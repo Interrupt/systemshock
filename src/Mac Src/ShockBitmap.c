@@ -132,7 +132,7 @@ void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean colo
 	{
 		theMap->BWBits.bounds = theMap->bounds;
 		theMap->BWBits.rowBytes = ((width+15) >> 4)<<1; 		// round to even
-		theMap->BWBits.baseAddr = NewPtr(((long) height * (long) theMap->BWBits.rowBytes));
+		theMap->BWBits.baseAddr = malloc(((long) height * (long) theMap->BWBits.rowBytes));
 		FailNIL(theMap->BWBits.baseAddr);
 		
 		theMap->BWBits.baseAddr = StripAddress(theMap->BWBits.baseAddr);
@@ -168,7 +168,7 @@ void FreeShockBitmap(ShockBitmap *theMap)
 	else
 	{
 		ClosePort(&theMap->BWPort);
-		DisposPtr(theMap->Address);
+		free(theMap->Address);
 	}
 }
 

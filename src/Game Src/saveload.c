@@ -123,7 +123,7 @@ extern bool trigger_check;
 //-------------------------------------------------------
 void store_objects(char** buf, ObjID *obj_array, char obj_count)
 {
-   char*	s = (char *)NewPtr(obj_count * sizeof(Obj) * 3);
+   char*	s = (char *)malloc(obj_count * sizeof(Obj) * 3);
    int 		i;
    if (s == NULL)
       critical_error(CRITERR_MEM|3);
@@ -186,7 +186,7 @@ void restore_objects(char* buf, ObjID *obj_array, char obj_count)
          s+=sh->struct_size;
       }
    }
-   DisposePtr((Ptr)buf);
+   free(buf);
 }
 
 

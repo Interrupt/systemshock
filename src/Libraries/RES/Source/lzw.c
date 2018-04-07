@@ -229,7 +229,7 @@ int LzwMallocBuffer()
 	if ((lzwBuffer == NULL) || (!lzwBufferMalloced))
 		{
 //		buff = Malloc(LZW_BUFF_SIZE);
-		buff = NewPtr(LZW_BUFF_SIZE);
+		buff = malloc(LZW_BUFF_SIZE);
 		if (buff == NULL)
 			{
 			Warning(("LzwMallocBuffer: failed to allocate buffers\n"));
@@ -253,7 +253,7 @@ void LzwFreeBuffer()
 	if (lzwBufferMalloced)
 		{
 //		Free(lzwBuffer);
-		DisposePtr((Ptr)lzwBuffer);
+		free(lzwBuffer);
 		lzwBuffer = NULL;
 		lzwBufferMalloced = FALSE;
 		}

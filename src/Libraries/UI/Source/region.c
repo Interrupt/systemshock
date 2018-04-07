@@ -186,8 +186,8 @@ errtype region_destroy(LGRegion *reg, bool draw)
    // Then, we kill OURSELVES!!!!!!!!!!!!
    if (AUTODESTROY_FLAG & reg->status_flags)
    {
-      DisposePtr((Ptr)reg->r);
-      DisposePtr((Ptr)reg);
+      free(reg->r);
+      free(reg);
    }
    return(OK);
 }

@@ -119,7 +119,7 @@ errtype init_hack_cameras()
 
 //      Warning(("start_mem = %d, BIG_HACKCAM = %d!\n",start_mem,BIG_HACKCAM_THRESHOLD));  
 //      Warning(("HACK_CAMERA_WID = %d!\n",HACK_CAMERA_WIDTH));
-      tmp_mem = (uchar *)NewPtr(HACK_CAMERA_WIDTH*HACK_CAMERA_HEIGHT);
+      tmp_mem = (uchar *)malloc(HACK_CAMERA_WIDTH*HACK_CAMERA_HEIGHT);
       hack_cam_frcs[i] = fr_place_view(FR_NEWVIEW, &hack_cam, tmp_mem, FR_DOUBLEB_MASK|FR_HACKCAM_FLAG, 
                                          0, 0, HACK_CAMERA_X, HACK_CAMERA_Y, HACK_CAMERA_WIDTH, HACK_CAMERA_HEIGHT);
       fr_set_callbacks(hack_cam_frcs[i], (frdraw)hack_camera_draw_callback, NULL, NULL);
@@ -147,7 +147,7 @@ errtype shutdown_hack_cameras()
    for (i=0; i < MAX_CAMERAS_VISIBLE; i++)
    {
       fr_free_view(hack_cam_frcs[i]);
-      DisposePtr((Ptr)hack_cam_bitmaps[i]->bits);
+      free(hack_cam_bitmaps[i]->bits);
    }
    return(OK);
 }

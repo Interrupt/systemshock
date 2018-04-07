@@ -74,7 +74,7 @@ void main()
 		return;
 	}
 	
-	pRef1 = NewPtr(100);
+	pRef1 = malloc(100);
 	if (pRef1 == NULL)
 	{
 		printf("Couldn't allocate pRef1.\n");
@@ -82,7 +82,7 @@ void main()
 	}
 	memset(pRef1, '1', 100);
 	
-	pRef2 = NewPtr(200);
+	pRef2 = malloc(200);
 	if (pRef2 == NULL)
 	{
 		printf("Couldn't allocate pRef2.\n");
@@ -90,7 +90,7 @@ void main()
 	}
 	memset(pRef2, '2', 200);
 	
-	pRef3 = NewPtr(300);
+	pRef3 = malloc(300);
 	if (pRef3 == NULL)
 	{
 		printf("Couldn't allocate pRef3.\n");

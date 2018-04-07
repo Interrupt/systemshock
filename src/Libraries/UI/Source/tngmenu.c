@@ -82,7 +82,7 @@ errtype tng_menu_destroy(TNG *ptng)
 	{
    	pnode_next = (MenuElement *)llist_next(pnode);
 	   llist_remove(pnode);
-      DisposePtr((Ptr)pnode);
+      free(pnode);
    	pnode = pnode_next;
 	}
    GUI_DEALLOC(ptng->ui_data, ptng->type_data);
@@ -328,9 +328,9 @@ MenuElement *tng_menu_add_basic(TNG *ptng, char *label)
 {
    MenuElement *newelem;
 
-   newelem = (MenuElement *)NewPtr(sizeof(MenuElement));
+   newelem = (MenuElement *)malloc(sizeof(MenuElement));
 
-   newelem->label = (char *)NewPtr(sizeof(char) * (strlen(label) + 1));
+   newelem->label = (char *)malloc(sizeof(char) * (strlen(label) + 1));
    strcpy(newelem->label,label);
 
    newelem->submenu = NULL;

@@ -1140,7 +1140,7 @@ void free_cursor_bitmaps()
    {
       grs_bitmap* bm = &motion_cursor_bitmaps[i];
       if (bm->bits!=NULL)
-	      DisposePtr((Ptr)bm->bits);
+	      free(bm->bits);
    }
 }
 
@@ -1166,7 +1166,7 @@ void alloc_cursor_bitmaps(void)
          realsz = w * h;
       }
 
-      bm->bits = (uchar *)NewPtr(max(cybsz,realsz));
+      bm->bits = (uchar *)malloc(max(cybsz,realsz));
    }
    for (; i < max(NUM_MOTION_CURSORS,NUM_CYBER_CURSORS); i++)
    {
@@ -1184,7 +1184,7 @@ void alloc_cursor_bitmaps(void)
 //         ss_point_convert(&w,&h,FALSE);
          sz = w * h;
       }
-      bm->bits = (uchar *)NewPtr(sz);
+      bm->bits = (uchar *)malloc(sz);
    }
 }
 
@@ -3390,7 +3390,7 @@ bool toggle_profile(short keycode, ulong context, void* data)
 void install_motion_mouse_handler(LGRegion* r,frc* fr)
 {
    int	cid;
-   view3d_data *data = (view3d_data *)NewPtr(sizeof(view3d_data));
+   view3d_data *data = (view3d_data *)malloc(sizeof(view3d_data));
    data->ldown = FALSE;
    data->rdown = FALSE;
    data->fr = fr;

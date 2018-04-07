@@ -504,7 +504,7 @@ void palette_initialize(short tbl_size)
    // Malloc the table
 
    Palette_Effects_Table = (PAL_TABLE_ENTRY *)
-      NewPtr((int) tbl_size * sizeof(PAL_TABLE_ENTRY));
+      malloc((int) tbl_size * sizeof(PAL_TABLE_ENTRY));
 //¥¥¥No error check here
   
    // Initialize Table
@@ -525,7 +525,7 @@ void palette_initialize(short tbl_size)
 
 void palette_shutdown()
 {
-   DisposePtr((Ptr)Palette_Effects_Table);
+   free(Palette_Effects_Table);
 
    return;
 }

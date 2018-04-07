@@ -111,7 +111,7 @@ static uchar real_cone_spans[(1<<DEFAULT_YSHF)*2];
 
 int fr_clip_freemem(void)
 {
-   if (x_span_lists!=NULL) DisposePtr((Ptr)x_span_lists);
+   if (x_span_lists!=NULL) free(x_span_lists);
    _fr_ret;
 }
 

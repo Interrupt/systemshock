@@ -45,7 +45,7 @@ void main ()
    void *p1, *p2, *p3, *p4, *p5;
    long s1, s2, s3, s4, s5;
 
-   ms.topptr = (void *)NewPtr(size);
+   ms.topptr = (void *)malloc(size);
    if (ms.topptr == NULL) printf ("malloc failed\n");
    ms.sz = size;
    MemStackInit (&ms);

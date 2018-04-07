@@ -310,8 +310,8 @@ void screen_init_mfd(bool fullscrn)
       // Pull in the background bitmap
       f = (FrameDesc*)RefLock(REF_IMG_bmBlankMFD);
       mfd_background = f->bm;
-//KLC      mfd_background.bits = (uchar *)NewPtr(MAX_WD(MFD_VIEW_WID)*MAX_HT(MFD_VIEW_HGT));
-      mfd_background.bits = (uchar *)NewPtr(f->bm.w * f->bm.h);
+//KLC      mfd_background.bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID)*MAX_HT(MFD_VIEW_HGT));
+      mfd_background.bits = (uchar *)malloc(f->bm.w * f->bm.h);
       LG_memcpy(mfd_background.bits,(f+1),f->bm.w * f->bm.h);
       RefUnlock(REF_IMG_bmBlankMFD);
 
@@ -1015,7 +1015,7 @@ bool mfd_button_callback(uiEvent *e, LGRegion *r, void *udata)
          {
             LGPoint offset = {0,0};
             last_mfd_cnum[which_panel] = cnum;
-            DisposePtr((Ptr)mfd_bttn_bitmaps[which_panel].bits);
+            free(mfd_bttn_bitmaps[which_panel].bits);
             make_popup_cursor(&mfd_bttn_cursors[which_panel],&mfd_bttn_bitmaps[which_panel],cursor_strings[cnum],which_panel,TRUE, offset);
             uiSetRegionDefaultCursor(r,&mfd_bttn_cursors[which_panel]);
          }

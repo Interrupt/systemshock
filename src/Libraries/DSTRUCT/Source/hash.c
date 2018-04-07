@@ -114,10 +114,10 @@ errtype hash_init(Hashtable* h, int elemsize, int vecsize, Hashfunc hfunc, Equfu
    h->fullness = 0;
    h->hfunc = hfunc;
    h->efunc = efunc;
-   h->statvec = (char*)NewPtr(vecsize);
+   h->statvec = (char*)malloc(vecsize);
    if (h->statvec == NULL) return ERR_NOMEM;
    for (i = 0; i < vecsize; i++) h->statvec[i] = HASH_EMPTY;
-   h->vec = (char*)NewPtr(elemsize*vecsize);
+   h->vec = (char*)malloc(elemsize*vecsize);
    if (h->vec == NULL) return ERR_NOMEM;
    return OK;
 }
@@ -125,9 +125,9 @@ errtype hash_init(Hashtable* h, int elemsize, int vecsize, Hashfunc hfunc, Equfu
 errtype hash_copy(Hashtable* t, Hashtable* s)
 {
    *t = *s;
-   t->statvec = NewPtr(t->size);
+   t->statvec = malloc(t->size);
    if (t->statvec == NULL) return ERR_NOMEM;
-   t->vec = NewPtr(t->elemsize*t->size);
+   t->vec = malloc(t->elemsize*t->size);
    if (t->vec == NULL) return ERR_NOMEM;
    LG_memcpy(t->vec,s->vec,t->size*t->elemsize);
    LG_memcpy(t->statvec,s->statvec,t->size);
@@ -178,12 +178,12 @@ static errtype grow(Hashtable* h, int newsize)
    int i;
 //   Spew(DSRC_DSTRUCT_Hash,("grow(%x,%d)\n",h,newsize));
    for (;!is_fermat_prime(newsize,2);newsize++);
-   newvec = NewPtr(newsize*h->elemsize);
+   newvec = malloc(newsize*h->elemsize);
    if (newvec == NULL) return ERR_NOMEM;
-   newstat = NewPtr(newsize);
+   newstat = malloc(newsize);
    if (newstat == NULL)
    {
-      DisposePtr (newvec);
+      free (newvec);
       return ERR_NOMEM;
    }
    h->vec = newvec;
@@ -199,8 +199,8 @@ static errtype grow(Hashtable* h, int newsize)
          hash_insert(h,(void*)(oldvec+i*h->elemsize));
       }
    }
-   DisposePtr(oldvec);
-   DisposePtr(oldstat);
+   free(oldvec);
+   free(oldstat);
    return OK;
 }
 
@@ -284,8 +284,8 @@ errtype hash_destroy(Hashtable* h)
 {
    h->size = 0;
    h->fullness = 0;
-   DisposePtr(h->statvec);
-   DisposePtr(h->vec);
+   free(h->statvec);
+   free(h->vec);
    return OK;
 }
 

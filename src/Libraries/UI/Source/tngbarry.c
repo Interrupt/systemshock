@@ -65,8 +65,8 @@ bool tng_buttonarray_vscroll_changed(void *ui_data, void *user_data)
 
 errtype tng_buttonarray_destroy(TNG *ptng)
 {
-   DisposePtr((Ptr)TNG_BA(ptng)->selected);
-   DisposePtr((Ptr)TNG_BA(ptng)->matrix);
+   free(TNG_BA(ptng)->selected);
+   free(TNG_BA(ptng)->matrix);
    GUI_DEALLOC(ptng->ui_data, ptng->type_data);
    return(OK);
 }
@@ -126,8 +126,8 @@ errtype tng_buttonarray_init(void *ui_data, TNG *ptng, TNGStyle *sty, ushort opt
    pbatng->offset = tngZeroPt;
    pbatng->lsel = pbatng->offset;
    pbatng->num_selectable = num_sel;
-   pbatng->matrix = (TNGButtonArrayElement *)NewPtr(sizeof(TNGButtonArrayElement) * (msize.x * msize.y));
-   pbatng->selected = (bool *)NewPtr(sizeof(bool) * (msize.x * msize.y));
+   pbatng->matrix = (TNGButtonArrayElement *)malloc(sizeof(TNGButtonArrayElement) * (msize.x * msize.y));
+   pbatng->selected = (bool *)malloc(sizeof(bool) * (msize.x * msize.y));
    for (i=0; i<msize.x; i++)
    {
       for (j=0; j<msize.y; j++)

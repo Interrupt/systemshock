@@ -40,7 +40,7 @@ Gadget *gad_text_create(Gadget *parent, LGRect *dim, int z, ulong options, TNGSt
    TNG *temp_tng;
    LGPoint dsize, dloc;
 
-   temp_tng = (TNG *)NewPtr(sizeof(TNG));
+   temp_tng = (TNG *)malloc(sizeof(TNG));
 
    dsize.x = RectWidth(dim);
    dsize.y = RectHeight(dim);
@@ -49,7 +49,7 @@ Gadget *gad_text_create(Gadget *parent, LGRect *dim, int z, ulong options, TNGSt
    tng_textgadget_init(NULL, temp_tng, sty, options, dsize, dloc); 
 
    gadget_create_setup(&retgad, parent, CLASS_TEXT, dim, z, name);
-   DisposePtr((Ptr)retgad->tng_data);
+   free(retgad->tng_data);
    temp_tng->ui_data = retgad;
    retgad->tng_data = temp_tng;
 

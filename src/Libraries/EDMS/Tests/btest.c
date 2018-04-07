@@ -169,7 +169,7 @@ fix	skeleton0[50],
 	emetic.awol_callback = off_playfield;
 //	emetic.wall_callback = NULL;
     emetic.snooz_callback = off_playfield;
-	emetic.argblock_pointer = NewPtr(0x7FFF);
+	emetic.argblock_pointer = malloc(0x7FFF);
 
 	EDMS_startup( &emetic );
 /*

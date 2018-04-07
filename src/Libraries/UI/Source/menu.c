@@ -41,12 +41,12 @@ void gad_menu_up(TNG *ptng)
    RectCallback fn;
    menu_struct *ms;
 
-   gd = (GadgetData *)NewPtr(sizeof(GadgetData));
+   gd = (GadgetData *)malloc(sizeof(GadgetData));
    retgad = (Gadget *)ptng->ui_data;
    ms = (menu_struct *)TNG_MN(ptng)->ui_struct;
 
    // Fill in the gadget data info
-   gd->name = (char *)NewPtr((strlen(ms->name) + 1) * sizeof(char));
+   gd->name = (char *)malloc((strlen(ms->name) + 1) * sizeof(char));
    strcpy(gd->name, ms->name);
    gd->g = retgad;
 
@@ -73,7 +73,7 @@ void gad_menu_up(TNG *ptng)
    dim.lr.y = dim.ul.y + TNG_MN(ptng)->size.y;
    //Spew(DSRC_UI_Menu, ("menu dim = (%d,%d)(%d,%d)\n",RECT_EXPAND_ARGS(&dim)));
 
-   retgad->rep = (LGRegion *)NewPtr(sizeof(LGRegion));
+   retgad->rep = (LGRegion *)malloc(sizeof(LGRegion));
    region_create(retgad->parent->rep, retgad->rep, &dim, ms->z, 0,
       REG_USER_CONTROLLED | AUTOMANAGE_FLAG | STENCIL_CLIPPING | OBSCURATION_CHECK,
       fn, NULL, NULL, gd);
@@ -111,9 +111,9 @@ Gadget *gad_menu_create(Gadget *parent, LGPoint *coord, int z, TNGStyle *sty, in
    TNG *mn_tng;
    menu_struct *ms;
 
-   retgad = (Gadget *)NewPtr(sizeof(Gadget));
-   mn_tng = (TNG *)NewPtr(sizeof(TNG));
-   ms = (menu_struct *)NewPtr(sizeof(menu_struct));
+   retgad = (Gadget *)malloc(sizeof(Gadget));
+   mn_tng = (TNG *)malloc(sizeof(TNG));
+   ms = (menu_struct *)malloc(sizeof(menu_struct));
 
    // Fill out basic gadgety info
    retgad->tng_data = mn_tng;
@@ -126,7 +126,7 @@ Gadget *gad_menu_create(Gadget *parent, LGPoint *coord, int z, TNGStyle *sty, in
    retgad->destroy_func = NULL;
 
    ms->z = z;
-   ms->name = (char *)NewPtr((1 + strlen(name)) * sizeof(char));
+   ms->name = (char *)malloc((1 + strlen(name)) * sizeof(char));
    strcpy(ms->name, name);
 
    tng_menu_init(retgad, retgad->tng_data, sty, *coord, width, &gad_menu_up, &gad_menu_down, ms);

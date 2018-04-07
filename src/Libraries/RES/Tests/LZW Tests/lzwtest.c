@@ -62,7 +62,7 @@ void main(void)
 
 		// Allocate buffer to hold compressed data.
 		
-		compBuff = NewPtr(len);
+		compBuff = malloc(len);
 		if (compBuff == NULL)
 		{
 			printf("Couldn't allocate compBuff.\n");

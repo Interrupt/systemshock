@@ -301,7 +301,7 @@ void free_textures(void)
 {
 #ifndef SVGA_CUTSCENES
    if (all_textures&&(tmap_dynamic_mem==NULL))
-      DisposePtr((Ptr)tmap_dynamic_mem);
+      free(tmap_dynamic_mem);
 #endif
    tmaps_setup=FALSE;
 }
@@ -317,8 +317,8 @@ errtype bitmap_array_unload(int *num_bitmaps, grs_bitmap *arr[])
    for (i=0; i<*num_bitmaps; i++)
    {
 //      Spew(DSRC_SYSTEM_Memory, ("%d ",i));
-      DisposePtr((Ptr)arr[i]->bits);   
-      DisposePtr((Ptr)arr[i]);
+      free(arr[i]->bits);   
+      free(arr[i]);
    }
    *num_bitmaps = 0;
    return(OK);
@@ -417,7 +417,7 @@ errtype load_master_texture_properties(void)
    int version,i;
    Handle res;
       
-   texture_properties = (TextureProp *)NewPtr(GAME_TEXTURES * sizeof(TextureProp));
+   texture_properties = (TextureProp *)malloc(GAME_TEXTURES * sizeof(TextureProp));
 
    // Load Properties from disk
    clear_texture_properties();
@@ -464,7 +464,7 @@ errtype load_master_texture_properties(void)
 
 errtype unload_master_texture_properties(void)
 {
-   DisposePtr((Ptr)texture_properties);
+   free(texture_properties);
    texture_properties = NULL;
    return(OK);
 }

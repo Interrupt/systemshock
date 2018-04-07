@@ -96,7 +96,7 @@ errtype uiInstallRegionHandler(LGRegion* r, ulong evmask, uiHandlerProc callback
    if (ch == NULL)
    {
       // Spew(DSRC_UI_Handlers,("uiInstallRegionHandler(): creating new handler chain\n"));
-      ch = (handler_chain *)NewPtr(sizeof(handler_chain));
+      ch = (handler_chain *)malloc(sizeof(handler_chain));
       if (ch == NULL)
       {
          // Spew(DSRC_UI_Handlers,("uiInstallRegionHandler: out of memory\n"));
@@ -195,7 +195,7 @@ errtype uiSetRegionOpacity(LGRegion* reg,ulong mask)
    if (ch == NULL)
    {
       // Spew(DSRC_UI_Handlers,("uiSetRegionOpacity(): creating new handler chain\n"));
-      ch = (handler_chain *)NewPtr(sizeof(handler_chain));
+      ch = (handler_chain *)malloc(sizeof(handler_chain));
       if (ch == NULL)
       {
          // Spew(DSRC_UI_Handlers,("uiSetRegionOpacity: out of memory\n"));
@@ -340,10 +340,10 @@ void event_queue_add(uiEvent* e)
       int i;
       int out = EventQueue.out;
       int newsize = EventQueue.size * 2;
-      uiEvent *newvec = (uiEvent *)NewPtr(sizeof(uiEvent)*newsize);
+      uiEvent *newvec = (uiEvent *)malloc(sizeof(uiEvent)*newsize);
       for(i = 0; out != EventQueue.in; i++, out = (out+1)%EventQueue.size)
          newvec[i] = EventQueue.vec[out];
-      DisposePtr((Ptr)EventQueue.vec);
+      free(EventQueue.vec);
       EventQueue.vec = newvec;
       EventQueue.size = newsize;
       EventQueue.in = i;
@@ -946,7 +946,7 @@ errtype uiInit(uiSlab* slab)
    // initialize the event queue;
    EventQueue.in = EventQueue.out = 0;
    EventQueue.size = INITIAL_QUEUE_SIZE;
-   EventQueue.vec = (uiEvent *)NewPtr(sizeof(uiEvent)*INITIAL_QUEUE_SIZE);
+   EventQueue.vec = (uiEvent *)malloc(sizeof(uiEvent)*INITIAL_QUEUE_SIZE);
    for (i = 0; i < NUM_MOUSE_BTNS; i++)
       last_down_events[i].type = UI_EVENT_NULL;
 //KLC - done in main program now.   err = ui_init_cursors();
@@ -970,7 +970,7 @@ errtype uiShutdownRegionHandlers(LGRegion* r)
    handler_chain *ch = (handler_chain*)(r->handler);
    if (ch == NULL) return ERR_NOEFFECT;
    err = array_destroy(&ch->chain);
-   DisposePtr((Ptr)ch);
+   free(ch);
    return err;
 }
 

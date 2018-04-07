@@ -267,7 +267,7 @@ errtype obj_load_art(bool flush_all)
                if ((f == 0) && (empty_bitmap(bitmaps_2d[i])))
                {
                   objart_loadsize -= bitmaps_2d[i]->w * bitmaps_2d[i]->h;
-                  DisposePtr((Ptr)bitmaps_2d[i]->bits);
+                  free(bitmaps_2d[i]->bits);
                   not_using_2d = TRUE;
                }
 
@@ -298,14 +298,14 @@ errtype obj_load_art(bool flush_all)
             if (bitmaps_2d[i] != bitmaps_3d[count_3d])
             {
                objart_loadsize -= bitmaps_2d[i]->w * bitmaps_2d[i]->h;
-               DisposePtr((Ptr)bitmaps_2d[i]->bits);
+               free(bitmaps_2d[i]->bits);
             }
             bitmaps_2d[i] = NULL;
             objart_count++;
             for (f=0; f < (FRAME_NUM_3D(ObjProps[i].bitmap_3d) + 1); f++)
             {
                objart_loadsize -= bitmaps_3d[count_3d]->w * bitmaps_3d[count_3d]->h;
-               DisposePtr((Ptr)bitmaps_3d[count_3d]->bits);
+               free(bitmaps_3d[count_3d]->bits);
                count_3d++;
                objart_count++;
             }

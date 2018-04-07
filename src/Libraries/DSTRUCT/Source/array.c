@@ -27,7 +27,7 @@ errtype array_grow(Array *a, int size);
 
 
 //------------------------------------------------------
-//  For Mac version:  Use NewPtr and DisposePtr.
+//  For Mac version:  Use malloc and free.
 
 #define FREELIST_EMPTY   -1
 #define FREELIST_NOTFREE -2
@@ -39,9 +39,9 @@ errtype array_init(Array* initme, int elemsize, int vecsize)
    initme->vecsize = vecsize;
    initme->fullness = 0;
    initme->freehead = FREELIST_EMPTY;
-   initme->freevec = (int*)NewPtr(vecsize*sizeof(int));
+   initme->freevec = (int*)malloc(vecsize*sizeof(int));
    if (initme->freevec == NULL) return ERR_NOMEM; 
-   initme->vec = (char*) NewPtr(elemsize*vecsize);
+   initme->vec = (char*) malloc(elemsize*vecsize);
    if (initme->vec == NULL) return ERR_NOMEM;
    return OK;
 }
@@ -51,14 +51,14 @@ errtype array_grow(Array *a, int size)
    char* tmpvec;
    int* tmplist; 
    if (size <= a->vecsize) return OK;
-   tmpvec = (char *)NewPtr(a->elemsize*size);
+   tmpvec = (char *)malloc(a->elemsize*size);
    if (tmpvec == NULL) return ERR_NOMEM;
    LG_memcpy(tmpvec,a->vec,a->vecsize*a->elemsize);
-   tmplist = (int *)NewPtr(size*sizeof(int));
+   tmplist = (int *)malloc(size*sizeof(int));
    if (tmplist == NULL) return ERR_NOMEM;
    LG_memcpy(tmplist,a->vec,a->vecsize*sizeof(int));
-   DisposePtr((Ptr)a->vec);
-   DisposePtr((Ptr)a->freevec);
+   free(a->vec);
+   free(a->freevec);
    a->vecsize = size;
    a->vec = tmpvec;
    a->freevec = tmplist;
@@ -98,7 +98,7 @@ errtype array_destroy(Array* a)
    a->elemsize = 0;
    a->vecsize = 0;
    a->freehead = FREELIST_EMPTY;
-   DisposePtr((Ptr)a->freevec);
-   DisposePtr((Ptr)a->vec);
+   free(a->freevec);
+   free(a->vec);
    return OK;
 }

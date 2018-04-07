@@ -209,7 +209,7 @@ errtype tng_install_callback(TNG *ptng, ushort event_type, ushort cond, TNGCallb
       return(ERR_NULL);
    }
 
-   tngcb = (TNG_CB *)NewPtr(sizeof(TNG_CB));
+   tngcb = (TNG_CB *)malloc(sizeof(TNG_CB));
    tngcb->condition = cond;
    tngcb->user_data = user_data;
    tngcb->cb = cbfn;
@@ -262,7 +262,7 @@ errtype tng_uninstall_callback(TNG *ptng, int id)
    {
       oldp->next_cb = curp->next_cb;
    }
-   DisposePtr((Ptr)curp);
+   free(curp);
    return(OK);
 }
 

@@ -144,7 +144,7 @@ void main(void)
 		myErr = SndDisposeChannel(gSCPtr[i], TRUE);
 		if (myErr != noErr)
 			printf("Error in SndDisposeChannel call for channel %d: %d\n", i, myErr);
-		DisposePtr((Ptr)gSCPtr[i]);
+		free(gSCPtr[i]);
 	}
 	
 	printf("\nDone.\n");
@@ -159,14 +159,14 @@ SndChannelPtr CreateSndChannel(void)
 	SndChannelPtr	scPtr;
 	OSErr			err;
 	
-	scPtr = SndChannelPtr(NewPtr(sizeof(SndChannel)));
+	scPtr = SndChannelPtr(malloc(sizeof(SndChannel)));
 	if (scPtr)
 	{
 		scPtr->qLength = 16;
 		err = SndNewChannel(&scPtr, sampledSynth, initStereo, NULL);
 		if (err != noErr)
 		{
-			DisposePtr(Ptr(scPtr));
+			free(scPtr);
 			scPtr = NULL;
 		}
 		else

@@ -271,7 +271,7 @@ void RndGauss16FastSeed(RndStream *prs, ulong seed)
 
 	if (gaussTable == NULL)
 	{
-		pg = gaussTable = (ushort *)NewPtr(SIZE_GAUSSTABLE * sizeof(short));
+		pg = gaussTable = (ushort *)malloc(SIZE_GAUSSTABLE * sizeof(short));
 		for (i = 0; i < SIZE_GAUSSTABLE; i++)
 		{
 			prs->curr = i;

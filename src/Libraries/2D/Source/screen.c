@@ -66,7 +66,7 @@ grs_screen *gr_alloc_screen (short w, short h)
 
   /* get memory for screen structure itself and 2 system canvases,
         and video ram for the screen itself. */
-  if ((p=(uchar *)NewPtr (sizeof (*s)+2*sizeof (*c))) == NULL)	// was gr_malloc
+  if ((p=(uchar *)malloc (sizeof (*s)+2*sizeof (*c))) == NULL)	// was gr_malloc
      goto bailout2;
   if ((b = valloc (w, h)) == (uchar *)-1)      
   	goto bailout1;
@@ -87,7 +87,7 @@ grs_screen *gr_alloc_screen (short w, short h)
   return s;
 
 bailout1:
-  DisposePtr ((Ptr) s);	// was gr_free
+  free(s);	// was gr_free
 bailout2:
   return NULL;
 }
@@ -97,9 +97,9 @@ void gr_free_screen (grs_screen *s)
 {
 	vfree (s->bm.bits);
 	if (s->c->ytab)
-  	DisposePtr ((Ptr) s->c->ytab);	// was gr_free
+  	free(s->c->ytab);	// was gr_free
   if ((s->c+1)->ytab)
-  	DisposePtr ((Ptr) (s->c+1)->ytab);	// was gr_free
-  DisposePtr ((Ptr) s->c);	// was gr_free
-  DisposePtr ((Ptr) s);	// was gr_free
+  	free((s->c+1)->ytab);	// was gr_free
+  free(s->c);	// was gr_free
+  free(s);	// was gr_free
 }

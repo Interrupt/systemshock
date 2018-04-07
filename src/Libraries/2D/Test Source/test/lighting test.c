@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
 #if 1
-	big_buffer = NewPtr(100000);
+	big_buffer = malloc(100000);
   gr_set_unpack_buf((uchar *) big_buffer);			// Do this somewhere
 	StandardGetFile(0L, -1, 0L, &reply);
 	PaintRect(&gMainWindow->portRect);

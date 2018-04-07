@@ -363,11 +363,11 @@ errtype load_misc_cursors(void)
 
    if (misc_cursors_loaded)
    {
-      if (_targbm.bits != NULL)  DisposPtr((Ptr) _targbm.bits);
-      if (_waitbm.bits != NULL)  DisposPtr((Ptr) _waitbm.bits);
-      if (_firebm.bits != NULL)  DisposPtr((Ptr) _firebm.bits);
-//      if (_vmailbm.bits != NULL)  DisposPtr((Ptr) _vmailbm.bits);
-      if (slider_cursor_bmap.bits != NULL)  DisposPtr((Ptr) slider_cursor_bmap.bits);
+      if (_targbm.bits != NULL)  free(_targbm.bits);
+      if (_waitbm.bits != NULL)  free(_waitbm.bits);
+      if (_firebm.bits != NULL)  free(_firebm.bits);
+//      if (_vmailbm.bits != NULL)  free(_vmailbm.bits);
+      if (slider_cursor_bmap.bits != NULL)  free(slider_cursor_bmap.bits);
    }
    load_hires_bitmap_cursor(&globcursor,   &_targbm,  REF_IMG_bmTargetCursor, TRUE);
    load_hires_bitmap_cursor(&wait_cursor,  &_waitbm,  REF_IMG_bmWaitCursor, TRUE);

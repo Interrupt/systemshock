@@ -2565,7 +2565,7 @@ bool pagebutton_mouse_handler(uiMouseEvent* ev, LGRegion* r, void*)
          c = NULL;
       last_invent_cnum = cnum;
 #ifdef SVGA_SUPPORT
-      DisposePtr((Ptr)invent_bttn_bitmap.bits);
+      free(invent_bttn_bitmap.bits);
       make_popup_cursor(c,&invent_bttn_bitmap,cursor_strings[cnum],POPUP_DOWN,TRUE,offset);
 #else
       make_popup_cursor(c,&invent_bttn_bitmap,cursor_strings[cnum],POPUP_DOWN,FALSE,offset);
@@ -2732,8 +2732,8 @@ LGRegion* create_invent_region(LGRegion* root, LGRegion **pbuttons, LGRegion **p
    extern void add_email_handler(LGRegion* r);
    int id;
    LGRect invrect;
-   LGRegion* invreg = (LGRegion *)NewPtr(sizeof(LGRegion));
-   LGRegion* pagereg = (LGRegion *)NewPtr(sizeof(LGRegion));
+   LGRegion* invreg = (LGRegion *)malloc(sizeof(LGRegion));
+   LGRegion* pagereg = (LGRegion *)malloc(sizeof(LGRegion));
    FrameDesc* f;
 #ifdef OLD_BUTTON_CURSORS
    LGPoint pt;
@@ -2785,8 +2785,8 @@ LGRegion* create_invent_region(LGRegion* root, LGRegion **pbuttons, LGRegion **p
 
       // This background is going to get used by the 360 ware 
       // in fullscreen mode, so we need extra bits 
-//KLC      inv_backgnd.bits = (uchar *)NewPtr(MAX_INV_FULL_WD(INV_FULL_WD) * MAX_INV_FULL_HT(grd_cap->h - GAME_MESSAGE_Y));
-      inv_backgnd.bits = (uchar *)NewPtr(290 * 136);					// KLC - I just happen to know what these are.
+//KLC      inv_backgnd.bits = (uchar *)malloc(MAX_INV_FULL_WD(INV_FULL_WD) * MAX_INV_FULL_HT(grd_cap->h - GAME_MESSAGE_Y));
+      inv_backgnd.bits = (uchar *)malloc(290 * 136);					// KLC - I just happen to know what these are.
       LG_memcpy(inv_backgnd.bits,(f+1),f->bm.w * f->bm.h);
       ResUnlock(RES_gamescrGfx);
       ResUnlock(RES_gamescrGfx);
@@ -2797,7 +2797,7 @@ LGRegion* create_invent_region(LGRegion* root, LGRegion **pbuttons, LGRegion **p
       gr_init_canvas(&inv_view360_canvas,inv_backgnd.bits, BMT_FLAT8, INV_FULL_WD, INV_FULL_HT);
       gr_init_sub_canvas(grd_scr_canv,&inv_gamepage_canvas,INVENTORY_PANEL_X,BUTTON_PANEL_Y,INVENTORY_PANEL_WIDTH,grd_cap->h - BUTTON_PANEL_Y);
 
-      uchar *p = (uchar *)NewPtr(292 * 10);											// This canvas holds an off-screen image of the
+      uchar *p = (uchar *)malloc(292 * 10);											// This canvas holds an off-screen image of the
       gr_init_canvas(&inv_fullpage_canvas, p, BMT_FLAT8, 292, 10);			// inventory buttons.
       gr_push_canvas(&inv_fullpage_canvas);
       gr_clear(0);

@@ -76,7 +76,7 @@ int gr_alloc_ipal(void)
 		if ((err = gr_free_ipal())<0) return err;
 	}
 
-	if ((grd_ipal = (uchar *) NewPtr(32768))==NULL) return RGB_OUT_OF_MEMORY;		// was gr_malloc
+	if ((grd_ipal = (uchar *) malloc(32768))==NULL) return RGB_OUT_OF_MEMORY;		// was gr_malloc
 
 	if ((err = gr_init_ipal())<0) return err;
 	return RGB_OK;
@@ -85,7 +85,7 @@ int gr_alloc_ipal(void)
 int gr_free_ipal(void)
 {
 	if (grd_ipal==NULL) return RGB_CANT_DEALLOCATE;
-	DisposePtr((Ptr) grd_ipal);	// was gr_free
+	free( grd_ipal);	// was gr_free
    grd_ipal=NULL;
 	return RGB_OK;
 }
@@ -102,7 +102,7 @@ int gr_init_ipal(void)
 
 	if (grd_ipal == NULL) return RGB_IPAL_NOT_ALLOCATED;
 
-  if ((data = (uchar *) NewPtr(3*256)) == NULL) return RGB_OUT_OF_MEMORY;	// was gr_malloc
+  if ((data = (uchar *) malloc(3*256)) == NULL) return RGB_OUT_OF_MEMORY;	// was gr_malloc
 	/* needs to be split up into r,g,b planes */
 	colormap[0] = data;
 	colormap[1] = data + 256;
@@ -115,12 +115,12 @@ int gr_init_ipal(void)
    	colormap[0][i] = b;
    }
 
-	if ((dist_buf = (ulong *) NewPtr(sizeof(ulong) * 32768))==NULL) return RGB_OUT_OF_MEMORY;	// was gr_malloc
+	if ((dist_buf = (ulong *) malloc(sizeof(ulong) * 32768))==NULL) return RGB_OUT_OF_MEMORY;	// was gr_malloc
 
 	inv_cmap_2(256,colormap,5,dist_buf,grd_ipal);
 
- 	DisposePtr((Ptr) dist_buf);	// was gr_free
- 	DisposePtr((Ptr) data);	// was gr_free
+ 	free( dist_buf);	// was gr_free
+ 	free( data);	// was gr_free
 
 	return RGB_OK;
 }

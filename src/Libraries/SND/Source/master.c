@@ -79,7 +79,7 @@ void snd_shutdown(void)
 	for (int i=0; i < _snd_smp_cnt; i++)
 	{
 		SndDisposeChannel(_snd_smp_prm[i].sndChan, TRUE);
-		DisposePtr((Ptr)_snd_smp_prm[i].sndChan);
+		free(_snd_smp_prm[i].sndChan);
 	}
 	
 	DisposeRoutineDescriptor(gDigiCallBackProcPtr);

@@ -183,7 +183,7 @@ int slorkatron_memory_check()
 
    while ((size > MINIMUM_SLORK_SIZE) && (ptr_count < MAX_PTRS))
    {
-      mem_ptrs[ptr_count] = (uchar *)NewPtr(size);		//  mem_ptrs[ptr_count] = Malloc(size);
+      mem_ptrs[ptr_count] = (uchar *)malloc(size);		//  mem_ptrs[ptr_count] = Malloc(size);
       if (mem_ptrs[ptr_count] == NULL)
          size -= DECREMENT_INTERVAL;
       else
@@ -194,7 +194,7 @@ int slorkatron_memory_check()
    }
    for (i=ptr_count - 1; i >= 0; i--)
       if (mem_ptrs[i] != NULL)
-         DisposePtr((Ptr)mem_ptrs[i]);		//  Free(mem_ptrs[i]);
+         free(mem_ptrs[i]);		//  Free(mem_ptrs[i]);
 
    return(retval);
 }

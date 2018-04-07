@@ -92,7 +92,7 @@ bool mfd_buttonarray_handlerproc(MFD* mfd, uiEvent* ev, MFDhandler* h)
 
 errtype MFDBttnArrayInit(MFDhandler* h, LGRect* r, LGPoint bdims, LGPoint bsize, MFDBttnCallback cb, void* cbdata)
 {
-   MFDBttnArray* ba = (MFDBttnArray *)NewPtr(sizeof(MFDBttnArray));
+   MFDBttnArray* ba = (MFDBttnArray *)malloc(sizeof(MFDBttnArray));
    if (ba == NULL) return ERR_NOMEM;
    if (bsize.x < 1 || bsize.y < 1) return ERR_RANGE;
    h->r = *r;
@@ -113,7 +113,7 @@ errtype MFDBttnArrayInit(MFDhandler* h, LGRect* r, LGPoint bdims, LGPoint bsize,
 
 errtype MFDBttnArrayShutdown(MFDhandler* h)
 {
-   DisposePtr((Ptr)h->data);
+   free(h->data);
    h->proc = NULL;
    return OK;
 }
@@ -186,7 +186,7 @@ bool mfd_slider_handler(MFD* mfd, uiMouseEvent* ev, MFDhandler* h)
 
 errtype MFDSliderInit(MFDhandler* h, LGRect* r, MFDSliderCallback cb, void* data)
 {
-   MFDSlider* sl = (MFDSlider *)NewPtr(sizeof(MFDSlider));
+   MFDSlider* sl = (MFDSlider *)malloc(sizeof(MFDSlider));
    if (sl == NULL) return ERR_NOMEM;
    h->r = *r;
    h->data = sl;

@@ -145,7 +145,7 @@ int fnt_load(char *fnt_fname)
    fd = open(fnt_fname, O_RDONLY|O_BINARY);
    size = lseek(fd, 0, SEEK_END);
    lseek(fd, 0, SEEK_SET);
-   _fnt_lists[hnd].font_buf = (char *)NewPtr((size + 1) * sizeof(char));
+   _fnt_lists[hnd].font_buf = (char *)malloc((size + 1) * sizeof(char));
    read(fd, _fnt_lists[hnd].font_buf, size);
    close(fd);
    gr_set_font((grs_font *)_fnt_lists[hnd].font_buf);

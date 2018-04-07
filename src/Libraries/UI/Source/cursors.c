@@ -224,10 +224,10 @@ errtype uiMakeCursorStack(cursor_stack* res)
 	if (res == NULL)
 		return ERR_NULL;
 	res->size = CURSOR_STACKSIZE;
-	res->stack = (LGCursor**)NewPtr(sizeof(LGCursor*) * res->size);
+	res->stack = (LGCursor**)malloc(sizeof(LGCursor*) * res->size);
 	if (res->stack == NULL)
 	{
-		DisposePtr((Ptr)res);
+		free(res);
 		return ERR_NOMEM;
 	}
 	res->fullness = 1;
@@ -244,7 +244,7 @@ errtype uiDestroyCursorStack(cursor_stack* cstack)
    if (cstack == NULL) return ERR_NULL;
    if (cstack->size==  0) return ERR_NOEFFECT;
    cstack->size = 0;
-   DisposePtr((Ptr)cstack->stack);
+   free(cstack->stack);
    return OK;
 }
 
@@ -287,11 +287,11 @@ errtype uiPushCursor(cursor_stack* cs, LGCursor* c)
    if (cs == NULL) return ERR_NULL;
    if (cs->fullness >= cs->size)
    {
-      LGCursor** tmp = (LGCursor**)NewPtr(cs->size*2*sizeof(LGCursor*));
+      LGCursor** tmp = (LGCursor**)malloc(cs->size*2*sizeof(LGCursor*));
       //SPEW_ANAL(DSRC_UI_Cursor_Stack,("cs_push(%x,%x), growing stack\n",cs,c));
       if (tmp == NULL) return ERR_NOMEM;
       LG_memcpy(tmp,cs->stack,cs->size*sizeof(LGCursor*));
-      DisposePtr((Ptr)cs->stack);
+      free(cs->stack);
       cs->stack = tmp;
       cs->size *= 2;
    }
@@ -356,7 +356,7 @@ errtype get_region_stack(LGRegion*r, cursor_stack** cs)
    {
       errtype err;
       //SPEW_ANAL(DSRC_UI_Cursor_Stack,("get_region_stack(%x,%x), creating stack\n",r,cs));
-      r->cursors = res = (cursor_stack *)NewPtr(sizeof(cursor_stack));
+      r->cursors = res = (cursor_stack *)malloc(sizeof(cursor_stack));
       if (res == NULL)
          return ERR_NOMEM;
       err = cstack_init(res);
@@ -391,7 +391,7 @@ errtype ui_init_cursors(void)
    // Spew(DSRC_UI_Cursors ,("ui_init_cursors()\n"));
    // KLC grow_save_under(STARTING_SAVEUNDER_WD,STARTING_SAVEUNDER_HT);
    // KLC - just initalize it to a sizeable bitmap, and leave it that way.
-   SaveUnder.bm.bits = (uchar *)NewPtr(6144);
+   SaveUnder.bm.bits = (uchar *)malloc(6144);
    SaveUnder.mapsize = 6144;
 
    LastCursor = NULL;
@@ -401,7 +401,7 @@ errtype ui_init_cursors(void)
       0,0,grd_cap->w,grd_cap->h);
    err = mouse_set_callback(cursor_draw_callback,NULL,&uiCursorCallbackId);
    if (err != OK) return err;
-   HideRect = (LGRect *)NewPtr(sizeof(LGRect)*INITIAL_RECT_STACK);
+   HideRect = (LGRect *)malloc(sizeof(LGRect)*INITIAL_RECT_STACK);
    HideRect[0].ul.x = -32768;
    HideRect[0].ul.y = -32768;
    HideRect[0].lr = HideRect[0].ul;
@@ -427,7 +427,7 @@ errtype ui_shutdown_cursors(void)
 {
    errtype err;
    // Spew(DSRC_UI_Cursors,("ui_shutdown_cursors()\n"));
-   DisposePtr((Ptr)SaveUnder.bm.bits);
+   free(SaveUnder.bm.bits);
    err = mouse_unset_callback(uiCursorCallbackId);
    return err;
 }
@@ -576,8 +576,8 @@ errtype uiShutdownRegionCursors(LGRegion* r)
    cursor_stack* cs = (cursor_stack*)(r->cursors);
    // Spew(DSRC_UI_Cursor_Stack,("uiShutdownRegionCursors(%x)\n",r));
    if (cs == NULL) return ERR_NOEFFECT;
-   DisposePtr((Ptr)cs->stack);
-   DisposePtr((Ptr)cs);
+   free(cs->stack);
+   free(cs);
    r->cursors = NULL;
    uiSetCursor();
    return OK;
@@ -662,10 +662,10 @@ errtype uiHideMouse(LGRect* r)
       if (curhiderect >= numhiderects)
       {
          LGRect* tmp = HideRect;
-         HideRect = (LGRect *)NewPtr(numhiderects*2*sizeof(LGRect));
+         HideRect = (LGRect *)malloc(numhiderects*2*sizeof(LGRect));
          memcpy(HideRect,tmp,numhiderects*sizeof(LGRect));
          numhiderects *= 2;
-         DisposePtr((Ptr)tmp);
+         free(tmp);
       }
       if (curhiderect == 1) HideRect[curhiderect] = *r;
       else RECT_UNION(&HideRect[curhiderect-1],r,&HideRect[curhiderect]);

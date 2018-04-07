@@ -256,8 +256,8 @@ void screen_init_side_icons(LGRegion* root)
    int id;
    LGRegion *left_region, *right_region;
    LGRect r;
-   left_region = (LGRegion *)NewPtr(sizeof(LGRegion));
-   right_region = (LGRegion *)NewPtr(sizeof(LGRegion));
+   left_region = (LGRegion *)malloc(sizeof(LGRegion));
+   right_region = (LGRegion *)malloc(sizeof(LGRegion));
 
    // Wow, having a LGRegion for each of the side icons is totally uncool
    // Let's just have two regions, and figure out from there.  
@@ -339,7 +339,7 @@ bool side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata)
             grs_bitmap* bm = &icon_cursor_bm[side];
             LGPoint offset = {0, -1};
 
-            DisposePtr((Ptr)bm->bits);
+            free(bm->bits);
             make_popup_cursor(c,bm,cursor_strings[i],side+POPUP_ICON_LEFT, TRUE, offset);
             uiSetRegionDefaultCursor(r,c);
             last_side_icon = i;

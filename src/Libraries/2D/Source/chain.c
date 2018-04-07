@@ -70,11 +70,11 @@ grs_func_chain *grd_chain_table[GRD_CANVAS_FUNCS];
 
 grs_func_chain *gr_chain_add_over(int n, void (*f)())
 {
-   grs_func_chain *p = (grs_func_chain *)(NewPtr(sizeof(grs_func_chain)));	// was gr_malloc
+   grs_func_chain *p = (grs_func_chain *)(malloc(sizeof(grs_func_chain)));	// was gr_malloc
    if (grd_chain_table[n] == NULL) {
       /* First time: stash and replace primitives */
       int k;
-      chn_primitives[n] = (void (**)())(NewPtr(BMT_TYPES*sizeof(void (*)())));	// was gr_malloc
+      chn_primitives[n] = (void (**)())(malloc(BMT_TYPES*sizeof(void (*)())));	// was gr_malloc
       for (k=0; k<BMT_TYPES; k++)
           if (grd_canvas_table_list[k] != NULL)
             chn_primitives[n][k] = grd_canvas_table_list[k][n];
@@ -103,14 +103,14 @@ grs_func_chain *gr_chain_add_before(int n, void (*f)(void))
 
 grs_func_chain *gr_chain_add_after(int n, void (*f)(void))
 {
-   grs_func_chain *p = (grs_func_chain *)(NewPtr(sizeof(grs_func_chain)));	// was gr_malloc
+   grs_func_chain *p = (grs_func_chain *)(malloc(sizeof(grs_func_chain)));	// was gr_malloc
    p->f = f;
    p->next = NULL;
    p->flags = CHNF_VOID | CHNF_AFTER;
    if (grd_chain_table[n] == NULL) {
       /* First time: stash and replace primitives */
       int k;
-      chn_primitives[n] = (void (**)())(NewPtr(BMT_TYPES*sizeof(void (*)())));	// was gr_malloc
+      chn_primitives[n] = (void (**)())(malloc(BMT_TYPES*sizeof(void (*)())));	// was gr_malloc
       for (k=0; k<BMT_TYPES; k++)
           if (grd_canvas_table_list[k] != NULL)
             chn_primitives[n][k] = grd_canvas_table_list[k][n];

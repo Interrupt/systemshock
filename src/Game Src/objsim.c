@@ -753,7 +753,7 @@ errtype obj_shutdown()
 	for (i=0; i < NUM_TEXT_BITMAPS; i++)
 	{
 		if (text_bitmap_ptrs[i] != NULL)
-			DisposePtr((Ptr)text_bitmap_ptrs[i]);
+			free(text_bitmap_ptrs[i]);
 	}
 	
 	obj_load_art(TRUE);

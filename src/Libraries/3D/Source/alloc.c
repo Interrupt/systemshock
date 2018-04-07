@@ -136,7 +136,7 @@ short g3_init(short max_points,int user_x_axis,int user_y_axis,int user_z_axis)
 	  allocSize<<=1;
 #endif
  
-  point_list = (g3s_point *) NewPtr(allocSize);
+  point_list = (g3s_point *) malloc(allocSize);
   if (!point_list) return(0);
 
 // MLA - all divide overflow/divide by zero errors are handled around the individual divide
@@ -206,7 +206,7 @@ void g3_start_frame(void)
 void g3_shutdown(void)
  {
  	if (point_list)
-	 	DisposPtr((Ptr) point_list);
+	 	free(point_list);
 
 	n_points = 0;
 	first_free = 0;

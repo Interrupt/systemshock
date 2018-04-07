@@ -150,7 +150,7 @@ errtype gad_Mac_init(Gadget *g, LGPoint extent)
 		initialize_2d = TRUE;
 	}
 	
-	g->device_data = (grs_canvas *)NewPtr(sizeof(grs_canvas));
+	g->device_data = (grs_canvas *)malloc(sizeof(grs_canvas));
 	gr_init_sub_canvas(dr_scr_canv, (grs_canvas *)g->device_data, 0, 0, extent.x, extent.y);
 	return (OK);
 }
@@ -280,7 +280,7 @@ Gadget *gadget_init(int display_type, LGPoint extent)
    r.lr = extent;
 
    // Make the basic gadget
-   retgad = (Gadget *)NewPtr(sizeof(Gadget));
+   retgad = (Gadget *)malloc(sizeof(Gadget));
    retgad->gclass = CLASS_ROOT;
    retgad->tng_data = NULL;
    retgad->draw_parts = TNG_ALLPARTS;
@@ -290,9 +290,9 @@ Gadget *gadget_init(int display_type, LGPoint extent)
    retgad->conversion.y = extent.y / BASELINE_Y;
 
    // Fill out the user data structure
-   gd = (GadgetData *)NewPtr(sizeof(GadgetData));
+   gd = (GadgetData *)malloc(sizeof(GadgetData));
    gd->g = retgad;
-   gd->name  = (char *)NewPtr(8 * sizeof(char));  
+   gd->name  = (char *)malloc(8 * sizeof(char));  
 //   lg_sprintf(gd->name, "root%d\0", display_type);
    sprintf(gd->name, "root%d\0", display_type);
 
@@ -314,7 +314,7 @@ Gadget *gadget_init(int display_type, LGPoint extent)
 
    // Create that durned rep
 
-   retgad->rep = (LGRegion *)NewPtr(sizeof(LGRegion));
+   retgad->rep = (LGRegion *)malloc(sizeof(LGRegion));
    region_create(NULL, retgad->rep, &r, 0, 0, REG_AUTOMATIC, NULL, NULL, NULL, gd);
    retgad->rep->expose = fn;
    retgad->rep->device_type = display_type;
@@ -412,7 +412,7 @@ errtype gadget_destroy(Gadget **pvic)
 
    if (victim->destroy_func != NULL)
       victim->destroy_func(victim, NULL);
-   DisposePtr((Ptr)*pvic);
+   free(*pvic);
    *pvic = NULL;
 
    if (!inner_destroy)
@@ -608,9 +608,9 @@ errtype gadget_create_setup(Gadget **pg, Gadget *parent, GadgetClass cl, LGRect 
    }
 
    // Do those yummy mallocs
-   retgad = (Gadget *)NewPtr(sizeof(Gadget));
-   gd = (GadgetData *)NewPtr(sizeof(GadgetData));
-   pb_tng = (TNG *)NewPtr(sizeof(TNG));
+   retgad = (Gadget *)malloc(sizeof(Gadget));
+   gd = (GadgetData *)malloc(sizeof(GadgetData));
+   pb_tng = (TNG *)malloc(sizeof(TNG));
 
    switch (parent->rep->device_type)
    {
@@ -639,12 +639,12 @@ errtype gadget_create_setup(Gadget **pg, Gadget *parent, GadgetClass cl, LGRect 
    retgad->destroy_func = NULL;
   
    // Fill in the gadget data info
-   gd->name = (char *)NewPtr((strlen(name) + 1) * sizeof(char));
+   gd->name = (char *)malloc((strlen(name) + 1) * sizeof(char));
    strcpy(gd->name, name);
    gd->g = retgad;
 
    // Create that durned rep
-   retgad->rep = (LGRegion *)NewPtr(sizeof(LGRegion));
+   retgad->rep = (LGRegion *)malloc(sizeof(LGRegion));
    region_create(parent->rep, retgad->rep, dim, z, 0,
       REG_USER_CONTROLLED | AUTOMANAGE_FLAG | STENCIL_CLIPPING | OBSCURATION_CHECK,
       fn, NULL, NULL, gd);

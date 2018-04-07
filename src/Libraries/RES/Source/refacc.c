@@ -182,7 +182,7 @@ RefTable *ResReadRefTable(Id id)
 	ReadPartialResource(resHdl, 0, &numRefs, sizeof(RefIndex));	// Get number of refs
 	tableSize = REFTABLESIZE(numRefs);										// to determine table size
 	
-	prt = (RefTable *)NewPtr(tableSize);							// Now allocate a buffer for the
+	prt = (RefTable *)malloc(tableSize);							// Now allocate a buffer for the
 	if (prt)																		// table and read it in.
 	{
 		ReadPartialResource(resHdl, 0, (Ptr)prt, tableSize);
@@ -343,7 +343,7 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
 	{
 /*
 		rs = RefSize(prt, index);
-		compPtr = NewPtr(rs + 100);								// Just to be safe.
+		compPtr = malloc(rs + 100);								// Just to be safe.
 		if (compPtr == NULL)
 		{
 			Warning(("RefExtract: Can't allocate ptr for compressed ref.\n"));

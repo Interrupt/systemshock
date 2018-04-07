@@ -265,7 +265,7 @@ errtype biohelp_load_cursor()
    static bool cursor_loaded = FALSE;
    extern errtype simple_load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid);
    if (cursor_loaded)
-      DisposePtr((Ptr)biohelp_cursor_bmap.bits);
+      free(biohelp_cursor_bmap.bits);
    err = simple_load_res_bitmap_cursor(&biohelp_cursor,&biohelp_cursor_bmap,REF_IMG_QuestionCursor);
    if (err != OK) return err;
    cursor_loaded = TRUE;
@@ -277,7 +277,7 @@ errtype biohelp_create_mouse_region(LGRegion* root)
    errtype err; 
    int id;
    LGRect r = { { STATUS_X, 0}, {STATUS_X+GAMESCR_BIO_WIDTH,GAMESCR_BIO_HEIGHT}};
-   LGRegion* reg = (LGRegion*)NewPtr(sizeof(LGRegion));
+   LGRegion* reg = (LGRegion*)malloc(sizeof(LGRegion));
 
    if (reg == NULL) return ERR_NOMEM;
    err = region_create(root,reg,&r,2,0,REG_USER_CONTROLLED|AUTODESTROY_FLAG,NULL,NULL,NULL,NULL);

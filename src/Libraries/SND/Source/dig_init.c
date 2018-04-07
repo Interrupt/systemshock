@@ -117,14 +117,14 @@ SndChannelPtr CreateSndChannel(void)
 	SndChannelPtr	scPtr;
 	OSErr				err;
 	
-	scPtr = SndChannelPtr(NewPtr(sizeof(SndChannel)));
+	scPtr = SndChannelPtr(malloc(sizeof(SndChannel)));
 	if (scPtr)
 	{
 		scPtr->qLength = 16;
 		err = SndNewChannel(&scPtr, sampledSynth, initStereo, gDigiCallBackProcPtr);
 		if (err != noErr)
 		{
-			DisposePtr(Ptr(scPtr));
+			free(scPtr);
 			scPtr = NULL;
 		}
 		else

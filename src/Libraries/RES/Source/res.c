@@ -83,7 +83,7 @@ void ResInit()
 //	Allocate initial resource descriptor table, default size (can't fail)
 
 	resDescMax = DEFAULT_RESMAX;
-	gResDesc = (ResDesc *)NewPtrClear( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
+	gResDesc = (ResDesc *)malloc( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
 	if (MemError())
 		DebugStr("\pResInit: Can't allocate the global resource descriptor table.\n");
 	
@@ -137,7 +137,7 @@ void ResTerm()
 
 	if (gResDesc)
 	{
-		DisposePtr((Ptr)gResDesc);
+		free(gResDesc);
 		gResDesc = NULL;
 		resDescMax = 0;
 	}
@@ -203,14 +203,14 @@ void ResGrowResDescTable(Id id)
 //			("ResGrowResDescTable: extending to $%x entries\n", newAmt));
 
 //		SetPtrSize((Ptr)gResDesc, newAmt * sizeof(ResDesc));
-		growPtr = NewPtr(newAmt * sizeof(ResDesc));
+		growPtr = malloc(newAmt * sizeof(ResDesc));
 		if (MemError() != noErr)
 		{
 			DebugStr("\pResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
 			return;
 		}
 		BlockMove(gResDesc, growPtr, currAmt * sizeof(ResDesc));
-		DisposePtr((Ptr)gResDesc);
+		free(gResDesc);
 		gResDesc = (ResDesc *)growPtr;
 		LG_memset(gResDesc + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc));
 		resDescMax = newAmt - 1;

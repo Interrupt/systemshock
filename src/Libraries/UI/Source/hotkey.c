@@ -82,7 +82,7 @@ errtype hotkey_add_help(short keycode, ulong contexts, hotkey_callback func, voi
    chain[i].func = func;
    chain[i].state = state;
 #ifdef HOTKEY_HELP
-//   chain[i].help_text = NewPtr(strlen(help_text)+1);
+//   chain[i].help_text = malloc(strlen(help_text)+1);
 //   strcpy(chain[i].help_text,help_text);
 #endif
    chain[i].next = ch->first;
@@ -144,7 +144,7 @@ errtype hotkey_remove(short keycode, ulong contexts, hotkey_callback func)
       {
          ch->first = chain[i].next;
 #ifdef HOTKEY_HELP
-//         DisposePtr(chain[i].help_text);
+//         free(chain[i].help_text);
 #endif // HOTKEY_HELP
          array_dropelem(&ch->keychain,i);
          i = ch->first;
@@ -160,7 +160,7 @@ errtype hotkey_remove(short keycode, ulong contexts, hotkey_callback func)
          {
             chain[i].next = chain[n].next;
 #ifdef HOTKEY_HELP
-//            DisposePtr(chain[i].help_text);
+//            free(chain[i].help_text);
 #endif // HOTKEY_HELP
             array_dropelem(&ch->keychain,n);
          }
@@ -207,7 +207,7 @@ static bool shutdown_iter_func(void* elem, void* data)
    if (ch == NULL) return FALSE;
    for (i = ch->first; i != CHAIN_END; i = chain[i].next)
    {
-      DisposePtr(chain[i].help_text);
+      free(chain[i].help_text);
    }
 #endif // HOTKEY_HELP
 */

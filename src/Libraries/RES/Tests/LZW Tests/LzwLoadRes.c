@@ -134,7 +134,7 @@ void TestExtractRefs(short filenum)
 		RefExtract(rt, MKREF(1002, i), p);
 		printf("Ref %d\n", i);
 		DumpBlock(p, rfs);
-		DisposePtr(p);
+		free(p);
 	}
 	
 	ResFreeRefTable(rt);

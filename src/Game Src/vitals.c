@@ -88,7 +88,7 @@ void status_vitals_end()
 {
    int i;
    for (i=0;i<NUM_STATUS_ARROWS;i++)
-      DisposePtr((Ptr)status_arrows[i].bits);
+      free(status_arrows[i].bits);
 }
 #define VITALS_MAX 23
 

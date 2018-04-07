@@ -88,8 +88,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern LGPoint tng_absloc(TNG* ptng);
 #define TNG_ABSLOC(ptng) tng_absloc(ptng)
 
-#define GUI_MALLOC(uid, size)   NewPtr(size)
-#define GUI_DEALLOC(uid, victim) DisposePtr((Ptr)victim)
+#define GUI_MALLOC(uid, size)   malloc(size)
+#define GUI_DEALLOC(uid, victim) free(victim)
 
 #define TNG_GRAB_FOCUS(ptng, evmask) uiGrabFocus(((Gadget *)((ptng)->ui_data))->rep, evmask)
 #define TNG_RELEASE_FOCUS(ptng, evmask) uiReleaseFocus(((Gadget *)((ptng)->ui_data))->rep, evmask)

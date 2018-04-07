@@ -36,7 +36,7 @@ Gadget *gad_buttonarray_create(Gadget *parent, LGPoint coord, int z, int msize_x
    LGPoint basize;
    LGPoint msize, bsize, wsize;
 
-   temp_tng = (TNG *)NewPtr(sizeof(TNG));
+   temp_tng = (TNG *)malloc(sizeof(TNG));
 
    msize.x = msize_x;   msize.y = msize_y;
    wsize.x = window_x;  wsize.y = window_y;
@@ -49,7 +49,7 @@ Gadget *gad_buttonarray_create(Gadget *parent, LGPoint coord, int z, int msize_x
    dim.lr.y = dim.ul.y + basize.y;
 
    gadget_create_setup(&retgad, parent, CLASS_BUTTONARRAY, &dim, z, name);
-   DisposePtr((Ptr)retgad->tng_data);
+   free(retgad->tng_data);
    temp_tng->ui_data = retgad;
    retgad->tng_data = temp_tng;
 

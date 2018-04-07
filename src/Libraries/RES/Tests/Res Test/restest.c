@@ -136,11 +136,11 @@ static uchar data5[] = {0x25,0x25,0x25,0x26,0x26,0x26};
 
 	ResSetComment(filenum, "This is a test\nresource file\n");
 
-	p = NewPtr(sizeof(data1));
+	p = malloc(sizeof(data1));
 	memcpy(p, data1, sizeof(data1));
 	ResMake(0x100, p, sizeof(data1), RTYPE_UNKNOWN, filenum, 0);
 
-	p = NewPtr(sizeof(data2));
+	p = malloc(sizeof(data2));
 	memcpy(p, data2, sizeof(data2));
 	ResMake(0x101, p, sizeof(data2), RTYPE_UNKNOWN, filenum, RDF_LZW);
 	printf("resources added\n");
@@ -192,7 +192,7 @@ void TestDumpFile(FSSpec *specPtr)
 		{
 			ResLock(id);
 			rs = ResSize(id);
-			p = NewPtr(rs);
+			p = malloc(rs);
 			ResExtract(id, p);
 			ResUnlock(id);
 			printf("Res $%x (size %d):\n", id, rs);
@@ -240,7 +240,7 @@ LOOP:
 			fgets(ans, sizeof(ans), stdin);
 			c = atoi(ans);
 			id = 0x100 + c;
-			buff = NewPtr(16);
+			buff = malloc(16);
 			memset(buff, c, 16);
 			ResMake(id, buff, 13, 0, filenum, 0);
 			c = ResWrite(id);
@@ -346,7 +346,7 @@ void TestRefExtract(FSSpec *specPtr)
 			
 			DumpBlock(p, rfs);
 
-			DisposePtr(p);
+			free(p);
 			break;
 	}
 	ResCloseFile(filenum);

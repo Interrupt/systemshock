@@ -78,9 +78,9 @@ Gadget *gad_qbox_start_full(Gadget *parent, LGPoint coord, int z, TNGStyle *sty,
       return(NULL);
    }
 
-   retgad = (Gadget *)NewPtr(sizeof(Gadget));
-   qb_gd = (GadgetData *)NewPtr(sizeof(GadgetData));
-   qb_tng = (TNG *)NewPtr(sizeof(TNG));
+   retgad = (Gadget *)malloc(sizeof(Gadget));
+   qb_gd = (GadgetData *)malloc(sizeof(GadgetData));
+   qb_tng = (TNG *)malloc(sizeof(TNG));
 
    switch (parent->rep->device_type)
    {
@@ -113,7 +113,7 @@ Gadget *gad_qbox_start_full(Gadget *parent, LGPoint coord, int z, TNGStyle *sty,
    retgad->destroy_func = &gad_qb_destroy;
 
    // Fill out gadget data
-   qb_gd->name = (char *)NewPtr((strlen(name) + 1) * sizeof(char));
+   qb_gd->name = (char *)malloc((strlen(name) + 1) * sizeof(char));
    strcpy(qb_gd->name, name);
    qb_gd->g = retgad;
 
@@ -176,7 +176,7 @@ errtype gad_qbox_end_full(Gadget **ptr)
    else
       Spew(DSRC_UI_Quickbox, ("Current_box seems okay...\n"));
 */
-   current_box->rep = (LGRegion *)NewPtr(sizeof(LGRegion));
+   current_box->rep = (LGRegion *)malloc(sizeof(LGRegion));
    region_create(current_box->parent->rep, current_box->rep, &box_dim, current_z, 1,
       REG_USER_CONTROLLED | AUTOMANAGE_FLAG | STENCIL_CLIPPING | OBSCURATION_CHECK,
       disp_fn, NULL, NULL, qb_gd);

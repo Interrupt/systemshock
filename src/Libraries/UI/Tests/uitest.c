@@ -483,7 +483,7 @@ extern short gMainVRef;
 //   p[2]->tng_data->style->font = RES_largeTechFont;
    p[2]->tng_data->style->textColor = 1;
    for (i=0; i<10; i++)
-      list[i] = (char *)NewPtr(10 * sizeof(char));
+      list[i] = (char *)malloc(10 * sizeof(char));
    sprintf(list[0], "Alpha");
    sprintf(list[1], "Beta");
    sprintf(list[2], "Gamma");
@@ -512,7 +512,7 @@ extern short gMainVRef;
    ss.x = 220; ss.y = 20;
    spac.x = 0; spac.y = 0;
    bord.x = 1; bord.y = 1;
-   test_text2 = (char *)NewPtr(20 * sizeof(char));
+   test_text2 = (char *)malloc(20 * sizeof(char));
    sprintf(test_text2, "Mr. Lifto rules!");
    p[1] = gad_qbox_start_full(mn, r5.ul, 10, NULL, QB_ALIGNMENT, "quickbox", ss, spac, bord, NULL, NULL);
    gad_qbox_add("Foobar", QB_SHORT_SLOT, &test_short1, QB_RD_ONLY);

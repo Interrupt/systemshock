@@ -150,7 +150,7 @@ void main(void)
 	gr_set_mode (GRM_640x480x8, TRUE);
 	screen = gr_alloc_screen (grd_cap->w, grd_cap->h);
 	gr_set_screen (screen);
-	gr_set_unpack_buf((uchar *)NewPtr(640 * 480));
+	gr_set_unpack_buf((uchar *)malloc(640 * 480));
 	
 	LoadShockPalette();
 	LoadAnimRes();
@@ -442,7 +442,7 @@ void LoadShockPalette(void)
 	
 	
  	gr_set_pal(0, 256, (uchar *)p);
-	DisposePtr(p);
+	free(p);
 	
 	ResCloseFile(resNum);
 }

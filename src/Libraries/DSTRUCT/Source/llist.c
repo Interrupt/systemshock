@@ -230,7 +230,7 @@ void LlistFreeAll(LlistHead *plh)
 //
 //		plh = ptr to list or queue header
 //	--------------------------------------------------------
-//  For Mac version:  Use DisposePtr instead of Free.
+//  For Mac version:  Use free instead of Free.
 
 void LlistDestroy(LlistHead *plh)
 {
@@ -243,7 +243,7 @@ void LlistDestroy(LlistHead *plh)
 	while (pnb)
 	{
 		pnbNext = pnb->pnext;
-		DisposePtr((Ptr)pnb);
+		free(pnb);
 		pnb = pnbNext;
 	}
 
@@ -262,7 +262,7 @@ void LlistDestroy(LlistHead *plh)
 //
 //		plh = ptr to list or queue header
 //	--------------------------------------------------------
-//  For Mac version:  Use NewPtr instead of Malloc.
+//  For Mac version:  Use malloc instead of Malloc.
 
 void LlistGrowList(LlistHead *plh)
 {
@@ -272,7 +272,7 @@ void LlistGrowList(LlistHead *plh)
 //	Allocate new storage block
 
 	blockSize = plh->nodeSize * plh->numNodesPerBlock;
-	pNewStore = (llist *)NewPtr(sizeof(llist) + blockSize);
+	pNewStore = (llist *)malloc(sizeof(llist) + blockSize);
 
 //	Link it in to the node store list
 

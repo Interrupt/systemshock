@@ -153,7 +153,7 @@ void InitMac(void)
 		
 	gExtraMemory = NewHandle(16384L);				// Some extra room in case we have to die
 	
-	FailNIL(gOriginalColors = (ColorSpec *)NewPtr(256 * sizeof(ColorSpec)));		// Original palette
+	FailNIL(gOriginalColors = (ColorSpec *)malloc(256 * sizeof(ColorSpec)));		// Original palette
 	
 	GetDateTime(&gRandSeed);								// Start off with a random seed
 	gRandSeed += TickCount()<<8;

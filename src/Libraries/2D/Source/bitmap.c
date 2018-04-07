@@ -157,7 +157,7 @@ grs_bitmap *gr_alloc_bitmap (uchar type, ushort flags, short w, short h)
 
 	gr_init_bitmap(&tmp_bm, NULL, type, flags, w, h);
 //	p=(uchar *)gr_malloc(sizeof(tmp_bm)+(tmp_bm.row*tmp_bm.h));
-	p=(uchar *) NewPtr(sizeof(tmp_bm)+(tmp_bm.row*tmp_bm.h));
+	p=(uchar *) malloc(sizeof(tmp_bm)+(tmp_bm.row*tmp_bm.h));
 	if (p) 
 	 {
 		tmp_bm.bits = p+sizeof(tmp_bm);

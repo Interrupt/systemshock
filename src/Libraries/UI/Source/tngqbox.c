@@ -987,7 +987,7 @@ errtype tng_quickbox_add_parm(char *label, int slot_type, void *var, ulong slot_
 {
    QuickboxSlot *newslot, *curp;
    
-   newslot = (QuickboxSlot *)NewPtr(sizeof(QuickboxSlot));
+   newslot = (QuickboxSlot *)malloc(sizeof(QuickboxSlot));
    
    // Fill out newslot
    num_slots++;
@@ -1000,7 +1000,7 @@ errtype tng_quickbox_add_parm(char *label, int slot_type, void *var, ulong slot_
    newslot->next = NULL;
    newslot->aux_tng = NULL;
    newslot->aux_size = tngZeroPt;
-   newslot->label = (char *)NewPtr(sizeof(char) * 100);
+   newslot->label = (char *)malloc(sizeof(char) * 100);
    strcpy(newslot->label, label);
 
    // Update size of overall box
@@ -1075,7 +1075,7 @@ errtype tng_quickbox_end()
           ( ((curp->vartype == QB_SHORT_SLOT) || (curp->vartype == QB_BYTE_SLOT) || (curp->vartype == QB_INT_SLOT) || (curp->vartype == QB_UINT_SLOT))
             && !(curp->options & QB_RD_ONLY)))
       { 
-         sdim = (LGRect *)NewPtr(sizeof(LGRect));
+         sdim = (LGRect *)malloc(sizeof(LGRect));
          if ((curp->options & QB_SLIDER) ||
             (((curp->vartype == QB_SHORT_SLOT) || (curp->vartype == QB_INT_SLOT) || (curp->vartype == QB_BYTE_SLOT) || (curp->vartype == QB_UINT_SLOT)
                || (curp->vartype == QB_FIX_SLOT))

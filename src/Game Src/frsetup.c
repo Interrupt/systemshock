@@ -227,7 +227,7 @@ void _fr_init_all_tmaps(void)
    for (i=0; i<FAKE_TMAPS; i++)
 	{
       int v1=(rand()&0xff), v2=(rand()&0xff), v3=(rand()&0xff), v4=(rand()&0xff);
-      dummy_tm=(uchar *)NewPtr(16*16);
+      dummy_tm=(uchar *)malloc(16*16);
       for (x=0; x<16; x++)
          for (y=0; y<16; y++)
             dummy_tm[(x*16)+y]=(((x>>1)+(y>>1))&1)?((2*abs(8-x))>y)?v1:v2:((2*abs(8-x))>y)?v3:v4;
@@ -244,7 +244,7 @@ void _fr_free_all_tmaps(void)
 {
    int i;
    for (i=0; i<FAKE_TMAPS; i++)
-      DisposePtr((Ptr)tmap_bm[i].bits);
+      free(tmap_bm[i].bits);
 }
 #else
 #define _fr_init_all_tmaps()
@@ -331,11 +331,11 @@ int fr_free_view(frc *view)
       if (_fr==_sr) _sr=NULL;          /* no longer a default rendering context */
       if ((_fr->flags&FR_DOUBLEB_MASK)&&((_fr->flags&FR_OWNBITS_MASK)==0))
       {
-//         DisposePtr((Ptr)_fr->main_canvas.bm.bits);  // deal w/any other canvii
+//         free(_fr->main_canvas.bm.bits);  // deal w/any other canvii
 		DebugStr("\pHey!  We shouldn't ever be doing this!");
-		DisposePtr(_fr->realCanvasPtr);
+		free(_fr->realCanvasPtr);
       }
-  	 DisposePtr((Ptr)_fr);
+  	 free(_fr);
    }
    _fr_ret;
 }
@@ -435,14 +435,14 @@ frc *fr_place_view (frc *view, void *v_cam, void *cnvs, int pflags, char axis, i
 	fauxrend_context *fr;
 
 	if (view==NULL)
-		fr = (fauxrend_context *)NewPtr(sizeof(fauxrend_context));
+		fr = (fauxrend_context *)malloc(sizeof(fauxrend_context));
 /* KLC - this never actually happens
 	else        // are their other canvii to free here...
 	{
 		fr = (fauxrend_context *)view;
 		if (fr->flags & FR_DOUBLEB_MASK)
-//			DisposePtr((Ptr)fr->main_canvas.bm.bits);
-			DisposePtr(fr->realCanvasPtr);
+//			free(fr->main_canvas.bm.bits);
+			free(fr->realCanvasPtr);
 	}
 */	
 	if (pflags&FR_DOUBLEB_MASK)
@@ -458,7 +458,7 @@ DebugStr("\pHey! I though we always supplied a canvas");
 			// even/odd line usage for vertical drawing.
 			if (!((rowbytes / 64) & 1))
 				rowbytes += 64;
-			p = (uchar *)NewPtr(rowbytes*hgt + 32);
+			p = (uchar *)malloc(rowbytes*hgt + 32);
 			if (p == NULL)
 				return NULL;
 			fr->realCanvasPtr = (Ptr)p;
