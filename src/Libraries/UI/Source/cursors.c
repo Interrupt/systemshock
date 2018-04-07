@@ -190,7 +190,7 @@ static errtype grow_save_under(short x, short y)
 	int sz = MAPSIZE(x,y);
 	if (SaveUnder.mapsize >= sz) return ERR_NOEFFECT;
 
-	DebugStr("\pSaveUnder needs to be increased!");	//¥¥¥
+	DebugStr("\pSaveUnder needs to be increased!");	//Â¥Â¥Â¥
 	return OK;
 }
 

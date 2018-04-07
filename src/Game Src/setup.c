@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ShockDialogs.h"
 
-//��#include <setploop.h>
+//Â¥Â¥#include <setploop.h>
 #include "setup.h"
 #include "colors.h"
 #include "diffq.h"
@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "version.h"
 
-/*���
+/*Â¥Â¥Â¥
 #include <mainloop.h>
 #include <tools.h>
 #include <input.h>
@@ -104,7 +104,7 @@ bool setup_bio_started = FALSE;
 errtype journey_newgame_func();
 
 
-#ifdef NOT_YET //���
+#ifdef NOT_YET //Â¥Â¥Â¥
 
 #define ALT(x) ((x)|KB_FLAG_ALT)
 
@@ -538,7 +538,7 @@ errtype journey_intro_func(bool draw_stuff)
 }
 #pragma enable_message(202)
 
-#endif //NOT_YET���
+#endif //NOT_YETÂ¥Â¥Â¥
 
 
 // -------------------------------------------------------------
@@ -556,7 +556,7 @@ errtype journey_newgame_func()
    player_struct.level = 0xFF;
 
    create_initial_game_func(0,0,0);
-/*��� not yet
+/*Â¥Â¥Â¥ not yet
    change_mode_func(0,0,(void *)GAME_LOOP);
 */
    startup_music = TRUE;
@@ -564,7 +564,7 @@ errtype journey_newgame_func()
 }
 
 
-#ifdef NOT_YET  //���
+#ifdef NOT_YET  //Â¥Â¥Â¥
 
 // -------------------------------------------------------------
 // journey_difficulty_func
@@ -687,7 +687,7 @@ errtype draw_savegame_names()
    return(OK);
 }
 
-#endif //NOT_YET���
+#endif //NOT_YETÂ¥Â¥Â¥
 
 extern void check_and_update_initial(void);
 
@@ -701,7 +701,7 @@ errtype load_that_thar_game(FSSpec *loadSpec)
 
 //KLC - not in Mac version      draw_sg_slot(-1);             // highlight the current save game slot with SELECTED_COLOR
 //KLC - have Mac version up at this point      begin_wait();
-//��� is this needed?      check_and_update_initial();
+//Â¥Â¥Â¥ is this needed?      check_and_update_initial();
       clear_player_data=TRUE;   // initializes the player struct in object_data_load
       object_data_load();
       player_create_initial();
@@ -725,7 +725,7 @@ errtype load_that_thar_game(FSSpec *loadSpec)
    return(OK);
 }
 
-#ifdef NOT_YET //���
+#ifdef NOT_YET //Â¥Â¥Â¥
 
 // -------------------------------------------------------------
 // journey_continue_func
@@ -748,7 +748,7 @@ errtype journey_continue_func(bool draw_stuff)
 }
 #pragma enable_message(202)
 
-#endif //NOT_YET���
+#endif //NOT_YETÂ¥Â¥Â¥
 
 
 #define SECRET_MISSION_DIFFICULTY_QB      0xB0
@@ -784,23 +784,23 @@ void go_and_start_the_game_already()
 #ifdef SVGA_SUPPORT
    QUESTVAR_SET(SCREENMODE_QVAR, convert_use_mode);
 #endif
-//��   QUESTVAR_SET(MUSIC_VOLUME_QVAR, (curr_vol_lev*curr_vol_lev)/100);
-//��   QUESTVAR_SET(SFX_VOLUME_QVAR, (curr_sfx_vol*curr_sfx_vol)/100);
+//Â¥Â¥   QUESTVAR_SET(MUSIC_VOLUME_QVAR, (curr_vol_lev*curr_vol_lev)/100);
+//Â¥Â¥   QUESTVAR_SET(SFX_VOLUME_QVAR, (curr_sfx_vol*curr_sfx_vol)/100);
 #ifdef AUDIOLOGS
-//��   QUESTVAR_SET(ALOG_VOLUME_QVAR, (curr_alog_vol*curr_alog_vol)/100);
+//Â¥Â¥   QUESTVAR_SET(ALOG_VOLUME_QVAR, (curr_alog_vol*curr_alog_vol)/100);
    QUESTVAR_SET(ALOG_OPT_QVAR, audiolog_setting);
 #endif
    QUESTVAR_SET(FULLSCRN_ICON_QVAR, fullscrn_icons);
    QUESTVAR_SET(FULLSCRN_VITAL_QVAR, fullscrn_vitals);
-//��   QUESTVAR_SET(AMAP_NOTES_QVAR, map_notes_on);
+//Â¥Â¥   QUESTVAR_SET(AMAP_NOTES_QVAR, map_notes_on);
    QUESTVAR_SET(HUDCOLOR_QVAR, hud_color_bank);
 //KLC - this is a global now   QUESTVAR_SET(GAMMACOR_QVAR, (short)((29*FIX_UNIT)/100));
-//��   QUESTVAR_SET(MOUSEHAND_QVAR, mouseLefty);
+//Â¥Â¥   QUESTVAR_SET(MOUSEHAND_QVAR, mouseLefty);
    QUESTVAR_SET(DCLICK_QVAR, FIX_UNIT/3);
-//��   {
-//��      extern char hack_digi_channels;
-//��      QUESTVAR_SET(DIGI_CHANNELS_QVAR, hack_digi_channels);
-//��   }
+//Â¥Â¥   {
+//Â¥Â¥      extern char hack_digi_channels;
+//Â¥Â¥      QUESTVAR_SET(DIGI_CHANNELS_QVAR, hack_digi_channels);
+//Â¥Â¥   }
    for (i=0; i < 4; i++)
       QUESTVAR_SET(diff_qvars[i], player_struct.difficulty[i]);
    if (QUESTVAR_GET(MISSION_DIFF_QVAR) == 3)
@@ -821,7 +821,7 @@ void go_and_start_the_game_already()
 }
 
 
-#ifdef NOT_YET //���
+#ifdef NOT_YET //Â¥Â¥Â¥
 
 // ------------------------------------
 // journey functions
@@ -1313,4 +1313,4 @@ void setup_exit()
    direct_into_cutscene = FALSE;
 }
 
-#endif //NOT_YET���
+#endif //NOT_YETÂ¥Â¥Â¥

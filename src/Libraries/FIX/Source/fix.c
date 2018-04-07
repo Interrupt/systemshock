@@ -248,7 +248,7 @@ fix fix_pyth_dist (fix a, fix b)
 	gOVResult = 100;
 	blah	= 200;
 	
-	// ¥¥¥should check for overflow!
+	// Â¥Â¥Â¥should check for overflow!
  	return fix_sqrt(fix_mul(a, a) + fix_mul(b, b));
 }
 

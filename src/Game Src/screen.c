@@ -223,7 +223,7 @@ void screen_start()
    extern void change_svga_screen_mode();
 #endif
 
-/* ��� Not yet
+/* Â¥Â¥Â¥ Not yet
    // Check the config system to see if time should automatically be running
    if (config_get_raw(CFG_TIME_VAR, NULL, 0)) time_passes = TRUE;
 */
@@ -247,7 +247,7 @@ void screen_start()
    status_vitals_update(TRUE);
 // KLC - not needed anymore   mouse_unconstrain();
 #ifdef PALFX_FADES
-//��� later   if (pal_fx_on) palfx_fade_up(FALSE);
+//Â¥Â¥Â¥ later   if (pal_fx_on) palfx_fade_up(FALSE);
 #endif
    return;
 }
@@ -391,7 +391,7 @@ errtype _screen_init_mouse(LGRegion* r, uiSlab* slab, bool do_init)
    if (do_init)
       uiInit(slab);
 #ifdef INPUT_CHAINING
-/* ����do we ever need this?
+/* Â¥Â¥Â¥Ãdo we ever need this?
    if (config_get_raw(CHAINING_VAR,NULL,0))
       kb_set_flags(kb_get_flags()|KBF_CHAIN);*/
 #endif // INPUT_CHAINING

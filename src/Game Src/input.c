@@ -301,7 +301,7 @@ void handle_keyboard_fatigue(void)
    }
 }
 
-#ifdef NOT_YET //���
+#ifdef NOT_YET //Â¥Â¥Â¥
 
 //#define CONSTRAIN_TO_FAUXREND
 
@@ -1459,7 +1459,7 @@ void init_input(void)
    hotkey_add(CONTROL('/'), DEMO_CONTEXT, MacHelpFunc, NULL);
    hotkey_add(CONTROL('?'), DEMO_CONTEXT, MacHelpFunc, NULL);
 
-/*���
+/*Â¥Â¥Â¥
    hotkey_add(ALT('x'),DEMO_CONTEXT,demo_quit_func,NULL);
    hotkey_add(ALT('x'),SETUP_CONTEXT,really_quit_key_func,NULL);
    hotkey_add(ALT('v'),DEMO_CONTEXT,toggle_view_func,NULL);
@@ -1473,7 +1473,7 @@ void init_input(void)
    hotkey_add(CONTROL('D'), DEMO_CONTEXT, change_mode_func,  (void *) FULLSCREEN_LOOP);
    hotkey_add(CONTROL('a'), DEMO_CONTEXT, change_mode_func,  (void *) AUTOMAP_LOOP);
    hotkey_add(CONTROL('A'), DEMO_CONTEXT, change_mode_func,  (void *) AUTOMAP_LOOP);
-/*���
+/*Â¥Â¥Â¥
 #else
    hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,(void *)TRUE);   
    hotkey_add(CONTROL('a'), DEMO_CONTEXT, change_mode_func,  (void *) AUTOMAP_LOOP);
@@ -1902,10 +1902,10 @@ void view3d_rightbutton_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data
       data->rdown = TRUE;
       data->lastright = aimpos;
       left_down_jump = data->ldown && !global_fullmap->cyber;
-//���      view3d_constrain_mouse(r,RBUTTON_CONSTRAIN_BIT);
+//Â¥Â¥Â¥      view3d_constrain_mouse(r,RBUTTON_CONSTRAIN_BIT);
    }
 
-/*���
+/*Â¥Â¥Â¥
    if (mouse_jump_ui && data->ldown && !global_fullmap->cyber)
    {
 	   if (ev->action & MOUSE_RDOWN)
@@ -2425,7 +2425,7 @@ bool view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
             got_focus = TRUE;
       }
       chg_set_flg(_current_3d_flag);
-//���      view3d_constrain_mouse(r,LBUTTON_CONSTRAIN_BIT);
+//Â¥Â¥Â¥      view3d_constrain_mouse(r,LBUTTON_CONSTRAIN_BIT);
    }
    if (ev->action & MOUSE_LUP || !(ev->buttons & (1 << MOUSE_LBUTTON)))
    {
@@ -2435,7 +2435,7 @@ bool view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
          if (uiReleaseFocus(r,UI_EVENT_MOUSE|UI_EVENT_MOUSE_MOVE) == OK)
             got_focus = FALSE;
       }
-//���      view3d_unconstrain_mouse(LBUTTON_CONSTRAIN_BIT);
+//Â¥Â¥Â¥      view3d_unconstrain_mouse(LBUTTON_CONSTRAIN_BIT);
    }
    if (ev->action & MOUSE_LUP &&
       abs(evp.y - data->lastleft.y) < uiDoubleClickTolerance &&
@@ -2540,15 +2540,15 @@ bool view3d_key_handler(uiCookedKeyEvent* ev, LGRegion* r, void* )
 #ifdef SVGA_SUPPORT
       ss_point_convert(&(evp.x),&(evp.y),FALSE);
 #endif
-//���temp      fire_player_weapon(&evp,r,!fire_key_down);
+//Â¥Â¥Â¥temp      fire_player_weapon(&evp,r,!fire_key_down);
       fire_player_weapon(&evp, r, !fire_slam);
-//���      view3d_constrain_mouse(_current_view,FIREKEY_CONSTRAIN_BIT);
+//Â¥Â¥Â¥      view3d_constrain_mouse(_current_view,FIREKEY_CONSTRAIN_BIT);
 //KLC      retval = fire_key_down = TRUE;
       fire_slam = TRUE;
    }
    else if (ev->code == FIRE_KEY)
    {
-//���      view3d_unconstrain_mouse(FIREKEY_CONSTRAIN_BIT);
+//Â¥Â¥Â¥      view3d_unconstrain_mouse(FIREKEY_CONSTRAIN_BIT);
       retval = TRUE;
 //KLC      fire_key_down = FALSE;
       fire_slam = FALSE;

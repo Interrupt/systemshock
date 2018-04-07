@@ -183,8 +183,8 @@ void _tt_build_cheat(long line_num)
 void _tt_new_line(long line_num)
 {
    _tt->max_h++;
-//¥¥¥   _tt->lines=(char **)Realloc(_tt->lines,sizeof(char *)*_tt->max_h);
-//¥¥¥   _tt->line_info=(TTCheats *)Realloc(_tt->line_info,sizeof(TTCheats)*_tt->max_h);
+//Â¥Â¥Â¥   _tt->lines=(char **)Realloc(_tt->lines,sizeof(char *)*_tt->max_h);
+//Â¥Â¥Â¥   _tt->line_info=(TTCheats *)Realloc(_tt->line_info,sizeof(TTCheats)*_tt->max_h);
    DisposePtr((Ptr)_tt->lines);
    _tt->lines = (char **)NewPtr(sizeof(char *)*_tt->max_h);
    DisposePtr((Ptr)_tt->line_info);
@@ -329,7 +329,7 @@ void _tt_resize_line(long line_num, long new_len)
    new_targ=n_num*TTL_BASE+TTL_INIT;
    if (new_targ==cur_len) return;
    _tt->line_info[line_num].wid=new_targ;
-//¥¥¥   _tt->lines[line_num]=Realloc(_tt->lines[line_num],new_targ);
+//Â¥Â¥Â¥   _tt->lines[line_num]=Realloc(_tt->lines[line_num],new_targ);
    SetPtrSize((Ptr)_tt->lines[line_num],new_targ);
 }
 

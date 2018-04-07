@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define kSkipColor 0
 
-//ÊMLA - removed so we have the prototypes
+//ÃŠMLA - removed so we have the prototypes
 // #ifndef _RSDCVT_C
 extern uchar *grd_unpack_buf;
 extern int gr_rsd8_convert(grs_bitmap *sbm, grs_bitmap *dbm);

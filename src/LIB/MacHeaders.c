@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *	MacHeaders.c
  *
  *	Script to generate the 'MacHeaders<xxx>' precompiled header for Metrowerks C/C++.
- *  Copyright © 1993 metrowerks inc.  All rights reserved.
+ *  Copyright Â© 1993 metrowerks inc.  All rights reserved.
  */
 
 /*

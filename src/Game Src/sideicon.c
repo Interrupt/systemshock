@@ -209,7 +209,7 @@ void init_side_icon_popups(void)
 }
 
 
-#ifdef DUMMY	//��� not yet, bucko
+#ifdef DUMMY	//Â¥Â¥Â¥ not yet, bucko
 
 void init_side_icon_hotkeys(void)
 {
@@ -236,7 +236,7 @@ void init_side_icon_hotkeys(void)
    }
 }
 
-#endif // DUMMY ���
+#endif // DUMMY Â¥Â¥Â¥
 
 
 // ---------------------------------------------------------------------------
@@ -345,7 +345,7 @@ bool side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata)
             last_side_icon = i;
          }
       }
-/*���
+/*Â¥Â¥Â¥
       if (m->action & MOUSE_RDOWN)
       {
          zoom_side_icon_to_mfd(i,type,num);

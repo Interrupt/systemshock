@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 int select_object_by_class(int obclass, int num, ubyte* quantlist);
 
 
-#ifdef NOT_YET //���
+#ifdef NOT_YET //Â¥Â¥Â¥
 
 #include <frprotox.h>
 #include <wrapper.h>
@@ -237,7 +237,7 @@ bool toggle_bool_func(short keycode, ulong context, bool* tgl)
    return TRUE;
 }
 
-#endif //��� NOT_YET
+#endif //Â¥Â¥Â¥ NOT_YET
 
 extern Boolean	DoubleSize;
 
@@ -252,7 +252,7 @@ bool change_mode_func(short , ulong , void* data)
    return TRUE;
 }
 
-#ifdef NOT_YET //���
+#ifdef NOT_YET //Â¥Â¥Â¥
 
 #ifdef HANDART_ADJUST
 
@@ -299,14 +299,14 @@ bool toggle_view_func(short keycode, ulong context, void* data)
 }
 
 
-#endif //��� NOT_YET
+#endif //Â¥Â¥Â¥ NOT_YET
 
 void start_music(void)
 {
 	extern errtype mlimbs_AI_init(void);
 
-//���   if (music_card)
-//���   {
+//Â¥Â¥Â¥   if (music_card)
+//Â¥Â¥Â¥   {
 	if (MacTuneInit() == 0)
 	{
 	    	music_on = TRUE;
@@ -320,7 +320,7 @@ void start_music(void)
 		gShockPrefs.soBackMusic = FALSE;
 		SavePrefs(kPrefsResID);
 	}
-//���   }
+//Â¥Â¥Â¥   }
 }
 
 void stop_music(void)
@@ -995,7 +995,7 @@ bool version_spew_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-#endif //��� NOT_YET
+#endif //Â¥Â¥Â¥ NOT_YET
 
 char conv_hex(char val);
 bool location_spew_func(short , ulong , void* );
@@ -1048,7 +1048,7 @@ bool location_spew_func(short , ulong , void* )
 }
 */
 
-#ifdef NOT_YET	//���
+#ifdef NOT_YET	//Â¥Â¥Â¥
 
 #ifdef PLAYTEST
 bool toggle_physics_func(short keycode, ulong context, void* data)
@@ -1290,7 +1290,7 @@ bool unpause_callback(uiEvent *, LGRegion *, void *)
    return(TRUE);
 }
 
-#endif //��� NOT_YET
+#endif //Â¥Â¥Â¥ NOT_YET
 
 bool pause_game_func(short, ulong, void*)
 {
@@ -1373,7 +1373,7 @@ bool save_hotkey_func(short, ulong, void *)
 }
 
 
-#ifdef NOT_YET  //���
+#ifdef NOT_YET  //Â¥Â¥Â¥
 
 
 //#define CHECK_STATE_N_HOTKEY
@@ -1449,4 +1449,4 @@ bool res_cache_usage_func(short keycode, ulong context, void* data)
 
 #pragma enable_message(202)
 
-#endif //��� NOT_YET
+#endif //Â¥Â¥Â¥ NOT_YET

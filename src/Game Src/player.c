@@ -183,7 +183,7 @@ errtype init_player(Player *pplr)
    pplr->active_bio_tracks = 0xFF;
    pplr->actives[ACTIVE_EMAIL] = 0xFF;
 
-//��� take out.  This gives me everything!
+//Â¥Â¥Â¥ take out.  This gives me everything!
 //for (i=0; i < NUM_HARDWAREZ; i++)
 //	pplr->hardwarez[i] = 1;
 
@@ -207,7 +207,7 @@ pplr->weapons[5].type = 4;
 pplr->weapons[5].subtype = 0;
 pplr->weapons[6].type = 3;
 pplr->weapons[6].subtype = 0;
-//���
+//Â¥Â¥Â¥
 */
 
    // init physics stuff

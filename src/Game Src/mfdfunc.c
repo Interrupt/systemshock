@@ -38,8 +38,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gameloop.h"
 #include "mfdart.h"
 #include "gamescr.h"
-//��#include "anim.h"
-//��#include "animreg.h"
+//Â¥Â¥#include "anim.h"
+//Â¥Â¥#include "animreg.h"
 #include "objwarez.h"
 #include "objsim.h"
 #include "gamestrn.h"
@@ -410,7 +410,7 @@ void mfd_weapon_expose(MFD *m, ubyte control)
          int id = mfd_bmap_id(triple);
 //KLC - chg for new art         draw_res_bm(id,(MFD_VIEW_WID-res_bm_width(id))/2, WEAPON_ART_Y);
          draw_hires_resource_bm(id,
-         		(SCONV_X(MFD_VIEW_WID)-res_bm_width(id))/2, SCONV_Y(WEAPON_ART_Y));  //��� is this right?
+         		(SCONV_X(MFD_VIEW_WID)-res_bm_width(id))/2, SCONV_Y(WEAPON_ART_Y));  //Â¥Â¥Â¥ is this right?
       }
 
       // This is all stuff that should be drawn for a full expose of
@@ -2880,7 +2880,7 @@ void mfd_keypad_expose(MFD* mfd, ubyte control)
    mfd_update_rects(mfd);
 }
 
-/*���
+/*Â¥Â¥Â¥
 // --------------------
 //   HUD WARE MFD
 // --------------------

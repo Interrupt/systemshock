@@ -170,7 +170,7 @@ extern int	gOVResult;
 //
 // First some math functions that don't use fixes.
 //
-/*  ¥¥¥ Change this
+/*  Â¥Â¥Â¥ Change this
 // Returns 0 if x < 0
 ushort long_sqrt (long x);
 #pragma aux long_sqrt parm [eax] value [ax] modify [eax ebx ecx edx esi edi]
@@ -333,7 +333,7 @@ asm long quad_sqrt(long hi, long lo);
 
 
 // Returns 0 if x < 0
-/* ¥¥¥ Fix this
+/* Â¥Â¥Â¥ Fix this
 fix fix_sloppy_sqrt (fix x);
 #pragma aux fix_sloppy_sqrt parm [eax] value [eax] modify [eax ebx ecx edx esi edi]
 */
@@ -435,7 +435,7 @@ fix24 asm fix24_div (fix24 a, fix24 b);
 
 #endif
 
-/* ¥¥¥ Fix this
+/* Â¥Â¥Â¥ Fix this
 fix24 fix24_mul_div (fix24 m0, fix24 m1, fix24 d);
 #pragma aux fix24_mul_div =\
    "imul    edx"     \
@@ -447,7 +447,7 @@ fix24 fix24_mul_div (fix24 m0, fix24 m1, fix24 d);
 fix24 fix24_pyth_dist (fix24 a, fix24 b);
 fix24 fix24_fast_pyth_dist (fix24 a, fix24 b);
 fix24 fix24_safe_pyth_dist (fix24 a, fix24 b);
-/* ¥¥¥ Fix this
+/* Â¥Â¥Â¥ Fix this
 fix24 fix24_sqrt (fix24 x);
 #pragma aux fix24_sqrt parm [eax] value [eax] modify [eax ebx ecx edx esi edi]
 */

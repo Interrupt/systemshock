@@ -488,7 +488,7 @@ void ConvertVMHD(void *data, ulong length, bool read)
 
 void Flip4Func(ulong *pval4)
 {
-//ⅴ� For mac version
+//짜짜짜 For mac version
 //	*pval4 = MAKE4(*pval4 & 0xFF,
 //		(*pval4 >> 8) & 0xFF,
 //		(*pval4 >> 16) & 0xFF,
@@ -497,7 +497,7 @@ void Flip4Func(ulong *pval4)
 
 void Flip2Func(ushort *pval2)
 {
-//ⅴ� For mac version
+//짜짜짜 For mac version
 //	*pval2 = ((*pval2 & 0xFF) << 8) | ((*pval2 >> 8) & 0xFF);
 }
 

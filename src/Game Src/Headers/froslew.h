@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __RENDTEST__
 #include "objects.h"
 #else
-//¥¥#include <rtestobj.h>
+//Â¥Â¥#include <rtestobj.h>
 #endif
 
 long *fr_objslew_obj_to_fix(long *flist, Obj *cobj, int count);

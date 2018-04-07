@@ -505,7 +505,7 @@ void palette_initialize(short tbl_size)
 
    Palette_Effects_Table = (PAL_TABLE_ENTRY *)
       NewPtr((int) tbl_size * sizeof(PAL_TABLE_ENTRY));
-//¥¥¥No error check here
+//Â¥Â¥Â¥No error check here
   
    // Initialize Table
    

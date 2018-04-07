@@ -140,7 +140,7 @@ int ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo)
 			{
 //			read(fd, &fileHead, sizeof(ResFileHeader));
 			fread(&fileHead, sizeof(ResFileHeader), 1, fd);
-			fileHead.dirOffset = SwapLongBytes(fileHead.dirOffset);		//¥¥¥
+			fileHead.dirOffset = SwapLongBytes(fileHead.dirOffset);		//Â¥Â¥Â¥
 			if (strncmp(fileHead.signature, resFileSignature,
 				sizeof(resFileSignature)) != 0)
 				{
@@ -220,8 +220,8 @@ int ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo)
 				fseek(fd, fileHead.dirOffset, SEEK_SET);
 //				read(fd, &dirHead, sizeof(ResDirHeader));
 				fread(&dirHead, 1, sizeof(ResDirHeader), fd);
-				dirHead.numEntries = SwapShortBytes(dirHead.numEntries); 	//¥¥¥
-				dirHead.dataOffset = SwapLongBytes(dirHead.dataOffset);		//¥¥¥
+				dirHead.numEntries = SwapShortBytes(dirHead.numEntries); 	//Â¥Â¥Â¥
+				dirHead.dataOffset = SwapLongBytes(dirHead.dataOffset);		//Â¥Â¥Â¥
 //				ResReadDirEntries(filenum, &dirHead, (cd_spoof) ? RDF_CDSPOOF : 0);
 				}
 			break;

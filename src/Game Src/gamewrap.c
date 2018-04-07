@@ -213,7 +213,7 @@ errtype save_game(FSSpec *saveSpec)
 	int 			idx = SAVE_GAME_ID_BASE;
 
    //KLC - this does nothing now.		check_save_game_wackiness();
-   //��� Why is this done???			closedown_game(FALSE);
+   //Â¥Â¥Â¥ Why is this done???			closedown_game(FALSE);
 
    //KLC  do it the Mac way						i = flush_resource_cache();
 	Size	dummy;
@@ -241,7 +241,7 @@ errtype save_game(FSSpec *saveSpec)
 	player_struct.realspace_loc = objs[player_struct.rep].loc;
 	EDMS_get_state(objs[PLAYER_OBJ].info.ph, &player_state);
 	LG_memcpy(player_struct.edms_state, &player_state, sizeof (fix) * 12);
-//��� LZW later		ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, RDF_LZW);
+//Â¥Â¥Â¥ LZW later		ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, RDF_LZW);
 	ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, 0);
 	ResWrite(idx);
 	ResUnmake(idx);
@@ -250,7 +250,7 @@ errtype save_game(FSSpec *saveSpec)
 
 	// Save game schedule (resource #590)
 	idx = SCHEDULE_BASE_ID;
-//��� LZW later		ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, RDF_LZW);
+//Â¥Â¥Â¥ LZW later		ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, RDF_LZW);
 	ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, 0);
 	ResWrite(idx);
 	ResUnmake(idx);
@@ -258,7 +258,7 @@ errtype save_game(FSSpec *saveSpec)
 	AdvanceProgress();
 	
 	// Save game schedule vec info (resource #591)
-//��� LZW later		ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, RDF_LZW);
+//Â¥Â¥Â¥ LZW later		ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, RDF_LZW);
 	ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, 0);
 	ResWrite(idx);
 	ResUnmake(idx);
@@ -272,21 +272,21 @@ errtype save_game(FSSpec *saveSpec)
 	retval = write_level_to_disk(ResIdFromLevel(player_struct.level), TRUE);
 	if (retval)
 	{
-		DebugStr("\pReturn value from write_level_to_disk is non-zero!\n");//���
+		DebugStr("\pReturn value from write_level_to_disk is non-zero!\n");//Â¥Â¥Â¥
 		critical_error(CRITERR_FILE|3);
 	}
 
 	// Copy current game out to save game slot
 	if (copy_file(&currSpec, saveSpec, TRUE) != OK)
 	{
-		//��� Put up some alert here.
+		//Â¥Â¥Â¥ Put up some alert here.
 		DebugStr("\pNo good copy, dude!\n");
 //		string_message_info(REF_STR_SaveGameFail);
 	}
 //KLC	else
 //KLC		string_message_info(REF_STR_SaveGameSaved);
 	old_ticks = *tmd_ticks;
-	//��� do we have to do this?		startup_game(FALSE);
+	//Â¥Â¥Â¥ do we have to do this?		startup_game(FALSE);
 	return(OK);
 }
 
@@ -325,7 +325,7 @@ errtype interpret_qvars(void)
    extern uchar audiolog_setting;
 
 //KLC - don't do this here - it's a global now.   load_da_palette();
-/*��� later
+/*Â¥Â¥Â¥ later
    gamma_dealfunc(QUESTVAR_GET(GAMMACOR_QVAR));
 
    dclick_dealfunc(QUESTVAR_GET(DCLICK_QVAR));
@@ -355,7 +355,7 @@ errtype interpret_qvars(void)
    return(OK);
 }
 
-//char saveArray[16];	//����������temp
+//char saveArray[16];	//Â¥Â¥Â¥Â¥Â¥Â¥Â¥Â¥Â¥Â¥temp
 
 errtype load_game(FSSpec *loadSpec)
 {
@@ -383,7 +383,7 @@ errtype load_game(FSSpec *loadSpec)
       retval = copy_file(loadSpec, &currSpec, FALSE);
       if (retval != OK)
       {
-		//��� bring up an alert here??
+		//Â¥Â¥Â¥ bring up an alert here??
          string_message_info(REF_STR_LoadGameFail);
          return(retval);
       }
@@ -411,7 +411,7 @@ errtype load_game(FSSpec *loadSpec)
       dynmem_mask = DYNMEM_PARTIAL;
    }
    load_level_from_file(player_struct.level);
-   obj_load_art(FALSE);							//���KLC - added here (removed from load_level_data)
+   obj_load_art(FALSE);							//Â¥Â¥Â¥KLC - added here (removed from load_level_data)
 //KLC   string_message_info(REF_STR_LoadGameLoaded);
    dynmem_mask = DYNMEM_ALL;
    chg_set_flg(_current_3d_flag);
@@ -428,7 +428,7 @@ errtype load_game(FSSpec *loadSpec)
 		load_score_for_location(PLAYER_BIN_X, PLAYER_BIN_Y);		//KLC - added here
 	}
 
-//�������� temp
+//Â¥Â¥Â¥Â¥Â¥Â¥Â¥Â¥ temp
 //BlockMove(0, saveArray, 16);
 
    return(OK);
@@ -457,7 +457,7 @@ errtype load_level_from_file(int level_num)
 }
 
 
-#ifdef NOT_YET //���
+#ifdef NOT_YET //Â¥Â¥Â¥
 
 void check_and_update_initial(void)
 {
@@ -481,7 +481,7 @@ void check_and_update_initial(void)
 
 }
 
-#endif //NOT_YET ���
+#endif //NOT_YET Â¥Â¥Â¥
 
 
 bool create_initial_game_func(short , ulong , void* )
@@ -538,7 +538,7 @@ bool create_initial_game_func(short , ulong , void* )
    player_struct.rep = OBJ_NULL;
 
    load_level_from_file(player_struct.level);
-   obj_load_art(FALSE);							//���KLC - added here (removed from load_level_data)
+   obj_load_art(FALSE);							//Â¥Â¥Â¥KLC - added here (removed from load_level_data)
    amap_reset();
    player_create_initial();
 

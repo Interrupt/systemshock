@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 //====================================================================================
 //
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
+//		System Shock - Â©1994-1995 Looking Glass Technologies, Inc.
 //
 //		MoviePlay.c	-	Plays movies in Shock fashion, changing palettes on the fly.
 //

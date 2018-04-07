@@ -330,7 +330,7 @@ inline Fixpoint::Fixpoint( double d )
 { CLICK( constructor_double); val = (long int)(d * SHIFTMULTIPLIER); }
 
 
-//inline Fixpoint rawConstruct( long l ) ¥¥¥ Removed inline.  Put code in fixpp.cc
+//inline Fixpoint rawConstruct( long l ) Â¥Â¥Â¥ Removed inline.  Put code in fixpp.cc
 
 
 

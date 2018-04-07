@@ -270,7 +270,7 @@ void ResShrinkResDescTable()
 		SetPtrSize(gResDesc, newAmt * sizeof(ResDesc));
 		if (MemError() != noErr)
 		{
-//¥¥¥			Warning(("ResGrowDescTable: RES DESCRIPTOR TABLE BAD!!!\n"));
+//Â¥Â¥Â¥			Warning(("ResGrowDescTable: RES DESCRIPTOR TABLE BAD!!!\n"));
 			return;
 		}
 		resDescMax = newAmt - 1;

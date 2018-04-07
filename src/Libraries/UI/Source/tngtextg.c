@@ -214,7 +214,7 @@ bool tng_textgadget_keycooked(TNG *ptng, ushort key)
 {
    short code;
    bool retval = FALSE;
-/*ⅴ�
+/*짜짜짜
 
    code = key & 0xff;
    //Spew(DSRC_UI_Textgadget, ("%x was typed!\n",code));
@@ -265,7 +265,7 @@ bool tng_textgadget_signal(TNG *ptng, ushort signal)
 // appropriate kind of scroll key.
 errtype tng_textgadget_scroll(TNG *ptng)
 {
-/*ⅴ�
+/*짜짜짜
    short code;
    TNG *which_bar;
    bool increm;

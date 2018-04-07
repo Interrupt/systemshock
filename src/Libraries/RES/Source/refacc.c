@@ -326,7 +326,7 @@ int ResNumRefs(Id id)
 //	Returns: ptr to supplied buffer, or NULL if problem
 //	---------------------------------------------------------
 //  For Mac version:  Use "ReadPartialResource" to get just the reference specified.
-//  ¥¥¥ For now, ignore LZW.
+//  Â¥Â¥Â¥ For now, ignore LZW.
 
 void *RefExtract(RefTable *prt, Ref ref, void *buff)
 {

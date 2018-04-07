@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "musicai.h"
-//���#include "citmusic.h"
+//Â¥Â¥Â¥#include "citmusic.h"
 #include "faketime.h"
 
 #define __SNDCALL_SRC

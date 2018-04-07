@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 //=======================================================================
 //
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
+//		System Shock - Â©1994-1995 Looking Glass Technologies, Inc.
 //
 //		Tests.c	-	Code to do test commands.
 //
@@ -1123,7 +1123,7 @@ void DoPlayMovie(short cmd)
 		SetEntries(1, 253, &(**ctab[0]).ctTable[1]);
 		ResetCTSeed();
 
-		//¥¥¥ Load movie into RAM
+		//Â¥Â¥Â¥ Load movie into RAM
 //		err = LoadMovieIntoRam(aMovie, 0, GetMovieDuration(aMovie), keepInRam);
 		GoToBeginningOfMovie(aMovie);
 		

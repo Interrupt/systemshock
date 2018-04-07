@@ -505,7 +505,7 @@ void update_damage_report(struct _hudobj_data* dat,bool reverse)
          y = dat->yl - h;
          if (reverse)
          {
-/*���  shock_hflip_in_place is mostly ASM.
+/*Â¥Â¥Â¥  shock_hflip_in_place is mostly ASM.
             extern void shock_hflip_in_place(grs_bitmap* bm);
             grs_canvas gc;
             grs_font* font = gr_get_font();
@@ -651,7 +651,7 @@ if (msg[0])
 	draw_shadowed_string(msg, x, y, TRUE);
 }
 }
-//��� END TEMP
+//Â¥Â¥Â¥ END TEMP
 */
    if (full_game_3d && fullscrn_vitals)
    {

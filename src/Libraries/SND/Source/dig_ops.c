@@ -44,7 +44,7 @@ snd_digi_parms *snd_sample_parms(int hnd_id)
    return &_snd_smp_prm[hnd_id];
 }
 
-/*¥¥¥ Callback
+/*Â¥Â¥Â¥ Callback
 static void cdecl smp_EOS_callback(SAMPLE *S)
 {
    int hnd_id;

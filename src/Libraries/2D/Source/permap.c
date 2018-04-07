@@ -151,7 +151,7 @@ void per_umap (grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti)
       h_umap(bm, n, vpl, ti);
       return;
    }
-//¥¥¥ÊMLA - doesnt' ever appear to use this
+//Â¥Â¥Â¥ÃŠMLA - doesnt' ever appear to use this
 /*
    if ((bm->type==BMT_FLAT8)&&grd_enable_quad_blend) {
       int u_min=vpl[0]->u;

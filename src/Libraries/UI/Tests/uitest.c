@@ -457,7 +457,7 @@ extern short gMainVRef;
    gad_menu_add_line(menu_gadg, "Zany", &menu_test2, 'D'|KB_FLAG_CTRL|KB_FLAG_DOWN, 0xFFFF, NULL, "Wacko boy writes a help string");
 //   gad_menu_add_line(menu_gadg, "Zany", &qbox_test, 'n'|KB_FLAG_CTRL|KB_FLAG_DOWN, 0xFFFF, NULL, "Wacko boy writes a help string");
    gad_menu_add_submenu(menu_gadg, "Hair of Gold", sub_menu);
-¥/
+Â¥/
 
 
 //   mprintf("before buttonarray creation\n");

@@ -184,7 +184,7 @@ errtype gad_qbox_end_full(Gadget **ptr)
    uiInstallRegionHandler(current_box->rep, UI_EVENT_MOUSE, &gadget_tng_mouse_handler, current_box, &(current_box->handler_id));
    uiInstallRegionHandler(current_box->rep, UI_EVENT_KBD_COOKED, &gadget_tng_keyboard_handler, current_box, &(current_box->handler_id));
    uiSetRegionOpacity(current_box->rep,UI_EVENT_KBD_POLL);
-/*¥¥¥
+/*Â¥Â¥Â¥
    kb_set_state(QB_LEFT_KEY,KBA_REPEAT);
    kb_set_state(QB_RIGHT_KEY,KBA_REPEAT);
    kb_set_state(QB_DOWN_KEY,KBA_REPEAT);

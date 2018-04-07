@@ -261,7 +261,7 @@ if ((long)sizeRef < 0)
 						else
 						{
 							DumpData(fd, dataOffset + offset[j], sizeRef);
-							break;  //ⅴ� for now
+							break;  //짜짜짜 for now
 						}
 					}
 				}
@@ -277,7 +277,7 @@ if ((long)sizeRef < 0)
 				else
 				{
 					DumpData(fd, dataOffset, pentry->csize);
-					break;  //ⅴ� for now
+					break;  //짜짜짜 for now
 				}
 			}
 		}

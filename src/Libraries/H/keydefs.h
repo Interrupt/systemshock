@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define KEY_PAUSE	0x1b
 #define KEY_SPACE	0x20
 
-#define KEY_F1			0x10			// ¥¥¥Find out what these are
+#define KEY_F1			0x10			// Â¥Â¥Â¥Find out what these are
 #define KEY_F2			0x10
 #define KEY_F3			0x10
 #define KEY_F4			0x10

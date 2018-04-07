@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 //=====================================================================
 //
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
+//		System Shock - Â©1994-1995 Looking Glass Technologies, Inc.
 //
 //		ShockHelp.c	-	Displays a help dialog with multiple topics.
 //
@@ -50,7 +50,7 @@ void AddHelpMenu(void)
  	MenuHandle	mh;
 	Str255			str;
 	
-	BlockMove("\pSystem Shock HelpÉ",str,32L);
+	BlockMove("\pSystem Shock HelpÃ‰",str,32L);
 		
 	if (GetHelpMgr())													// If Help Mgr is available, stick Help
 	{																			// menu item in the Help menu

@@ -524,16 +524,16 @@ void grind_music_ai(void)
 errtype check_asynch_ai(bool /*new_score_ok*/)
 {
 //   extern bool mlimbs_semaphore;
-//���   if (ai_cycle)
-//���   {
+//Â¥Â¥Â¥   if (ai_cycle)
+//Â¥Â¥Â¥   {
       ai_cycle = 0;
       grind_music_ai();
-//���      if (!run_asynch_music_ai)
-//���         mlimbs_preload_requested_timbres();
+//Â¥Â¥Â¥      if (!run_asynch_music_ai)
+//Â¥Â¥Â¥         mlimbs_preload_requested_timbres();
 
 //      mlimbs_semaphore = FALSE;
 
-/*���
+/*Â¥Â¥Â¥
       // We need new theme loaded...
       if (!mai_semaphor)
       {
@@ -544,7 +544,7 @@ errtype check_asynch_ai(bool /*new_score_ok*/)
          }
       }
 */
-//���   }
+//Â¥Â¥Â¥   }
    return(OK);
 }
 

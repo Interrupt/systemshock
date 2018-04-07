@@ -206,7 +206,7 @@ grs_bitmap dst;
 //  gr_set_fill_type(FILL_SOLID);
 //  gr_set_fill_parm(33);
 
-	// ⅴSetup for forcing 1D wall mapper
+	// 짜짜Setup for forcing 1D wall mapper
 //  ti.tmap_type=GRC_LIT_WALL1D;
 //  ti.flags=TMF_WALL;
 
@@ -215,7 +215,7 @@ grs_bitmap dst;
 //	  gr_per_umap(&bm, 4, points);
 		gr_clut_per_umap(&bm, 4, points, (uchar *) bogus_clut);
 //		gr_lit_per_umap(&bm, 4, points);
-//  		v_umap(&bm,4,points,&ti);		//ⅴ for wall 1D
+//  		v_umap(&bm,4,points,&ti);		//짜짜 for wall 1D
  /*{
 extern void per_umap (grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
       grs_tmap_info ti;

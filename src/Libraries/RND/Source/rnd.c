@@ -121,7 +121,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	For gruesome interrupt routines, let 'em have their way:
 
-//¥¥¥#pragma off(check_stack);
+//Â¥Â¥Â¥#pragma off(check_stack);
 
 
 //	---------------------------------------------------------------

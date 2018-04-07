@@ -506,7 +506,7 @@ bool use_ir_hack(void)
    return(WareActive(player_struct.hardwarez_status[HARDWARE_GOGGLE_INFRARED]));
 }
 
-//���#pragma aux c_ror_by_5 = "ror eax,5" parm [eax] modify exact [eax];
+//Â¥Â¥Â¥#pragma aux c_ror_by_5 = "ror eax,5" parm [eax] modify exact [eax];
 // MLA- optimize this
 #define c_ror_by_5(v_to_ror) ((v_to_ror>>5 & 0x07ffffff) | (v_to_ror<<27))
 

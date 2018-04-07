@@ -51,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "cit2d.h"
 
-//���#include <gifd.h>
+//Â¥Â¥Â¥#include <gifd.h>
 
 
 #ifndef STORE_CLIP 
@@ -367,7 +367,7 @@ void second_format(int sec_remain, char *s)
    if (s[0]=='0') s[0]=' ';
 }
 
-#ifdef NOT_YET //��� later, dude
+#ifdef NOT_YET //Â¥Â¥Â¥ later, dude
 
 #define BIG_BUF
 
@@ -395,7 +395,7 @@ bool gifdump_func(short keycode, ulong context, void* data)
 }
 #pragma enable_message(202)
 
-#endif //��� NOT_YET
+#endif //Â¥Â¥Â¥ NOT_YET
 
 
 #define FULLSCREEN_MESSAGE_X  125
@@ -561,7 +561,7 @@ errtype message_box(char *box_text)
    return(OK);
 }
 
-#ifdef NOT_YET //��� later, dude
+#ifdef NOT_YET //Â¥Â¥Â¥ later, dude
 
 #pragma disable_message(202)
 bool confirm_box(char *confirm_text)
@@ -653,7 +653,7 @@ char *next_number_fname(char *fname)
    return fname;
 }
 
-#endif //NOT_YET���
+#endif //NOT_YETÂ¥Â¥Â¥
 
 errtype tight_loop(bool check_input)
 {
@@ -810,7 +810,7 @@ errtype begin_wait()
    return(retval);
 }
 
-#ifdef NOT_YET //���
+#ifdef NOT_YET //Â¥Â¥Â¥
 errtype spoof_mouse_event(void)
 {
    int i;
@@ -826,7 +826,7 @@ errtype spoof_mouse_event(void)
    ev.type = UI_EVENT_MOUSE;
    return uiQueueEvent((uiEvent*)&ev);
 }
-#endif //NOT_YET���
+#endif //NOT_YETÂ¥Â¥Â¥
 
 errtype end_wait()
 {

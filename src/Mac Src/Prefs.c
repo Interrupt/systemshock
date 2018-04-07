@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 //====================================================================================
 //
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
+//		System Shock - Â©1994-1995 Looking Glass Technologies, Inc.
 //
 //		Prefs.c	-	Handles saving and loading preferences.
 //
@@ -68,7 +68,7 @@ void SetDefaultPrefs(void)
 
 	gShockPrefs.soBackMusic = true;
 	gShockPrefs.soSoundFX = true;
-	gShockPrefs.soMusicVolume = 33;			// ¥¥¥ Figure out when sound is put in.
+	gShockPrefs.soMusicVolume = 33;			// Â¥Â¥Â¥ Figure out when sound is put in.
 
 	gShockPrefs.doResolution = 0;					// High-res.
 	gShockPrefs.doDetail = 2;						// High detail.

@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 //====================================================================================
 //
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
+//		System Shock - Â©1994-1995 Looking Glass Technologies, Inc.
 //
 //		ShockBitmap.c	-	Manages off-screen bitmaps and palettes.
 //
@@ -186,7 +186,7 @@ Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height)
 	
 	SetRect(&bRect, 0, 0, width, height);
 	
-	OpenCPort(theCGrafPtr);   							// open a new color port Ñ this calls InitCPort
+	OpenCPort(theCGrafPtr);   							// open a new color port Ã‘ this calls InitCPort
 	
 	pmap = NewPixMap();
 	MoveHHi((Handle)pmap);

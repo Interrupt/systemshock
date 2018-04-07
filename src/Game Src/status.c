@@ -58,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Look ma, a new biorhythm option.
 #define BOTTOMLESS               0x04 // things that fall off the bottom don't get drawn.
 
-//��� For now, turn these on so it won't try to draw any biorhythm stuff
+//Â¥Â¥Â¥ For now, turn these on so it won't try to draw any biorhythm stuff
 #define TIMING_PROCEDURES_OFF
 //#define TIMING_CALLBACK_OFF
 

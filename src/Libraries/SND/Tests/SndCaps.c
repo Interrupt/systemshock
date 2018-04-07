@@ -52,7 +52,7 @@ void main(void)
 	NumVersion	smVer;
 	int 			i;
 
-	printf("\nGetting sound capabilities…\n\n");
+	printf("\nGetting sound capabilities√â\n\n");
 
 	// Show all the Gestalt info
 	

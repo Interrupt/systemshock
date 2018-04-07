@@ -660,7 +660,7 @@ static void _fr_flat_flr(void)
          pt_code=*ptdat++; pt_code=(pt_code^pt_merge_mask[0])&pt_merge_mask[1];
          _fr_figure_pt(*pb++,pt_code);
       }
-//�� bug??      _fr_ndbg(NO_REND,g3_draw_poly((*fr_get_idx)(),_fdt_ttf->ptsper,&_fdt_tmppts));
+//Â¥Â¥ bug??      _fr_ndbg(NO_REND,g3_draw_poly((*fr_get_idx)(),_fdt_ttf->ptsper,&_fdt_tmppts));
       _fr_ndbg(NO_REND,g3_draw_poly((*fr_get_idx)(),_fdt_ttf->ptsper,_fdt_tmppts));
    } while (loopcnt-->0);
    _fr_sdbg(STATS,_frp.stats.flr++);

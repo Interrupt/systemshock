@@ -922,7 +922,7 @@ long GetSndHdrOffset (Handle sndHandle)
 	char					theText1[] = "Sie finden deine Leiche und geben ihr neues Leben.";
 	char					theText2[] = "Als Cyborg wirst du SHODAN treu dienen.";
 	// French.
-	char					theText1[] = "Ils ont trouv ton corps et lui ont redonn la vie.";
+	char					theText1[] = "Ils ont trouvÂ ton corps et lui ont redonnÂ la vie.";
 	char					theText2[] = "En tant que cyborgue, tu serviras bien SHODAN.";
 	
 	// Timing - 507 total
@@ -940,12 +940,12 @@ long GetSndHdrOffset (Handle sndHandle)
 	char					theText3[] = "Old habits die hard.";
 	// German.
 	char					theText1[] = "Es ist vorbei.";
-	char					theText2[] = "Sie haben dir einen netten Job bei Triop angeboten; es w„re dir nie eingefallen, ihr Angebot anzunehmen.";
+	char					theText2[] = "Sie haben dir einen netten Job bei Triop angeboten; es wÂ„re dir nie eingefallen, ihr Angebot anzunehmen.";
 	char					theText3[] = "Du kannst es eben einfach nicht lassen.";
 	// French.
 	char					theText1[] = "C'est fini.";
-	char					theText2[] = "Ils vous ont offert un bon boulot ennuyeux sur Triop; ‡a ne vous est jamais venu … l'ide de l'accepter.";
-	char					theText3[] = "On a du mal … se dbarasser des mauvaises habitudes.";
+	char					theText2[] = "Ils vous ont offert un bon boulot ennuyeux sur Triop; Â‡a ne vous est jamais venu Â… l'idÂe de l'accepter.";
+	char					theText3[] = "On a du mal Â… se dÂbarasser des mauvaises habitudes.";
 	
 	// Timing - 507 total
 	blank	9
@@ -961,7 +961,7 @@ void MyCreateTextTrack(Movie theMovie)
 	Media 					theMedia;
 	OSErr					err = noErr;
 	char					blankText[] = " ";
-	char					theText1[] = "Ils ont trouv ton corps et lui ont redonn la vie.";
+	char					theText1[] = "Ils ont trouvÂ ton corps et lui ont redonnÂ la vie.";
 	char					theText2[] = "En tant que cyborgue, tu serviras bien SHODAN.";
 	RGBColor				black = {0, 0, 0};
 	RGBColor				white = {0xeeee, 0xeeee, 0xeeee};

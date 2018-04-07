@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 //====================================================================================
 //
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
+//		System Shock - Â©1994-1995 Looking Glass Technologies, Inc.
 //
 //		Shock.c	-	Mac-specific initialization and main event loop.
 //
@@ -70,7 +70,7 @@ RgnHandle			gCursorRgn;
 short					gCursorSet;
 Boolean				gDone = false;
 Boolean				gInForeground = true;
-Boolean				gPlayingGame;		//¥¥¥ Temp
+Boolean				gPlayingGame;		//Â¥Â¥Â¥ Temp
 Boolean				gIsNewGame;
 FSSpec				gSavedGameFile;
 long					gGameSavedTime;
@@ -317,7 +317,7 @@ void UpdateWindow(WindowPtr wind)
  	 	PaintRect(&r);
 	}
 
-	//¥¥¥ For now, just copy from main offscreen bitmap
+	//Â¥Â¥Â¥ For now, just copy from main offscreen bitmap
 	
  	ResetCTSeed();		// make sure all color table seeds match
 	RGBForeColor(&black);
@@ -1041,7 +1041,7 @@ Boolean DoSaveGameAs(void)
 
 	if (CheckFreeSpace(reply.sfFile.vRefNum) == ERR_NOMEM)
 	{
-		// ¥¥¥Put up alert saying "not enough disk space".
+		// Â¥Â¥Â¥Put up alert saying "not enough disk space".
 		return (FALSE);
 	}
 		
@@ -1073,7 +1073,7 @@ Boolean DoSaveGame(void)
 	
 	if (CheckFreeSpace(gSavedGameFile.vRefNum) == ERR_NOMEM)
 	{
-		// ¥¥¥Put up alert saying "not enough disk space".
+		// Â¥Â¥Â¥Put up alert saying "not enough disk space".
 		return (FALSE);
 	}
 		

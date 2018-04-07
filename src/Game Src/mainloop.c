@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 #include "loops.h"
 
-/*���
+/*Â¥Â¥Â¥
 #include <input.h>
 #include <setup.h>
 #include <loopdbg.h>
@@ -69,14 +69,14 @@ extern void automap_loop(void);
 extern void amap_start();
 extern void amap_exit();
 
-/*���
+/*Â¥Â¥Â¥
 // Note that in the shipping version, the edit_loop stuff should never
 // get called, but needs to be SOMETHING as a place holder
 void (*citadel_loops[])(void)={game_loop,game_loop,game_loop,game_loop,setup_loop,game_loop,cutscene_loop,game_loop,automap_loop};
 void (*enter_modes[])(void)={screen_start,fullscreen_start,screen_start,screen_start,setup_start,screen_start,cutscene_start,fullscreen_start,amap_start};
 void (*exit_modes[])(void)={screen_exit,fullscreen_exit,screen_exit, screen_exit,setup_exit,screen_exit,cutscene_exit,fullscreen_exit,amap_exit};
 */
-// ��� Next two lines are temporary
+// Â¥Â¥Â¥ Next two lines are temporary
 void (*enter_modes[])(void)={screen_start, fullscreen_start, NULL,NULL,NULL,NULL,NULL,NULL,amap_start};
 void (*exit_modes[])(void)={screen_exit, fullscreen_exit, NULL, NULL,NULL,NULL,NULL,NULL,amap_exit};
 
@@ -93,7 +93,7 @@ void loopmode_switch(short *cmode)
 	_static_change = 0;
 	if (*cmode>=0)
 		(*enter_modes[*cmode])();
-/*���
+/*Â¥Â¥Â¥
 #ifdef SVGA_SUPPORT
 	if (wrapper_screenmode_hack)
 	{
@@ -110,7 +110,7 @@ void loopmode_exit(short loopmode)
 		(*exit_modes[loopmode])();
 }
 
-/*���
+/*Â¥Â¥Â¥
 void loopmode_enter(short loopmode)
 {
    (*enter_modes[loopmode])();
@@ -119,7 +119,7 @@ void loopmode_enter(short loopmode)
 void ShockMain(void)
 {
 	init_all();
-/*���
+/*Â¥Â¥Â¥
 	while (_current_loop>=0)
 	{
 		if (!(_change_flag&(ML_CHG_BASE<<1)))

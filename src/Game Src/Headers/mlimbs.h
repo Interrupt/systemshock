@@ -114,8 +114,8 @@ extern volatile int		mlimbs_master_slot;
 
 /* Function prototypes */
 int	mlimbs_init(void);
-//ⅴ쪁oid cdecl  mlimbs_callback(snd_midi_parms *mprm, int trigger_value);
-//ⅴ쪁oid cdecl  mlimbs_seq_done_call(snd_midi_parms *mprm);
+//짜짜짜void cdecl  mlimbs_callback(snd_midi_parms *mprm, int trigger_value);
+//짜짜짜void cdecl  mlimbs_seq_done_call(snd_midi_parms *mprm);
 
 void	mlimbs_shutdown(void);
 int	mlimbs_load_theme(char *, char *, int);

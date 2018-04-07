@@ -104,7 +104,7 @@ void game_loop(void)
 	extern errtype check_cspace_death();
 	extern bool game_paused;
 	extern void sound_frame_update(void);
-//������ temp
+//Â¥Â¥Â¥Â¥Â¥Â¥ temp
 //extern char saveArray[16];
 //if (memcmp(0, saveArray, 16))
 //	Debugger();

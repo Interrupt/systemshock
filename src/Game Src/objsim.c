@@ -140,7 +140,7 @@ errtype obj_settle_func(ObjID id);
 bool death_check(ObjID id, bool* destr);
 
 
-errtype set_door_data(ObjID id); // ��� here for now
+errtype set_door_data(ObjID id); // Â¥Â¥Â¥ here for now
 
 errtype set_door_data(ObjID id)
 {
@@ -272,7 +272,7 @@ Ref ref_from_critter_data(ObjID, int triple, ubyte posture, ubyte frame, ubyte v
    RefTable *prt;
    char curr_frames;
    bool load_all_views = TRUE;
-//���   extern ulong page_amount;
+//Â¥Â¥Â¥   extern ulong page_amount;
 
    // Set mirror pointer
 //   if (pmirror != NULL)
@@ -285,9 +285,9 @@ Ref ref_from_critter_data(ObjID, int triple, ubyte posture, ubyte frame, ubyte v
          break;
    }
 
-//���   if (page_amount > CRITTER_LOADING_PAGE_LIMIT)
-//���      load_all_views = FALSE;
-//���   else
+//Â¥Â¥Â¥   if (page_amount > CRITTER_LOADING_PAGE_LIMIT)
+//Â¥Â¥Â¥      load_all_views = FALSE;
+//Â¥Â¥Â¥   else
    {
       for (p=STANDING_CRITTER_POSTURE; p <= MOVING_CRITTER_POSTURE; p++)
       {
@@ -1792,7 +1792,7 @@ errtype obj_load_properties()
 	cp += NUM_ELEVATOR_DOOR;
 	cp += NUM_SPECIAL_DOOR;
 	
-	cp -= 2;											//��� We got off here somehow.  Check into it!!!
+	cp -= 2;											//Â¥Â¥Â¥ We got off here somehow.  Check into it!!!
 
 	//----------------
 	//  ANIMATING OBJECTS
@@ -2430,7 +2430,7 @@ errtype obj_floor_func(ObjID id)
    return(OK);
 }
 
-#ifdef NOT_YET //��� later
+#ifdef NOT_YET //Â¥Â¥Â¥ later
 
 #ifdef PLAYTEST
 #pragma disable_message(202)
@@ -2895,7 +2895,7 @@ void spew_about_stuff(char *txt, ObjID id)
 #define spew_about_stuff(txt, id)
 #endif
 
-#endif //NOT_YET ���
+#endif //NOT_YET Â¥Â¥Â¥
 
 extern bool robot_antisocial;
 

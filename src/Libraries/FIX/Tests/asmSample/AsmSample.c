@@ -27,7 +27,7 @@ void main()
 	InitDialogs(nil);
 	InitCursor();
 
-	/* Wait for the user to choose… */
+	/* Wait for the user to choose√â */
 	itemHit = Alert(kChooseAMessageAlertID, nil);
 	
 	/* Call the assembly language routine to handle the user's choice.

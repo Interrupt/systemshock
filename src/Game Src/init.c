@@ -72,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "dynmem.h"
 
-/*���
+/*Â¥Â¥Â¥
 #define AIL_SOUND
 #include "tminit.h"
 #include "mlimbs.h"
@@ -137,7 +137,7 @@ extern void rendedit_process_tilemap(FullMap* fmap, LGRect* r, bool newMap);
 extern void mac_get_pal (int start, int n, uchar *pal_data);
 
 errtype init_pal_fx();
-/*���
+/*Â¥Â¥Â¥
 errtype init_kb();
 errtype init_debug();
 void byebyemessage(void);
@@ -149,10 +149,10 @@ extern bool toggle_heap_check(short keycode, ulong context, void *data);
 
 extern errtype sanity_check_obj_props();
 errtype amap_init(void);
-//���extern long old_ticks;
+//Â¥Â¥Â¥extern long old_ticks;
 
 errtype object_data_load(void);
-/*��
+/*Â¥Â¥
 int   global_timer_id;
 extern int mlimbs_peril;
 */
@@ -225,9 +225,9 @@ extern void CitFree(void *p);
 #define PALETTE_SIZE 768
 uchar ppall[PALETTE_SIZE];
 
-//���
+//Â¥Â¥Â¥
 #define DO_FADES
-//���
+//Â¥Â¥Â¥
 
 //-------------------------------------------------
 //  Initialize everything!
@@ -261,7 +261,7 @@ void init_all(void)
       critical_error(CRITERR_MEM|1);
 
    ResInit();
-//���Where are these defined?
+//Â¥Â¥Â¥Where are these defined?
 //   restemp_buffer = ALTERNATE_BUFFER;
 //   restemp_buffer_size = ALTERNATE_BUFFER_SIZE;
 
@@ -448,10 +448,10 @@ void init_all(void)
    if ((_current_loop != SETUP_LOOP) && (_current_loop != CUTSCENE_LOOP))
    {
 
-//����� for now      object_data_load();
+//Â¥Â¥Â¥Â¥Â¥ for now      object_data_load();
       
-//���      gr_clear(0xFF);
-//���      gr_set_pal(0, 256, ppall);
+//Â¥Â¥Â¥      gr_clear(0xFF);
+//Â¥Â¥Â¥      gr_set_pal(0, 256, ppall);
    }
 
    // perhaps shouldnt do this if we are going to go into editor...
@@ -459,8 +459,8 @@ void init_all(void)
    if (_current_loop != EDIT_LOOP)
    {
 	   pause_for_input(pause_time);
-//���	   if (pal_fx_on)
-//���	      palfx_fade_down();
+//Â¥Â¥Â¥	   if (pal_fx_on)
+//Â¥Â¥Â¥	      palfx_fade_down();
    }
 
 	uiFlush();
@@ -589,7 +589,7 @@ errtype object_data_load(void)
    // Start up some subsystems
    init_newmfd();
 
-/*���
+/*Â¥Â¥Â¥
 //   strcpy(buf,"DATA\\");
    strcpy(buf,"");
    // NOTE: is there any other loop we start in which doesnt overwrite the map
@@ -613,7 +613,7 @@ errtype object_data_load(void)
    return(OK);
 }
 
-#ifdef DUMMY	///���� 
+#ifdef DUMMY	///Â¥Â¥Â¥Â¥ 
 
 errtype init_kb()
 {
@@ -635,7 +635,7 @@ errtype init_kb()
    return(OK);
 }
 
-#endif 	// ���� DUMMY
+#endif 	// Â¥Â¥Â¥Â¥ DUMMY
 
 errtype load_da_palette();
 errtype load_da_palette()
@@ -817,7 +817,7 @@ errtype init_load_resources()
 	return(OK);
 }
 
-#ifdef DUMMY //��� later
+#ifdef DUMMY //Â¥Â¥Â¥ later
 
 errtype init_debug()
 {
@@ -896,4 +896,4 @@ void byebyemessage(void)
    else
       lg_printf("Our system has been shocked!!!\b But rememeber to Salt The Fries\n");
 }
-#endif //��� DUMMY
+#endif //Â¥Â¥Â¥ DUMMY

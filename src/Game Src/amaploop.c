@@ -579,7 +579,7 @@ bool amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte )
 		edit_mapnote(amptr);													// start editing.
 	}
 	
-	else if (x>AMAP_RGT(grd_bm.w))									// If in the button region�
+	else if (x>AMAP_RGT(grd_bm.w))									// If in the button regionÃ
 	{
 		if (y<GET_BTN_TOP(7)-AMAP_BORDER)   					// If in one of the upper buttons (above pan)
 		{
