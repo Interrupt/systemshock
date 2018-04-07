@@ -279,7 +279,7 @@ typedef ushort fixang;
 // For Mac version: The PowerPC version uses two assembly language routines
 // to do the multiply and divide.
 #if defined(powerc) || defined(__powerc)
-
+#ifdef __cplusplus
 extern "C"
 {
 fix fix_mul_asm(fix a, fix b);
@@ -292,6 +292,8 @@ fix fix_mul_div_asm (fix m0, fix m1, fix d);
 #define fast_fix_mul_int fast_fix_mul_int_asm
 #define fix_div fix_div_asm
 #define fix_mul_div fix_mul_div_asm
+#endif
+
 
 #else
 
@@ -419,7 +421,7 @@ typedef long fix24;
 // For Mac version: The PowerPC version uses an assembly language routine
 // to do the multiply.
 #if defined(powerc) || defined(__powerc)
-
+#ifdef __cplusplus
 extern "C"
 {
 fix24 fix24_mul_asm(fix24 a, fix24 b);
@@ -427,7 +429,7 @@ fix24 fix24_div_asm(fix24 a, fix24 b);
 }
 #define fix24_mul fix24_mul_asm
 #define fix24_div fix24_div_asm
-
+#endif
 #else
 
 fix24 asm fix24_mul(fix24 a, fix24 b);
@@ -478,6 +480,7 @@ struct AWide
 typedef struct AWide AWide;
 
 #if defined(powerc) || defined(__powerc)
+#ifdef __cplusplus
 extern "C"
 {
 extern fix fix_mul_3_3_3_asm (fix a, fix b);
@@ -495,7 +498,7 @@ extern long AsmWideDivide(long hi, long lo, long den);
 #define AsmWideNegate(target) (AWide *) WideNegate((wide *) target)
 #define AsmWideBitShift(target,count) (AWide *) WideBitShift((wide *) target,count)
 }
-
+#endif
 #else
 extern asm AWide *AsmWideAdd(AWide *target, AWide *source);
 extern asm AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target);

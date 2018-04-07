@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // main test code for 2d library (remove if not building test app)
 
 #include <2d.h>
-#include <2dRes.h>
+#include <2dres.h>
 #include <fix.h>
 #include <FixMath.h>
 #include <InitMac.h>

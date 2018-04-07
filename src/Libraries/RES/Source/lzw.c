@@ -739,11 +739,13 @@ void LzwFpDestPut(uchar byte)
 
 //#pragma off(unreferenced);
 
-void LzwNullDestCtrl(long /*destLoc*/, LzwCtrl /*ctrl*/)
+
+// FIXME Cleanup?
+void LzwNullDestCtrl(long destLoc, LzwCtrl ctrl)
 {
 }
 
-void LzwNullDestPut(uchar /*byte*/)
+void LzwNullDestPut(uchar byte)
 {
 }
 

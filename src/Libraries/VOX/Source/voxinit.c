@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
+#include <stdlib.h>
 #include "lg.h"
 #include "vox.h"
 

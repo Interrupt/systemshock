@@ -28,10 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *
  */
- //---------------------------------------------------
- //  For Mac version:  Uses malloc and free.
 
 //#include <io.h>
+#include <stdlib.h>
 #include <string.h>
 #include "pqueue.h"
 
@@ -148,7 +147,7 @@ errtype pqueue_init(PQueue* q, int size, int elemsize, QueueCompare comp, bool g
       	swap_buffer = malloc(elemsize);
       }
       swap_bufsize = elemsize;
-      if (MemError()) return ERR_NOMEM;
+      if (swap_buffer == NULL) return ERR_NOMEM;
    }
    q->size = size;
    q->fullness = 0;
@@ -165,10 +164,11 @@ errtype pqueue_insert(PQueue* q, void* elem)
       return ERR_DOVERFLOW;
    while (q->fullness >= q->size)
    {
-      Ptr newp = malloc(q->elemsize * q->size*2);
-      if (MemError())
+      char* newp = malloc(q->elemsize * q->size*2);
+      if (newp == NULL)
       	return ERR_NOMEM;
-      BlockMoveData(q->vec, newp, q->size * q->elemsize);
+      // FIXME check is memmove eq BlockMoveData 
+      memmove(q->vec, newp, q->size * q->elemsize);
       free(q->vec);
       q->vec = newp;
       q->size*=2;

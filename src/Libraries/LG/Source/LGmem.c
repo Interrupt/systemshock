@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Optimized memset, memcpy, and memmove routines, for 68K and PowerPC
 // MLA - 3/20/95
 
-#include "LG.h"
+#include "lg.h"
 
 // some handy 68000 assembly defines
 #define blo	bcs		// branch low (unsigned <)

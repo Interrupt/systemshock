@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // main test code for 3d library (remove if not building test app)
 
-#include <fixmath.h>
+//#include <fixmath.h>
 #include <string.h>
 #include <stdlib.h>
 #include "lg.h"

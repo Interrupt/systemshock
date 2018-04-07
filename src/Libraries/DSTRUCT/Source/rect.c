@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * $Header: n:/project/lib/src/dstruct/RCS/rect.c 1.3 1994/04/05 04:04:13 dc Exp $
 * $log$
 */
-
+#include <stdbool.h>
 #include "rect.h"
 
 //	--------------------------------------------------------
@@ -65,14 +65,14 @@ int RectTestSect(LGRect *pr1, LGRect *pr2)
 int RectSect(LGRect *pr1, LGRect *pr2, LGRect *prsect)
 {
 	if (!RECT_TEST_SECT(pr1, pr2))
-		return(FALSE);
+		return(false);
 
 	prsect->ul.x = pr1->ul.x > pr2->ul.x ? pr1->ul.x : pr2->ul.x;
 	prsect->lr.x = pr1->lr.x < pr2->lr.x ? pr1->lr.x : pr2->lr.x;
 	prsect->ul.y = pr1->ul.y > pr2->ul.y ? pr1->ul.y : pr2->ul.y;
 	prsect->lr.y = pr1->lr.y < pr2->lr.y ? pr1->lr.y : pr2->lr.y;
 
-	return(TRUE);
+	return(true);
 }
 
 //	---------------------------------------------------------

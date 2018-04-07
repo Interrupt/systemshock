@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * $log$
 */
 
+#include <stdlib.h>
 #include <string.h>
 #include "lg.h"
 #include "llist.h"
