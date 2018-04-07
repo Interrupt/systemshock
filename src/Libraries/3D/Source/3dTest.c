@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <fixmath.h>
 #include <string.h>
-#include <StdLib.h>
+#include <stdlib.h>
 #include "lg.h"
 #include "fix.h"
 #include "2d.h"

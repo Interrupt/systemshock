@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // main test code for 2d library (remove if not building test app)
 
-#include <StdLib.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "InitMac.h"

@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <fix.h>
 #include <FixMath.h>
 #include <InitMac.h>
-#include <StdLib.h>
+#include <stdlib.h>
 #include "lg.h"
 #include "ShockBitmap.h"
 #include <string.h>
