@@ -25,7 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //==============================================================================
 
 
-#include <Timer.h>
+#include <Carbon/Carbon.h>
+//#include <Timer.h>
 
 //-----------------
 //  TYPES & DEFINES
@@ -37,7 +38,7 @@ typedef struct
 }
 CalcTuneTask, *CalcTuneTaskPtr;
 
-typedef struct mlimbs_request_info
+typedef struct
 {
 	int pieceID;						//  Indexes an array of XMIDI_info structs.  Specifies which piece to play.
 	int priority;						// Priority of this request.
@@ -49,7 +50,7 @@ typedef struct mlimbs_request_info
 	char	crossfade;					// 0 - don't crossfade,  <0 - crossfade out, >0 - crossfade in.
 	char ramp;							// 0 - don't ramp,       <0 - ramp out       >0 - ramp in
  	uchar pad;
-};
+} mlimbs_request_info;
 
 #define MLIMBS_MAX_SEQUENCES   	8
 #define MLIMBS_MAX_CHANNELS    		8
@@ -69,21 +70,21 @@ extern bool		mlimbs_semaphore;
 
 extern Handle			gHeaderHdl, gTuneHdl, gOfsHdl;		// Holds the tune-related data for the current theme file.
 extern long				*gOffsets;									// Array of offsets for the beginning of each tune.
-extern TunePlayer	gPlayer;									// The Tune Player.
+//extern TunePlayer	gPlayer;									// The Tune Player.
 extern Boolean		gTuneDone;									// True when a sequence has finished playing (set by CB proc).
 extern Boolean		gReadyToQueue;							// True when it's time to queue up a new sequence.
 
-extern TuneCallBackUPP	gTuneCBProc;						// The tune's callback proc.
-extern CalcTuneTask		gCalcTuneTask;					// Global to hold task info.
-extern TimerUPP			gCalcTuneProcPtr;				// UPP for the 6-second time manager tune determiner task.
+//extern TuneCallBackUPP	gTuneCBProc;						// The tune's callback proc.
+//extern CalcTuneTask		gCalcTuneTask;					// Global to hold task info.
+//extern TimerUPP			gCalcTuneProcPtr;				// UPP for the 6-second time manager tune determiner task.
 
 
 //-----------------
 //  PROTOTYPES
 //-----------------
-int	MacTuneInit(void);
+int	    MacTuneInit(void);
 void	MacTuneShutdown(void);
-int	MacTuneLoadTheme(FSSpec *themeSpec, int themeID);
+int	    MacTuneLoadTheme(FSSpec *themeSpec, int themeID);
 void	MacTuneStartCurrentTheme(void);
 void	MacTuneKillCurrentTheme(void);
 void	MacTunePurgeCurrentTheme(void);
