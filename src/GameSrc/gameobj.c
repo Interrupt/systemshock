@@ -84,7 +84,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // should get this into headers
 extern grs_bitmap *get_text_bitmap_obj(ObjID cobjid, char dest_type, char *scale);
-extern Ref ref_from_critter_data(ObjID oid, int triple, ubyte posture, ubyte frame, ubyte view);
+//extern Ref ref_from_critter_data(ObjID oid, int triple, ubyte posture, ubyte frame, ubyte view);
 
 extern int     fr_n_3d_models;
 
@@ -291,7 +291,7 @@ void gen_seed_vec(g3s_vector *gpt_vec, int seed, int scale, int deviant)
    gpt_vec->gZ+=rand()&deviant;
 }
 
-void do_xplodamatron(int frame, int severity, int seed, int col1, int )
+void do_xplodamatron(int frame, int severity, int seed, int col1, int col2)
 {
    g3s_phandle xplo_pts[3];
    g3s_vector  xplo_vec;
@@ -315,7 +315,7 @@ void do_xplodamatron(int frame, int severity, int seed, int col1, int )
 }
 
 // should be deviant some day
-void gen_tetra(g3s_phandle *xplo_pts, fix size, int , int color)
+void gen_tetra(g3s_phandle *xplo_pts, fix size, int ii, int color)
 {
    int i;
    g3s_vector  xplo_vec;
@@ -485,7 +485,7 @@ void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar 
 
 // note this always has show_obj's p for p and _fdt_dist for dist.. perhaps shouldnt pass them
 //#pragma disable_message(202)
-void _fr_draw_bitmap(grs_bitmap *draw_bm, int /*dist*/, int sc, int anch_x, int anch_y)
+void _fr_draw_bitmap(grs_bitmap *draw_bm, int dist, int sc, int anch_x, int anch_y)
 {
 #ifdef SMOOTH_BITMAPS
    grs_canvas tmp_can;

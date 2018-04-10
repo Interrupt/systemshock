@@ -45,7 +45,7 @@ void amap_start(void);
 void amap_exit(void);
 
 
-uchar amap_mouse_handler(uiEvent *ev, LGRegion *, void *)
+uchar amap_mouse_handler(uiEvent *ev, LGRegion *reg, void *v)
 {
    uiMouseEvent *mev = (uiMouseEvent *)ev;
    if (mev->action & ~MOUSE_MOTION)
