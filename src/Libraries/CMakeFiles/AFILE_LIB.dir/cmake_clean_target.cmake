@@ -1,3 +1,0 @@
-file(REMOVE_RECURSE
-  "libAFILE_LIB.a"
-)

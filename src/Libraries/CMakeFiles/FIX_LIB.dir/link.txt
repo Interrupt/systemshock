@@ -1,2 +1,0 @@
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc libFIX_LIB.a  CMakeFiles/FIX_LIB.dir/FIX/Source/atofix.c.o CMakeFiles/FIX_LIB.dir/FIX/Source/f_exp.c.o CMakeFiles/FIX_LIB.dir/FIX/Source/fix24.c.o CMakeFiles/FIX_LIB.dir/FIX/Source/fix.c.o CMakeFiles/FIX_LIB.dir/FIX/Source/fix_pow.c.o CMakeFiles/FIX_LIB.dir/FIX/Source/fixsprnt.c.o CMakeFiles/FIX_LIB.dir/FIX/Source/fix_sqrt.c.o CMakeFiles/FIX_LIB.dir/FIX/Source/MakeTables.c.o
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib libFIX_LIB.a
