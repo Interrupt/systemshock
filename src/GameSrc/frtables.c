@@ -196,14 +196,14 @@ TilesToWalls tile_walls[FRTILEWALLCNT]=
 #define flgP  (FRFLRFLG_USEPR)
 #define flgNT (FRFLRFLG_NOTOP)
 
-#define fF3(p1,p2,p3)          {0,3,0x##p1##,0x##p2##,0x##p3##,0,0,0}
-#define fF4(p1,p2,p3,p4)       {0,4,0x##p1##,0x##p2##,0x##p3##,0x##p4##,0,0}
-#define fT4(p1,p2,p3,p4)       {flgNT,4,0x##p1##,0x##p2##,0x##p3##,0x##p4##,0,0}
+#define fF3(p1,p2,p3)          {0,3,0x##p1,0x##p2,0x##p3,0,0,0}
+#define fF4(p1,p2,p3,p4)       {0,4,0x##p1,0x##p2,0x##p3,0x##p4,0,0}
+#define fT4(p1,p2,p3,p4)       {flgNT,4,0x##p1,0x##p2,0x##p3,0x##p4,0,0}
 
-#define fS3cc(pl,p2,p3,p4,p5)  {flg2|flgP,3,zPa|(0x##p2##),zPa|(0x##p3##),0x##pl##,zPa|(0x##p4##),zPa|(0x##p5##),0x##pl##}
-#define fS3cv(ph,p2,p3,p4,p5)  {flg2|flgP,3,0x##p2##,0x##p3##,zPa|(0x##ph##),0x##p4##,0x##p5##,zPa|(0x##ph##)}
-#define fS4(p1,p2,p3,p4)       {flgP,4,zPa|(0x##p1##),zPa|(0x##p2##),0x##p3##,0x##p4##,0,0}
-#define fSspl(pla,pha,pm1,pm2) {flg2|flgP,3,0x##pla##,0x##pm1##,0x##pm2##,zPa|(0x##pha##),zPa|(0x##pm2##),zPa|(0x##pm1##)}
+#define fS3cc(pl,p2,p3,p4,p5)  {flg2|flgP,3,zPa|(0x##p2),zPa|(0x##p3),0x##pl,zPa|(0x##p4),zPa|(0x##p5),0x##pl}
+#define fS3cv(ph,p2,p3,p4,p5)  {flg2|flgP,3,0x##p2,0x##p3,zPa|(0x##ph),0x##p4,0x##p5,zPa|(0x##ph)}
+#define fS4(p1,p2,p3,p4)       {flgP,4,zPa|(0x##p1),zPa|(0x##p2),0x##p3,0x##p4,0,0}
+#define fSspl(pla,pha,pm1,pm2) {flg2|flgP,3,0x##pla,0x##pm1,0x##pm2,zPa|(0x##pha),zPa|(0x##pm2),zPa|(0x##pm1)}
 
 TilesToFloors tile_floors[FRTILEFLOORCNT]=
 {

@@ -260,8 +260,8 @@ grs_bitmap *fr_default_tmap(void)            {return &tmap_bm[fr_default_idx()%F
 #else
 grs_bitmap *fr_default_tmap(void)            {return NULL;}
 #endif
-uchar        fr_default_block(void *, uchar *, int *) {return FALSE;}
-void        fr_default_clip_start(uchar ) {}
+uchar        fr_default_block(void * v, uchar * u, int * i) {return FALSE;}
+void        fr_default_clip_start(uchar u) {}
 void        fr_default_rend_start(void)      {}
 
 void fr_set_default_ptrs(void)

@@ -89,7 +89,7 @@ int fr_pts_freemem(void)
 }
 
 //#pragma disable_message(202)
-int fr_pts_resize(int , int )					// x, y
+int fr_pts_resize(int x, int y)					// x, y
 {
 #ifdef MAP_RESIZING
    int i;
