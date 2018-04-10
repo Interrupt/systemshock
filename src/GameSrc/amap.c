@@ -674,9 +674,9 @@ void amap_draw(curAMap *amptr, int expose)
                {              // bio, rad, both
                   static uchar col_map[]={YELLOW_8_BASE+6,RED_8_BASE+6,ORANGE_8_BASE+5};
                   int hv=0;
-                  /*if (level_gamedata.hazard.zerogbio==0)
+                  if (level_gamedata.hazard.zerogbio==0)
 	                  if (me_hazard_bio_x(curmp)) hv=1;
-                  if (me_hazard_rad_x(curmp)) hv|=2;*/
+                  if (me_hazard_rad_x(curmp)) hv|=2;
                   if (hv)
                      tile_draw(xm,ym,(drw&DRAW_MASK_SEEN)?mt:TILE_OPEN,tsize,1,col_map[hv-1]);
                }

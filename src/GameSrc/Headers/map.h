@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MAP_H
 #define __MAP_H
 
-#include "lg.h"
-
 /*
  * 
  *
@@ -225,8 +223,8 @@ typedef struct {
    Schedule sched[NUM_MAP_SCHEDULES];
 } FullMap;
 
-#define _me_normal_x(me_ptr,strname,maskname) ((me_ptr)->##strname##&(##maskname##_MASK))
-#define _me_normal_n(me_ptr,strname,maskname) (_me_normal_x(me_ptr,strname,maskname)>>##maskname##_SHF)
+#define _me_normal_x(me_ptr,strname,maskname) me_ptr->strname&maskname##_MASK
+#define _me_normal_n(me_ptr,strname,maskname) _me_normal_x(me_ptr,strname,maskname)>>maskname##_SHF
 
 #define _me_tiletype(me_ptr)             ((me_ptr)->tiletype)
 
