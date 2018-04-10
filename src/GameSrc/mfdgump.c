@@ -67,7 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CONTENTS_HGT ((MFD_VIEW_HGT - FIRST_ITEM_Y - 5)/2)
 extern char container_extract(ObjID *pidlist, int d1, int d2);
 extern void container_stuff(ObjID *pidlist, int numobjs, int* d1, int* d2);
-extern bool is_container(ObjID id, int** d1, int** d2);
+extern uchar is_container(ObjID id, int** d1, int** d2);
 
 #define LAST_INPUT_ROW (player_struct.mfd_func_data[MFD_GUMP_FUNC][0])
 #define LAST_DOUBLE    (player_struct.mfd_func_data[MFD_GUMP_FUNC][1])
@@ -85,9 +85,9 @@ uchar gump_num_objs;
 // -----------
 void mfd_gump_expose(MFD* mfd, ubyte control);
 void gump_clear(void);
-bool gump_pickup(byte row);
-bool gump_get_useful(void);
-bool mfd_gump_handler(MFD* m, uiEvent* uie);
+uchar gump_pickup(byte row);
+uchar gump_get_useful(void);
+uchar mfd_gump_handler(MFD* m, uiEvent* uie);
 
 
 // ---------------
@@ -105,12 +105,12 @@ bool mfd_gump_handler(MFD* m, uiEvent* uie);
    being pulled off the screen to make room for a different func.
 */
 
-extern void check_panel_ref(bool punt);
+extern void check_panel_ref(uchar punt);
 
 
 void mfd_gump_expose(MFD* mfd, ubyte control)
 {
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    if (control == 0)  // MFD is drawing stuff
    {
       panel_ref_unexpose(mfd->id,MFD_GUMP_FUNC);
@@ -118,7 +118,7 @@ void mfd_gump_expose(MFD* mfd, ubyte control)
    }
    if (control & MFD_EXPOSE) // Time to draw stuff
    {
-      extern void mfd_item_micro_expose(bool full,int triple);
+      extern void mfd_item_micro_expose(uchar full,int triple);
       ObjID id = player_struct.panel_ref;
       uchar i;
 
@@ -198,11 +198,11 @@ void gump_clear(void)
       gump_idlist[i]=OBJ_NULL;
 }
 
-bool gump_pickup(byte row)
+uchar gump_pickup(byte row)
 {
    int *d1, *d2;
    ObjID cont = player_struct.panel_ref;
-   extern void check_panel_ref(bool puntme);
+   extern void check_panel_ref(uchar puntme);
 
 //KLC   mouse_unconstrain();
    if (row < 0 || row >= gump_num_objs || gump_idlist[row] == OBJ_NULL) return FALSE;
@@ -223,11 +223,11 @@ bool gump_pickup(byte row)
    return TRUE;
 }
 
-bool gump_get_useful(void)
+uchar gump_get_useful(void)
 {
    int row;
-   bool useless;
-   bool obj_is_useless(ObjID oid);
+   uchar useless;
+   uchar obj_is_useless(ObjID oid);
 
    for(useless=0;useless<=1;useless++) {
       for(row=0;row<gump_num_objs;row++) {
@@ -239,7 +239,7 @@ bool gump_get_useful(void)
    return FALSE;
 }
 
-bool mfd_gump_handler(MFD* m, uiEvent* uie)
+uchar mfd_gump_handler(MFD* m, uiEvent* uie)
 {
    uiMouseEvent	*e = (uiMouseEvent *)uie;
    LGPoint pos = e->pos;

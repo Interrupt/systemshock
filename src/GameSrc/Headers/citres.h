@@ -27,6 +27,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include "lg.h"
+#include "rect.h"
+#include "cursors.h"
+#include "res.h"
+
 // Includes
 
 // Defines
@@ -38,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 grs_bitmap *lock_bitmap_from_ref_anchor(Ref r, LGRect *anchor);
 #define get_bitmap_from_ref(r) get_bitmap_from_ref_anchor(r,NULL)
 grs_bitmap *get_bitmap_from_ref_anchor(Ref r, LGRect *anchor);
-errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, bool transp, LGRect *anchor, uchar *p);
+errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar transp, LGRect *anchor, uchar *p);
 
 // loads in a bitmap or a bitmap cursor, malloc'ing the bits 
 // field. 
@@ -46,9 +51,9 @@ errtype simple_load_res_bitmap(grs_bitmap* bmp, Ref rid);
 errtype simple_load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid);
 
 // loads a bitmap, specifying whether to malloc the bits or not.
-errtype load_res_bitmap(grs_bitmap* bmp, Ref rid, bool alloc); 
-errtype load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, bool alloc);
-errtype load_hires_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, bool alloc);
+errtype load_res_bitmap(grs_bitmap* bmp, Ref rid, uchar alloc); 
+errtype load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar alloc);
+errtype load_hires_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar alloc);
 
 errtype extract_temp_res_bitmap(grs_bitmap* bmp, Ref rid); 
 

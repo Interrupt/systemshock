@@ -25,6 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // yo, word up
 errtype mfd_games_init(MFD_Func* f);
-bool mfd_games_handler(MFD *m, uiEvent *e);
+uchar mfd_games_handler(MFD *m, uiEvent *e);
 void mfd_games_expose(MFD *m, ubyte control);
 

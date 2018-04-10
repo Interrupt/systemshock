@@ -77,11 +77,11 @@ extern void    set_dmg_percentage(int which, ubyte percent);
 //----------------
 //  Internal Prototypes
 //----------------
-int random_bell_modifier(bool attack_on_player);
-int randomize_damage(int damage,bool attack_on_player);
+int random_bell_modifier(uchar attack_on_player);
+int randomize_damage(int damage,uchar attack_on_player);
 int armor_absorption(int raw_damage, int obj_triple, ubyte penetrate);
 int shield_absorb_damage(int damage, ubyte dtype, byte shield_absorb, ubyte shield_threshold);
-bool kill_player(void);
+uchar kill_player(void);
 void regenerate_player(void);
 void player_dies();
 ubyte damage_player(int damage, ubyte dtype, ubyte flags);
@@ -96,8 +96,8 @@ void critter_hit_effect(ObjID target, ubyte effect,Combat_Pt location, int damag
 void destroy_destroyed_objects(void)
 {
    int      i, j;
-   bool     change_target = FALSE;
-   bool     dupe;
+   uchar     change_target = FALSE;
+   uchar     dupe;
    ObjID    id;
 
    if (destroyed_obj_count != 0)
@@ -170,10 +170,10 @@ void destroy_destroyed_objects(void)
 // is_obj_destroyed()
 //
 
-bool is_obj_destroyed(ObjID id)
+uchar is_obj_destroyed(ObjID id)
 {
    int   i;
-   bool  found = FALSE;
+   uchar  found = FALSE;
 
    for (i=0; i<destroyed_obj_count;i++)
    {
@@ -190,7 +190,7 @@ bool is_obj_destroyed(ObjID id)
 // random_bell_modifier()
 //
 
-int random_bell_modifier(bool attack_on_player)
+int random_bell_modifier(uchar attack_on_player)
 {
    int   rtotal;
    int   i;
@@ -241,7 +241,7 @@ int random_bell_modifier(bool attack_on_player)
 // randomize_damage()
 //
 
-int randomize_damage(int damage,bool attack_on_player)
+int randomize_damage(int damage,uchar attack_on_player)
 {
    int        dtotal;
    ubyte      iterations;
@@ -345,9 +345,9 @@ short fr_sfx_time;
 // returns damage to the player after shields
 
 short shield_absorb_perc = 0;
-bool shield_used;
+uchar shield_used;
 
-int shield_absorb_damage(int damage, ubyte, byte shield_absorb, ubyte shield_threshold)
+int shield_absorb_damage(int damage, ubyte ub, byte shield_absorb, ubyte shield_threshold)
 {
    ubyte          shield_drain=0;
 
@@ -413,19 +413,19 @@ int shield_absorb_damage(int damage, ubyte, byte shield_absorb, ubyte shield_thr
 }
 
 
-bool alternate_death = FALSE;
+uchar alternate_death = FALSE;
 extern Boolean	gPlayingGame;
 extern Boolean	gDeadPlayerQuit;
 
 // kill_player()
 // kills the player, checks for traps and stuff, so on
 // returns true if player is really dead dead dead
-bool kill_player(void)
+uchar kill_player(void)
 {
    ObjSpecID osid;
-   bool quick_death = TRUE;
-   bool dummy;
-   extern bool clear_player_data;
+   uchar quick_death = TRUE;
+   uchar dummy;
+   extern uchar clear_player_data;
 
    // Look for a player death trigger.  If so, do it.
    // If not, play appropriate dying cutscene.
@@ -545,7 +545,7 @@ ubyte damage_player(int damage, ubyte dtype, ubyte flags)
 {
    ubyte *cur_hp;
    short rawval;
-   bool dead = 0, damage_dealt=FALSE;
+   uchar dead = 0, damage_dealt=FALSE;
    char dlev, dmg_type=DMG_BLOOD;
 
    if (secret_render_fx > 0)
@@ -676,8 +676,8 @@ ubyte damage_object(ObjID target_id, int damage, int dtype, ubyte flags)
 {
    int   obclass = objs[target_id].obclass;
    int   dead = 0;
-   bool  tranq=FALSE;
-   bool  stun= FALSE;
+   uchar  tranq=FALSE;
+   uchar  stun= FALSE;
    short target_hp = ObjProps[OPNUM(target_id)].hit_points;
 
    // If we've already been destroyed, or don't care, thendon't bother us.
@@ -780,7 +780,7 @@ ubyte damage_object(ObjID target_id, int damage, int dtype, ubyte flags)
 // and applies it to the object if it is vulnerable to the type.
 // returns whether the object was destroyed.
 
-bool simple_damage_object(ObjID target, int damage, ubyte dtype, ubyte flags)
+uchar simple_damage_object(ObjID target, int damage, ubyte dtype, ubyte flags)
 {
    if (object_affect(target,1 << (dtype-1) ))
       return damage_object(target,damage,dtype,flags);
@@ -876,7 +876,7 @@ void slow_proj_hit(ObjID id, ObjID victim)
 }
 
 // returns whether it is being killed...
-bool special_terrain_hit(ObjID cobjid)
+uchar special_terrain_hit(ObjID cobjid)
 {
    if (is_obj_destroyed(cobjid))
       return TRUE;
@@ -919,9 +919,9 @@ bool special_terrain_hit(ObjID cobjid)
 
 // HEY COMMENTED OUT PROCEDURE
 #ifdef CALLS_WERENT_SLOW
-bool terrain_damage_object(physics_handle ph, fix raw_damage)
+uchar terrain_damage_object(physics_handle ph, fix raw_damage)
 {
-   bool dead = FALSE;
+   uchar dead = FALSE;
    ObjID target = physics_handle_to_id(ph);
 
    if (ObjProps[OPNUM(cobjid)].flags & SPCL_TERR_DMG)
@@ -1179,8 +1179,8 @@ ubyte player_attack_object(ObjID target, int wpn_triple, int power_level, Combat
    ubyte special_effect = 0;
    ubyte flags = 0;
    ObjID effect_id = OBJ_NULL;
-   bool  dead = FALSE;
-   bool  new_loc = FALSE;
+   uchar  dead = FALSE;
+   uchar  new_loc = FALSE;
    ObjLoc            loc;
    ubyte effect_class = (objs[target].obclass == CLASS_CRITTER) ? CritterProps[CPNUM(target)].hit_effect : NON_CRITTER_EFFECT;
 

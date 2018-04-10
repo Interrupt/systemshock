@@ -85,19 +85,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // INTERNAL PROTOTYPES
 // --------------------
-bool safety_net_wont_you_back_me_up(ObjID oid);
+uchar safety_net_wont_you_back_me_up(ObjID oid);
 void add_edms_delete(int ph);
 void edms_delete_go(void);
 void get_phys_state(int ph, State *new_state, ObjID id);
 void physics_zero_all_controls(void);
 errtype compare_locs(void);
-void physics_set_relax(int axis, bool relax);
+void physics_set_relax(int axis, uchar relax);
 void relax_axis(int axis);
 errtype collide_objects(ObjID collision, ObjID victim, int bad);
 void terrain_object_collide(physics_handle src, ObjID target);
 errtype run_cspace_collisions(ObjID obj, ObjID exclude, ObjID exclude2);
 void state_to_objloc(State *s, ObjLoc *l);
-bool get_phys_info(int ph, fix *list, int cnt);
+uchar get_phys_info(int ph, fix *list, int cnt);
 fix ID2radius(ObjID id);
 
 
@@ -163,12 +163,12 @@ uchar safety_fail_count=0;
 #define TOGGLEABLE_SNET
 #endif
 
-bool safety_net_on = TRUE;
+uchar safety_net_on = TRUE;
 short curr_edms_del = 0;
 short edms_delete_queue[MAX_EDMS_DELETE_OBJS];
 
 
-bool safety_net_wont_you_back_me_up(ObjID oid)
+uchar safety_net_wont_you_back_me_up(ObjID oid)
 { 
    obj_move_to(oid, &objs[oid].loc, TRUE);
    if (safety_fail_oid==oid)
@@ -188,7 +188,7 @@ bool safety_net_wont_you_back_me_up(ObjID oid)
 void add_edms_delete(int ph)
 {
    int i=0;
-   bool bad = FALSE;
+   uchar bad = FALSE;
    extern char *get_object_lookname(ObjID id,char use_string[], int sz);
 
    for (i=0; i < curr_edms_del; i++)
@@ -279,8 +279,8 @@ errtype physics_get_one_control(int bank, int num, byte* val)
 int old_x = -1, old_y = -1, old_lev = -1;
 char old_bits = 0;
 extern uchar decon_count;
-extern bool in_deconst;
-extern bool in_peril;
+extern uchar in_deconst;
+extern uchar in_peril;
 
 #define TUNNEL_CONTROL_MAX          fix_make(0x8, 0)
 #define MATCHBOX_SPEED              fix_make(0x3F, 0)
@@ -337,9 +337,9 @@ errtype compare_locs(void)
    return(OK);
 }
 
-bool control_relax[DEGREES_OF_FREEDOM];
+uchar control_relax[DEGREES_OF_FREEDOM];
 
-void physics_set_relax(int axis, bool relax)
+void physics_set_relax(int axis, uchar relax)
 {
    control_relax[axis] = relax;
 }
@@ -416,7 +416,7 @@ errtype run_cspace_collisions(ObjID obj, ObjID exclude, ObjID exclude2)
 #define SKATE_ALPHA_CUTOFF (fix_make(8,0))
 #define MAX_BOOSTER_ALPHA (fix_make(40,0))
 
-extern void physics_set_relax(int axis,bool relax);
+extern void physics_set_relax(int axis,uchar relax);
 
 // Takes a physics state and converts it into an Objloc
 // externed in objsim.c
@@ -446,17 +446,17 @@ errtype physics_run(void)
    extern int avail_memory(int debug_src);
    extern errtype TileMapUpdateCameras(struct _tilemap* );
 
-   bool update = FALSE;
+   uchar update = FALSE;
    int deltat = player_struct.deltat;
    fix plr_y, plr_z, time_diff;
    fix plr_alpha;
    State new_state;
-   bool some_move = FALSE;
+   uchar some_move = FALSE;
    extern int fire_kickback;
-   extern bool hack_takeover;
+   extern uchar hack_takeover;
    static long kickback_time=0;        // i bet this static will someday bite our butts, like save/rest mid kickback?
 #ifdef EDMS_SAFETY_NET
-   bool allow_move=TRUE;
+   uchar allow_move=TRUE;
 #endif
 
    // Here we are computing the values of the player's controls
@@ -600,7 +600,7 @@ errtype physics_run(void)
       if (player_struct.controls[CONTROL_ZVEL] > 0)
       {
          extern void activate_jumpjets(fix* x,fix* y,fix* z);
-         extern bool jumpjets_active;
+         extern uchar jumpjets_active;
 
          player_set_posture(POSTURE_STAND);
          plr_z = fix_make(player_struct.controls[CONTROL_ZVEL],0);
@@ -609,7 +609,7 @@ errtype physics_run(void)
       }
       else
       {
-         extern bool jumpjets_active;
+         extern uchar jumpjets_active;
          plr_z     = fix_make(player_struct.controls[CONTROL_ZVEL],0);  /*  /3/damp; */
          jumpjets_active = FALSE;
       }
@@ -685,7 +685,7 @@ errtype physics_run(void)
                ubyte new_head,new_pitch;//, new_bank;
                short new_deltah, new_deltap;
                State cyber_state;
-               extern bool new_cyber_orient;
+               extern uchar new_cyber_orient;
 
                get_phys_state(objs[PLAYER_OBJ].info.ph, &cyber_state, PLAYER_OBJ);
 
@@ -855,7 +855,7 @@ typedef fix pt3d[3];
 }
 
 
-bool vec_equal(fix* v1,fix *v2)    
+uchar vec_equal(fix* v1,fix *v2)    
 {
    if (*(v1++) == *(v2++) && *(v1++) == *(v2++) && *(v1++) == *(v2++))
       return TRUE;
@@ -1256,8 +1256,8 @@ typedef fix pt3d[3];
 
 
 #pragma disable_message(202)
-bool FF_terrain( fix X, fix Y, fix Z, bool fast, void* TFF )  { return(TRUE); }
-bool FF_raycast (fix x, fix y, fix z, fix vec[3], fix range, fix where_hit[3], terrain_ff *tff) { return (TRUE);}
+uchar FF_terrain( fix X, fix Y, fix Z, uchar fast, void* TFF )  { return(TRUE); }
+uchar FF_raycast (fix x, fix y, fix z, fix vec[3], fix range, fix where_hit[3], terrain_ff *tff) { return (TRUE);}
 #pragma disable_message(202)
 
 // ?????
@@ -1405,7 +1405,7 @@ fix ID2radius(ObjID id)
 #define THROW_RAYCAST_MASS  fix_make(0,0x2000)
 #define THROW_RAYCAST_SPEED fix_make(1,0)
 
-bool player_throw_object(ObjID proj_id,  int x, int y, int lastx, int lasty, fix vel) 
+uchar player_throw_object(ObjID proj_id,  int x, int y, int lastx, int lasty, fix vel) 
 {
    LGPoint pos = MakePoint(x,y);
    LGPoint lastpos = MakePoint(lastx,lasty);
@@ -1484,7 +1484,7 @@ bool player_throw_object(ObjID proj_id,  int x, int y, int lastx, int lasty, fix
    return TRUE;
  }
 
-bool get_phys_info(int ph, fix *list, int cnt)
+uchar get_phys_info(int ph, fix *list, int cnt)
 {
    ObjID id = physics_handle_id[ph];
    State new_state;
@@ -1551,7 +1551,7 @@ ubyte ice_damage_modifiers[] = { 10, 20, 40, 80};
 
 errtype collide_objects(ObjID collision, ObjID victim, int bad)
 {
-   bool destroy_me = TRUE;
+   uchar destroy_me = TRUE;
 
    if (objs[collision].obclass == CLASS_GRENADE)
    {
@@ -1565,7 +1565,7 @@ errtype collide_objects(ObjID collision, ObjID victim, int bad)
       ObjLoc   loc = objs[collision].loc;
       extern ObjID damage_sound_id;
       extern char damage_sound_fx;
-      bool special_proj = FALSE;
+      uchar special_proj = FALSE;
 
       // set that we've already collided this time
       if (objPhysicss[objs[collision].specID].p3.y)
@@ -1761,7 +1761,7 @@ void cit_autodestruct_callback(physics_handle)
 {
 }
 
-bool robot_antisocial = FALSE;
+uchar robot_antisocial = FALSE;
 
 
 // Build the model given a state and object ID, and assign appropriate

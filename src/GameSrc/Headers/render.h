@@ -51,24 +51,24 @@ errtype render_run(void);
 extern LGRect* rendrect;
 
 #ifdef __RENDER_SRC
-bool fr_texture           = TRUE;
-bool fr_txt_walls         = TRUE;
-bool fr_txt_floors        = TRUE;
-bool fr_txt_ceilings      = TRUE;
-bool fr_lights_out        = FALSE;
-bool fr_lighting          = TRUE;
-bool fr_play_lighting     = FALSE;
-bool fr_normal_lights     = TRUE;
+uchar fr_texture           = TRUE;
+uchar fr_txt_walls         = TRUE;
+uchar fr_txt_floors        = TRUE;
+uchar fr_txt_ceilings      = TRUE;
+uchar fr_lights_out        = FALSE;
+uchar fr_lighting          = TRUE;
+uchar fr_play_lighting     = FALSE;
+uchar fr_normal_lights     = TRUE;
 int  fr_detail_value      = 100;
 int  fr_drop[TM_SIZE_CNT] ={1,4,10};
 int  fr_view_radius       = 10;
 int  fr_clear_color       = 0;
-bool fr_show_tilecursor   = FALSE;
-bool fr_cont_tilecursor   = FALSE;
-bool fr_show_all          = TRUE;
+uchar fr_show_tilecursor   = FALSE;
+uchar fr_cont_tilecursor   = FALSE;
+uchar fr_show_all          = TRUE;
 int  fr_qscale_obj        = 2;
 int  fr_qscale_crit       = 2;
-bool fr_highlights        = FALSE;
+uchar fr_highlights        = FALSE;
 int  fr_normal_shf        = 2;
 int  fr_lite_rad1         = 0,
      fr_lite_base1        = 10,
@@ -79,20 +79,20 @@ fix  fr_lite_slope        = (-fix_make(2,0)+fix_make(0,0x5000)),
 int  fr_detail_master     = 3;         /* 0-3 master detail */
 int  fr_pseudo_spheres    = 0;
 #else
-extern bool fr_texture;
-extern bool fr_txt_walls;
-extern bool fr_txt_floors;
-extern bool fr_txt_ceilings;
-extern bool fr_lighting, fr_play_lighting, fr_lights_out, fr_normal_lights;
+extern uchar fr_texture;
+extern uchar fr_txt_walls;
+extern uchar fr_txt_floors;
+extern uchar fr_txt_ceilings;
+extern uchar fr_lighting, fr_play_lighting, fr_lights_out, fr_normal_lights;
 extern int  fr_detail_value;
 extern int  fr_drop[TM_SIZE_CNT];
-extern bool fr_view_radius;
-extern bool fr_clear_color;
-extern bool fr_show_tilecursor;
-extern bool fr_cont_tilecursor;
-extern bool fr_show_all;
+extern uchar fr_view_radius;
+extern uchar fr_clear_color;
+extern uchar fr_show_tilecursor;
+extern uchar fr_cont_tilecursor;
+extern uchar fr_show_all;
 extern int  fr_qscale_crit, fr_qscale_obj;
-extern bool fr_highlights;
+extern uchar fr_highlights;
 extern int  fr_lite_rad1, fr_lite_base1, fr_lite_rad2, fr_lite_base2;
 extern int  fr_normal_shf;
 extern fix  fr_lite_slope, fr_lite_yint;

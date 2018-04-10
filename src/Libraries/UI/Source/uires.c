@@ -29,15 +29,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Prototypes
 errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt,
-									bool tmp_mem, LGRect *anchor, uchar *p);
+									uchar tmp_mem, LGRect *anchor, uchar *p);
 
 struct _uirestempbuffer uiResTempBuffer;
 
-errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, bool tmp_mem, LGRect *anchor, uchar *p)
+errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar tmp_mem, LGRect *anchor, uchar *p)
 {
    Ref rid;
    FrameDesc *f;
-   bool alloced_fdesc = FALSE;
+   uchar alloced_fdesc = FALSE;
 //   extern int memcount;
 
    if(!RefIndexValid(rt,i)) {
@@ -80,12 +80,12 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
    return(OK);
 }
 
-errtype uiLoadRefBitmapCursor(LGCursor* c, grs_bitmap* bmp, Ref rid, bool alloc)
+errtype uiLoadRefBitmapCursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar alloc)
 {
    errtype retval = OK;  
    LGRect anchor;
 //   extern int memcount;
-   bool buffer_snag = FALSE;
+   uchar buffer_snag = FALSE;
 
    int numrefs = ResNumRefs(REFID(rid));
    int tsize = REFTABLESIZE(numrefs);

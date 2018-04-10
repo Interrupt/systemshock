@@ -62,12 +62,12 @@ extern struct _uirestempbuffer
 // Cursor* c: a pointer to a cursor struct to be filled in with cursor data
 // grs_bitmap* bmp: a pointer to a bitmap to be filled in with the cursor's bitmap
 // Ref rid: The ref of the bitmap to be loaded. 
-// bool alloc: if alloc is true, the bmp->bits will be set to a Malloc'd buffer
+// uchar alloc: if alloc is true, the bmp->bits will be set to a Malloc'd buffer
 //             for the bitmap's bits. 
 //             if alloc is false, then bmp->bits must already point to a memory
 //             buffer big enough to hold the bitmaps bits. 
 
-errtype uiLoadRefBitmapCursor(LGCursor* c, grs_bitmap* bmp, Ref rid, bool alloc);
+errtype uiLoadRefBitmapCursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar alloc);
 
 #endif // __UIRES_H
 

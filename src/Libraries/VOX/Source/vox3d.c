@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //void vmap_rgbg(fix x[4],fix y[4],fix dz[3],int near_ver,grs_bitmap *col,grs_bitmap *ht);
 //void vmap_poly(fix x[4],fix y[4],fix dz[3],int near_ver,grs_bitmap *col,grs_bitmap *ht);
-void vmap_dot(fix x0, fix y0, fix dxdu, fix dydu, fix dxdv, fix dydv, fix dxdz, fix dydz, int near_ver,vxs_vox *vx,int dotw,int doth,bool clip);
+void vmap_dot(fix x0, fix y0, fix dxdu, fix dydu, fix dxdv, fix dydv, fix dxdz, fix dydz, int near_ver,vxs_vox *vx,int dotw,int doth,uchar clip);
 
 // The four vertices of every face
 //static int faces[6][4] = { {0,1,5,4},{1,2,6,5},{2,3,7,6}
@@ -87,7 +87,7 @@ void vx_render(vxs_vox *vx)
    int psx,psy;
    fix maxdx;
    fix maxdy;
-   bool clip;
+   uchar clip;
    fix tx,ty,tz;
    fix min_z;
 

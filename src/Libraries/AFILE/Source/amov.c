@@ -63,7 +63,7 @@ typedef struct
 	MovieChunk *pcurrChunk;	// current chunk ptr
 	FILE *fpTemp;					// temp file for writing
 	uchar pal[768];         			// space for palette
-	bool newPal;            			// new pal flag
+	uchar newPal;            			// new pal flag
 } AmovInfo;
 
 //	Methods

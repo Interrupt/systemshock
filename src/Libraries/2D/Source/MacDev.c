@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lintab.h"
 #include "ShockBitmap.h"
 
+#include <Carbon/Carbon.h>
+
 // NOTE!
 //
 // MacDev (and some other 2d code) relies on the fact that several globals are setup

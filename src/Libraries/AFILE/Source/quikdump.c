@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void WriteChunk(ulong ctype, ulong length, long offset, char *indent);
 void MakeIndentString(char *str, int istack);
 
-bool QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr);
+uchar QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr);
 QT_ChunkInfo *QuikFindChunkInfo(QT_ChunkHdr *phdr);
 void QuikSkipChunk(FILE *fp, QT_ChunkHdr *phdr);
 
@@ -90,7 +90,7 @@ void main(int argc, char **argv)
 {
 	FILE *fp;
 	int iarg,istack;
-	bool badArgs,dumpChunks;
+	uchar badArgs,dumpChunks;
 	uchar *dbuff;
 	ulong dbuffLen;
 	QT_ChunkHdr chunkHdr;
@@ -209,7 +209,7 @@ void MakeIndentString(char *str, int istack)
 //
 //	QuikReadChunkHdr() reads in the next chunk header, returns TRUE if ok.
 
-bool QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr)
+uchar QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr)
 {
 	fread(phdr, sizeof(QT_ChunkHdr), 1, fp);
 

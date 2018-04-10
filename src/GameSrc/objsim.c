@@ -105,7 +105,7 @@ extern void instantiate_robot(int triple, Robot* new_robot);
 
 extern char container_extract(ObjID *pidlist, int d1, int d2);
 extern void container_stuff(ObjID *pidlist, int numobjs, int* d1, int* d2);
-extern bool is_container(ObjID id, int** d1, int** d2);
+extern uchar is_container(ObjID id, int** d1, int** d2);
 
 char clearwithFF = false;
 
@@ -114,11 +114,11 @@ cams player_cam;
 
 uchar cam_mode = OBJ_PLAYER_CAMERA;
 cams objmode_cam;
-bool  new_cyber_orient=TRUE;
-bool  ocp_settle_the_player=TRUE;
+uchar  new_cyber_orient=TRUE;
+uchar  ocp_settle_the_player=TRUE;
 
-bool properties_changed = FALSE;
-bool trigger_check = TRUE;
+uchar properties_changed = FALSE;
+uchar trigger_check = TRUE;
 ObjID physics_handle_id[MAX_OBJ];
 int physics_handle_max=-1;
 
@@ -126,18 +126,18 @@ int physics_handle_max=-1;
 errtype ObjClassInit(ObjID id, ObjSpecID specid, int subclass);
 errtype obj_set_secondary_properties();
 errtype do_ecology_triggers();
-errtype obj_physics_refresh(short x, short y, bool use_floor);
-grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, bool scroll, int scroll_index);
+errtype obj_physics_refresh(short x, short y, uchar use_floor);
+grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, uchar scroll, int scroll_index);
 grs_bitmap *get_text_bitmap_obj(ObjID cobjid, char dest_type, char *pscale);
 grs_bitmap *obj_get_model_data(ObjID id, fix *x, fix *y, fix *z, grs_bitmap *bm2, Ref *ref1, Ref *ref2);
 void place_obj_at_objloc(ObjID id, ObjLoc *newloc, ushort xsize, ushort ysize);
 char extract_object_special_color(ObjID id);
 Ref ref_from_critter_data(ObjID oid, int triple, ubyte posture, ubyte frame, ubyte view);
 void spew_contents(ObjID id, int d1, int d2);
-bool obj_is_useless(ObjID oid);
-bool obj_is_display(int triple);
+uchar obj_is_useless(ObjID oid);
+uchar obj_is_display(int triple);
 errtype obj_settle_func(ObjID id);
-bool death_check(ObjID id, bool* destr);
+uchar death_check(ObjID id, bool* destr);
 
 
 errtype set_door_data(ObjID id); // Â¥Â¥Â¥ here for now
@@ -180,7 +180,7 @@ int extra_object_frames(int triple)
 
 Id critter_id_table[NUM_CRITTER];
 
-grs_bitmap *get_text_bitmap(int d1, int d2, char dest_type, bool scroll);
+grs_bitmap *get_text_bitmap(int d1, int d2, char dest_type, uchar scroll);
 
 #define NUM_TEXT_BITMAPS   2
 short text_bitmaps_x[NUM_TEXT_BITMAPS] = {128, 64};
@@ -262,7 +262,7 @@ Id posture_bases[] = {
 
 #define CRITTER_LOADING_PAGE_LIMIT 45000
 
-Ref ref_from_critter_data(ObjID, int triple, ubyte posture, ubyte frame, ubyte view) //, bool *pmirror)
+Ref ref_from_critter_data(ObjID, int triple, ubyte posture, ubyte frame, ubyte view) //, uchar *pmirror)
 {
    Ref retval;
    ubyte v,p;
@@ -271,7 +271,7 @@ Ref ref_from_critter_data(ObjID, int triple, ubyte posture, ubyte frame, ubyte v
    Id our_id;
    RefTable *prt;
    char curr_frames;
-   bool load_all_views = TRUE;
+   uchar load_all_views = TRUE;
 //Â¥Â¥Â¥   extern ulong page_amount;
 
    // Set mirror pointer
@@ -747,7 +747,7 @@ char extract_object_special_color(ObjID id)
 errtype obj_shutdown()
 {
 	int	i;
-	extern errtype obj_load_art(bool flush_all);
+	extern errtype obj_load_art(uchar flush_all);
 	
 	// Free the word-buffer bitmap
 	for (i=0; i < NUM_TEXT_BITMAPS; i++)
@@ -779,9 +779,9 @@ void spew_contents(ObjID id, int d1, int d2)
 	}
 }
 
-bool obj_is_useless(ObjID oid)
+uchar obj_is_useless(ObjID oid)
 {
-	bool useless;
+	uchar useless;
 	
 	useless = (ObjProps[OPNUM(oid)].flags & USELESS_FLAG)!=0;
 #ifdef OBSELETE_WARES_USELESS
@@ -797,7 +797,7 @@ bool obj_is_useless(ObjID oid)
 #define MIN_OBJKILL_DIST 8
 
 // Creates the basic object, but does not place it into the world
-bool obj_autodelete = TRUE;
+uchar obj_autodelete = TRUE;
 ObjID obj_create_base(int triple)
 {
    ObjID new_id;
@@ -1074,7 +1074,7 @@ void place_obj_at_objloc(ObjID id, ObjLoc *newloc, ushort xsize, ushort ysize)
 
 // Moves an object to an objloc with a given velocity (in physics units, whatever
 // they are).
-errtype obj_move_to_vel(ObjID id, ObjLoc *newloc, bool phys_tel, fix x_dot, fix y_dot, fix z_dot)
+errtype obj_move_to_vel(ObjID id, ObjLoc *newloc, uchar phys_tel, fix x_dot, fix y_dot, fix z_dot)
 {
    State  new_state;
    ushort xsize = 0, ysize = 0;
@@ -1239,19 +1239,19 @@ errtype obj_move_to_vel(ObjID id, ObjLoc *newloc, bool phys_tel, fix x_dot, fix 
 }
 
 // Moves an object to a given objloc, with no velocity
-errtype obj_move_to(ObjID id, ObjLoc *newloc, bool phys_tel)
+errtype obj_move_to(ObjID id, ObjLoc *newloc, uchar phys_tel)
 {
    return(obj_move_to_vel(id,newloc,phys_tel, 0,0,0));
 }
 
 // Destroys an object, deals automagically with it's DOS and EDMS
 // representations
-bool obj_destroy(ObjID id)
+uchar obj_destroy(ObjID id)
 {
 	int retval = -1;
-	extern void check_panel_ref(bool puntme);
+	extern void check_panel_ref(uchar puntme);
 	short x,y;
-	bool  terrain_object = FALSE;
+	uchar  terrain_object = FALSE;
 	
 	decrement_shodan_value(id, TRUE);
 	if (id != OBJ_NULL) 
@@ -1305,7 +1305,7 @@ bool obj_destroy(ObjID id)
 errtype obj_create_player(ObjLoc *plr_loc)
 {
    State new_state;
-   bool use_new = FALSE;
+   uchar use_new = FALSE;
    physics_handle ph;
    Pelvis player_pelvis;
 #ifdef DIRAC_EDMS
@@ -2029,7 +2029,7 @@ ObjID physics_handle_to_id(physics_handle p)
 }
 
 /* KLC - not used
-bool get_obj_radii(Obj *objp, fix *rad)
+uchar get_obj_radii(Obj *objp, fix *rad)
 {
    Robot temp_robot;
    
@@ -2085,7 +2085,7 @@ Ref obj_cache_ref(ObjID id)
 
 #define  MEDIAN_WORD_SCALE 4
 
-grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, bool scroll, int scroll_index)
+grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, uchar scroll, int scroll_index)
 {
    Id currfont;
    short w,h,c,x;
@@ -2139,7 +2139,7 @@ grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, bool sc
    return(text_bitmap_ptrs[dest_type]);
 }
 
-grs_bitmap *get_text_bitmap(int d1, int d2, char dest_type, bool scroll)
+grs_bitmap *get_text_bitmap(int d1, int d2, char dest_type, uchar scroll)
 {
    return(get_text_bitmap_from_string(d1, dest_type, get_temp_string(text_bitmap_refs[dest_type] + d2), scroll, d2));
 }
@@ -2195,7 +2195,7 @@ void diego_teleport_callback(ObjID id, void *)
 // in gameobj.c also
 #define DIEGO_DEATH_BATTLE_LEVEL 8
 
-bool death_check(ObjID id, bool*)
+uchar death_check(ObjID id, bool*)
 {
    extern char damage_sound_fx;
    if(ID2TRIP(id)==DIEGO_TRIPLE && player_struct.level!=DIEGO_DEATH_BATTLE_LEVEL) 
@@ -2212,14 +2212,14 @@ bool death_check(ObjID id, bool*)
 // An object has been destroyed -- now we must consider doing some 
 // special stuff.  Returns TRUE if the regular destruction process
 // should continue.
-bool obj_combat_destroy(ObjID id)
+uchar obj_combat_destroy(ObjID id)
 {
-   bool retval = TRUE;
+   uchar retval = TRUE;
    ObjSpecID osid = objs[id].specID;
    int i,*d1,*d2;
    extern ObjID hack_cam_objs[NUM_HACK_CAMERAS];
    extern ObjID hack_cam_surrogates[NUM_HACK_CAMERAS];
-   extern bool is_container(ObjID id, int** d1, int** d2);
+   extern uchar is_container(ObjID id, int** d1, int** d2);
    extern char container_extract(ObjID *pidlist, int d1, int d2);
    extern ObjID damage_sound_id;
    extern char damage_sound_fx;
@@ -2434,7 +2434,7 @@ errtype obj_floor_func(ObjID id)
 
 #ifdef PLAYTEST
 #pragma disable_message(202)
-bool global_settle_func(short keycode, ulong context, void* data)
+uchar global_settle_func(short keycode, ulong context, void* data)
 {
    ObjID oid;
    message_info("settling all objects.");
@@ -2445,7 +2445,7 @@ bool global_settle_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-bool global_floor_func(short keycode, ulong context, void* data)
+uchar global_floor_func(short keycode, ulong context, void* data)
 {
    ObjID oid;
    message_info("flooring all objects.");
@@ -2456,7 +2456,7 @@ bool global_floor_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-bool check_objsys_func(short keycode, ulong context, void* data)
+uchar check_objsys_func(short keycode, ulong context, void* data)
 {
    int i;
    char buf[64];
@@ -2525,7 +2525,7 @@ errtype obj_level_munge()
    ObjRefID oref;
    short x,y;
    MapElem *pme;
-   bool found;
+   uchar found;
    char buf[128];
    ObjID exorcism[MAX_EXOR];
    char exorcise_count = 0;
@@ -2624,7 +2624,7 @@ errtype obj_level_munge()
 #ifdef TEETH
    for (x = 0; x < exorcise_count; x++)
    {
-      extern ObjID ObjRefFree (ObjRefID this, bool cleanup);
+      extern ObjID ObjRefFree (ObjRefID this, uchar cleanup);
       oref = objs[exorcism[x]].ref;
       objRefs[oref].next = OBJ_REF_NULL;
       ObjRefFree(oref,TRUE);
@@ -2897,12 +2897,12 @@ void spew_about_stuff(char *txt, ObjID id)
 
 #endif //NOT_YET Â¥Â¥Â¥
 
-extern bool robot_antisocial;
+extern uchar robot_antisocial;
 
 #define MAX_MOVE_OBJS   32
 // uchar of height above the ground to refresh within
 #define REFRESH_HEIGHT  0x10
-errtype obj_physics_refresh(short x, short y, bool use_floor)
+errtype obj_physics_refresh(short x, short y, uchar use_floor)
 {
    ObjRefID oref;
    ObjID id;
@@ -2959,7 +2959,7 @@ errtype obj_physics_refresh(short x, short y, bool use_floor)
    return(OK);
 }
 
-errtype obj_physics_refresh_area(short x, short y, bool use_floor)
+errtype obj_physics_refresh_area(short x, short y, uchar use_floor)
 {
    ObjsClearDealt();
    obj_physics_refresh(x-1,y,use_floor);
@@ -2969,7 +2969,7 @@ errtype obj_physics_refresh_area(short x, short y, bool use_floor)
    return(obj_physics_refresh(x,y,use_floor));
 }
 
-bool obj_is_display(int triple)
+uchar obj_is_display(int triple)
 {
    if (ObjProps[OPTRIP(triple)].render_type == FAUBJ_TEXTPOLY)
       return(TRUE);

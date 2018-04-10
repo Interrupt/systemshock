@@ -34,8 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "audiolog.h"
 #endif
 
-
-bool sfx_on = TRUE;
+uchar sfx_on = TRUE;
 
 #define NUM_DIGI_FX  114
 
@@ -112,9 +111,9 @@ errtype digifx_init()
 
    close(fp);
 */
-   clear_digi_fx();
+   //clear_digi_fx();
 
-   snd_finish = digifx_EOS_callback;
+   //snd_finish = digifx_EOS_callback;
 
 /* KLC - not needed now.
 #ifdef ASYNCH_DIGI
@@ -141,7 +140,7 @@ extern int curr_alog;
 // ------------
 int compute_sfx_vol(ushort x1, ushort y1, ushort x2, ushort y2);
 int compute_sfx_pan(ushort x1, ushort y1, ushort x2, ushort y2, fixang our_ang);
-bool set_sample_pan_gain(snd_digi_parms *sdp);
+uchar set_sample_pan_gain(snd_digi_parms *sdp);
 
 
 int compute_sfx_vol(ushort x1, ushort y1, ushort x2, ushort y2)
@@ -184,7 +183,7 @@ int compute_sfx_pan(ushort x1, ushort y1, ushort x2, ushort y2, fixang our_ang)
 
 // Returns whether or not in the humble opinion of the
 // sound system, the sample should be politely obliterated out of existence
-bool set_sample_pan_gain(snd_digi_parms *sdp)
+uchar set_sample_pan_gain(snd_digi_parms *sdp)
 {
    uchar temp_vol,vol;
    uint raw_data = (uint)sdp->data;
@@ -286,15 +285,17 @@ uchar sfx_volume_levels[] = {0, 0x9, 0xF};
 #define NO_GAIN_THRESHOLD     0x6A
 #define HARSH_GAIN_THRESHOLD  0xBA
 
+#define SND_DEF_PAN 1
+
 snd_digi_parms s_dprm;
 char secret_global_pan=SND_DEF_PAN;
 
 int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort y)
 {
-   Id vocRes;
+   /*Id vocRes;
    int retval, real_code = sfx_code, len;
    uchar *addr;
-   extern bool sfx_on;
+   extern uchar sfx_on;
    extern uchar curr_sfx_vol;
 
    if (!sfx_on)
@@ -360,13 +361,14 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
       ResUnlock(vocRes);
       return -3;
    }
-   return retval;          // which sample id
+   return retval;          // which sample id*/
+   return -3;
 }
 
 // scan through the whole list
-bool digi_fx_playing(int fx_id, int *handle_ptr)
+uchar digi_fx_playing(int fx_id, int *handle_ptr)
 {
-	int 			i;
+	/*int 			i;
 	SCStatus	stat;
 	snd_digi_parms *sdp;
 	
@@ -387,6 +389,6 @@ bool digi_fx_playing(int fx_id, int *handle_ptr)
 				return(TRUE);
 			}
 		}
-	}
+	}*/
 	return FALSE;
 }

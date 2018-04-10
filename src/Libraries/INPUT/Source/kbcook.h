@@ -34,6 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "error.h"
 #include "kb.h"
 
+#include <Carbon/Carbon.h>
+
 /*
 #define KB_CNV_SHIFT   1 
 #define KB_CNV_NOSHIFT 0
@@ -74,7 +76,7 @@ extern ushort kb_cnv_table[KB_CNV_TBLSIZE][2];
 
 #define KBC_EXTENDED 0x80
 
-errtype kb_cook(kbs_event code, ushort *cooked, bool *results);
+errtype kb_cook(kbs_event code, ushort *cooked, uchar *results);
 // "cooks" kb event "code."  If cooking generates a cooked code, sets 
 // *results to true and puts the result in *cooked.  Otherwise, *results = false.  
 

@@ -67,6 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "region.h" 
 #include "mouse.h" 
 #include "error.h"
+#include "array.h"
 
 // Defines
 
@@ -98,6 +99,18 @@ typedef struct _cursorstack
 
 
 typedef cursor_stack uiCursorStack; 
+
+
+typedef struct _ui_slab
+{
+   LGRegion* creg;  // cursor region.
+   struct _focus_chain
+   {
+      Array chain;
+      int curfocus;
+   } fchain;  // focus chain
+   cursor_stack cstack;
+} uiSlab;
 
 
 
@@ -137,16 +150,16 @@ errtype uiGetGlobalCursor(LGCursor** c);
 // Gets the cursor on top of the active slab's global cursor stack,
 // or the global default cursor if the stack is empty.
 
-errtype uiSetSlabDefaultCursor(struct _ui_slab* slab, LGCursor* c);
+errtype uiSetSlabDefaultCursor(uiSlab* slab, LGCursor* c);
 // Sets the default cursor for the specified slab.
 
-errtype uiPushSlabCursor(struct _ui_slab* slab, LGCursor* c);
+errtype uiPushSlabCursor(uiSlab* slab, LGCursor* c);
 // Pushes a cursor to the specified slab's global cursor stack.  
 
-errtype uiPopSlabCursor(struct _ui_slab* slab);
+errtype uiPopSlabCursor(uiSlab* slab);
 // Pops the top cursor off of the specified slab's global cursor stack. 
 
-errtype uiGetSlabCursor(struct _ui_slab* slab, LGCursor** c);
+errtype uiGetSlabCursor(uiSlab* slab, LGCursor** c);
 // Gets the cursor on top of the specified slab's global cursor stack,
 // or the global default cursor if the stack is empty.
 
@@ -211,7 +224,7 @@ extern errtype uiGetRegionCursorStack(LGRegion* reg, uiCursorStack** cs);
 extern errtype uiSetRegionCursorStack(LGRegion* reg, uiCursorStack* cs);
 // Sets reg's cursor stack to cs. 
 
-extern errtype uiGetSlabCursorStack(struct _ui_slab* slab, uiCursorStack** cs);
+extern errtype uiGetSlabCursorStack(uiSlab* slab, uiCursorStack** cs);
 // points *cs to slab's cursor stack.  If slab has no cursor stack, sets *cs to NULL
 // and returns ERR_NULL;
 

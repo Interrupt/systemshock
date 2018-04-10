@@ -28,8 +28,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __LGSNDX_H
 #define __LGSNDX_H
 
-#include <QuickTimeComponents.h>
-#include <Sound.h>
+#include <Carbon/Carbon.h>
+
+//#include <QuickTimeComponents.h>
+//#include <Sound.h>
+
+//#include <SDL2/SDL.h>
+
 #include "lg.h"
 
 //--------------------------

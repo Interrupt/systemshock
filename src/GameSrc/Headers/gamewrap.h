@@ -52,12 +52,12 @@ errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile);
 errtype save_game(FSSpec *fSpec);
 //KLC - following is Mac version 		errtype load_game(char *fname);
 errtype load_game(FSSpec *loadSpec);
-errtype write_level_to_disk(int idnum, bool flush_mem);
-bool create_initial_game_func(short keycode, ulong context, void* data);
-bool create_level_archive_func(short keycode, ulong context, void* data);
+errtype write_level_to_disk(int idnum, uchar flush_mem);
+uchar create_initial_game_func(short keycode, ulong context, void* data);
+uchar create_level_archive_func(short keycode, ulong context, void* data);
 errtype load_level_from_file(int level_num);
-void startup_game(bool visible);
-void closedown_game(bool visible);
+void startup_game(uchar visible);
+void closedown_game(uchar visible);
 
 // Globals
 

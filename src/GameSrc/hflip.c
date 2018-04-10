@@ -26,6 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "cybmem.h"
 
+#include "lg.h"
+#include "error.h"
+
 // MLA #define REAL_HFLIP
 #ifdef REAL_HFLIP
 // asm is good

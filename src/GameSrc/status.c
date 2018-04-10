@@ -65,22 +65,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Struct to contain information about tail
 
 typedef struct {
-   bool     free;
+   uchar     free;
    int      *data;
    uchar    height[MAX_BIO_LENGTH];
    int      head;
-   bool     tail;
+   uchar     tail;
    uchar    tail_length;
    uchar    color_length;
    int      update_time;
    int      counter;
    int      max_value;
    uchar    special;
-   bool     active; 
+   uchar     active; 
 } bio_data_block;
 
 
-bool gBioInited = FALSE;
+uchar gBioInited = FALSE;
 
 //KLC - chg for new art   uchar status_background[(DIFF_BIO_WIDTH+4)*(DIFF_BIO_HEIGHT+2)];
 uchar status_background[(266+4)*(44+2)];
@@ -124,15 +124,15 @@ uchar bio_bitmap_bits[BIO_BITMAP_SIZE];
 
 // Internal Prototype
 
-bool under_bio(int x);
+uchar under_bio(int x);
 void ss_save_under_set_pixel(int color, short i, short j);
 void bio_set_pixel(int color, short x, short y);
 void bio_restore_pixel(grs_bitmap *bmp, short x, short y);
 void bio_vline(int color, int x, int y, int y1);
 void status_bio_update_screenmode();
-bool status_track_free(int track);
-bool status_track_active(int track);
-void status_track_activate(int track, bool active);
+uchar status_track_free(int track);
+uchar status_track_active(int track);
+void status_track_activate(int track, uchar active);
 void draw_lower_tracks(int track_number, int location);
 void gamescr_bio_func(void);
 void diff_bio_func(void);
@@ -145,7 +145,7 @@ int FIND_OVERLAP(int x, int y);
 void (*bio_funcs[])(void) = {gamescr_bio_func, diff_bio_func};
 
 
-bool under_bio(int x)
+uchar under_bio(int x)
 {
       if ( ((x >= 16) && (x <= 22)) ||
 	   ((x >= 69) && (x <= 74)) ||
@@ -384,17 +384,17 @@ void status_bio_draw(void)
 // -----------------------------------------------
 // Accessors for the "active" field. 
 
-bool status_track_free(int track)
+uchar status_track_free(int track)
 {
    return bio_data[track].free;
 }
 
-bool status_track_active(int track)
+uchar status_track_active(int track)
 {
    return bio_data[track].active;
 }
 
-void status_track_activate(int track, bool active)
+void status_track_activate(int track, uchar active)
 {
    bio_data[track].active = active;
 }
@@ -854,7 +854,7 @@ void diff_bio_func(void)
 uchar heart_beat = 0;
 ulong heart_time = 0;
 ulong heart_delay = 5;
-bool flatline_heart;
+uchar flatline_heart;
 
 uchar chi_amp=STATUS_CHI_AMP;
 

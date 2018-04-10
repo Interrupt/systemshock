@@ -61,6 +61,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SPECIAL_SHODAN_FAIL_CODE 0xFF
 #define SHODAN_FAILURE_STRING REF_STR_SHODANFail
 
-short compute_shodometer_value(bool game_stuff);
-short increment_shodan_value(ObjID oid, bool game_stuff);
-short decrement_shodan_value(ObjID oid, bool game_stuff);
+short compute_shodometer_value(uchar game_stuff);
+short increment_shodan_value(ObjID oid, uchar game_stuff);
+short decrement_shodan_value(ObjID oid, uchar game_stuff);

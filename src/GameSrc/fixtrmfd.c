@@ -40,6 +40,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 #include "gr2ss.h"
 
+#include "lg.h"
+#include "error.h"
+
 // ============================================================
 //                   THE FIXTURE MFD
 // ============================================================
@@ -64,7 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TEXT_COLOR   0x4C
 
-extern void check_panel_ref(bool punt);
+extern void check_panel_ref(uchar punt);
 
 typedef struct _fixture_data
 {
@@ -79,7 +82,7 @@ typedef struct _fixture_data
 //  PROTOTYPES
 // ----------
 void mfd_fixture_expose(MFD* mfd, ubyte control);
-bool mfd_fixture_handler(MFD* m, uiEvent* e);
+uchar mfd_fixture_handler(MFD* m, uiEvent* e);
 
 // ---------------
 // EXPOSE FUNCTION
@@ -98,7 +101,7 @@ bool mfd_fixture_handler(MFD* m, uiEvent* e);
 
 void mfd_fixture_expose(MFD* mfd, ubyte control)
 {
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    if (control == 0)  // MFD is drawing stuff
    {
       panel_ref_unexpose(mfd->id,MFD_FIXTURE_FUNC);
@@ -124,7 +127,7 @@ void mfd_fixture_expose(MFD* mfd, ubyte control)
       if (full || player_struct.panel_ref != fd->last_obj)
       {
          short w,h;
-         bool wrap = mfd_string_wrap;
+         uchar wrap = mfd_string_wrap;
          char buf[256];
          if (objs[player_struct.panel_ref].info.make_info != 0)
             get_string(REF_STR_Name0+objs[player_struct.panel_ref].info.make_info,buf,sizeof(buf));
@@ -176,7 +179,7 @@ void mfd_fixture_expose(MFD* mfd, ubyte control)
 // HANDLER FUNCTION
 // ----------------
 
-bool mfd_fixture_handler(MFD* m, uiEvent* e)
+uchar mfd_fixture_handler(MFD* m, uiEvent* e)
 {
 	uiMouseEvent	*me = (uiMouseEvent *)e;
 	LGRect brect = { { BUTTON_STATE_X, BUTTON_STATE_Y},

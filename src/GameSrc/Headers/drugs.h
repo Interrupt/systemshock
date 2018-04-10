@@ -95,8 +95,8 @@ void drug_wear_off(int type);
 void drug_effect(int type);
 void drugs_update();
 void drugs_init();
-void drug_startup(bool visible);
-void drug_closedown(bool visible);
+void drug_startup(uchar visible);
+void drug_closedown(uchar visible);
 int drug2triple(int type);
 int triple2drug(int triple);
 

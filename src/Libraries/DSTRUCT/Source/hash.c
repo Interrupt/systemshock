@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 int hashlog2(int x);
 int expmod(int b, int e, uint m);
-bool is_fermat_prime(uint n, uint numtests);
+uchar is_fermat_prime(uint n, uint numtests);
 static errtype grow(Hashtable* h, int newsize);
 
 //--------------------
@@ -91,7 +91,7 @@ int expmod(int b, int e, uint m)
 
 }
 
-bool is_fermat_prime(uint n, uint numtests)
+uchar is_fermat_prime(uint n, uint numtests)
 {
    int i;
    if (n < 3) return FALSE;
@@ -134,9 +134,9 @@ errtype hash_copy(Hashtable* t, Hashtable* s)
    return OK;
 }
 
-static bool find_elem(Hashtable* h, void* elem, int* idx)
+static uchar find_elem(Hashtable* h, void* elem, int* idx)
 {
-   bool found = FALSE;
+   uchar found = FALSE;
    int hash = h->hfunc(elem);
    int index,j;
    //Spew(DSRC_DSTRUCT_Hash,("find_elem(%x,%x,%x) hash is %d\n",h,elem,idx,hash));

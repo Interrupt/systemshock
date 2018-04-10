@@ -43,14 +43,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tilename.h"
 
+#include "lg.h"
+#include "error.h"
+
 extern void render_sorted_objs(void);
 extern void sort_show_obj(ObjID cobjid);
 extern void facelet_obj(ObjID cobjid);
 
-bool pick_best_ref(ObjRefID cRef);
+uchar pick_best_ref(ObjRefID cRef);
 
 
-bool pick_best_ref(ObjRefID cRef)
+uchar pick_best_ref(ObjRefID cRef)
 {
    int bdist, cdist, ldist;
    ObjRefID curLRef, BRef;
@@ -108,7 +111,7 @@ void render_parse_obj(void)
    curORef=_fdt_mptr->objRef;
    while (curORef!=OBJ_REF_NULL)
    {
-      bool show_here;
+      uchar show_here;
       cobjid=objRefs[curORef].obj;
       if (!ObjCheckDealt(cobjid))
       {

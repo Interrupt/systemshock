@@ -162,10 +162,10 @@ typedef struct Movie_ {
 	void (*f_VideoCallback)(struct Movie_ *pmovie);	// video callback for composing
 	void (*f_TextCallback)(struct Movie_ *pmovie, MovieTextItem *pitem);	// text chunk callback
 	void *pTextCallbackInfo;	// info maintained by text callback
-	bool playing;			// is movie playing?
- 	bool processing;		// is movie processing?
-	bool singleStep;		// single step movie
-	bool clipCanvas;		// clip to canvas?
+	uchar playing;			// is movie playing?
+ 	uchar processing;		// is movie processing?
+	uchar singleStep;		// single step movie
+	uchar clipCanvas;		// clip to canvas?
 } Movie;
 
 //	Prototypes

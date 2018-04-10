@@ -73,7 +73,7 @@ void (**grd_canvas_table)();
 int grd_mode=-1;
 
 /* flag for whether we are executing in an interrupt. */
-bool grd_interrupt=0;
+uchar grd_interrupt=0;
 
 /* Function chaining globals.  Set during gr_set_canvas; that's why I moved them here. */
 short grd_pixel_index, grd_canvas_index;

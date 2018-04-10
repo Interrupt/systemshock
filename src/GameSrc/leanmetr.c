@@ -86,8 +86,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define NUM_LEAN_BMAPS 9
 #define BMAPS_PER_POSTURE 3
 
-extern bool full_game_3d;
-extern void physics_set_relax(int axis, bool relax);
+extern uchar full_game_3d;
+extern void physics_set_relax(int axis, uchar relax);
 
 static ubyte discrete_eye_height[DISCRETE_EYE_POSITIONS] =
       {   3,
@@ -110,7 +110,7 @@ void EDMS_lean_o_meter(physics_handle ph, fix& lean, fix& crouch);
 // -------
 // GLOBALS
 // -------
-extern bool gBioInited;
+extern uchar gBioInited;
 
 LGRegion slot_meter_region;
 LGRegion fullscrn_meter_region;
@@ -130,13 +130,13 @@ ushort shield_bmap_res = 0;
 #define meter_bkgnd() (get_bitmap_from_ref(full_game_3d ? REF_IMG_bmLeanBkgndTransp : REF_IMG_bmLeanBkgnd))
 
 
-bool eye_fine_mode = FALSE;
+uchar eye_fine_mode = FALSE;
 
 
 // ---------
 // PROTOTYPES
 // ---------
-void set_base_lean_bmap(bool shield);
+void set_base_lean_bmap(uchar shield);
 fix compute_filter_weight(ulong deltat);
 fix apply_weighted_filter(fix input, fix state, ulong deltat);
 void slam_posture_meter_state(void);
@@ -146,13 +146,13 @@ void player_reset_eye(void);
 byte player_get_eye(void);
 void player_set_eye_fixang(int ang);
 int player_get_eye_fixang(void);
-bool eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *);
-bool lean_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *);
-void init_posture_meters(LGRegion* root, bool fullscreen);
-void update_lean_meter(bool force);
+uchar eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *);
+uchar lean_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *);
+void init_posture_meters(LGRegion* root, uchar fullscreen);
+void update_lean_meter(uchar force);
 void draw_eye_bitmap(grs_bitmap *eye_bmap, LGPoint pos, int lasty);
-void update_eye_meter(bool force);
-void update_meters(bool force);
+void update_eye_meter(uchar force);
+void update_meters(uchar force);
 void zoom_to_lean_meter(void);
 
 
@@ -161,7 +161,7 @@ void zoom_to_lean_meter(void);
 // ---------
 #define MAX_LEAN_BASE (RES_leanMeterRad - RES_leanMeterBase)
 
-void set_base_lean_bmap(bool shield)
+void set_base_lean_bmap(uchar shield)
 {
 	int		v;
 	ushort	baseRes;
@@ -393,11 +393,11 @@ int player_get_eye_fixang(void)
    return theta;
 }
 
-bool eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *)
+uchar eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *)
 {
    short x = ev->pos.x - r->abs_x;
    short y = ev->pos.y - r->abs_y;
-   extern bool hack_takeover;
+   extern uchar hack_takeover;
    if (hack_takeover || global_fullmap->cyber) return FALSE;
    if (x < 0 || x >= EYEMETER_W) return FALSE;
    eye_fine_mode = 2*x > EYEMETER_W;
@@ -422,7 +422,7 @@ bool eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *)
 }
 
 
-bool lean_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *)
+uchar lean_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *)
 {
    short x = ev->pos.x - r->abs_x - LEANOMETER_XOFF;
    short y = ev->pos.y - r->abs_y - LEANOMETER_YOFF;
@@ -456,7 +456,7 @@ bool lean_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *)
 
 #define BAD_REGION_CRITERR 3000
 
-void init_posture_meters(LGRegion* root, bool fullscreen)
+void init_posture_meters(LGRegion* root, uchar fullscreen)
 {
    LGRegion* reg = PICK_METER_REGION(fullscreen);
    int id;
@@ -480,9 +480,9 @@ void init_posture_meters(LGRegion* root, bool fullscreen)
 
 
 
-void update_lean_meter(bool force)
+void update_lean_meter(uchar force)
 {
-	static bool 		 last_shield = FALSE;
+	static uchar 		 last_shield = FALSE;
 	static uchar	 last_shieldstr = 0;
 	static int		 last_lean_icon = -1;
 	static LGPoint	 last_lean_pos = { -1, -1};
@@ -601,11 +601,11 @@ void draw_eye_bitmap(grs_bitmap *eye_bmap, LGPoint pos, int lasty)
 
 #define	HIRES_EYEMETER_H	53
 
-void update_eye_meter(bool force)
+void update_eye_meter(uchar force)
 {
    static short last_y = 0;
    static short last_ly = 0;
-   static bool last_mode = FALSE;
+   static uchar last_mode = FALSE;
 
    short a,b,c,d;
    fix pos = eye_mods[1];
@@ -653,7 +653,7 @@ void update_eye_meter(bool force)
 }
 
 
-void update_meters(bool force)
+void update_meters(uchar force)
 {
    current_meter_region = PICK_METER_REGION(full_game_3d);
    update_eye_meter(force);

@@ -61,6 +61,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "models.h"
 #include "objload.h"
 
+#include "lg.h"
+#include "error.h"
+
 #include "ai.h"
 
 #ifdef DOOM_EMULATION_MODE
@@ -103,13 +106,13 @@ char curr_clut_table = 0;
 int munge_val(int val, int range, int delta);
 void _fr_draw_parm_cube(grs_bitmap *side_bm, grs_bitmap *oth_bm, int x, int y, int z);
 void _fr_draw_poly_cube(int p_color, int x, int y, int z);
-void _fr_draw_polyobj(void *model_ptr, bool use_lighting);
+void _fr_draw_polyobj(void *model_ptr, uchar use_lighting);
 void gen_seed_vec(g3s_vector *gpt_vec, int seed, int scale, int deviant);
 void do_xplodamatron(int frame, int severity, int seed, int col1, int col2);
 void gen_tetra(g3s_phandle *xplo_pts, fix size, int deviant, int color);
 void draw_ice(void);
 void draw_ice_wall(void);
-void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, bool dblface, bool use_lighting);
+void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar dblface, uchar use_lighting);
 void _fr_draw_bitmap(grs_bitmap *draw_bm, int dist, int sc, int anch_x, int anch_y);
 short compute_3drep(Obj *cobj, ObjID cobjid, int obj_type);
 
@@ -246,7 +249,7 @@ void _fr_draw_poly_cube(int p_color, int x, int y, int z)
 }
 
 // you stand surrounded by dreams brutally crushed
-void _fr_draw_polyobj(void *model_ptr, bool use_lighting)
+void _fr_draw_polyobj(void *model_ptr, uchar use_lighting)
 {
    int pos_parm=abs(PARM_MAX-((*tmd_ticks)&PARM_MOD));         // this is dumb
    int cur_ft;
@@ -411,7 +414,7 @@ void draw_ice_wall(void)
 }
 //#pragma enable_message(202)
 
-void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, bool dblface, bool use_lighting)
+void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar dblface, uchar use_lighting)
 {
    int t_off_l, t_off_r;
 //   int face_c, face_f, hgt_f, hgt_c;
@@ -491,7 +494,7 @@ void _fr_draw_bitmap(grs_bitmap *draw_bm, int /*dist*/, int sc, int anch_x, int 
    grs_canvas tmp_can;
    grs_bitmap tmp_bm;
    uchar *tmp_ptr;
-   bool do_qsc=(dist<fr_qscale_obj);
+   uchar do_qsc=(dist<fr_qscale_obj);
 #endif
    g3s_phandle anchor;
    grs_vertex **bitmap_verts;
@@ -547,8 +550,8 @@ extern char extract_object_special_color(ObjID id);
 short compute_3drep(Obj *cobj, ObjID cobjid, int obj_type)
 {
    short o3drep = -1;
-   extern bool anim_data_from_id(ObjID, bool*, bool*);
-   extern bool obj_is_display(int triple);
+   extern uchar anim_data_from_id(ObjID, bool*, bool*);
+   extern uchar obj_is_display(int triple);
 
    // fix for screens with data2 of zero wanting to animate,
    // and other bigstuffs presumbably wanting to use it as a default.
@@ -626,12 +629,12 @@ void show_obj(ObjID cobjid)
 #endif
    char scale = 0;
    uchar type = 0xFF;
-   bool use_cache = FALSE;
+   uchar use_cache = FALSE;
    Ref ref = 0;
    int obj_type, tluc_val=0xFF, index=0, loc_h;
-   bool light_me = TRUE;
+   uchar light_me = TRUE;
    extern cams objmode_cam;
-   extern bool obj_too_smart(ObjID id);
+   extern uchar obj_too_smart(ObjID id);
    extern void check_up(int num);
 
 //   check_up(0x220000|cobjid);
@@ -667,7 +670,7 @@ void show_obj(ObjID cobjid)
 //         uchar sftware_col[5]={0x3B,0x54,0x7D,0x62,0x27};
          uchar sftware_col[5]={0x3B,0x4F,0x76,0x5A,0x23};
          int col=0xC3, dm=0, move_me=1, ndm;
-         extern bool time_passes;
+         extern uchar time_passes;
          fix fx,fy,fz;
          int sc,v;
 //         static long ltime=0;
@@ -772,7 +775,7 @@ void show_obj(ObjID cobjid)
       {
       case MAPNOTE_TRIPLE:
 	      {
-            extern bool map_notes_on;
+            extern uchar map_notes_on;
             g3s_phandle note_pts[4];
             int h=player_struct.game_time&0x3fff;
 

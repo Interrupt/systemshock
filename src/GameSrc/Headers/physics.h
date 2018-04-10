@@ -102,7 +102,7 @@ errtype apply_gravity_to_objects(fix new_grav);
 
 // Take an object, and moves it to a position and velocity relative to the 
 // player.  returns true if it finds an appropriate place to put the object.
-bool player_throw_object(ObjID id,  int x, int y, int lastx, int lasty, fix vel);
+uchar player_throw_object(ObjID id,  int x, int y, int lastx, int lasty, fix vel);
 
 // Cause the player to assume one of three postures
 #define POSTURE_STAND    0
@@ -119,7 +119,7 @@ errtype player_set_lean(byte x, byte y);
 
 // Plant the player's foot, turning directional controls into
 // translational ones.  Unplants foot IFF planted is false
-errtype player_plant_foot(bool planted);
+errtype player_plant_foot(uchar planted);
 
 // Set the player's eye position -100 to +100
 void player_set_eye(byte eyecntl);

@@ -83,12 +83,12 @@ typedef struct _plot_display
 //  PROTOTYPES
 // ----------
 void fill_time(short val, char* vbuf);
-bool do_plotware_hack(int hack_num, char* vbuf);
+uchar do_plotware_hack(int hack_num, char* vbuf);
 void mfd_plotware_expose(MFD* mfd, ubyte control);
 void plotware_showpage(uchar page);
-bool plotware_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data);
+uchar plotware_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data);
 errtype mfd_plotware_init(MFD_Func* f);
-void plotware_turnon(bool visible,bool real);
+void plotware_turnon(uchar visible,uchar real);
 
 // --------
 //  GLOBALS
@@ -156,7 +156,7 @@ void fill_time(short val, char* vbuf)
 #define NODES_QDATA 0x1001
 #define TOTAL_NODES 27
 
-bool do_plotware_hack(int hack_num, char* vbuf)
+uchar do_plotware_hack(int hack_num, char* vbuf)
 {
    switch(hack_num)
    {
@@ -254,7 +254,7 @@ bool do_plotware_hack(int hack_num, char* vbuf)
 void mfd_plotware_expose(MFD* mfd, ubyte control)
 {
    extern void mfd_item_micro_hires_expose(bool,int);
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    if (control == 0)  // MFD is drawing stuff
    {
       // Do unexpose stuff here.  
@@ -349,7 +349,7 @@ void plotware_showpage(uchar page)
 // --------------
 // BUTTON HANDLER
 // --------------
-bool plotware_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
+uchar plotware_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
 {
    if (!(ev->subtype & MOUSE_LDOWN)) return TRUE;
    if (bttn.x == 0)
@@ -386,7 +386,7 @@ errtype mfd_plotware_init(MFD_Func* f)
 }
 
 
-void plotware_turnon(bool visible, bool)
+void plotware_turnon(uchar visible, bool)
 {
    if (visible)
    {

@@ -91,7 +91,7 @@ typedef struct {
    short lastkey;
    ushort options;
    TNGButtonArrayElement *matrix;
-   bool *selected;
+   uchar *selected;
    TNG *hscroll_tng, *vscroll_tng;
 } TNG_buttonarray;
 
@@ -134,13 +134,13 @@ errtype tng_buttonarray_size(TNG *ptng, LGPoint *ppt);
 int tng_buttonarray_getvalue(TNG *ptng);
 
 // React appropriately for receiving the specified cooked key
-bool tng_buttonarray_keycooked(TNG *ptng, ushort key);
+uchar tng_buttonarray_keycooked(TNG *ptng, ushort key);
 
 // React appropriately for receiving the specified mouse button event
-bool tng_buttonarray_mousebutt(TNG *ptng, uchar type, LGPoint loc);
+uchar tng_buttonarray_mousebutt(TNG *ptng, uchar type, LGPoint loc);
 
 // Handle incoming signals
-bool tng_buttonarray_signal(TNG *ptng, ushort signal);
+uchar tng_buttonarray_signal(TNG *ptng, ushort signal);
 
 errtype tng_buttonarray_select(TNG *ptng);
 errtype tng_buttonarray_scroll(TNG *ptng);

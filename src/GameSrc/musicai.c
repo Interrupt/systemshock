@@ -81,9 +81,9 @@ char tmode_time = 0;
 int actual_score = 0;
 uchar decon_count = 0;
 uchar decon_time = 8;
-bool in_deconst = FALSE, old_deconst = FALSE;
-bool in_peril = FALSE;
-bool just_started = TRUE;
+uchar in_deconst = FALSE, old_deconst = FALSE;
+uchar in_peril = FALSE;
+uchar just_started = TRUE;
 int score_playing = 0;
 short curr_ramp_time, curr_ramp;
 char curr_prioritize, curr_crossfade;
@@ -94,7 +94,7 @@ errtype mai_transition(int new_trans);
 extern errtype make_request(int chunk_num, int piece_ID);
 extern int digifx_volume_shift(short x, short y, short z, short phi, short theta, short basevol);
 extern int digifx_pan_shift(short x, short y, short z, short phi, short theta);
-extern bool mai_semaphor;
+extern uchar mai_semaphor;
 
 uchar park_random = 75;
 uchar park_playing = 0;
@@ -113,7 +113,7 @@ int mai_damage_sum = 0;
 // How long an attack keeps us in combat music mode
 int mai_combat_length = 1000;
 
-bool bad_digifx = FALSE;
+uchar bad_digifx = FALSE;
 
 //KLC - no longer need this   Datapath music_dpath;
 
@@ -125,7 +125,7 @@ char mlimbs_machine = 0;
 //  INTERNAL PROTOTYPES
 //------------------
 errtype musicai_shutdown();
-errtype musicai_reset(bool runai);
+errtype musicai_reset(uchar runai);
 int gen_monster(int monster_num);
 
 
@@ -138,9 +138,9 @@ errtype musicai_shutdown()
    return(OK);
 }
 
-extern bool run_asynch_music_ai;
+extern uchar run_asynch_music_ai;
 
-errtype musicai_reset(bool runai)
+errtype musicai_reset(uchar runai)
 {
 	if (runai)												// Figure out if there is a theme to start with.
 		grind_music_ai();
@@ -157,8 +157,8 @@ void musicai_clear()
 
 void mlimbs_do_ai()
 {
-//   extern bool mlimbs_semaphore;
-   extern errtype check_asynch_ai(bool new_score_ok);
+//   extern uchar mlimbs_semaphore;
+   extern errtype check_asynch_ai(uchar new_score_ok);
    extern ObjID damage_sound_id;
    extern char damage_sound_fx;
 
@@ -267,7 +267,7 @@ void mlimbs_do_ai()
 
 void mlimbs_do_credits_ai()
 {
-   extern bool mlimbs_semaphore;
+   extern uchar mlimbs_semaphore;
    if (ai_cycle)
    {
       ai_cycle = 0;
@@ -490,8 +490,8 @@ errtype blank_theme_data()
 }
 */
 
-//Â¥Â¥Â¥ don't need?     bool voices_4op = FALSE;
-//Â¥Â¥Â¥ don't need?     bool digi_gain = FALSE;
+//Â¥Â¥Â¥ don't need?     uchar voices_4op = FALSE;
+//Â¥Â¥Â¥ don't need?     uchar digi_gain = FALSE;
 void load_score_guts(char score_playing)
 {
 	int 		rv;
@@ -620,7 +620,7 @@ errtype music_init()
 {
 /*Â¥Â¥Â¥ put in later
    int i,j;
-   bool gm=FALSE;
+   uchar gm=FALSE;
    short dev_info[DEV_TYPES][DEV_PARMS];
    char s[64],path[64];
    audio_card card_info;

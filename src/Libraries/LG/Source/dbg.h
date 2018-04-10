@@ -258,7 +258,7 @@ extern "C" {
 void DbgReportError(int errcode, char *msg, ...);
 void DbgReportWarnUser(char *msg, ...);
 void DbgReportWarning(char *msg, ...);
-bool DbgSpewTest(ulong src);
+uchar DbgSpewTest(ulong src);
 void DbgDoSpew(char *msg, ...);
 
 //	Set debug config screen to use function for getting keys
@@ -275,11 +275,11 @@ void DbgSetLogPath(char *path);
 //	Opening, writing, and closing of the log file is automatic, as
 //	is sharing of files with the same name.
 
-bool DbgSetLogFile(ulong src, char *name);
+uchar DbgSetLogFile(ulong src, char *name);
 
 //	These are really internal things
 
-bool DbgOpenLogFile(int index);
+uchar DbgOpenLogFile(int index);
 void DbgCloseLogFiles();
 void DbgHandle(int reportType, ulong src, char *buff);
 extern char *dbgTags[];
@@ -300,7 +300,7 @@ void DbgSetReportRoutine(ReportRoutine *);
 
 void DbgInit();							// auto-loads settings from "debug.dbg"
 void DbgMonoConfig();					// let operator config on mono screen
-bool DbgAddConfigPath(char *path);	// add path for finding config files
+uchar DbgAddConfigPath(char *path);	// add path for finding config files
 int DbgLoadConfig(char *fname);		// load config file
 int DbgSaveConfig(char *fname);		// save config file
 

@@ -106,7 +106,7 @@ void critter_light_world(ObjID id);
 void critter_unlight_world(ObjID id);
 int anim_frames(ObjID id);
 errtype increment_anim(ulong num_units);
-bool anim_data_from_id(ObjID id, bool* reverse, bool* cycle);
+uchar anim_data_from_id(ObjID id, bool* reverse, bool* cycle);
 void init_animlist(void);
 
 // -----------------------------------------------------------------
@@ -115,14 +115,14 @@ void init_animlist(void);
 
 ObjID beam_effect_id=OBJ_NULL;
 
-ObjID do_special_effect_location(ObjID owner, ubyte effect, ubyte start, ObjLoc *loc, short )
+ObjID do_special_effect_location(ObjID owner, ubyte effect, ubyte start, ObjLoc *loc, short s)
 {
 	ObjID				new_id=OBJ_NULL;
 	ObjSpecID			osid;
 	int					triple = 0;
 
    // are we suppose to destroy the attached object?
-   bool  special = DESTROY_OBJ_EFFECT(effect);
+   uchar  special = DESTROY_OBJ_EFFECT(effect);
 
    // strip out the extra stuff
    effect = EFFECT_VAL(effect);
@@ -294,7 +294,7 @@ int anim_frames(ObjID id)
 extern void lamp_change_setting(byte offset);
 extern ubyte energy_expulsion;
 extern ubyte handart_count;
-extern bool handart_flash;
+extern uchar handart_flash;
 
 #define DEFAULT_ANIMATION_SPEED  32
 
@@ -326,7 +326,7 @@ errtype increment_anim(ulong num_units)
    ulong hand_speed=HANDART_SPEED;
    ubyte old_handart;
    LightSchedEvent      new_event;
-   extern bool anim_on;
+   extern uchar anim_on;
 #ifdef SPEW_ON
    char ft1[30];
 #endif
@@ -771,7 +771,7 @@ void advance_animations(void)
 // fills in requested types of information about an animating object,
 // returning FALSE iff that object is not in the anim list.  Pass a
 // NULL pointer about a piece of data if you don't want it.
-bool anim_data_from_id(ObjID id, bool* reverse, bool* cycle)
+uchar anim_data_from_id(ObjID id, bool* reverse, bool* cycle)
 {
    int i;
 
@@ -788,10 +788,10 @@ bool anim_data_from_id(ObjID id, bool* reverse, bool* cycle)
 }
 
 #define CHECK_ANIM_SPEED
-errtype add_obj_to_animlist(ObjID id, bool repeat, bool reverse, bool cycle, short speed, int cb_id, void *user_data, short cbtype)
+errtype add_obj_to_animlist(ObjID id, uchar repeat, uchar reverse, uchar cycle, short speed, int cb_id, void *user_data, short cbtype)
 {
    int i=0;
-   bool replace_me = FALSE;
+   uchar replace_me = FALSE;
    int use_counter = anim_counter;
 #ifdef CHECK_ANIM_SPEED
    char count=0;

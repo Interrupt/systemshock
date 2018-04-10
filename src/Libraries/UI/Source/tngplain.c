@@ -20,20 +20,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <_ui.h>
 
 #pragma require_prototypes off
-bool tng_plain_keycooked(TNG *ptng, ushort key)
+uchar tng_plain_keycooked(TNG *ptng, ushort key)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    IF_SET_RV(tng_cb_keycooked(ptng, key));
    return(retval);
 }
 
-bool tng_plain_mousebutt(TNG *ptng, uchar type, LGPoint loc)
+uchar tng_plain_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
    tng_cb_mousebutt(ptng,type,loc);
    return(TRUE);
 }
 
-bool tng_plain_signal(TNG *ptng, ushort signal)
+uchar tng_plain_signal(TNG *ptng, ushort signal)
 {
    tng_cb_signal(ptng,signal);
    return(TRUE);

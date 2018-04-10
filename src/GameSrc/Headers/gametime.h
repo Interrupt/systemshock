@@ -62,7 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Prototypes
 
 // Increment game time by one frame
-errtype update_state(bool run_time);
+errtype update_state(uchar run_time);
 
 // suspend and resume game time, so that sim doesn't 
 // get run while doing non-real-time stuff.

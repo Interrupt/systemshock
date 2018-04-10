@@ -1446,8 +1446,8 @@ void RenderTest(void)
 	FSSpec					fSpec;
 	cams 						test_cam;
    	fauxrend_context 	*_frc;
-	bool 						_rt_inside=TRUE;
-	bool 						all_axis = FALSE;
+	uchar 						_rt_inside=TRUE;
+	uchar 						all_axis = FALSE;
 	long						time,detailCheck;
 	Str255					str;
 	long						frames = 0L;

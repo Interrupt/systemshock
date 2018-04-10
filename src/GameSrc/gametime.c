@@ -35,6 +35,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "dirac.h"
 #include "framer8.h"
 
+#include "lg.h"
+#include "error.h"
+
 ulong last_real_time = 0;
 char reflex_remainder=0;
 
@@ -45,9 +48,9 @@ char reflex_remainder=0;
 void update_level_gametime(void);
 
 
-errtype update_state(bool time_running)
+errtype update_state(uchar time_running)
 {
-   bool update = TRUE;
+   uchar update = TRUE;
    if (time_running)
    {
       ulong deltat;

@@ -125,7 +125,7 @@ typedef struct CritterProp {
    ubyte proj_offset;      // slow projectile offset (y)
 //   int speed;            
    int   flags;            // flying??, shield??, fixed point?, does it move??
-   bool mirror;            // should it's views be mirrored?
+   uchar mirror;            // should it's views be mirrored?
    ubyte frames[NUM_CRITTER_POSTURES];           // number of animation frames.  
    ubyte anim_speed;
    ubyte attack_sound;     // play this when attacking.  -1 for no sound.

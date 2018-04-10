@@ -29,7 +29,7 @@ errtype tng_textgadget_move(TNG *ptng, short code);
 #pragma require_prototypes off
 
 // For the text tool to communicate with the rest of the universe....
-void tng_textgadget_ui_display(void *ptng, LGRect *)
+void tng_textgadget_ui_display(void *ptng, LGRect * rect)
 {
    //Spew(DSRC_UI_Textgadget, ("About to trigger display from texttool call!\n"));
    //Spew(DSRC_UI_Textgadget, ("r = (%d,%d)(%d, %d)\n",RECT_EXPAND_ARGS(r)));
@@ -39,7 +39,7 @@ void tng_textgadget_ui_display(void *ptng, LGRect *)
       //Spew(DSRC_UI_Textgadget, ("Problem was a null ptng in ui_display...\n"));
 }
 
-bool tng_textgadget_hscroll_changed(void *ui_data, void *user_data)
+uchar tng_textgadget_hscroll_changed(void *ui_data, void *user_data)
 {
    TNG *ptng;
    void *dummy;
@@ -50,7 +50,7 @@ bool tng_textgadget_hscroll_changed(void *ui_data, void *user_data)
    return(FALSE);
 }
 
-bool tng_textgadget_vscroll_changed(void *ui_data, void *user_data)
+uchar tng_textgadget_vscroll_changed(void *ui_data, void *user_data)
 {
    TNG *ptng;
    void *dummy;
@@ -75,7 +75,7 @@ errtype tng_textgadget_init(void *ui_data, TNG *ptng, TNGStyle *sty, ulong optio
    extern TTFontInfo TTTNGFontInfo;
    TTState TTs;
    TTRect TTr;
-   static bool inited=FALSE;
+   static uchar inited=FALSE;
 
    ptxtng = (TNG_textgadget *)GUI_MALLOC(ptng->ui_data, sizeof(TNG_textgadget));
 
@@ -173,7 +173,7 @@ errtype tng_textgadget_init2(TNG *ptng)
 
 // Draw the specified parts (may be all) of the TNG at screen coordinates loc
 // assumes all appropriate setup has already been done!
-errtype tng_textgadget_2d_draw(TNG *ptng, ushort , LGPoint loc)
+errtype tng_textgadget_2d_draw(TNG *ptng, ushort us, LGPoint loc)
 {
    TNG_textgadget *ptxtng;
    LGRect r;
@@ -210,10 +210,10 @@ int tng_textgadget_getvalue(TNG *ptng)
 }
 
 // React appropriately for receiving the specified cooked key
-bool tng_textgadget_keycooked(TNG *ptng, ushort key)
+uchar tng_textgadget_keycooked(TNG *ptng, ushort key)
 {
    short code;
-   bool retval = FALSE;
+   uchar retval = FALSE;
 /*¥¥¥
 
    code = key & 0xff;
@@ -240,15 +240,15 @@ bool tng_textgadget_keycooked(TNG *ptng, ushort key)
 }
 
 // React appropriately for receiving the specified mouse button event
-bool tng_textgadget_mousebutt(TNG *ptng, uchar type, LGPoint loc)
+uchar tng_textgadget_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
    return(tng_cb_mousebutt(ptng,type,loc));
 }
 
 // Handle incoming signals
-bool tng_textgadget_signal(TNG *ptng, ushort signal)
+uchar tng_textgadget_signal(TNG *ptng, ushort signal)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    //Spew(DSRC_UI_Textgadget, ("Textgadget Received signal: %x\n",signal));
    if (signal & TNG_SIGNAL_CHANGED)
       TNG_DRAWPART(ptng, TNG_ALLPARTS);
@@ -268,7 +268,7 @@ errtype tng_textgadget_scroll(TNG *ptng)
 /*¥¥¥
    short code;
    TNG *which_bar;
-   bool increm;
+   uchar increm;
    code = TNG_TG_LASTKEY(ptng);
    which_bar = NULL;
    switch (code)

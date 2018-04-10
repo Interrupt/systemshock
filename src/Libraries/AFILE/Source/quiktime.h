@@ -66,7 +66,7 @@ typedef struct {
 
 typedef struct {
 	ulong ctype;			// chunk type
-	bool isleaf;			// is leaf chunk, or are there subchunks
+	uchar isleaf;			// is leaf chunk, or are there subchunks
 } QT_ChunkInfo;
 
 typedef struct {
@@ -346,9 +346,9 @@ typedef struct {
 } MovieTrack;
 
 typedef struct {			// info about current track, have we gotten
-	bool gotTKHD;			// these important chunks? (TKHD, MDHD, STBL)
-	bool gotMDHD;
-	bool gotSTBL;
+	uchar gotTKHD;			// these important chunks? (TKHD, MDHD, STBL)
+	uchar gotMDHD;
+	uchar gotSTBL;
 } MovieTrackStatus;
 
 #define QTM_MAX_TRACKS 8			// hey, what's in this thing anyway??
@@ -369,7 +369,7 @@ typedef struct {
 //	The following used only when writing movies
 	long offsetStack[QTM_MAX_CHUNK_NESTING];	// stack of lengths to update
 	short indexOffsetStack;		// current index into offset stack
-	bool depth16;					// convert to 16-bit depth when writing
+	uchar depth16;					// convert to 16-bit depth when writing
 } QTM;
 
 //	Prototypes: quiktime.c (reading movie for processing/conversion)
@@ -393,9 +393,9 @@ void QuikWriteMovieAndClose(QTM *pqtm, FILE *fp);
 //	Prototypes: quikconv.c (reading chunks for inspection/dumping)
 
 FILE *QuikOpenFile(char *filename);
-bool QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr);
+uchar QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr);
 void QuikSkipChunk(FILE *fp, QT_ChunkHdr *phdr);
-bool QuikReadChunk(FILE *fp, QT_ChunkHdr *phdr, void *buff, ulong bufflen);
+uchar QuikReadChunk(FILE *fp, QT_ChunkHdr *phdr, void *buff, ulong bufflen);
 void QuikWriteChunkHdr(FILE *fp, QT_ChunkHdr chunkHdr);
 void QuikWriteChunkLength(FILE *fp, long length);
 void QuikWriteChunk(FILE *fp, QT_Ctype ctype, void *data, ulong len);

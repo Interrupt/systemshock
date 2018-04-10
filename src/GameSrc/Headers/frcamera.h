@@ -54,6 +54,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CAM_COOR_CNT    6
 #define CAM_ARGS_CNT    3
 
+#include "lg.h"
+#include "fix.h"
+
 typedef struct {
    uchar  type;                 // camera type code
    ushort obj_id;               // current obj_id, or null if abs used
@@ -61,7 +64,7 @@ typedef struct {
    fix    args[CAM_ARGS_CNT];   // args interpreted based on type
 } cams;
 
-bool    fr_camera_create (cams *cam, int camtype, void *arg1, void *arg2);
+uchar    fr_camera_create (cams *cam, int camtype, void *arg1, void *arg2);
 uchar   fr_camera_modtype(cams *cam, uchar type_on, uchar type_off);
 int     fr_camera_update (cams *cam, void *arg1, int whicharg, void *arg2);
 void    fr_camera_slewone(cams *cam, int which, int how);

@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
-#include "ShockBitmap.h"
+#include "../MacSrc/ShockBitmap.h"
 
 #include "audiolog.h"
 #include "criterr.h"
@@ -138,12 +138,12 @@ static uchar      bcolor[]={GREEN_8_BASE+7,GREEN_8_BASE+3,GREEN_8_BASE,GREEN_8_B
 static int        cur_btn_hgt;
 static char      *cur_mapnote_base=NULL;
 static char      *cur_mapnote_ptr=NULL;
-static bool       last_msg_ok=TRUE;
+static uchar       last_msg_ok=TRUE;
 static ulong      map_scrolltime=0L;
 static int      map_scroll_d=0;
 static char       map_scroll_code=0;
 
-bool pend_check(void);
+uchar pend_check(void);
 
 // default units per second
 // in defiance of Rob, I use the number 13.
@@ -163,11 +163,11 @@ void fsmap_draw_map(void);
 void fsmap_draw_screen(uint chng);
 int s_bf(int btn_id,int todo);
 void fsmap_new_msg(curAMap *amptr);
-bool amap_scroll_handler(uiEvent* ev, LGRegion *r, void* user_data);
+uchar amap_scroll_handler(uiEvent* ev, LGRegion *r, void* user_data);
 void edit_mapnote(curAMap* amptr);
-bool amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte but);
-bool zoom_deal(curAMap *amptr, int btn);
-bool flags_deal(curAMap *amptr, int btn, int todo);
+uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte but);
+uchar zoom_deal(curAMap *amptr, int btn);
+uchar flags_deal(curAMap *amptr, int btn, int todo);
 void btn_init(curAMap *amptr);
 
 
@@ -481,7 +481,7 @@ void fsmap_new_msg(curAMap *amptr)
    chg_set_flg(AMAP_MAP_EV);
 }
 
-bool pend_check(void)
+uchar pend_check(void)
 {
    if (fsmap_btn_pending)
    {
@@ -503,7 +503,7 @@ bool pend_check(void)
 #define LEFT_ARROW_CODE  0xcb
 #define RIGHT_ARROW_CODE  0xcd
 
-bool amap_scroll_handler(uiEvent* ev, LGRegion *, void* )
+uchar amap_scroll_handler(uiEvent* ev, LGRegion * reg, void* v)
 {
    int elapsed, now;
    short code;
@@ -549,7 +549,7 @@ void edit_mapnote(curAMap* amptr)
    }
 }
 
-bool amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte )
+uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte b)
 {
 	extern void mouse_unconstrain(void);
 	int scregion=0;
@@ -698,10 +698,10 @@ bool amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte )
    return TRUE;
 }
 
-bool zoom_deal(curAMap *amptr, int btn)
+uchar zoom_deal(curAMap *amptr, int btn)
 {
    int zfac;
-   bool res;
+   uchar res;
    // now, set up for real 
    if (btn==BTN_ZOOMIN) zfac=1; else zfac=-1;
    res=amap_zoom(amptr,FALSE,zfac);
@@ -720,11 +720,11 @@ bool zoom_deal(curAMap *amptr, int btn)
    return res;
 }
 
-bool flags_deal(curAMap *amptr, int btn, int todo)
+uchar flags_deal(curAMap *amptr, int btn, int todo)
 {
    short flgs=btn_to_amap[btn];
    int todo_bf=todo;
-   bool res;
+   uchar res;
 
 //   mprintf("Think deal with %x - %d\n",flgs,todo);
    if (flgs==0) return FALSE;
@@ -756,7 +756,7 @@ void btn_init(curAMap *amptr)
          flags_deal(amptr,i,AMAP_UNSET);
 }
 
-bool amap_kb_callback(curAMap *amptr, int code)
+uchar amap_kb_callback(curAMap *amptr, int code)
 {
 //   char codewas;
    int exp=0xff; // will get zeroed in case default for codes we ignore

@@ -66,7 +66,7 @@ void mfd_accesscard_expose(MFD* mfd, ubyte control);
 
 void mfd_accesscard_expose(MFD* mfd, ubyte control)
 {
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    if (control == 0)  // MFD is drawing stuff
    {
       // Do unexpose stuff here.  
@@ -113,7 +113,7 @@ void mfd_accesscard_expose(MFD* mfd, ubyte control)
          short x = LEFT_X;
          short y = DISPLAY_TOP_MARGIN;
          short w,h;
-         bool old_wrap = mfd_string_wrap;
+         uchar old_wrap = mfd_string_wrap;
          char buf[256] = "";
          char *s = buf;
          for (i = 1; i <= sizeof(ulong)*8; i++)

@@ -65,9 +65,9 @@ void terrain_object_collide(physics_handle src, ObjID target);
 
 // Internal Prototypes
 fix *localize_object(fix *ax_pt);
-bool _axial_relativize(fix *src_pts, fix *targ_pts, bool vec);
-bool setup_cube_face(fix ndist, fix xp, fix yp, fix xhlf, fix yhlf, int nrm_cmp);
-bool _face_parm_cube(fix *cntr, int x, int y, int z);
+uchar _axial_relativize(fix *src_pts, fix *targ_pts, uchar vec);
+uchar setup_cube_face(fix ndist, fix xp, fix yp, fix xhlf, fix yhlf, int nrm_cmp);
+uchar _face_parm_cube(fix *cntr, int x, int y, int z);
 void _face_secret_repulsor_hack(void);
 void facelet_obj(ObjID cobjid);
 
@@ -93,7 +93,7 @@ fix *localize_object(fix *ax_pt)
 // convert a point into a relative FoRef
 // pass in nothing, oh well
 // implied are the current object, which has a location and an x,y,z
-bool _axial_relativize(fix *src_pts, fix *targ_pts, bool vec) // (fixang l_h, fixang l_p, fixang l_b)
+uchar _axial_relativize(fix *src_pts, fix *targ_pts, uchar vec) // (fixang l_h, fixang l_p, fixang l_b)
 {
 //   fixang l_h, fixang l_p, fixang l_b)
    fixang l_h, l_p, l_b;
@@ -138,7 +138,7 @@ bool _axial_relativize(fix *src_pts, fix *targ_pts, bool vec) // (fixang l_h, fi
    return TRUE;
 }
 
-bool setup_cube_face(fix ndist, fix xp, fix yp, fix xhlf, fix yhlf, int nrm_cmp)
+uchar setup_cube_face(fix ndist, fix xp, fix yp, fix xhlf, fix yhlf, int nrm_cmp)
 {
    fix unit_norm[3];
    fix l_pt[3], walls[4][2], nrm[3];
@@ -166,9 +166,9 @@ bool setup_cube_face(fix ndist, fix xp, fix yp, fix xhlf, fix yhlf, int nrm_cmp)
 
 //#define MIN_SIZE 0x0500
 #define MIN_SIZE 0x0050
-bool _face_parm_cube(fix *cntr, int x, int y, int z)
+uchar _face_parm_cube(fix *cntr, int x, int y, int z)
 {
-   bool rv=FALSE;
+   uchar rv=FALSE;
 //   mprintf("FDPC: o %x %x %x ph %x %x %x, at %x %x %x, size %x %x %x, rad %x\n",
 //      _n_fr_p.x,_n_fr_p.y,_n_fr_p.z,tf_raw_pt[0],tf_raw_pt[1],tf_raw_pt[2],cntr[0],cntr[1],cntr[2],x,y,z,tf_rad);
    if ((y>MIN_SIZE)&&(z>MIN_SIZE))
@@ -191,7 +191,7 @@ bool _face_parm_cube(fix *cntr, int x, int y, int z)
 
 void _face_secret_repulsor_hack(void)
 {
-   extern bool comparator_check(int comparator, ObjID obj, uchar *special_code);
+   extern uchar comparator_check(int comparator, ObjID obj, uchar *special_code);
    int comparator = objTraps[_n_fr_cobj->specID].comparator, r_prm, flg, r_top, r_bot;
    uchar special;
 
@@ -222,7 +222,7 @@ void facelet_obj(ObjID cobjid)
    short objtrip;
    int obj_type=FAUBJ_UNKNOWN;
    char scale = 0;
-   bool tfimp = FALSE;
+   uchar tfimp = FALSE;
 
    // This should do something to distinguish between wall-like terrain and complex terrain
    // values, but I'm not sure what.  Right now they just both keep cranking, although in 

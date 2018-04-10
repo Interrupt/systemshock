@@ -74,6 +74,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "refstuf.h"
 
+#include "lg.h"
+#include "error.h"
+
 //#include <mprintf.h>
 
 // tell me tell me what you're after
@@ -87,7 +90,7 @@ uchar *cone_span_list;
 
 int _fr_x_cen, _fr_y_cen;                   /* center tile for eye */
 
-// static bool cyber_on;
+// static uchar cyber_on;
 
 /*
 static uchar hack_off;

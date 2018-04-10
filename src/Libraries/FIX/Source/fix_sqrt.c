@@ -99,7 +99,7 @@ long quad_sqrt(long hi, long lo)
 	
 	// If 'hi' is non-zero, call FixMath's WideSquareRoot.
 	
-	wide	a;
+	AWide	a;
 	a.hi = hi;
 	a.lo = lo;
 	return(WideSquareRoot(&a));
@@ -258,7 +258,7 @@ found_byte:
 	
 	// Starting with the third iteration, we now actually check for a match.
 	
-	while (true)
+	while (1)
 	{
 		temp = num / divisor;
 		if (temp == divisor)

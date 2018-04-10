@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void main()
 {
    ushort cooked;
-   bool result;
+   uchar result;
    kb_init(NULL);
    kb_set_flags(KBF_BLOCK);
 //   kb_set_state(0x01, KBA_REPEAT);

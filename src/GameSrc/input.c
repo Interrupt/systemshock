@@ -87,6 +87,9 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "tools.h"
 #include "weapons.h"
 
+#include "lg.h"
+#include "error.h"
+
 #ifdef NOT_YET //KLC - for VR headsets
 
 #include <conio.h>
@@ -145,7 +148,7 @@ ubyte fatigue_threshold = 5;
 #define sqr(x) ((x)*(x))
 
 extern LGRect target_screen_rect;
-extern int fr_get_at_raw(frc *fr, int x, int y, bool again, bool transp);
+extern int fr_get_at_raw(frc *fr, int x, int y, uchar again, uchar transp);
 
 extern void mouse_unconstrain(void);
 
@@ -163,8 +166,8 @@ static ushort mouse_constrain_bits = 0;
 
 typedef struct _3d_mouse_stuff
 {
-   bool ldown;
-   bool rdown; 
+   uchar ldown;
+   uchar rdown; 
    int  lastsect;
    LGPoint lastleft;
    LGPoint lastright;
@@ -207,75 +210,75 @@ static uchar posture_keys[NUM_POSTURES] = { 't', 'g', 'b' } ;
 int input_cursor_mode = INPUT_NORMAL_CURSOR;
 int throw_oomph = 5;
 
-bool inp6d_headset=FALSE;
-bool inp6d_stereo=FALSE;
-bool inp6d_doom=FALSE;
-bool inp6d_stereo_active=FALSE;
+uchar inp6d_headset=FALSE;
+uchar inp6d_stereo=FALSE;
+uchar inp6d_doom=FALSE;
+uchar inp6d_stereo_active=FALSE;
 int inp6d_stereo_div=fix_make(3,0x4000);        // 3.25 inches apart
 fix inpJoystickSens=FIX_UNIT;
 
 // checking for game paused
-extern bool game_paused;
+extern uchar game_paused;
 
 #ifdef SVGA_SUPPORT
-extern bool change_svga_mode(short keycode, ulong context, void* data);
+extern uchar change_svga_mode(short keycode, ulong context, void* data);
 #endif
-extern bool toggle_bool_func(short keycode, ulong context, void* thebool);
+extern uchar toggle_bool_func(short keycode, ulong context, void* thebool);
 LGPoint use_cursor_pos;
 
 #ifdef RCACHE_TEST
-extern bool res_cache_usage_func(short keycode, ulong context, void* data);
+extern uchar res_cache_usage_func(short keycode, ulong context, void* data);
 #endif
-//extern bool texture_annihilate_func(short keycode, ulong context, void* data);
+//extern uchar texture_annihilate_func(short keycode, ulong context, void* data);
 
 // 6d wackiness
-bool inp6d_exists=FALSE;
+uchar inp6d_exists=FALSE;
 void inp6d_chk(void);
 
 #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
 #include <i6dvideo.h>
 
 static int  tracker_initial_pos[3]={0,0,0};
-bool recenter_headset(short keycode, ulong context, void* data);
+uchar recenter_headset(short keycode, ulong context, void* data);
 #endif
 
 // globals for doubling headset angular values
-bool  inp6d_hdouble = FALSE;
-bool  inp6d_pdouble = FALSE;
-bool  inp6d_bdouble = FALSE;
+uchar  inp6d_hdouble = FALSE;
+uchar  inp6d_pdouble = FALSE;
+uchar  inp6d_bdouble = FALSE;
 
 // and joysticks, heck, why be efficient
-bool joystick_mouse_emul = FALSE;
+uchar joystick_mouse_emul = FALSE;
 uchar joystick_count=0;
-bool recenter_joystick(short keycode, ulong context, void* data);
+uchar recenter_joystick(short keycode, ulong context, void* data);
 
-bool change_gamma(short keycode, ulong context, void* data);
+uchar change_gamma(short keycode, ulong context, void* data);
 
 // -------------
 //  PROTOTYPES
 // -------------
 void handle_keyboard_fatigue(void);
 void poll_mouse(void);
-bool posture_hotkey_func(short keycode, ulong context, void* data);
-bool eye_hotkey_func(short keycode, ulong context, int data);
+uchar posture_hotkey_func(short keycode, ulong context, void* data);
+uchar eye_hotkey_func(short keycode, ulong context, int data);
 
-void reload_motion_cursors(bool cyber);
+void reload_motion_cursors(uchar cyber);
 void free_cursor_bitmaps();
 void alloc_cursor_bitmaps(void);
 
-int view3d_mouse_input(LGPoint pos, LGRegion* reg, bool move ,int* lastsect);
+int view3d_mouse_input(LGPoint pos, LGRegion* reg, uchar move ,int* lastsect);
 void view3d_dclick(LGPoint pos, frc* fr);
 void look_at_object(ObjID id);
-bool view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data);
+uchar view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data);
 void view3d_rightbutton_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data);
-bool view3d_key_handler(uiCookedKeyEvent* ev, LGRegion* r, void* data);
+uchar view3d_key_handler(uiCookedKeyEvent* ev, LGRegion* r, void* data);
 void use_object_in_3d(ObjID obj);
 
-bool MacQuitFunc(short keycode, ulong context, void* data);
-bool MacResFunc(short keycode, ulong context, void* data);
-bool MacSkiplinesFunc(short keycode, ulong context, void* data);
-bool MacDetailFunc(short keycode, ulong context, void* data);
-bool MacHelpFunc(short keycode, ulong context, void* data);
+uchar MacQuitFunc(short keycode, ulong context, void* data);
+uchar MacResFunc(short keycode, ulong context, void* data);
+uchar MacSkiplinesFunc(short keycode, ulong context, void* data);
+uchar MacDetailFunc(short keycode, ulong context, void* data);
+uchar MacHelpFunc(short keycode, ulong context, void* data);
 
 
 // -------------
@@ -334,7 +337,7 @@ void view3d_unconstrain_mouse(int mouse_bit)
 }
 
 #ifdef PLAYTEST
-bool inp6d_player=TRUE, inp6d_motion=TRUE, inp6d_conform=TRUE;
+uchar inp6d_player=TRUE, inp6d_motion=TRUE, inp6d_conform=TRUE;
 #endif
 
 #endif //NOT_YET
@@ -342,7 +345,7 @@ bool inp6d_player=TRUE, inp6d_motion=TRUE, inp6d_conform=TRUE;
 
 // Sends a motion event to the 3d view.
 
-bool view3d_got_event = FALSE;
+uchar view3d_got_event = FALSE;
 
 void poll_mouse(void)
 {
@@ -358,13 +361,13 @@ void poll_mouse(void)
 }
 
 
-bool checking_mouse_button_emulation = FALSE;
-bool mouse_button_emulated = FALSE;
+uchar checking_mouse_button_emulation = FALSE;
+uchar mouse_button_emulated = FALSE;
 
-bool citadel_check_input(void);
+uchar citadel_check_input(void);
 // HATE HATE HATE HATE
 
-bool citadel_check_input(void)
+uchar citadel_check_input(void)
 {
    if (uiCheckInput())
       return(TRUE);
@@ -485,7 +488,7 @@ int sb_num_pitch = NUM_PITCH;
 int sb_pitch_div = 100 / NUM_PITCH;
 int sb_pitch_angles = FALSE;
 
-bool sb_major_axis = FALSE;
+uchar sb_major_axis = FALSE;
 
 void FilterSpaceballDataMajorAxis( long *vals )
 {
@@ -982,7 +985,7 @@ void sball_chk(void)
 #endif //NOT_YET
 
 
-bool main_kb_callback(uiEvent *h, LGRegion *r, void *udata)
+uchar main_kb_callback(uiEvent *h, LGRegion *r, void *udata)
 {
 
    LGRegion *dummy2;
@@ -1000,7 +1003,7 @@ bool main_kb_callback(uiEvent *h, LGRegion *r, void *udata)
 }
 
 
-bool posture_hotkey_func(short keycode, ulong context, void* data)
+uchar posture_hotkey_func(short keycode, ulong context, void* data)
 {
 #ifndef NO_DUMMIES
    ulong dummy; dummy = context + keycode;
@@ -1009,7 +1012,7 @@ bool posture_hotkey_func(short keycode, ulong context, void* data)
 }
 
 
-bool eye_hotkey_func(short, ulong , int data)
+uchar eye_hotkey_func(short, ulong , int data)
 {
    extern void player_set_eye(byte);
    extern byte player_get_eye(void);
@@ -1073,30 +1076,30 @@ static ushort eye_lvl_keys[] =
 #define NUM_EYE_LVL_KEYS (sizeof(eye_lvl_keys)/sizeof(ushort))
 // -------------------------------------
 // INITIALIZATION
-extern bool reload_weapon_hotkey(short keycode, ulong context, void* data);
+extern uchar reload_weapon_hotkey(short keycode, ulong context, void* data);
 extern errtype simple_load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid);
-extern bool unpause_game_func(short keycode, ulong context, void* data);
-extern bool saveload_hotkey_func(short keycode, ulong context, void* data);
+extern uchar unpause_game_func(short keycode, ulong context, void* data);
+extern uchar saveload_hotkey_func(short keycode, ulong context, void* data);
 #ifdef AUDIOLOGS
-extern bool audiolog_cancel_func(short keycode, ulong context, void* data);
+extern uchar audiolog_cancel_func(short keycode, ulong context, void* data);
 #endif
-extern bool keyhelp_hotkey_func(short keycode, ulong context, void* data);
-extern bool demo_quit_func(short keycode, ulong context, void* data);
-extern bool hud_color_bank_cycle(short keycode, ulong context, void* data);
+extern uchar keyhelp_hotkey_func(short keycode, ulong context, void* data);
+extern uchar demo_quit_func(short keycode, ulong context, void* data);
+extern uchar hud_color_bank_cycle(short keycode, ulong context, void* data);
 extern void init_side_icon_hotkeys(void);
 extern void init_invent_hotkeys(void);
-extern bool toggle_view_func(short keycode, ulong context, void* data);
-bool toggle_profile(short keycode, ulong context, void* data);
+extern uchar toggle_view_func(short keycode, ulong context, void* data);
+uchar toggle_profile(short keycode, ulong context, void* data);
 #ifdef PLAYTEST
-extern bool automap_seen(short keycode, ulong context, void* data);
-extern bool maim_player(short keycode, ulong context, void* data);
-extern bool salt_the_player(short keycode, ulong context, void* data);
-extern bool give_player_hotkey(short keycode, ulong context, void *data);
-extern bool change_clipper(short keycode, ulong context, void *data);
+extern uchar automap_seen(short keycode, ulong context, void* data);
+extern uchar maim_player(short keycode, ulong context, void* data);
+extern uchar salt_the_player(short keycode, ulong context, void* data);
+extern uchar give_player_hotkey(short keycode, ulong context, void *data);
+extern uchar change_clipper(short keycode, ulong context, void *data);
 #endif
 #ifndef PLAYTEST
-extern bool version_spew_func(short keycode, ulong context, void* data);
-extern bool location_spew_func(short keycode, ulong context, void* data);
+extern uchar version_spew_func(short keycode, ulong context, void* data);
+extern uchar location_spew_func(short keycode, ulong context, void* data);
 #endif
 
 #define ckpoint_input(val) Spew(DSRC_TESTING_Test0,("ii %s @%d\n",val,*tmd_ticks));
@@ -1104,7 +1107,7 @@ extern bool location_spew_func(short keycode, ulong context, void* data);
 #define CYB_CURS_ID(i)  (CYBER_CURSOR_BASE+(i))
 #define REAL_CURS_ID(i) (motion_cursor_ids[i])
 
-void reload_motion_cursors(bool cyber)
+void reload_motion_cursors(uchar cyber)
 {
    int i;
    extern short cursor_color_offset;
@@ -1197,7 +1200,7 @@ extern void change_svga_screen_mode(void);
 Boolean	gShowFrameCounter = FALSE;
 Boolean	gShowMusicGlobals = FALSE;
 
-bool MacQuitFunc(short , ulong , void*)
+uchar MacQuitFunc(short , ulong , void*)
 {
 	if (*tmd_ticks > (gGameSavedTime + (5 * CIT_CYCLE)))		// If the current game needs saving...
 	{
@@ -1254,7 +1257,7 @@ bool MacQuitFunc(short , ulong , void*)
 	return TRUE;
 }
 
-bool MacResFunc(short , ulong , void *)
+uchar MacResFunc(short , ulong , void *)
 {
  	DoubleSize = !DoubleSize;
 	change_svga_screen_mode();
@@ -1273,7 +1276,7 @@ bool MacResFunc(short , ulong , void *)
 	return TRUE;
 }
 
-bool MacSkiplinesFunc(short , ulong , void *)
+uchar MacSkiplinesFunc(short , ulong , void *)
 {
 	if (!DoubleSize)							// Skip lines only applies in double-size mode.
 	{
@@ -1286,7 +1289,7 @@ bool MacSkiplinesFunc(short , ulong , void *)
 	return TRUE;
 }
 
-bool MacDetailFunc(short , ulong , void *)
+uchar MacDetailFunc(short , ulong , void *)
 {
 	char	msg[32];
 	char	detailStr[8];
@@ -1325,7 +1328,7 @@ bool MacDetailFunc(short , ulong , void *)
 /*
 // Temporary function.  Remove for final build
 
-bool temp_FrameCounter_func(short , ulong , void *)
+uchar temp_FrameCounter_func(short , ulong , void *)
 {
 	gShowFrameCounter = !gShowFrameCounter;
 	
@@ -1338,7 +1341,7 @@ bool temp_FrameCounter_func(short , ulong , void *)
 // end temp functions
 */
 
-bool MacHelpFunc(short , ulong , void*)
+uchar MacHelpFunc(short , ulong , void*)
 {
 	if (music_on)									// Setup the environment for doing Mac stuff.
 		MacTuneKillCurrentTheme();
@@ -1566,7 +1569,7 @@ void init_input(void)
 #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
       if ((i6d_device==I6D_VFX1)||(i6d_device==I6D_CTM)||(i6d_device==I6D_ALLPRO))
       {
-         extern bool fullscrn_vitals, fullscrn_icons;
+         extern uchar fullscrn_vitals, fullscrn_icons;
          i6s_event *inp6d_geth;
          do {
             inp6d_geth=i6_poll();
@@ -1672,9 +1675,9 @@ LGCursor object_cursor;
 // ------------------------------------------------------------------------------
 // view3d_rightbutton_handler deals with firing/throwing objects in 3d.  
 
-bool mouse_jump_ui = TRUE;
-bool fire_slam = FALSE;
-bool left_down_jump = FALSE;
+uchar mouse_jump_ui = TRUE;
+uchar fire_slam = FALSE;
+uchar left_down_jump = FALSE;
 
 void reset_input_system(void)
 {
@@ -1690,7 +1693,7 @@ void reset_input_system(void)
 }
 
 #define DROP_REGION_Y(reg) ((reg)->abs_y + 7*RectHeight((reg)->r)/8)
-bool weapon_button_up = TRUE;
+uchar weapon_button_up = TRUE;
 
 
 // ---------
@@ -1701,7 +1704,7 @@ bool weapon_button_up = TRUE;
 // view3d_mouse_input sets/unsets physics controls based on mouse position in 3d 
 
 // return whether any control was applied
-int view3d_mouse_input(LGPoint pos, LGRegion* reg,bool move,int* lastsect)
+int view3d_mouse_input(LGPoint pos, LGRegion* reg,uchar move,int* lastsect)
 {  // do we really recompute these every frame?? couldnt we have a context or something... something, a call to reinit, something
    static int dougs_goofy_hack=FALSE;
 
@@ -1709,8 +1712,8 @@ int view3d_mouse_input(LGPoint pos, LGRegion* reg,bool move,int* lastsect)
    byte xvel = 0;
    byte yvel = 0;
    byte xyrot = 0;
-   bool thrust = FALSE;
-   bool cyber = global_fullmap->cyber && time_passes;
+   uchar thrust = FALSE;
+   uchar cyber = global_fullmap->cyber && time_passes;
 
    short   cx, cy, cw, ch, x, y;
 
@@ -1867,7 +1870,7 @@ int view3d_mouse_input(LGPoint pos, LGRegion* reg,bool move,int* lastsect)
 void view3d_rightbutton_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
 {
    extern LGCursor fire_cursor;
-   extern bool hack_takeover;
+   extern uchar hack_takeover;
    LGPoint aimpos = ev->pos;
 
 	if (DoubleSize)																// If double sizing, convert the y to 640x480, then
@@ -1963,9 +1966,9 @@ void view3d_rightbutton_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data
 // ----------------------------------------------------------------
 // use_object_in_3d deals with double-clicking on an object in the 3d
 
-bool check_object_dist(ObjID obj1, ObjID obj2, fix crit)
+uchar check_object_dist(ObjID obj1, ObjID obj2, fix crit)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    extern fix ID2radius(ObjID);
    fix critrad = ID2radius(obj2);
    fix dx = fix_from_obj_coord(objs[obj1].loc.x) - fix_from_obj_coord(objs[obj2].loc.x);
@@ -1988,10 +1991,10 @@ bool check_object_dist(ObjID obj1, ObjID obj2, fix crit)
 
 void use_object_in_3d(ObjID obj)
 {
-   bool success = FALSE;
+   uchar success = FALSE;
    ObjID telerod = OBJ_NULL;
-   bool showname = FALSE;
-   extern bool object_use(ObjID id, bool in_inv, ObjID cursor_obj);
+   uchar showname = FALSE;
+   extern uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj);
    extern ObjID physics_handle_id[MAX_OBJ];
    int mode = USE_MODE(obj);
    char buf[80];
@@ -2303,7 +2306,7 @@ void view3d_dclick(LGPoint pos, frc* )
 {
    extern short loved_textures[];
    extern char* get_texture_use_string(int,char*,int);
-   extern bool hack_takeover;
+   extern uchar hack_takeover;
    short obj_trans, obj;
    frc *use_frc;
 
@@ -2360,10 +2363,10 @@ void view3d_dclick(LGPoint pos, frc* )
 
 // -------------------------------------------------------------------------------
 // view3d_mouse_handler is the actual installed mouse handler, dispatching to the above functions
-bool view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
+uchar view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
 {
-   static bool got_focus = FALSE;
-   bool retval = TRUE;
+   static uchar got_focus = FALSE;
+   uchar retval = TRUE;
    LGPoint pt;
    LGPoint evp = ev->pos;
    extern int _fr_glob_flags;
@@ -2373,8 +2376,8 @@ bool view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
 #ifdef STEREO_SUPPORT
    if (convert_use_mode == 5)
    {
-      extern bool inventory_mouse_handler(uiEvent* ev, LGRegion* r, void* data);
-      extern bool mfd_view_callback(uiEvent *e, LGRegion *r, void *udata);
+      extern uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void* data);
+      extern uchar mfd_view_callback(uiEvent *e, LGRegion *r, void *udata);
       switch (i6d_device)
       {
          case I6D_CTM:
@@ -2519,10 +2522,10 @@ typedef struct _view3d_kdata
 
 #define FIRE_KEY KEY_SPACE  //KLC for PC was KEY_ENTER
 
-bool view3d_key_handler(uiCookedKeyEvent* ev, LGRegion* r, void* )
+uchar view3d_key_handler(uiCookedKeyEvent* ev, LGRegion* r, void* )
 {
-	bool retval = FALSE;
-//KLC   static bool fire_key_down = FALSE;
+	uchar retval = FALSE;
+//KLC   static uchar fire_key_down = FALSE;
 	LGPoint evp;
 	
 	if (ev->code == DOWN(FIRE_KEY))									// If fire key was pressed
@@ -2692,15 +2695,15 @@ void slam_head(short *angs)
 #define USE_UPPER_BOUND   (CIT_CYCLE/4)
 #define RELOAD_TIME       (CIT_CYCLE*2)
 
-bool reload_current_weapon(void);
-bool inp_reloaded = FALSE;
-bool inp_sidestep = FALSE;
+uchar reload_current_weapon(void);
+uchar inp_reloaded = FALSE;
+uchar inp_sidestep = FALSE;
 int use_but_time = 0;
 int weap_time = 0;
-void inp_weapon_button(bool pull)
+void inp_weapon_button(uchar pull)
 {
    int w = player_struct.actives[ACTIVE_WEAPON];                // check if we need to reload
-   bool reloaded = FALSE;
+   uchar reloaded = FALSE;
 
    if (object_on_cursor)
    {
@@ -3015,7 +3018,7 @@ void swift_chk(void)
 // various hacked hotkey functions....
 #pragma disable_message(202)
 #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
-bool recenter_headset(short keycode, ulong context, void* data)
+uchar recenter_headset(short keycode, ulong context, void* data)
 {
    long start_time=*tmd_ticks;
    i6s_event *inp6d_geth;
@@ -3034,14 +3037,14 @@ bool recenter_headset(short keycode, ulong context, void* data)
 }
 #endif
 
-bool recenter_joystick(short keycode, ulong context, void* data)
+uchar recenter_joystick(short keycode, ulong context, void* data)
 {
    joy_center();
    string_message_info(REF_STR_CenterJoyDone);
    return FALSE;
 }
 
-bool change_gamma(short keycode, ulong context, void* data)
+uchar change_gamma(short keycode, ulong context, void* data)
 {
    static fix cit_gamma=fix_make(1,0);
    int dir=(int)data;
@@ -3074,7 +3077,7 @@ void cyberman_chk(void)
 //   static inp6d_raw_event last_swift;
    i6s_event *inp6d_in;
    int xp, yp, zv, h, p, b;
-   static bool cyb_mouse_around=TRUE, pchange=FALSE;
+   static uchar cyb_mouse_around=TRUE, pchange=FALSE;
    static int p_vel=0, b_vel=0; // , h_vel=0;
 
    // we'll want to put in code here to check for mouse_button_emulation
@@ -3284,7 +3287,7 @@ void joystick_chk(void)
    uchar bstate;
 
    // this has to be fixed...
-   { static bool once=0; if (!once) { once=1; joy_center(); } }   // i wonder if we can punt this???
+   { static uchar once=0; if (!once) { once=1; joy_center(); } }   // i wonder if we can punt this???
 
    bstate=joy_read_buttons();
    if (checking_mouse_button_emulation && (last_bstate != bstate))
@@ -3368,9 +3371,9 @@ void joystick_chk(void)
 #ifdef PLAYTEST
 #include <wsample.h>
 #pragma disable_message(202)
-bool toggle_profile(short keycode, ulong context, void* data)
+uchar toggle_profile(short keycode, ulong context, void* data)
 {
-   static bool UserProf=FALSE;
+   static uchar UserProf=FALSE;
    if (UserProf)
 	   _MARK_("User Off");
    else

@@ -73,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define HKSORT_KEYCODE  1
 #define HKSORT_ASCII    2
 
-typedef bool (*hotkey_callback)(short keycode, ulong context, void* state); 
+typedef uchar (*hotkey_callback)(short keycode, ulong context, void* state); 
 
 typedef struct _hotkey_entry
 {
@@ -130,7 +130,7 @@ errtype hotkey_shutdown(void);
 // shut down the hotkey system.
 
 #ifdef GODDAMN_THIS_MESS_IS_IMPOSSIBLE
-bool hotkey_list(char **item, int sort_type);
+uchar hotkey_list(char **item, int sort_type);
 // stores in item a string that is the next hotkey string off of the
 // list, along with it's help text.  Returns whether or not there
 // are more hotkeys to list out.  sort_type determines what sorting

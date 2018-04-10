@@ -61,8 +61,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //¥¥¥ For now
 //#define DBG_ON		1
 
-#include <Files.h>
+//#include <Files.h> (hmm!)
+#include <MacTypes.h>
 #include "lg.h"
+#include "restypes.h"
+
+#include <Carbon/Carbon.h>
 
 //#ifndef DATAPATH_H
 //#include <datapath.h>
@@ -96,6 +100,9 @@ typedef ushort RefIndex;	// index part of ref
 #define ID_HEAD 1			// holds head ptr for LRU chain
 #define ID_TAIL 2			// holds tail ptr for LRU chain
 #define ID_MIN 3			// id's from 3 and up are valid
+
+#define fsRdPerm 1
+#define fsRdWrPerm 3
 
 //	---------------------------------------------------------
 //		ACCESS TO RESOURCES (ID'S)  (resacc.c)
@@ -215,7 +222,7 @@ typedef enum
 } ResOpenMode;
 
 void ResAddPath(char *path);		// add search path for resfiles
-short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, bool auxinfo);
+short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, uchar auxinfo);
 void ResCloseFile(short filenum);	// close res file
 
 #define ResOpenFile(specPtr) ResOpenResFile(specPtr, ROM_READ, FALSE)

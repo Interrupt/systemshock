@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 
-#include "ai.h"
+#include "Headers/ai.h"
 #include "aiflags.h"
 #include "objects.h"
 #include "objsim.h"
@@ -103,7 +103,7 @@ void ai_find_player(ObjID id)
       last_known_loc = objs[PLAYER_OBJ].loc;
    else
    {
-      bool slow_proj = FALSE;
+      uchar slow_proj = FALSE;
       CritterProp cp = CritterProps[CPNUM(id)];
       // Some of the time they shoot at yer head, the other times at yer body.
       // Unless they have a slow projectile, in which case they always shoot at yer head.
@@ -228,7 +228,7 @@ void ai_critter_seen(void)
 }
 
 
-errtype ai_critter_hit(ObjSpecID osid, short damage, bool tranq, bool stun)
+errtype ai_critter_hit(ObjSpecID osid, short damage, uchar tranq, uchar stun)
 {
 	char i,j;
    short r;
@@ -252,7 +252,7 @@ errtype ai_critter_hit(ObjSpecID osid, short damage, bool tranq, bool stun)
       case ROBOBABE_TRIPLE:
          {
             extern uchar *shodan_bitmask;
-            extern void shodan_phase_in(uchar *bitmask, short x, short y, short w, short h, short num, bool dir);
+            extern void shodan_phase_in(uchar *bitmask, short x, short y, short w, short h, short num, uchar dir);
             shodan_phase_in(shodan_bitmask, 0, 0, FULL_VIEW_WIDTH, FULL_VIEW_HEIGHT, damage << 4 , FALSE);
          }
          break;
@@ -502,7 +502,7 @@ errtype roll_on_dnd_treasure_tables(int *pcont, char treasure_type)
 {
    char perc;
    char count = 0;
-   bool give, done = FALSE;
+   uchar give, done = FALSE;
    int chance, trip;
 
    perc = rand()%100;
@@ -666,7 +666,7 @@ errtype ai_critter_really_dead(ObjSpecID osid)
    return(OK);
 }
 
-bool pacifism_on;
+uchar pacifism_on;
 #define AUTOBOMB_RANGE  fix_make(3,0)
 
 void ai_misses(ObjSpecID osid)
@@ -771,7 +771,7 @@ errtype ai_attack_player(ObjSpecID osid, char a)
       if (CritterProps[cp_num].attacks[a].slow_proj == 0)
       {
 #ifdef PLAYTEST
-         extern bool prevent_ray_spew;
+         extern uchar prevent_ray_spew;
          prevent_ray_spew = FALSE;
 #endif
 		   hit_obj = ray_cast_attack(objCritters[osid].id,

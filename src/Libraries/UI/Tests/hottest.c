@@ -30,7 +30,7 @@ uchar keybuf[512];
 #define PING 1
 #define PONG 2
 
-bool toggle_mode(short keycode, ulong context, void* state)
+uchar toggle_mode(short keycode, ulong context, void* state)
 {
    if (context == PING)
    {
@@ -46,21 +46,21 @@ bool toggle_mode(short keycode, ulong context, void* state)
 }
 
 
-bool ping(short keycode, ulong context, void* state)
+uchar ping(short keycode, ulong context, void* state)
 {
    printf("PING\n");
    return TRUE;
 }
 
 
-bool pong(short keycode, ulong context, void* state)
+uchar pong(short keycode, ulong context, void* state)
 {
    printf("PONG %x\n",state);
    return TRUE;
 }
 
 
-bool quit(short keycode, ulong context, void* state)
+uchar quit(short keycode, ulong context, void* state)
 {
    printf("Hey, look!  I'm an Origin Game!\n");
    return *(bool*)state = TRUE;
@@ -68,7 +68,7 @@ bool quit(short keycode, ulong context, void* state)
 
 void main()
 {
-   bool done = FALSE;
+   uchar done = FALSE;
    hotkey_init(10);
    hotkey_add(' '|KB_FLAG_DOWN,PING|PONG,toggle_mode,NULL);
    hotkey_add_help('x'|KB_FLAG_DOWN|KB_FLAG_CTRL,PING|PONG,quit,&done,"HELP TEXT");
@@ -82,7 +82,7 @@ void main()
    while(!done)
    {
       ushort cooked;
-      bool result;
+      uchar result;
 /*
       cooked = getc(stdin) |  KB_FLAG_DOWN;
       hotkey_dispatch(cooked);

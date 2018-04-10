@@ -37,10 +37,10 @@ typedef struct {
 LGRegion *trav_get_first(LGRegion *reg, int order);
 LGRegion *trav_get_next(LGRegion *curp, int order);
 errtype region_place(LGRegion *reg);
-errtype region_remove(LGRegion *reg, bool draw);
+errtype region_remove(LGRegion *reg, uchar draw);
 void region_moverect(LGRegion *reg, int delta_x, int delta_y, int move_rel);
 void region_propagate_callback(LGRegion *reg,  ulong callback_code, LGRect *arg_rect);
-bool reg_exp_CB(LGRegion *reg, LGRect *rc, void *data);
+uchar reg_exp_CB(LGRegion *reg, LGRect *rc, void *data);
 errtype region_expose_absolute(LGRegion *reg, LGRect *newr);
 errtype region_manage_place(LGRegion *reg);
 errtype region_manage_remove(LGRegion *reg);
@@ -49,8 +49,8 @@ errtype region_abs_rect(LGRegion *reg, LGRect *orig_rect, LGRect *conv);
 errtype region_set_moving(LGRegion *reg, int val);
 int region_convert_tochild(LGRegion *from_reg, LGRect *orig, LGRect *conv);
 int region_convert_toparent(LGRegion *from_reg, LGRect *orig, LGRect *conv);
-bool is_child(LGRegion *poss_parent, LGRegion *child);
-bool region_obscured_callback(LGRegion *reg, LGRect *r, void *data);
+uchar is_child(LGRegion *poss_parent, LGRegion *child);
+uchar region_obscured_callback(LGRegion *reg, LGRect *r, void *data);
 Region_Sequence_Element *get_rse_from_pool();
 errtype return_rse_to_pool(Region_Sequence_Element *rse);
 errtype region_add_sequence_expose(LGRegion *reg, LGRect exp_rect);
@@ -58,7 +58,7 @@ errtype region_add_sequence_expose(LGRegion *reg, LGRect exp_rect);
 /* Globals */
 
 int region_in_sequence = 0;
-bool region_system_init = FALSE, region_found;
+uchar region_system_init = FALSE, region_found;
 slist_head sequence_header;
 LGRegion *obsc_region, *current_expose_region;
 
@@ -147,7 +147,7 @@ errtype region_create(LGRegion *parent, LGRegion *ret, LGRect *r, int z, int eve
    return(OK);
 }
 
-errtype region_destroy(LGRegion *reg, bool draw)
+errtype region_destroy(LGRegion *reg, uchar draw)
 {
    LGRegion *curp, *lastp, *nextp;
    extern errtype uiShutdownRegionHandlers(LGRegion* r);
@@ -501,7 +501,7 @@ errtype region_place(LGRegion *reg)
    return(OK);
 }
 
-errtype region_remove(LGRegion *reg, bool draw)
+errtype region_remove(LGRegion *reg, uchar draw)
 {
    // This is currently a very stupid algorithm with lots of flicker and wasted effort
    // Needs to be made better!
@@ -605,10 +605,10 @@ void region_propagate_callback(LGRegion *reg,  ulong callback_code, LGRect *arg_
    }
 }
 
-bool reg_exp_CB(LGRegion *reg, LGRect *rc, void *data)
+uchar reg_exp_CB(LGRegion *reg, LGRect *rc, void *data)
 {
-   bool *dbp;
-   dbp = (bool *)data;
+   uchar *dbp;
+   dbp = (uchar *)data;
    if ((!(*dbp)) && !(current_expose_region->moving))
    {
       if (reg == current_expose_region)
@@ -632,7 +632,7 @@ bool reg_exp_CB(LGRegion *reg, LGRect *rc, void *data)
 errtype region_expose_absolute(LGRegion *reg, LGRect *newr)
 {
    LGRect absr, dummy_rect;
-   bool draw_beneath = TRUE;
+   uchar draw_beneath = TRUE;
    LGRegion *par;
 
    absr.ul.x = reg->abs_x; absr.ul.y = reg->abs_y;
@@ -728,9 +728,9 @@ errtype region_abs_rect(LGRegion *reg, LGRect *orig_rect, LGRect *conv)
    return((errtype)OK);
 }
 
-bool is_child(LGRegion *poss_parent, LGRegion *child)
+uchar is_child(LGRegion *poss_parent, LGRegion *child)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    LGRegion *curp;
 
    if (child == poss_parent)
@@ -750,9 +750,9 @@ bool is_child(LGRegion *poss_parent, LGRegion *child)
    return(FALSE);
 }
 
-bool ignore_children;
+uchar ignore_children;
 
-bool region_obscured_callback(LGRegion *reg, LGRect *r, void *data)
+uchar region_obscured_callback(LGRegion *reg, LGRect *r, void *data)
 {
    int *ival;
    LGRect ar1, ar2;
@@ -859,7 +859,7 @@ errtype init_rse_pool()
    return(OK);
 }
 
-errtype region_end_sequence(bool replay)
+errtype region_end_sequence(uchar replay)
 {
    Region_Sequence_Element *pnode,*pnode_prior,*pnode_next;
 
@@ -887,7 +887,7 @@ errtype region_end_sequence(bool replay)
 errtype region_add_sequence_expose(LGRegion *reg, LGRect exp_rect)
 {
    Region_Sequence_Element *rse, *pnode;
-   bool add_flag = TRUE;
+   uchar add_flag = TRUE;
    rse = get_rse_from_pool();
    if (rse == NULL)
    {
@@ -954,7 +954,7 @@ errtype region_manage_remove(LGRegion *reg)
    return(OK);
 }
 
-errtype region_set_invisible(LGRegion* reg, bool invis)
+errtype region_set_invisible(LGRegion* reg, uchar invis)
 {
    if (invis)
       reg->status_flags |= INVISIBLE_FLAG;
@@ -963,7 +963,7 @@ errtype region_set_invisible(LGRegion* reg, bool invis)
    return OK;
 }
 
-errtype region_get_invisible(LGRegion* reg, bool* invis)
+errtype region_get_invisible(LGRegion* reg, uchar* invis)
 {
    *invis = (reg->status_flags & INVISIBLE_FLAG) != 0;
    return OK;

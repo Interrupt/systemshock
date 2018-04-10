@@ -165,7 +165,7 @@ command cmd_list[] =
 	"exit",				CMD_QUIT
 };
 
-bool check_args (int num)
+uchar check_args (int num)
 {
 	if (num_args >= num)
 		return TRUE;
@@ -177,12 +177,12 @@ bool check_args (int num)
 }
 
 // okay, this is now hairy enough that I should probably comment it
-void parse (char *str, bool command)
+void parse (char *str, uchar command)
 {
 	char *c;										// pointer to current char in str
 	int val;										// value of current arg
-	bool neg = FALSE;							// is this arg negative?
-	bool frac = FALSE;						// is this arg really a fraction (after decimal point)?
+	uchar neg = FALSE;							// is this arg negative?
+	uchar frac = FALSE;						// is this arg really a fraction (after decimal point)?
 	int i;										// counter
 	int den;										// denominator of fraction
 

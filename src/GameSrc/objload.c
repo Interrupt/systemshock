@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 errtype voxel_convert(grs_bitmap *bmp);
 void load_treasure_table(uchar *loadme, char cp);
 void compute_complex_loadage(uchar *loadme);
-grs_bitmap *get_objbitmap_from_pool(int i, bool t);
+grs_bitmap *get_objbitmap_from_pool(int i, uchar t);
 
 
 // Transform the bitmap from a greyscale drawing to an actual 0-16 depth map
@@ -149,7 +149,7 @@ void compute_complex_loadage(uchar *loadme)
 // of integration
 // t    is 0 for 2d bitmaps
 //         1 for 3d bitmaps
-grs_bitmap *get_objbitmap_from_pool(int i, bool t)
+grs_bitmap *get_objbitmap_from_pool(int i, uchar t)
 {
 //   Warning(("objbitmap_from_pool (%d, %d, %d vs %d)\n",i,t,(t*NUM_OBJECT) + i,OBJ_BITMAP_POOL_SIZE));
    if (((t * NUM_OBJECT) + i) > OBJ_BITMAP_POOL_SIZE)
@@ -167,9 +167,9 @@ ulong objart_loadsize = 0;
 
 #define APPROX_REF_TAB_SIZE 7000
 
-static bool bitmap_zero_loaded = FALSE;
+static uchar bitmap_zero_loaded = FALSE;
 
-errtype obj_load_art(bool flush_all)
+errtype obj_load_art(uchar flush_all)
 {
    uchar loadme[NUM_OBJECT_BIT_LEN];
    LGRect dummy_anchor;
@@ -177,8 +177,8 @@ errtype obj_load_art(bool flush_all)
    int objfnum;
    RefTable *prt;
    short i,f;
-   extern bool empty_bitmap(grs_bitmap *bmp);
-   bool ref_buffer_used = TRUE;
+   extern uchar empty_bitmap(grs_bitmap *bmp);
+   uchar ref_buffer_used = TRUE;
 
    if (flush_all)
       ObjLoadMeClearAll();
@@ -190,7 +190,7 @@ errtype obj_load_art(bool flush_all)
    // If no, punt out now, duh.
    if ((!flush_all) && (start_mem < BIG_CACHE_THRESHOLD))
    {
-      bool different = FALSE;
+      uchar different = FALSE;
       for (i=0; (i < NUM_OBJECT) && !different; i++)
       {
          if ((ObjLoadMeCheck(i) && (bitmaps_2d[i] == NULL)) ||
@@ -262,7 +262,7 @@ errtype obj_load_art(bool flush_all)
 			   ObjProps[i].bitmap_3d = ObjProps[i].bitmap_3d | count_3d;
             for (f=0; f < (FRAME_NUM_3D(ObjProps[i].bitmap_3d) + 1); f++)
             {
-               bool  not_using_2d = FALSE;
+               uchar  not_using_2d = FALSE;
 
                if ((f == 0) && (empty_bitmap(bitmaps_2d[i])))
                {

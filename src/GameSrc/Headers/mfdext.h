@@ -110,18 +110,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Externs
 // -------
 
-extern void set_inventory_mfd(ubyte l_class, ubyte type,bool grab);
+extern void set_inventory_mfd(ubyte l_class, ubyte type,uchar grab);
 extern void init_newmfd();
-extern void screen_init_mfd(bool fullscrn);
+extern void screen_init_mfd(uchar fullscrn);
 extern void screen_init_mfd_draw();
 extern void keyboard_init_mfd();
 extern void mfd_update();
-extern void mfd_notify_func(ubyte func, ubyte slot, bool grab, MFD_Status stat, bool FullRedraw);
+extern void mfd_notify_func(ubyte func, ubyte slot, uchar grab, MFD_Status stat, uchar FullRedraw);
 extern void mfd_force_update_single(int which_mfd);
 extern void mfd_force_update();
 extern int mfd_grab(void);
 extern int mfd_grab_func(int my_func, int my_slot);
-extern bool mfd_yield_func(int func, int* mfd_id);
+extern uchar mfd_yield_func(int func, int* mfd_id);
 extern void mfd_change_slot(ubyte mfd_id, ubyte l_new);
 extern void save_mfd_slot(int mfd_id);
 extern void restore_mfd_slot(int mfd_id);

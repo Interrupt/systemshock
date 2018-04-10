@@ -49,18 +49,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <_system.h>
 //#include <_lg.h>
 
-bool textures_loaded = FALSE;
+uchar textures_loaded = FALSE;
 
 #define READ(fd,x) read(fd,(char*)&(x),sizeof(x))
 
 Id tmap_ids[NUM_TEXTURE_SIZES] = { TEXTURE_128_ID, TEXTURE_64_ID, TEXTURE_32_ID, TEXTURE_16_ID};
 ushort tmap_sizes[NUM_TEXTURE_SIZES] = { 128, 64, 32, 16 };
-bool all_textures=TRUE;
+uchar all_textures=TRUE;
 
 extern uchar tmap_big_buffer[];
 
 // prototypes
-bool set_animations(short start,short frames, uchar *anim_used);
+uchar set_animations(short start,short frames, uchar *anim_used);
 errtype load_small_texturemaps(void);
 void setup_tmap_bitmaps(void);
 void free_textures(void);
@@ -79,7 +79,7 @@ extern void FlipLong(long *lng);
 #define CHECK_ANIM_USED(x) anim_used[(x) >> 3] & (1 << ((x) & 0x7))
 
 #define ACTUAL_SMALL_ANIMS 101
-bool set_animations(short start,short frames, uchar *anim_used)
+uchar set_animations(short start,short frames, uchar *anim_used)
 {
    int loop;
    // Note that NUM_ACTUAL_SMALL_ANIMS contains the actual number of valid
@@ -99,7 +99,7 @@ errtype load_small_texturemaps(void)
 {
    Id id = TEXTURE_SMALL_ID;
    char i = 0;
-   extern bool obj_is_display(int triple);
+   extern uchar obj_is_display(int triple);
    int d;
    char rv=0;
    ObjSpecID osid;
@@ -165,7 +165,7 @@ extern uchar      *tmap_dynamic_mem=NULL;
 #define get_tmap_16x16(i)   ((uchar *)&tmap_static_mem[(i*SIZE_STATIC_TMAP)+(64*64)+(32*32)])
 
 // have we built the tables, do we have the extra memory, so on
-static bool tmaps_setup=FALSE;
+static uchar tmaps_setup=FALSE;
 
 
 static grs_bitmap tmap_bitmaps[NUM_TEXTURE_SIZES];
@@ -324,7 +324,7 @@ errtype bitmap_array_unload(int *num_bitmaps, grs_bitmap *arr[])
    return(OK);
 }
 
-bool empty_bitmap(grs_bitmap *bmp)
+uchar empty_bitmap(grs_bitmap *bmp)
 {
    uchar *cur=&bmp->bits[0], *targ=cur+(bmp->w*bmp->h);
    while (cur<targ)
@@ -628,8 +628,8 @@ errtype texture_crunch_go(void)
 #ifdef TEXTURE_ANNIHILATION
 #define NUM_DEMO_TEXTURES 32
 #pragma disable_message(202)
-bool salvation_list[GAME_TEXTURES];
-bool texture_annihilate_func(short keycode, ulong context, void* data)
+uchar salvation_list[GAME_TEXTURES];
+uchar texture_annihilate_func(short keycode, ulong context, void* data)
 {
    int fn;
    int i,c;

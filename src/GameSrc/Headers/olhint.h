@@ -45,7 +45,7 @@ typedef struct _olh_data
 
 extern olh_data olh_object;
 
-extern bool olh_candidate(ObjID obj);
+extern uchar olh_candidate(ObjID obj);
 
 
 

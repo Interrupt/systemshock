@@ -55,13 +55,13 @@ typedef struct _pqueue
    int size;
    int fullness;
    int elemsize;
-   bool grow;
+   uchar grow;
    char* vec;
    QueueCompare comp;
 } PQueue;
 
 // Prototypes
-errtype pqueue_init(PQueue* q, int size, int elemsize, QueueCompare comp,  bool grow);
+errtype pqueue_init(PQueue* q, int size, int elemsize, QueueCompare comp,  uchar grow);
 // Initializes a Priority queue to a particular size, with a 
 // particular element size and comparison function.
 

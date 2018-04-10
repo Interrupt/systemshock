@@ -79,7 +79,7 @@ static char *tableNames[] = {
 
 	FILE *fpi;
 	int iarg;
-	bool dumpChunkHdrs;
+	uchar dumpChunkHdrs;
 	long length;
 	MovieChunk *pmc,*pmcBase;
 	char infile[128];

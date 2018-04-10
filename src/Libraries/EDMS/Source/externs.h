@@ -75,7 +75,7 @@ extern int min_physics_handle;
 extern const Q min_scale_slice;
 
 // does A contain the current state of awake objects, instead of S?
-extern bool A_is_active;
+extern uchar A_is_active;
 
 //// interfac.cc
 
@@ -150,7 +150,7 @@ void  delete_object( int );         //based on arguments...
 void  state_write_object( int );    //and state.
 void  state_delete_object( int );
 int   are_you_there( int object );
-bool  object_check_hash (int object, int hx, int hy);
+uchar  object_check_hash (int object, int hx, int hy);
 
 extern unsigned int test_bitmask;
 

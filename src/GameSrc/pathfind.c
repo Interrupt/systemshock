@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  PROTOTYPES
 //------------
 errtype find_path(char path_id);
-short tile_height(MapElem *pme, char dir, bool floor);
+short tile_height(MapElem *pme, char dir, uchar floor);
 uchar pf_obj_height(MapElem *pme, uchar old_z);
 
 
@@ -72,7 +72,7 @@ uchar pf_obj_height(MapElem *pme, uchar old_z);
 
 // Note that a dest_z of 0 means to ignore that whole concept
 // dest_z and start_z are in objLoc height coordinates, since that is the easiest API
-char request_pathfind(LGPoint source, LGPoint dest, uchar dest_z, uchar start_z, bool priority)
+char request_pathfind(LGPoint source, LGPoint dest, uchar dest_z, uchar start_z, uchar priority)
 {
    char i = 0;
 
@@ -167,7 +167,7 @@ char next_step_on_path(char path_id, LGPoint *next, char *steps_left)
 // Checks whether or not we have skipped ahead to some square within LOOKAHEAD_STEPS
 // of the "current" location for the specified path.  If so, jumps the path to that point and 
 // returns TRUE.
-bool check_path_cutting(LGPoint new_sq, char path_id)
+uchar check_path_cutting(LGPoint new_sq, char path_id)
 {
    LGPoint pt;
    char count;
@@ -205,7 +205,7 @@ bool check_path_cutting(LGPoint new_sq, char path_id)
 // the clock rather than actually doing it right.
 ulong last_pathfind_time =0;
 // priority means only check priority requests, but always check
-errtype check_requests(bool priority_only)
+errtype check_requests(uchar priority_only)
 {
    char i;
    // Don't bother checking unless it has been at least N ticks,
@@ -314,14 +314,14 @@ char expand_count;
 uchar *pathfind_buffer;
 
 
-bool map_connectivity(spt sq1, spt sq2, char dir, uchar flr1, uchar *new_z, uchar dest_z);
-bool expand_one_square(spt sq, char path_id);
-bool expand_fill_list(char path_id);
+uchar map_connectivity(spt sq1, spt sq2, char dir, uchar flr1, uchar *new_z, uchar dest_z);
+uchar expand_one_square(spt sq, char path_id);
+uchar expand_fill_list(char path_id);
 
 
 // Returns the height at the edge of the tile pme, in the direction dir
 // Return value is in map units!
-short tile_height(MapElem *pme, char dir, bool floor)
+short tile_height(MapElem *pme, char dir, uchar floor)
 {
    uchar retval;
    if (floor)
@@ -390,7 +390,7 @@ short tile_height(MapElem *pme, char dir, bool floor)
 
 #define CRITTERS_OPEN_UNLOCKED_DOORS
 
-bool pf_check_doors(MapElem *pme, char dir, ObjID *open_door)
+uchar pf_check_doors(MapElem *pme, char dir, ObjID *open_door)
 {
    ObjRefID curr;
    ObjID id, which_obj = OBJ_NULL;
@@ -442,9 +442,9 @@ bool pf_check_doors(MapElem *pme, char dir, ObjID *open_door)
 
 // Returns whether or not the two squares can be freely traveled
 // between with respect to door-like objects in the squares.
-bool pf_obj_doors(MapElem *pme1, MapElem *pme2, char dir, ObjID *open_door)
+uchar pf_obj_doors(MapElem *pme1, MapElem *pme2, char dir, ObjID *open_door)
 {
-   bool retval;
+   uchar retval;
 //   Warning(("Top of pf_obj_door!\n"));
    retval = pf_check_doors(pme1, dir, open_door);
 //   Warning(("A: *open_door = %x\n",*open_door));
@@ -517,12 +517,12 @@ uchar pf_obj_height(MapElem *pme, uchar )
 #define PF_CLIMB  1
 
 // flr1, new_z, and dest are all in PFE Z units
-bool map_connectivity(spt sq1, spt sq2, char dir, uchar flr1, uchar *new_z, uchar )
+uchar map_connectivity(spt sq1, spt sq2, char dir, uchar flr1, uchar *new_z, uchar )
 {
    MapElem *pme1, *pme2;
    ObjID temp;
    short flr2,ceil2;
-   bool retval;
+   uchar retval;
 
    pme1 = MAP_GET_XY(SPT_X(sq1),SPT_Y(sq1));
    pme2 = MAP_GET_XY(SPT_X(sq2),SPT_Y(sq2));
@@ -557,7 +557,7 @@ bool map_connectivity(spt sq1, spt sq2, char dir, uchar flr1, uchar *new_z, ucha
 // that point to places that other expansions have been to or
 // that we can't reach.
 // Returns whether or not we reached the destination.
-bool expand_one_square(spt sq, char path_id)
+uchar expand_one_square(spt sq, char path_id)
 {
    spt newsq, dest = PT2SPT(paths[path_id].dest);
    char i;
@@ -604,11 +604,11 @@ bool expand_one_square(spt sq, char path_id)
 // Go through the list of last-iteration's reached squares, and
 // generate a new list of places to go to. 
 // Returns whether or not we reached the destination.
-bool expand_fill_list(char path_id)
+uchar expand_fill_list(char path_id)
 {
    spt s;
    char i;
-   bool done = FALSE;
+   uchar done = FALSE;
    expand_count = 0;
    CLEARSPTLIST(expand_into_list,EXPAND_LIST_SIZE);
    FORALLINSPTLIST(expand_from_list, s, i)
@@ -650,7 +650,7 @@ bool expand_fill_list(char path_id)
 #define PATHFIND_WITH_BIG_BUFFER
 errtype find_path(char path_id)
 {
-   bool done = FALSE;
+   uchar done = FALSE;
    char i,j,step_count=0;
    uchar *ppfe;
 

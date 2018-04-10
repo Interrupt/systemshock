@@ -213,13 +213,13 @@ errtype tng_quickbox_size(TNG *ptng, LGPoint *ppt);
 int tng_quickbox_getvalue(TNG *ptng);
 
 // React appropriately for receiving the specified cooked key
-bool tng_quickbox_keycooked(TNG *ptng, ushort key);
+uchar tng_quickbox_keycooked(TNG *ptng, ushort key);
 
 // React appropriately for receiving the specified mouse button event
-bool tng_quickbox_mousebutt(TNG *ptng, uchar type, LGPoint loc);
+uchar tng_quickbox_mousebutt(TNG *ptng, uchar type, LGPoint loc);
 
 // Handle incoming signals
-bool tng_quickbox_signal(TNG *ptng, ushort signal);
+uchar tng_quickbox_signal(TNG *ptng, ushort signal);
 
 // Rename a slot
 errtype tng_quickbox_rename_slot(TNG *qb, int slot_num, char *new_name);

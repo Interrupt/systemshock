@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "physunit.h"
 
 
-bool bullet_debug = FALSE;
+uchar bullet_debug = FALSE;
 ObjID terrain_hit_obj = OBJ_NULL;
 ObjID terrain_hit_exclusion = OBJ_NULL;
 

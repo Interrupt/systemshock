@@ -63,14 +63,14 @@ extern int vxd_maxd;
 #endif
 
 void vmap_dot(fix x0, fix y0, fix dxdu, fix dydu, fix dxdv, fix dydv, fix dxdz, fix dydz, 
-			  int near_ver,vxs_vox *vx,int dotw,int doth,bool clip);
+			  int near_ver,vxs_vox *vx,int dotw,int doth,uchar clip);
 
 // We calculate fdxdu (where uv goes across bitmap)
 // and xy goes across screen
 // x,y seem to be nearest vertex coordinates
 // dz is the amount
 void vmap_dot(fix x0, fix y0, fix dxdu, fix dydu, fix dxdv, fix dydv, fix dxdz, fix dydz, 
-			  int near_ver,vxs_vox *vx,int dotw,int doth,bool clip)
+			  int near_ver,vxs_vox *vx,int dotw,int doth,uchar clip)
 {
    int du,dv,initu,endu,initv,endv;
    int i,j;

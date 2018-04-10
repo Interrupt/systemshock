@@ -95,7 +95,7 @@ errtype hash_delete(Hashtable* h, void* elem);
 // or do nothing if no such element exists.
 
 
-typedef bool (*HashIterFunc)(void* elem, void* data);
+typedef uchar (*HashIterFunc)(void* elem, void* data);
 
 errtype hash_iter(Hashtable* h, HashIterFunc ifunc, void* data);
 // Applies ifunc(elem,data) to every element of h, one at a time, until 

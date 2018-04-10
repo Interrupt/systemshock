@@ -87,9 +87,9 @@ void activate_grenade(ObjSpecID osid);
 void do_explosion(ObjLoc loc, ObjID exclusion, ubyte special_effect, ExplosionData *attack_data);
 
 //void do_explosion(ObjLoc loc, ObjID exclusion, ubyte special_effect, fix radius, fix radius_change, int damage_mod, int damage_change, int dtype, fix knock_mass, fix knock_speed, ubyte offense,ubyte penet);/
-//void do_explosion(ObjID id, bool special_effect);
+//void do_explosion(ObjID id, uchar special_effect);
 
-void do_grenade_explosion(ObjID id, bool special_effect);
+void do_grenade_explosion(ObjID id, uchar special_effect);
 
 void grenade_stopped(ObjID id);
 void grenade_contact(ObjID id, int severity);

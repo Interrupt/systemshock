@@ -53,6 +53,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frintern.h"
 #include "frparams.h"
 #include "frflags.h"
+#include "error.h"
+#include <Carbon/Carbon.h>
 
 int fr_pipe_go_2(void);
 int fr_pipe_go_3(void);
@@ -62,10 +64,10 @@ int fr_pipe_go_3(void);
 extern errtype audiolog_loop_callback();
 #endif
 
-extern "C"
-{
-  void ClearCache (unsigned char* theAddress, unsigned long numBlocks);
-}
+//extern "C"
+//{
+  //void ClearCache (unsigned char* theAddress, unsigned long numBlocks);
+//}
 
 int fr_rend(frc *view)
 {
@@ -75,9 +77,9 @@ int fr_rend(frc *view)
     { if (_fr->render_call) _fr->render_call(&_fr->draw_canvas.bm, _fr_curflags); }
    else
    {                                   /* actually do the 3d thang */
-      extern bool _g3d_enable_blend;
+      extern uchar _g3d_enable_blend;
       extern Boolean DoubleSize;
-      bool save_blend_flag;
+      uchar save_blend_flag;
 
       if ((_fr_curflags&FR_PICKUPM_MASK) || DoubleSize) {
          save_blend_flag=_g3d_enable_blend;

@@ -103,13 +103,13 @@ errtype tng_textgadget_size(TNG *ptng, LGPoint *ppt);
 int tng_textgadget_getvalue(TNG *ptng);
 
 // React appropriately for receiving the specified cooked key
-bool tng_textgadget_keycooked(TNG *ptng, ushort key);
+uchar tng_textgadget_keycooked(TNG *ptng, ushort key);
 
 // React appropriately for receiving the specified mouse button event
-bool tng_textgadget_mousebutt(TNG *ptng, uchar type, LGPoint loc);
+uchar tng_textgadget_mousebutt(TNG *ptng, uchar type, LGPoint loc);
 
 // Handle incoming signals
-bool tng_textgadget_signal(TNG *ptng, ushort signal);
+uchar tng_textgadget_signal(TNG *ptng, ushort signal);
 
 errtype tng_textgadget_scroll(TNG *ptng);
 

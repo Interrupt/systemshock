@@ -167,7 +167,7 @@ void state_delete_object (int object)
 // <hx, hy>.  This is a handy way to find out which of the three objects with
 // a given object bit is actually meant.
 
-bool object_check_hash (int object, int hx, int hy)
+uchar object_check_hash (int object, int hx, int hy)
 {
    // We use A if we are in the middle of integrating, and the object
    // is not asleep.

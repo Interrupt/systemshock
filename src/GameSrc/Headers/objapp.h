@@ -288,6 +288,6 @@ void ObjRefStateBinIteratorInit (void);
 // It can use static variables; the iterator is guaranteed to be active
 // only once at a time.
 
-bool ObjRefStateBinIterator (ObjRefStateBin *bin);
+uchar ObjRefStateBinIterator (ObjRefStateBin *bin);
 
 #endif //OBJAPP_H

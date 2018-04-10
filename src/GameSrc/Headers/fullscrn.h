@@ -74,14 +74,14 @@ LGRegion *fullroot_region, *fullview_region;
 LGRegion *inventory_region_full;
 LGRegion *pagebutton_region_full;
 frc *full_game_fr_context;
-bool full_game_3d = FALSE;
+uchar full_game_3d = FALSE;
 uchar full_visible = 0;
 #else
 extern LGRegion *fullroot_region, *fullview_region;
 extern LGRegion *inventory_region_full;
 extern LGRegion *pagebutton_region_full;
 extern frc *full_game_fr_context;
-extern bool full_game_3d;
+extern uchar full_game_3d;
 extern uchar full_visible;
 #endif
 

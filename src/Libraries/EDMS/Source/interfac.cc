@@ -140,12 +140,12 @@ void indoor_terrain( Q X, Q Y, Q Z, Q R, physics_handle ph )
 
 //      And with Freefall...
 //      --------------------
-bool ff_terrain( Q X, Q Y, Q Z, bool fast, terrain_ff* FFT )
+uchar ff_terrain( Q X, Q Y, Q Z, uchar fast, terrain_ff* FFT )
 {
    return FF_terrain( X.to_fix(), Y.to_fix(), Z.to_fix(), fast, FFT );
 }
 
-bool ff_raycast (Q x, Q y, Q z, Q vec[3], Q range, Q where_hit[3], terrain_ff* FFT)
+uchar ff_raycast (Q x, Q y, Q z, Q vec[3], Q range, Q where_hit[3], terrain_ff* FFT)
 {
    return FF_raycast (x.to_fix(), y.to_fix(), z.to_fix(), (fix *) vec, range.to_fix(), (fix *) where_hit, FFT);
 }

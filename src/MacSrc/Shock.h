@@ -38,6 +38,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define kNumMenus			4
 #endif
 
+#include <Carbon/Carbon.h>
+
 #define mApple					128					// Menu IDs
 #define mFile						129
 #define mEdit						130
@@ -142,7 +144,7 @@ extern Handle				gExtraMemory;
 extern ColorSpec*		gOriginalColors;
 extern unsigned long	gRandSeed;
 extern short				gMainVRef;
-extern CursHandle		gWatchCurs;
+extern Handle				gWatchCurs;
 
 extern short				gOriginalDepth;
 extern short				gStartupDepth;

@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 char *fix_sprint (char *str, fix x)
 {
 	ulong tmp;
-	bool neg = FALSE;
+	uchar neg = FALSE;
 
 	if (x < 0)
 	{
@@ -61,7 +61,7 @@ char *fix_sprint (char *str, fix x)
 char *fix24_sprint (char *str, fix24 x)
 {
 	ulong tmp;
-	bool neg = FALSE;
+	uchar neg = FALSE;
 
 	if (x < 0)
 	{
@@ -84,7 +84,7 @@ char *fix24_sprint (char *str, fix24 x)
 // it might be better to do %d.%4x but im not sure, so for now we will do this
 char *fix_sprint_hex (char *str, fix x)
 {
-	bool neg = FALSE;
+	uchar neg = FALSE;
 	if (x < 0) { x = -x; neg = TRUE; }
 	if (!neg) sprintf (str, "%x.%04lx", x >> 16, x&0xffff);
 	else 		 sprintf (str, "-%x.%04lx", x >> 16, x&0xffff);
@@ -93,7 +93,7 @@ char *fix_sprint_hex (char *str, fix x)
 
 char *fix24_sprint_hex (char *str, fix24 x)
 {
-	bool neg = FALSE;
+	uchar neg = FALSE;
 	if (x < 0) { x = -x; neg = TRUE;	}
 	if (!neg) sprintf (str, "%x.%02lx", x >> 8, x&0xff);
 	else      sprintf (str, "-%x.%02lx", x >> 8, x&0xff);

@@ -36,6 +36,6 @@ extern uchar ppall[]; // pointer to main shadow palette
 
 void object_data_flush(void);
 errtype object_data_load(void);
-extern bool objdata_loaded;
+extern uchar objdata_loaded;
 
 #endif

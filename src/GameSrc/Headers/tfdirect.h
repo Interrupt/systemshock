@@ -55,9 +55,9 @@ extern fix   tf_rad;            // current physics handle
 #define NO_NORM_HINT (127)
 
 // prototypes....
-bool tf_solve_aligned_face(fix pt[3], fix walls[4][2], int flags, fix *norm);
-bool tf_solve_remetriced_face(fix pt[3], fix walls[4][2], int flags, fix norm[3], fix metric);
-bool tf_solve_cylinder(fix pt[3], fix rad, fix height);
+uchar tf_solve_aligned_face(fix pt[3], fix walls[4][2], int flags, fix *norm);
+uchar tf_solve_remetriced_face(fix pt[3], fix walls[4][2], int flags, fix norm[3], fix metric);
+uchar tf_solve_cylinder(fix pt[3], fix rad, fix height);
 void tf_global_bcd_add(int flg, int param);
 
 // for now, really this will go soon....

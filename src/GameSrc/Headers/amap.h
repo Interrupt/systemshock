@@ -59,7 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // really should live in the player structure....
 typedef struct {
-   bool   init;
+   uchar   init;
    uchar  zoom;
    int    xf, yf;
    ushort lw, lh;
@@ -72,16 +72,16 @@ typedef struct {
 } curAMap;
 
 // prototypes
-bool amap_kb_callback(curAMap *amptr, int code);
+uchar amap_kb_callback(curAMap *amptr, int code);
 void amap_draw(curAMap *amptr, int expose);
 void amap_version_set(int id, int new_ver);
 void automap_init(int version, int id);
 void amap_invalidate(int id);
 void *amap_loc_note_check(curAMap *amptr, int *x, int *y, int *to_do); // note the void is really a MapElem
-bool amap_flags(curAMap *amptr, int flags, int set);                 // set -1 to toggle
-bool amap_zoom(curAMap *amptr, bool set, int zoom_delta);
+uchar amap_flags(curAMap *amptr, int flags, int set);                 // set -1 to toggle
+uchar amap_zoom(curAMap *amptr, uchar set, int zoom_delta);
 void amap_pan(curAMap *amptr, int dir, int* dist);
-bool amap_get_note(curAMap *amptr, char *buf);
+uchar amap_get_note(curAMap *amptr, char *buf);
 void amap_settings_copy(curAMap* from, curAMap* to);
 
 // this is a mess

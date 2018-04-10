@@ -1,0 +1,3 @@
+file(REMOVE_RECURSE
+  "libDSTRUCT_LIB.a"
+)

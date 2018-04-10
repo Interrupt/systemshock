@@ -51,6 +51,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
+#include "lg.h"
+#include "error.h"
+
 #ifndef __FRTYPESX_H
 typedef void frc;
 typedef void fmp;
@@ -97,12 +100,12 @@ int    fr_set_global_callbacks( int (*draw)(void *dstc, void *dstbm, int x, int 
               								void (*render)(void *dstbm, int flg) );
 
 //======== From frcompil.c
-void    fr_compile_rect(fmp *fm, int llx, int lly, int ulx, int uly, bool seen_bits);
+void    fr_compile_rect(fmp *fm, int llx, int lly, int ulx, int uly, uchar seen_bits);
 void    fr_compile_restart(fmp *fm);
 
 //======== From frmain.c
 int     fr_rend(frc *view);
-ushort  fr_get_at(frc *view, int x, int y,bool transp);
+ushort  fr_get_at(frc *view, int x, int y,uchar transp);
 
 //======== From frutil.c
 char   *fr_get_frame_rate(void);
@@ -114,8 +117,8 @@ extern int   _fr_default_detail;
 extern int   _fr_global_detail;
 extern void   (*fr_mouse_hide)(void), (*fr_mouse_show)(void);
 extern int   (*fr_get_idx)(void);
-extern bool  (*fr_obj_block)(void *mptr, uchar *_sclip, int *loc);
-extern void  (*fr_clip_start)(bool headnorth);
+extern uchar  (*fr_obj_block)(void *mptr, uchar *_sclip, int *loc);
+extern void  (*fr_clip_start)(uchar headnorth);
 extern void  (*fr_rend_start)(void);
 #ifdef __2D_H
 extern grs_bitmap *(*fr_get_tmap)(void);
@@ -125,8 +128,8 @@ extern grs_bitmap *(*fr_get_tmap)(void);
 // default versions of above, defined in frsetup and set there
 void fr_default_mouse(void);
 int   fr_default_idx(void), fr_pickup_idx(void);
-bool  fr_default_block(void *mptr, uchar *_sclip, int *loc);
-void  fr_default_clip_start(bool headnorth);
+uchar  fr_default_block(void *mptr, uchar *_sclip, int *loc);
+void  fr_default_clip_start(uchar headnorth);
 void  fr_default_rend_start(void);
 #ifdef __2D_H
 grs_bitmap *fr_default_tmap(void);

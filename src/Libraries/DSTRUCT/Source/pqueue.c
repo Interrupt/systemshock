@@ -132,7 +132,7 @@ void double_re_heapify(PQueue *q, int head)
 // EXTERNALS
 // ---------
 
-errtype pqueue_init(PQueue* q, int size, int elemsize, QueueCompare comp, bool grow)
+errtype pqueue_init(PQueue* q, int size, int elemsize, QueueCompare comp, uchar grow)
 {
    if (size < 1) return ERR_RANGE;
    q->vec = malloc(elemsize*size);

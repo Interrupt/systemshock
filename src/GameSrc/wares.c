@@ -60,13 +60,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //----------------
 //  Internal Prototypes
 //----------------
-bool is_passive_hardware(int n);
-bool is_oneshot_misc_software(int n);
+uchar is_passive_hardware(int n);
+uchar is_oneshot_misc_software(int n);
 int energy_cost(int warenum);
-void hardware_closedown(bool visible);
-void hardware_startup(bool visible);
+void hardware_closedown(uchar visible);
+void hardware_startup(uchar visible);
 void hardware_power_outage(void);
-bool check_game(void);
+uchar check_game(void);
 
 
 // ------
@@ -129,13 +129,13 @@ char* get_ware_name(int waretype, int num, char* buf, int sz)
 }
 
 
-bool is_passive_hardware(int n)
+uchar is_passive_hardware(int n)
 {
    ushort cflags = (ObjProps[OPTRIP(MAKETRIP(CLASS_HARDWARE,0,0))+n].flags & CLASS_FLAGS) >> CLASS_FLAGS_SHF;
    return (cflags & PASSIVE_WARE_FLAG);
 }
 
-bool is_oneshot_misc_software(int n)
+uchar is_oneshot_misc_software(int n)
 {
    return ((n < NUM_ONESHOT_SOFTWARE));
 }
@@ -289,7 +289,7 @@ void use_ware(int waretype, int num)
 
 
 // Hey, we're closing down a game. return to normalcy. 
-void hardware_closedown(bool visible)
+void hardware_closedown(uchar visible)
 {
    int i;
    for (i = 0; i < NUM_HARDWAREZ; i++)
@@ -301,7 +301,7 @@ void hardware_closedown(bool visible)
    }
 }
 
-void hardware_startup(bool visible)
+void hardware_startup(uchar visible)
 {
    int i;
    for (i = 0; i < NUM_HARDWAREZ; i++)
@@ -467,8 +467,8 @@ void wares_init()
 // ----------
 // * BIO WARE
 // ----------
-void bioware_turnon(bool visible, bool real_start);
-void bioware_turnoff(bool visible, bool real_stop);
+void bioware_turnon(uchar visible, uchar real_start);
+void bioware_turnoff(uchar visible, uchar real_stop);
 void bioware_effect(void);
 
 // ---------------------------------------------------------------------------
@@ -477,7 +477,7 @@ void bioware_effect(void);
 // Let the MFD system know that the bioware is active, and take over
 // the appropriate info MFD
 
-void bioware_turnon(bool visible, bool)
+void bioware_turnon(uchar visible, bool)
 {
    int i;
    if (visible)
@@ -496,7 +496,7 @@ void bioware_turnon(bool visible, bool)
 // Let the MFD system know that the bioware is deactivated, and toss it off
 // the info slot, replacing it with a blank.
 
-void bioware_turnoff(bool, bool real_stop)
+void bioware_turnoff(bool, uchar real_stop)
 {
    if (real_stop && player_struct.mfd_all_slots[MFD_INFO_SLOT] == MFD_BIOWARE_FUNC)
       mfd_notify_func(MFD_EMPTY_FUNC, MFD_INFO_SLOT, TRUE, MFD_EMPTY, TRUE);
@@ -518,15 +518,15 @@ void bioware_effect(void)
 // ---------------
 // * INFRARED WARE
 // ---------------
-void infrared_turnon(bool visible, bool real_start);
-void infrared_turnoff(bool visible, bool real_start);
+void infrared_turnon(uchar visible, uchar real_start);
+void infrared_turnoff(uchar visible, uchar real_start);
 
 extern char curr_clut_table;
 // ---------------------------------------------------------------------------
 // infrared_turnon()
 //
 // Turns on the infrared ware
-void infrared_turnon(bool visible, bool)
+void infrared_turnon(uchar visible, bool)
 {
    if (visible)
    {
@@ -543,7 +543,7 @@ void infrared_turnon(bool visible, bool)
 //
 // Turns off the infrared ware
 
-void infrared_turnoff(bool visible, bool)
+void infrared_turnoff(uchar visible, bool)
 {
    if (visible)
    {
@@ -561,15 +561,15 @@ void infrared_turnoff(bool visible, bool)
 // --------------------
 // * TARGETING WARE
 // --------------------
-void targeting_turnon(bool visible, bool real_start);
-void targeting_turnoff(bool visible, bool real_start);
+void targeting_turnon(uchar visible, uchar real_start);
+void targeting_turnoff(uchar visible, uchar real_start);
 
 // ---------------------------------------------------------------------------
 // targeting_turnon()
 //
 // Turn on the targeting ware
 
-void targeting_turnon(bool visible, bool real_start)
+void targeting_turnon(uchar visible, uchar real_start)
 {
    extern void select_closest_target();
 
@@ -599,10 +599,10 @@ void targeting_turnoff(bool, bool)
 // ---------------
 void lamp_set_vals(void);
 void lamp_set_vals_with_offset(byte offset);
-void lamp_turnon(bool visible, bool real_start);
+void lamp_turnon(uchar visible, uchar real_start);
 void lamp_change_setting(byte offset);
-void lamp_turnoff(bool visible, bool real_stop);
-bool lantern_change_setting_hkey(short keycode, ulong context, void* data);
+void lamp_turnoff(uchar visible, uchar real_stop);
+uchar lantern_change_setting_hkey(short keycode, ulong context, void* data);
 
 struct _lampspec
 {
@@ -627,7 +627,7 @@ lamp_specs[] =
 //   {  0,8,4,0,-2*FIX_UNIT,8*FIX_UNIT},
 // is level 3 above ever used?
 
-extern bool muzzle_fire_light;
+extern uchar muzzle_fire_light;
 
 void lamp_set_vals(void)
 {
@@ -666,7 +666,7 @@ void lamp_set_vals_with_offset(byte offset)
 //      _frp.lighting.yint,   _frp.lighting.slope,offset,s));
 }
 
-void lamp_turnon(bool visible, bool)
+void lamp_turnon(uchar visible, bool)
 {
    lamp_set_vals();
    if (visible)
@@ -682,7 +682,7 @@ void lamp_change_setting(byte offset)
    _frp_light_bits_set(LIGHT_BITS_CAM);
 }
 
-void lamp_turnoff(bool visible, bool real_stop)
+void lamp_turnoff(uchar visible, uchar real_stop)
 {
    if (visible)
    {
@@ -693,12 +693,12 @@ void lamp_turnoff(bool visible, bool real_stop)
    }
 }
 
-bool lantern_change_setting_hkey(short, ulong, void*)
+uchar lantern_change_setting_hkey(short, ulong, void*)
 {
    int n=CPTRIP(LANTERN_HARD_TRIPLE);
    int v=player_struct.hardwarez[n];
    int s=player_struct.hardwarez_status[n];
-   bool on=s&WARE_ON;
+   uchar on=s&WARE_ON;
    void mfd_lantern_setting(int setting);
 
    s=LAMP_SETTING(s);
@@ -722,15 +722,15 @@ bool lantern_change_setting_hkey(short, ulong, void*)
 // SHIELD WARE
 //-------------------------- 
 void shield_set_absorb(void);
-void shield_toggle(bool visible, bool real);
-bool shield_change_setting_hkey(short keycode, ulong context, void* data);
+void shield_toggle(uchar visible, uchar real);
+uchar shield_change_setting_hkey(short keycode, ulong context, void* data);
 
 #define SHIELD_IDX (CPTRIP(SHIELD_HARD_TRIPLE))
 
 ubyte shield_absorb_rates[] = {20, 40, 75, 75}; 
 ubyte shield_thresholds[] = {0, 10, 15, 30};
 
-extern void set_shield_raisage(bool going_up);
+extern void set_shield_raisage(uchar going_up);
 
 void shield_set_absorb(void)
 {
@@ -747,7 +747,7 @@ void shield_set_absorb(void)
    }
 }
 
-void shield_toggle(bool, bool real)
+void shield_toggle(bool, uchar real)
 {
    ubyte s = player_struct.hardwarez_status[SHIELD_IDX];
    if (real)
@@ -767,12 +767,12 @@ void shield_toggle(bool, bool real)
    shield_set_absorb();
 }
 
-bool shield_change_setting_hkey(short, ulong, void*)
+uchar shield_change_setting_hkey(short, ulong, void*)
 {
    int n=CPTRIP(SHIELD_HARD_TRIPLE);
    int v=player_struct.hardwarez[n];
    int s=player_struct.hardwarez_status[n];
-   bool on=s&WARE_ON;
+   uchar on=s&WARE_ON;
    void mfd_shield_setting(int setting);
 
    // version 4 has only one setting.
@@ -799,17 +799,17 @@ bool shield_change_setting_hkey(short, ulong, void*)
 //----------------
 // NAV WARE
 //----------------
-void nav_turnon(bool visible, bool real_start);
-void nav_turnoff(bool visible, bool real_start);
+void nav_turnon(uchar visible, uchar real_start);
+void nav_turnoff(uchar visible, uchar real_start);
 
 
-void nav_turnon(bool visible, bool)
+void nav_turnon(uchar visible, bool)
 {
    if (visible)
       hud_set(HUD_COMPASS);
 }
 
-void nav_turnoff(bool visible, bool)
+void nav_turnoff(uchar visible, bool)
 {
    if (visible)
    {
@@ -821,15 +821,15 @@ void nav_turnoff(bool visible, bool)
 //----------------------
 // MOTION WARE
 //---------------------- 
-void motionware_update(bool visible,  bool real, bool on);
-void motionware_turnon(bool visible, bool real);
-void motionware_turnoff(bool visible, bool real);
+void motionware_update(uchar visible,  uchar real, uchar on);
+void motionware_turnon(uchar visible, uchar real);
+void motionware_turnoff(uchar visible, uchar real);
 
 ubyte motionware_mode = MOTION_INACTIVE;
 
 #define MOTION_SETTING LAMP_SETTING
 
-void motionware_update(bool visible,  bool, bool on)
+void motionware_update(uchar visible,  bool, uchar on)
 {
    ubyte s = player_struct.hardwarez_status[CPTRIP(MOTION_HARD_TRIPLE)];
    if (on)
@@ -861,12 +861,12 @@ void motionware_update(bool visible,  bool, bool on)
    
 }
 
-void motionware_turnon(bool visible, bool real)
+void motionware_turnon(uchar visible, uchar real)
 {
    motionware_update(visible, real, TRUE);
 }
 
-void motionware_turnoff(bool visible, bool real)
+void motionware_turnoff(uchar visible, uchar real)
 {
    motionware_update(visible, real, FALSE);
 }
@@ -880,7 +880,7 @@ void activate_jumpjets(fix* xcntl, fix* ycntl, fix* zcntl);
 static short jumpjet_controls[] = { -25, -50, -75};
 static fix   jumpjet_thrust_scales[] = { FIX_UNIT/64, FIX_UNIT/32, FIX_UNIT/16};
 
-bool jumpjets_active = FALSE;
+uchar jumpjets_active = FALSE;
 
 // modifies z control based on jumpject ware. 
 void activate_jumpjets(fix* xcntl, fix* ycntl, fix* zcntl)
@@ -910,11 +910,11 @@ void activate_jumpjets(fix* xcntl, fix* ycntl, fix* zcntl)
 //-----------------------
 //   FULLSCREEN WARE
 //-----------------------
-void fullscreen_turnon(bool visible, bool real_start);
-void fullscreen_turnoff(bool visible, bool real_start);
+void fullscreen_turnon(uchar visible, uchar real_start);
+void fullscreen_turnoff(uchar visible, uchar real_start);
 extern Boolean	DoubleSize;
 
-void fullscreen_turnon(bool visible, bool)
+void fullscreen_turnon(uchar visible, bool)
 {
 	if (visible)
 	{
@@ -923,7 +923,7 @@ void fullscreen_turnon(bool visible, bool)
 	}
 }
 
-void fullscreen_turnoff(bool visible, bool)
+void fullscreen_turnoff(uchar visible, bool)
 {
 	if (visible)
 	{
@@ -935,15 +935,15 @@ void fullscreen_turnoff(bool visible, bool)
 //-----------------------
 //   CYBERSPACE ONESHOTS
 //-----------------------
-void do_turbo_stuff(bool from_drug);
-void turbo_turnon(bool visible, bool real_start);
-void turbo_turnoff(bool visible, bool real_start);
-void fakeid_turnon(bool visible, bool real_start);
-void decoy_turnon(bool visible, bool real_start);
-void decoy_turnoff(bool visible, bool real_stop);
-void recall_turnon(bool visible, bool real_start);
+void do_turbo_stuff(uchar from_drug);
+void turbo_turnon(uchar visible, uchar real_start);
+void turbo_turnoff(uchar visible, uchar real_start);
+void fakeid_turnon(uchar visible, uchar real_start);
+void decoy_turnon(uchar visible, uchar real_start);
+void decoy_turnoff(uchar visible, uchar real_stop);
+void recall_turnon(uchar visible, uchar real_start);
 
-void do_turbo_stuff(bool from_drug)
+void do_turbo_stuff(uchar from_drug)
 {
    if (cspace_effect_times[CS_TURBO_EFF] == 0)
    {
@@ -955,7 +955,7 @@ void do_turbo_stuff(bool from_drug)
    }
 }
 
-void turbo_turnon(bool visible, bool real_start)
+void turbo_turnon(uchar visible, uchar real_start)
 {
    ulong hammer_time = cspace_effect_durations[CS_TURBO_EFF];
    do_turbo_stuff(visible);
@@ -967,7 +967,7 @@ void turbo_turnon(bool visible, bool real_start)
    }
 }   
 
-void turbo_turnoff(bool visible, bool)
+void turbo_turnoff(uchar visible, bool)
 {
    if (visible)
    {
@@ -976,7 +976,7 @@ void turbo_turnoff(bool visible, bool)
    cspace_effect_times[CS_TURBO_EFF] = 0;
 }
 
-void fakeid_turnon(bool visible, bool real_start)
+void fakeid_turnon(uchar visible, uchar real_start)
 {
    if (!(player_struct.hud_modes & HUD_FAKEID) && visible)
    {
@@ -990,7 +990,7 @@ void fakeid_turnon(bool visible, bool real_start)
    }
 }   
 
-void decoy_turnon(bool, bool real_start)
+void decoy_turnon(bool, uchar real_start)
 {
    if (real_start)
    {
@@ -1012,7 +1012,7 @@ void decoy_turnon(bool, bool real_start)
    }
 }   
 
-void decoy_turnoff(bool visible, bool real_stop)
+void decoy_turnoff(uchar visible, uchar real_stop)
 {
    if (visible)
    {
@@ -1027,7 +1027,7 @@ void decoy_turnoff(bool visible, bool real_stop)
    cspace_decoy_obj = OBJ_NULL;
 }
 
-void recall_turnon(bool visible, bool real_start)
+void recall_turnon(uchar visible, uchar real_start)
 {
    if (visible && real_start)
    {
@@ -1042,11 +1042,11 @@ void recall_turnon(bool visible, bool real_start)
 // =================
 // THE STATIC ARRAYS
 
-extern void view360_turnon(bool visible, bool real_start),view360_turnoff(bool visible, bool real_start);
-extern bool view360_check();
-extern void email_turnon(bool visible, bool real_start);
-extern void email_turnoff(bool visible, bool real_start);
-extern void plotware_turnon(bool visible, bool real_start);
+extern void view360_turnon(uchar visible, uchar real_start),view360_turnoff(uchar visible, uchar real_start);
+extern uchar view360_check();
+extern void email_turnon(uchar visible, uchar real_start);
+extern void email_turnoff(uchar visible, uchar real_start);
+extern void plotware_turnon(uchar visible, uchar real_start);
 
 WARE HardWare[NUM_HARDWAREZ] =
 {             
@@ -1123,7 +1123,7 @@ short energy_cost_vec[NUM_HARDWAREZ][MAX_VERSIONS] =
 };
 
 
-bool check_game(void)
+uchar check_game(void)
 {
    return (!global_fullmap->cyber);
 }

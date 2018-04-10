@@ -55,6 +55,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lvldata.h"
 #include "diffq.h"
 
+#include "lg.h"
+#include "error.h"
+
 
 LGRect target_screen_rect;
 
@@ -147,7 +150,7 @@ extern Boolean	DoubleSize;
 // --------------
 //  PROTOTYPES
 // --------------
-bool hud_color_bank_cycle(short keycode, ulong context, void* data);
+uchar hud_color_bank_cycle(short keycode, ulong context, void* data);
 void hud_free_line(int i);
 void hud_delete_line(int i);
 void compute_hud_var(HudLine* hl);
@@ -159,7 +162,7 @@ void hud_shutdown_lines(void);
 // --------------
 //  FUNCTIONS
 // --------------
-bool hud_color_bank_cycle(short , ulong , void* )
+uchar hud_color_bank_cycle(short , ulong , void* )
 {
    hud_color_bank=(hud_color_bank+1)%HUD_COLOR_BANKS;
    return TRUE;
@@ -275,7 +278,7 @@ void hud_update_lines(short x, short* y, short , short )
    for (i = 0; i < HUD_LINES; i++)
       if (hud_lines[i].mask & player_struct.hud_modes)
       {
-         bool compute_text = FALSE;
+         uchar compute_text = FALSE;
          if ((hud_lines[i].time != 0) && (hud_lines[i].time < player_struct.game_time))
          {
             hud_unset(hud_lines[i].mask);
@@ -327,7 +330,7 @@ void hud_update_lines(short x, short* y, short , short )
          }
          else
          {
-            extern bool full_game_3d;
+            extern uchar full_game_3d;
             use_y = hud_lines[i].y;
             if (full_game_3d)
                use_y += FULLSCREEN_Y_OFFSET;
@@ -415,7 +418,7 @@ static struct _damage_report
 
 void hud_report_damage(ObjID target, byte dmglvl);
 void draw_target_box(short xl,short yl,short xh,short yh);
-void update_damage_report(struct _hudobj_data* dat,bool reverse);
+void update_damage_report(struct _hudobj_data* dat,uchar reverse);
 
 
 void hud_report_damage(ObjID target, byte dmglvl)
@@ -474,7 +477,7 @@ void draw_target_box(short xl,short yl,short xh,short yh)
    gr_hline(xh,yl,xh-w);
 }
 
-void update_damage_report(struct _hudobj_data* dat,bool reverse)
+void update_damage_report(struct _hudobj_data* dat,uchar reverse)
 {
    short i;
    for (i = 0; i < NUM_HUD_CRITTERS; i++)
@@ -523,8 +526,8 @@ void update_damage_report(struct _hudobj_data* dat,bool reverse)
          else
          {
 #ifdef SVGA_SUPPORT
-            extern bool shadow_scale;
-            bool old_scale = shadow_scale;
+            extern uchar shadow_scale;
+            uchar old_scale = shadow_scale;
             shadow_scale = FALSE;
 #endif
             if (DoubleSize)
@@ -553,10 +556,10 @@ ubyte targ_frame = NUM_TARG_FRAMES;
 
 #define TARG_COLOR 2
 
-void hud_do_objs(short xtop, short ytop, short xwid, short ywid, bool reverse);
+void hud_do_objs(short xtop, short ytop, short xwid, short ywid, uchar reverse);
 
 
-void hud_do_objs(short xtop, short ytop, short , short , bool reverse)
+void hud_do_objs(short xtop, short ytop, short , short , uchar reverse)
 {
    int i;
    extern ObjID beam_effect_id;
@@ -603,8 +606,8 @@ void hud_do_objs(short xtop, short ytop, short , short , bool reverse)
 
 errtype hud_update(bool, frc* context)
 {
-   extern bool fullscrn_vitals;
-   extern bool fullscrn_icons;
+   extern uchar fullscrn_vitals;
+   extern uchar fullscrn_icons;
    fauxrend_context *fc = (fauxrend_context*)context;
    short y = Y_MARGIN;
    short x = X_MARGIN;

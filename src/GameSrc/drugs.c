@@ -82,7 +82,7 @@ typedef struct {
    void  (*effect)();
    void  (*wearoff)();
    void  (*startup)(void);
-   void  (*closedown)(bool visible);
+   void  (*closedown)(uchar visible);
    void  (*after_effect)();
 } DRUG;
 
@@ -263,7 +263,7 @@ void drugs_init()
 //
 // do drug startup on game load.
 
-void drug_startup(bool)
+void drug_startup(uchar uc)
 {
    int i;
    for (i = 0; i < NUM_DRUGZ; i++)
@@ -271,7 +271,7 @@ void drug_startup(bool)
          Drugs[i].startup();
 }
 
-void drug_closedown(bool visible)
+void drug_closedown(uchar visible)
 {
    int i;
    for (i = 0; i < NUM_DRUGZ; i++)
@@ -330,7 +330,7 @@ void dummy_wearoff_drug()
 void drug_lsd_effect();
 void drug_lsd_startup(void);
 void drug_lsd_wearoff();
-void drug_lsd_closedown(bool visible);
+void drug_lsd_closedown(uchar visible);
 
 
 // ---------------------------------------------------------------------------
@@ -377,6 +377,7 @@ void drug_lsd_startup(void)
 void drug_lsd_wearoff()
 {
    // Return from palette shift
+   int ppall = 0;
    gr_set_pal(0,256,ppall);
 //KLC   gamma_dealfunc(QUESTVAR_GET(GAMMACOR_QVAR));
    gamma_dealfunc(gShockPrefs.doGamma);
@@ -384,8 +385,9 @@ void drug_lsd_wearoff()
    return;
 }
 
-void drug_lsd_closedown(bool visible)
+void drug_lsd_closedown(uchar visible)
 {
+   int ppall = 0;
    if (visible && STATUS(DRUG_LSD) > 0)
       gr_set_pal(0,256,ppall);
 }
@@ -402,7 +404,7 @@ void drug_staminup_wearoff();
 //
 // Initial effects of the staminup drug.
 
-extern bool fatigue_warning;
+extern uchar fatigue_warning;
 
 void drug_staminup_use()
 {
@@ -440,7 +442,7 @@ void drug_sight_startup();
 void drug_sight_effect();
 void drug_sight_wearoff();
 void drug_sight_after_effect(void);
-void drug_sight_closedown(bool visible);
+void drug_sight_closedown(uchar visible);
 
 
 extern void set_global_lighting(short);
@@ -502,7 +504,7 @@ void drug_sight_after_effect(void)
       set_global_lighting(SIGHT_LIGHT_LEVEL);
 }
 
-void drug_sight_closedown(bool visible)
+void drug_sight_closedown(uchar visible)
 {
    if (!visible) return;
    if (STATUS(DRUG_SIGHT) > 0)
@@ -639,7 +641,7 @@ void drug_genius_wearoff();
 
 void drug_genius_use()
 {
-   void mfd_gridpanel_set_winmove(bool check);
+   void mfd_gridpanel_set_winmove(uchar check);
 
    mfd_gridpanel_set_winmove(TRUE);
    return;

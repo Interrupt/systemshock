@@ -129,9 +129,21 @@ set(GAME_SRC
 
 include_directories(
 	src/Libraries/2D/Source
-	src/Libraries/FIX/Source		
+	src/Libraries/3D/Source
+	src/Libraries/DSTRUCT/Source
+	src/Libraries/EDMS/Source
+	src/Libraries/INPUT/Source
+	src/Libraries/PALETTE/Source
+	src/Libraries/RES/Source
+	src/Libraries/UI/Source
+	src/Libraries/RND/Source
+	src/Libraries/VOX/Source
+	src/Libraries/FIX/Source
+	src/Libraries/SND/Source
 	src/Libraries/H
 	src/Libraries/LG/Source
+	src/GameSrc/Headers
+	src/MacSrc
 )
 
 add_executable(systemshock

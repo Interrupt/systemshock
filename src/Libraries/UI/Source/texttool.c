@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // internal prototypes
 void _tt_build_cheat(long line_num);
 void _tt_new_line(long line_num);
-TextTool *tt_full_build(TTRect *pos, TTState *es, TTFontInfo *ttf, void *output_data, char *keymap, void *(d_func)(void *, LGRect *));
+//TextTool *tt_full_build(TTRect *pos, TTState *es, TTFontInfo *ttf, void *output_data, char *keymap, void *(d_func)(void *, LGRect *));
 void tt_resize(TextTool *tt, int wid, int height);
 void _tt_display_line(long line_num, long p_left, long p_right);
 void _tt_show_line(long line_num, long p_left, long p_right);
@@ -56,11 +56,11 @@ void _tt_resize_line(long line_num, long new_len);
 void _tt_break_line(long line_num, long break_pt);
 void _tt_rem_front(long line_num, long rem_pos);
 void _tt_rem_mid(long line_num, long left_c, long right_c);
-bool _tt_wrap_check(long *line_num, long *cur_pos);
-bool _tt_add_char(long *line_num, long *cur_pos, char c);
-bool _tt_del_chars(long *line_num, long *cur_pos, int cnt);
-bool _tt_chg_line(int how);
-bool _tt_chg_colu(int how);
+uchar _tt_wrap_check(long *line_num, long *cur_pos);
+uchar _tt_add_char(long *line_num, long *cur_pos, char c);
+uchar _tt_del_chars(long *line_num, long *cur_pos, int cnt);
+uchar _tt_chg_line(int how);
+uchar _tt_chg_colu(int how);
 void _tt_return(void);
 ulong _tt_check_cursor_position(void);
 int _tt_do_event(long tt_event);
@@ -112,7 +112,7 @@ TextTool *tt_full_build(TTRect *pos, TTState *es, TTFontInfo *ttf, void *output_
    return new_tt;
 }
 
-bool tt_toast(TextTool *old_tt)
+uchar tt_toast(TextTool *old_tt)
 {
    int i;
    for (i=0; i<old_tt->max_h; i++)
@@ -123,7 +123,7 @@ bool tt_toast(TextTool *old_tt)
 }
 
 // set this tt to be the default one
-bool tt_set(TextTool *def_tt)
+uchar tt_set(TextTool *def_tt)
 {
    cur_tt=def_tt;
    return TRUE;
@@ -205,7 +205,7 @@ void _tt_new_line(long line_num)
 // returns whether there are characters on the line in the specified range
 // sets c_l and c_r to the character counts for the pix counts in p_l and p_r
 // based on the string in l_n
-bool _tt_pix_cnv(long l_n, long p_l, long p_r, long *c_l, long *c_r)
+uchar _tt_pix_cnv(long l_n, long p_l, long p_r, long *c_l, long *c_r)
 {
       
 
@@ -241,7 +241,7 @@ void _tt_show_line(long line_num, long p_left, long p_right)
 {
    int llin=line_num-_tt->disp_y, cy=line_num;
 //   long c_left, c_right;
-   bool blnk_line=TRUE;
+   uchar blnk_line=TRUE;
 
    if ((line_num<_tt->disp_y)||(line_num>=_tt->disp_y+_tt->disp_rows)) return;
    if (p_left==-1) p_left=0; if (p_right==-1) p_right=_tt->scr_loc.w-1;
@@ -330,7 +330,7 @@ void _tt_resize_line(long line_num, long new_len)
    if (new_targ==cur_len) return;
    _tt->line_info[line_num].wid=new_targ;
 //¥¥¥   _tt->lines[line_num]=Realloc(_tt->lines[line_num],new_targ);
-   SetPtrSize((Ptr)_tt->lines[line_num],new_targ);
+   //SetPtrSize((Ptr)_tt->lines[line_num],new_targ);
 }
 
 // fills line_num with s
@@ -399,11 +399,11 @@ void _tt_rem_mid(long line_num, long left_c, long right_c)
 }
 
 // given that only line line_num changed, do wrap checks
-bool _tt_wrap_check(long *line_num, long *cur_pos)
+uchar _tt_wrap_check(long *line_num, long *cur_pos)
 {
    char *s, *p, sw=0;                   /* pointers for manipulation, sw is the swap character */
    long ln=*line_num;
-   bool wr=FALSE;
+   uchar wr=FALSE;
    // first, do we wrap back to the last line (should use pixwid, not stl)
    if (LineExist(_tt,ln-1)&&((_tt->line_info[ln-1].flg&TTC_FLG_RET)==0))
       if (_tt->line_info[ln-1].stl+1+_tt_word_len(TTWL_FIRST,_tt->lines[ln],0)<_tt->es.right_m)
@@ -438,11 +438,11 @@ bool _tt_wrap_check(long *line_num, long *cur_pos)
 }
 
 // currently returns whether the line wrapped? why? who knows.
-bool _tt_add_char(long *line_num, long *cur_pos, char c)
+uchar _tt_add_char(long *line_num, long *cur_pos, char c)
 {
    long new_stl=_tt->line_info[*line_num].stl, new_pos=*cur_pos;
    char *s=_tt->lines[*line_num];
-   bool add_at_end=TRUE; 
+   uchar add_at_end=TRUE; 
 
    if (new_stl>*cur_pos)                         // insert
       if ((_tt->es.mode&TTS_OVER)==0)            // actually have to insert
@@ -466,7 +466,7 @@ bool _tt_add_char(long *line_num, long *cur_pos, char c)
 }
 
 // learn this about return flag
-bool _tt_del_chars(long *line_num, long *cur_pos, int cnt)
+uchar _tt_del_chars(long *line_num, long *cur_pos, int cnt)
 {
    int lin_wid=_tt->line_info[*line_num].stl, nlpos=*cur_pos, nrpos=*cur_pos;
 //   int dir;
@@ -495,9 +495,9 @@ bool _tt_del_chars(long *line_num, long *cur_pos, int cnt)
 }
 
 // return TRUE if we are out of space
-bool _tt_chg_line(int how)
+uchar _tt_chg_line(int how)
 {
-   bool edge=FALSE;                    /* edge of available space */
+   uchar edge=FALSE;                    /* edge of available space */
    how+=_tt->cur_h;
    if (how<0) { _tt->cur_h=0; edge=TRUE; }
    else if (how>=_tt->max_h)
@@ -521,7 +521,7 @@ bool _tt_chg_line(int how)
 }
 
 // returns if it hit the edge
-bool _tt_chg_colu(int how)
+uchar _tt_chg_colu(int how)
 {
    int dir, ncpos=_tt->cur_w+how, lin_wid=_tt->line_info[_tt->cur_h].stl;
 
@@ -542,7 +542,7 @@ bool _tt_chg_colu(int how)
 // should wrap to the next line
 void _tt_return(void)
 {
-   bool line_gen=FALSE;
+   uchar line_gen=FALSE;
 
 
    switch (_tt->es.mode&TTS_MODE)

@@ -97,7 +97,7 @@ void strtoupper(char *text)
 }
 
 #ifdef SVGA_SUPPORT
-bool shadow_scale = TRUE;
+uchar shadow_scale = TRUE;
 #endif
 void draw_shadowed_string(char* s, short x, short y, uchar shadow)
 {
@@ -109,7 +109,7 @@ void draw_shadowed_string(char* s, short x, short y, uchar shadow)
    {
 #ifdef SVGA_SUPPORT
       extern char convert_use_mode;
-      extern bool perform_svga_conversion(uchar mask);
+      extern uchar perform_svga_conversion(uchar mask);
       extern void ss_scale_string(char *s, short x, short y);
       if ((convert_use_mode > 0) && (perform_svga_conversion(OVERRIDE_FONT)))
       {
@@ -195,7 +195,7 @@ errtype draw_raw_resource_bm(Ref id, int x, int y)
    return (OK);
 }  
 
-errtype draw_res_bm_core(Ref id, int x, int y, bool scale)
+errtype draw_res_bm_core(Ref id, int x, int y, uchar scale)
 {
    FrameDesc *f;
    LGRect mouse_rect;
@@ -226,7 +226,7 @@ errtype draw_res_bm(Ref id, int x, int y)
 }
 
 // Note, does no mouse code!
-errtype draw_full_res_bm(Ref id, int x, int y, bool fade_in)
+errtype draw_full_res_bm(Ref id, int x, int y, uchar fade_in)
 {
    FrameDesc *f;
    short *temp_pall;
@@ -283,7 +283,7 @@ int res_bm_height(Ref id)
    return (n);
 }
 
-errtype res_draw_text_shadowed(Id id, char *text, int x, int y, bool shadow)
+errtype res_draw_text_shadowed(Id id, char *text, int x, int y, uchar shadow)
 {
    gr_set_font((grs_font *)ResLock(id));
    draw_shadowed_string(text, x, y, shadow);
@@ -372,7 +372,7 @@ void second_format(int sec_remain, char *s)
 #define BIG_BUF
 
 #pragma disable_message(202)
-bool gifdump_func(short keycode, ulong context, void* data)
+uchar gifdump_func(short keycode, ulong context, void* data)
 {
    unsigned char *temp_buf;
    int giffp;
@@ -435,9 +435,9 @@ LGRect msg_rect[2]=
    {FULLSCREEN_MESSAGE_X,FULLSCREEN_MESSAGE_Y,FULLSCREEN_MESSAGE_X+GAME_MESSAGE_W,FULLSCREEN_MESSAGE_Y+GAME_MESSAGE_H}
 };
 
-bool message_resend = FALSE;
-extern bool game_paused;
-extern bool view360_message_obscured;
+uchar message_resend = FALSE;
+extern uchar game_paused;
+extern uchar view360_message_obscured;
 void strip_newlines(char* buf);
 
 
@@ -534,7 +534,7 @@ errtype message_info(char *info_text)
 }
 
 
-bool message_clear_on = TRUE;
+uchar message_clear_on = TRUE;
 
 errtype message_clear_check()
 {
@@ -564,7 +564,7 @@ errtype message_box(char *box_text)
 #ifdef NOT_YET //Â¥Â¥Â¥ later, dude
 
 #pragma disable_message(202)
-bool confirm_box(char *confirm_text)
+uchar confirm_box(char *confirm_text)
 {
    return(TRUE);
 }
@@ -655,7 +655,7 @@ char *next_number_fname(char *fname)
 
 #endif //NOT_YETÂ¥Â¥Â¥
 
-errtype tight_loop(bool check_input)
+errtype tight_loop(uchar check_input)
 {
    if (music_on)
       mlimbs_do_ai();

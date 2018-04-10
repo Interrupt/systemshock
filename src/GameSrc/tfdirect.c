@@ -72,15 +72,15 @@ uchar v_to_cur[]=
 };
 
 // Local Prototypes
-bool _tf_set_flet(int flags, fix att, fix dist, fix *norm);
-bool _tf_internal_chk(void);
+uchar _tf_set_flet(int flags, fix att, fix dist, fix *norm);
+uchar _tf_internal_chk(void);
 fix _tf_border_check_2d(void);
 void _tf_norm_create(void);
 void _tf_get_crosses(void);
 fix tf_solve_2d_case(int flags);
 int _stair_check(fix walls[4][2], int flags);
 void terrfunc_one_map_square(int fmask);
-bool tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type);
+uchar tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type);
 
 
 // old style physics...
@@ -165,7 +165,7 @@ extern void fr_tfunc_grab_fast(int mask);
 // here we need the tmap/size parser stuff to happen....
 
 // actually output a facelet
-bool _tf_set_flet(int flags, fix att, fix dist, fix *norm)
+uchar _tf_set_flet(int flags, fix att, fix dist, fix *norm)
 {
    fix full_norms[2]={fix_make(1,0),-fix_make(1,0)};
    int pv;
@@ -217,7 +217,7 @@ i_hate_everyone:
 }
 
 // tf_internal_chk...
-bool _tf_internal_chk(void)
+uchar _tf_internal_chk(void)
 {
    fix dp[2];
 	dp[0]=fix_mul(tf_norm_2d[cross_face[0][0]][0],(tf_pt[0]-tf_vert_2d[cross_face[0][1]][0]))+
@@ -495,10 +495,10 @@ int _stair_check(fix walls[4][2], int flags)
 }  
 
 // note: if it turns out aligned > 2*multi, we should do set and reset in multi for rad, and no rad set here
-bool tf_solve_aligned_face(fix pt[3], fix walls[4][2], int flags, fix *norm)
+uchar tf_solve_aligned_face(fix pt[3], fix walls[4][2], int flags, fix *norm)
 {
    fix att;
-   bool rv=FALSE;
+   uchar rv=FALSE;
 //   if (norm!=NULL)
 //      tf_turn_on(0xffff);
    tf_Spew(AlignFce,("tfd:aligned walls %x %x %x %x %x %x %x %x, pt %x %x %x, flg %x, nrm %x %x %x\n",
@@ -523,10 +523,10 @@ bool tf_solve_aligned_face(fix pt[3], fix walls[4][2], int flags, fix *norm)
    return rv;
 }
 
-bool tf_solve_remetriced_face(fix pt[3], fix walls[4][2], int flags, fix norm[3], fix metric)
+uchar tf_solve_remetriced_face(fix pt[3], fix walls[4][2], int flags, fix norm[3], fix metric)
 {
    fix att;
-   bool rv=FALSE;
+   uchar rv=FALSE;
 //   tf_turn_on(0xffff);
    tf_Spew(RemetFce,("tfd:remetric walls %x %x %x %x %x %x %x %x, pt %x %x %x, nrm %x %x %x, flg %x, metric %x\n",
       walls[0][0],walls[0][1],walls[1][0],walls[1][1],walls[2][0],walls[2][1],walls[3][0],walls[3][1],pt[0],pt[1],pt[2],norm[0],norm[1],norm[2],flags,metric));
@@ -553,9 +553,9 @@ bool tf_solve_remetriced_face(fix pt[3], fix walls[4][2], int flags, fix norm[3]
 // THIS IS BROKEN
 // THE INITIAL CHECK SHOULD ADD TF_RAD^2 to rad
 // BUT WE HAVE TO CUT FINAL IN 20 MINUTES, SO WE ARENT GOING TO CHANGE IT
-bool tf_solve_cylinder(fix pt[3], fix irad, fix height)
+uchar tf_solve_cylinder(fix pt[3], fix irad, fix height)
 {
-   bool rv=FALSE, slv=FALSE;
+   uchar rv=FALSE, slv=FALSE;
    int flags;
    fix dist_sqrd, r_dist, rad=abs(irad), urad;
    // first check height
@@ -636,7 +636,7 @@ uchar tf_wall_check[5][2][5]=
  {{fcs(Z,Z),fcs(S,Z),fcs(S,N),fcs(Z,N),fcs(Z,Z)},{fcs(Z,Z),fcs(S,Z),fcs(S,N),fcs(Z,N),fcs(Z,Z)} }
 };
 
-bool tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type)
+uchar tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type)
 {
    int fce_minc,xd,yd,xo,yo,centered; // fce_minc is map increment between lines, ?d LGRect size, xo clip offset
    fix minx,miny,maxx,maxy,cenx,ceny; // for full radius of us, center for us, all really ints in the end

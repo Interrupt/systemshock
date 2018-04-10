@@ -50,7 +50,7 @@ ulong CircBuffRoom(CircBuff *pcb);
 ulong CircBuffUsed(CircBuff *pcb);
 void CircBuffAdvancePut(CircBuff *pcb, long amt);
 void CircBuffAdvanceGet(CircBuff *pcb, long amt);
-bool CircBuffBetween(uchar *ptest, uchar *pbeg, uchar *pend);
+uchar CircBuffBetween(uchar *ptest, uchar *pbeg, uchar *pend);
 
 #define CircBuffEmpty(pcb) ((pcb)->pput==(pcb)->pget)
 #define CircBuffHitEnd(pcb,p) ((p)>=(pcb)->buffEnd)

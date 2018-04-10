@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // that is, local to the main game window.
 
 #include <stdlib.h>
-#include <Timer.h>
+//#include <Timer.h>
 
 #include "lg.h"
 #include "error.h"
@@ -92,7 +92,7 @@ ubyte mouseYshift = 1;
 */
 ubyte mouseMask = 0xFF; 				// mask of events to put in the queue.
 /*
-bool  mouseLefty = FALSE; 				// is the user left-handed? 
+uchar  mouseLefty = FALSE; 				// is the user left-handed? 
 */
 #define NUM_MOUSE_CALLBACKS 16
 mouse_callfunc mouseCall[NUM_MOUSE_CALLBACKS];
@@ -100,7 +100,7 @@ void* mouseCallData[NUM_MOUSE_CALLBACKS];
 short mouseCalls = 0;  					// current number of mouse calls.
 short mouseCallSize = sizeof(mouse_callfunc);
 /*
-bool mouse_installed = FALSE;					// was mouse found?
+uchar mouse_installed = FALSE;					// was mouse found?
 
 ulong default_mouse_ticks = 0;
 ulong volatile *mouse_ticks = &default_mouse_ticks;  // Place to get mouse timestamps.
@@ -148,7 +148,7 @@ static void ReadMouseState(mouse_state *pMouseState);
 #pragma require_prototypes off
 
 #ifndef __powerc
-MouseTaskPtr GetMouseTask(void) = 0x2049;							// MOVE.L A1,A0
+//MouseTaskPtr GetMouseTask(void) = 0x2049;							// MOVE.L A1,A0
 #endif
 
 // KLC - try calling this from the main timer task.
@@ -262,7 +262,7 @@ errtype mouse_shutdown(void)
 //	---------------------------------------------------------
 //  For Mac version: ignore sizes (mouse is already set up).
 
-errtype mouse_init(short , short )
+errtype mouse_init(short mone, short mtwo)
 {
 	mouse_state mstate;
 /*
@@ -476,7 +476,7 @@ errtype mouse_put_xy(short x, short y)
 //	---------------------------------------------------------
 //  For Mac version: Basically just return true or false right now.
 
-errtype mouse_check_btn(short /*button*/, bool* res)
+errtype mouse_check_btn(short button, bool* res)
 {
 	*res = Button();
 /*   if (!mouse_installed) 
@@ -948,7 +948,7 @@ static short shifted_button_state(short bstate)
    return tmp;
 }
 
-errtype mouse_set_lefty(bool lefty)
+errtype mouse_set_lefty(uchar lefty)
 {
    if (lefty == mouseLefty) return ERR_NOEFFECT;
    mouseInstantButts = shifted_button_state(mouseInstantButts);

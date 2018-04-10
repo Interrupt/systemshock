@@ -146,7 +146,7 @@ int fnt_init_from_style(void *style_ptr)
 }
 
 // 
-bool fnt_free(void)
+uchar fnt_free(void)
 {
    if (_fnt_count==-1) return FALSE;
    free(_fnt_lists);
@@ -155,7 +155,7 @@ bool fnt_free(void)
 }
 
 // return the handle of the loaded font or -1
-int fnt_load(char * /*fnt_fname*/)
+int fnt_load(char * fnt_fname)
 {
 //   mprintf ("AGH!  NO!  USE STYLES WITH THIS FONT CODE (%s)!!\n",fnt_fname);
    return 0;
@@ -193,7 +193,7 @@ int fnt_load_from_style(void *style_ptr)
 }
 
 // unload the specified font
-bool fnt_unload(int fnt_handle)
+uchar fnt_unload(int fnt_handle)
 {
    if (fnt_handle>=_fnt_count) return FALSE;
    if (fnt_handle!=_fnt_count-1)
@@ -205,7 +205,7 @@ bool fnt_unload(int fnt_handle)
 }
 
 // set the current font
-bool fnt_select(int fnt_handle)
+uchar fnt_select(int fnt_handle)
 {
    if (fnt_handle>=_fnt_count) return FALSE;
    _fnt_current=fnt_handle;

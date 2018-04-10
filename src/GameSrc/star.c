@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define STARS_ANTI_ALIAS
 
 #ifdef STEREO_ON
-extern bool g3d_stereo;
+extern uchar g3d_stereo;
 extern fix g3d_eyesep_raw;
 extern uchar *g3d_rt_canv_bits;
 extern uchar *g3d_lt_canv_bits;
@@ -275,7 +275,7 @@ void star_render(void)
    int x1,y1;
    g3s_vector v;
    #ifdef STEREO_ON
-   bool  old_stereo;
+   uchar  old_stereo;
    #endif
    #ifdef STARS_ANTI_ALIAS
    int anti_alias = grd_bm.w >= std_alias_size;

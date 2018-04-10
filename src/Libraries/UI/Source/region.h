@@ -47,9 +47,9 @@ typedef struct _Region
 	LGRect  *r;						// rectangle covered by this region, in coord frame of parent.
 	int     z;						// z-coordinate to determine stacking
 	int 	moving;
-	bool 	(*expose)(struct _Region *reg, LGRect *r);		// function to draw a given rectangle
-	bool 	(*save_under)(struct _Region *reg, LGRect *r);	// function to save under a given rectangle
-	bool 	(*replace)(struct _Region *reg, LGRect *r);
+	uchar 	(*expose)(struct _Region *reg, LGRect *r);		// function to draw a given rectangle
+	uchar 	(*save_under)(struct _Region *reg, LGRect *r);	// function to save under a given rectangle
+	uchar 	(*replace)(struct _Region *reg, LGRect *r);
 	ulong  	status_flags;
 	int    	device_type;
 	void 	*handler;
@@ -62,9 +62,9 @@ typedef struct _Region
     LGRect real_rect;
 } LGRegion;
 
-typedef bool (*RectCallback)(LGRegion *reg, LGRect *r);  // all in relative coords
-typedef bool (*TravRectCallback)(LGRegion *reg, LGRect *r, void *data);
-typedef bool (*TravCallback)(LGRegion *reg, void *data);
+typedef uchar (*RectCallback)(LGRegion *reg, LGRect *r);  // all in relative coords
+typedef uchar (*TravRectCallback)(LGRegion *reg, LGRect *r, void *data);
+typedef uchar (*TravCallback)(LGRegion *reg, void *data);
 
 
 // If the callback returns non-zero, then it indicates that the callback triggering
@@ -108,7 +108,7 @@ errtype region_create(LGRegion *parent, LGRegion *ret, LGRect *r, int z, int eve
 // Returns whether or not the operation was successful.  Any newly exposed
 // areas will recieve expose callbacks if their masks allow.
 
-errtype region_destroy(LGRegion *reg, bool draw);
+errtype region_destroy(LGRegion *reg, uchar draw);
 
 // Move a region to a new set of coordinates.  Expose and saveunder
 // callbacks are dished out for the original area and any newly covered
@@ -156,16 +156,16 @@ int foreign_region_obscured(LGRegion *reg, LGRect *obs_rect);
 // sequence has ended, a which point it lets the exposes get through, after filtering out 
 // all the duplicate exposes.
 errtype region_begin_sequence();
-errtype region_end_sequence(bool replay);
+errtype region_end_sequence(uchar replay);
 
 
 // An _invisible_ region is not detected through any kind of traversal, does not 
 // receive mouse events and does not change the cursor.
 
-errtype region_set_invisible(LGRegion* reg, bool invis);
+errtype region_set_invisible(LGRegion* reg, uchar invis);
 // Sets whether or not a region is invisible
 
-errtype region_get_invisible(LGRegion* reg, bool* invis);
+errtype region_get_invisible(LGRegion* reg, uchar* invis);
 // determines whether a region is currently invisible. 
 
 #define UNOBSCURED            0

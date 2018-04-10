@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __SCHEDTYPE_H
 #define __SCHEDTYPE_H
 
+#include "pqueue.h"
+
 /*
  * $Source: q:/inc/RCS/schedtyp.h $
  * $Revision: 1.2 $

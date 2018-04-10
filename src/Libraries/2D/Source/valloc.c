@@ -62,7 +62,7 @@ v_block v_table[VTAB_SIZE];
 // globals
 uchar grd_valloc_mode = 0;
 
-uchar *valloc (short w, short h)
+uchar *our_valloc (short w, short h)
 {
    if (grd_valloc_mode)
       return (uchar *)0;

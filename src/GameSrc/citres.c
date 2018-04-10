@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "statics.h"
 
 // Internal Prototypes
-errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, bool tmp_mem, 
+errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar tmp_mem, 
 															LGRect *anchor, uchar *p);
 
 
@@ -69,11 +69,11 @@ grs_bitmap *get_bitmap_from_ref_anchor(Ref r, LGRect* anchor)
 #pragma scheduling off
 #pragma global_optimizer off
 
-errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, bool tmp_mem, LGRect *anchor, uchar *p)
+errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar tmp_mem, LGRect *anchor, uchar *p)
 {
    Ref rid;
    FrameDesc *f;
-   bool alloced_fdesc = FALSE;
+   uchar alloced_fdesc = FALSE;
    extern int memcount;
 
    if(!RefIndexValid(rt,i))
@@ -127,14 +127,14 @@ if (bmp == NULL)
 
 #pragma mark -
 
-errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, bool /*transp*/, LGRect *anchor, uchar *p)
+errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar transp, LGRect *anchor, uchar *p)
 {
    return master_load_bitmap_from_res(bmp,id_num,i,rt,FALSE,anchor,p);
 }
 
 
 
-errtype load_res_bitmap(grs_bitmap* bmp, Ref rid,bool alloc)
+errtype load_res_bitmap(grs_bitmap* bmp, Ref rid,uchar alloc)
 {
    errtype retval;
    RefTable *rt = ResReadRefTable(REFID(rid));
@@ -154,7 +154,7 @@ errtype extract_temp_res_bitmap(grs_bitmap* bmp, Ref rid)
 
 
 #ifdef SIMPLER_NONEXTRACTING_WAY
-errtype load_res_bitmap(grs_bitmap* bmp, Ref rid,bool alloc)
+errtype load_res_bitmap(grs_bitmap* bmp, Ref rid,uchar alloc)
 {
    errtype retval = OK;
    char* bits = bmp->bits;
@@ -185,7 +185,7 @@ errtype simple_load_res_bitmap(grs_bitmap* bmp, Ref rid)
 
 #pragma mark -
 
-errtype load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, bool alloc)
+errtype load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar alloc)
 {
    errtype retval = OK;  
    LGRect anchor;
@@ -242,7 +242,7 @@ errtype simple_load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid)
    return load_res_bitmap_cursor(c,bmp,rid,TRUE);
 }
 
-errtype load_hires_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, bool alloc)
+errtype load_hires_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar alloc)
 {
 	errtype retval = OK;  
 	LGRect anchor;

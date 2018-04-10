@@ -99,7 +99,7 @@ errtype location_trigger_activate(ObjID id);
 // return value is whether or not the trap beneath the trigger
 // actually went off. use_message is a pointer to a boolean
 // to set if the trap utilizes the message line.
-bool trap_activate(ObjID id, bool *use_message);
+uchar trap_activate(ObjID id, uchar *use_message);
 
 #define is_trap(id) (objs[(id)].class == CLASS_TRAP)
 
@@ -107,7 +107,7 @@ bool trap_activate(ObjID id, bool *use_message);
 // Use these functions to directly access trap-like functions
 errtype trap_teleport_func(int targ_x, int targ_y, int targ_z, int targlevel);
 errtype trap_scheduler_func(int p1, int p2, int p3, int p4);
-errtype trap_lighting_func(bool floor, int p1, int p2, int p3, int p4);
+errtype trap_lighting_func(uchar floor, int p1, int p2, int p3, int p4);
 errtype trap_damage_func(int p1, int p2, int p3, int p4);
 errtype trap_create_obj_func(int p1, int p2, int p3, int p4);
 errtype trap_questbit_func(int p1, int p2, int p3, int p4);
@@ -115,7 +115,7 @@ errtype trap_cutscene_func(int p1, int p2, int p3, int p4);
 errtype trap_terrain_func(int p1, int p2, int p3, int p4);
 errtype trap_sfx_func(int p1, int p2, int p3, int p4);
 
-errtype check_deathwatch_triggers(ObjID id, bool really_dead);
+errtype check_deathwatch_triggers(ObjID id, uchar really_dead);
 errtype check_entrance_triggers(uchar old_x, uchar old_y, uchar new_x, uchar new_y);
 
 errtype do_multi_stuff(ObjID id);

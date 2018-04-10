@@ -198,11 +198,10 @@ typedef struct {
 } TextTool;
 
 // prototypes
-TextTool *tt_full_build(TTRect *pos, TTState *es, TTFontInfo *ttf, void *output_data, char *keymap,
-   void (*d_func)(void *, LGRect *));
+TextTool *tt_full_build(TTRect *pos, TTState *es, TTFontInfo *ttf, void *output_data, char *keymap, void (*d_func)(void *, LGRect *));
 #define tt_easy_build() tt_full_build(NULL,NULL,NULL,NULL,NULL)
-bool tt_toast(TextTool *old_tt);
-bool tt_set(TextTool *def_tt);
+uchar tt_toast(TextTool *old_tt);
+uchar tt_set(TextTool *def_tt);
 long tt_parse_char(TextTool *tt, ushort key_code);
 long tt_parse_string(TextTool *tt, char *st);
 char *tt_get(TextTool *tt, long line_num);

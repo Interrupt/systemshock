@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 //#include <malloc.h>
 //#include <mprintf.h>
-#include <texttool.h>
+#include "texttool.h"
 
 #pragma require_prototypes off
 

@@ -66,7 +66,7 @@ errtype inventory_clear(void);
 // Add the appropriate kind of object to the player's inventory.   Returns whether
 // or not the action succeded (typical failure reason being not enough inventory
 // slots remaining).
-bool inventory_add_object (ObjID new_object,bool select);
+uchar inventory_add_object (ObjID new_object,uchar select);
 
 // Removes the specified object from the player's inventory.  Does not do any 
 // correlation with the rest of the Universe -- this needs to be handed by

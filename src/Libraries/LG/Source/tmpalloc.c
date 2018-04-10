@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 static MemStack *temp_mem_stack=NULL;
 
 /* TRUE if buffer is allocated by temp_mem_init. */
-static bool stack_dynamic=FALSE;
+static uchar stack_dynamic=FALSE;
 
 MemStack *temp_mem_get_stack(void)
 {

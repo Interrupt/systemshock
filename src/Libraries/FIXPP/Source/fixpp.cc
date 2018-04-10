@@ -80,7 +80,7 @@ Fixpoint Fixpoint_two_pi          = f2Fixpoint(6.283185306);
 
 #ifdef FIXDEBUG
 
-bool  Fixpoint::click_bool = 1;
+uchar  Fixpoint::click_uchar = 1;
 
 ulong Fixpoint::constructor_void     = 0,
       Fixpoint::constructor_Fixpoint = 0,

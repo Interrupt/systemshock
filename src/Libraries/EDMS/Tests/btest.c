@@ -81,7 +81,7 @@ void	Indoor_Terrain( fix X, fix Y, fix Z, fix R, physics_handle ph )
 }
 } // extern "C"
 
-bool  FF_terrain( fix X, fix Y, fix Z, bool fast, terrain_ff* TFF ) {
+uchar  FF_terrain( fix X, fix Y, fix Z, uchar fast, terrain_ff* TFF ) {
 
 	TFF->g_height = fix_mul( fix_make(0,0x2000), (X - fix_make(20,0) ) );
 	TFF->g_dx     = fix_make(0,0x2000);

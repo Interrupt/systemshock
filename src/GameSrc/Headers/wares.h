@@ -98,10 +98,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 typedef struct {
    ubyte flags;                   // Do we have a sideicon, etc.
    ubyte sideicon;                // Which sideicon corresponds
-   void  (*turnon)(bool visible, bool real_start);             // Function slots for turn on, etc.
+   void  (*turnon)(uchar visible, uchar real_start);             // Function slots for turn on, etc.
    void  (*effect)();
-   void  (*turnoff)(bool visible, bool real_stop);
-   bool  (*check)();
+   void  (*turnoff)(uchar visible, uchar real_stop);
+   uchar  (*check)();
 } WARE;
 
 typedef struct

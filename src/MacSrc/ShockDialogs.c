@@ -51,7 +51,7 @@ extern Boolean	gPlayingGame;
 extern char		which_lang;
 extern int 			_fr_global_detail;
 extern frc 			*svga_render_context;
-extern bool 		sfx_on;
+extern uchar 		sfx_on;
 extern Boolean	DoubleSize;
 extern Boolean	SkipLines;
 

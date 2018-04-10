@@ -181,10 +181,10 @@ int tng_menu_getvalue(TNG *ptng)
 }
 
 // React appropriately for receiving the specified cooked key
-bool tng_menu_keycooked(TNG *ptng, ushort key)
+uchar tng_menu_keycooked(TNG *ptng, ushort key)
 {
    ushort code = key ^ KB_FLAG_DOWN;
-   bool retval = FALSE;
+   uchar retval = FALSE;
    MenuElement *csel, *next;
 
    switch(code)
@@ -230,9 +230,9 @@ bool tng_menu_keycooked(TNG *ptng, ushort key)
 }
 
 // React appropriately for receiving the specified mouse button event
-bool tng_menu_mousebutt(TNG *ptng, uchar type, LGPoint loc)
+uchar tng_menu_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    int localy;
    TNG_menu *pmntng;
    MenuElement *curp;
@@ -261,9 +261,9 @@ bool tng_menu_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 }
 
 // Handle incoming signals
-bool tng_menu_signal(TNG *ptng, ushort signal)
+uchar tng_menu_signal(TNG *ptng, ushort signal)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
 
    if (signal & TNG_SIGNAL_SELECT)
       IF_SET_RV(tng_menu_selection(ptng));

@@ -99,7 +99,7 @@ extern ObjID destroyed_ids[MAX_DESTROYED_OBJS];
 
 // is_obj_destroyed()
 // returns TRUE, if object with id, is scheduled for destruction
-bool is_obj_destroyed(ObjID id);
+uchar is_obj_destroyed(ObjID id);
 
 // destroy_destroyed_objects()
 // destroy all objects that have been scheduled to be destroyed
@@ -117,9 +117,9 @@ ubyte object_affect(ObjID target_id, short dtype);
 // simple_damage object just takes some damage and damage type
 // (and flags) and damages the object if it is vulnerable.
 
-bool simple_damage_object(ObjID target, int damage, ubyte dtype, ubyte flags);
-bool terrain_damage_object(physics_handle ph, fix raw_damage);
-bool special_terrain_hit(ObjID cobjid);
+uchar simple_damage_object(ObjID target, int damage, ubyte dtype, ubyte flags);
+uchar terrain_damage_object(physics_handle ph, fix raw_damage);
+uchar special_terrain_hit(ObjID cobjid);
 
 // attack_object()    
 //
@@ -139,7 +139,7 @@ ubyte player_attack_object(ObjID target, int wpn_triple, int power_level, Combat
 int get_damage_estimate(ObjSpecID osid);
 
 void spew_object_specs(void);
-bool test_object_specs(short keycode, ulong context, void *data);
-bool damage_player(int damage, ubyte dtype, ubyte flags);
+uchar test_object_specs(short keycode, ulong context, void *data);
+uchar damage_player(int damage, ubyte dtype, ubyte flags);
 
 #endif // __DAMAGE_H

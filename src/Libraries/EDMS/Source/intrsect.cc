@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern int      alarm_clock[MAX_OBJ];
 extern int      no_no_not_me[MAX_OBJ];
 
-bool do_work( int object, int other_object, Q my_rad, Q your_rad,
+uchar do_work( int object, int other_object, Q my_rad, Q your_rad,
               Q my_pos[3], Q your_pos[3], Q &result0, Q &result1, Q &result2 );
 
 void shall_we_dance( int object, Q& result0, Q& result1, Q& result2 );
@@ -199,7 +199,7 @@ Q       dx, dy, dz;
  
 //	Here's the meat of the sutuation...
 //	===================================
-bool do_work( int object, int other_object, Q my_rad, Q your_rad,
+uchar do_work( int object, int other_object, Q my_rad, Q your_rad,
               Q my_pos[3], Q other_pos[3]/*, Q my_dot[3], your_dot[3]*/,
               Q &result0, Q &result1, Q &result2 )
 {

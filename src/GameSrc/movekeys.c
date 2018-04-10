@@ -239,21 +239,21 @@ extern uchar motion_key_scancodes[];  // KBC_NONE terminated scancodes
 // ---------
 // INFERNALS
 // ---------
-bool parse_motion_key(ushort keycode, short* cnum, short* cval);
-bool parse_motion_key_cyber(ushort keycode, short* cnum, short* cval);
+uchar parse_motion_key(ushort keycode, short* cnum, short* cval);
+uchar parse_motion_key_cyber(ushort keycode, short* cnum, short* cval);
 void init_motion_polling(void);
 void setup_motion_polling(void);
 void process_motion_keys(void);
-bool motion_keycheck_handler(uiEvent* ev, LGRegion*, void*);
+uchar motion_keycheck_handler(uiEvent* ev, LGRegion*, void*);
 
 
-extern void physics_set_relax(int axis, bool relax);
+extern void physics_set_relax(int axis, uchar relax);
 
 static byte poll_controls[6];
 
 
 // Hey, this deals with motion keys
-bool parse_motion_key(ushort keycode, short* cnum, short* cval)
+uchar parse_motion_key(ushort keycode, short* cnum, short* cval)
 {
    *cnum = -1;
    *cval = 0;
@@ -346,7 +346,7 @@ bool parse_motion_key(ushort keycode, short* cnum, short* cval)
 }
 
 
-bool parse_motion_key_cyber(ushort keycode, short* cnum, short* cval)
+uchar parse_motion_key_cyber(ushort keycode, short* cnum, short* cval)
 {
    keycode &= ~KB_FLAG_2ND;
    *cnum = -1;
@@ -417,7 +417,7 @@ bool parse_motion_key_cyber(ushort keycode, short* cnum, short* cval)
 // EXTERNALS
 // ---------
 
-extern bool fire_slam;
+extern uchar fire_slam;
 
 void init_motion_polling(void)
 {
@@ -444,7 +444,7 @@ void process_motion_keys(void)
 
 extern Boolean	gKeypadOverride;
 
-bool motion_keycheck_handler(uiEvent* ev, LGRegion*, void*)
+uchar motion_keycheck_handler(uiEvent* ev, LGRegion*, void*)
 {
 	uiPollKeyEvent	*ke = (uiPollKeyEvent *)ev;
 	

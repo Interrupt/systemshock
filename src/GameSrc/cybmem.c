@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Memory management and manipulation functions
 // for Cyberia
 #define __CYBMEM_SRC
-#include "ShockDialogs.h"
+//#include "ShockDialogs.h"
 
 #include "cybmem.h"
 #include "tools.h"
@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "textmaps.h"
 #include "objcrit.h"
 #include "dynmem.h"
-#include "Shock.h"
+#include "../MacSrc/Shock.h"
 #include "sideicon.h"
 #include "criterr.h"
 

@@ -19,6 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __TOOLS_H
 #define __TOOLS_H
 
+#include "lg_types.h"
+#include "error.h"
+#include "res.h"
+#include "fix.h"
+#include "region.h"
+#include "2d.h"
+
 /*
  * $Source: r:/prj/cit/src/inc/RCS/tools.h $
  * $Revision: 1.27 $
@@ -55,8 +62,8 @@ errtype draw_raw_res_bm_extract(Ref id, int x, int y);
 void draw_hires_resource_bm(Ref id, int x, int y);
 void draw_hires_halfsize_bm(Ref id, int x, int y);
 errtype draw_res_bm(Ref id, int x, int y);
-errtype draw_res_bm_core(Ref id, int x, int y,bool scale);
-errtype draw_full_res_bm(Ref id, int x, int y, bool fade_in);
+errtype draw_res_bm_core(Ref id, int x, int y,uchar scale);
+errtype draw_full_res_bm(Ref id, int x, int y, uchar fade_in);
 
 // Return the width or height of a resource bitmap.
 int res_bm_width(Ref id);
@@ -64,7 +71,7 @@ int res_bm_height(Ref id);
 
 // Draw a Text string to the screen, given a resource font pointer
 #define res_draw_text(font,text,x,y) res_draw_text_shadowed(font,text,x,y,FALSE)
-errtype res_draw_text_shadowed(Id id, char *text, int x, int y, bool shadow);
+errtype res_draw_text_shadowed(Id id, char *text, int x, int y, uchar shadow);
 
 // Like res_draw_text, but takes a string number instead.
 errtype res_draw_string(Id font, int strid, int x, int y);
@@ -75,7 +82,7 @@ void Rect_gr_box(void *rv);
 void Rect_gr_rect(void *rv);
 
 // Dump the current screen out to a .GIF in the GEN directory
-bool gifdump_func(short keycode, ulong context, void* data);
+uchar gifdump_func(short keycode, ulong context, void* data);
 
 // Spit up a box containing a message.
 errtype message_box(char *box_text);
@@ -86,7 +93,7 @@ errtype message_info(char *info_text);
 errtype message_clear_check();
 
 // Spit up a box asking for confirmation.  Returns true or false, accordingly.
-bool confirm_box(char *box_text);
+uchar confirm_box(char *box_text);
 
 // From the short-lived util.c
 // ¥¥¥FILE *fopen_gen(char *fname, const char *how);
@@ -95,11 +102,11 @@ char *next_number_fname(char *fname);
 //¥¥¥Êchar *next_number_dpath_fname(Datapath *dpath, char *fname);
 
 // Execute a tight loop, doing appropriate music/palette things
-errtype tight_loop(bool check_input);
+errtype tight_loop(uchar check_input);
 
 
 // returns whether or not a given bitmap is, well, empty.
-bool empty_bitmap(grs_bitmap *bmp);
+uchar empty_bitmap(grs_bitmap *bmp);
 
 // string wrapper functions
 int wrap_text(char *ps, short width);

@@ -55,7 +55,7 @@ Id resDescMax;									// max id in res desc
 //	Some variables
 /*
 ResStat resStat;						// stats held here
-static bool resPushedAllocators;	// did we push our allocators?
+static uchar resPushedAllocators;	// did we push our allocators?
 */
 
 //	---------------------------------------------------------

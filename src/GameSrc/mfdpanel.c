@@ -59,30 +59,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------
 extern errtype accesspanel_trigger(ObjID id);
 errtype simple_load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid);
-errtype load_res_bitmap(grs_bitmap* bmp,Ref rid,bool alloc);
+errtype load_res_bitmap(grs_bitmap* bmp,Ref rid,uchar alloc);
 
 int wirepos_score(wirePosPuzzle *wppz);
 void wirepos_setup_buttons(wirePosPuzzle *wppz);
-bool wirepos_3int_init(wirePosPuzzle *wppz, int a1, int a2, int a3);
+uchar wirepos_3int_init(wirePosPuzzle *wppz, int a1, int a2, int a3);
 void wirepos_3int_update(wirePosPuzzle *wppz);
 int wirepos_iswire(wirePosPuzzle *wppz, int wim_code);
 int wirepos_rescore_n_check(wirePosPuzzle *wppz);
-bool wirepos_moveto(wirePosPuzzle *wppz, int wim_code);
+uchar wirepos_moveto(wirePosPuzzle *wppz, int wim_code);
 
 int mfd_slot_primary(int slot);
-bool mfd_accesspanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data);
-bool mfd_accesspanel_handler(MFD* mfd, uiEvent* ev);
+uchar mfd_accesspanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data);
+uchar mfd_accesspanel_handler(MFD* mfd, uiEvent* ev);
 errtype mfd_accesspanel_init(MFD_Func* f);
 int access_help_string(wirePosPuzzle *wppz);
 void mfd_accesspanel_expose(MFD* mfd, ubyte control);
 void mfd_setup_wirepanel(uchar special, ObjID id);
 uchar mfd_solve_wirepanel(void);
 errtype mfd_gridpanel_init(MFD_Func* f);
-bool mfd_gridpanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data);
-bool mfd_gridpanel_handler(MFD* m, uiEvent* ev);
+uchar mfd_gridpanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data);
+uchar mfd_gridpanel_handler(MFD* m, uiEvent* ev);
 void mfd_setup_gridpanel(ObjID id);
 uchar mfd_solve_gridpanel(void);
-void mfd_gridpanel_set_winmove(bool check);
+void mfd_gridpanel_set_winmove(uchar check);
 gpz_state gridpanel_move(LGPoint node, gridFlowPuzzle* gfpz);
 void mfd_gridpanel_expose(MFD* mfd, ubyte control);
 
@@ -90,20 +90,20 @@ void gpz_set_grid_state(gridFlowPuzzle *gfpz, short row, short col, gpz_state va
 void gpz_uncharge_grid(gridFlowPuzzle *gfpz);
 gpz_state gpz_charge_state(gpz_state s);
 gpz_state gpz_uncharge_state(gpz_state s);
-bool gpz_is_charged(gpz_state s);
+uchar gpz_is_charged(gpz_state s);
 void gpz_toggle_state(gridFlowPuzzle *gfpz, short r, short c);
 gpz_state bitarray_get(short siz, short off, uint *base);
 void bitarray_set(short siz, short off, ushort val, uint *base);
 int gpz_search_depth(gridFlowPuzzle* gfpz);
 void gpz_add_gate(gridFlowPuzzle *gfpz, ObjID me);
 void gpz_perimeter_to_grid(gridFlowPuzzle *gfpz, ushort per, short* r, short* c);
-bool gpz_state_charged(gridFlowPuzzle *gfpz, short r, short c);
+uchar gpz_state_charged(gridFlowPuzzle *gfpz, short r, short c);
 uchar gpz_doneness(gridFlowPuzzle *gfpz);
-bool gpz_propogate_charge_n_check(gridFlowPuzzle *gfpz);
+uchar gpz_propogate_charge_n_check(gridFlowPuzzle *gfpz);
 void gpz_setup_buttons(gridFlowPuzzle *gfpz);
 
-bool find_winning_move_from(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, LGPoint* move, int r0, int c0, int dep, ulong timeout);
-bool find_winning_move(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, int depth, LGPoint* move, bool breadth_first, ulong timeout);
+uchar find_winning_move_from(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, LGPoint* move, int r0, int c0, int dep, ulong timeout);
+uchar find_winning_move(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, int depth, LGPoint* move, uchar breadth_first, ulong timeout);
 void wacky_int_line(short x1,short y1,short x2,short y2);
 char* grid_help_string(gridFlowPuzzle *gfpz, char* buf, int siz);
 void id_clut_init(uchar* clut);
@@ -164,10 +164,10 @@ int mfd_slot_primary(int slot)
 
 // draws text and/or bitmap centered in current canvas,
 // assumed to be an mfd.
-static void draw_help_text( char* str, bool wire, void* puzzle )
+static void draw_help_text( char* str, uchar wire, void* puzzle )
 {
    short sw,sh,bw=0,bh=0,x,y;
-   bool save_w = mfd_string_wrap, bmap=FALSE;
+   uchar save_w = mfd_string_wrap, bmap=FALSE;
    grs_bitmap foot;
    uchar bcolor;
 
@@ -276,7 +276,7 @@ void wirepos_setup_buttons(wirePosPuzzle *wppz)
 }
 
 // a1 is master data, a2 target pos, a3 current pos
-bool wirepos_3int_init(wirePosPuzzle *wppz, int a1, int a2, int a3)
+uchar wirepos_3int_init(wirePosPuzzle *wppz, int a1, int a2, int a3)
 {  // restore the puzzle, for now just init it
    int i;
    wppz->wirecnt=a1&0xf;   a1>>=4;     if (wppz->wirecnt==0) wppz->wirecnt=4;
@@ -346,7 +346,7 @@ int wirepos_iswire(wirePosPuzzle *wppz, int wim_code)
 
 #define ALLOW_FLIP
 
-bool wirepos_moveto(wirePosPuzzle *wppz, int wim_code)
+uchar wirepos_moveto(wirePosPuzzle *wppz, int wim_code)
 {
    int wim_tap, retv;
 
@@ -406,7 +406,7 @@ int wirepos_rescore_n_check(wirePosPuzzle *wppz)
    return score;
 }
 
-bool mfd_accesspanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_accesspanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void*)
 {
    wirePosPuzzle *wppz=(wirePosPuzzle *)&player_struct.mfd_access_puzzles[0];
    int wim_code;
@@ -483,7 +483,7 @@ char mfd_setup_accesspanel(uchar special, ObjID id)
 uchar mfd_solve_accesspanel(ObjID id)
 {
    int p2;
-   bool retval;
+   uchar retval;
 
    p2=objFixtures[objs[id].specID].p2;
    p2=(p2>>28)&0xF;
@@ -520,7 +520,7 @@ void mfd_setup_wirepanel(uchar special, ObjID id)
    mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
 }
 
-bool mfd_solve_wirepanel()
+uchar mfd_solve_wirepanel()
 {
    wirePosPuzzle *wppz=(wirePosPuzzle*)&player_struct.mfd_access_puzzles[0];
    int wire, swapper, targ;
@@ -622,11 +622,11 @@ errtype mfd_accesspanel_init(MFD_Func* f)
    return OK;
 }
 
-bool mfd_accesspanel_handler(MFD*, uiEvent*)
+uchar mfd_accesspanel_handler(MFD*, uiEvent*)
 {
-   extern bool mfd_gridpanel_handler(MFD*,uiEvent*);
+   extern uchar mfd_gridpanel_handler(MFD*,uiEvent*);
 #ifdef EPICK_ON_CURSOR_TRY
-   extern bool try_use_epick(ObjID panel, ObjID cursor_obj);
+   extern uchar try_use_epick(ObjID panel, ObjID cursor_obj);
 
    if (ev->type != UI_EVENT_MOUSE || !(ev->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE))) return FALSE;
 
@@ -648,11 +648,11 @@ void mfd_accesspanel_expose(MFD* mfd, ubyte control)
 {
    void mfd_clear_view(void);
    wirePosPuzzle *wppz=(wirePosPuzzle *)&player_struct.mfd_access_puzzles[0];
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    if (control & MFD_EXPOSE) // Time to draw stuff
    {
       int cscore;
-      bool primary;
+      uchar primary;
 
       if((full && access_primary_mfd<0) || player_struct.mfd_current_slots[access_primary_mfd]!=MFD_INFO_SLOT) {
          full = TRUE;
@@ -837,7 +837,7 @@ gpz_state gpz_uncharge_state(gpz_state s)
 }
 
 // returns TRUE iff s is a "charged" state.
-bool gpz_is_charged(gpz_state s)
+uchar gpz_is_charged(gpz_state s)
 {
    return(s!=GPZ_OPEN && (s&1));
 }
@@ -913,7 +913,7 @@ void bitarray_set(short siz, short off, ushort val, uint *base)
 
 errtype mfd_gridpanel_init(MFD_Func* f)
 {
-   bool mfd_gridpanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data);
+   uchar mfd_gridpanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data);
    int cnt = 0;
    errtype err;
    LGPoint bsize = { GRIDP_BTN_WD, GRIDP_BTN_HGT };
@@ -1018,12 +1018,12 @@ void gpz_add_gate(gridFlowPuzzle *gfpz, ObjID me)
    return;
 }
 
-bool mfd_solve_gridpanel()
+uchar mfd_solve_gridpanel()
 {
    gridFlowPuzzle *gfpz=(gridFlowPuzzle*)&player_struct.mfd_access_puzzles[0];
    gridFlowPuzzle solved;
    int search_depth;
-   bool found, shadow;
+   uchar found, shadow;
    ObjID id=gfpz->gfLayout.our_id;
    uchar temp[sizeof(player_struct.mfd_access_puzzles)];
    // for slow machines; don't give probe more than a couple of
@@ -1132,7 +1132,7 @@ void gpz_perimeter_to_grid(gridFlowPuzzle *gfpz, ushort per, short* r, short* c)
    return;
 }
 
-bool gpz_state_charged(gridFlowPuzzle *gfpz, short r, short c)
+uchar gpz_state_charged(gridFlowPuzzle *gfpz, short r, short c)
 {
    return(gpz_is_charged(gpz_get_grid_state(gfpz,r,c)));
 }
@@ -1173,9 +1173,9 @@ uchar gpz_doneness(gridFlowPuzzle *gfpz)
 // recalculates "current" or "charge" flow through grid.  Returns TRUE
 // iff destination node is charged.
 //
-bool gpz_propogate_charge_n_check(gridFlowPuzzle *gfpz)
+uchar gpz_propogate_charge_n_check(gridFlowPuzzle *gfpz)
 {
-   bool flow;
+   uchar flow;
    short r,c,src_r,src_c;
    gpz_state s;
    extern errtype accesspanel_trigger(ObjID id);
@@ -1261,7 +1261,7 @@ bool gpz_propogate_charge_n_check(gridFlowPuzzle *gfpz)
    return(gpz_is_charged(s));
 }
 
-bool find_winning_move_from(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, LGPoint* move, int r0, int c0, int dep, ulong timeout)
+uchar find_winning_move_from(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, LGPoint* move, int r0, int c0, int dep, ulong timeout)
 {
    gpz_state gridpanel_move(LGPoint node,gridFlowPuzzle *gfpz);
    int r,c,real_c0=c0;
@@ -1346,7 +1346,7 @@ bool find_winning_move_from(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, LGPoin
 // be very careful with depth here; search time can increase exponentially
 // with depth, ya know.
 //
-bool find_winning_move(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, int depth, LGPoint* move, bool breadth_first, ulong timeout)
+uchar find_winning_move(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, int depth, LGPoint* move, uchar breadth_first, ulong timeout)
 {
    int d;
 
@@ -1531,7 +1531,7 @@ gpz_state gridpanel_move(LGPoint node, gridFlowPuzzle* gfpz)
    return(s);
 }
 
-void mfd_gridpanel_set_winmove(bool check)
+void mfd_gridpanel_set_winmove(uchar check)
 {
    gridFlowPuzzle *gfpz;
 
@@ -1540,7 +1540,7 @@ void mfd_gridpanel_set_winmove(bool check)
    gfpz=(gridFlowPuzzle*)&player_struct.mfd_access_puzzles[0];
 
    if(!gfpz->gfLayout.have_won && player_struct.drug_status[CPTRIP(GENIUS_DRUG_TRIPLE)]>0) {
-      bool gotone;
+      uchar gotone;
       LGPoint winner;
       short diff;
 
@@ -1561,7 +1561,7 @@ void mfd_gridpanel_set_winmove(bool check)
    }
 }
 
-bool mfd_gridpanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_gridpanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void*)
 {
    gridFlowPuzzle *gfpz=(gridFlowPuzzle *)&player_struct.mfd_access_puzzles[0];
    gpz_state s;
@@ -1614,9 +1614,9 @@ void mfd_setup_gridpanel(ObjID id)
 }
 
 
-bool mfd_gridpanel_handler(MFD* m, uiEvent* ev)
+uchar mfd_gridpanel_handler(MFD* m, uiEvent* ev)
 {
-   extern bool mfd_gridpanel_handler(MFD*,uiEvent*);
+   extern uchar mfd_gridpanel_handler(MFD*,uiEvent*);
    uiCursorStack* cs;
    gridFlowPuzzle *gfpz=(gridFlowPuzzle *)&player_struct.mfd_access_puzzles[0];
    int rr=gfpz->gfLayout.rows;
@@ -1638,7 +1638,7 @@ bool mfd_gridpanel_handler(MFD* m, uiEvent* ev)
       uiPopCursorEvery(cs,&gridCursor);
    }
 #ifdef EPICK_ON_CURSOR_TRY
-   extern bool try_use_epick(ObjID panel, ObjID cursor_obj);
+   extern uchar try_use_epick(ObjID panel, ObjID cursor_obj);
 
    if (ev->type != UI_EVENT_MOUSE || !(ev->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE))) return FALSE;
 
@@ -1719,7 +1719,7 @@ void mfd_gridpanel_expose(MFD* mfd, ubyte control)
    short sc, sr, p;
    gpz_state s, nearstate;
    gridFlowPuzzle *gfpz=(gridFlowPuzzle *)&player_struct.mfd_access_puzzles[0];
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
 
 #ifdef SVGA_SUPPORT
    // Whatta hack!
@@ -1744,7 +1744,7 @@ void mfd_gridpanel_expose(MFD* mfd, ubyte control)
    if (control & MFD_EXPOSE) // Time to draw stuff
    {
       short dr, dc;
-      bool win, primary, winblink=FALSE;
+      uchar win, primary, winblink=FALSE;
 
       if(gfpz->gfLayout.winmove_f) {
          mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);

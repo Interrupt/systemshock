@@ -338,7 +338,7 @@ long AfileReadDiffFrame(Afile *paf, grs_bitmap *pbm, fix *ptime)
 //
 //	Returns: TRUE if palette for this frame, FALSE if none
 
-bool AfileGetFramePal(Afile *paf, Apalette *ppal)
+uchar AfileGetFramePal(Afile *paf, Apalette *ppal)
 {
 //	Spew(DSRC_2D_Afile, ("AfileGetFramePal: getting pal\n"));
 

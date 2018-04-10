@@ -538,7 +538,7 @@ void DbgReportWarning(char *msg, ...)
 //
 //	Returns: TRUE if should do spew, FALSE if not
 
-bool DbgSpewTest(ulong src)
+uchar DbgSpewTest(ulong src)
 {
 	int bank;
 
@@ -768,7 +768,7 @@ void DbgSetLogPath(char *path)
 //
 //	Returns: TRUE if file opened successfully, FALSE if not
 
-bool DbgSetLogFile(ulong src, char *name)
+uchar DbgSetLogFile(ulong src, char *name)
 {
 	int index,slot;
 	uchar *pfi;
@@ -856,7 +856,7 @@ INSERT_INDEX:
 //
 //		index = file index
 
-bool DbgOpenLogFile(int index)
+uchar DbgOpenLogFile(int index)
 {
 	DbgLogFile *pdlf;
 	DbgBank *pbank;
@@ -933,7 +933,7 @@ void DbgCloseLogFiles()
 
 void DbgHandle(int reportType, ulong src, char *buff)
 {
-static bool exiting = FALSE;
+static uchar exiting = FALSE;
 	int slot,fileIndex;
 	uchar *pfi;
 	ulong didLogFile;

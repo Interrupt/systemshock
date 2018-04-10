@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define FONT_IS_MONO(fontptr) ((fontptr)->id != 0xCCCC)
 
-void draw_shadowed_string(char* s, short x, short y,bool shadow);
+void draw_shadowed_string(char* s, short x, short y,uchar shadow);
 
 
 #ifdef BROKEN_SAFE_CLIPRECT

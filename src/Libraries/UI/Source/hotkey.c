@@ -56,7 +56,7 @@ errtype hotkey_add(short keycode, ulong contexts, hotkey_callback func, void* st
    return(hotkey_add_help(keycode,contexts,func,state,NULL));
 }
 
-errtype hotkey_add_help(short keycode, ulong contexts, hotkey_callback func, void* state, char * /*help_text*/)
+errtype hotkey_add_help(short keycode, ulong contexts, hotkey_callback func, void* state, char * help_text)
 {
 #endif
    hotkey_entry e,*ch;
@@ -193,7 +193,7 @@ errtype hotkey_dispatch(short keycode)
    return ERR_NOEFFECT;
 }
 
-static bool shutdown_iter_func(void* elem, void* data)
+static uchar shutdown_iter_func(void* elem, void* data)
 {
 #ifndef NO_DUMMIES
    void *dummy = data;
@@ -228,7 +228,7 @@ errtype hotkey_shutdown(void)
 int list_index = 0;
 
 #ifdef GODDAMN_THIS_MESS_IS_IMPOSSIBLE
-bool hotkey_list(char **item, int sort_type)
+uchar hotkey_list(char **item, int sort_type)
 {
    void *res;
    hotkey_entry* ch;

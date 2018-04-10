@@ -82,29 +82,29 @@ errtype accesspanel_trigger(ObjID id);
 void zoom_mfd(int mfd);
 int grab_and_zoom_mfd(int mfd_func, int mfd_slot);
 errtype obj_access_fail_message(int stringref, char access_level, char offset);
-bool really_really_locked(int qvar);
-bool use_door(ObjID id, uchar in_inv, ObjID cursor_obj);
-bool obj_too_smart(ObjID id);
+uchar really_really_locked(int qvar);
+uchar use_door(ObjID id, uchar in_inv, ObjID cursor_obj);
+uchar obj_too_smart(ObjID id);
 void container_check(ObjID obj, char* count, ObjID* pidlist);
 char container_extract(ObjID *pidlist, int d1, int d2);
 void container_stuff(ObjID *pidlist, int numobjs, int* d1, int* d2);
-bool is_container(ObjID id, int** d1, int** d2);
-bool obj_fixture_zoom(ObjID id, bool in_inv, bool *messagep);
-errtype obj_tractor_beam_func(ObjID id, bool on);
+uchar is_container(ObjID id, int** d1, int** d2);
+uchar obj_fixture_zoom(ObjID id, uchar in_inv, uchar *messagep);
+errtype obj_tractor_beam_func(ObjID id, uchar on);
 errtype gear_power_outage();
 void unmulti_anim_callback(ObjID id, void *user_data);
 errtype obj_screen_animate(ObjID id);
-bool obj_keypad_crunch(int p, uchar digits[]);
+uchar obj_keypad_crunch(int p, uchar digits[]);
 errtype keypad_trigger(ObjID id, uchar digits[]);
-bool try_use_epick(ObjID panel, ObjID cursor_obj);
-ObjID door_in_square(ObjLoc* loc, bool usable);
+uchar try_use_epick(ObjID panel, ObjID cursor_obj);
+ObjID door_in_square(ObjLoc* loc, uchar usable);
 void regenetron_door_hack();
 errtype elevator_janitor_run();
 
 
 // not in any way the right way to fix this bug, except
 // that it is the fastest way.  Doug says go.  Ask TJS.
-bool shameful_obselete_flag;
+uchar shameful_obselete_flag;
 
 #define DOOR_TIME_UNIT 2 // how many time-setting units in a second
 
@@ -143,20 +143,20 @@ errtype obj_access_fail_message(int stringref, char access_level, char offset)
 }
 
 // dir true for door_closing
-bool door_moving(ObjID door, bool dir)
+uchar door_moving(ObjID door, uchar dir)
 {
-   bool anim_data_from_id(ObjID id, bool* reverse, bool* cycle);
+   uchar anim_data_from_id(ObjID id, bool* reverse, bool* cycle);
 
-   bool moving, closing;
+   uchar moving, closing;
 
    moving=anim_data_from_id(door, &closing, NULL);
    return(moving && (!closing==!dir));
 }
 
 #define COMPAR_ESC_ACCESS 0xFF
-extern bool comparator_check(int comparator, ObjID obj, uchar *special_code);
+extern uchar comparator_check(int comparator, ObjID obj, uchar *special_code);
 
-bool door_locked(ObjID obj)
+uchar door_locked(ObjID obj)
 {
    ObjSpecID spec = objs[obj].specID;
    if (!DOOR_CLOSED(obj))
@@ -197,7 +197,7 @@ bool door_locked(ObjID obj)
 #ifdef DOOM_EMULATION_MODE
 // questbits for doors that are "broken beyond repair" or such,
 // and should not be openable even in doom emulation mode.
-bool really_really_locked(int qvar)
+uchar really_really_locked(int qvar)
 {
    return(qvar==0x5E||qvar==0xE7);
 }
@@ -211,11 +211,11 @@ bool really_really_locked(int qvar)
 //      and should be used by anyone other than the player trying
 //      to use the door.
 //
-bool use_door(ObjID id, uchar in_inv, ObjID)
+uchar use_door(ObjID id, uchar in_inv, ObjID)
 {
-   bool retval = FALSE;
-   bool play_fx = FALSE;
-   bool use_card = FALSE;
+   uchar retval = FALSE;
+   uchar play_fx = FALSE;
+   uchar use_card = FALSE;
    int lqb;
    DoorSchedEvent new_event;
    ObjID try_card, other;
@@ -229,7 +229,7 @@ bool use_door(ObjID id, uchar in_inv, ObjID)
 #endif
    {
       int try_combo;
-      bool rv;
+      uchar rv;
       uchar special;
       int comp;
 
@@ -251,7 +251,7 @@ bool use_door(ObjID id, uchar in_inv, ObjID)
 
       try_combo = 1 << objDoors[objs[id].specID].access_level;
       {
-          bool some_card = FALSE;
+          uchar some_card = FALSE;
           try_card = OBJ_NULL;
           for (i=0; i < NUM_GENERAL_SLOTS; i++)
           {
@@ -374,7 +374,7 @@ access_ok:
           play_digi_fx_obj(sfx_id, 1,id);
     }   
     if (((other=objDoors[objs[id].specID].other_half) != OBJ_NULL) && !(in_inv&0x1)) {
-      bool otherdoor=objs[other].obclass==CLASS_DOOR;
+      uchar otherdoor=objs[other].obclass==CLASS_DOOR;
       // use other half if we don't have the same closed-ness, in order to
       // cause us to have the same closed-ness.
       if(!otherdoor ||
@@ -391,7 +391,7 @@ access_ok:
 
 // If mission difficulty is low, returns TRUE on objects
 // which might require literacy.
-bool obj_too_smart(ObjID id)
+uchar obj_too_smart(ObjID id)
 {
    switch(QUESTVAR_GET(MISSION_DIFF_QVAR))
    {
@@ -471,10 +471,10 @@ void container_stuff(ObjID *pidlist, int numobjs, int* d1, int* d2)
 // the objects.
 // If we want to make more objects have these properties later, here is
 // the place to add 'em.
-bool is_container(ObjID id, int** d1, int** d2)
+uchar is_container(ObjID id, int** d1, int** d2)
 {
    ObjSpecID specid = objs[id].specID;
-   bool retval = FALSE;
+   uchar retval = FALSE;
    if (objs[id].obclass == CLASS_CONTAINER)
    {
       // Containers
@@ -513,10 +513,10 @@ bool is_container(ObjID id, int** d1, int** d2)
    return(retval);
 }
 
-bool obj_fixture_zoom(ObjID id, bool in_inv, bool *messagep)
+uchar obj_fixture_zoom(ObjID id, uchar in_inv, uchar *messagep)
 {
-   bool retval = FALSE;
-   bool zoom = (objs[id].info.inst_flags & CLASS_INST_FLAG);
+   uchar retval = FALSE;
+   uchar zoom = (objs[id].info.inst_flags & CLASS_INST_FLAG);
    if (zoom && !in_inv)
    {
       int mfd = grab_and_zoom_mfd(MFD_FIXTURE_FUNC,MFD_INFO_SLOT);
@@ -546,7 +546,7 @@ bool obj_fixture_zoom(ObjID id, bool in_inv, bool *messagep)
 #define TRACBEAM_DIST_MOD        0x20
 extern ubyte pickup_distance_mod;
 
-errtype obj_tractor_beam_func(ObjID id, bool on)
+errtype obj_tractor_beam_func(ObjID id, uchar on)
 {
    if (on)
    {
@@ -575,7 +575,7 @@ errtype obj_tractor_beam_func(ObjID id, bool on)
 
 errtype gear_power_outage()
 {
-   extern errtype obj_tractor_beam_func(ObjID id, bool on);
+   extern errtype obj_tractor_beam_func(ObjID id, uchar on);
 
    ObjID obj;
    char i;
@@ -599,7 +599,7 @@ errtype gear_power_outage()
 
 // returns TRUE iff we tried to use an electronic pick on the panel.
 //
-bool try_use_epick(ObjID panel, ObjID cursor_obj)
+uchar try_use_epick(ObjID panel, ObjID cursor_obj)
 {
    uchar sol;
 
@@ -624,9 +624,9 @@ extern void remove_general_item(ObjID obj);
 extern Boolean	gKeypadOverride;
 
 // We return whether or not we used the message line.
-bool object_use(ObjID id, bool in_inv, ObjID cursor_obj)
+uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj)
 {
-   bool retval = FALSE, rv;
+   uchar retval = FALSE, rv;
    ObjFixture *pfixt;
    ObjBigstuff *pbigs;
    char i;
@@ -644,7 +644,7 @@ bool object_use(ObjID id, bool in_inv, ObjID cursor_obj)
    if (is_container(id, &d1,&d2))
    {
       int mfd;
-      extern bool gump_get_useful(void);
+      extern uchar gump_get_useful(void);
       extern void gump_clear(void);
       
       if(id==player_struct.panel_ref && object_on_cursor==NULL) {
@@ -675,7 +675,7 @@ bool object_use(ObjID id, bool in_inv, ObjID cursor_obj)
 
    if (global_fullmap->cyber)
    {
-      bool did_something = FALSE;
+      uchar did_something = FALSE;
       extern void long_bark(ObjID speaker_id, uchar mug_id, int string_id, ubyte color);
       switch(ID2TRIP(id))
       {
@@ -730,7 +730,7 @@ bool object_use(ObjID id, bool in_inv, ObjID cursor_obj)
 
    switch (objs[id].obclass)
    {
-      extern bool comparator_check(int comparator, ObjID obj, uchar *special_code);
+      extern uchar comparator_check(int comparator, ObjID obj, uchar *special_code);
       case CLASS_TRAP:
          if (ID2TRIP(id) == MAPNOTE_TRIPLE)
          {
@@ -998,7 +998,7 @@ bool object_use(ObjID id, bool in_inv, ObjID cursor_obj)
                      break;
                   default:
                   {
-                     bool access_okay = FALSE;
+                     uchar access_okay = FALSE;
                      int try_combo;
                      if ((objFixtures[osid].access_level == 0) 
 #ifdef DOOM_EMULATION_MODE
@@ -1009,7 +1009,7 @@ bool object_use(ObjID id, bool in_inv, ObjID cursor_obj)
                      else
                      {
                         ObjID try_card;
-                        bool had_card = FALSE;
+                        uchar had_card = FALSE;
                         try_combo = 1 << objFixtures[osid].access_level;
                         for (i=0; i < NUM_GENERAL_SLOTS; i++)
                         {
@@ -1204,7 +1204,7 @@ bool object_use(ObjID id, bool in_inv, ObjID cursor_obj)
 }
 
 
-ObjID door_in_square(ObjLoc* loc, bool usable)
+ObjID door_in_square(ObjLoc* loc, uchar usable)
 {
    ObjRefID oref;
    ObjID id;
@@ -1242,9 +1242,9 @@ errtype elevator_janitor_run()
    int i, j, obj_count = 0;
    ObjLoc dump_loc, newloc;
    ObjID objlist[MAX_JANITOR_OBJS],id;
-   bool dupe;
+   uchar dupe;
    ObjRefID orefid;
-   extern bool robot_antisocial;
+   extern uchar robot_antisocial;
 
    // clear out our movelist
    for (i=0; i < MAX_JANITOR_OBJS; i++)
@@ -1335,7 +1335,7 @@ errtype compute_elev_objs(ObjID *objlist)
    ObjRefID oref;
    ObjID id;
    MapElem *pme;
-   bool dupe;
+   uchar dupe;
 
    for (i = 0; i < MAX_ELEV_OBJS; i++)
       objlist[i] = OBJ_NULL;
@@ -1435,7 +1435,7 @@ errtype compute_elev_objs(ObjID *objlist)
 // dest_level is the target level to be teleported to
 // which_panel is an index into the list of "equivalent" panels that each panel keeps around.
 // returns whether or not the elevator actually went anywhere
-bool elevator_use(short dest_level, ubyte which_panel)
+uchar elevator_use(short dest_level, ubyte which_panel)
 {
 #ifdef MAC_DEMO
 //   extern errtype trap_cutscene_func(int p1, int p2, int p3, int p4);
@@ -1461,11 +1461,11 @@ bool elevator_use(short dest_level, ubyte which_panel)
    ObjLoc elev_obj_diffs[MAX_ELEV_OBJS];
    extern void store_objects(char** buf, ObjID *obj_array, char obj_count);
    extern void restore_objects(char* buf, ObjID *obj_array, char obj_count);
-   extern errtype obj_load_art(bool flush_all);
-   extern bool robot_antisocial;
+   extern errtype obj_load_art(uchar flush_all);
+   extern uchar robot_antisocial;
    char *buf;
 #endif
-   extern void check_panel_ref(bool puntme);
+   extern void check_panel_ref(uchar puntme);
 
    if (dest_level == player_struct.level)
    {
@@ -1615,7 +1615,7 @@ bool elevator_use(short dest_level, ubyte which_panel)
 }
 
 
-errtype obj_door_lock(ObjID door_id, bool new_lock)
+errtype obj_door_lock(ObjID door_id, uchar new_lock)
 {
    if (new_lock)
       QUESTBIT_ON(objDoors[objs[door_id].specID].locked);
@@ -1626,7 +1626,7 @@ errtype obj_door_lock(ObjID door_id, bool new_lock)
 
 
 void multi_anim_callback(ObjID id, void *user_data);
-bool in_anim_callback = FALSE;
+uchar in_anim_callback = FALSE;
 
 void unmulti_anim_callback(ObjID id, void *user_data)
 {
@@ -1656,7 +1656,7 @@ void unmulti_anim_callback(ObjID id, void *user_data)
 void multi_anim_callback(ObjID id, void *)
 {
    int *pp2, *pp1;
-   bool do_swap = FALSE;
+   uchar do_swap = FALSE;
 
    if (in_anim_callback || !time_passes)
       return;
@@ -1723,9 +1723,9 @@ errtype obj_screen_animate(ObjID id)
 
 #define MAX_KEYPAD_DIGITS  3
 
-bool obj_keypad_crunch(int p, uchar digits[MAX_KEYPAD_DIGITS])
+uchar obj_keypad_crunch(int p, uchar digits[MAX_KEYPAD_DIGITS])
 {
-   bool retval = TRUE;
+   uchar retval = TRUE;
    int i;
    short combo = qdata_get(p & 0xFFFF);
    ObjID id = qdata_get(p >> 16);
@@ -1820,7 +1820,7 @@ errtype obj_cspace_collide(ObjID id, ObjID collider)
    extern errtype collide_objects(ObjID collision, ObjID victim, int bad);
    char str_buf[60],temp[20];
    int bigstuff_fake = 0, trip;
-   bool select=FALSE;
+   uchar select=FALSE;
    
    if (collider != PLAYER_OBJ)
    {

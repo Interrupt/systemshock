@@ -26,9 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 
 #include <stdio.h>
-#include <Movies.h>		// QuickTime header
+//#include <Movies.h>		// QuickTime header
 
-#include "Shock.h"
+//#include "Shock.h"
 //#include <movie.h>
 #include "audiolog.h"
 #include "citalog.h"
@@ -36,14 +36,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "map.h"
 #include "tools.h"
-#include "MacTune.h"
+//#include "MacTune.h"
 #include "musicai.h"
+
+#include "bark.h"
+
+
+typedef long Movie;
 
 
 //-------------------
 //  PROTOTYPES
 //-------------------
-bool audiolog_cancel_func(short , ulong , void* );
+uchar audiolog_cancel_func(short , ulong , void* );
 
 //-------------------
 //  GLOBALS
@@ -72,7 +77,7 @@ errtype audiolog_init()
    return(OK);
 }
 
-//extern bool set_sample_pan_gain(snd_digi_parms *sdp);
+//extern uchar set_sample_pan_gain(snd_digi_parms *sdp);
 
 //#define ALOG_PAN 64
 //char *bark_files[] = { "citbark.res", "frnbark.res", "gerbark.res" };
@@ -127,29 +132,29 @@ errtype audiolog_play(int email_id)
 	if (email_id > (AUDIOLOG_BARK_BASE_ID - AUDIOLOG_BASE_ID))
 	{
 		sprintf(buff, "BARK %x", AUDIOLOG_BASE_ID + email_id);
-		FSMakeFSSpec(gBarkVref, gBarkDirID, c2pstr(buff), &fSpec);
+		//FSMakeFSSpec(gBarkVref, gBarkDirID, c2pstr(buff), &fSpec);
 	}
 	else
 	{
 		sprintf(buff, "ALOG %x", AUDIOLOG_BASE_ID + email_id);
-		FSMakeFSSpec(gAlogVref, gAlogDirID, c2pstr(buff), &fSpec);
+		//FSMakeFSSpec(gAlogVref, gAlogDirID, c2pstr(buff), &fSpec);
 	}
-	err = OpenMovieFile(&fSpec, &movieResFile, fsRdPerm);
+
+	/*err = OpenMovieFile(&fSpec, &movieResFile, fsRdPerm);
 	if (err == noErr) 
 	{
 		short 		movieResID = 0;
 		Str255 		movieName;
 		Boolean 		wasChanged;
 																			// Load the 'moov' resource.
-		err = NewMovieFromFile(&alog, movieResFile, &movieResID,
-						movieName, newMovieActive, &wasChanged);
+		err = NewMovieFromFile(&alog, movieResFile, &movieResID, movieName, newMovieActive, &wasChanged);
 		CloseMovieFile (movieResFile);						// Close the resource fork.
 	}
 	else
 	{
 		end_wait();
 		return(ERR_FREAD);
-	}
+	}*/
 
 /*
    // Make sure this is a thing we have an audiolog for...
@@ -278,7 +283,7 @@ fix GetFixTimer()
 // if email_id is -1, returns whether or not anything is playing
 // if email_id != -1, matches whether or not that specific email_id is playing
 //-------------------------------------------------------------
-bool audiolog_playing(int email_id)
+uchar audiolog_playing(int email_id)
 {
 	if (email_id == -1)
 		return(curr_alog != -1);
@@ -300,7 +305,7 @@ errtype audiolog_bark_play(int bark_id)
 //-------------------------------------------------------------
 //  Stop playing audiolog (in response to a hotkey).
 //-------------------------------------------------------------
-bool audiolog_cancel_func(short , ulong , void* )
+uchar audiolog_cancel_func(short s, ulong l, void* v)
 {
 	audiolog_stop();
 	return(TRUE);

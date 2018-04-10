@@ -77,7 +77,7 @@ ObjID hack_cam_surrogates[NUM_HACK_CAMERAS];
 uchar hack_cameras_needed = 0;
 char curr_hack_cam = 0;
 ulong hack_cam_fr_count = 0;
-bool screen_static_drawn = FALSE;
+uchar screen_static_drawn = FALSE;
 
 // -----------
 // PROTOTYPES
@@ -332,7 +332,7 @@ void tile_hit(int mx, int my)
 
 errtype render_run(void)
 {
-   extern bool view360_render_on;
+   extern uchar view360_render_on;
    extern void view360_render(void);
    static long last_cspace_update=0;
 

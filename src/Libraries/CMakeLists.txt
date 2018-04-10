@@ -1,7 +1,10 @@
 
 
+set(MAC_SRC
+	../MacSrc/ShockBitmap.c
+)
+
 set(2D_SRC
-	2D/Source/2dTest.c
 	2D/Source/bit.c
 	2D/Source/bitmap.c
 	2D/Source/blend.c
@@ -18,10 +21,8 @@ set(2D_SRC
 	2D/Source/devtab.c
 	2D/Source/fcntab.c
 	2D/Source/init.c
-	2D/Source/InitMac2d.c
 	2D/Source/invtab.c
 	2D/Source/lintab.c
-	2D/Source/MacDev.c
 	2D/Source/mode.c
 	2D/Source/pal.c
 	2D/Source/permap.c
@@ -46,6 +47,7 @@ set(2D_SRC
 	2D/Source/valloc.c
 	2D/Source/vtab.c
 	2D/Source/wirpoly.c
+	2D/Source/MacDev.c
 )	
 
 
@@ -195,19 +197,26 @@ set(VOX_SRC
 )
 
 include_directories(
+	${CMAKE_SOURCE_DIR}/src/MacSrc
+	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/GR
+	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/Clip
+	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/Flat8
+	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/Gen
+	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/RSD
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/3D/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/DSTRUCT/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/H
 	${CMAKE_SOURCE_DIR}/src/Libraries/INPUT/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/FIX/Source
-        ${CMAKE_SOURCE_DIR}/src/Libraries/LG/Source
+    ${CMAKE_SOURCE_DIR}/src/Libraries/LG/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/RES/Source
 )
 
+add_library(MAC_LIB ${MAC_SRC})
 add_library(2D_LIB ${2D_SRC})
 add_library(3D_LIB ${3D_SRC})
-add_library(AFILE_LIB ${AFILE_SRC})
+#add_library(AFILE_LIB ${AFILE_SRC})
 add_library(PALLETE_LIB ${PALETTE_SRC})
 add_library(DSTRUCT_LIB ${DSTRUCT_SRC})
 add_library(FIX_LIB ${FIX_SRC})
@@ -215,7 +224,7 @@ add_library(INPUT_LIB ${INPUT_SRC})
 #add_library(LG_LIB ${LG_SRC})
 add_library(RES_LIB ${RES_SRC})
 add_library(RND_LIB ${RND_SRC})
-add_library(SND_LIB ${SND_SRC})
+#add_library(SND_LIB ${SND_SRC})
 add_library(UI_LIB ${UI_SRC})
 add_library(VOX_LIB ${VOX_SRC})
 

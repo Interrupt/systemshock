@@ -78,7 +78,7 @@ errtype _map_init_elem(FullMap *fmap, int i, int j)
    return(OK);
 }
 
-FullMap* map_create(int xshf, int yshf,int zshf, bool cyb)
+FullMap* map_create(int xshf, int yshf,int zshf, uchar cyb)
 {
 	int i,j;
 	FullMap* fmap = (FullMap *)malloc(sizeof(FullMap));
@@ -102,7 +102,7 @@ FullMap* map_create(int xshf, int yshf,int zshf, bool cyb)
 	return fmap;
 }
 
-bool map_set_default(FullMap *fmap)
+uchar map_set_default(FullMap *fmap)
 {
    global_fullmap=fmap;
    global_map=fmap->map;

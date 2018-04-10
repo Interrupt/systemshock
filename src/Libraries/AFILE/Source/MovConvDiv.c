@@ -118,7 +118,7 @@ void SetPalette(short palID);
 void CreateAMovie(void);
 void EndAMovie(void);
 
-bool QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr);
+uchar QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr);
 QT_ChunkInfo *QuikFindChunkInfo(QT_ChunkHdr *phdr);
 void QuikSkipChunk(FILE *fp, QT_ChunkHdr *phdr);
 
@@ -493,7 +493,7 @@ void EndAMovie(void)
 //
 //	QuikReadChunkHdr() reads in the next chunk header, returns TRUE if ok.
 
-bool QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr)
+uchar QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr)
 {
 	fread(phdr, sizeof(QT_ChunkHdr), 1, fp);
 

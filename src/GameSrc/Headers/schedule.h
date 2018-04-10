@@ -91,7 +91,7 @@ typedef struct _expose_data
 } SchedExposeData; 
 
 // Prototypes
-errtype schedule_init(Schedule* s,int size, bool grow);
+errtype schedule_init(Schedule* s,int size, uchar grow);
 // Initialize a schedule.  If grow is true, the schedule
 // will realloc memory when it needs space for more events. 
 // size is the number of events the shedule can hold.

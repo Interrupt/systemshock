@@ -60,7 +60,7 @@ void sound_frame_update(void)
 	int			i;
 	SCStatus	stat;
 	snd_digi_parms *sdp;
-	extern bool set_sample_pan_gain(snd_digi_parms *sdp);
+	extern uchar set_sample_pan_gain(snd_digi_parms *sdp);
 
 	while (rulock_ptr>0)
 		ResUnlock(rulock_list[--rulock_ptr]);

@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // prototypes
 void gri_build_blend(uchar *base_addr, int blend_fac);
 int gr_free_blend(void);
-bool gr_init_blend(int log_blend_levels);
+uchar gr_init_blend(int log_blend_levels);
 
 
 // points to blend_tabs-1 tables, each 64k
@@ -86,7 +86,7 @@ int gr_free_blend(void)
 }
 
 // at the moment, log_blend_levels = 0 deallocates the blend, ie. runs free_blend
-bool gr_init_blend(int log_blend_levels)
+uchar gr_init_blend(int log_blend_levels)
 {
    if (log_blend_levels>0)
    {

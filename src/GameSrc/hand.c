@@ -35,6 +35,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "screen.h"
 #include "faketime.h"
 
+#include "lg.h"
+#include "error.h"
+
 
 typedef struct {
    char   handart_frame;
@@ -110,8 +113,8 @@ byte energy_hand_info[NUM_ENERGY_GUN][NUM_FRAMES] =
 ubyte handart_count = 2;
 ubyte hand_bobbing = HAND_BOB;
 ubyte hand_bobx = HAND_BOBX;
-bool bob_up = TRUE;
-bool bob_left = TRUE;
+uchar bob_up = TRUE;
+uchar bob_left = TRUE;
 void reset_handart_count(int wpn_num);
 
 

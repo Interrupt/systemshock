@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
-#include <HEADER.h>
+#include "tngtemp.h"
 
 // Initializes the TNG 
 errtype tng_GADGET_NAME_init(void *ui_data, TNG *ptng, TNGStyle *sty, int alignment, int min, int max, int value, int increm, LGPoint size)
@@ -45,17 +45,17 @@ int tng_GADGET_NAME_getvalue(TNG *ptng)
 }
 
 // React appropriately for receiving the specified cooked key
-bool tng_GADGET_NAME_keycooked(TNG *ptng, ushort key)
+uchar tng_GADGET_NAME_keycooked(TNG *ptng, ushort key)
 {
 }
 
 // React appropriately for receiving the specified mouse button event
-bool tng_GADGET_NAME_mousebutt(TNG *ptng, uchar type, LGPoint loc)
+uchar tng_GADGET_NAME_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
 }
 
 // Handle incoming signals
-bool tng_GADGET_NAME_signal(TNG *ptng, ushort signal)
+uchar tng_GADGET_NAME_signal(TNG *ptng, ushort signal)
 {
 }
 

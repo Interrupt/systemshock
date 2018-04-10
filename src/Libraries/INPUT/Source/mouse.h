@@ -60,6 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg.h"
 #include "error.h"
+#include <Carbon/Carbon.h>
 
 typedef struct _mouse_event
 {
@@ -152,7 +153,7 @@ errtype mouse_set_screensize(short x, short y);
 errtype mouse_extremes( short *xmin, short *ymin, short *xmax, short *ymax );
 
 // Sets mouse handedness (true for left-handed)
-errtype mouse_set_lefty(bool lefty);
+errtype mouse_set_lefty(uchar lefty);
 
 
 #endif // _MOUSE_H

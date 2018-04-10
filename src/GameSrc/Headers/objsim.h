@@ -91,21 +91,21 @@ errtype obj_init();
 errtype obj_shutdown();
 ObjID obj_create_base(int triple);
 ObjID obj_create_clone(ObjID dna);
-errtype obj_move_to_vel(ObjID id, ObjLoc *newloc, bool phys_tel, fix x_dot, fix y_dot, fix z_dot);
-errtype obj_move_to(ObjID id, ObjLoc *newloc, bool phys_tel);
-bool obj_destroy(ObjID id);
+errtype obj_move_to_vel(ObjID id, ObjLoc *newloc, uchar phys_tel, fix x_dot, fix y_dot, fix z_dot);
+errtype obj_move_to(ObjID id, ObjLoc *newloc, uchar phys_tel);
+uchar obj_destroy(ObjID id);
 errtype obj_holocaust();
-bool obj_holocaust_func(short keycode, ulong context, void* data);
+uchar obj_holocaust_func(short keycode, ulong context, void* data);
 errtype obj_load_properties();
 errtype obj_create_player(ObjLoc *plr_loc);
 Ref ref_from_critter_data(ObjID oid, int triple, byte posture, short frame, short view);
 errtype obj_zero_unused();
 errtype obj_model_hack(ObjID id, uchar *hack_x, uchar *hack_y, uchar *hack_z, uchar *hack_type);
-bool obj_combat_destroy(ObjID id);
+uchar obj_combat_destroy(ObjID id);
 ObjID object_place(int triple, LGPoint square);
 ushort obj_floor_compute(ObjID id, uchar flrh);
 ushort obj_floor_height(ObjID id);
-errtype obj_physics_refresh_area(short x, short y, bool use_floor);
+errtype obj_physics_refresh_area(short x, short y, uchar use_floor);
 
 ObjID physics_handle_to_id(physics_handle p);
 

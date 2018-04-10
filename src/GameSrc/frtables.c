@@ -42,6 +42,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frtables.h"
 #include "tilename.h"
 
+#include "lg.h"
+#include "error.h"
+
 //======== Points
 pt_mods pt_deref[FRPTSUNIQUE]=
 {

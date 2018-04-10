@@ -93,7 +93,7 @@ void automap_expose_zoom(MFD *m, ubyte tac);
 // Globals
 // -------
 static long last_update=0;
-extern bool full_game_3d;
+extern uchar full_game_3d;
 
 // ===========================================================================
 //                         * THE AUTOMAP CODE *        
@@ -104,7 +104,7 @@ extern bool full_game_3d;
 // 
 // Initializes the automap settings on either side to appropriate values.
 
-errtype mfd_map_init(MFD_Func *)
+errtype mfd_map_init(MFD_Func * mfd)
 {
    // set them up to be different cur and last, and left zoom, right station
    player_struct.mfd_func_data[MFD_MAP_FUNC][MFD_LEFT]=(AUTOMAP_STATION<<2)+AUTOMAP_ZOOM;
@@ -136,9 +136,9 @@ int mfd_to_map(int mid)
 #define MODE_RIGHT 25
 #define OPT_LEFT  (MFD_VIEW_WID-25)
 
-bool mfd_map_handler(MFD *m, uiEvent *e)
+uchar mfd_map_handler(MFD *m, uiEvent *e)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    ubyte map_state;
    uiMouseEvent *mouse;
    int mapid=mfd_to_map(m->id);
@@ -189,7 +189,7 @@ bool mfd_map_handler(MFD *m, uiEvent *e)
          retval = amap_get_note(oAMap(mapid),buf);
          if (full_game_3d && !retval)
          {
-            extern bool mfd_scan_opacity(int mfd,LGPoint pos);
+            extern uchar mfd_scan_opacity(int mfd,LGPoint pos);
             retval = mfd_scan_opacity(m->id,e->pos);
          }
          if (retval)
@@ -310,7 +310,7 @@ void mfd_map_expose(MFD *m, ubyte control)
 
 #define BUF_SIZE 10
 
-void automap_expose_cross_section(MFD *, ubyte)
+void automap_expose_cross_section(MFD * mfd, ubyte u)
 {
    grs_font *mfdamapfont;
    char buf[BUF_SIZE];
@@ -343,7 +343,7 @@ void automap_expose_cross_section(MFD *, ubyte)
 //
 // The expose function for drawing the zoomed in mode for the automap
 
-void automap_expose_zoom(MFD *m, ubyte)
+void automap_expose_zoom(MFD *m, ubyte u)
 {
    grs_font *mfdamapfont;
    int mapid=mfd_to_map(m->id);

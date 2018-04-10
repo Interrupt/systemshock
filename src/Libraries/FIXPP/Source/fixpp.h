@@ -253,7 +253,7 @@ public:
    // Reporting.
    // ==========
 
-   static bool click_bool;
+   static uchar click_bool;
 
    static ulong constructor_void,
                 constructor_Fixpoint,
@@ -290,8 +290,8 @@ public:
                 cond_eq,
                 cond_neq;
 
-   static void  report_on( void ) { click_bool = 1; }
-   static void report_off( void ) { click_bool = 0; }
+   static void  report_on( void ) { click_uchar = 1; }
+   static void report_off( void ) { click_uchar = 0; }
 
    static void report( ostream& );
    static void report( void );

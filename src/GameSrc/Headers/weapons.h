@@ -72,11 +72,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef __WEAPONS_SRC
 ubyte handart_show = 0;
 ubyte handart_remainder = 0;
-bool handart_fire = FALSE;
+uchar handart_fire = FALSE;
 #else
 extern ubyte handart_show;
 extern ubyte handart_remainder;
-extern bool handart_fire;
+extern uchar handart_fire;
 //extern handart_frame_info handart_info[NUM_HANDART_ANIM][HANDART_FRAMES];
 extern ubyte weapon_to_handart[NUM_GUN];
 #endif
@@ -95,14 +95,14 @@ char* get_weapon_long_name(int type, int subtype, char *buf);
 // in units of -100-+100 spanning the view cone. 
 // pull is true if the  trigger was just pulled.
 // returns - TRUE if player fired weapon
-bool fire_player_weapon(LGPoint *pos,LGRegion *r,bool pull);
+uchar fire_player_weapon(LGPoint *pos,LGRegion *r,uchar pull);
 
 // Set the maximum charge on a beam weapon.  index is into player_struct.weapons,
 // max_charge can't be higher than 100
 void set_beam_weapon_max_charge(ubyte index, ubyte max_charge);
 
 void get_available_ammo_type(int type, int subtype, int *num_ammo_types, ubyte *bitflag, int *ammo_subclass);
-bool change_ammo_type(ubyte ammo_type);
+uchar change_ammo_type(ubyte ammo_type);
 
 // change_weapon() - changes the current selected weapon
 void change_selected_weapon(int new_weapon);
@@ -120,7 +120,7 @@ ubyte drain_energy(ubyte desired_energy);
 // return triple of currently-selected weapon, or -1 for none such.
 int current_weapon_trip(void);
 
-bool gun_takes_ammo(int guntrip, int ammotrip);
+uchar gun_takes_ammo(int guntrip, int ammotrip);
 
 // Globals
 

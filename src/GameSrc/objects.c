@@ -97,7 +97,7 @@ uchar numObjLocStates;
 
 ObjHashElem objHashTable[OBJ_HASH_ENTRIES];
 
-bool ObjDeleteHashElem (ObjRefStateBin bin);
+uchar ObjDeleteHashElem (ObjRefStateBin bin);
 
 #ifndef USE_FUNCTION_FOR_HASH_GET
 ObjHashElemID HASHENTRY;
@@ -106,17 +106,17 @@ ObjHashElemID HASHENTRY;
 #endif // HASH_OBJECTS
 
 static void ObjRefRem (ObjRefID ref);
-static bool ObjLinkMake (ObjRefID ref, ObjID obj);
+static uchar ObjLinkMake (ObjRefID ref, ObjID obj);
 static ObjID ObjRefLinkDel (ObjRefID ref);
-static bool ObjRefAdd (ObjRefID ref, ObjRefState refstate);
-static bool ObjDelRefs (ObjID ID);
+static uchar ObjRefAdd (ObjRefID ref, ObjRefState refstate);
+static uchar ObjDelRefs (ObjID ID);
 static ObjID ObjGrab (void);
-static bool ObjFree (ObjID ref);
+static uchar ObjFree (ObjID ref);
 static ObjRefID ObjRefGrab (void);
-static ObjID ObjRefFree (ObjRefID ref, bool cleanup);
+static ObjID ObjRefFree (ObjRefID ref, uchar cleanup);
 static ObjSpecID ObjSpecGrab (ObjClass obclass);
-static bool ObjSpecFree (ObjClass obclass, ObjSpecID id);
-static bool ObjAndSpecFree (ObjID obj);
+static uchar ObjSpecFree (ObjClass obclass, ObjSpecID id);
+static uchar ObjAndSpecFree (ObjID obj);
 
 
 ////////////////////////////////////////////////////////////
@@ -192,7 +192,7 @@ void ObjsInit (void)
 // links them together.  Fills up the given fields.  Returns whether it
 // succeeded.
 //
-bool ObjAndSpecGrab (ObjClass obclass, ObjID *id, ObjSpecID *specid)
+uchar ObjAndSpecGrab (ObjClass obclass, ObjID *id, ObjSpecID *specid)
 {
 	ObjSpecHeader *head;
 
@@ -221,7 +221,7 @@ bool ObjAndSpecGrab (ObjClass obclass, ObjID *id, ObjSpecID *specid)
 // Sets the given fields of an object appropriately, and makes it active.
 // Currently always returns TRUE.
 //
-bool ObjPlace (ObjID id, ObjLoc *loc)
+uchar ObjPlace (ObjID id, ObjLoc *loc)
 {
 //DBG_Report ({
 //	char str[80];
@@ -247,7 +247,7 @@ bool ObjPlace (ObjID id, ObjLoc *loc)
 //
 ObjID ObjRefDel (ObjRefID ref)
 {
-	bool tmp;
+	uchar tmp;
 
 //	SpewReport (("ObjRefDel (ref %d)\n", ref));
 
@@ -272,7 +272,7 @@ ObjID ObjRefDel (ObjRefID ref)
 ObjRefID ObjRefMake (ObjID obj, ObjRefState refstate)
 {
 	ObjRefID ref;
-	bool ok;
+	uchar ok;
 
 //DBG_Report ({
 //	char str[80];
@@ -318,9 +318,9 @@ ObjRefID ObjRefMake (ObjID obj, ObjRefState refstate)
 // Deletes the given obj and all its references.
 // Returns whether success was achieved in this quest.
 //
-bool ObjDel (ObjID obj)
+uchar ObjDel (ObjID obj)
 {
-	bool ok;
+	uchar ok;
 
 //	SpewReport (("ObjDel (obj %d)\n", obj));
 
@@ -361,7 +361,7 @@ bool ObjDel (ObjID obj)
 // around.  This function updates all the ObjRefs's referring to that object
 // correctly.
 //
-bool ObjUpdateLocs (ObjLocState *olsp)
+uchar ObjUpdateLocs (ObjLocState *olsp)
 {
 	ObjID obj;									// this object
 	ObjRefID ref;								// each reference of it
@@ -502,7 +502,7 @@ void ObjFreeHashEntry (ObjHashElemID elem)
 // created.  You must immediately set the ref's StateBin correctly.
 // 
 #ifdef USE_FUNCTION_FOR_HASH_GET
-ObjHashElemID ObjGetHashElem (ObjRefStateBin bin, bool create)
+ObjHashElemID ObjGetHashElem (ObjRefStateBin bin, uchar create)
 {
 	ObjHashElemID entry;
 	ObjHashElemID firstentry, nextentry;
@@ -556,7 +556,7 @@ ObjHashElemID ObjGetHashElem (ObjRefStateBin bin, bool create)
 // it.  At this point, the entry is used, but not by us, so we go down the
 // chain looking for the right entry.
 //
-ObjHashElemID ObjGetHashElemFromChain (ObjRefStateBin bin, bool create, ObjHashElemID firstentry)
+ObjHashElemID ObjGetHashElemFromChain (ObjRefStateBin bin, uchar create, ObjHashElemID firstentry)
 {
 	ObjHashElemID entry = firstentry;
 	ObjHashElemID nextentry;
@@ -596,7 +596,7 @@ ObjHashElemID ObjGetHashElemFromChain (ObjRefStateBin bin, bool create, ObjHashE
 // Deletes the entry in the hash table corresponding to the ref
 // chain at the given bin.  Returns FALSE if there was nothing to delete.
 //
-bool ObjDeleteHashElem (ObjRefStateBin bin)
+uchar ObjDeleteHashElem (ObjRefStateBin bin)
 {
 	ObjHashElemID firstentry = OBJ_HASH_FUNC(bin);
 	ObjHashElemID entry, nextentry;
@@ -641,7 +641,7 @@ void ObjHashIteratorInit (void)
 	hash_i = 0;
 }
 
-bool ObjHashIterator (ObjRefID *ref)
+uchar ObjHashIterator (ObjRefID *ref)
 {
 	while (hash_i < OBJ_HASH_ENTRIES && objHashTable[hash_i].ref == 0) hash_i++;
 	if (hash_i == OBJ_HASH_ENTRIES) return FALSE;
@@ -693,7 +693,7 @@ ObjHashStats (void)
 //
 // Check whether the object system is consistent.
 //
-bool ObjSysOkay (void)
+uchar ObjSysOkay (void)
 {
 	char usedObj[NUM_OBJECTS];
 	char usedRef[NUM_REF_OBJECTS];
@@ -1072,7 +1072,7 @@ ObjID ObjGrab (void)
 //   if there are objRefs referring to the object
 //
 static
-bool ObjFree (ObjID obj)
+uchar ObjFree (ObjID obj)
 {
 //	SpewReport (("ObjFree (obj %d)\n", obj));	
 
@@ -1140,7 +1140,7 @@ ObjRefID ObjRefGrab (void)
 //   If this is the last reference to an Obj, returns that Obj's ID.
 //
 static
-ObjID ObjRefFree (ObjRefID ref, bool cleanup)
+ObjID ObjRefFree (ObjRefID ref, uchar cleanup)
 {
 	ObjID obj;									// the object ref refers to
 
@@ -1244,7 +1244,7 @@ DBG_Check ({
 // referred to by id.
 //
 static
-bool ObjSpecFree (ObjClass obclass, ObjSpecID id)
+uchar ObjSpecFree (ObjClass obclass, ObjSpecID id)
 {
 	char *data;
 	ObjSpecHeader *head;
@@ -1282,7 +1282,7 @@ bool ObjSpecFree (ObjClass obclass, ObjSpecID id)
 }
 
 #ifdef COMPRESS_OBJSPECS
-bool HeaderObjSpecFree (ObjClass obclass, ObjSpecID id, ObjSpecHeader *head)
+uchar HeaderObjSpecFree (ObjClass obclass, ObjSpecID id, ObjSpecHeader *head)
 {
 	char *data;
 	ObjSpec *spec0, *thisspec;
@@ -1321,7 +1321,7 @@ DBG_Check ({
 
 
 #ifdef COMPRESS_OBJSPECS
-bool HeaderObjSpecCopy (ObjClass cls, ObjSpecID old, ObjSpecID new, ObjSpecHeader *head)
+uchar HeaderObjSpecCopy (ObjClass cls, ObjSpecID old, ObjSpecID new, ObjSpecHeader *head)
 {
 	char *data;
 	ObjSpec *spec0;
@@ -1417,7 +1417,7 @@ void ObjRefRem (ObjRefID ref)
 // Returns whether we could do it
 //
 static
-bool ObjLinkMake (ObjRefID ref, ObjID obj)
+uchar ObjLinkMake (ObjRefID ref, ObjID obj)
 {
 //	SpewReport (("ObjLinkMake (ref %d, obj %d)\n", ref, obj));
 
@@ -1501,7 +1501,7 @@ ObjID ObjRefLinkDel (ObjRefID ref)
 // Returns whether everything worked okay.
 //
 static
-bool ObjRefAdd (ObjRefID ref, ObjRefState refstate)
+uchar ObjRefAdd (ObjRefID ref, ObjRefState refstate)
 {
 	ObjID obj;
 	ObjRefID *refhead;
@@ -1559,7 +1559,7 @@ bool ObjRefAdd (ObjRefID ref, ObjRefState refstate)
 //   we delete references one at a time and clean up each time.
 //
 static
-bool ObjDelRefs (ObjID obj)
+uchar ObjDelRefs (ObjID obj)
 {
 	ObjRefID ref;
 	ObjRefID nextref = OBJ_REF_NULL;
@@ -1599,11 +1599,11 @@ bool ObjDelRefs (ObjID obj)
 //   if there are ObjRefs referring to the object.
 //
 static
-bool ObjAndSpecFree (ObjID obj)
+uchar ObjAndSpecFree (ObjID obj)
 {
 	ObjClass obclass;
 	ObjSpecID specID;
-	bool ok;
+	uchar ok;
 
 //	SpewReport (("ObjAndSpecFree (obj %d)\n", obj));
 

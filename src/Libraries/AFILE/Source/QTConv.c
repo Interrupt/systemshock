@@ -90,11 +90,11 @@ void SetInputSpecs(void);
 void SetPalette(short palID);
 
 /*
-bool QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr);
+uchar QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr);
 QT_ChunkInfo *QuikFindChunkInfo(QT_ChunkHdr *phdr);
 void QuikSkipChunk(FILE *fp, QT_ChunkHdr *phdr);
 */
-bool QuikReadChunkHdr(Ptr &p, QT_ChunkHdr *phdr);
+uchar QuikReadChunkHdr(Ptr &p, QT_ChunkHdr *phdr);
 QT_ChunkInfo *QuikFindChunkInfo(QT_ChunkHdr *phdr);
 void QuikSkipChunk(Ptr &p, QT_ChunkHdr *phdr);
 
@@ -459,8 +459,8 @@ void	 CheckError(OSErr error, Str255 displayString)
 //
 //	QuikReadChunkHdr() reads in the next chunk header, returns TRUE if ok.
 
-//bool QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr)
-bool QuikReadChunkHdr(Ptr &p, QT_ChunkHdr *phdr)
+//uchar QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr)
+uchar QuikReadChunkHdr(Ptr &p, QT_ChunkHdr *phdr)
 {
 //	fread(phdr, sizeof(QT_ChunkHdr), 1, fp);
 	BlockMove(p, phdr, sizeof(QT_ChunkHdr));

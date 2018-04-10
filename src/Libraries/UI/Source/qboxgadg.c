@@ -50,7 +50,7 @@ LGPoint QboxDefaultBorder = {1, 1};
 
 // Prototypes
 int gad_qb_destroy(Gadget *g, void *user_data);
-bool gad_qbox_close_func(void *vg, void *ud);
+uchar gad_qbox_close_func(void *vg, void *ud);
 
 
 int gad_qb_destroy(Gadget *g, void *user_data)
@@ -142,7 +142,7 @@ errtype gad_qbox_add_parm(char *label, int slot_type, void *var, ulong slot_opti
    return(tng_quickbox_add_parm(label, slot_type, var, slot_options, parm1, parm2));
 }
 
-bool gad_qbox_close_func(void *vg, void *ud)
+uchar gad_qbox_close_func(void *vg, void *ud)
 {
 #ifndef NO_DUMMIES
    void *dummy;

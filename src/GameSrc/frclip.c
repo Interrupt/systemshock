@@ -84,6 +84,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mapflags.h"
 #include "tilename.h"
 
+#include "lg.h"
+#include "error.h"
+
 // pre prototyping
 static void   _fr_rebuild_nVecWork(void);
 static void   _fr_init_vecwork(void);
@@ -100,7 +103,7 @@ void _fr_sclip_line_check_solid(MapElem *sp_base, int len, int val);
 void fr_span_parse(void);
 void span_fixup(void);
 int fr_clip_show_all(void);
-bool _fr_move_ccv_x(struct _nVecWork *nvp);
+//uchar _fr_move_ccv_x(struct _nVecWork *nvp);
 void _fr_move_along_dcode(int dircode);
 
 
@@ -115,7 +118,7 @@ int fr_clip_freemem(void)
    _fr_ret;
 }
 
-int fr_clip_resize(int ,int )				// x, y
+int fr_clip_resize(int x, int y)				// x, y
 {
    int i;
 #ifdef MAP_RESIZING
@@ -474,14 +477,14 @@ struct _nVecWork _nVP[4]=
  (cv)->deltas[0]=ray[0]; (cv)->deltas[1]=ray[1]; (cv)->deltas[2]=ray[2]
 
 // More prototypes
-bool _fr_skip_solid_right_n_back(FrClipVec *cv, fix max_loc, int y_map_step);
-bool _fr_skip_space_right_n_back(FrClipVec *cv, fix max_loc, int y_map_step);
-bool _fr_skip_solid_left_n_back(FrClipVec *cv, fix min_loc, int y_map_step);
+uchar _fr_skip_solid_right_n_back(FrClipVec *cv, fix max_loc, int y_map_step);
+uchar _fr_skip_space_right_n_back(FrClipVec *cv, fix max_loc, int y_map_step);
+uchar _fr_skip_solid_left_n_back(FrClipVec *cv, fix min_loc, int y_map_step);
 void _fr_del_compute(FrClipVec *v1, FrClipVec *v2);
-void _fr_spawn_check_one(FrClipVec *lv, FrClipVec *rv, bool northward);
-bool _fr_move_new_dels(FrClipVec *lv, FrClipVec *rv, bool northward);
+void _fr_spawn_check_one(FrClipVec *lv, FrClipVec *rv, uchar northward);
+uchar _fr_move_new_dels(FrClipVec *lv, FrClipVec *rv, uchar northward);
 void _fr_kill_pair(FrClipVec *lv,FrClipVec *rv);
-bool _fr_setup_first_pair(bool headnorth);
+uchar _fr_setup_first_pair(uchar headnorth);
 
 
 // these dont really work, the *org, *ray doesnt move all 3
@@ -558,10 +561,10 @@ static uchar *_sclip_mask, *_sclip_door;
 // moves until next y span is hit, i guess
 // perhaps will have to learn about it's partner vector?
 // strip the gloss from a beauty queen
-bool _fr_move_ccv_x(struct _nVecWork *nvp)
+uchar _fr_move_ccv_x(struct _nVecWork *nvp)
 {
    int tt, oflow;
-   bool move_in_y=TRUE, move_in_x=TRUE;
+   uchar move_in_y=TRUE, move_in_x=TRUE;
 
    // should be saving off texture cuts some day!!
    ccv->loc[1]+=nvp->stepy;
@@ -653,7 +656,7 @@ bool _fr_move_ccv_x(struct _nVecWork *nvp)
 
 void _fr_move_along_dcode(int dircode)
 {
-   bool move_in_y=TRUE;
+   uchar move_in_y=TRUE;
    struct _nVecWork *nvp=&_nVP[dircode];
 
    if (dircode&nVW_XDIR) nvp->remx=_fixp1-1-fix_frac(ccv->loc[0]);
@@ -770,7 +773,7 @@ static uchar *_face_topedge, *_face_botedge;
              ((me_clearsolid((cv->mptr+y_map_step))&_face_botmask)==0))
 
 // note how pretty this looks till you look at the is_solid macro
-bool _fr_skip_solid_right_n_back(FrClipVec *cv, fix max_loc, int y_map_step)
+uchar _fr_skip_solid_right_n_back(FrClipVec *cv, fix max_loc, int y_map_step)
 {
    if (is_solid()) 
    {
@@ -783,7 +786,7 @@ bool _fr_skip_solid_right_n_back(FrClipVec *cv, fix max_loc, int y_map_step)
    return (cv->loc[0]>=max_loc);
 }
 
-bool _fr_skip_space_right_n_back(FrClipVec *cv, fix max_loc, int y_map_step)
+uchar _fr_skip_space_right_n_back(FrClipVec *cv, fix max_loc, int y_map_step)
 {
    if (is_space()) 
    {
@@ -796,7 +799,7 @@ bool _fr_skip_space_right_n_back(FrClipVec *cv, fix max_loc, int y_map_step)
    return (cv->loc[0]>=max_loc);
 }
 
-bool _fr_skip_solid_left_n_back(FrClipVec *cv, fix min_loc, int y_map_step)
+uchar _fr_skip_solid_left_n_back(FrClipVec *cv, fix min_loc, int y_map_step)
 {
    if (is_solid()) 
    {
@@ -824,7 +827,7 @@ void _fr_del_compute(FrClipVec *v1, FrClipVec *v2)
    v1->oldx=v1->loc[0]; v2->oldx=v2->loc[0];
 }
 
-void _fr_spawn_check_one(FrClipVec *lv, FrClipVec *rv, bool northward)
+void _fr_spawn_check_one(FrClipVec *lv, FrClipVec *rv, uchar northward)
 {
    FrClipVec *tmpr, *tmpl;
    short cur_mapstep=new_del_mapstep[northward];
@@ -872,7 +875,7 @@ void _fr_spawn_check_one(FrClipVec *lv, FrClipVec *rv, bool northward)
 
 // i want no part of their death culture
 // i just want to go the beach
-bool _fr_move_new_dels(FrClipVec *lv, FrClipVec *rv, bool northward)
+uchar _fr_move_new_dels(FrClipVec *lv, FrClipVec *rv, uchar northward)
 {
 	int lm, rm;
 
@@ -930,7 +933,7 @@ void _fr_kill_pair(FrClipVec *lv,FrClipVec *rv)
 
 // it's a wonderful world, with a lot of strange men
 // who are standing around, and they're all wearing towels
-bool _fr_setup_first_pair(bool headnorth)
+uchar _fr_setup_first_pair(uchar headnorth)
 {
    fix org[3], ray[3];
    int flags;

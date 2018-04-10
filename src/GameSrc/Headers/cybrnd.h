@@ -44,6 +44,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include "rnd.h"
+
 #ifdef __CYBRND_SRC
 RNDSTREAM_STD(damage_rnd);
 RNDSTREAM_STD(grenade_rnd);

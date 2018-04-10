@@ -78,8 +78,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Update the HUD.  If redraw_whole is TRUE, better draw the
 // whole durned thing.
-errtype hud_update(bool redraw_whole,frc* context);
-errtype cyber_hud_update(bool redraw_whole);
+errtype hud_update(uchar redraw_whole,frc* context);
+errtype cyber_hud_update(uchar redraw_whole);
 
 // Set the data being displayed by the HUD.
 errtype hud_set(ulong hud_modes);

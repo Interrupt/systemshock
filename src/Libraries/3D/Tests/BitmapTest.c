@@ -36,7 +36,7 @@ long fr_clear_color = 0xff;
 
 // prototypes
 void test_3d(uchar *tmap, uchar *pal);
-bool fauxrend_start_frame(void);
+uchar fauxrend_start_frame(void);
 void fauxrend_send_frame(void);
 void sys_close(void);
 void sys_init(void);
@@ -77,7 +77,7 @@ void fauxrend_set_context(fauxrend_context *frc)
    _sr=frc;
 }
 
-fauxrend_context *fauxrend_place_3d(fauxrend_context *fr, bool db_buf, char axis, int fov, int xc, int yc, int wid, int hgt)
+fauxrend_context *fauxrend_place_3d(fauxrend_context *fr, uchar db_buf, char axis, int fov, int xc, int yc, int wid, int hgt)
 {
    if (fr==NULL)                         /* create new context */
       fr=(fauxrend_context *)malloc(sizeof(fauxrend_context));
@@ -99,7 +99,7 @@ fauxrend_context *fauxrend_place_3d(fauxrend_context *fr, bool db_buf, char axis
    return fr;
 }
 
-bool fauxrend_start_frame(void)
+uchar fauxrend_start_frame(void)
 {
    gr_set_canvas(_fr->draw_canvas);
    viewer_position.gX = coor(EYE_X);

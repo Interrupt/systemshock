@@ -29,11 +29,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "frcamera.h"
+#include "res.h"
+#include "2d.h"
+#include "lg.h"
 
 // structures
 typedef struct {
    grs_canvas draw_canvas, main_canvas, hack_canvas;
-   bool       double_buffer;
+   uchar       double_buffer;
    int        xtop, ytop;
    int        xwid, ywid;              /* ywid is, of course, height */
    fix        viewer_zoom;

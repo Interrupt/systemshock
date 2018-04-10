@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/cuddigan/Github/systemshock/src/MacSrc/InitMac.h
+Carbon/Carbon.h
+-
+
+/Users/cuddigan/Github/systemshock/src/MacSrc/Shock.h
+Carbon/Carbon.h
+-
+
+/Users/cuddigan/Github/systemshock/src/MacSrc/ShockBitmap.c
+Palettes.h
+-
+Shock.h
+/Users/cuddigan/Github/systemshock/src/MacSrc/Shock.h
+InitMac.h
+/Users/cuddigan/Github/systemshock/src/MacSrc/InitMac.h
+ShockBitmap.h
+/Users/cuddigan/Github/systemshock/src/MacSrc/ShockBitmap.h
+
+/Users/cuddigan/Github/systemshock/src/MacSrc/ShockBitmap.h
+Carbon/Carbon.h
+-
+

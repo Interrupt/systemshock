@@ -72,7 +72,7 @@ Boolean			gMenusHid;
 //  Externs
 //---------------------------
 void status_bio_update(void);
-extern bool gBioInited;
+extern uchar gBioInited;
 pascal void MousePollProc(void);
 
 

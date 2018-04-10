@@ -68,7 +68,7 @@ void main(void)
 	int iarg;
 	int iframe,numFrames;
 	int outWidth,outHeight;
-	bool depth16;
+	uchar depth16;
 	fix tFrame;
 	grs_bitmap bmscale;
 	grs_canvas cvscale;

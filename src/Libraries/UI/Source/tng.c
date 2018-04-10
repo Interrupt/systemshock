@@ -266,11 +266,11 @@ errtype tng_uninstall_callback(TNG *ptng, int id)
    return(OK);
 }
 
-bool tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc)
+uchar tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
    TNG_CB *tngcb;
-   bool retval = FALSE;
-   bool newret;
+   uchar retval = FALSE;
+   uchar newret;
 
    tngcb = ptng->pcb;
    while (tngcb != NULL)
@@ -292,11 +292,11 @@ bool tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc)
    return(retval);
 }
 
-bool tng_cb_keycooked(TNG *ptng, ushort key)
+uchar tng_cb_keycooked(TNG *ptng, ushort key)
 {
    TNG_CB *tngcb;
-   bool retval = FALSE;
-   bool newret;
+   uchar retval = FALSE;
+   uchar newret;
 
    tngcb = ptng->pcb;
    while (tngcb != NULL)
@@ -317,11 +317,11 @@ bool tng_cb_keycooked(TNG *ptng, ushort key)
    return(retval);
 }
 
-bool tng_cb_signal(TNG *ptng, ushort signal)
+uchar tng_cb_signal(TNG *ptng, ushort signal)
 {
    TNG_CB *tngcb;
-   bool retval = FALSE;
-   bool newret;
+   uchar retval = FALSE;
+   uchar newret;
 
    tngcb = ptng->pcb;
    while (tngcb != NULL)
@@ -342,11 +342,11 @@ bool tng_cb_signal(TNG *ptng, ushort signal)
    return(retval);
 }
 
-bool tng_cb_keyscan(TNG *ptng, ushort scan)
+uchar tng_cb_keyscan(TNG *ptng, ushort scan)
 {
    TNG_CB *tngcb;
-   bool retval = FALSE;
-   bool newret;
+   uchar retval = FALSE;
+   uchar newret;
 
    tngcb = ptng->pcb;
    while (tngcb != NULL)
@@ -367,11 +367,11 @@ bool tng_cb_keyscan(TNG *ptng, ushort scan)
    return(retval);
 }
 
-bool tng_cb_mousemove(TNG *ptng, LGPoint loc)
+uchar tng_cb_mousemove(TNG *ptng, LGPoint loc)
 {
    TNG_CB *tngcb;
-   bool retval = FALSE;
-   bool newret;
+   uchar retval = FALSE;
+   uchar newret;
    LGPoint dummy;
    dummy = loc;
 

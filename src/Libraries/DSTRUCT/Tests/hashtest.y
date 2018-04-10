@@ -10,7 +10,7 @@
 #include "mprintf.h"
 #define yyerror printf
 Hashtable TestHash;
-extern bool my_iter_func(void* elem, void* data);
+extern uchar my_iter_func(void* elem, void* data);
 %}
 %% 
 
@@ -77,7 +77,7 @@ int my_equ_func(void* arg1, void* arg2)
    return strncmp(elem1->key,elem2->key,HASHELEMSIZE);
 }
 
-bool my_iter_func(void* elem, void* data)
+uchar my_iter_func(void* elem, void* data)
 {
   HashElem *e = (HashElem*)elem;
   char* s = (char*)data;

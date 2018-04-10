@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Citadel Renderer
  *  camera position/modification/creation system
  *
- * bool    fr_camera_create (cams *camtype, int *arg1, int *arg2)
+ * uchar    fr_camera_create (cams *camtype, int *arg1, int *arg2)
  * int     fr_camera_update (cams *cam, int *arg1, int *arg2)
  * void    fr_camera_slewone(cams *cam, int which, int how)
  * fix    *fr_camera_getpos (cams *cam)
@@ -91,6 +91,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fauxrint.h"
 #include "map.h"
 
+#include "lg.h"
+#include "error.h"
+
 fix    fr_camera_last[CAM_COOR_CNT]={0,0,0,0,0,0};
 fix    cam_slew_scale[CAM_COOR_CNT]={fix_make(4,0),fix_make(4,0),fix_make(4,0),128,128,128};
 cams  *_def_cam=NULL;
@@ -103,7 +106,7 @@ void    fr_camera_setdef (cams *cam)
 cams   *fr_camera_getdef (void)
  { return _def_cam; }
 
-bool    fr_camera_create (cams *cam, int camtype, void *arg1, void *arg2)
+uchar    fr_camera_create (cams *cam, int camtype, void *arg1, void *arg2)
 {
    _cam_top(cam) FALSE;
    _cam->type=camtype;
@@ -190,7 +193,7 @@ void    fr_camera_getobjloc (int oid, fix *store)
    if (cobj->info.ph!=-1)
    {
 #ifndef __RENDTEST__
-      extern bool get_phys_info(int ph, fix *targ_array, int cnt);
+      extern uchar get_phys_info(int ph, fix *targ_array, int cnt);
 #endif
      get_phys_info(cobj->info.ph,store,6);
    }

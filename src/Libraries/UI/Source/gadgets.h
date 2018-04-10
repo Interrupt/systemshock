@@ -114,14 +114,14 @@ errtype draw_resource_bm(Ref id, int x, int y);
 int resource_bm_width(Ref id);
 int resource_bm_height(Ref id);
 
-bool gadget_tng_vga_expose(LGRegion *reg, LGRect *r);
-bool gadget_tng_mono_expose(LGRegion *reg, LGRect *r);
-bool gadget_tng_Mac_expose(LGRegion *reg, LGRect *r);
-bool gadget_tng_mouse_handler(uiEvent *e, LGRegion *r, void *state);
-bool gadget_tng_keyboard_handler(uiEvent *e, LGRegion *r, void *state);
+uchar gadget_tng_vga_expose(LGRegion *reg, LGRect *r);
+uchar gadget_tng_mono_expose(LGRegion *reg, LGRect *r);
+uchar gadget_tng_Mac_expose(LGRegion *reg, LGRect *r);
+uchar gadget_tng_mouse_handler(uiEvent *e, LGRegion *r, void *state);
+uchar gadget_tng_keyboard_handler(uiEvent *e, LGRegion *r, void *state);
 errtype gadget_tng_vga_expose_part(LGRegion *reg, LGRect *r, ushort partmask);
 errtype gadget_create_setup(Gadget **pg, Gadget *parent, GadgetClass cl, LGRect *dim, int z, char *name);
-errtype gadget_change_flags(Gadget *g, ulong flags, bool on, bool children);
+errtype gadget_change_flags(Gadget *g, ulong flags, uchar on, uchar children);
 
 // Defines
 #define NULL_TYPE       -1

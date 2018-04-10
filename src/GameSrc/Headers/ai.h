@@ -67,7 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 errtype ai_run(void);
 
 // What do do when we are hit
-errtype ai_critter_hit(ObjSpecID osid, short damage, bool tranq, bool stun);
+errtype ai_critter_hit(ObjSpecID osid, short damage, uchar tranq, uchar stun);
 
 // When we pretend that we're dead (pretend we're dead)
 errtype ai_critter_die(ObjSpecID osid);

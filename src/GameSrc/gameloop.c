@@ -53,6 +53,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "screen.h"
 #include "gr2ss.h"
 
+#include "lg.h"
+#include "error.h"
+
 
 #undef RECT_FILL
 #define RECT_FILL(pr,x1,y1,x2,y2) \
@@ -66,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------
 // GLOBALS
 // ----------
-bool redraw_paused=FALSE;
+uchar redraw_paused=FALSE;
 
 // ----------
 // PROTOTYPES
@@ -102,7 +105,7 @@ void game_loop(void)
 {
 	extern void update_meters(bool);
 	extern errtype check_cspace_death();
-	extern bool game_paused;
+	extern uchar game_paused;
 	extern void sound_frame_update(void);
 //Â¥Â¥Â¥Â¥Â¥Â¥ temp
 //extern char saveArray[16];

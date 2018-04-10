@@ -82,7 +82,7 @@ LGRegion mv_region_data, msg_region_data, status_region_data;
 uiSlab main_slab;
 LGRegion *msg_region;
 
-errtype _screen_init_mouse(LGRegion* r, uiSlab* slab, bool do_init);
+errtype _screen_init_mouse(LGRegion* r, uiSlab* slab, uchar do_init);
 errtype _screen_background(void);
 
 extern void mouse_unconstrain(void);
@@ -98,7 +98,7 @@ LGRegion *root_region=&root_region_data;
 // prototypes
 errtype load_misc_cursors(void);
 
-void generic_reg_init(bool create_it, LGRegion *reg, LGRect *rct, uiSlab *slb, void *key_h, void *maus_h)
+void generic_reg_init(uchar create_it, LGRegion *reg, LGRect *rct, uiSlab *slb, void *key_h, void *maus_h)
 {
    int callid;
    if (rct==NULL)
@@ -124,8 +124,8 @@ errtype screen_init(void)
    extern errtype wrapper_create_mouse_region(LGRegion*);
    extern LGRegion *fullview_region;
    int callid;
-   extern void (*ui_mouse_convert)(short *px, short *py,bool down);
-   extern void (*ui_mouse_convert_round)(short *px, short *py,bool down);
+   extern void (*ui_mouse_convert)(short *px, short *py,uchar down);
+   extern void (*ui_mouse_convert_round)(short *px, short *py,uchar down);
 
    // God this is stupid, maybe I'll get it right next project
    status_rect = &real_status_rect;
@@ -359,7 +359,7 @@ extern LGCursor slider_cursor;
 
 errtype load_misc_cursors(void)
 {
-   static bool misc_cursors_loaded = FALSE;
+   static uchar misc_cursors_loaded = FALSE;
 
    if (misc_cursors_loaded)
    {
@@ -378,7 +378,7 @@ errtype load_misc_cursors(void)
    return(OK);
 }
 
-errtype _screen_init_mouse(LGRegion* r, uiSlab* slab, bool do_init)
+errtype _screen_init_mouse(LGRegion* r, uiSlab* slab, uchar do_init)
 {
    extern errtype ui_init_cursors(void);
    

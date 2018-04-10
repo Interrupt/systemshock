@@ -52,16 +52,16 @@ extern ulong time_until_shodan_avatar;
 
 ObjID cspace_decoy_obj = OBJ_NULL;
 ObjLoc recall_objloc;
-extern void turbo_turnoff(bool visible, bool real);
-extern void decoy_turnoff(bool visible, bool real);
+extern void turbo_turnoff(uchar visible, uchar real);
+extern void decoy_turnoff(uchar visible, uchar real);
 
 ulong cspace_effect_times[NUM_CS_EFFECTS] = {0,0,0};
 ulong cspace_effect_durations[NUM_CS_EFFECTS] = { CIT_CYCLE * 30, CIT_CYCLE * 15, CIT_CYCLE };
-void (*cspace_effect_turnoff[])(bool visible,bool real) = { turbo_turnoff, decoy_turnoff, NULL };
+void (*cspace_effect_turnoff[])(uchar visible,uchar real) = { turbo_turnoff, decoy_turnoff, NULL };
 
 errtype early_exit_cyberspace_stuff();
 
-bool cyber_nodie = FALSE;
+uchar cyber_nodie = FALSE;
 Handle	gCyberHdl;
 
 errtype check_cspace_death()
@@ -78,7 +78,7 @@ errtype check_cspace_death()
          if (shodan_bitmask != NULL)
          {
             errtype trap_hack_func(int p1, int p2, int p3, int p4);
-            extern void begin_shodan_conquer_fx(bool begin);
+            extern void begin_shodan_conquer_fx(uchar begin);
             extern char thresh_fail;
             if (!cyber_nodie)
             {
@@ -121,12 +121,12 @@ errtype check_cspace_death()
 
 MFD_Status status_back[MFD_NUM_REAL_SLOTS];
 
-extern void hardware_closedown(bool  visible);
-extern void hardware_startup(bool visible);
+extern void hardware_closedown(uchar  visible);
+extern void hardware_startup(uchar visible);
 
 int old_loop;
 
-extern void drug_closedown(bool),drug_startup(bool);
+extern void drug_closedown(uchar),drug_startup(uchar);
 extern Handle shock_alloc_ipal();		// KLC - Mac style
 
 errtype enter_cyberspace_stuff(char dest_lev)

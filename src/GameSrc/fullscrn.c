@@ -55,6 +55,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools.h"
 #include "wares.h"
 
+#include "lg.h"
+#include "error.h"
+
 #ifdef NOT_YET //KLC stereo 
 
 #include <config.h>
@@ -70,11 +73,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // -------
 // GLOBALS
 // -------
-bool fullscrn_vitals = TRUE;
-bool fullscrn_icons = TRUE;
+uchar fullscrn_vitals = TRUE;
+uchar fullscrn_icons = TRUE;
 
-extern bool inp6d_stereo_active;
-extern bool inp6d_stereo;
+extern uchar inp6d_stereo_active;
+extern uchar inp6d_stereo;
 
 #ifdef SVGA_SUPPORT
 grs_screen *svga_screen=NULL;
@@ -98,8 +101,8 @@ uiSlab fullscreen_slab;
 extern void status_bio_update_screenmode();
 extern void mouse_unconstrain(void);
 extern void olh_svga_deal(void);
-extern void inv_change_fullscreen(bool on);
-extern void mfd_change_fullscreen(bool on);
+extern void inv_change_fullscreen(uchar on);
+extern void mfd_change_fullscreen(uchar on);
 extern void game_redrop_rad(int rad_mod);
 void change_svga_cursors();
 void change_svga_screen_mode();
@@ -151,8 +154,8 @@ errtype fullscreen_overlay()
    extern char last_message[128];
    extern void mfd_draw_button_panel(ubyte mfd_id);
    extern void fullscreen_refresh_mfd(ubyte mfd_id);
-   extern void inv_update_fullscreen(bool full);
-   extern bool game_paused;
+   extern void inv_update_fullscreen(uchar full);
+   extern uchar game_paused;
 
    if (!global_fullmap->cyber)
    {
@@ -187,7 +190,7 @@ void change_svga_cursors()
    ObjID old_obj;
 
    extern errtype make_options_cursor(void);
-   extern void reload_motion_cursors(bool cyber);
+   extern void reload_motion_cursors(uchar cyber);
    extern void free_cursor_bitmaps();
    extern void alloc_cursor_bitmaps(void);
    extern errtype biohelp_load_cursor();
@@ -229,14 +232,14 @@ void change_svga_screen_mode()
 	extern errtype mfd_update_screen_mode();
 	extern void view360_update_screen_mode();
 	extern void amap_pixratio_set(fix ratio);
-	extern bool redraw_paused;
+	extern uchar redraw_paused;
 	extern Boolean DoubleSize;
 	
 	uchar cur_pal[768];
 	uchar *s_table;
 	short cur_w, cur_h, cur_m;
 	short mx,my;
-	bool mode_change = FALSE;
+	uchar mode_change = FALSE;
 	short temp;
 	
 	if (convert_use_mode != mode_id)
@@ -390,8 +393,8 @@ void fullscreen_start()
 {
    extern LGRegion *pagebutton_region;
    extern LGRegion *inventory_region;
-   extern void draw_page_buttons(bool full);
-   extern bool inp6d_headset;
+   extern void draw_page_buttons(uchar full);
+   extern uchar inp6d_headset;
 
 // Hey, we don't need to hide here because the mouse already gets hidden by fooscreen_exit
 //   uiHideMouse(NULL);

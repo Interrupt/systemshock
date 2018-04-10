@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Internal Prototypes
 //--------------------
-int snd_find_free_handle(uchar smp_pri, bool check_only);
+int snd_find_free_handle(uchar smp_pri, uchar check_only);
 
 
 //--------------------------------------------------------------------------
@@ -123,7 +123,7 @@ void snd_kill_all_samples(void)
 //--------------------------------------------------------------------------
 //  Call this to check for free sound handles, returns a handle id.
 //--------------------------------------------------------------------------
-int snd_find_free_handle(uchar smp_pri, bool check_only)
+int snd_find_free_handle(uchar smp_pri, uchar check_only)
 {
 	int 			i;
 	SCStatus	stat;

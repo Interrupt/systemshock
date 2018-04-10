@@ -56,10 +56,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "map.h"
 
-extern bool game_paused;		// I've learned such bad lessons from LG.
-extern bool objdata_loaded;
-extern bool music_on;
-extern bool startup_music;
+extern uchar game_paused;		// I've learned such bad lessons from LG.
+extern uchar objdata_loaded;
+extern uchar music_on;
+extern uchar startup_music;
 
 //--------------------
 //  Globals
@@ -81,7 +81,7 @@ Boolean				gGameCompletedQuit;
 //  Prototypes
 //--------------------
 extern void init_all(void);
-extern void inv_change_fullscreen(bool on);
+extern void inv_change_fullscreen(uchar on);
 extern void object_data_flush(void);
 extern Boolean IsFullscreenWareOn(void);
 extern errtype load_da_palette(void);

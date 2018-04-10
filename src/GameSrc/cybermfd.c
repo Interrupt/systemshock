@@ -67,7 +67,7 @@ void mfd_cspace_expose(MFD* mfd, ubyte control);
 
 void mfd_cspace_expose(MFD* mfd, ubyte control)
 {
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    if (control == 0)  // MFD is drawing stuff
    {
       // Do unexpose stuff here.  

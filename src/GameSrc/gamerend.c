@@ -67,6 +67,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "status.h"
 #include "statics.h"
 
+#include "lg.h"
+#include "error.h"
+
 #ifdef AUDIOLOGS
 #include "audiolog.h"
 #endif
@@ -75,16 +78,16 @@ extern uchar  tmap_big_buffer[];
 
 
 // prototypes
-void set_shield_raisage(bool going_up);
-void begin_shodan_conquer_fx(bool begin);
+void set_shield_raisage(uchar going_up);
+void begin_shodan_conquer_fx(uchar begin);
 void set_dmg_percentage(int which, ubyte percent);
 void do_secret_fx(void);
 void gamesys_render_effects(void);
-bool use_ir_hack(void);
+uchar use_ir_hack(void);
 void draw_single_static_line(uchar *line_base, int lx, int rx, int c_base);
 void draw_line_static(grs_bitmap *stat_dest, int dens1, int color1);
 void draw_full_static(grs_bitmap *stat_dest, int c_base);
-bool gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y, int flags);
+uchar gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y, int flags);
 void gamesys_render_func(void *fake_dest_bitmap, int flags);
 
 errtype gamerend_init(void)
@@ -98,13 +101,13 @@ static ubyte fr_sfx_color;
 static ubyte dmg_percentage;
 static char shield_raisage;
 
-void set_shield_raisage(bool going_up)
+void set_shield_raisage(uchar going_up)
 {
    if (going_up) shield_raisage=1; else shield_raisage=-15;
    fr_global_mod_flag(FR_SFX_SHIELD, FR_SFX_MASK);
 }
 
-void begin_shodan_conquer_fx(bool begin)
+void begin_shodan_conquer_fx(uchar begin)
 {
    if (begin)
       fr_global_mod_flag(FR_OVERLAY_SHODAN, FR_OVERLAY_MASK);
@@ -147,7 +150,7 @@ extern ObjID beam_effect_id;
 #define FAKEWIN_PAPER         0x8
 #define FAKEWIN_STRING_BASE   REF_STR_fakewinStrings
 
-extern bool kill_player(void);
+extern uchar kill_player(void);
 
 // about a quarter second, really
 #define V_CLOCK 0x040
@@ -240,7 +243,7 @@ void do_secret_fx(void)
 	      if (c_val==REBORN_FRAMES)
          {
             extern errtype spoof_mouse_event(void); 
-            extern bool music_on;
+            extern uchar music_on;
             secret_render_fx=0;
 
             // look - we should say the player is no longer dead!
@@ -306,7 +309,7 @@ void do_secret_fx(void)
             if (c_val == 1)
             {
                extern void long_bark(ObjID speaker_id, uchar mug_id, int string_id, ubyte color);
-               extern void add_email_datamunge(short mung,bool select);
+               extern void add_email_datamunge(short mung,uchar select);
                extern void read_email(Id new_base, int num);
                fr_global_mod_flag(FR_SFX_SHAKE, FR_SFX_MASK);
                long_bark(OBJ_NULL, FIRST_SHODAN_MUG + 3, REF_STR_Null, 0);
@@ -340,8 +343,8 @@ void do_secret_fx(void)
 extern short mouse_attack_x;
 extern short mouse_attack_y;
 extern ulong next_fire_time;
-extern bool overload_beam;
-extern bool saveload_static;
+extern uchar overload_beam;
+extern uchar saveload_static;
 extern Boolean DoubleSize;
 
 byte beam_offset[NUM_BEAM_GUN]={-12,-8,-4};
@@ -371,12 +374,12 @@ void gamesys_render_effects(void)
 	Ref      temp;
 	int deltax, deltay;
 	short    mx,my;
-	extern bool full_game_3d;
+	extern uchar full_game_3d;
 	
 	if ((!global_fullmap->cyber)&&(!secret_render_fx))
 	{
 		ubyte active = player_struct.actives[ACTIVE_WEAPON];
-		extern bool hack_takeover;
+		extern uchar hack_takeover;
 		extern ulong player_death_time;
 		
 		// check to make sure we have an active weapon before drawing handart
@@ -407,7 +410,7 @@ void gamesys_render_effects(void)
 			temp = get_handart(&deltax, &deltay,mx, my);
 			if (temp != NULL)
 			{
-				extern bool ready_to_draw_handart(void);
+				extern uchar ready_to_draw_handart(void);
 				
 				if (handart_show != 1)     // are we showing an attack frame?
 				{
@@ -419,7 +422,7 @@ void gamesys_render_effects(void)
 						if (beam_effect_id)
 						{
 							int i;
-							bool draw_beam=FALSE;
+							uchar draw_beam=FALSE;
 							
 							for (i=0;i<current_num_hudobjs;i++)
 							{
@@ -501,7 +504,7 @@ void gamesys_render_effects(void)
       fullscreen_overlay();
 }
 
-bool use_ir_hack(void)
+uchar use_ir_hack(void)
 {
    return(WareActive(player_struct.hardwarez_status[HARDWARE_GOGGLE_INFRARED]));
 }
@@ -575,9 +578,9 @@ short vhold_shift = 0;
 #define FULL_CONVERT_X  
 
 // returns whether to send the bitmap out in the render
-bool gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y, int flags)
+uchar gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y, int flags)
 { 
-   extern hud_do_objs(short xtop, short ytop, short xwid, short ywid, bool rev);
+   extern hud_do_objs(short xtop, short ytop, short xwid, short ywid, uchar rev);
    grs_canvas *dest_canvas = (grs_canvas *)fake_dest_canvas;
    grs_bitmap *dest_bm = (grs_bitmap *)fake_dest_bm;
    uchar *orig_bits;

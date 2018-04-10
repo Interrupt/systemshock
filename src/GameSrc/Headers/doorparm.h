@@ -25,6 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define NEVER_AUTOCLOSE_COOKIE ((ubyte)-1)
 
 
-extern bool check_object_dist(ObjID obj1, ObjID obj2, fix crit);
-extern bool door_locked(ObjID);
-extern bool door_moving(ObjID,bool);
+extern uchar check_object_dist(ObjID obj1, ObjID obj2, fix crit);
+extern uchar door_locked(ObjID);
+extern uchar door_moving(ObjID,bool);

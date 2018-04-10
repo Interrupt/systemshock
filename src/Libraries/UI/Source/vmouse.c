@@ -22,10 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "vmouse.h"
 //#include <mprintf.h>
 
-void (*ui_mouse_convert)(short *px, short *py, bool down) = NULL;
-void (*ui_mouse_convert_round)(short *px, short *py, bool down) = NULL;
+void (*ui_mouse_convert)(short *px, short *py, uchar down) = NULL;
+void (*ui_mouse_convert_round)(short *px, short *py, uchar down) = NULL;
 
-errtype ui_mouse_do_conversion(short *pmx, short *pmy, bool down)
+errtype ui_mouse_do_conversion(short *pmx, short *pmy, uchar down)
 {
    if (ui_mouse_convert != NULL)
       ui_mouse_convert(pmx,pmy,down);

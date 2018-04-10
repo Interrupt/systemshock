@@ -85,9 +85,9 @@ uiSlab setup_slab;
 Region setup_root_region;
 */
 
-bool play_intro_anim;
-bool save_game_exists = FALSE;
-bool startup_music;
+uchar play_intro_anim;
+uchar save_game_exists = FALSE;
+uchar startup_music;
 int setup_mode;
 int intro_num;
 int diff_sum = 0;
@@ -96,7 +96,7 @@ extern char which_lang;
 
 ubyte valid_save;
 
-bool setup_bio_started = FALSE;
+uchar setup_bio_started = FALSE;
 
 // ----------------------
 // Internal Prototypes
@@ -270,9 +270,9 @@ journey_y[8] = {
 
 errtype draw_difficulty_char(int char_num);
 errtype draw_difficulty_description(int which_cat, int color);
-errtype journey_continue_func(bool draw_stuff);
+errtype journey_continue_func(uchar draw_stuff);
 
-bool setup_sound_on=FALSE;
+uchar setup_sound_on=FALSE;
 
 #define MAX_NAME_SIZE   sizeof(player_struct.name)
 #define start_name (player_struct.name)
@@ -282,7 +282,7 @@ bool setup_sound_on=FALSE;
 //
 char *stp_themes[]={"titloop.xmi","endloop.xmi"};
 
-bool start_setup_sound(int which)
+uchar start_setup_sound(int which)
 {
    if ((setup_sound_on)||(!music_on))
       return FALSE;
@@ -327,7 +327,7 @@ errtype compute_new_diff()
 
 #define NUM_DIFF_CATEGORIES   4
 char curr_diff = 0;
-bool start_selected = FALSE;
+uchar start_selected = FALSE;
 
 #define CATEGORY_STRING_BASE  REF_STR_diffCategories
 #define DIFF_STRING_BASE      REF_STR_diffStrings
@@ -338,7 +338,7 @@ short diff_titles_x[] = { DIFF_TITLE1_X1, DIFF_TITLE2_X1, DIFF_TITLE3_X1,DIFF_TI
 short diff_titles_y[] = { DIFF_TITLE1_Y1, DIFF_TITLE2_Y1, DIFF_TITLE3_Y1,DIFF_TITLE4_Y1 };
 char *valid_char_string = "0123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
 
-errtype difficulty_draw(bool full)
+errtype difficulty_draw(uchar full)
 {
    errtype draw_username();
    int i;
@@ -524,7 +524,7 @@ errtype journey_draw(char part)
 //
 
 #pragma disable_message(202)
-errtype journey_intro_func(bool draw_stuff)
+errtype journey_intro_func(uchar draw_stuff)
 {
 #ifdef DEMO
    uiShowMouse(NULL);    // need to leave it hidden
@@ -547,7 +547,7 @@ errtype journey_intro_func(bool draw_stuff)
 
 errtype journey_newgame_func()
 {
-   extern bool clear_player_data;
+   extern uchar clear_player_data;
 
    clear_player_data = TRUE;
 
@@ -570,7 +570,7 @@ errtype journey_newgame_func()
 // journey_difficulty_func
 //
 
-errtype journey_difficulty_func(bool draw_stuff)
+errtype journey_difficulty_func(uchar draw_stuff)
 {
    if (draw_stuff)
       res_draw_string(RES_citadelFont, SETUP_STRING_BASE + 1, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT2_TOP + 2);
@@ -590,7 +590,7 @@ errtype journey_difficulty_func(bool draw_stuff)
 int credits_inp=0;
 void *credits_txtscrn;
 
-void journey_credits_func(bool draw_stuff)
+void journey_credits_func(uchar draw_stuff)
 {
    if (draw_stuff)
       res_draw_string(RES_citadelFont, SETUP_STRING_BASE + 2, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT3_TOP + 2);
@@ -696,7 +696,7 @@ errtype load_that_thar_game(FSSpec *loadSpec)
    errtype retval;
 //KLC - not in Mac version   if (valid_save & (1 << which_slot))
 //KLC - not in Mac version   {
-      extern bool clear_player_data;
+      extern uchar clear_player_data;
       extern char curr_vol_lev;
 
 //KLC - not in Mac version      draw_sg_slot(-1);             // highlight the current save game slot with SELECTED_COLOR
@@ -732,7 +732,7 @@ errtype load_that_thar_game(FSSpec *loadSpec)
 //
 
 #pragma disable_message(202)
-errtype journey_continue_func(bool draw_stuff)
+errtype journey_continue_func(uchar draw_stuff)
 {
 #ifndef DEMO
    if (save_game_exists)
@@ -759,14 +759,14 @@ void go_and_start_the_game_already()
    char i;
    extern char curr_vol_lev;
    extern char curr_sfx_vol;
-   extern bool fullscrn_vitals;
-   extern bool fullscrn_icons;
-   extern bool map_notes_on;
+   extern uchar fullscrn_vitals;
+   extern uchar fullscrn_icons;
+   extern uchar map_notes_on;
    extern uchar audiolog_setting;
 #ifdef AUDIOLOGS
    extern char curr_alog_vol;
 #endif
-   extern bool mouseLefty;
+   extern uchar mouseLefty;
    
 /* KLC - no longer needed
 #ifdef GAMEONLY
@@ -826,7 +826,7 @@ void go_and_start_the_game_already()
 // ------------------------------------
 // journey functions
 
-typedef errtype (*journey_func)(bool draw_stuff);
+typedef errtype (*journey_func)(uchar draw_stuff);
 
 journey_func journey_funcs[4] =
 {  journey_intro_func,
@@ -836,19 +836,19 @@ journey_func journey_funcs[4] =
 
 // if there are two different input events - only let's one
 // call a journey_func
-bool journey_lock = FALSE;
+uchar journey_lock = FALSE;
 
 // -------------------------------------------------------------
 // intro_mouse_handler()
 //
 
-bool intro_mouse_handler(uiEvent *ev, Region *r, void *user_data)
+uchar intro_mouse_handler(uiEvent *ev, Region *r, void *user_data)
 {
    uiMouseEvent *mev = (uiMouseEvent *)ev;
    int which_one = -1;
    int i = 0;
    int old_diff;
-   bool diff_changed;
+   uchar diff_changed;
 #ifndef NO_DUMMIES
    void *dummy;   dummy = user_data;   dummy = r;
 #endif
@@ -928,7 +928,7 @@ bool intro_mouse_handler(uiEvent *ev, Region *r, void *user_data)
 
 #pragma disable_message(202)
 
-bool intro_key_handler(uiEvent *ev, Region *r, void *user_data)
+uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
 {
    uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
    int code = kev->code & ~(KB_FLAG_DOWN | KB_FLAG_2ND);
@@ -1160,8 +1160,8 @@ errtype setup_init(void)
 // setup_start()
 //
 
-static bool direct_into_cutscene = FALSE;
-bool start_first_time = TRUE;
+static uchar direct_into_cutscene = FALSE;
+uchar start_first_time = TRUE;
 
 #define MAX_TRY_NUM   8
 #define CFG_INIT_SVG "init_savegame"

@@ -87,7 +87,7 @@ byte palfx_start_fade_up(uchar *new_pal)
 
 
 //-------------------------------------
-void palfx_fade_up(bool do_now)
+void palfx_fade_up(uchar do_now)
 {
    // ppall is defined as the main shadow palette in init.c
    pal_fade_id=palfx_start_fade_up(ppall);

@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // structures
 typedef struct {
    grs_canvas *draw_canvas;
-   bool       double_buffer;
+   uchar       double_buffer;
    int        xtop, ytop;
    fix        viewer_zoom;
 } fauxrend_context;
@@ -35,7 +35,7 @@ typedef struct {
 void fauxrend(fauxrend_context *fr);
 void fauxrend_set_context(fauxrend_context *frc);
 void fauxrend_free_context(fauxrend_context *frc);
-fauxrend_context *fauxrend_place_3d(fauxrend_context *fr, bool db_buf, char axis, int fov, int xc, int yc, int wid, int hgt);
+fauxrend_context *fauxrend_place_3d(fauxrend_context *fr, uchar db_buf, char axis, int fov, int xc, int yc, int wid, int hgt);
 void fauxrend_zoom(fauxrend_context *fr, fix mod_fac);
 void fauxrend_setup_3d(void);
 void fauxrend_close_3d(void);

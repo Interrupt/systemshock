@@ -168,7 +168,7 @@ void ObjRefStateBinIteratorInit (void)
 	map_x = map_y = 0;
 }
 
-bool ObjRefStateBinIterator (ObjRefStateBin *bin)
+uchar ObjRefStateBinIterator (ObjRefStateBin *bin)
 {
 	if (map_y == MAP_YSIZE) return FALSE;
 	bin->sq.x = map_x; bin->sq.y = map_y;

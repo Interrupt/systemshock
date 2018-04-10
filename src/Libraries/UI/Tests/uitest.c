@@ -67,12 +67,12 @@ Gadget *qbox2 = NULL;
 short test2_short = 40,test2_short2 = 0xBAD2;
 byte test2_byte = 22;
 int test2_int = 9;
-bool test2_bool = TRUE;
+uchar test2_uchar = TRUE;
 */
 
 #pragma require_prototypes off
 /*
-bool test_panel_close(void *vg, void *ud)
+uchar test_panel_close(void *vg, void *ud)
 {
 #ifndef NO_DUMMIES
    void *dummy;
@@ -83,7 +83,7 @@ bool test_panel_close(void *vg, void *ud)
    return(FALSE);
 }
 
-bool qbox_test(short keycode, ulong context, void *data)
+uchar qbox_test(short keycode, ulong context, void *data)
 {
    Point testpoint, ss;
    testpoint.x = 60;
@@ -103,19 +103,19 @@ bool qbox_test(short keycode, ulong context, void *data)
    }
 }
 */
-bool menu_test1(short keycode, ulong context, void *data)
+uchar menu_test1(short keycode, ulong context, void *data)
 {
 //   mprintf("Hey, test 1: %s\n",(char *)data);
    return(TRUE);
 }
 
-bool menu_test2(short keycode, ulong context, void *data)
+uchar menu_test2(short keycode, ulong context, void *data)
 {
 //   mprintf("THIS IS TEST TWO!! BAHAHAHAHAHAH!\n");
    return(TRUE);
 }
 
-bool view_gadget_draw(void *vg, void *ud)
+uchar view_gadget_draw(void *vg, void *ud)
 {
    LGRect r;
    Gadget *g = (Gadget *)vg;
@@ -127,7 +127,7 @@ bool view_gadget_draw(void *vg, void *ud)
 }
 
 
-bool test_callback(void *uid_g, void *ud)
+uchar test_callback(void *uid_g, void *ud)
 {
    Gadget *g = (Gadget *)uid_g;
    void *dummy = ud;
@@ -159,7 +159,7 @@ bool test_callback(void *uid_g, void *ud)
 }
 
 
-bool barry_callback(void *uid_g, void *ud)
+uchar barry_callback(void *uid_g, void *ud)
 {
    Gadget *g;
    int i,j;
@@ -228,7 +228,7 @@ int test_pb_CB(Gadget *g, void *ud)
    return(0);
 }
 
-bool quit_callback(void *uid_g, void *ud)
+uchar quit_callback(void *uid_g, void *ud)
 {
    void *dummy;
    Gadget *dummy2;
@@ -265,7 +265,7 @@ void gadtest_init_mouse(LGRegion* r, uiSlab* slab)
 }
 
 
-bool goofy_key_callback(uiEvent* h, LGRegion* r, void* state)
+uchar goofy_key_callback(uiEvent* h, LGRegion* r, void* state)
 {
    void *dummy;
    LGRegion *dummy2;
@@ -347,7 +347,7 @@ void main(void)
    short test_short1, hack_short;
    char *test_text, *test_text2;
    byte zco = 0;
-   bool test_bool;
+   uchar test_bool;
    LGPoint ss, spac, bord;
    int min, max;
 
@@ -507,7 +507,7 @@ extern short gMainVRef;
    test_int3 = 1;
    test_int4 = 1;
    hack_short = 1;
-   test_bool = TRUE;
+   test_uchar = TRUE;
    max = 100; min = 1;
    ss.x = 220; ss.y = 20;
    spac.x = 0; spac.y = 0;

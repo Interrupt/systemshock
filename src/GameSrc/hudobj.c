@@ -20,6 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objects.h"
 #include "objapp.h"
 
+#include "lg.h"
+#include "error.h"
+
 // -------
 // GLOBALS
 // -------
@@ -35,14 +38,14 @@ ubyte current_num_hudobjs = 0;
 // API FUNCTIONS
 // -------------
 
-void hudobj_set_subclass(ubyte obclass, ubyte subclass, bool val)
+void hudobj_set_subclass(ubyte obclass, ubyte subclass, uchar val)
 {
    ushort mask = (subclass == HUDOBJ_ALL_SUBCLASSES) ? 0xFFFF : (1 << subclass);
    if (val) hudobj_classes[obclass] |= mask;
    else hudobj_classes[obclass] &= ~mask;
 }
 
-void hudobj_set_id(short id, bool val)
+void hudobj_set_id(short id, uchar val)
 {
    if (id == OBJ_NULL) return;
    if (val) objs[id].info.inst_flags |=  HUDOBJ_INST_FLAG;

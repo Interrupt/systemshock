@@ -48,6 +48,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ICanvas.h"
 #include "chain.h"
 #include "chnfuncs.h"
+#include <stdlib.h>
+
+typedef struct
+{
+
+} Ptr;
 
 
 // globals

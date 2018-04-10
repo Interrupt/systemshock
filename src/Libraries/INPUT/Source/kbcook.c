@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  already exists in the kbs_event record.  So just format the results
 //  as expected.
 //----------------------------------------------------------------------------
-errtype kb_cook(kbs_event ev, ushort *cooked, bool *results)
+errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 {
 	// On the Mac, since modifiers by themselves don't produce an event,
 	// you always have a "cooked" result.
@@ -77,9 +77,9 @@ errtype kb_cook(kbs_event ev, ushort *cooked, bool *results)
 	return OK;
 /*
    ushort flags = KB_CNV(ev.code,0);
-   bool shifted = 1 & ((kbd_modifier_state >> KBM_SHIFT_SHF)
+   uchar shifted = 1 & ((kbd_modifier_state >> KBM_SHIFT_SHF)
       | (kbd_modifier_state >> (KBM_SHIFT_SHF+1)));
-   bool capslock = 1 & (flags >> CNV_CAPS_SHF)
+   uchar capslock = 1 & (flags >> CNV_CAPS_SHF)
                      & (kbd_modifier_state >> KBM_CAPS_SHF);
    ushort cnv = KB_CNV(ev.code,shifted ^ capslock);
    int old_mods = kbd_modifier_state;
@@ -151,9 +151,9 @@ errtype kb_cook(kbs_event ev, ushort *cooked, bool *results)
 */
 }
 
-bool kb_get_cooked(ushort *key)
+uchar kb_get_cooked(ushort *key)
 {
-   bool res = FALSE;
+   uchar res = FALSE;
    kbs_event ev = kb_next();
    if (ev.code == KBC_NONE) return res;
    kb_cook(ev,key,&res);

@@ -44,7 +44,7 @@ typedef struct _tilecamera
 {
    long bcolor, fcolor;
    fix x,y,theta;
-   bool show;
+   uchar show;
    camera_setfunc func;
    void* data;
 } TileCamera;

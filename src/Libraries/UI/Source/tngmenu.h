@@ -79,7 +79,7 @@ typedef struct {
    llist_head element_header;
    int slot_height;
    int num_lines;
-   bool popped_up;
+   uchar popped_up;
    MenuElement *current_selection;
    void (*popup_func)(TNG *ptng);
    void (*popdown_func)(TNG *ptng);
@@ -107,13 +107,13 @@ errtype tng_menu_size(TNG *ptng, LGPoint *ppt);
 int tng_menu_getvalue(TNG *ptng);
 
 // React appropriately for receiving the specified cooked key
-bool tng_menu_keycooked(TNG *ptng, ushort key);
+uchar tng_menu_keycooked(TNG *ptng, ushort key);
 
 // React appropriately for receiving the specified mouse button event
-bool tng_menu_mousebutt(TNG *ptng, uchar type, LGPoint loc);
+uchar tng_menu_mousebutt(TNG *ptng, uchar type, LGPoint loc);
 
 // Handle incoming signals
-bool tng_menu_signal(TNG *ptng, ushort signal);
+uchar tng_menu_signal(TNG *ptng, ushort signal);
 
 errtype tng_menu_add_line(TNG *ptng, char *label, hotkey_callback f, short keycode, ulong context,
    void *user_data, char *help_text);

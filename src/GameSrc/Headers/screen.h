@@ -69,10 +69,10 @@ errtype screen_draw(void);
 errtype screen_shutdown(void);
 
 // Handle keyboard input anywhere on the main screen
-bool main_kb_callback(uiEvent *h, LGRegion *r, void *udata);
+uchar main_kb_callback(uiEvent *h, LGRegion *r, void *udata);
 
 // rct NULL means fullscreen, slb NULL is no slabinit, key and maus are callbacks, NULL is no install
-void generic_reg_init(bool create_reg, LGRegion *reg, LGRect *rct, uiSlab *slb, void *key_h, void *maus_h);
+void generic_reg_init(uchar create_reg, LGRegion *reg, LGRect *rct, uiSlab *slb, void *key_h, void *maus_h);
 
 // Globals
 #ifdef __SCREEN_SRC

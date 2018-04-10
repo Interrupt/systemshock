@@ -112,7 +112,7 @@ void	 CheckError(OSErr error, Str255 displayString);
 void SetInputSpecs(void);
 void SetPalette(short palID);
 
-bool QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr);
+uchar QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr);
 QT_ChunkInfo *QuikFindChunkInfo(QT_ChunkHdr *phdr);
 void QuikSkipChunk(FILE *fp, QT_ChunkHdr *phdr);
 
@@ -655,7 +655,7 @@ void SetPalette(short palID)
 //
 //	QuikReadChunkHdr() reads in the next chunk header, returns TRUE if ok.
 
-bool QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr)
+uchar QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr)
 {
 	fread(phdr, sizeof(QT_ChunkHdr), 1, fp);
 

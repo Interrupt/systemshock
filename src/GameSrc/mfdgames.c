@@ -89,7 +89,7 @@ unsigned char hideous_secret_game_storage[HIDEOUS_GAME_STORAGE + 4];
 
 LGRect GamesMenu;
 static long score_time=0;
-extern bool full_game_3d;
+extern uchar full_game_3d;
 
 static int games_time_diff;
 
@@ -181,15 +181,15 @@ void games_init_bots(void *game_state);
 #ifdef LOST_TREASURES_OF_MFD_GAMES
 void games_expose_15(MFD *m,ubyte control);
 void games_init_15(void *game_state);
-bool games_handle_15(MFD *m, uiEvent *e);
+uchar games_handle_15(MFD *m, uiEvent *e);
 
 void games_expose_ttt(MFD *m,ubyte control);
 void games_init_ttt(void* game_state);
-bool games_handle_ttt(MFD *m, uiEvent *e);
+uchar games_handle_ttt(MFD *m, uiEvent *e);
 
 void games_expose_wing(MFD *m,ubyte control);
 void games_init_wing(void *game_state);
-bool games_handle_wing(MFD *m, uiEvent *e);
+uchar games_handle_wing(MFD *m, uiEvent *e);
 #else
 #define games_expose_15 games_expose_null
 #define games_init_15 games_init_null
@@ -204,10 +204,10 @@ bool games_handle_wing(MFD *m, uiEvent *e);
 #define games_handle_wing games_handle_null
 #endif
 
-bool games_handle_pong(MFD* m, uiEvent* e);
-bool games_handle_road(MFD *m, uiEvent *e);
-bool games_handle_menu(MFD* m, uiEvent* ev);
-bool games_handle_null(MFD* m, uiEvent* ev);
+uchar games_handle_pong(MFD* m, uiEvent* e);
+uchar games_handle_road(MFD *m, uiEvent *e);
+uchar games_handle_menu(MFD* m, uiEvent* ev);
+uchar games_handle_null(MFD* m, uiEvent* ev);
 
 void games_run_pong(pong_state *work_ps);
 void games_run_road(road_state *work_ps);
@@ -216,8 +216,8 @@ void games_run_bots(bots_state *bs);
 static void mcom_start_level(void);
 int tictactoe_evaluator(void* pos);
 
-void mfd_games_turnon(bool, bool );
-void mfd_games_turnoff(bool, bool );
+void mfd_games_turnon(bool, uchar );
+void mfd_games_turnoff(bool, uchar );
 
 void (*game_expose_funcs[])(MFD *m,ubyte control)=
 {
@@ -245,7 +245,7 @@ void (*game_init_funcs[])(void* game_data)=
    games_init_null
 };
 
-extern bool (*game_handler_funcs[])(MFD *m,uiEvent* ev);
+extern uchar (*game_handler_funcs[])(MFD *m,uiEvent* ev);
 
 #define NORMAL_DISPLAY  0
 #define SCORE_DISPLAY   1
@@ -269,10 +269,10 @@ errtype mfd_games_init(MFD_Func*)
 
 // ---------------------------------------------------------------------------
 // mfd_games_handler()
-bool mfd_games_handler(MFD *m, uiEvent *e)
+uchar mfd_games_handler(MFD *m, uiEvent *e)
 {
    int cur_mode = GAME_MODE;
-   bool retval = (*game_handler_funcs[cur_mode])(m,e);
+   uchar retval = (*game_handler_funcs[cur_mode])(m,e);
    uiMouseEvent *mouse;
    LGRect r;
 
@@ -457,7 +457,7 @@ void games_expose_menu(MFD *, ubyte )
    mfd_add_rect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
 }
 
-bool games_handle_menu(MFD* m, uiEvent* ev)
+uchar games_handle_menu(MFD* m, uiEvent* ev)
 {
    uiMouseEvent *mouse;
    int game;
@@ -504,7 +504,7 @@ void games_expose_null(MFD *, ubyte )
    mfd_add_rect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
 }
 
-bool games_handle_null(MFD* , uiEvent* )
+uchar games_handle_null(MFD* , uiEvent* )
 {
    return FALSE;
 }
@@ -688,7 +688,7 @@ void games_expose_pong(MFD *m, ubyte tac)
    }
    else
    {
-	   extern bool games_handle_pong(MFD*,uiEvent*);
+	   extern uchar games_handle_pong(MFD*,uiEvent*);
 	   uiEvent fake_event;
 
       for(; games_time_diff>=PONG_CYCLE; games_time_diff-=PONG_CYCLE) {
@@ -743,7 +743,7 @@ void games_expose_pong(MFD *m, ubyte tac)
 
 #define PONG_FUDGE 10
 
-bool games_handle_pong(MFD* m, uiEvent* e)
+uchar games_handle_pong(MFD* m, uiEvent* e)
 {
    pong_state *cur_ps=(pong_state *)GAME_DATA;
    LGPoint pos = MakePoint(e->pos.x-m->rect.ul.x,
@@ -941,7 +941,7 @@ void games_expose_road(MFD *m, ubyte tac)
    mfd_notify_func(MFD_GAMES_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
 }
 
-bool games_handle_road(MFD *, uiEvent *e)
+uchar games_handle_road(MFD *, uiEvent *e)
 {
 	uiMouseEvent *me=(uiMouseEvent *)e;
 	
@@ -1399,7 +1399,7 @@ static void make_random_attacker(void)
 static void advance_mcom_state(void)
 {
   int i,j;
-  bool silo=FALSE;
+  uchar silo=FALSE;
   mcom_state *ms = (mcom_state *) GAME_DATA;
   uchar old_quarter=ms->quarter;
   uchar old_bob=ms->bob;
@@ -1517,7 +1517,7 @@ static void mcom_start_level(void)
 }
 
 // hey, hey, we got some user input
-static bool games_handle_mcom(MFD *m, uiEvent* e)
+static uchar games_handle_mcom(MFD *m, uiEvent* e)
 {
 	mcom_state *ms = (mcom_state *)GAME_DATA;
 	uiMouseEvent *mouse = (uiMouseEvent *) e;
@@ -1770,16 +1770,16 @@ typedef struct {
    uchar scramble;
    uchar movedto;
    uchar animframe;
-   bool  pause;
+   uchar  pause;
 } puzzle15_state;
 
 typedef struct {
    uchar bcolor;
    uchar fcolor;
    Ref back;
-   bool numbers;
+   uchar numbers;
    uchar tsize;
-   bool animating;
+   uchar animating;
 } puzz15_style;
 
 static puzz15_style p15_styles[NUM_PUZZ15_STYLES] = {
@@ -1804,7 +1804,7 @@ void games_init_15(void* game_state)
    games_time_diff=0;
 }
 
-static bool puzz15_won()
+static uchar puzz15_won()
 {
    puzzle15_state *st=(puzzle15_state *)GAME_DATA;
    int i;
@@ -1825,7 +1825,7 @@ static void puzz15_xy(int ind, int* x, int* y)
    *y=PUZZ15_ULY+(r*PUZZ15_TILE_SIZE);
 }
 
-static bool puzz15_move(int x, int y)
+static uchar puzz15_move(int x, int y)
 {
    puzzle15_state *st=(puzzle15_state *)GAME_DATA;
    int dir=-1, ind;
@@ -1850,12 +1850,12 @@ void games_expose_15(MFD *, ubyte control)
 {
    int i,x,y,t,dx,dy,dt;
    short sw,sh;
-   bool rex=FALSE;
+   uchar rex=FALSE;
    puzzle15_state* st=(puzzle15_state*)GAME_DATA;
    char buf[3];
    int cycle=PUZZ15_CYCLE, aframe;
    Ref back;
-   bool full, solv, nums=p15_styles[st->style].numbers;
+   uchar full, solv, nums=p15_styles[st->style].numbers;
 
    full=(control&MFD_EXPOSE_FULL);
 
@@ -1979,7 +1979,7 @@ void games_expose_15(MFD *, ubyte control)
       mfd_notify_func(MFD_GAMES_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
 }
 
-bool games_handle_15(MFD *m, uiEvent *e)
+uchar games_handle_15(MFD *m, uiEvent *e)
 {
    uiMouseEvent *me=(uiMouseEvent *)e;
    puzzle15_state *st=(puzzle15_state *)GAME_DATA;
@@ -2048,7 +2048,7 @@ typedef struct {
 #define TTT_LRY (TTT_ULY+TTT_PUZ_HGT)
 
 static void tictactoe_drawwin(ttt_state* st);
-bool tictactoe_generator(void* pos, int index, bool minimizer_moves);
+uchar tictactoe_generator(void* pos, int index, uchar minimizer_moves);
 
 // ----------------------
 // TIC-TAC-TOE:
@@ -2062,7 +2062,7 @@ static int winnerval(uchar owner)
    else return 0;
 }
 
-static bool tictactoe_over(tictactoe* st)
+static uchar tictactoe_over(tictactoe* st)
 {
    int i,val;
 
@@ -2109,7 +2109,7 @@ static int ttt_fullness(tictactoe* st)
 static char move_to_index(char move,tictactoe* st)
 {
    int i;
-   bool empty;
+   uchar empty;
 
    empty=(ttt_fullness(st)==0);
    if(empty) return initmove_ttt[move];
@@ -2126,7 +2126,7 @@ static char move_to_index(char move,tictactoe* st)
 
 void games_expose_ttt(MFD *, ubyte control)
 {
-   bool full;
+   uchar full;
    int val;
    static long timeformove=0, dt, timeout;
    char whichmove;
@@ -2137,7 +2137,7 @@ void games_expose_ttt(MFD *, ubyte control)
 
    if(full) {
       int x,y;
-      bool over;
+      uchar over;
       uchar owner;
       Ref bm;
 
@@ -2297,11 +2297,11 @@ void tictactoe_drawwin(ttt_state* st)
 }
 
 
-bool tictactoe_generator(void* pos, int index, bool minimizer_moves)
+uchar tictactoe_generator(void* pos, int index, uchar minimizer_moves)
 {
    int i;
    tictactoe* t = (tictactoe *)pos;
-   bool empty=TRUE;
+   uchar empty=TRUE;
    uchar mover=minimizer_moves?O:X;
 
    int realindex=index;
@@ -2338,7 +2338,7 @@ bool tictactoe_generator(void* pos, int index, bool minimizer_moves)
    return FALSE;
 }
 
-bool games_handle_ttt(MFD *m, uiEvent *e)
+uchar games_handle_ttt(MFD *m, uiEvent *e)
 {
    uiMouseEvent *me=(uiMouseEvent *)e;
    ttt_state *st=(ttt_state *)GAME_DATA;
@@ -3478,7 +3478,7 @@ static void wing_advance_to_next_level(void)
   }
 }
 
-bool games_handle_wing(MFD *m, uiEvent *e)
+uchar games_handle_wing(MFD *m, uiEvent *e)
 {
    uiMouseEvent *me=(uiMouseEvent *)e;
    LGPoint pos = MakePoint(e->pos.x-m->rect.ul.x,
@@ -3617,7 +3617,7 @@ void games_expose_wing(MFD *, ubyte)
 
 /*
 // this is so lovely, it is a test function, joy
-bool mfd_games_hack_func(short keycode, ulong context, void* data)
+uchar mfd_games_hack_func(short keycode, ulong context, void* data)
 {
    mcom_state *cur_state=(mcom_state *)GAME_DATA;
    int mfd = mfd_grab_func(MFD_GAMES_FUNC,MFD_INFO_SLOT);
@@ -3634,7 +3634,7 @@ bool mfd_games_hack_func(short keycode, ulong context, void* data)
 }
 */
 
-void mfd_games_turnon(bool, bool real_start)
+void mfd_games_turnon(bool, uchar real_start)
 {
    if (real_start)
    {
@@ -3646,13 +3646,13 @@ void mfd_games_turnon(bool, bool real_start)
    }
 }
 
-void mfd_games_turnoff(bool, bool )
+void mfd_games_turnoff(bool, uchar )
 {
 
    // game shutdown code goes here. 
 }
 
-bool (*game_handler_funcs[])(MFD *m,uiEvent* ev) =
+uchar (*game_handler_funcs[])(MFD *m,uiEvent* ev) =
 {
 games_handle_pong,
 games_handle_mcom,

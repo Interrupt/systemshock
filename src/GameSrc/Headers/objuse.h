@@ -66,13 +66,13 @@ typedef struct
 // Hey.  You've been USED, man.  Prove your manhood. Do something about it!
 // Of course for now, do nothing if not of CLASS_FIXTURE.
 // Returns whether or not the message line was used.
-bool object_use(ObjID id, bool in_inv, ObjID cursor_obj);
+uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj);
 
 // Lock/unlock a door
-errtype obj_door_lock(ObjID door_id, bool new_lock);
+errtype obj_door_lock(ObjID door_id, uchar new_lock);
 
 // Special case for elevator
-bool elevator_use(short dest_level, ubyte which_panel);
+uchar elevator_use(short dest_level, ubyte which_panel);
 
 errtype obj_cspace_collide(ObjID id, ObjID collider);
 

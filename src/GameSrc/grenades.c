@@ -55,6 +55,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "physunit.h"
 #include "trigger.h"    // for trap_sfx_func()
 
+#include "lg.h"
+#include "error.h"
+
 //----------------
 //  Internal Prototypes
 //----------------
@@ -62,7 +65,7 @@ void convert_grenade_to_explosion(ExplosionData *edata, int triple);
 ubyte grenade_compute_damage(ObjID target, int wpn_triple, int power_level, ubyte *effect);
 ObjID explosion_ray_cast_attack(ObjID gren_id, ObjID target, ObjLoc *gren_loc, fix radius, fix mass, fix speed);
 void do_object_explosion(ObjID id);
-bool activate_grenade_on_cursor(void);
+uchar activate_grenade_on_cursor(void);
 void reactivate_mine(ObjID id);
 
 ExplosionData game_explosions[GAME_EXPLS] =
@@ -223,7 +226,7 @@ void do_explosion(ObjLoc loc, ObjID exclusion, ubyte special_effect, ExplosionDa
    fix      max_damage = fix_make((edata->damage_mod>>2), 0);
    ObjRefID current_ref;
    ObjID    current_id;
-   bool     no_effect;
+   uchar     no_effect;
    ubyte    affect;
    int      damage;
    extern ObjID damage_sound_id;
@@ -389,7 +392,7 @@ void do_explosion(ObjLoc loc, ObjID exclusion, ubyte special_effect, ExplosionDa
 
                      if (damage>0)
                      {
-                        bool explosion_affected;
+                        uchar explosion_affected;
                         ubyte flags;
 
                         explosion_affected = FALSE;
@@ -441,7 +444,7 @@ void do_explosion(ObjLoc loc, ObjID exclusion, ubyte special_effect, ExplosionDa
                         }
                         else
                         {
-                           bool do_effect = FALSE;
+                           uchar do_effect = FALSE;
                            ubyte destroy = ObjProps[OPNUM(current_id)].destroy_effect;
                            if ((objs[current_id].info.current_hp <= damage) && DESTROY_OBJ_EFFECT(destroy))
                            {
@@ -492,13 +495,13 @@ void do_explosion(ObjLoc loc, ObjID exclusion, ubyte special_effect, ExplosionDa
 // after calling do_explosion
 //
 
-void do_grenade_explosion(ObjID id, bool special_effect)
+void do_grenade_explosion(ObjID id, uchar special_effect)
 {
    ObjID          grenade_location_id;
    ObjLoc         gren_loc;
    ExplosionData  edata;
    int            triple;
-   bool           in_hand = (id == object_on_cursor);
+   uchar           in_hand = (id == object_on_cursor);
    ubyte          effect = (special_effect) ? (ObjProps[OPNUM(id)].destroy_effect&0x7F) : 0;
 
    // let's get the triple
@@ -635,7 +638,7 @@ void activate_grenade(ObjSpecID osid)
    }
 }
 
-bool activate_grenade_on_cursor(void)
+uchar activate_grenade_on_cursor(void)
 {
    ObjID oc=object_on_cursor;
 

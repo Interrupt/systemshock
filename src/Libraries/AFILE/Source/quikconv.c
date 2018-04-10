@@ -44,24 +44,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 typedef struct {		// THIS STRUCT MUST MATCH QT_ChunkInfo IN FIRST VARS
 	ulong ctype;
-	bool isleaf;
-	void (*f_convert)(void *data, ulong length, bool read);
+	uchar isleaf;
+	void (*f_convert)(void *data, ulong length, uchar read);
 } QT_ChunkInfoAndConvert;
 
-void ConvertELST(void *data, ulong length, bool read);
-void ConvertHDLR(void *data, ulong length, bool read);
-void ConvertMDHD(void *data, ulong length, bool read);
-void ConvertMVHD(void *data, ulong length, bool read);
-void ConvertSMHD(void *data, ulong length, bool read);
-void ConvertSTCO(void *data, ulong length, bool read);
-void ConvertSTSC(void *data, ulong length, bool read);
-void ConvertSTSD(void *data, ulong length, bool read);
-void ConvertSTSH(void *data, ulong length, bool read);
-void ConvertSTSS(void *data, ulong length, bool read);
-void ConvertSTSZ(void *data, ulong length, bool read);
-void ConvertSTTS(void *data, ulong length, bool read);
-void ConvertTKHD(void *data, ulong length, bool read);
-void ConvertVMHD(void *data, ulong length, bool read);
+void ConvertELST(void *data, ulong length, uchar read);
+void ConvertHDLR(void *data, ulong length, uchar read);
+void ConvertMDHD(void *data, ulong length, uchar read);
+void ConvertMVHD(void *data, ulong length, uchar read);
+void ConvertSMHD(void *data, ulong length, uchar read);
+void ConvertSTCO(void *data, ulong length, uchar read);
+void ConvertSTSC(void *data, ulong length, uchar read);
+void ConvertSTSD(void *data, ulong length, uchar read);
+void ConvertSTSH(void *data, ulong length, uchar read);
+void ConvertSTSS(void *data, ulong length, uchar read);
+void ConvertSTSZ(void *data, ulong length, uchar read);
+void ConvertSTTS(void *data, ulong length, uchar read);
+void ConvertTKHD(void *data, ulong length, uchar read);
+void ConvertVMHD(void *data, ulong length, uchar read);
 
 QT_ChunkInfoAndConvert chunkInfo[] = {
 	QT_CLIP,FALSE,NULL,
@@ -120,7 +120,7 @@ FILE *QuikOpenFile(char *filename)
 //
 //	QuikReadChunkHdr() reads in the next chunk header, returns TRUE if ok.
 
-bool QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr)
+uchar QuikReadChunkHdr(FILE *fp, QT_ChunkHdr *phdr)
 {
 	fread(phdr, sizeof(QT_ChunkHdr), 1, fp);
 	Flip4(&phdr->length);
@@ -157,7 +157,7 @@ void QuikSkipChunk(FILE *fp, QT_ChunkHdr *phdr)
 //
 //	QuikReadChunk() reads data in chunk.
 
-bool QuikReadChunk(FILE *fp, QT_ChunkHdr *phdr, void *buff, ulong bufflen)
+uchar QuikReadChunk(FILE *fp, QT_ChunkHdr *phdr, void *buff, ulong bufflen)
 {
 	QT_ChunkInfoAndConvert *pinfo;
 
@@ -250,7 +250,7 @@ static QT_ChunkInfoAndConvert *lastInfoPtr = NULL;
 //		CONVERTER ROUTINES
 //	----------------------------------------------------------------
 
-void ConvertELST(void *data, ulong length, bool read)
+void ConvertELST(void *data, ulong length, uchar read)
 {
 	int i;
 	QTS_ELST *p = (QTS_ELST *)data;
@@ -267,7 +267,7 @@ void ConvertELST(void *data, ulong length, bool read)
 		Flip4(&p->numEntries);
 }
 
-void ConvertHDLR(void *data, ulong length, bool read)
+void ConvertHDLR(void *data, ulong length, uchar read)
 {
 	QTS_HDLR *p = (QTS_HDLR *)data;
 
@@ -278,7 +278,7 @@ void ConvertHDLR(void *data, ulong length, bool read)
 	Flip4(&p->compFlagsMask);
 }
 
-void ConvertMDHD(void *data, ulong length, bool read)
+void ConvertMDHD(void *data, ulong length, uchar read)
 {
 	QTS_MDHD *p = (QTS_MDHD *)data;
 
@@ -290,7 +290,7 @@ void ConvertMDHD(void *data, ulong length, bool read)
 	Flip2(&p->quality);
 }
 
-void ConvertMVHD(void *data, ulong length, bool read)
+void ConvertMVHD(void *data, ulong length, uchar read)
 {
 	int i;
 	QTS_MVHD *p = (QTS_MVHD *)data;
@@ -312,14 +312,14 @@ void ConvertMVHD(void *data, ulong length, bool read)
 	Flip4(&p->nextTrackId);
 }
 
-void ConvertSMHD(void *data, ulong length, bool read)
+void ConvertSMHD(void *data, ulong length, uchar read)
 {
 	QTS_SMHD *p = (QTS_SMHD *)data;
 
 	Flip2(&p->balance);
 }
 
-void ConvertSTCO(void *data, ulong length, bool read)
+void ConvertSTCO(void *data, ulong length, uchar read)
 {
 	int i;
 	QTS_STCO *p = (QTS_STCO *)data;
@@ -332,7 +332,7 @@ void ConvertSTCO(void *data, ulong length, bool read)
 		Flip4(&p->numEntries);
 }
 
-void ConvertSTSC(void *data, ulong length, bool read)
+void ConvertSTSC(void *data, ulong length, uchar read)
 {
 	int i;
 	QTS_STSC *p = (QTS_STSC *)data;
@@ -349,7 +349,7 @@ void ConvertSTSC(void *data, ulong length, bool read)
 		Flip4(&p->numEntries);
 }
 
-void ConvertSTSD(void *data, ulong length, bool read)
+void ConvertSTSD(void *data, ulong length, uchar read)
 {
 	QTS_STSD *p = (QTS_STSD *)data;
 
@@ -392,7 +392,7 @@ void ConvertSTSD(void *data, ulong length, bool read)
 		}
 }
 
-void ConvertSTSH(void *data, ulong length, bool read)
+void ConvertSTSH(void *data, ulong length, uchar read)
 {
 	int i;
 	QTS_STSH *p = (QTS_STSH *)data;
@@ -408,7 +408,7 @@ void ConvertSTSH(void *data, ulong length, bool read)
 		Flip4(&p->numEntries);
 }
 
-void ConvertSTSS(void *data, ulong length, bool read)
+void ConvertSTSS(void *data, ulong length, uchar read)
 {
 	int i;
 	QTS_STSS *p = (QTS_STSS *)data;
@@ -421,7 +421,7 @@ void ConvertSTSS(void *data, ulong length, bool read)
 		Flip4(&p->numEntries);
 }
 
-void ConvertSTSZ(void *data, ulong length, bool read)
+void ConvertSTSZ(void *data, ulong length, uchar read)
 {
 	int i;
 	QTS_STSZ *p = (QTS_STSZ *)data;
@@ -438,7 +438,7 @@ void ConvertSTSZ(void *data, ulong length, bool read)
 		Flip4(&p->numEntries);
 }
 
-void ConvertSTTS(void *data, ulong length, bool read)
+void ConvertSTTS(void *data, ulong length, uchar read)
 {
 	int i;
 	QTS_STTS *p = (QTS_STTS *)data;
@@ -454,7 +454,7 @@ void ConvertSTTS(void *data, ulong length, bool read)
 		Flip4(&p->numEntries);
 }
 
-void ConvertTKHD(void *data, ulong length, bool read)
+void ConvertTKHD(void *data, ulong length, uchar read)
 {
 	int i;
 	QTS_TKHD *p = (QTS_TKHD *)data;
@@ -472,7 +472,7 @@ void ConvertTKHD(void *data, ulong length, bool read)
 	Flip4(&p->trackHeight);
 }
 
-void ConvertVMHD(void *data, ulong length, bool read)
+void ConvertVMHD(void *data, ulong length, uchar read)
 {
 	int i;
 	QTS_VMHD *p = (QTS_VMHD *)data;

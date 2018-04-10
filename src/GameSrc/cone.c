@@ -94,7 +94,7 @@ extern g3s_angvec viewer_orientation;
 
 // prototypes
 void reverse_poly_list(int index, fix *new_pts);
-bool clockwise_poly(int index, fix *poly_pts);
+uchar clockwise_poly(int index, fix *poly_pts);
 int insert_viewer_position(int index, fix *new_pts, fix_point viewer_point);
 int radius_fix(int index, fix *new_pts, fix_point viewer);
 void intersect_cone_sides(fix *vlist, int n, fix y_min, fix y_max, int v_left, int v_right, int v_max);
@@ -131,14 +131,14 @@ void reverse_poly_list(int index, fix *new_pts)
 // 
 // Note: Does not handle points that are really really close together. 
 
-bool clockwise_poly(int index, fix *poly_pts)
+uchar clockwise_poly(int index, fix *poly_pts)
 {
    fix         temp_pts[MAX_PTS * 2];
    fix_line    poly_line;
    fix_point   point;
    fix         cross_prd;
-   bool        clockwise;
-   bool        extra_div = TRUE;
+   uchar        clockwise;
+   uchar        extra_div = TRUE;
 
    if (index <3)
       return(TRUE);  // Is a point or line clockwise??? - hmmmmmm, why not?
@@ -210,8 +210,8 @@ int insert_viewer_position(int index, fix *new_pts, fix_point viewer_point)
    int         i;
    int         insert;
    
-   bool        extra_div = TRUE;
-   bool        inside = FALSE;
+   uchar        extra_div = TRUE;
+   uchar        inside = FALSE;
 
    // Reduce values to a reasonable number, so cross product is happy
    // Copy over the raw data to the temp list
@@ -283,7 +283,7 @@ int insert_viewer_position(int index, fix *new_pts, fix_point viewer_point)
          fix         slope, inv_slope;
          fix         inter, inv_inter;
          fix         interx, intery;
-         bool        local_inside;
+         uchar        local_inside;
 
          // check if we don't have to compute the intersection point
          if (poly_line.end.x == poly_line.start.x)
@@ -362,8 +362,8 @@ int radius_fix(int index, fix *new_pts, fix_point viewer)
    int         i, j, k;
    int         new_index;
    int         counter;
-   bool        middle;
-   bool        second, third;
+   uchar        middle;
+   uchar        second, third;
    fix         x, y, x2, y2;
    fix         *current_pt;
    fix         *insert_pt;
@@ -503,7 +503,7 @@ int radius_fix(int index, fix *new_pts, fix_point viewer)
 
    if (new_index > 2)
    {
-      bool extra_div = TRUE;
+      uchar extra_div = TRUE;
 
       // This will remove convexness from the polygon
       // We are assuming counter-clockwise, due to sorting by angles.
@@ -594,7 +594,7 @@ int radius_fix(int index, fix *new_pts, fix_point viewer)
 // modifies an array of points to represents the view area in clockwise order 
 // *count will have the number of points in the array.
 
-bool find_view_area(fix *cone_list, fix floor_val, fix roof_val, int *count, fix radius)
+uchar find_view_area(fix *cone_list, fix floor_val, fix roof_val, int *count, fix radius)
 {
    int         i;
    fix         tx, tz;
@@ -965,8 +965,8 @@ void simple_cone_clip_pass(void)
    fix      x_abs_left, x_abs_right;   // min or max value of endpoint for that line of the polygon 
    fix      x_outer_left, x_outer_right; // used to determine if that line is horizontal
    fix      x_shift;
-   bool     right_line, left_line;     // looking for line
-   bool     right_repeat, left_repeat; // looking for repeat on the line 
+   uchar     right_line, left_line;     // looking for line
+   uchar     right_repeat, left_repeat; // looking for repeat on the line 
 
    // get the view polygon - if there's not a valid cone, then just return.
    if (!find_view_area(view_cone_list, fix_make(0,0), GAME_HEIGHT, &n, fix_make(_frp.view.radius,0)))

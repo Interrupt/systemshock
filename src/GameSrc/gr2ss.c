@@ -23,11 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frintern.h"
 #include "frprotox.h"
 #include "gamescr.h"
+
+#include "lg.h"
+#include "error.h"
+
 //Â¥Â¥#include <inp6d.h>
 
 #ifdef STEREO_SUPPORT
 #include <i6dvideo.h>
-extern bool inp6d_stereo_active;
+extern uchar inp6d_stereo_active;
 
 #define S_DELTA 5
 #endif
@@ -55,7 +59,7 @@ void mouse_unconstrain(void);
 
 uchar perform_svga_conversion(uchar mask)
 {
-	extern bool full_game_3d;
+	extern uchar full_game_3d;
 	
 	if (gr2ss_override & OVERRIDE_FAIL)
 		return(SVGA_CONV_NONE);
@@ -517,7 +521,7 @@ void ss_recompute_zoom(frc *which_frc, short oldm)
       fix_div(convert_x[convert_type][convert_use_mode],convert_x[convert_type][oldm]));
 }
 
-void ss_point_convert(short *px, short *py, bool down)
+void ss_point_convert(short *px, short *py, uchar down)
 {
 #ifdef SVGA_SUPPORT
    if (convert_use_mode != 0)
@@ -589,7 +593,7 @@ void ss_set_hack_mode(short new_m, short *tval)
 
 #endif
 
-void ss_mouse_convert(short *px, short *py, bool down)
+void ss_mouse_convert(short *px, short *py, uchar down)
 {
    if (convert_use_mode != 0)
    {
@@ -623,7 +627,7 @@ void ss_mouse_convert(short *px, short *py, bool down)
    }
 }
 
-void ss_mouse_convert_round(short *px, short *py, bool down)
+void ss_mouse_convert_round(short *px, short *py, uchar down)
 {
    short ox,oy;
 

@@ -48,15 +48,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // -------
 // DEFINES
 // -------
-bool status_track_free(int track);
-bool status_track_active(int track);
-void status_track_activate(int track, bool active);
+uchar status_track_free(int track);
+uchar status_track_active(int track);
+void status_track_activate(int track, uchar active);
 
 errtype mfd_biohelp_init(MFD_Func* f);
 void mfd_biohelp_expose(MFD* mfd, ubyte control);
-bool mfd_biohelp_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data);
-bool mfd_biohelp_handler(MFD* m, uiEvent* e);
-bool biohelp_region_mouse_handler(uiMouseEvent* ev, LGRegion* r, void* data);
+uchar mfd_biohelp_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data);
+uchar mfd_biohelp_handler(MFD* m, uiEvent* e);
+uchar biohelp_region_mouse_handler(uiMouseEvent* ev, LGRegion* r, void* data);
 errtype biohelp_load_cursor();
 errtype biohelp_create_mouse_region(LGRegion* root);
 
@@ -94,15 +94,21 @@ errtype biohelp_create_mouse_region(LGRegion* root);
 
 #define ITEM_COLOR  (0x5A)
 
+#define STATUS_X 0
+#define GAMESCR_BIO_WIDTH 100
+#define GAMESCR_BIO_HEIGHT 40
+
 
 #define LAST_ACTIVE_BITS(mfd) (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][mfd])
 #define LAST_USED_BITS(mfd)   (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][mfd+6])
 #define BIOHELP_PAGE (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][2]) 
 #define NUM_TRACKS   (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][3])
 
+#define NUM_BIO_TRACKS (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][3])
+
 void mfd_biohelp_expose(MFD* mfd, ubyte control)
 {
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    if (control == 0)  // MFD is drawing stuff
    {
       // Do unexpose stuff here.  
@@ -194,7 +200,7 @@ void mfd_biohelp_expose(MFD* mfd, ubyte control)
 // HANDLERS 
 // --------
 
-bool mfd_biohelp_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_biohelp_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* v)
 {
    int track = -1;
    int i = 0;
@@ -218,9 +224,9 @@ bool mfd_biohelp_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
 }
 
 
-bool mfd_biohelp_handler(MFD* m, uiEvent* e)
+uchar mfd_biohelp_handler(MFD* m, uiEvent* e)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    LGPoint pos = e->pos;
    if (NUM_TRACKS <= NUM_BUTTONS)
       return FALSE;
@@ -238,7 +244,7 @@ bool mfd_biohelp_handler(MFD* m, uiEvent* e)
 }
 
 
-bool biohelp_region_mouse_handler(uiMouseEvent* ev, LGRegion*, void*)
+uchar biohelp_region_mouse_handler(uiMouseEvent* ev, LGRegion* reg, void* v)
 {
    if (ev->action & (MOUSE_LDOWN|MOUSE_RDOWN))
    {
@@ -262,7 +268,7 @@ grs_bitmap biohelp_cursor_bmap;
 errtype biohelp_load_cursor()
 {
    errtype err; 
-   static bool cursor_loaded = FALSE;
+   static uchar cursor_loaded = FALSE;
    extern errtype simple_load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid);
    if (cursor_loaded)
       free(biohelp_cursor_bmap.bits);

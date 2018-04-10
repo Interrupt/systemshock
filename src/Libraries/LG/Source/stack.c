@@ -91,7 +91,7 @@ void *MemStackRealloc (MemStack *ms, void *ptr, long newsize)
 // reverse order from allocating it - this is a stack.  Violations may
 // not be caught right away.
 //
-bool MemStackFree (MemStack *ms, void *ptr)
+uchar MemStackFree (MemStack *ms, void *ptr)
 {
    if (ms->topptr < ptr)
    {

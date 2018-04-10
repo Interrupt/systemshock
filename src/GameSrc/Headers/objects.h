@@ -16,8 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
+
 #ifndef __OBJECTS_H
 #define __OBJECTS_H
+
+#include "precompiled.h"
 
 /*
 ** $Header: r:/prj/cit/src/inc/RCS/objects.h 1.18 1994/08/30 07:15:13 xemu Exp $
@@ -66,7 +69,7 @@ typedef short ObjSpecID;
 
 // The common data for all objects
 typedef struct Obj {
-	bool active;								// does this object really exist?
+	uchar active;								// does this object really exist?
 	ObjClass obclass;							// what class this is
 	ObjSubClass subclass;					// subclass within that class
 	ObjSpecID specID;							// ID within that class
@@ -84,7 +87,7 @@ typedef struct Obj {
 } Obj;
 
 typedef struct old_Obj {
-	bool active;								// does this object really exist?
+	uchar active;								// does this object really exist?
 	ObjClass obclass;							// what class this is
 	ObjSubClass subclass;					// subclass within that class
 	ObjSpecID specID;							// ID within that class
@@ -261,7 +264,7 @@ extern ObjHashElem objHashTable[OBJ_HASH_ENTRIES];
 // The global variable is a pain but I don't see a way to get rid of it.
 
 #ifdef USE_FUNCTION_FOR_HASH_GET
-ObjHashElemID ObjGetHashElem (ObjRefStateBin thebin, bool create);
+ObjHashElemID ObjGetHashElem (ObjRefStateBin thebin, uchar create);
 #else
 extern ObjHashElemID HASHENTRY;	       // global, found in objects.c
 #define ObjGetHashElem(thebin,create) \
@@ -271,7 +274,7 @@ extern ObjHashElemID HASHENTRY;	       // global, found in objects.c
     (ObjRefStateBinEqual(objRefs[objHashTable[HASHENTRY].ref].state.bin,thebin) ?\
       HASHENTRY :\
       ObjGetHashElemFromChain(thebin,create,HASHENTRY))))
-ObjHashElemID ObjGetHashElemFromChain (ObjRefStateBin bin, bool create, ObjHashElemID firstentry);
+ObjHashElemID ObjGetHashElemFromChain (ObjRefStateBin bin, uchar create, ObjHashElemID firstentry);
 #endif
 
 #endif // HASH_OBJECTS
@@ -282,23 +285,23 @@ ObjHashElemID ObjGetHashElemFromChain (ObjRefStateBin bin, bool create, ObjHashE
 //
 
 void ObjsInit (void);
-bool ObjAndSpecGrab (ObjClass obclass, ObjID *id, ObjSpecID *specid);
-bool ObjPlace (ObjID id, ObjLoc *loc);
+uchar ObjAndSpecGrab (ObjClass obclass, ObjID *id, ObjSpecID *specid);
+uchar ObjPlace (ObjID id, ObjLoc *loc);
 ObjID ObjRefDel (ObjRefID ref);
 ObjRefID ObjRefMake (ObjID obj, ObjRefState refstate);
-bool ObjDel (ObjID obj);
-bool ObjChangeClass (ObjID obj, ObjClass obclass);
-bool ObjUpdateLocs (ObjLocState *olsp);
-bool ObjsUpdateLocs (void);
+uchar ObjDel (ObjID obj);
+uchar ObjChangeClass (ObjID obj, ObjClass obclass);
+uchar ObjUpdateLocs (ObjLocState *olsp);
+uchar ObjsUpdateLocs (void);
 void ObjPossibleCollisions (ObjID obj, ObjID *colls);
 
 void ObjBinPrint (ObjRefStateBin bin);
-bool ObjSysOkay (void);
+uchar ObjSysOkay (void);
 void ObjPrintRefs (ObjID obj);
 
 //////////////
 
-bool ObjInstInit (ObjID id, ObjSpecID specid, ObjSubClass subclass);
+uchar ObjInstInit (ObjID id, ObjSpecID specid, ObjSubClass subclass);
 
 //////////////////////////////
 

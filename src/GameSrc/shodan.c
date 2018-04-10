@@ -27,10 +27,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ---------------
 // Internal Prototypes
 // ---------------
-errtype update_shodometer(short new_val, bool game_stuff);
+errtype update_shodometer(short new_val, uchar game_stuff);
 
 
-short compute_shodometer_value(bool game_stuff)
+short compute_shodometer_value(uchar game_stuff)
 {
    ObjID oid;
    
@@ -49,7 +49,7 @@ short compute_shodometer_value(bool game_stuff)
 
 #define HUD_SHODOMETER_TICKS (CIT_CYCLE << 1)
 
-errtype update_shodometer(short new_val, bool game_stuff)
+errtype update_shodometer(short new_val, uchar game_stuff)
 {
    extern errtype do_shodan_triggers();
    QUESTVAR_SET(SHODAN_QV, new_val);
@@ -62,7 +62,7 @@ errtype update_shodometer(short new_val, bool game_stuff)
    return(OK);
 }
 
-short increment_shodan_value(ObjID oid, bool game_stuff)
+short increment_shodan_value(ObjID oid, uchar game_stuff)
 {
    short curr_shodan_val = QUESTVAR_GET(SHODAN_QV);
 
@@ -94,7 +94,7 @@ short increment_shodan_value(ObjID oid, bool game_stuff)
       return(0);
 }
 
-short decrement_shodan_value(ObjID oid, bool game_stuff)
+short decrement_shodan_value(ObjID oid, uchar game_stuff)
 {
    short curr_shodan_val = QUESTVAR_GET(SHODAN_QV);
 

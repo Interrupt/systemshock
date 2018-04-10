@@ -48,6 +48,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frparams.h"
 #include "frflags.h"
 
+#include "lg.h"
+#include "error.h"
+
 #define ptLst(i)     pt_lsts[i]
 #define ptLstx(i,x)  (*(ptLst(i)+x))
 #define ptRow(i)     pt_rowv[i]
@@ -109,7 +112,7 @@ int fr_pts_resize(int , int )					// x, y
 void dumb_hack_for_now(int x, int y);
 void dumb_hack_for_now(int x, int y)
 {
-   bool tran_sv=FALSE, d=TRUE;
+   uchar tran_sv=FALSE, d=TRUE;
    ushort *_cur_rowv, *_nxt_rowv;
    g3s_phandle *_cur_pt, *_fr_curb, *_fr_curn;
    g3s_vector   _pt_vec;

@@ -53,7 +53,7 @@ typedef struct {
    TNG *tng_data;
    LGPoint size;
    int type;
-   bool pressed;
+   uchar pressed;
    void *disp_data;
 } TNG_pushbutton;
 
@@ -82,13 +82,13 @@ errtype tng_pushbutton_size(TNG *ptng, LGPoint *ppt);
 int tng_pushbutton_getvalue(TNG *ptng);
 
 // React appropriately for receiving the specified cooked key
-bool tng_pushbutton_keycooked(TNG *ptng, ushort key);
+uchar tng_pushbutton_keycooked(TNG *ptng, ushort key);
 
 // React appropriately for receiving the specified mouse button event
-bool tng_pushbutton_mousebutt(TNG *ptng, uchar type, LGPoint loc);
+uchar tng_pushbutton_mousebutt(TNG *ptng, uchar type, LGPoint loc);
 
 // Handle incoming signals
-bool tng_pushbutton_signal(TNG *ptng, ushort signal);
+uchar tng_pushbutton_signal(TNG *ptng, ushort signal);
 
 errtype tng_pushbutton_pressed(TNG_pushbutton *ppbtng);
 errtype tng_pushbutton_released(TNG_pushbutton *ppbtng);

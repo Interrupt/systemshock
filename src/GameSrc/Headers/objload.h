@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define EXTRA_FRAMES 500
 
-extern errtype obj_load_art(bool flush_all);
+extern errtype obj_load_art(uchar flush_all);
 
 #ifdef __OBJSIM_SRC
 LGPoint anchors_3d[NUM_OBJECT + EXTRA_FRAMES];

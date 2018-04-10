@@ -105,7 +105,7 @@ extern long height_colors[MAP_HEIGHTS];
 #define TEXTURE2COLOR(t) ((t)*2+32)
 #define CAMERA_COLOR (BROWN_BASE+5)
 
-typedef bool (*highlight_func)(FullMap* map, MapElem* elem, LGPoint square, void* data);
+typedef uchar (*highlight_func)(FullMap* map, MapElem* elem, LGPoint square, void* data);
 
 typedef void (*tile_drawfunc)(struct _tilemap* t, LGPoint square, MapElem* elem, LGPoint pix);
 
@@ -128,12 +128,12 @@ typedef struct _tilemap
    ushort zoom; // pixels per tile.
    LGPoint topleft;
    TileDraw draw;
-   bool  showcursor;
+   uchar  showcursor;
    LGPoint cursor;           // Cursor for keyboard input.
    uchar highlights[MAP_ROWS][MAP_COLS];
    uchar hilitebits;
    TileCamera cameras[NUM_CAMERAS];
-   bool cameras_used[NUM_CAMERAS];
+   uchar cameras_used[NUM_CAMERAS];
 }  TileMap;
 
 // user-defined event types
@@ -178,7 +178,7 @@ errtype TileMapSetDraw(TileMap* t, TileDraw draw);
 errtype TileMapGetDraw(TileMap* t, TileDraw* draw);
 // Gets the function used to display mapsquares, and its data
 
-errtype TileMapSetHighlight(TileMap* t, LGPoint square, int hilitenum, bool on);
+errtype TileMapSetHighlight(TileMap* t, LGPoint square, int hilitenum, uchar on);
 // Sets the highlighted-ness of the specified square to the value of "on" for 
 // highlight number hilitenum.  (there are MAX_HIGHLIGHTS possible hilitenums) 
 
@@ -204,28 +204,28 @@ errtype TileMapSetZoom(TileMap* t, ushort zoom);
 errtype TileMapGetZoom(TileMap* t,ushort* zoom);
 // Gets the zoom facter of t. 
 
-bool TileMapSquare2Pixel(TileMap* t, LGPoint in, LGPoint* out);
+uchar TileMapSquare2Pixel(TileMap* t, LGPoint in, LGPoint* out);
 // if the square "in" is visible, sets *out to the upper left
 // corner of it in screen coordinates, and returns true.  
 // otherwise, returns false.
 
-bool TileMapPixel2Square(TileMap* t, LGPoint in, LGPoint* out);
+uchar TileMapPixel2Square(TileMap* t, LGPoint in, LGPoint* out);
 // If the LGPoint "in" is contained in a square of tilemap t, 
 // set *out to that square in map coordinates, and return true.
 // Otherwise, return false.  
 
 
-bool TileMapRedrawPixels(TileMap* t, LGRect* r);
+uchar TileMapRedrawPixels(TileMap* t, LGRect* r);
 // If any part of r intersects with t in screen coordinates, 
 // return true and redraw that intersection, otherwise
 // return false.  the NULL rectangle represents all pixels. 
 
-bool TileMapRedrawSquares(TileMap* t, LGRect* r);
+uchar TileMapRedrawSquares(TileMap* t, LGRect* r);
 // If any of the squares in r are visible in t, redraw those
 // squares and return true.  otherwise, return false.  
 // The NULL rectangle represents all squares.  
 
-bool TileMapRedrawSquare(TileMap* t, LGPoint sq);
+uchar TileMapRedrawSquare(TileMap* t, LGPoint sq);
 // Redraws a single square of t, returns whether that 
 // square is visible, and thus was actually redrawn. 
 
@@ -235,7 +235,7 @@ errtype TileMapSetCursor(TileMap* t, LGPoint p);
 errtype TileMapGetCursor(TileMap* t, LGPoint *p);
 // Gets the tilemap cursor.  
 
-errtype TileMapCursorOnOff(TileMap* t, bool onoff);
+errtype TileMapCursorOnOff(TileMap* t, uchar onoff);
 // Turns the cursor display on or off.  
 
 errtype TileMapAddCamera(TileMap* t, TileCamera* tc, uint* id);

@@ -232,7 +232,7 @@ typedef enum {
 } ResOpenMode;
 
 void ResAddPath(char *path);		// add search path for resfiles
-int ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo);	// openfile
+int ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo);	// openfile
 void ResCloseFile(int filenum);	// close res file
 void ResSetCDSpoof(char *path, void (*spoof_cb)(int size, Id id));
 

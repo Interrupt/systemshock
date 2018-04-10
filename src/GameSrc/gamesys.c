@@ -76,6 +76,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "wares.h"
 #include "weapons.h"
 
+#include "lg.h"
+#include "error.h"
+
 
 // -------
 // DEFINES
@@ -97,7 +100,7 @@ int run_fatigue_rate = 5;
 extern short fr_solidfr_time;
 extern short fr_sfx_time;
 ulong fr_shake_time;
-bool gamesys_on = TRUE;
+uchar gamesys_on = TRUE;
 
 // hud vars
 short enviro_edrain_rate = 0;
@@ -112,10 +115,10 @@ void game_sched_free(void);
 void unshodanizing_callback(ObjID id, void *user_data);
 void check_nearby_objects(void);
 void fatigue_player(void);
-bool shodan_phase_in(uchar *bitmask, short x, short y, short w, short h, short num, bool dir);
+uchar shodan_phase_in(uchar *bitmask, short x, short y, short w, short h, short num, uchar dir);
 void check_hazard_regions(MapElem* newElem);
-bool panel_ref_sanity(ObjID obj);
-void check_panel_ref(bool puntme);
+uchar panel_ref_sanity(ObjID obj);
+void check_panel_ref(uchar puntme);
 int apply_rate(int var, int rate, int t0, int t1, int vmin, int vmax);
 void do_stuff_every_second(void);
 void expose_player_real(short damage, ubyte type, ushort tsecs);
@@ -143,7 +146,7 @@ ulong obj_check_time = 0;
 
 void unshodanizing_callback(ObjID id, void *user_data)
 {
-   bool ud = (bool)user_data;
+   uchar ud = (bool)user_data;
    if (ud)
    {
       objBigstuffs[objs[id].specID].data2 = SHODAN_STATIC_MAGIC_COOKIE | (TPOLY_TYPE_CUSTOM_MAT << TPOLY_INDEX_BITS);
@@ -188,7 +191,7 @@ void check_nearby_objects()
    ObjSpecID osid;
    LGPoint dest_pt, source_pt;
    int pf_id;
-   extern bool music_on;
+   extern uchar music_on;
 
    // Should probably distribute different kinds of checks so that there is not a big hit every OBJ_CHECK_TIME
    if (obj_check_time < player_struct.game_time)
@@ -293,7 +296,7 @@ void check_nearby_objects()
                         break;
                      case HORZ_KLAXON_TRIPLE:
                         {
-                           bool digi_fx_playing(int fx_id, int *handle_ptr);
+                           uchar digi_fx_playing(int fx_id, int *handle_ptr);
                            if (!digi_fx_playing(SFX_KLAXON,NULL))
                               play_digi_fx_obj(SFX_KLAXON,1,id);
                         }
@@ -364,10 +367,10 @@ void reload_fatigue_parms()
 }
 */
 
-bool fatigue_warning;
+uchar fatigue_warning;
 #define fatigue_val(x) (((x) > SPRINT_CONTROL_THRESHOLD) ? ((int)(x) - SPRINT_CONTROL_THRESHOLD): 0)
 #define FATIGUE_DENOM  (CONTROL_MAX_VAL - SPRINT_CONTROL_THRESHOLD)
-bool gamesys_fatigue = TRUE;
+uchar gamesys_fatigue = TRUE;
 
 #define SKATE_MOD 8
 
@@ -378,7 +381,7 @@ void fatigue_player(void)
 {
    byte* c = player_struct.controls;
    int deltat,deltaf;
-   extern bool jumpjets_active;
+   extern uchar jumpjets_active;
    if (gamesys_fatigue && !jumpjets_active && !EDMS_pelvis_is_climbing)
    {
       deltat = player_struct.deltat;
@@ -413,11 +416,11 @@ void fatigue_player(void)
 
 
 
-bool gamesys_render_fx = TRUE;
-bool gamesys_restore_health = TRUE;
-bool gamesys_slow_proj = TRUE;
-bool gamesys_beam_wpns = TRUE;
-bool gamesys_drugs = TRUE;
+uchar gamesys_render_fx = TRUE;
+uchar gamesys_restore_health = TRUE;
+uchar gamesys_slow_proj = TRUE;
+uchar gamesys_beam_wpns = TRUE;
+uchar gamesys_drugs = TRUE;
 
 ulong next_contin_trig;
 
@@ -435,7 +438,7 @@ short surge_vals[NUM_SURG_FX_FRAMES] = { -1 << 8 , -5 << 8, 0 << 8, 2 << 8, 2 <<
 #define UNCONQUER_THRESHOLD   32
 #define MAX_SHODAN_FAILURES   10
 char thresh_fail = 0;
-bool shodan_phase_in(uchar *bitmask, short x, short y, short w, short h, short num, bool dir)
+uchar shodan_phase_in(uchar *bitmask, short x, short y, short w, short h, short num, uchar dir)
 {
    int i = 0,nx,ny,val,oval;
    while (i < num)
@@ -493,9 +496,9 @@ short shodan_region_full_height[] = {FULL_VIEW_HEIGHT / 8, FULL_VIEW_HEIGHT, FUL
 errtype gamesys_run(void)
 {
    ObjSpecID osi;
-   bool dummy;
+   uchar dummy;
    extern void destroy_destroyed_objects(void);
-   extern bool trap_activate(ObjID id, bool *use_message);
+   extern uchar trap_activate(ObjID id, uchar *use_message);
    extern void set_global_lighting(short new_val);
    extern uchar *shodan_bitmask;
    extern ulong page_amount;
@@ -561,7 +564,7 @@ errtype gamesys_run(void)
          if (thresh_fail)
          {
             errtype trap_hack_func(int p1, int p2, int p3, int p4);
-            extern void begin_shodan_conquer_fx(bool begin);
+            extern void begin_shodan_conquer_fx(uchar begin);
             begin_shodan_conquer_fx(FALSE);
             shodan_bitmask = NULL;
             trap_hack_func(GAME_OVER_HACK, 0, 0, 0);
@@ -691,7 +694,7 @@ void check_hazard_regions(MapElem* newElem)
 
 #define Z_THRESHOLD FIX_UNIT
 
-bool panel_ref_sanity(ObjID obj)
+uchar panel_ref_sanity(ObjID obj)
 {
    int objtrip=OPNUM(obj), obj_type;
    obj_type=ObjProps[objtrip].render_type;
@@ -725,26 +728,26 @@ bool panel_ref_sanity(ObjID obj)
 // Checks to see if we've walked away from a panel
 // in an mfd, and closes the mfd. 
 
-void check_panel_ref(bool puntme)
+void check_panel_ref(uchar puntme)
 {
    static short old_x,old_y;
    extern void restore_mfd_slot(int mfd_id);
-   extern bool check_object_dist(ObjID obj1, ObjID obj2, fix crit);
+   extern uchar check_object_dist(ObjID obj1, ObjID obj2, fix crit);
 
    ObjID id = player_struct.panel_ref;
 
    if (id != OBJ_NULL && (id != PLAYER_OBJ || puntme))
    {
       extern ubyte mfd_get_func(ubyte mfd_id, ubyte s);
-      extern bool mfd_distance_remove(ubyte slot_funca);
-      bool punt = puntme;
+      extern uchar mfd_distance_remove(ubyte slot_funca);
+      uchar punt = puntme;
       if(objs[id].active) {
          punt=punt || !check_object_dist(id,PLAYER_OBJ,MAX_USE_DIST);
          punt=punt || !panel_ref_sanity(id);
       }
       if (punt)
       {
-         bool punt_mfd[NUM_MFDS], punting;
+         uchar punt_mfd[NUM_MFDS], punting;
          int mfd_id;
 
          for(mfd_id=0;mfd_id<NUM_MFDS;mfd_id++) {

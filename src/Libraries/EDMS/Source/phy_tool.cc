@@ -393,9 +393,9 @@ void	EDMS_get_Euler_angles( Q &alpha, Q &beta, Q &gamma, int object )
 
 //      Call this to see if an object is asleep...
 //      ==========================================
-bool    EDMS_frere_jaques( physics_handle ph )
+uchar    EDMS_frere_jaques( physics_handle ph )
 {
-   bool    rval = FALSE;
+   uchar    rval = FALSE;
 
 // condomate...
 // ------------

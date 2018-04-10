@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MAP_H
 #define __MAP_H
 
+#include "lg.h"
+
 /*
  * 
  *
@@ -187,7 +189,7 @@ typedef struct {
    int x_size, y_size;
    int x_shft, y_shft, z_shft;
    oMapElem *map;
-   bool cyber;
+   uchar cyber;
    int x_scale, y_scale, z_scale;
    Schedule sched[NUM_MAP_SCHEDULES];
 } oFullMap;
@@ -218,7 +220,7 @@ typedef struct {
    int x_size, y_size;
    int x_shft, y_shft, z_shft;
    MapElem *map;
-   bool cyber;
+   uchar cyber;
    int x_scale, y_scale, z_scale;
    Schedule sched[NUM_MAP_SCHEDULES];
 } FullMap;
@@ -343,8 +345,8 @@ extern MapElem *global_map;
 extern FullMap *global_fullmap;
 #endif
 
-FullMap *map_create(int xshf, int yshf,int zshf,bool cyb);
-bool map_set_default(FullMap *fmap);
+FullMap *map_create(int xshf, int yshf,int zshf,uchar cyb);
+uchar map_set_default(FullMap *fmap);
 void map_init(void);
 void map_free(void);
 

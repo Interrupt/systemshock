@@ -110,14 +110,14 @@ errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags
 #define SAVE_AUTOMAP_STRINGS
 
 char saveload_string[30];
-bool display_saveload_checkpoints = FALSE;
-bool saveload_static = FALSE;
+uchar display_saveload_checkpoints = FALSE;
+uchar saveload_static = FALSE;
 uint dynmem_mask = DYNMEM_ALL;
 
 extern ObjID hack_cam_objs[NUM_HACK_CAMERAS];
 extern ObjID hack_cam_surrogates[NUM_HACK_CAMERAS];
 extern height_semaphor h_sems[NUM_HEIGHT_SEMAPHORS];
-extern bool trigger_check;
+extern uchar trigger_check;
 
 
 //-------------------------------------------------------
@@ -193,14 +193,14 @@ void restore_objects(char* buf, ObjID *obj_array, char obj_count)
 //-------------------------------------------------------
 #define SECRET_VOODOO_ENDGAME_CSPACE   10
 
-bool go_to_different_level(int targlevel)
+uchar go_to_different_level(int targlevel)
 {
    State player_state;
    char* buf;
    extern void update_level_gametime(void);
    extern errtype do_level_entry_triggers();
-   bool in_cyber = global_fullmap->cyber;
-   bool retval = FALSE;
+   uchar in_cyber = global_fullmap->cyber;
+   uchar retval = FALSE;
    errtype rv;
 
    dynmem_mask = DYNMEM_ALL;
@@ -225,7 +225,7 @@ bool go_to_different_level(int targlevel)
    {
       extern void physics_zero_all_controls();
       extern void start_asynch_digi_fx();
-      bool old_music;
+      uchar old_music;
       physics_zero_all_controls();
       fr_global_mod_flag(FR_SOLIDFR_STATIC, FR_SOLIDFR_MASK);
       render_run();
@@ -343,7 +343,7 @@ errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags
    return(OK);
 }
 
-errtype save_current_map(FSSpec* fSpec, Id id_num, bool /*flush_mem*/, bool )
+errtype save_current_map(FSSpec* fSpec, Id id_num, uchar /*flush_mem*/, uchar )
 {
    int i,goof;
    int idx = 0;
@@ -352,7 +352,7 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, bool /*flush_mem*/, bool )
    int ovnum = OBJECT_VERSION_NUMBER;
    int mvnum = MISC_SAVELOAD_VERSION_NUMBER;
    ObjLoc plr_loc;
-   bool make_player = FALSE;
+   uchar make_player = FALSE;
    State player_edms;
    int verify_cookie = 0;
 
@@ -506,7 +506,7 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, bool /*flush_mem*/, bool )
 
 /*KLC - no map conversion needed in Mac version.
 
-extern bool init_done;
+extern uchar init_done;
 extern int loadcount;
 
 #ifdef SUPPORT_9_TO_10
@@ -601,9 +601,9 @@ void convert_cit_map(oFullMap *omp, FullMap **mp)
 }
 
 #ifdef COMPRESS_OBJSPECS
-extern bool HeaderObjSpecFree (ObjClass obclass, ObjSpecID id, ObjSpecHeader *head);
+extern uchar HeaderObjSpecFree (ObjClass obclass, ObjSpecID id, ObjSpecHeader *head);
 extern ObjSpecID HeaderObjSpecGrab (ObjClass obclass, ObjSpecHeader *head);
-extern bool HeaderObjSpecCopy (ObjClass cls, ObjSpecID old, ObjSpecID new, ObjSpecHeader *head);
+extern uchar HeaderObjSpecCopy (ObjClass cls, ObjSpecID old, ObjSpecID new, ObjSpecHeader *head);
 extern const ObjSpecHeader old_objSpecHeaders[NUM_CLASSES];
 
 errtype fix_free_chain(char cl, short limit)
@@ -611,7 +611,7 @@ errtype fix_free_chain(char cl, short limit)
    ObjSpec *osp, *next_item, *next_next_item;
    short ss;
    char *data;
-   bool cont = TRUE;
+   uchar cont = TRUE;
 
    ss = old_objSpecHeaders[cl].struct_size;
    data = old_objSpecHeaders[cl].data;
@@ -640,7 +640,7 @@ errtype fix_free_chain(char cl, short limit)
    return(OK);
 }
 
-bool one_compression_pass(char cl,short start)
+uchar one_compression_pass(char cl,short start)
 {
    ObjSpec *osp;
    short ss;
@@ -648,7 +648,7 @@ bool one_compression_pass(char cl,short start)
    ObjID fugitive = OBJ_NULL;
    ObjSpec *p1;
    ObjSpecID new_objspec, old_specid;
-   bool cont = TRUE;
+   uchar cont = TRUE;
 
    ss = old_objSpecHeaders[cl].struct_size;
    data = old_objSpecHeaders[cl].data;
@@ -694,7 +694,7 @@ bool one_compression_pass(char cl,short start)
 
 errtype compress_old_class(char cl)
 {
-   bool cont = TRUE;
+   uchar cont = TRUE;
    fix_free_chain(cl, objSpecHeaders[cl].size);
    while (cont)
       cont = one_compression_pass(cl,objSpecHeaders[cl].size);
@@ -708,7 +708,7 @@ errtype expand_old_class(char cl, short new_start)
    ObjSpecID osid;
    short ss;
    char *data;
-   bool cont = TRUE;
+   uchar cont = TRUE;
 
    ss = objSpecHeaders[cl].struct_size;
    data = objSpecHeaders[cl].data;
@@ -774,27 +774,27 @@ void SwapShortBytes(void *pval2)
 //errtype load_current_map(char* fn, Id id_num, Datapath* dpath)
 errtype load_current_map(Id id_num, FSSpec* spec)
 {
-	void rendedit_process_tilemap(FullMap* fmap, LGRect* r, bool newMap);
+	void rendedit_process_tilemap(FullMap* fmap, LGRect* r, uchar newMap);
 	extern errtype set_door_data(ObjID id);
 	extern int physics_handle_max;
 	extern ObjID physics_handle_id[MAX_OBJ];
 	void cit_sleeper_callback(physics_handle caller);
 	extern void edms_delete_go();
-	extern void reload_motion_cursors(bool cyber);
+	extern void reload_motion_cursors(uchar cyber);
 	extern char old_bits;
 	extern int compare_events(void* e1, void* e2);
    
 	int 			i, idx = 0, fd, version;
 	LGRect 		bounds;
 	errtype 		retval = OK;
-	bool 			make_player = FALSE;
+	uchar 			make_player = FALSE;
 	ObjLoc 		plr_loc;
 	ObjID 		oid;
 	char			*schedvec;			//KLC - don't need an array.  Only one in map.
 //	State 			player_edms;
 	curAMap 	saveAMaps[NUM_O_AMAP];
 	uchar 		savedMaps;
-	bool 			do_anims = FALSE;
+	uchar 			do_anims = FALSE;
    
 //   _MARK_("load_current_map:Start");
 

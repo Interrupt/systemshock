@@ -142,7 +142,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	Overall lzw buffer info
 
 void *lzwBuffer;						// total buffer
-bool lzwBufferMalloced;				// buffer malloced?
+uchar lzwBufferMalloced;				// buffer malloced?
 
 //	Global tables used for compression & expansion
 

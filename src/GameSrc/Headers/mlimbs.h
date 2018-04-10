@@ -74,7 +74,7 @@ struct mlimbs_request_info
 	uint rel_vol;						// Specifies at what relative volume to play it at. (percent)
 	uint ramp_time;					// Specifies the time to ramp in to the specified rel_vol, or ramp out to 0.
 	int pan;								// Note that this pan value affects all channels.
-	bool channel_prioritize;
+	uchar channel_prioritize;
 	char	crossfade;					// 0 - don't crossfade,  <0 - crossfade out, >0 - crossfade in.
 	char ramp;							// 0 - don't ramp,       <0 - ramp out       >0 - ramp in
  	uchar pad;
@@ -96,14 +96,14 @@ struct mlimbs_playing_info
 	short  sequence_channel_status[7];	// Status of the sequence channel, >= 0 is mlimbs physical channel
 	char   seq_id;
 	uint   rel_vol;
-	bool   channel_prioritize;
+	uchar   channel_prioritize;
 	char	 crossfade_status;					// <= 0 - no fade, >= 10 & <= 16, next channel to fade in or fade out.
 };
 
 extern volatile struct mlimbs_request_info current_request[MLIMBS_MAX_SEQUENCES - 1];
 
 extern char             		mlimbs_status;   // could make this one bitfield of status, on/off, enable/not, so on
-extern bool             		mlimbs_on;
+extern uchar             		mlimbs_on;
 extern volatile long    	mlimbs_error;
 extern volatile uint    	default_rel_vol;
 extern volatile uint    	default_ramp_time;
@@ -124,7 +124,7 @@ int	mlimbs_start_theme(void);
 void	mlimbs_purge_theme(void);
 void	mlimbs_mute_sequence_channel(int usernum, int x,bool);
 int	mlimbs_unmute_sequence_channel(int usernum, int x);
-int	mlimbs_channel_prioritize(int priority, int pieceID, int voices_needed,bool crossfade,bool channel_prioritize);
+int	mlimbs_channel_prioritize(int priority, int pieceID, int voices_needed,uchar crossfade,uchar channel_prioritize);
 int	mlimbs_assign_channels(int,bool);
 int	mlimbs_play_piece(int, int, int, int, bool,bool);
 int	mlimbs_punt_piece(int);

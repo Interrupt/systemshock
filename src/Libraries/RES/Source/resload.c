@@ -209,7 +209,7 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 //
 //	Returns: TRUE if retrieved, FALSE if problem
 
-bool ResRetrieve(Id id, void *buffer)
+uchar ResRetrieve(Id id, void *buffer)
 {
 	ResDesc *prd;
 //	int fd;

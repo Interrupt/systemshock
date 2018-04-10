@@ -47,6 +47,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "textmaps.h"  // pain, sadness
 #include "star.h"
 
+#include "lg.h"
+#include "error.h"
+
 #define FLIP_BITS
 
 // for the game system to grab and deparse for distance and all
@@ -137,7 +140,7 @@ static void (*_fr_parse_obj)(void);
 #else
 #define IsTpropNotStars() (_game_fr_tmap>=4)
 #endif
-extern bool draw_tmap_p(int ptcnt);
+extern uchar draw_tmap_p(int ptcnt);
 #define quik_draw_tmap_p(ptcnt) ((IsTpropNotStars())||(draw_tmap_p(ptcnt)))
 //#define quik_draw_tmap_p(ptcnt) (TRUE)
 
@@ -1783,14 +1786,14 @@ void fr_tfunc_grab_fast(int mask)
 //==============================================================================
 //  Edge-finding routines.
 //==============================================================================
-bool edge_get_fandc(MapElem *mp, int c_edge, char *e_list);
+uchar edge_get_fandc(MapElem *mp, int c_edge, char *e_list);
 
 #define EDGE_GET
 
 #include "fredge.h"
 #ifdef EDGE_GET
 
-bool edge_get_fandc(MapElem *mp, int c_edge, char *e_list)
+uchar edge_get_fandc(MapElem *mp, int c_edge, char *e_list)
 {
    uchar *mmptr, fo, p=me_param(mp), in_fo;
    in_fo=face_obstruct[me_tiletype(mp)][c_edge];

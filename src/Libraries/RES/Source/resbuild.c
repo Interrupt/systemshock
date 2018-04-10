@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	Internal prototypes
 
-bool ResEraseIfInFile(Id id);				// erase item from file
+uchar ResEraseIfInFile(Id id);				// erase item from file
 */
 
 //	-------------------------------------------------------
@@ -53,7 +53,7 @@ bool ResEraseIfInFile(Id id);				// erase item from file
 //	For Mac version:  Does nothing.  May go back later and add comment via the
 // desktop database, maybe.
 
-void ResSetComment(int /*filenum*/, char* /*comment*/)
+void ResSetComment(int filenum, char* comment)
 {
 /*
 	ResFileHeader *phead;
@@ -433,7 +433,7 @@ static void ResCopyBytes(int fd, long writePos, long readPos, long size)
 //
 //	Returns: TRUE if found & erased, FALSE otherwise
 
-bool ResEraseIfInFile(Id id)
+uchar ResEraseIfInFile(Id id)
 {
 	ResDesc *prd;
 	ResFile *prf;

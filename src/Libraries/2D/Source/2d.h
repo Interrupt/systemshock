@@ -1453,7 +1453,7 @@ enum {
    GRT_SPAN_TABLE,
    GRD_DEVICE_FUNCS
 };
-extern bool grd_interrupt;
+extern uchar grd_interrupt;
 extern void gr_set_pal (int start, int n, uchar *pal_data);
 extern void gr_set_gamma_pal (int start, int n, fix gamma);
 extern void gr_get_pal (int start, int n, uchar *pal_data);
@@ -1758,8 +1758,8 @@ uchar *gr_rsd8_unpack(uchar* src, uchar *dst);
 #define GR_UNPACK_RSD8_OK 0
 #define GR_UNPACK_RSD8_NOBUF 1
 #define GR_UNPACK_RSD8_NOTRSD 2
-bool gr_free_blend(void);
-bool gr_init_blend(int log_blend_levels);
+uchar gr_free_blend(void);
+uchar gr_init_blend(int log_blend_levels);
 typedef struct iaaiiaia{
    void (*f)();
    struct iaaiiaia *next;
@@ -1790,7 +1790,7 @@ extern void gr_unforce_generic();
 #define gr_end_frame ((void (*)())grd_canvas_table[END_FRAME])
 #define MAX_PPROF_OBJ_CNT (1<<12)
 extern unsigned short *pixprof_screen;
-extern bool pixprof_setup();
+extern uchar pixprof_setup();
 extern void pixprof_report();
 #define install_pixprof_report() (gr_chain_add_before(END_FRAME, &pixprof_report))
 #define pixprof_on() (gr_chaining_on(), gr_force_generic())

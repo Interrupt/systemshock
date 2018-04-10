@@ -22,6 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gameloop.h"
 #include "frtypesx.h"
 
+#include "lg.h"
+#include "error.h"
+
 #define QUIT_LOOP    -1
 #define GAME_LOOP     0
 #define FULLSCREEN_LOOP 1
@@ -74,15 +77,15 @@ uint  _change_flag   = 0;          /* change flags for loop */
 uint  _static_change = 0;          /* current static changes */
 short _new_mode      = 0;          /* mode to change to, if any */
 short _last_mode     = 0;          /* last mode, if you want to change back to it */
-bool time_passes = TRUE;
-bool saves_allowed = FALSE;
-bool physics_running = TRUE;
-bool ai_on = TRUE;
-bool anim_on = TRUE;
-bool player_invulnerable = FALSE;
-bool player_immortal = FALSE;
-bool always_render = FALSE;
-bool pal_fx_on = TRUE;
+uchar time_passes = TRUE;
+uchar saves_allowed = FALSE;
+uchar physics_running = TRUE;
+uchar ai_on = TRUE;
+uchar anim_on = TRUE;
+uchar player_invulnerable = FALSE;
+uchar player_immortal = FALSE;
+uchar always_render = FALSE;
+uchar pal_fx_on = TRUE;
 
 #else     // NOT _MAINLOOP_SRC
 
@@ -96,15 +99,15 @@ extern uint  _change_flag;         /* change flags for loop */
 extern uint  _static_change;       /* current static changes */
 extern short _new_mode;            /* mode to change to, if any */
 extern short _last_mode;           /* last mode we were in, to switch back to */
-extern bool player_invulnerable;
-extern bool player_immortal;
-extern bool physics_running;
-extern bool ai_on;
-extern bool anim_on;
-extern bool always_render;
-extern bool saves_allowed;
-extern bool time_passes;
-extern bool pal_fx_on;
+extern uchar player_invulnerable;
+extern uchar player_immortal;
+extern uchar physics_running;
+extern uchar ai_on;
+extern uchar anim_on;
+extern uchar always_render;
+extern uchar saves_allowed;
+extern uchar time_passes;
+extern uchar pal_fx_on;
 extern LGRegion *_current_view;
 #endif
 

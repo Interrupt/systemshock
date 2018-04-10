@@ -46,14 +46,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	Checking id's and ref's (resacc.c and refacc.c)
 
-bool ResCheckId(Id id);				// returns TRUE if id ok, else FALSE + warns
-bool RefCheckRef(Ref ref);			// returns TRUE if ref ok, else FALSE & warns
+uchar ResCheckId(Id id);				// returns TRUE if id ok, else FALSE + warns
+uchar RefCheckRef(Ref ref);			// returns TRUE if ref ok, else FALSE & warns
 */
 
 //	Resource loading (resload.c)
 
 void *ResLoadResource(Id id);
-bool ResRetrieve(Id id, void *buffer);
+uchar ResRetrieve(Id id, void *buffer);
 
 /*
 //	Resource paging (resmem.c)

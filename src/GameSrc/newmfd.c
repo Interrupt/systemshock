@@ -85,7 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 MFD        mfd[2];                           // Our actual MFD's
-bool       Flash = TRUE;                     // State of blinking buttons
+uchar       Flash = TRUE;                     // State of blinking buttons
 LGCursor    mfd_bttn_cursors[NUM_MFDS];
 grs_bitmap  mfd_bttn_bitmaps[NUM_MFDS];
 
@@ -99,19 +99,19 @@ grs_canvas _offscreen_mfd, _fullscreen_mfd;
 // Prototypes
 // -----------
 void mfd_language_change(void);
-void mfd_set_slot(ubyte mfd_id, ubyte newSlot, bool OnOff);
+void mfd_set_slot(ubyte mfd_id, ubyte newSlot, uchar OnOff);
 void mfd_draw_all_buttons(ubyte mfd_id);
 errtype mfd_update_screen_mode();
 errtype mfd_clear_all();
-void mfd_change_fullscreen(bool on);
+void mfd_change_fullscreen(uchar on);
 
 void mfd_clear_func(ubyte func_id);
 int mfd_choose_func(int my_func, int my_slot);
 void mfd_zoom_rect(LGRect* start, int mfdnum);
 void fullscreen_refresh_mfd(ubyte mfd_id);
 
-bool mfd_object_cursor_handler(uiEvent* ev, LGRegion*, int which_mfd);
-bool mfd_scan_opacity(int mfd_id, LGPoint epos);
+uchar mfd_object_cursor_handler(uiEvent* ev, LGRegion*, int which_mfd);
+uchar mfd_scan_opacity(int mfd_id, LGPoint epos);
 
 void mfd_draw_button_panel(ubyte mfd_id);
 void mfd_draw_button(ubyte mfd_id, ubyte b);
@@ -222,9 +222,9 @@ void screen_init_mfd_draw()
 // Declare the appropriate regions for the MFD's and their button panels.
 // (called from screen_start() in screen.c)
 
-void screen_init_mfd(bool fullscrn)
+void screen_init_mfd(uchar fullscrn)
 {
-   static bool done_init = FALSE;
+   static uchar done_init = FALSE;
    FrameDesc *f;
    int id;                     
    int lval, rval;
@@ -357,11 +357,11 @@ errtype mfd_clear_all()
 
 
 // ---------------------------------------------
-// mfd_change_fullscreen(bool on);
+// mfd_change_fullscreen(uchar on);
 //
 // set up and clean up for fullscreen mode. 
 
-void mfd_change_fullscreen(bool on)
+void mfd_change_fullscreen(uchar on)
 {
    if (on)
    {
@@ -455,7 +455,7 @@ void mfd_clear_func(ubyte func_id)
 // status as demanded.
 
 //#define MFD_STEREO_HACK_MODE  ((i6d_device == I6D_CTM) ? 6 : 7)
-void mfd_notify_func(ubyte fnum, ubyte snum, bool Grab, MFD_Status stat, bool Full)
+void mfd_notify_func(ubyte fnum, ubyte snum, uchar Grab, MFD_Status stat, uchar Full)
 {
    ubyte i, j;
    int oldf = player_struct.mfd_all_slots[snum];
@@ -556,7 +556,7 @@ ubyte mfd_get_func(ubyte mfd_id, ubyte s)
 // previously there, or any change-related state.  Permits usage from both
 // initializer and slot-changer.
 
-void mfd_set_slot(ubyte mfd_id, ubyte newSlot, bool OnOff)
+void mfd_set_slot(ubyte mfd_id, ubyte newSlot, uchar OnOff)
 {
 	MFD_Func *f;
 	ubyte old_index;
@@ -759,7 +759,7 @@ int mfd_grab_func(int my_func, int my_slot)
 // function which just finds out if some mfd has this current function,
 // which is what I need, and it's loads more generally useful.  Har har.
 
-bool mfd_yield_func(int func, int* mfd_id)
+uchar mfd_yield_func(int func, int* mfd_id)
 {
    int id;
 
@@ -799,12 +799,12 @@ void mfd_zoom_rect(LGRect* start, int mfdnum)
 // region with an object on the cursor.  
 
 
-extern bool inventory_add_object(ObjID,bool);
-bool object_button_down = FALSE;
+extern uchar inventory_add_object(ObjID,bool);
+uchar object_button_down = FALSE;
 
-bool mfd_object_cursor_handler(uiEvent* ev, LGRegion*, int which_mfd)
+uchar mfd_object_cursor_handler(uiEvent* ev, LGRegion*, int which_mfd)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    int trip, mid;
    int new_slot=-1;
    ObjID obj = object_on_cursor;
@@ -817,7 +817,7 @@ bool mfd_object_cursor_handler(uiEvent* ev, LGRegion*, int which_mfd)
    if ((ev->subtype & (MOUSE_LUP|MOUSE_RUP)) && object_button_down)
    {
       extern uchar gump_num_objs;
-      bool is_gump = mfd_get_active_func(which_mfd)==MFD_GUMP_FUNC && gump_num_objs!=0;
+      uchar is_gump = mfd_get_active_func(which_mfd)==MFD_GUMP_FUNC && gump_num_objs!=0;
 
       object_button_down = FALSE;
       retval = TRUE;
@@ -870,9 +870,9 @@ bool mfd_object_cursor_handler(uiEvent* ev, LGRegion*, int which_mfd)
 
 #define SEARCH_MARGIN 2
 
-bool mfd_scan_opacity(int mfd_id, LGPoint epos)
+uchar mfd_scan_opacity(int mfd_id, LGPoint epos)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    LGPoint pos = epos;
    short x,y;
    grs_canvas* cv = ((int)mfd_id == MFD_RIGHT) ?  &_fullscreen_mfd : &_offscreen_mfd;
@@ -890,9 +890,9 @@ bool mfd_scan_opacity(int mfd_id, LGPoint epos)
 
 
 
-bool mfd_view_callback_full(uiEvent *e, LGRegion *r, void *udata)
+uchar mfd_view_callback_full(uiEvent *e, LGRegion *r, void *udata)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    uchar mask;
    if ((int)udata == MFD_RIGHT)
       mask = FULL_R_MFD_MASK;
@@ -909,7 +909,7 @@ bool mfd_view_callback_full(uiEvent *e, LGRegion *r, void *udata)
    return retval;
 }
 
-bool mfd_view_callback(uiEvent *e, LGRegion *r, void *udata)
+uchar mfd_view_callback(uiEvent *e, LGRegion *r, void *udata)
 {
    int i;
    int which_mfd;
@@ -976,7 +976,7 @@ bool mfd_view_callback(uiEvent *e, LGRegion *r, void *udata)
 // The callback for the MFD button panels.  Triggered by mouseclicks inside
 // the button panels.
 int last_mfd_cnum[NUM_MFDS] = {-1,-1};
-bool mfd_button_callback(uiEvent *e, LGRegion *r, void *udata)
+uchar mfd_button_callback(uiEvent *e, LGRegion *r, void *udata)
 {
    uiMouseEvent *m;
    int cnum, which_panel, which_button;
@@ -1037,7 +1037,7 @@ bool mfd_button_callback(uiEvent *e, LGRegion *r, void *udata)
 //
 // The callback for the MFD button panels, as triggered by function keys
 
-bool mfd_button_callback_kb(short keycode, ulong context, void *data)
+uchar mfd_button_callback_kb(short keycode, ulong context, void *data)
 {
    int which_panel, which_button;
    int fkeynum;
@@ -1105,7 +1105,7 @@ void mfd_select_button(int which_panel, int which_button)
 
 void mfd_update()
 {
-   static bool LastFlash = FALSE;
+   static uchar LastFlash = FALSE;
    ubyte   steps_cache[NUM_MFDS] = { 0, 0};
 
    int    i, j;
@@ -1184,15 +1184,15 @@ void mfd_update()
 // See if we need to update anything in the current slot being
 // viewed in an MFD.  Returns TRUE if it updated a function.
 
-bool mfd_update_current_slot(ubyte mfd_id,ubyte status,ubyte num_steps)
+uchar mfd_update_current_slot(ubyte mfd_id,ubyte status,ubyte num_steps)
 {
    MFD_Func *f;
    ubyte f_id;
    ubyte control;
    MFD *m;
 
-   extern ObjID check_panel_ref(bool puntme);
-   extern bool mfd_distance_remove(ubyte func);
+   extern ObjID check_panel_ref(uchar puntme);
+   extern uchar mfd_distance_remove(ubyte func);
   
    f_id = mfd_get_active_func(mfd_id);
    f    = &(mfd_funcs[f_id]);
@@ -1285,7 +1285,7 @@ void fullscreen_refresh_mfd(ubyte mfd_id)
    ushort a,b,c,d;
    LGRect r;
    MFD* m = &mfd[mfd_id];
-   bool visible = (full_visible & visible_mask(mfd_id)) != 0;
+   uchar visible = (full_visible & visible_mask(mfd_id)) != 0;
 #ifdef SVGA_SUPPORT
    uchar old_over = gr2ss_override;
 #endif
@@ -1350,7 +1350,7 @@ void fullscreen_refresh_mfd(ubyte mfd_id)
 //
 // Draws a button in a given color code depending on its status.
 
-bool cyber_button_back_door = FALSE;
+uchar cyber_button_back_door = FALSE;
 
 void mfd_draw_button(ubyte mfd_id, ubyte b)
 {
@@ -1443,10 +1443,10 @@ void mfd_draw_all_buttons(ubyte mfd_id)
 // to the screen.  Returns a point describing the pixel dimensions of the string
 
 
-bool mfd_string_wrap = TRUE;
+uchar mfd_string_wrap = TRUE;
 ubyte mfd_string_shadow = MFD_SHADOW_FULLSCREEN;
 
-LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, bool DrawString, bool transp)
+LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, uchar DrawString, uchar transp)
 {
    LGPoint siz;
    short w,h;
@@ -1491,7 +1491,7 @@ out:
    return siz;
 }
 
-LGPoint mfd_draw_font_string(char *s, short x, short y, long c, int font, bool DrawString)
+LGPoint mfd_draw_font_string(char *s, short x, short y, long c, int font, uchar DrawString)
 {
    // Hey, this used to always specify non-transparent strings,but that just plain
    // seemed wrong, so I switched it.... -- Xemu
@@ -1499,7 +1499,7 @@ LGPoint mfd_draw_font_string(char *s, short x, short y, long c, int font, bool D
 }
 
 
-LGPoint mfd_draw_string(char *s, short x, short y, long c, bool DrawString)
+LGPoint mfd_draw_string(char *s, short x, short y, long c, uchar DrawString)
 {
    return mfd_draw_font_string(s,x,y,c,RES_tinyTechFont,DrawString);
 }
@@ -1664,11 +1664,11 @@ void mfd_update_display(MFD *m, short x0, short y0, short x1, short y1)
 // for saving and restoring mfd settings around "panel" mfd's, we
 // use our secret 6th slot.
 
-typedef bool (*mfd_def_qual)(void);
+typedef uchar (*mfd_def_qual)(void);
 
-extern bool mfd_target_qual(void);
-extern bool mfd_automap_qual(void);
-extern bool mfd_weapon_qual(void);
+extern uchar mfd_target_qual(void);
+extern uchar mfd_automap_qual(void);
+extern uchar mfd_weapon_qual(void);
 
 typedef struct {
    uchar          func;
@@ -1740,7 +1740,7 @@ void save_mfd_slot(int mfd_id)
 void set_mfd_from_defaults(int mfd_id, uchar func, uchar slot)
 {
 	uchar def, mid;
-	bool check;
+	uchar check;
 	
 	def=0;
 	do

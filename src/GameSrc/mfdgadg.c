@@ -46,8 +46,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdgadg.h"
 
 extern void mouse_unconstrain(void);
-bool mfd_buttonarray_handlerproc(MFD* mfd, uiEvent* ev, MFDhandler* h);
-bool mfd_slider_handler(MFD* mfd, uiMouseEvent* ev, MFDhandler* h);
+uchar mfd_buttonarray_handlerproc(MFD* mfd, uiEvent* ev, MFDhandler* h);
+uchar mfd_slider_handler(MFD* mfd, uiMouseEvent* ev, MFDhandler* h);
 
 // =======================
 // BUTTON ARRAYS
@@ -68,7 +68,7 @@ typedef struct _mfd_bttnarray
 }  MFDBttnArray;
 
 
-bool mfd_buttonarray_handlerproc(MFD* mfd, uiEvent* ev, MFDhandler* h)
+uchar mfd_buttonarray_handlerproc(MFD* mfd, uiEvent* ev, MFDhandler* h)
 {
    MFDBttnArray* ba = (MFDBttnArray*)(h->data);
    LGPoint bttn;
@@ -148,15 +148,15 @@ typedef struct _mfd_slider
 {
    MFDSliderCallback cb;
    void* data;
-   bool bttndown; 
+   uchar bttndown; 
 }  MFDSlider;
 
 
-bool mfd_slider_handler(MFD* mfd, uiMouseEvent* ev, MFDhandler* h)
+uchar mfd_slider_handler(MFD* mfd, uiMouseEvent* ev, MFDhandler* h)
 {
    short x = mfd->rect.ul.x + h->r.ul.x;
    short y = mfd->rect.ul.y + h->r.ul.y;
-   bool retval = TRUE;
+   uchar retval = TRUE;
    MFDSlider* sl = (MFDSlider*)(h->data);
    LGPoint pos = ev->pos;
    pos.x -= x;

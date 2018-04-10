@@ -58,10 +58,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <wsample.h>
 */
 // how is the game doing, anyway, set to true at end of time
-bool cit_success=FALSE;
+uchar cit_success=FALSE;
 
 // are we "paused"
-bool game_paused = FALSE;
+uchar game_paused = FALSE;
 
 void ShockMain(void);
 
@@ -83,7 +83,7 @@ void (*exit_modes[])(void)={screen_exit, fullscreen_exit, NULL, NULL,NULL,NULL,N
 void loopmode_switch(short *cmode)
 {
 #ifdef SVGA_SUPPORT
-	extern bool wrapper_screenmode_hack;
+	extern uchar wrapper_screenmode_hack;
 #endif
 
 	// Actually switch mode

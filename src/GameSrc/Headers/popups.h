@@ -37,8 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void init_popups(void);
 // initalizes popup cursors
 
-void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* string, uint tmplt, bool allocate, LGPoint offset);
-void make_email_cursor(LGCursor* c, grs_bitmap* bm, uchar page, bool init);
+void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* string, uint tmplt, uchar allocate, LGPoint offset);
+void make_email_cursor(LGCursor* c, grs_bitmap* bm, uchar page, uchar init);
 
 /* Modifies c and bm to be a cursor built from the specified 
  string and tmplt.  if allocate is true the bits for the cursor bitmap
@@ -52,7 +52,7 @@ void load_string_array(Ref first, char *arry[], char buf[], int sz, int n);
    Fills the array arry with pointers to each of the strings.
 */
 
-extern bool 	popup_cursors;
+extern uchar 	popup_cursors;
 
 #endif // __POPUPS_H
 

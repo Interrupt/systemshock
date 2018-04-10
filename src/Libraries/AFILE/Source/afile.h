@@ -85,8 +85,8 @@ struct Amethods_;
 typedef struct Afile_ {
 	FILE *fp;				// file access ptr
 	AfileType type;			// file type
-	bool writing;			// if TRUE, opened for write (FALSE = read)
-	bool writerWantsRsd;	// if TRUE, writer wants rsd frames
+	uchar writing;			// if TRUE, opened for write (FALSE = read)
+	uchar writerWantsRsd;	// if TRUE, writer wants rsd frames
 	struct Amethods_ *pm; 	// ptr to access method ptrs
 	AvideoInfo v;			// video info
 	AaudioInfo a;			// audio info
@@ -117,7 +117,7 @@ typedef struct Amethods_ {
 int AfileOpen(Afile *paf, char *filename /*Datapath *pdp*/);
 long AfileReadFullFrame(Afile *paf, grs_bitmap *pbm, fix *ptime);
 long AfileReadDiffFrame(Afile *paf, grs_bitmap *pbm, fix *ptime);
-bool AfileGetFramePal(Afile *paf, Apalette *ppal);
+uchar AfileGetFramePal(Afile *paf, Apalette *ppal);
 int AfileGetAudio(Afile *paf, void *paudio);
 int AfileReadReset(Afile *paf);
 void AfileClose(Afile *paf);		// write also

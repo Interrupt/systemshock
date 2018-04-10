@@ -1,0 +1,2 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc libPALLETE_LIB.a  CMakeFiles/PALLETE_LIB.dir/PALETTE/Source/palette.c.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib libPALLETE_LIB.a

@@ -90,7 +90,7 @@ extern void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0,g3s_vector *v1
 
 // takes 3 rotated points: eax,edx,ebx. 
 // returns al=true (& s flag set) if facing. trashes all but ebp
-bool g3_check_poly_facing(g3s_phandle p0,g3s_phandle p1,g3s_phandle p2)
+uchar g3_check_poly_facing(g3s_phandle p0,g3s_phandle p1,g3s_phandle p2)
  {
 	AWide	result,result2;
 
@@ -540,7 +540,7 @@ unclipped_sline:
 // check if a surface is facing the viewer
 // takes esi=point on surface, edi=surface normal (can be unnormalized)
 // trashes eax,ebx,ecx,edx. returns al=true & sign set, if facing
-bool g3_check_normal_facing(g3s_vector *v,g3s_vector *normal)
+uchar g3_check_normal_facing(g3s_vector *v,g3s_vector *normal)
  {
  	AWide		result,result2;
  

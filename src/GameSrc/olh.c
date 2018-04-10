@@ -65,8 +65,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //          ON-LINE HELP FOR SYSTEM SHOCK
 // -------------------------------------------------
 
-bool olh_active = TRUE;
-bool olh_overlay_on = FALSE;
+uchar olh_active = TRUE;
+uchar olh_overlay_on = FALSE;
 olh_data olh_object = { OBJ_NULL, { 0, 0} };
 
 
@@ -78,7 +78,7 @@ char* get_olh_string(ObjID obj,char* buf);
 LGPoint draw_olh_string(char* s, short xl, short yl);
 void olh_do_panel_ref(short xl, short yl);
 void olh_do_callout(short xl, short yl);
-bool is_compound_use_obj(ObjID obj);
+uchar is_compound_use_obj(ObjID obj);
 void olh_do_cursor(short xl, short yl);
 
 
@@ -89,10 +89,10 @@ void olh_do_cursor(short xl, short yl);
                             || objs[obj].info.type == TRIP2TY(BIGSCREEN_TRIPLE)))
 
 
-bool olh_candidate(ObjID obj)
+uchar olh_candidate(ObjID obj)
 {
-   bool check_dist = FALSE;
-   bool retval = FALSE;
+   uchar check_dist = FALSE;
+   uchar retval = FALSE;
 
    if (objs[obj].info.inst_flags & OLH_INST_FLAG)
       return FALSE;
@@ -191,7 +191,7 @@ short weap_subclass_idx[] =
          
 
 
-extern bool is_container(ObjID id, int** d1, int ** d2);
+extern uchar is_container(ObjID id, int** d1, int ** d2);
 
 
 // basically we chose a string id for a string 
@@ -358,10 +358,10 @@ void olh_do_panel_ref(short xl, short yl)
          ref = REF_STR_helpSwitch;
       else if (objs[obj].subclass == FIXTURE_SUBCLASS_PANEL)
       {
-         extern bool comparator_check(int comparator, ObjID obj, uchar *special_code);
+         extern uchar comparator_check(int comparator, ObjID obj, uchar *special_code);
          uchar special;
          ObjFixture* pfixt = &objFixtures[objs[obj].specID];
-         bool rv = comparator_check(pfixt->comparator, obj, &special);
+         uchar rv = comparator_check(pfixt->comparator, obj, &special);
          if (special == 0)
             ref = MKREF(RES_olh_strings,fixture_panel_stringrefs[objs[obj].info.type]);
       }
@@ -428,7 +428,7 @@ void olh_do_callout(short xl, short yl)
 // that used on another object by double clicking on that
 // object.
 
-bool is_compound_use_obj(ObjID obj)
+uchar is_compound_use_obj(ObjID obj)
 {
    if (objs[obj].obclass != CLASS_SMALLSTUFF)
       return FALSE;
@@ -474,7 +474,7 @@ void olh_do_cursor(short xl, short yl)
 
 void olh_do_hudobjs(short xl,short yl)
 {
-   extern bool saveload_static;
+   extern uchar saveload_static;
    if (global_fullmap->cyber || saveload_static)
       return;
    if (input_cursor_mode == INPUT_OBJECT_CURSOR)
@@ -525,7 +525,7 @@ void olh_overlay(void)
 {
    extern LGCursor globcursor;
    extern char which_lang;
-   bool done = FALSE;
+   uchar done = FALSE;
 
    status_bio_end();
    uiPushGlobalCursor(&globcursor);
@@ -566,7 +566,7 @@ void olh_overlay(void)
    status_bio_start();
 }
 
-bool toggle_olh_func(short , ulong , void* )
+uchar toggle_olh_func(short , ulong , void* )
 {
    if (!olh_active)
    {
@@ -585,7 +585,7 @@ bool toggle_olh_func(short , ulong , void* )
 }
 
 
-bool olh_overlay_func(short keycode, ulong context, void* )
+uchar olh_overlay_func(short keycode, ulong context, void* )
 {
    if (global_fullmap->cyber)
    {

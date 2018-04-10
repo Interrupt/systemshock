@@ -40,7 +40,7 @@ void goofy_callback(mouse_event* e,void* data)
 
 void main()
 {
-	bool done = FALSE;
+	uchar done = FALSE;
 	int	 callbackid = -1;
 	
 	printf ("Click the mouse...\n\n");

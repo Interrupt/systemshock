@@ -111,6 +111,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "slab.h"
 //#include <libdbg.h>
 #include "vmouse.h"
+#include <stdlib.h>
 
 #define SPEW_ANAL Spew
 
@@ -171,12 +172,12 @@ typedef struct _cursor_callback_state
    LGRegion** reg;
 } cstate;
 
-bool cursor_get_callback(LGRegion* reg, LGRect* rect, void* vp);
+uchar cursor_get_callback(LGRegion* reg, LGRect* rect, void* vp);
 
 errtype ui_init_cursor_stack(uiSlab* slab, LGCursor* default_cursor);
 errtype ui_init_cursors(void);
 errtype ui_shutdown_cursors(void);
-bool ui_set_current_cursor(LGPoint pos);
+uchar ui_set_current_cursor(LGPoint pos);
 void ui_update_cursor(LGPoint pos);
 
 
@@ -195,11 +196,11 @@ static errtype grow_save_under(short x, short y)
 }
 
 
-bool cursor_get_callback(LGRegion* reg, LGRect*, void *vp)
+uchar cursor_get_callback(LGRegion* reg, LGRect* rect, void *vp)
 {
 	 cstate *s = (cstate *)vp;
    cursor_stack* cs = (cursor_stack*)(reg->cursors);
-   bool anal = FALSE;
+   uchar anal = FALSE;
    //DBG(DSRC_UI_Anal, { anal = TRUE;});
    //if (anal) SPEW_ANAL(DSRC_UI_Cursor_Stack,("cursor_get_callback(%x,%x,%x)\n",reg,rect,s)); 
    if (cs == NULL) *(s->out) = NULL;
@@ -432,10 +433,10 @@ errtype ui_shutdown_cursors(void)
    return err;
 }
 
-bool ui_set_current_cursor(LGPoint pos)
+uchar ui_set_current_cursor(LGPoint pos)
 {
    cstate s;
-   bool result = FALSE;
+   uchar result = FALSE;
 
    ui_mouse_do_conversion(&(pos.x),&(pos.y),TRUE);
    // Spew(DSRC_UI_Cursors,("ui_set_current_cursor(<%d,%d>)\n",pos.x,pos.y));
@@ -469,7 +470,7 @@ bool ui_set_current_cursor(LGPoint pos)
 
 void ui_update_cursor(LGPoint pos)
 {
-   bool show = ui_set_current_cursor(pos);
+   uchar show = ui_set_current_cursor(pos);
 //   ui_mouse_do_conversion(&(pos.x),&(pos.y),FALSE);
    if (show && LastCursor != NULL && !PointsEqual(pos,LastCursorPos))
    {
@@ -497,7 +498,7 @@ void ui_update_cursor(LGPoint pos)
 errtype uiSetCursor(void)
 {
    LGPoint pos;
-   bool show = MouseLock == 0;
+   uchar show = MouseLock == 0;
    errtype retval = OK;
    // Spew(DSRC_UI_Cursors,("uiSetCursor(), MouseLock = %d\n",MouseLock));
    if (!ui_set_current_cursor(pos))
@@ -645,7 +646,7 @@ errtype uiGetGlobalCursor(LGCursor** c)
 errtype uiHideMouse(LGRect* r)
 {
    LGRect mr;
-   bool hide = r == NULL || LastCursor == NULL;
+   uchar hide = r == NULL || LastCursor == NULL;
    MouseLock++; // hey, don't move the mouse while we're doing this.
    if (!hide)
    {
@@ -696,7 +697,7 @@ errtype uiShowMouse(LGRect* r)
 {
    errtype ret;
    LGRect mr;
-   bool show = LastCursor == NULL || r == NULL;
+   uchar show = LastCursor == NULL || r == NULL;
    MouseLock++;
    if (!show)
    {

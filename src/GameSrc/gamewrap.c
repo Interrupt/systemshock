@@ -56,6 +56,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sideicon.h"
 #include "status.h"
 #include "tools.h"
+
+#include "lg.h"
+#include "error.h"
+
 /*
 #include <physics.h>
 #include <tilemap.h>
@@ -76,9 +80,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern long old_ticks;
 extern char saveload_string[30];
-extern bool display_saveload_checkpoints;
+extern uchar display_saveload_checkpoints;
 extern ulong obj_check_time;
-extern bool mlimbs_on;
+extern uchar mlimbs_on;
 
 //-------------------
 //  INTERNAL PROTOTYPES
@@ -139,13 +143,13 @@ errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile)
 	return(retv);
 }
 
-void closedown_game(bool visible)
+void closedown_game(uchar visible)
 {
    extern void fr_closedown(void);
    extern void olh_closedown(void);
    extern void musicai_clear();
-   extern void drug_closedown(bool visible);
-   extern void hardware_closedown(bool visible);
+   extern void drug_closedown(uchar visible);
+   extern void hardware_closedown(uchar visible);
    extern void clear_digi_fx();
    extern void reset_schedules(void);
    extern void hud_shutdown_lines(void);
@@ -161,10 +165,10 @@ void closedown_game(bool visible)
       reset_schedules();
 }
 
-void startup_game(bool visible)
+void startup_game(uchar visible)
 {
-   extern void drug_startup(bool visible);
-   extern void hardware_startup(bool visible);
+   extern void drug_startup(uchar visible);
+   extern void hardware_startup(uchar visible);
    drug_startup(visible);
    hardware_startup(visible);
    if (visible)
@@ -319,9 +323,9 @@ errtype interpret_qvars(void)
    extern void joysens_dealfunc(ushort var);
    extern void language_change(uchar lang);
    extern errtype load_da_palette();
-   extern bool fullscrn_vitals;
-   extern bool fullscrn_icons;
-   extern bool map_notes_on;
+   extern uchar fullscrn_vitals;
+   extern uchar fullscrn_icons;
+   extern uchar map_notes_on;
    extern uchar audiolog_setting;
 
 //KLC - don't do this here - it's a global now.   load_da_palette();
@@ -361,7 +365,7 @@ errtype load_game(FSSpec *loadSpec)
 {
    int 			filenum;
    ObjID 		old_plr;
-   bool 		bad_save = FALSE;
+   uchar 		bad_save = FALSE;
    char 		orig_lvl;
    FSSpec	currSpec;
    extern errtype change_detail_level(byte new_level);
@@ -484,7 +488,7 @@ void check_and_update_initial(void)
 #endif //NOT_YET Â¥Â¥Â¥
 
 
-bool create_initial_game_func(short , ulong , void* )
+uchar create_initial_game_func(short , ulong , void* )
 {
 	FSSpec	archiveSpec, currSpec;
 	OSErr	err;
@@ -586,7 +590,7 @@ bool create_initial_game_func(short , ulong , void* )
    return(FALSE);
 }
 
-errtype write_level_to_disk(int idnum, bool flush_mem)
+errtype write_level_to_disk(int idnum, uchar flush_mem)
 {
 	FSSpec	currSpec;
 

@@ -37,6 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "InitMac.h"
 #include "ShockBitmap.h"
 
+#include <Carbon/Carbon.h>
+
 QDGlobals	qd;
 
 //--------------------

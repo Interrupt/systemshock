@@ -40,9 +40,9 @@ extern void ss_set_pixel(long color, short x, short y);
 extern void ss_set_thick_pixel(long color, short x, short y);
 extern void ss_clut_ubitmap(grs_bitmap *bmp, short x, short y, uchar *cl);
 extern void ss_recompute_zoom(frc *w, short oldm);
-extern void ss_mouse_convert(short *px, short *py, bool down);
-extern void ss_mouse_convert_round(short *px, short *py, bool down);
-extern void ss_point_convert(short *px, short *py, bool down);
+extern void ss_mouse_convert(short *px, short *py, uchar down);
+extern void ss_mouse_convert_round(short *px, short *py, uchar down);
+extern void ss_point_convert(short *px, short *py, uchar down);
 
 extern void gr2ss_register_init(char convert_type, short init_x, short init_y);
 extern void gr2ss_register_mode(char conv_mode, short nx, short ny);
@@ -116,8 +116,8 @@ extern uchar gr2ss_override;
 #define gr2ss_register_init(convert_type,init_x,init_y)
 #define gr2ss_register_mode(conv_mode,nx,ny)
 
-extern void ss_mouse_convert(short *px, short *py, bool down);
-extern void ss_mouse_convert_round(short *px, short *py, bool down);
+extern void ss_mouse_convert(short *px, short *py, uchar down);
+extern void ss_mouse_convert_round(short *px, short *py, uchar down);
 
 #define SCONV_X(x)   x
 #define SCONV_Y(y)   y

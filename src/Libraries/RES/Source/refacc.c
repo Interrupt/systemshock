@@ -508,7 +508,7 @@ int RefInject(RefTable *prt, Ref ref, void *buff)
 //
 //	Returns: TRUE if ref ok, FALSE if invalid & prints warning
 
-bool RefCheckRef(Ref ref)
+uchar RefCheckRef(Ref ref)
 {
 	Id id;
 

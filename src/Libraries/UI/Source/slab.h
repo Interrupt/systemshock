@@ -61,7 +61,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Defines
 
-typedef struct _ui_slab
+/*typedef struct _ui_slab
 {
    LGRegion* creg;  // cursor region.
    struct _focus_chain
@@ -70,7 +70,7 @@ typedef struct _ui_slab
       int curfocus;
    } fchain;  // focus chain
    cursor_stack cstack;
-} uiSlab;
+} uiSlab;*/
 
 
 // Prototypes

@@ -326,7 +326,7 @@ void ResDelete(Id id)
 //
 //	Returns: TRUE if id ok, FALSE if invalid & prints warning
 
-bool ResCheckId(Id id)
+uchar ResCheckId(Id id)
 {
 	if (id < ID_MIN)
 		{

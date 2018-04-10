@@ -23,10 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //===============================================================
 
 #include <string.h>
-#include <Timer.h>
+//#include <Timer.h>
 #include "lg.h"
 #include "kb.h"
 #include "kbglob.h"
+
+#include <Carbon/Carbon.h>
 
 
 //------------------
@@ -39,7 +41,7 @@ uchar		pKbdGetKeys[16];
 //---------------------------------------------------------------
 //  Startup and keyboard handlers and initialize globals.   Shutdown follows.
 //---------------------------------------------------------------
-int kb_startup(void *)
+int kb_startup(void * v)
 {
 	pKbdStatusFlags = 0;
 	

@@ -137,13 +137,26 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
 #define play_digi_fx_obj(sfx_code, num_loops, id)     play_digi_fx_master(sfx_code,num_loops,id,0,0)
 #define play_digi_fx_loc(sfx_code, num_loops, x, y)   play_digi_fx_master(sfx_code,num_loops,OBJ_NULL,x,y)
 errtype play_sound_effect(char *filename);
-bool digi_fx_playing(int fx_id, int *handle_ptr);
+uchar digi_fx_playing(int fx_id, int *handle_ptr);
 errtype output_text(char *);
 extern void mlimbs_do_ai(void);
 
+typedef struct
+{
+   uchar       pan;
+   uchar       pri;
+   ushort         vol;
+   uchar       flags;
+   int         snd_ref;
+   int         loops;
+   Handle         sample;     // Handle to Mac 'snd ' resource.
+   void        *data;
+   int         len;
+} snd_digi_parms;
+
 extern void digifx_EOS_callback(snd_digi_parms *sdp);
 
-extern bool digi_pan_reverse;
+extern uchar digi_pan_reverse;
 
 void grind_credits_music_ai(void);
 
@@ -156,10 +169,10 @@ int current_transition, last_score;
 int boring_count;
 int mlimbs_boredom;
 int *output_table;
-bool wait_flag;
+uchar wait_flag;
 int next_mode, ai_cycle;
-bool music_card=FALSE, music_on=FALSE;
-//KLC no sfx_card, sfx_on moved to DIGIFX.C     bool sfx_card=FALSE, sfx_on=FALSE;
+uchar music_card=FALSE, music_on=FALSE;
+//KLC no sfx_card, sfx_on moved to DIGIFX.C     uchar sfx_card=FALSE, sfx_on=FALSE;
 int cur_digi_channels=4;
 #else
 extern int mlimbs_peril, mlimbs_positive, mlimbs_motion, mlimbs_monster;
@@ -169,10 +182,10 @@ extern int current_transition, last_score;
 extern int boring_count;
 extern int mlimbs_boredom;
 extern int *output_table;
-extern bool wait_flag;
+extern uchar wait_flag;
 extern int next_mode, ai_cycle;
-extern bool music_card, music_on;
-extern bool /*sfx_card, */sfx_on;
+extern uchar music_card, music_on;
+extern uchar /*sfx_card, */sfx_on;
 extern int cur_digi_channels;
 #endif
 

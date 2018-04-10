@@ -45,8 +45,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  PROTOTYPES
 // ----------
 void mfd_viewhelp_expose(MFD* mfd, ubyte control);
-bool mfd_viewhelp_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data);
-bool mfd_viewhelp_color_handler(MFD*, LGPoint bttn, uiEvent* ev, void*);
+uchar mfd_viewhelp_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data);
+uchar mfd_viewhelp_color_handler(MFD*, LGPoint bttn, uiEvent* ev, void*);
 errtype install_color_handler(MFD_Func* f);
 errtype mfd_viewhelp_init(MFD_Func* f);
 
@@ -103,14 +103,14 @@ errtype mfd_viewhelp_init(MFD_Func* f);
 
 #define BAR_SINISTER REF_IMG_BioIconNot
 
-bool map_notes_on = TRUE;
-extern bool fullscrn_vitals;
-extern bool fullscrn_icons;
+uchar map_notes_on = TRUE;
+extern uchar fullscrn_vitals;
+extern uchar fullscrn_icons;
 
 struct _field_data 
 {
    bool* var;
-   bool fullscrn;
+   uchar fullscrn;
    int qvar;
 } checkbox_fields []  =
 {
@@ -123,7 +123,7 @@ struct _field_data
 
 void mfd_viewhelp_expose(MFD* mfd, ubyte control)
 {
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    if (control == 0)  // MFD is drawing stuff
    {
       // Do unexpose stuff here.  
@@ -219,7 +219,7 @@ void mfd_viewhelp_expose(MFD* mfd, ubyte control)
 // HANDLERS 
 // --------
 
-bool mfd_viewhelp_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_viewhelp_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
 {
    int track = -1;
    int i = bttn.y;
@@ -232,7 +232,7 @@ bool mfd_viewhelp_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
    return TRUE;
 }
 
-bool mfd_viewhelp_color_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_viewhelp_color_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
 {
    if (!(ev->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE)))
       return FALSE;

@@ -116,8 +116,8 @@ extern ObjID panel_ref_unexpose(int mfd_id, int func);
 
 #define NUM_MFD_HANDLERS 4
 
-typedef bool (*MFD_handlerProc) (struct _MFD* mfd, uiEvent* ev, struct _mfd_handler *mh);
-typedef bool (*MFD_SimpHandler) (struct _MFD* mfd, uiEvent* ev);
+typedef uchar (*MFD_handlerProc) (struct _MFD* mfd, uiEvent* ev, struct _mfd_handler *mh);
+typedef uchar (*MFD_SimpHandler) (struct _MFD* mfd, uiEvent* ev);
 
 typedef struct _mfd_handler
 {
@@ -162,17 +162,17 @@ typedef struct _mfd_func {
       
 
 extern void init_mfd_funcs();
-extern bool mfd_view_callback_full(uiEvent *e, LGRegion *r, void *udata);
-extern bool mfd_view_callback(uiEvent *e, LGRegion *r, void *udata);
-extern bool mfd_button_callback(uiEvent *e, LGRegion *r, void *udata);
-extern bool mfd_button_callback_kb(short keycode, ulong context, void *data);
-extern bool mfd_update_current_slot(ubyte mfd_id,ubyte status,ubyte num_steps);
+extern uchar mfd_view_callback_full(uiEvent *e, LGRegion *r, void *udata);
+extern uchar mfd_view_callback(uiEvent *e, LGRegion *r, void *udata);
+extern uchar mfd_button_callback(uiEvent *e, LGRegion *r, void *udata);
+extern uchar mfd_button_callback_kb(short keycode, ulong context, void *data);
+extern uchar mfd_update_current_slot(ubyte mfd_id,ubyte status,ubyte num_steps);
 extern void mfd_init_funcs();
 extern void mfd_set_cliprect(LGRect *r);
 extern void set_mfd_func(int fnum, void *e, void *h, void *initf, ubyte flags);
-extern LGPoint mfd_draw_string(char *s, short x, short y, long c, bool DrawString);
-extern LGPoint mfd_draw_font_string(char *s, short x, short y, long c, int font, bool DrawString);
-extern LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, bool DrawString, bool transp);
+extern LGPoint mfd_draw_string(char *s, short x, short y, long c, uchar DrawString);
+extern LGPoint mfd_draw_font_string(char *s, short x, short y, long c, int font, uchar DrawString);
+extern LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, uchar DrawString, uchar transp);
 extern void set_slot_to_func(ubyte snum, ubyte fnum, MFD_Status stat);
 extern void mfd_draw_bitmap(grs_bitmap* bmp, short x, short y);
 extern void mfd_partial_clear(LGRect *r);
@@ -190,7 +190,7 @@ extern char* get_free_frame_buffer_bits(int);
 // GLOBALS
 // -------
 extern MFD_Func mfd_funcs[MFD_NUM_FUNCS];
-extern bool mfd_string_wrap;
+extern uchar mfd_string_wrap;
 extern ubyte mfd_string_shadow;
 
 #define MFD_SHADOW_NEVER      0
@@ -207,7 +207,7 @@ extern grs_bitmap mfd_background;
 extern grs_canvas *pmfd_canvas;
 #endif
 #ifndef __NEWMFD_SRC
-extern bool Flash;
+extern uchar Flash;
 #endif
 
 

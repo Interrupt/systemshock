@@ -36,9 +36,9 @@ static uchar* FauxStackPointer;
 static uint FauxStackSize;
 
 static uint PositionSize;
-static bool (*generate_position)(void* parent, int index, bool minimizer_moves);
+static uchar (*generate_position)(void* parent, int index, uchar minimizer_moves);
 static int (*static_evaluator)(void* position);
-static bool (*extend_horizon)(void* position);
+static uchar (*extend_horizon)(void* position);
 
 #define StackSpew(x) 
 
@@ -98,15 +98,15 @@ void minimax_get_result(int* val,char* which)
    fstack_pop(which,sizeof(char));
 }
 
-bool minimax_done(void)
+uchar minimax_done(void)
 {
    // done if only value (an int) and move (a char) remain on stack
    return(FauxStackPointer<=FauxStackBase+(sizeof(int)+sizeof(char)));
 }
 
-void minimax_setup(void* boardpos, uint pos_siz, char depth, bool minimize,
-   int (*evaluator)(void*), bool (*generate)(void*,int,bool),
-   bool (*horizon)(void*))
+void minimax_setup(void* boardpos, uint pos_siz, char depth, uchar minimize,
+   int (*evaluator)(void*), uchar (*generate)(void*,int,bool),
+   uchar (*horizon)(void*))
 {
    char next_child=0;
 
@@ -134,7 +134,7 @@ void minimax_step(void)
    int value, bestval;
    char next_child, which_child;
    uchar depth;
-   bool minimize;
+   uchar minimize;
    
    FSTACK_POPVAR(value);  // get value from previous recursive call
    fstack_flush(sizeof(which_child));  // flush which child gave best value

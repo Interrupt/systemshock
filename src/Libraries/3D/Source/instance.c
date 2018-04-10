@@ -61,13 +61,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern void angles_2_matrix(g3s_angvec *angles, g3s_matrix *view_matrix, int rotation_order);
 
 // prototypes
-bool instance_x(fixang tx);
-bool instance_y(fixang ty);
-bool instance_z(fixang tz);
+uchar instance_x(fixang tx);
+uchar instance_y(fixang ty);
+uchar instance_z(fixang tz);
 void instance_matrix(g3s_matrix *src, g3s_matrix *dest);
-bool save_context(void);
-bool g3_start_object_angles_zy(g3s_vector *p,fixang ty,fixang tz,int rotation_order);
-bool start_obj_common(g3s_vector *p,g3s_angvec *o,int rotation_order);
+uchar save_context(void);
+uchar g3_start_object_angles_zy(g3s_vector *p,fixang ty,fixang tz,int rotation_order);
+uchar start_obj_common(g3s_vector *p,g3s_angvec *o,int rotation_order);
 
 
 
@@ -82,7 +82,7 @@ char *cstack_ptr = context_stack;
 long	cstack_depth;
 
 //takes esi=position. No orientation, just offset
-bool g3_start_object(g3s_vector *p)    //position only (no orientation)
+uchar g3_start_object(g3s_vector *p)    //position only (no orientation)
  {
  	if (save_context()) return 0;
  	
@@ -95,7 +95,7 @@ bool g3_start_object(g3s_vector *p)    //position only (no orientation)
  }
  
 //takes esi=position, ecx=rotation order, angles=eax,ebx,edx
-bool g3_start_object_angles_xyz(g3s_vector *p,fixang tx,fixang ty,fixang tz,int rotation_order)
+uchar g3_start_object_angles_xyz(g3s_vector *p,fixang tx,fixang ty,fixang tz,int rotation_order)
  {
 	g3s_angvec temp_angles;
 
@@ -110,14 +110,14 @@ bool g3_start_object_angles_xyz(g3s_vector *p,fixang tx,fixang ty,fixang tz,int 
 
 
 //takes esi=position, edi=orientation vector, ecx=rotation order
-bool g3_start_object_angles_v(g3s_vector *p,g3s_angvec *o,int rotation_order)
+uchar g3_start_object_angles_v(g3s_vector *p,g3s_angvec *o,int rotation_order)
  {
  	if (save_context()) return 0;
 	return (start_obj_common(p,o,rotation_order));
  }
  
 //takes esi=position, edi=orientation vector, ecx=rotation order
-bool start_obj_common(g3s_vector *p,g3s_angvec *o,int rotation_order)
+uchar start_obj_common(g3s_vector *p,g3s_angvec *o,int rotation_order)
  {
 	g3s_matrix temp_matrix;
 
@@ -165,7 +165,7 @@ bool start_obj_common(g3s_vector *p,g3s_angvec *o,int rotation_order)
 
 //rotate around the specified axis. angle = ebx
 //takes esi=position, 
-bool g3_start_object_angles_y(g3s_vector *p,fixang ty)
+uchar g3_start_object_angles_y(g3s_vector *p,fixang ty)
  {
  	if (save_context()) return 0;
 
@@ -178,7 +178,7 @@ bool g3_start_object_angles_y(g3s_vector *p,fixang ty)
  }
  
 //get sin & cos - angles still in ebx
-bool instance_y(fixang ty)
+uchar instance_y(fixang ty)
  {
  	fix		temp;
 	fix		sin_y;
@@ -220,7 +220,7 @@ bool instance_y(fixang ty)
 
 //rotate around the specified axis. angle = ebx
 //takes esi=position, 
-bool g3_start_object_angles_x(g3s_vector *p,fixang tx)
+uchar g3_start_object_angles_x(g3s_vector *p,fixang tx)
  {
  	if (save_context()) return 0;
 
@@ -233,7 +233,7 @@ bool g3_start_object_angles_x(g3s_vector *p,fixang tx)
  }
  
 //get sin & cos - angles still in ebx
-bool instance_x(fixang tx)
+uchar instance_x(fixang tx)
  {
 	fix		temp;
 	fix		temp1;
@@ -277,7 +277,7 @@ bool instance_x(fixang tx)
 
 //rotate around the specified axis. angle = ebx
 //takes esi=position, 
-bool g3_start_object_angles_z(g3s_vector *p,fixang tz)
+uchar g3_start_object_angles_z(g3s_vector *p,fixang tz)
  {
  	if (save_context()) return 0;
 
@@ -290,7 +290,7 @@ bool g3_start_object_angles_z(g3s_vector *p,fixang tz)
  }
 
 //get sin & cos - angles still in ebx
-bool instance_z(fixang tz)
+uchar instance_z(fixang tz)
  {
 	fix		temp;
 	fix		temp1;
@@ -331,7 +331,7 @@ bool instance_z(fixang tz)
  }
 
 //rotate around the specified axes. angles = ebx edx. esi=position
-bool g3_start_object_angles_xy(g3s_vector *p,fixang tx,fixang ty,int rotation_order)
+uchar g3_start_object_angles_xy(g3s_vector *p,fixang tx,fixang ty,int rotation_order)
  {
  	if (save_context()) return 0;
 
@@ -354,7 +354,7 @@ bool g3_start_object_angles_xy(g3s_vector *p,fixang tx,fixang ty,int rotation_or
 
 
 //rotate around the specified axes. angles = ebx edx. esi=position
-bool g3_start_object_angles_xz(g3s_vector *p,fixang tx,fixang tz,int rotation_order)
+uchar g3_start_object_angles_xz(g3s_vector *p,fixang tx,fixang tz,int rotation_order)
  {
  	if (save_context()) return 0;
 
@@ -377,7 +377,7 @@ bool g3_start_object_angles_xz(g3s_vector *p,fixang tx,fixang tz,int rotation_or
 
 
 //rotate around the specified axes. angles = ebx edx. esi=position
-bool g3_start_object_angles_yz(g3s_vector *p,fixang ty,fixang tz,int rotation_order)
+uchar g3_start_object_angles_yz(g3s_vector *p,fixang ty,fixang tz,int rotation_order)
  {
  	if (save_context()) return 0;
 
@@ -400,7 +400,7 @@ bool g3_start_object_angles_yz(g3s_vector *p,fixang ty,fixang tz,int rotation_or
 
 
 //rotate around the specified axes. angles = ebx edx. esi=position
-bool g3_start_object_angles_zy(g3s_vector *p,fixang ty,fixang tz,int rotation_order)
+uchar g3_start_object_angles_zy(g3s_vector *p,fixang ty,fixang tz,int rotation_order)
  {
  	if (save_context()) return 0;
 
@@ -415,7 +415,7 @@ bool g3_start_object_angles_zy(g3s_vector *p,fixang ty,fixang tz,int rotation_or
 
 
 //takes esi=position, edi=object matrix
-bool g3_start_object_matrix(g3s_vector *p,g3s_matrix *m)
+uchar g3_start_object_matrix(g3s_vector *p,g3s_matrix *m)
  {
 	g3s_matrix temp_matrix;
 
@@ -439,7 +439,7 @@ bool g3_start_object_matrix(g3s_vector *p,g3s_matrix *m)
 
 //save the current view matrix + view position.
 //returns carry set if cannot save. saves all regs
-bool save_context(void)
+uchar save_context(void)
  {
  	if (cstack_depth==MAX_INSTANCE_DEPTH)	
  		return 1;

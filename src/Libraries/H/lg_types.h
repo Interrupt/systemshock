@@ -46,8 +46,9 @@ typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
-typedef unsigned char bool;
 typedef unsigned char ubyte;
+
+//typedef unsigned char bool;
 
 #ifndef NULL
 #define NULL 0

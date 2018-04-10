@@ -141,7 +141,7 @@ grs_canvas *gr_alloc_canvas (int type, short w, short h)
    if ((c=(grs_canvas *)malloc (sizeof (*c))) == NULL)	// was Malloc
       return NULL;
    if (type == BMT_DEVICE)
-      p = valloc (w,h);
+      p = our_valloc (w,h);
    else
       p = (uchar *)malloc (w*h);// was Malloc
    gr_init_canvas (c, p, type, w, h);

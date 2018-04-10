@@ -85,7 +85,7 @@ extern void kb_set_flags(int flags);
 extern void kb_generate(kbs_event e);
 //extern void kb_flush_bios(void);				// For Mac version
 #define kb_flush_bios	kb_flush
-extern bool kb_get_cooked(ushort* key);
+extern uchar kb_get_cooked(ushort* key);
 #define KBA_STATE (1)
 #define KBA_REPEAT (2)
 #define KBA_SIGNAL (4)

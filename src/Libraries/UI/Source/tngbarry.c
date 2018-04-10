@@ -30,12 +30,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // PROTOTYPES
 //-------------------------
 errtype tng_buttonarray_move(TNG *ptng, short code);
-bool tng_buttonarray_hscroll_changed(void *ui_data, void *user_data);
-bool tng_buttonarray_vscroll_changed(void *ui_data, void *user_data);
+uchar tng_buttonarray_hscroll_changed(void *ui_data, void *user_data);
+uchar tng_buttonarray_vscroll_changed(void *ui_data, void *user_data);
 
 
 // Callbacks....
-bool tng_buttonarray_hscroll_changed(void *ui_data, void *user_data)
+uchar tng_buttonarray_hscroll_changed(void *ui_data, void *user_data)
 {
    TNG *ptng, *scroll_tng;
    void *dummy;
@@ -49,7 +49,7 @@ bool tng_buttonarray_hscroll_changed(void *ui_data, void *user_data)
    return(FALSE);
 }
 
-bool tng_buttonarray_vscroll_changed(void *ui_data, void *user_data)
+uchar tng_buttonarray_vscroll_changed(void *ui_data, void *user_data)
 {
    TNG *ptng, *scroll_tng;
    void *dummy;
@@ -127,7 +127,7 @@ errtype tng_buttonarray_init(void *ui_data, TNG *ptng, TNGStyle *sty, ushort opt
    pbatng->lsel = pbatng->offset;
    pbatng->num_selectable = num_sel;
    pbatng->matrix = (TNGButtonArrayElement *)malloc(sizeof(TNGButtonArrayElement) * (msize.x * msize.y));
-   pbatng->selected = (bool *)malloc(sizeof(bool) * (msize.x * msize.y));
+   pbatng->selected = (uchar *)malloc(sizeof(bool) * (msize.x * msize.y));
    for (i=0; i<msize.x; i++)
    {
       for (j=0; j<msize.y; j++)
@@ -335,10 +335,10 @@ int tng_buttonarray_getvalue(TNG *ptng)
 }
 
 // React appropriately for receiving the specified cooked key
-bool tng_buttonarray_keycooked(TNG *ptng, ushort key)
+uchar tng_buttonarray_keycooked(TNG *ptng, ushort key)
 {
    ushort code = key ^ KB_FLAG_DOWN;
-   bool retval = FALSE;
+   uchar retval = FALSE;
 
    code = key & 0xff;
 //   Spew(DSRC_UI_Buttonarray, ("code = %x\n",code));
@@ -376,13 +376,13 @@ bool tng_buttonarray_keycooked(TNG *ptng, ushort key)
 }
 
 // React appropriately for receiving the specified mouse button event
-bool tng_buttonarray_mousebutt(TNG *ptng, uchar type, LGPoint loc)
+uchar tng_buttonarray_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
    LGPoint curr;
    TNG_buttonarray *pbatng;
    int i,j;
    int a,b;
-   bool retval = FALSE;
+   uchar retval = FALSE;
 
    if (type & TNG_MOUSE_LDOWN)
    {
@@ -426,9 +426,9 @@ bool tng_buttonarray_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 }
 
 // Handle incoming signals
-bool tng_buttonarray_signal(TNG *ptng, ushort signal)
+uchar tng_buttonarray_signal(TNG *ptng, ushort signal)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    //Spew(DSRC_UI_Buttonarray, ("Buttonarray Received signal: %x\n",signal));
    if (signal & TNG_SIGNAL_SELECT)
       tng_buttonarray_select(ptng);

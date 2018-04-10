@@ -65,7 +65,7 @@ char *res_files[] = { "vidmail.res", "texture.res", "objart.res", "objart2.res",
 					  "mfdger.res", "cybstrng.res", "frnstrng.res", "gerstrng.res",
 					  "death.res", "start1.res", "win1.res" };
 short fn;
-bool  foundsome;
+uchar  foundsome;
 char  fname[128];
 
 //	------------------------------------------
@@ -84,7 +84,7 @@ void main(void)
 	RefIndex numEntries;
 	long *offset;
 	ulong dataOffset,sizeRef;
-	bool doRefs,doFull;
+	uchar doRefs,doFull;
 	char buff[160];
 	char tname[16];
 	char blankPad[9] = {"        "};

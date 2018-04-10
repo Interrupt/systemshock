@@ -45,7 +45,7 @@ typedef struct mlimbs_request_info
 	uint rel_vol;						// Specifies at what relative volume to play it at. (percent)
 	uint ramp_time;					// Specifies the time to ramp in to the specified rel_vol, or ramp out to 0.
 	int pan;								// Note that this pan value affects all channels.
-	bool channel_prioritize;
+	uchar channel_prioritize;
 	char	crossfade;					// 0 - don't crossfade,  <0 - crossfade out, >0 - crossfade in.
 	char ramp;							// 0 - don't ramp,       <0 - ramp out       >0 - ramp in
  	uchar pad;

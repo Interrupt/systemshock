@@ -36,6 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybstrng.h"
 #include "gr2ss.h"
 
+#include "lg.h"
+#include "error.h"
+
 
 // ============================================================
 //                   THE GEAR MFD
@@ -44,11 +47,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // -------
 // DEFINES
 // -------
-extern bool full_game_3d;
+extern uchar full_game_3d;
 
-bool gear_active(ObjID obj);
+uchar gear_active(ObjID obj);
 void mfd_gear_expose(MFD* mfd, ubyte control);
-bool mfd_gear_handler(MFD *m, uiEvent *e);
+uchar mfd_gear_handler(MFD *m, uiEvent *e);
 
 // ---------------
 // EXPOSE FUNCTION
@@ -65,7 +68,7 @@ bool mfd_gear_handler(MFD *m, uiEvent *e);
    being pulled off the screen to make room for a different func.
 */
 
-bool gear_active(ObjID obj)
+uchar gear_active(ObjID obj)
 {
    switch (ID2TRIP(obj))
    {
@@ -90,12 +93,12 @@ ushort button_bitmaps[] =
      (ushort)REFINDEX(REF_IMG_Use),
    };
 
-extern void mfd_item_micro_expose(bool full, int triple);
+extern void mfd_item_micro_expose(uchar full, int triple);
 
 void mfd_gear_expose(MFD* mfd, ubyte control)
 {
    int active = player_struct.actives[ACTIVE_GENERAL];
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    extern void draw_mfd_item_spew(Ref id, int n);
    if (control == 0)  // MFD is drawing stuff
    {
@@ -159,9 +162,9 @@ cleanup_et_return:
 // HANDLER
 // -------
 
-bool mfd_gear_handler(MFD *m, uiEvent *e)
+uchar mfd_gear_handler(MFD *m, uiEvent *e)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    int active = player_struct.actives[ACTIVE_GENERAL];
    LGRect r = { {0, GEAR_BUTTON_Y},{MFD_VIEW_WID, GEAR_BUTTON_Y+GEAR_BUTTON_H}};
    

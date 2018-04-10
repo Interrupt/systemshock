@@ -103,7 +103,7 @@ void ResAddPath(char *path)
 //  For Mac version:  Use the ResourceMgr routines to open and create Res files.
 //  Skip all the EditInfo and Dir stuff.
 
-short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, bool /*auxinfo*/)
+short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, uchar auxinfo)
 {
 	short  		filenum, fd;
 	FInfo			fi;

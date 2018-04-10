@@ -37,7 +37,7 @@ typedef struct {
 // pass it the maximum pixel dimension of any of the
 // voxel objects you anticipate drawing
 // returns TRUE for success, FALSE if unable to allocate
-bool vx_init(int max_depth);
+uchar vx_init(int max_depth);
 
 // Close the voxel system
 void vx_close();

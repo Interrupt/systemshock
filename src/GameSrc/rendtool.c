@@ -87,21 +87,21 @@ uchar star_col[NUM_STARS];
 //------------------------
 void rend_mouse_hide(void);
 void rend_mouse_show(void);
-bool game_obj_block_home(void *vmptr, uchar *_sclip, int *loc);
-bool game_obj_block(void *vmptr, uchar *_sclip, int *loc);
+uchar game_obj_block_home(void *vmptr, uchar *_sclip, int *loc);
+uchar game_obj_block(void *vmptr, uchar *_sclip, int *loc);
 int game_fr_idx(void);
 grs_bitmap *game_fr_tmap_128(void);
 grs_bitmap *game_fr_tmap_64(void);
 grs_bitmap *game_fr_tmap_full(void);
 void game_rend_start(void);
-void game_fr_clip_start(bool headnorth);
+void game_fr_clip_start(uchar headnorth);
 
 void game_redrop_rad(int rad_mod);
 void change_detail_level(byte new_level);
 void set_global_lighting(short l_lev);
 void fauxrend_camera_setfunc(TileCamera* tc);
-void rendedit_process_tilemap(FullMap* fmap, LGRect* r, bool newMap);
-ushort fr_get_at_raw(frc *fr, int x, int y, bool again, bool transp);
+void rendedit_process_tilemap(FullMap* fmap, LGRect* r, uchar newMap);
+ushort fr_get_at_raw(frc *fr, int x, int y, uchar again, uchar transp);
 void load_model_vtexts(char model_num);
 void free_model_vtexts(char model_num);
 
@@ -166,7 +166,7 @@ extern grs_bitmap tmap_bm[32];	// this is dumb, yea yea
 static MapElem *home_ptr;
 
 
-bool game_obj_block_home(void *vmptr, uchar *_sclip, int *loc)
+uchar game_obj_block_home(void *vmptr, uchar *_sclip, int *loc)
 {
    MapElem *mptr=(MapElem *)vmptr;
    Obj *cobj;
@@ -230,7 +230,7 @@ bool game_obj_block_home(void *vmptr, uchar *_sclip, int *loc)
    return FALSE;     // for now, no blockage in home square
 }
 
-bool game_obj_block(void *vmptr, uchar *_sclip, int *loc)
+uchar game_obj_block(void *vmptr, uchar *_sclip, int *loc)
 {
    MapElem *mptr=(MapElem *)vmptr;
    Obj *cobj;
@@ -289,10 +289,10 @@ int game_fr_idx(void)
 
 extern g3s_phandle _fdt_tmppts[8];   /* these are used for all temporary point sets */
 
-bool draw_tmap_p(int ptcnt);
+uchar draw_tmap_p(int ptcnt);
 
 // should i draw this texture/map/so on
-bool draw_tmap_p(int ptcnt)
+uchar draw_tmap_p(int ptcnt)
 {
    // JAEMZ JAEMZ JAEMZ JAEMZ
    // notify yourself here, i would guess....
@@ -410,7 +410,7 @@ void game_rend_start(void)
   render_sort_start();
 }
 
-void game_fr_clip_start(bool headnorth)
+void game_fr_clip_start(uchar headnorth)
 {
    if (headnorth)
    {
@@ -508,7 +508,7 @@ void set_global_lighting(short l_lev)
 }
 
 
-void rendedit_process_tilemap(FullMap* fmap, LGRect* r, bool newMap)
+void rendedit_process_tilemap(FullMap* fmap, LGRect* r, uchar newMap)
 {
 //   mprintf("RPT %d\n",new);
    if (fmap==NULL)		       /* support null pass in */
@@ -529,7 +529,7 @@ void fauxrend_camera_setfunc(TileCamera* tc)
 
 
 // Like fr_get_at, but takes real screen coordinates.
-ushort fr_get_at_raw(frc *fr, int x, int y, bool again, bool transp)
+ushort fr_get_at_raw(frc *fr, int x, int y, uchar again, uchar transp)
 {
    extern fauxrend_context *_sr;
    extern ushort fr_get_again(frc *fr, int x, int y);

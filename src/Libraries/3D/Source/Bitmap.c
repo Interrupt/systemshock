@@ -76,6 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 #include "3d.h"
 #include "GlobalV.h"
+#include <stdbool.h>
 
 // need this from 2D lib
 extern int h_map(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);

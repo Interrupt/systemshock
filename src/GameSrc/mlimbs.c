@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LOCK_ALL_CHANNELS
 
 
-bool   mlimbs_on=FALSE;
+uchar   mlimbs_on=FALSE;
 static   char   mlimbs_status=0;    // could make this one bitfield of status, on/off, enable/not, so on
 static   int    mlimbs_timer_id;    // what our timer handle is
 
@@ -49,7 +49,7 @@ volatile struct mlimbs_piece_info xseq_info[MAX_SEQUENCES];	// Sequence specific
 volatile struct mlimbs_request_info current_request[MLIMBS_MAX_SEQUENCES - 1]; // Request information
 volatile struct mlimbs_channel_info channel_info[MLIMBS_MAX_CHANNELS]; // MIDI channel information
 volatile struct mlimbs_playing_info userID[MLIMBS_MAX_SEQUENCES - 1]; // Sequence instance specific information
-volatile bool   mlimbs_update_requests = FALSE;
+volatile uchar   mlimbs_update_requests = FALSE;
 
 volatile uchar   num_XMIDI_sequences = 0;
 volatile uchar   num_master_measures;
@@ -59,7 +59,7 @@ volatile uchar   max_voices = 0;
 volatile void  (*mlimbs_AI)(void) = NULL;
 volatile ulong   mlimbs_counter = 0;
 volatile long    mlimbs_error;
-volatile bool    mlimbs_semaphore = FALSE;
+volatile uchar    mlimbs_semaphore = FALSE;
 
 int     master_volume = 100;
 
@@ -434,12 +434,12 @@ void mlimbs_purge_theme (void)
 //	inputs:
 //		int usernum		// The sequence instance to give up a channel.
 //		int x				// Which channel to relenquish.
-//		bool mute			// If TRUE, mute the channel.  If FALSE merely,
+//		uchar mute			// If TRUE, mute the channel.  If FALSE merely,
 //							//	relenquish the channel, and set the sequence channel's
 //							// status to SEQUENCE_CHANNEL_PENDING
 /////////////////////////////////////////////////////////////////
 
-void mlimbs_mute_sequence_channel (int usernum, int x, bool mute)
+void mlimbs_mute_sequence_channel (int usernum, int x, uchar mute)
 {
 	int val,seq_ch;
 	int phys_ch;
@@ -580,7 +580,7 @@ int mlimbs_unmute_sequence_channel (int usernum, int x)
 //
 /////////////////////////////////////////////////////////////////
 
-int mlimbs_channel_prioritize (int priority, int pieceID,int voices_needed,bool crossfade,bool channel_prioritize)
+int mlimbs_channel_prioritize (int priority, int pieceID,int voices_needed,uchar crossfade,uchar channel_prioritize)
 {
 	int i,j;
 	int channels_needed, num_free_channels;
@@ -794,7 +794,7 @@ int mlimbs_channel_prioritize (int priority, int pieceID,int voices_needed,bool 
 //          // code can unmute channels as the sequence is crossfaded in.
 //
 /////////////////////////////////////////////////////////////////
-int mlimbs_assign_channels (int usernum,bool crossfade)
+int mlimbs_assign_channels (int usernum,uchar crossfade)
 {
 	uint j;
 	ushort c_map;
@@ -841,18 +841,18 @@ int mlimbs_assign_channels (int usernum,bool crossfade)
 //		int loops			Number of times to play the piece
 //		int rel_vol			Relative volume to start the piece at.  This will
 //								be set to 0 for pieces that will ramp up.
-//		bool channel_prioritize		- if TRUE, then its ok to play the
+//		uchar channel_prioritize		- if TRUE, then its ok to play the
 //								chunk even if not enough channels are available,
 //								If FALSE, then only play chunk if all channels can
 //								be played.
-//		bool crossfade
+//		uchar crossfade
 //
 //	return:
 //		-1	if failed
 //		usernum	- an integer index into the userID[] array
 /////////////////////////////////////////////////////////////////
 
-int mlimbs_play_piece (int pieceID, int priority, int loops, int rel_vol, bool channel_prioritize,bool crossfade)
+int mlimbs_play_piece (int pieceID, int priority, int loops, int rel_vol, uchar channel_prioritize,uchar crossfade)
 {
 	int i, slot, usernum, voices_needed, voices_available;
 
@@ -1048,7 +1048,7 @@ void cdecl mlimbs_callback (snd_midi_parms *mprm, unsigned trigger_value)
             extern schar curr_crossfade;
             extern int new_theme;
             extern uchar decon_count , decon_time ;
-				extern bool in_deconst , old_deconst ;
+				extern uchar in_deconst , old_deconst ;
             secret_sprint((ss_temp, "note in %d old %d, count %d time %d, cf %d, nt %d\n",
                in_deconst, old_deconst, decon_count, decon_time, curr_crossfade, new_theme));
 	      }
@@ -1341,7 +1341,7 @@ void mlimbs_timer_callback (void)
 
 SEQUENCE *_mlimbs_get_a_seq(void)
 {
-   extern int snd_find_free_sequence(uchar smp_pri, bool check_only);
+   extern int snd_find_free_sequence(uchar smp_pri, uchar check_only);
    SEQUENCE *S;
    int seq_id;
    if ((seq_id=snd_find_free_sequence(1000,FALSE))==SND_PERROR)
@@ -1350,7 +1350,7 @@ SEQUENCE *_mlimbs_get_a_seq(void)
    return S;
 }
 
-extern bool run_asynch_music_ai;
+extern uchar run_asynch_music_ai;
 
 // scan through all requested pieces, if not already playing, init_sequence them
 void mlimbs_preload_requested_timbres(void)

@@ -148,7 +148,7 @@ typedef struct _Player {
 
    // Random physics state.
    ubyte posture;                   // current posture (standing/stooped/prone)
-   bool  foot_planted;              // Player's foot is planted
+   uchar  foot_planted;              // Player's foot is planted
    byte leanx, leany;               // leaning, -100-+100
 
    // not used - eye postion - lower in struct!!!!
@@ -164,13 +164,13 @@ typedef struct _Player {
    ubyte energy;                    // suit power charge
    ubyte energy_spend;              // rate of energy burn
    ubyte energy_regen;              // Rate at which suit recharges
-   bool  energy_out;                // out of energy last check
+   uchar  energy_out;                // out of energy last check
    short cspace_trips;
    int   cspace_time_base;
    ubyte questbits[NUM_QUESTBITS / 8];       // Mask of which "quests" you have completed
    short questvars[NUM_QUESTVARS];
    ulong hud_modes;                 // What hud functions are currently active?
-   bool  experience;                // Are you experienced?
+   uchar  experience;                // Are you experienced?
    int   fatigue;                   // how fatigued are you
    ushort   fatigue_spend;          // Current rate of fatigue expenditure in pts/sec
    ushort   fatigue_regen;          // Current rate of fatigue regeneration
@@ -203,7 +203,7 @@ typedef struct _Player {
    ubyte drugs[NUM_DRUGZ];          // Quantity of each drug
    ubyte grenades[NUM_GRENADEZ];    // Quantity of each grenade.
 
-   bool email[NUM_EMAIL];  // Which email messages do you have.
+   uchar email[NUM_EMAIL];  // Which email messages do you have.
    ubyte logs[NUM_LOG_LEVELS]; // on which levels do we have logs. 
 
    // Weapons are arranged into "slots" 
@@ -256,7 +256,7 @@ typedef struct _Player {
    short current_email;
 
    char version[6];
-   bool dead;
+   uchar dead;
 
    ushort lean_filter_state;
    ushort FREE_BITS_HERE;
@@ -266,7 +266,7 @@ typedef struct _Player {
 
    ulong posture_slam_state;
 
-   bool terseness;
+   uchar terseness;
 
    ulong last_bob;         // not last paul, but last bob
 

@@ -92,16 +92,16 @@ grs_bitmap option_cursor_bmap;
 
 extern Region *inventory_region;
 int wrap_id = -1, wrapper_wid, wrap_key_id;
-bool clear_panel = TRUE, wrapper_panel_on = FALSE;
+uchar clear_panel = TRUE, wrapper_panel_on = FALSE;
 grs_font* opt_font;
-bool olh_temp;
-extern bool sfx_on;
-extern bool digi_gain;
+uchar olh_temp;
+extern uchar sfx_on;
+extern uchar digi_gain;
 errtype (*wrapper_cb)(int num_clicked);
 errtype (*slot_callback)(int num_clicked);
-static bool cursor_loaded = FALSE;
+static uchar cursor_loaded = FALSE;
 #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
-bool headset_track = TRUE;
+uchar headset_track = TRUE;
 #define HEADSET_FOV_MIN 30
 #define HEADSET_FOV_MAX 180
 // these 3 should all be initialized for real elsewhere...
@@ -113,13 +113,13 @@ int inp6d_curr_fov = 60;
 errtype music_slots();
 errtype wrapper_do_save();
 extern errtype inventory_clear(void);
-errtype wrapper_panel_close(bool clear_message);
+errtype wrapper_panel_close(uchar clear_message);
 errtype do_savegame_guts(uchar slot);
 void wrapper_start(void (*init)(void));
 void quit_verify_pushbutton_handler(uchar butid);
-bool quit_verify_slorker(uchar butid);
+uchar quit_verify_slorker(uchar butid);
 void save_verify_pushbutton_handler(uchar butid);
-bool save_verify_slorker(uchar butid);
+uchar save_verify_slorker(uchar butid);
 errtype make_options_cursor(void);
 void free_options_cursor(void);
 
@@ -148,15 +148,15 @@ void draw_button(uchar butid);
 errtype (*verify_callback)(int num_clicked) = NULL;
 char savegame_verify;
 char comments[NUM_SAVE_SLOTS+1][SAVE_COMMENT_LEN];
-bool pause_game_func(short keycode, ulong context, void* data);
-bool really_quit_key_func(short keycode, ulong context, void* data);
+uchar pause_game_func(short keycode, ulong context, void* data);
+uchar really_quit_key_func(short keycode, ulong context, void* data);
 
 // separate mouse region for regular-screen and fullscreen.
 #define NUM_MOUSEREGION_SCREENS 2
 Region options_mouseregion[NUM_MOUSEREGION_SCREENS];
 uchar free_mouseregion=0;
 
-bool popup_cursors = TRUE;
+uchar popup_cursors = TRUE;
 
 char save_game_name[]="savgam00.dat";
 
@@ -179,7 +179,7 @@ typedef struct {
    uchar    user[BUTTON_USERDATA_SIZ];
    ulong    evmask;
    void (*drawfunc)(uchar butid);
-   bool (*handler)(uiEvent* ev, uchar butid);
+   uchar (*handler)(uiEvent* ev, uchar butid);
 } opt_button;
 
 // SLIDER WIDGETS:
@@ -195,12 +195,12 @@ typedef struct {
    uchar color;
    uchar bvalcol;
    uchar sliderpos;
-   bool  active;
+   uchar  active;
    Ref   descrip;
    uint  maxval;
    uchar baseval;
    uchar type;
-   bool  smooth;
+   uchar  smooth;
    void* curval;
    void* dealfunc;
 } opt_slider_state;
@@ -270,9 +270,9 @@ typedef struct {
 
    char     currstring;
    char     index;
-   bool     modified;
+   uchar     modified;
 
-   bool     editable;
+   uchar     editable;
    ushort   editmask;
    ushort   selectmask;
    ushort   initmask;
@@ -294,7 +294,7 @@ typedef struct {
 // with their button id as an argument.  Thus, any keypress which is not
 // handled by another gadget is taken by the slorker.
 //                                                                                
-typedef bool (*slorker)(uchar butid);
+typedef uchar (*slorker)(uchar butid);
 
 #define OPT_SLIDER_BAR REF_IMG_BeamSetting
 
@@ -419,7 +419,7 @@ void slider_draw_func(uchar butid)
 
 }
 
-void slider_deal(uchar butid, bool deal)
+void slider_deal(uchar butid, uchar deal)
 {
    opt_slider_state* st=(opt_slider_state*)&(OButtons[butid].user);
    uint val;
@@ -436,7 +436,7 @@ void slider_deal(uchar butid, bool deal)
 // you lose a little bit of me, from within
 //
 
-bool slider_handler(uiEvent* ev, uchar butid)
+uchar slider_handler(uiEvent* ev, uchar butid)
 {
    opt_slider_state* st=(opt_slider_state*)&(OButtons[butid].user);
    uiMouseEvent* mev=(uiMouseEvent*)ev;
@@ -485,7 +485,7 @@ bool slider_handler(uiEvent* ev, uchar butid)
    return FALSE;
 }
 
-void slider_init(uchar butid, Ref descrip, uchar type, bool smooth, void* var, uint maxval, uchar baseval, void* dealfunc, Rect* r)
+void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void* var, uint maxval, uchar baseval, void* dealfunc, Rect* r)
 {
    opt_slider_state* st=(opt_slider_state*)&OButtons[butid].user;
    uint val;
@@ -529,7 +529,7 @@ void pushbutton_draw_func(uchar butid)
    unwrap_text(btext);
 }
 
-bool pushbutton_handler(uiEvent* ev, uchar butid)
+uchar pushbutton_handler(uiEvent* ev, uchar butid)
 {
    if(((ev->type==UI_EVENT_MOUSE) && (ev->subtype & MOUSE_DOWN)) ||
       ((ev->type==UI_EVENT_KBD_COOKED) && ((((uiCookedKeyEvent*)ev)->code & 0xFF)==((opt_pushbutton_state*)(&OButtons[butid].user))->keyeq)))
@@ -673,7 +673,7 @@ void multi_draw_func(uchar butid)
    ss_string(btext,x-w/2,y);
 }
 
-bool multi_handler(uiEvent* ev, uchar butid)
+uchar multi_handler(uiEvent* ev, uchar butid)
 {
    uint val=0, delta=0;
    opt_multi_state* st=(opt_multi_state*)&OButtons[butid].user;
@@ -732,7 +732,7 @@ void multi_init(uchar butid, uchar key, Ref descrip, Ref optbase, Ref feedbase,
 }
 
 #pragma disable_message(202)
-bool keyslork_handler(uiEvent* ev, uchar butid)
+uchar keyslork_handler(uiEvent* ev, uchar butid)
 {
    slorker* slork=(slorker*)(&OButtons[butid].user);
 
@@ -740,7 +740,7 @@ bool keyslork_handler(uiEvent* ev, uchar butid)
 }
 #pragma enable_message(202)
 
-void slork_init(uchar butid, bool (*slork)(short code))
+void slork_init(uchar butid, uchar (*slork)(short code))
 {
    LG_memset(&OButtons[butid].rect,0,sizeof(Rect));
    *((slorker*)&(OButtons[butid].user))=slork;
@@ -825,7 +825,7 @@ void textlist_cleanup(opt_textlist_state* st)
 }
 
 #ifdef WE_USED_THIS
-void textlist_edit_line(opt_textlist_state* st, uchar butid, uchar line, bool end)
+void textlist_edit_line(opt_textlist_state* st, uchar butid, uchar line, uchar end)
 {
    char* s, * bak;
    char tmp;
@@ -847,7 +847,7 @@ void textlist_edit_line(opt_textlist_state* st, uchar butid, uchar line, bool en
 }
 #endif
 
-void textlist_select_line(opt_textlist_state* st, uchar butid, uchar line, bool deal)
+void textlist_select_line(opt_textlist_state* st, uchar butid, uchar line, uchar deal)
 {
    char tmp;
 
@@ -863,7 +863,7 @@ void textlist_select_line(opt_textlist_state* st, uchar butid, uchar line, bool 
       st->dealfunc(butid,line);
 }
 
-bool textlist_handler(uiEvent* ev, uchar butid)
+uchar textlist_handler(uiEvent* ev, uchar butid)
 {
    uchar line;
    opt_textlist_state* st=(opt_textlist_state*)&OButtons[butid].user;
@@ -905,7 +905,7 @@ bool textlist_handler(uiEvent* ev, uchar butid)
       uiCookedKeyEvent* kev=(uiCookedKeyEvent*)ev;
       char k=(kev->code&0xFF);
       uint keycode=kev->code & ~KB_FLAG_DOWN;
-      bool special=((kev->code & KB_FLAG_SPECIAL)!=0);
+      uchar special=((kev->code & KB_FLAG_SPECIAL)!=0);
       char* s;
       char upness=0;
       char cur=st->currstring;
@@ -988,7 +988,7 @@ bool textlist_handler(uiEvent* ev, uchar butid)
 }
 
 void textlist_init(uchar butid,char* text,uchar numblocks,uchar blocksiz,
-   bool editable,ushort editmask,ushort selectmask,ushort initmask,
+   uchar editable,ushort editmask,ushort selectmask,ushort initmask,
    Ref invalidstr,uchar validcol,uchar selectcol,uchar invalidcol,
    Ref selectprompt, void (*dealfunc)(uchar butid,uchar index), Rect* r)
 {
@@ -1029,7 +1029,7 @@ void textlist_init(uchar butid,char* text,uchar numblocks,uchar blocksiz,
 // event to see if they want to deal with it.
 //
 #pragma disable_message(202)
-bool opanel_mouse_handler(uiEvent *ev, Region *r, void *user_data)
+uchar opanel_mouse_handler(uiEvent *ev, Region *r, void *user_data)
 {
    uiMouseEvent mev;
    int b;
@@ -1056,7 +1056,7 @@ bool opanel_mouse_handler(uiEvent *ev, Region *r, void *user_data)
 // One, true keyboard handler for all options mode events.
 // checks all options panel widgets to see if they want to deal.
 //
-bool opanel_kb_handler(uiEvent *ev, Region *r, void* user_data)
+uchar opanel_kb_handler(uiEvent *ev, Region *r, void* user_data)
 {
    uiCookedKeyEvent* kev=(uiCookedKeyEvent*)ev;
    int b;
@@ -1087,7 +1087,7 @@ void clear_obuttons()
    LG_memset(OButtons,0,MAX_OPTION_BUTTONS*sizeof(opt_button));
 }
 
-void opanel_redraw(bool back)
+void opanel_redraw(uchar back)
 {
    extern grs_bitmap inv_backgnd;
    int but;
@@ -1156,7 +1156,7 @@ void standard_slider_rect(Rect* r, uchar butid, uchar ro, uchar mar)
    r->ul.y=r->lr.y-sh;
 }
 
-errtype wrapper_panel_close(bool clear_message)
+errtype wrapper_panel_close(uchar clear_message)
 {
    uiCursorStack* cs;
    extern uiSlab* uiCurrentSlab;
@@ -1195,11 +1195,11 @@ errtype wrapper_panel_close(bool clear_message)
    return(OK);
 }
 
-extern bool game_paused;
+extern uchar game_paused;
 
-bool can_save()
+uchar can_save()
 {
-   bool gp=game_paused;
+   uchar gp=game_paused;
    if (global_fullmap->cyber)
    {
       // spoof the game as not being paused so that the message won't go to the 
@@ -1259,7 +1259,7 @@ void wrapper_pushbutton_func(uchar butid)
          break;
       case HEAD_RECENTER_BUTTON: // Input
          {
-            extern bool recenter_headset(short keycode, ulong context, void* data);
+            extern uchar recenter_headset(short keycode, ulong context, void* data);
             recenter_headset(0,0,0);
          }
          break;
@@ -1317,7 +1317,7 @@ void quit_verify_pushbutton_handler(uchar butid)
    really_quit_key_func(0,0,0);
 }
 
-bool quit_verify_slorker(uchar butid)
+uchar quit_verify_slorker(uchar butid)
 {
    wrapper_panel_close(TRUE);
    return TRUE;
@@ -1328,7 +1328,7 @@ void save_verify_pushbutton_handler(uchar butid)
    do_savegame_guts(savegame_verify);
 }
 
-bool save_verify_slorker(uchar butid)
+uchar save_verify_slorker(uchar butid)
 {
    strcpy(comments[savegame_verify],comments[NUM_SAVE_SLOTS]);
    wrapper_panel_close(TRUE);
@@ -1414,7 +1414,7 @@ void recompute_audiolog_level(ushort vol)
 #endif
 
 #pragma disable_message(202)
-void digi_toggle_deal(bool offon)
+void digi_toggle_deal(uchar offon)
 {
    int vol;
    vol=(sfx_on)?100:0;
@@ -1588,7 +1588,7 @@ void gamma_dealfunc(ushort gamma_qvar)
 }
 
 #ifdef SVGA_SUPPORT
-bool wrapper_screenmode_hack = FALSE;
+uchar wrapper_screenmode_hack = FALSE;
 void screenmode_change(new_mode)
 {
    extern short mode_id;
@@ -1657,7 +1657,7 @@ void joysens_dealfunc(ushort joysens_qvar)
 #pragma disable_message(202)
 void center_joy_go(uchar butid)
 {
-   extern bool recenter_joystick(short keycode, ulong context, void* data);
+   extern uchar recenter_joystick(short keycode, ulong context, void* data);
 
    recenter_joystick(0,0,0);
    joystick_screen_init();
@@ -1699,11 +1699,11 @@ void mousehand_dealfunc(ushort lefty)
 
 #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
 #pragma disable_message(202)
-void headset_stereo_dealfunc(bool st_on)
+void headset_stereo_dealfunc(uchar st_on)
 {
-   extern bool inp6d_headset;
-   extern bool inp6d_stereo;
-//   extern bool ui_stereo_on;
+   extern uchar inp6d_headset;
+   extern uchar inp6d_stereo;
+//   extern uchar ui_stereo_on;
    if ((inp6d_headset) && (i6d_device != I6D_ALLPRO))
    {
 //      ui_stereo_on = inp6d_stereo;
@@ -1720,7 +1720,7 @@ void headset_stereo_dealfunc(bool st_on)
    }
 }
 
-void headset_tracking_dealfunc(bool tr_on)
+void headset_tracking_dealfunc(uchar tr_on)
 {
    Warning(("tracking now %d!\n",tr_on));
    return;
@@ -1738,7 +1738,7 @@ void headset_fov_dealfunc(int hackval)
 #pragma disable_message(202)
 void olh_dealfunc(uchar olh)
 {
-   extern bool toggle_olh_func(short keycode, ulong context, void* data);
+   extern uchar toggle_olh_func(short keycode, ulong context, void* data);
 
    toggle_olh_func(0,0,0);
 }
@@ -1763,7 +1763,7 @@ void joystick_screen_init(void)
    Rect r;
    int i = 0;
    char *keys;
-   extern bool inp6d_headset;
+   extern uchar inp6d_headset;
    uchar sliderbase;
 
    extern uchar joystick_count;
@@ -1812,7 +1812,7 @@ void input_screen_init(void)
    char* keys;
    int i=0;
    uchar sliderbase;
-   extern bool inp6d_headset;
+   extern uchar inp6d_headset;
 
    keys=get_temp_string(REF_STR_KeyEquivs1);
    clear_obuttons();
@@ -1860,7 +1860,7 @@ void video_screen_init(void)
 #endif
    uchar sliderbase;
 #ifdef STEREO_SUPPORT
-   extern bool inp6d_headset;
+   extern uchar inp6d_headset;
 #endif
 
    keys=get_temp_string(REF_STR_KeyEquivs3);
@@ -1914,7 +1914,7 @@ void headset_screen_init(void)
    int i;
    char* keys;
 #ifdef STEREO_SUPPORT
-   extern bool inp6d_stereo;
+   extern uchar inp6d_stereo;
    extern int inp6d_stereo_div;
 #endif
 
@@ -1985,7 +1985,7 @@ void screenmode_screen_init(void)
    for (i=0; i < 4; i++)
    {
       extern short svga_mode_data[];
-      bool mode_ok = FALSE;
+      uchar mode_ok = FALSE;
       char j =0;
       standard_button_rect(&r,i,2,2,2);
       pushbutton_init(i,keys[i],REF_STR_ScreenModeText + i,screenmode_change,&r);
@@ -2055,7 +2055,7 @@ void options_screen_init(void)
 }
 
 #pragma disable_message(202)
-bool wrapper_options_func(short keycode, ulong context, void* data)
+uchar wrapper_options_func(short keycode, ulong context, void* data)
 {
    wrapper_start(wrapper_init);
    return(OK);
@@ -2240,7 +2240,7 @@ errtype do_savegame_guts(uchar slot)
 }
 
 #pragma disable_message(202)
-bool wrapper_region_mouse_handler(uiMouseEvent* ev, Region* r, void* data)
+uchar wrapper_region_mouse_handler(uiMouseEvent* ev, Region* r, void* data)
 {
    if (global_fullmap->cyber)
    {
@@ -2329,7 +2329,7 @@ errtype wrapper_create_mouse_region(Region* root)
 }
 
 #pragma disable_message(202)
-bool saveload_hotkey_func(short keycode, ulong context, void* data)
+uchar saveload_hotkey_func(short keycode, ulong context, void* data)
 {
 #ifdef DEMO
    return(TRUE);
@@ -2342,7 +2342,7 @@ bool saveload_hotkey_func(short keycode, ulong context, void* data)
 #endif
 }
 
-bool demo_quit_func(short keycode, ulong context, void* data)
+uchar demo_quit_func(short keycode, ulong context, void* data)
 {
    wrapper_start(quit_verify_init);
    string_message_info(REF_STR_QuitConfirm);

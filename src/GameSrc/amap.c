@@ -149,7 +149,7 @@ void amap_version_set(int id, int new_ver);
 void obj_draw(int xm, int ym, Obj *cobj, int tsize, int so, int color);
 void line_draw(int xm, int ym, Obj *cobj, int tsize, int full, int color);
 void obj_mess(curAMap *amptr, MapElem *curmp, int drw, int xm, int ym, int tsize, int pass);
-bool wall_seen_p(int wallcode, int csbits, MapElem *cur);
+uchar wall_seen_p(int wallcode, int csbits, MapElem *cur);
 void tile_draw(int xm, int ym, int tiletype, int size, int offs, int color);
 void wall_draw(int xm, int ym, int wallcode, int size, MapElem *cur);
 void draw_radius_obj(curAMap *amptr, short OtoF, int col, int zeroscrx,int zeroscry,int rad);
@@ -217,10 +217,10 @@ void amap_settings_copy(curAMap* from, curAMap* to)
 
 
 #ifdef USE_COMPILED_WALLS
-bool wall_seen_p(int wallcode, int csbits, MapElem *cur)
+uchar wall_seen_p(int wallcode, int csbits, MapElem *cur)
 {
-   if(textprops[me_tmap_flr(cur)].force_dir==1)
-      return 0;
+   //if(textprops[me_tmap_flr(cur)].force_dir==1)
+      //return 0;
 
    if (wallcode<FMK_INT_INT) {
 	   return csbits&wallcode;
@@ -243,10 +243,11 @@ bool wall_seen_p(int wallcode, int csbits, MapElem *cur)
 }
 #else
 #include "fredge.h"
-bool wall_seen_p(int wallcode, int csbits, MapElem *cur)
+uchar wall_seen_p(int wallcode, int csbits, MapElem *cur)
 {
-   if(textprops[me_tmap_flr(cur)].force_dir)
-      return 0;
+   //if(textprops[me_tmap_flr(cur)].force_dir)
+      //return 0;
+   
    if (wallcode==FMK_INT_INT)
    {
       switch (me_tiletype(cur))
@@ -271,7 +272,7 @@ bool wall_seen_p(int wallcode, int csbits, MapElem *cur)
 #endif
 
 #ifdef REAL_XIST_CHECK
-bool wall_xist_p(int wallcode, int csbits, MapElem *cur)
+uchar wall_xist_p(int wallcode, int csbits, MapElem *cur)
 {
    if (wallcode<FMK_INT_INT)
 	   return ((csbits&(wallcode>>4))==0);       // wow, this is super wacky (tm)? punt diags and go with?
@@ -487,7 +488,7 @@ void obj_mess(curAMap *amptr, MapElem *curmp, int drw, int xm, int ym, int tsize
                      gr_set_fcolor(BLACK+1);
 #ifdef SVGA_SUPPORT
                      {
-                        extern bool shadow_scale;
+                        extern uchar shadow_scale;
                         shadow_scale = FALSE;
 #endif
 #ifdef CORRECT_PIXEL_RATIO
@@ -673,9 +674,9 @@ void amap_draw(curAMap *amptr, int expose)
                {              // bio, rad, both
                   static uchar col_map[]={YELLOW_8_BASE+6,RED_8_BASE+6,ORANGE_8_BASE+5};
                   int hv=0;
-                  if (level_gamedata.hazard.zerogbio==0)
+                  /*if (level_gamedata.hazard.zerogbio==0)
 	                  if (me_hazard_bio_x(curmp)) hv=1;
-                  if (me_hazard_rad_x(curmp)) hv|=2;
+                  if (me_hazard_rad_x(curmp)) hv|=2;*/
                   if (hv)
                      tile_draw(xm,ym,(drw&DRAW_MASK_SEEN)?mt:TILE_OPEN,tsize,1,col_map[hv-1]);
                }
@@ -910,7 +911,7 @@ hack_breakout:
    }
 }
 
-bool amap_flags(curAMap *amptr, int flags, int set)
+uchar amap_flags(curAMap *amptr, int flags, int set)
 {
    flags&=amptr->avail_flags;
    if (flags==0) return FALSE;
@@ -928,7 +929,7 @@ bool amap_flags(curAMap *amptr, int flags, int set)
    return TRUE;
 }
 
-bool amap_zoom(curAMap *amptr, bool set, int zoom_delta)
+uchar amap_zoom(curAMap *amptr, uchar set, int zoom_delta)
 {
    if (set)
       amptr->zoom=zoom_delta;
@@ -1033,9 +1034,9 @@ void amap_str_delete(char *toast_str)
    }
 }
 
-bool amap_get_note(curAMap *amptr, char *buf)
+uchar amap_get_note(curAMap *amptr, char *buf)
 {
-   bool retval = TRUE;
+   uchar retval = TRUE;
 // later, do this for real
 // ie base on the string stuff
 #ifdef USE_OBJ
@@ -1059,7 +1060,7 @@ bool amap_get_note(curAMap *amptr, char *buf)
    return retval;
 }
 
-grs_bitmap *screen_automap_bitmap(char)
+grs_bitmap *screen_automap_bitmap(char c)
 {
    extern grs_bitmap *static_bitmap;
    return(static_bitmap);

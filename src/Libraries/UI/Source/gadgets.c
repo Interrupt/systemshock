@@ -48,8 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //---------------------------------------------------------------
 #define NUM_RESOURCE_FILES 1
 
-bool gadget_initialization  = FALSE;
-bool initialize_2d = FALSE;
+uchar gadget_initialization  = FALSE;
+uchar initialize_2d = FALSE;
 
 
 //---------------------------------------------------------------
@@ -57,10 +57,10 @@ bool initialize_2d = FALSE;
 //---------------------------------------------------------------
 errtype draw_resource_bm(Ref id, int x, int y);
 errtype gad_Mac_init(Gadget *g, LGPoint extent);
-bool gad_Mac_blank_expose(LGRegion *reg, LGRect *r);
+uchar gad_Mac_blank_expose(LGRegion *reg, LGRect *r);
 errtype gadget_initialize_system(void);
-bool gadget_frob_canvas(LGRegion *reg, void *data);
-bool gadget_tng_mouse_move_handler(uiEvent *e, LGRegion *r, void *state);
+uchar gadget_frob_canvas(LGRegion *reg, void *data);
+uchar gadget_tng_mouse_move_handler(uiEvent *e, LGRegion *r, void *state);
 
 
 //---------------------------------------------------------------
@@ -156,7 +156,7 @@ errtype gad_Mac_init(Gadget *g, LGPoint extent)
 }
 
 /*
-bool gad_vga_blank_expose(LGRegion *reg, LGRect *r)
+uchar gad_vga_blank_expose(LGRegion *reg, LGRect *r)
 {
    LGRect nrect;
 
@@ -172,7 +172,7 @@ bool gad_vga_blank_expose(LGRegion *reg, LGRect *r)
    return(0);
 }
 
-bool gad_mono_blank_expose(LGRegion *reg, LGRect *r)
+uchar gad_mono_blank_expose(LGRegion *reg, LGRect *r)
 {
    LGRegion *dummy;
    LGRect *dummy2;
@@ -182,7 +182,7 @@ bool gad_mono_blank_expose(LGRegion *reg, LGRect *r)
 }
 */
 
-bool gad_Mac_blank_expose(LGRegion *reg, LGRect *r)
+uchar gad_Mac_blank_expose(LGRegion *reg, LGRect *r)
 {
 	LGRect nrect;
 	
@@ -365,12 +365,12 @@ errtype gadget_shutdown()
 
 
 // Destroys the gadget and any children gadgets
-bool in_destroy = FALSE;
+uchar in_destroy = FALSE;
 errtype gadget_destroy(Gadget **pvic)
 {
    LGRegion *curp, *nextp;
    Gadget *victim;
-   bool inner_destroy;
+   uchar inner_destroy;
 
    victim = *pvic;
 
@@ -423,7 +423,7 @@ errtype gadget_destroy(Gadget **pvic)
 }
 
 // Moves the gadget to a new x, y, z coordinate (relative)
-bool gadget_frob_canvas(LGRegion *reg, void *data)
+uchar gadget_frob_canvas(LGRegion *reg, void *data)
 {
    LGPoint delta;
    Gadget *g;
@@ -488,7 +488,7 @@ errtype gad_callback_uninstall(Gadget *g, int id)
 }
 
 /*
-bool gadget_tng_mono_expose(LGRegion *reg, LGRect *r)
+uchar gadget_tng_mono_expose(LGRegion *reg, LGRect *r)
 {
    LGRegion *dummy;
    LGRect *dummy2;
@@ -498,7 +498,7 @@ bool gadget_tng_mono_expose(LGRegion *reg, LGRect *r)
    return (FALSE);
 }
 
-bool gadget_tng_vga_expose(LGRegion *reg, LGRect *r)
+uchar gadget_tng_vga_expose(LGRegion *reg, LGRect *r)
 {
    ushort partmask;
    LGRect nrect;
@@ -527,7 +527,7 @@ bool gadget_tng_vga_expose(LGRegion *reg, LGRect *r)
    return(OK);
 }
 */
-bool gadget_tng_Mac_expose(LGRegion *reg, LGRect *r)
+uchar gadget_tng_Mac_expose(LGRegion *reg, LGRect *r)
 {
 	ushort	partmask;
 	LGRect	nrect;
@@ -550,7 +550,7 @@ bool gadget_tng_Mac_expose(LGRegion *reg, LGRect *r)
 	return(OK);
 }
 
-bool gadget_tng_mouse_handler(uiEvent *e, LGRegion *r, void *state)
+uchar gadget_tng_mouse_handler(uiEvent *e, LGRegion *r, void *state)
 {
    Gadget *g;
    uiMouseEvent *mickey;
@@ -565,7 +565,7 @@ bool gadget_tng_mouse_handler(uiEvent *e, LGRegion *r, void *state)
    return(g->tng_data->mousebutt(g->tng_data, mickey->action, rel));
 }
 
-bool gadget_tng_mouse_move_handler(uiEvent *e, LGRegion *r, void *state)
+uchar gadget_tng_mouse_move_handler(uiEvent *e, LGRegion *r, void *state)
 {
    Gadget *g;
    uiMouseEvent *mickey;
@@ -580,7 +580,7 @@ bool gadget_tng_mouse_move_handler(uiEvent *e, LGRegion *r, void *state)
    return(g->tng_data->mousemove(g->tng_data, rel));
 }
 
-bool gadget_tng_keyboard_handler(uiEvent *e, LGRegion *r, void *state)
+uchar gadget_tng_keyboard_handler(uiEvent *e, LGRegion *r, void *state)
 {
    Gadget *g;
    uiCookedKeyEvent *cke;
@@ -658,7 +658,7 @@ errtype gadget_create_setup(Gadget **pg, Gadget *parent, GadgetClass cl, LGRect 
    return(OK);
 }
 
-errtype gadget_change_flags(Gadget *g, ulong flags, bool on, bool children)
+errtype gadget_change_flags(Gadget *g, ulong flags, uchar on, uchar children)
 {
    LGRegion *cur_child;
    if (on)

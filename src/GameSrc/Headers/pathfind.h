@@ -19,15 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "map.h"
 #include "objects.h"
 
-char request_pathfind(LGPoint source, LGPoint dest, uchar dest_z, uchar start_z,bool priority);
+char request_pathfind(LGPoint source, LGPoint dest, uchar dest_z, uchar start_z,uchar priority);
 char next_step_on_path(char path_id, LGPoint *next, char *steps_left);
-errtype check_requests(bool priority);
+errtype check_requests(uchar priority);
 errtype delete_path(char path_id);
-bool check_path_cutting(LGPoint new_sq, char path_id);
+uchar check_path_cutting(LGPoint new_sq, char path_id);
 errtype reset_pathfinding();
 char compute_next_step(char path_id, LGPoint *pt, char step_num);
-bool pf_check_doors(MapElem *pme, char dir, ObjID *open_door);
-bool pf_obj_doors(MapElem *pme1, MapElem *pme2, char dir, ObjID *open_door);
+uchar pf_check_doors(MapElem *pme, char dir, ObjID *open_door);
+uchar pf_obj_doors(MapElem *pme1, MapElem *pme2, char dir, ObjID *open_door);
 
 #define NUM_PATH_STEPS     64
 #define MAX_PATHS          16

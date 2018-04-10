@@ -25,7 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //====================================================================================
 
 
-#include <Timer.h>
+#include <Carbon/Carbon.h>
+//#include <Timer.h>
 
 //---------------------
 //  Time Manager defines

@@ -82,10 +82,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------
 
 void side_icon_language_change(void);
-bool side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata);
+uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata);
 void zoom_side_icon_to_mfd(int icon,int waretype, int wnum);
 void zoom_to_side_icon(LGPoint from, int icon);
-bool side_icon_hotkey_func(ushort keycode, ulong context, int i);
+uchar side_icon_hotkey_func(ushort keycode, ulong context, int i);
 void side_icon_draw_bm(LGRect *r, ubyte icon, ubyte art);
 
 // ----------
@@ -95,7 +95,7 @@ void side_icon_draw_bm(LGRect *r, ubyte icon, ubyte art);
 
 typedef struct _side_icon {
    LGRect   r;
-   bool flashstate;
+   uchar flashstate;
    ubyte flashcount;
    ubyte state;
 } SIDE_ICON;
@@ -213,11 +213,11 @@ void init_side_icon_popups(void)
 
 void init_side_icon_hotkeys(void)
 {
-   bool side_icon_hotkey_func(ushort key, ulong context, int i);
-   bool side_icon_progset_hotkey_func(ushort key, ulong context, int i);
-   bool lantern_change_setting_hkey(ushort key, ulong context, void* i);
-   bool shield_change_setting_hkey(ushort key, ulong context, void* i);
-   bool side_icon_prog_hotkey_func(ushort key, ulong context, void* notused);
+   uchar side_icon_hotkey_func(ushort key, ulong context, int i);
+   uchar side_icon_progset_hotkey_func(ushort key, ulong context, int i);
+   uchar lantern_change_setting_hkey(ushort key, ulong context, void* i);
+   uchar shield_change_setting_hkey(ushort key, ulong context, void* i);
+   uchar side_icon_prog_hotkey_func(ushort key, ulong context, void* notused);
    int i;
 
    hotkey_add(KB_FLAG_ALT|KB_FLAG_DOWN|'4',DEMO_CONTEXT,lantern_change_setting_hkey, NULL);
@@ -306,10 +306,10 @@ void zoom_side_icon_to_mfd(int icon,int waretype, int wnum)
 extern LGCursor globcursor;
 
 int last_side_icon = -1;
-bool side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata)
+uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata)
 {
-   extern bool fullscrn_icons;
-   bool retval = FALSE;
+   extern uchar fullscrn_icons;
+   uchar retval = FALSE;
    uiMouseEvent *m;
    int i, type, num;
 
@@ -372,7 +372,7 @@ bool side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata)
 }
 
 
-bool side_icon_hotkey_func(ushort, ulong, int i)
+uchar side_icon_hotkey_func(ushort, ulong, int i)
 {
    int type = icon_data[i].waretype;
    int num  = IDX_OF_TYPE(type,icon_data[i].waretrip);
@@ -384,7 +384,7 @@ bool side_icon_hotkey_func(ushort, ulong, int i)
 }
 
 #ifdef PROGRAM_SIDEICON
-bool side_icon_progset_hotkey_func(ushort keycode, ulong context, int i)
+uchar side_icon_progset_hotkey_func(ushort keycode, ulong context, int i)
 {
    char mess[80];
    int l;
@@ -396,7 +396,7 @@ bool side_icon_progset_hotkey_func(ushort keycode, ulong context, int i)
    return TRUE;
 }
 
-bool side_icon_prog_hotkey_func(ushort keycode, ulong context, void* notused)
+uchar side_icon_prog_hotkey_func(ushort keycode, ulong context, void* notused)
 {
    return(side_icon_hotkey_func(keycode, context, programmed_sideicon));
 }
@@ -477,7 +477,7 @@ void side_icon_expose(ubyte icon_num)
    WARE  *wares;
    int   type, num, n;
    LGRect  *r;
-   extern bool fullscrn_icons;
+   extern uchar fullscrn_icons;
 
    if (full_game_3d && (global_fullmap->cyber || !(fullscrn_icons)))
       return;
@@ -504,7 +504,7 @@ void side_icon_expose(ubyte icon_num)
    //
    else if (player_status[num] & WARE_FLASH)
    {
-      bool fs = ((*tmd_ticks/FLASH_RATE)%2);
+      uchar fs = ((*tmd_ticks/FLASH_RATE)%2);
       if (fs == side_icons[icon_num].flashstate && !full_game_3d)
          return;
 

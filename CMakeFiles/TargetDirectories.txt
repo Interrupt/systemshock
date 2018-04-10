@@ -1,0 +1,16 @@
+/Users/cuddigan/Github/systemshock/CMakeFiles/rebuild_cache.dir
+/Users/cuddigan/Github/systemshock/CMakeFiles/edit_cache.dir
+/Users/cuddigan/Github/systemshock/CMakeFiles/systemshock.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/rebuild_cache.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/edit_cache.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/RND_LIB.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/UI_LIB.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/RES_LIB.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/VOX_LIB.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/PALLETE_LIB.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/FIX_LIB.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/3D_LIB.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/INPUT_LIB.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/DSTRUCT_LIB.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/2D_LIB.dir
+/Users/cuddigan/Github/systemshock/src/Libraries/CMakeFiles/MAC_LIB.dir

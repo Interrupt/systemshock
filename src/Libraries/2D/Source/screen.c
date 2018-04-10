@@ -68,7 +68,7 @@ grs_screen *gr_alloc_screen (short w, short h)
         and video ram for the screen itself. */
   if ((p=(uchar *)malloc (sizeof (*s)+2*sizeof (*c))) == NULL)	// was gr_malloc
      goto bailout2;
-  if ((b = valloc (w, h)) == (uchar *)-1)      
+  if ((b = our_valloc (w,h)) == (uchar *)-1)      
   	goto bailout1;
 
   /* set up bitmap. */

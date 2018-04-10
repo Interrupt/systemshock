@@ -67,7 +67,7 @@ typedef struct {
    int alignment;
    int min, max;
    int value, increm;
-   bool dragging;
+   uchar dragging;
    Ref left_id, right_id, up_id, down_id;
    Ref slider_id;
 } TNG_slider;
@@ -108,19 +108,19 @@ errtype tng_slider_size(TNG *ptng, LGPoint *ppt);
 int tng_slider_getvalue(TNG *ptng);
 
 // React appropriately for receiving the specified cooked key
-bool tng_slider_keycooked(TNG *ptng, ushort key);
+uchar tng_slider_keycooked(TNG *ptng, ushort key);
 
 // React appropriately for receiving the specified mouse button event
-bool tng_slider_mousebutt(TNG *ptng, uchar type, LGPoint loc);
+uchar tng_slider_mousebutt(TNG *ptng, uchar type, LGPoint loc);
 
 // React to a click at the given location
-bool tng_slider_apply_click(TNG *ptng, LGPoint loc);
+uchar tng_slider_apply_click(TNG *ptng, LGPoint loc);
 
 // Handle incoming signals
-bool tng_slider_signal(TNG *ptng, ushort signal);
+uchar tng_slider_signal(TNG *ptng, ushort signal);
 
-bool tng_slider_increm(TNG_slider *ptng);
-bool tng_slider_decrem(TNG_slider *ptng);
+uchar tng_slider_increm(TNG_slider *ptng);
+uchar tng_slider_decrem(TNG_slider *ptng);
 errtype tng_slider_set(TNG_slider *ptng, int perc);
 
 // Macros

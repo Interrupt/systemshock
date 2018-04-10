@@ -73,15 +73,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // -------
 
 extern errtype inventory_draw_new_page(int num);
-extern bool full_game_3d;
+extern uchar full_game_3d;
 
 extern void push_inventory_cursors(LGCursor* newcurs);
 extern void pop_inventory_cursors(void);
 
 LGCursor email_cursor;
 grs_bitmap email_cursor_bitmap;
-bool email_cursor_currently=FALSE;
-bool shodan_sfx_go = FALSE;
+uchar email_cursor_currently=FALSE;
+uchar shodan_sfx_go = FALSE;
 
 #define MFD_EMAILMUG_FUNC 14
 #define EMAIL_BASE_ID   RES_email0
@@ -126,7 +126,7 @@ extern grs_canvas *pinv_canvas;
 #define EMAIL_INTERCEPT 0xFE
 #define EMAIL_DONE     0xFF
 
-bool email_big_font=TRUE;
+uchar email_big_font=TRUE;
 
 char   email_buffer[256];
 #define EMAIL_BUFSIZ (sizeof(email_buffer))
@@ -153,23 +153,23 @@ void set_email_flags(int n);
 char* get_email_title_string(int n, char *text, int siz);
 void apply_email_macros(char *text, char *newval);
 void email_intercept(void);
-char* email_draw_string(char* text,short* x, short* y,bool last);
+char* email_draw_string(char* text,short* x, short* y,uchar last);
 void free_email_buffer(void);
 void draw_more_string(int x, int y, uchar footermask);
-void email_draw_text(short email_id, bool really_an_email);
+void email_draw_text(short email_id, uchar really_an_email);
 void email_page_exit(void);
-bool email_invpanel_input_handler(uiEvent* ev, LGRegion* r, void* data);
-void parse_email_mugs(char* mug, uchar* mcolor, ushort mugnums[NUM_MFDS], bool setup);
+uchar email_invpanel_input_handler(uiEvent* ev, LGRegion* r, void* data);
+void parse_email_mugs(char* mug, uchar* mcolor, ushort mugnums[NUM_MFDS], uchar setup);
 void mfd_emailmug_expose(MFD* mfd, ubyte control);
-bool mfd_emailmug_handler(MFD *m, uiEvent *ev);
-void select_email(int num, bool scr);
+uchar mfd_emailmug_handler(MFD *m, uiEvent *ev);
+void select_email(int num, uchar scr);
 void read_email(Id new_base, int num);
 void add_email_handler(LGRegion* r);
 void mfd_emailware_expose(MFD* mfd, ubyte control);
-bool mfd_email_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data);
+uchar mfd_email_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data);
 errtype mfd_emailware_init(MFD_Func* f);
-void email_turnon(bool visible,bool real_start);
-void email_turnoff(bool visible,bool real_stop);
+void email_turnon(uchar visible,uchar real_start);
+void email_turnoff(uchar visible,uchar real_stop);
 void update_email_ware(void);
 char* email_name_func(void* dp, int num, char* buf);
 uchar email_color_func(void* dp, int num);
@@ -350,7 +350,7 @@ void email_intercept(void)
    }
 }
 
-char* email_draw_string(char* text,short* x, short* y,bool last)
+char* email_draw_string(char* text,short* x, short* y,uchar last)
 {
    short w,h;
    gr_set_fcolor(MESSAGE_COLOR);
@@ -475,7 +475,7 @@ void draw_more_string(int x, int y, uchar footermask)
    }
 }
 
-void email_draw_text(short email_id, bool really_an_email)
+void email_draw_text(short email_id, uchar really_an_email)
 {
    short x = 0,y = 0;
    char* remains = NULL;
@@ -527,7 +527,7 @@ void email_draw_text(short email_id, bool really_an_email)
    {
       ubyte line = EMAIL_MESSAGE_IDX + next_text_line;
       char* next = get_temp_string(MKREF(email_id,line));
-      bool last;
+      uchar last;
 
       last = (next==NULL || next[0]=='\0');
       if ((remains = email_draw_string(email_buffer,&x,&y,last)) != NULL)
@@ -549,7 +549,7 @@ void email_draw_text(short email_id, bool really_an_email)
    {
       int len;
       char* next;
-      bool last;
+      uchar last;
       char tmp[256];
       ubyte line = EMAIL_MESSAGE_IDX  + next_text_line++;
       if (remains == NULL)
@@ -644,7 +644,7 @@ void email_page_exit(void)
 }
 
 
-bool email_invpanel_input_handler(uiEvent* ev, LGRegion*, void*)
+uchar email_invpanel_input_handler(uiEvent* ev, LGRegion* region, void* v)
 {
    if (input_cursor_mode == INPUT_OBJECT_CURSOR) return FALSE;
    if (inventory_page != INV_EMAILTEXT_PAGE)
@@ -687,7 +687,7 @@ bool email_invpanel_input_handler(uiEvent* ev, LGRegion*, void*)
 #define TRANSITORY_ESC_CHAR 't'
 #define WHOAMI_ESC_CHAR 's'
 
-void parse_email_mugs(char* mug, uchar* mcolor, ushort mugnums[NUM_MFDS], bool setup)
+void parse_email_mugs(char* mug, uchar* mcolor, ushort mugnums[NUM_MFDS], uchar setup)
 {
    short i, fwid;
    char* s, *sfront;
@@ -757,7 +757,7 @@ void parse_email_mugs(char* mug, uchar* mcolor, ushort mugnums[NUM_MFDS], bool s
 
 void mfd_emailmug_expose(MFD* mfd, ubyte control)
 {
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    int msg = current_email_base+current_email;
    if (control == 0)  // MFD is drawing stuff
    {
@@ -875,7 +875,7 @@ void mfd_emailmug_expose(MFD* mfd, ubyte control)
   
 }
 
-bool mfd_emailmug_handler(MFD *, uiEvent *ev)
+uchar mfd_emailmug_handler(MFD * mfd, uiEvent *ev)
 {
    if (ev->type != UI_EVENT_MOUSE || !(ev->subtype & (MOUSE_LDOWN|MOUSE_RDOWN|MOUSE_CDOWN)))
       return FALSE;
@@ -892,7 +892,7 @@ bool mfd_emailmug_handler(MFD *, uiEvent *ev)
 //                DISPLAY A MESSAGE
 //==========================================================
 
-void select_email(int num, bool scr)
+void select_email(int num, uchar scr)
 {
    int id;
    int mug_num;
@@ -1010,7 +1010,7 @@ void read_email(Id new_base, int num)
          {
             int i;
             ushort mnums[NUM_MFDS];
-            bool grab = TRUE; 
+            uchar grab = TRUE; 
             parse_email_mugs((char *)RefGet(MKREF(current_email_base+num,MUGSHOT_IDX)),NULL,mnums,TRUE);
             for (i = 1; i < NUM_MFDS; i++)
             {
@@ -1079,11 +1079,11 @@ static ubyte email_pages[] = { 50,7,8};
 
 void mfd_emailware_expose(MFD* mfd, ubyte control)
 {
-   extern void mfd_item_micro_hires_expose(bool full, int triple);
+   extern void mfd_item_micro_hires_expose(uchar full, int triple);
    extern void draw_mfd_item_spew(Ref id, int n);
    int i;
-   bool full = control & MFD_EXPOSE_FULL;
-   bool on = (control & (MFD_EXPOSE|MFD_EXPOSE_FULL)) != 0;
+   uchar full = control & MFD_EXPOSE_FULL;
+   uchar on = (control & (MFD_EXPOSE|MFD_EXPOSE_FULL)) != 0;
    ubyte s = player_struct.hardwarez_status[HARDWARE_EMAIL];
    if (control == 0)
    {
@@ -1125,7 +1125,7 @@ void mfd_emailware_expose(MFD* mfd, ubyte control)
 
    for (i = 0; i < NUM_EMAIL_BUTTONS; i++)
    {
-      bool lit = inventory_page == email_pages[i];
+      uchar lit = inventory_page == email_pages[i];
       if (full || BUTTON_LIT_STATE(mfd->id,i) != lit)
       {
          int id = (lit) ? REF_IMG_LitEmailButt0 + i : REF_IMG_EmailButt0 + i;
@@ -1140,7 +1140,7 @@ void mfd_emailware_expose(MFD* mfd, ubyte control)
    mfd_update_rects(mfd);
 }
 
-bool mfd_email_button_handler(MFD*, LGPoint bttn, uiEvent*, void*)
+uchar mfd_email_button_handler(MFD* mfd, LGPoint bttn, uiEvent* evt, void* v)
 {
    current_email_base = EMAIL_BASE_ID;
    old_invent_page = bttn.x;
@@ -1174,9 +1174,9 @@ errtype mfd_emailware_init(MFD_Func* f)
 //=====================================================
 short last_email_taken = 0;
 
-void email_turnon(bool ,bool real_start)
+void email_turnon(uchar c,uchar real_start)
 {
-   bool flash=player_struct.hardwarez_status[HARDWARE_EMAIL]&WARE_FLASH;
+   uchar flash=player_struct.hardwarez_status[HARDWARE_EMAIL]&WARE_FLASH;
    current_email_base = EMAIL_BASE_ID;
    player_struct.hardwarez_status[HARDWARE_EMAIL] &= ~(WARE_FLASH);
    QUESTBIT_OFF(0x12c);
@@ -1188,7 +1188,7 @@ void email_turnon(bool ,bool real_start)
    }
 }
 
-void email_turnoff(bool ,bool real_stop)
+void email_turnoff(uchar uc,uchar real_stop)
 {
    if (real_stop)
    {
@@ -1228,12 +1228,12 @@ found:
 
 #define BUFSZ 50
 
-char* email_name_func(void*, int num, char* buf)
+char* email_name_func(void* v, int num, char* buf)
 {
    return get_email_title_string(num,buf,BUFSZ);
 }
 
-uchar email_color_func(void* , int num)
+uchar email_color_func(void* v, int num)
 {
    return(player_struct.email[num] & EMAIL_READ?0x5C:0x59);
 }
@@ -1241,7 +1241,7 @@ uchar email_color_func(void* , int num)
 // SHODAN wacky earth destroying hacking
 void email_slam_hack(short which)
 {
-   void add_email_datamunge(short munge,bool select);
+   void add_email_datamunge(short munge,uchar select);
 
    add_email_datamunge(which,TRUE);
    read_email(EMAIL_BASE_ID,which);

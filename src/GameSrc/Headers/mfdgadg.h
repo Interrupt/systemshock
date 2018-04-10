@@ -64,7 +64,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Defines
 
-typedef bool (*MFDBttnCallback)(MFD* mfd, LGPoint button, uiEvent* ev, void *data);
+typedef uchar (*MFDBttnCallback)(MFD* mfd, LGPoint button, uiEvent* ev, void *data);
 
 // Prototypes
 errtype MFDBttnArrayInit(MFDhandler* h, LGRect* r, LGPoint bdims, LGPoint bsize, MFDBttnCallback cb, void* cbdata);
@@ -86,7 +86,7 @@ errtype MFDBttnArrayResize(MFDhandler* h, LGRect* r, LGPoint bdims, LGPoint bsiz
 
 // A slider is a linear "analog" control.  
 
-typedef bool (*MFDSliderCallback)(MFD* mfd, short val, uiEvent* ev, void *data);
+typedef uchar (*MFDSliderCallback)(MFD* mfd, short val, uiEvent* ev, void *data);
 
 errtype MFDSliderInit(MFDhandler* h, LGRect* r, MFDSliderCallback cb, void* data);
 // Create a (horizontal) slider in a particular sub-rect of the MFD.  

@@ -28,6 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  #include "FrUtils.h"
  #include "Shock.h"
 
+#include "lg.h"
+#include "error.h"
+
 // ------------------
 //  GLOBALS
 // ------------------ 

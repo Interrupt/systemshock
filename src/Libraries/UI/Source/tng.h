@@ -135,7 +135,7 @@ typedef struct {
 #define TNG_BEVELMASK	0x6000	// bottom 2 bits for bevel drawing
 #define TNG_BEVELSHIFT	13			// shift down to put in low bits
 
-typedef bool (*TNGCallback)(void *ui_data, void *user_data);
+typedef uchar (*TNGCallback)(void *ui_data, void *user_data);
 
 typedef struct _TNG_CB {
    struct _TNG_CB *next_cb;
@@ -154,11 +154,11 @@ typedef struct _TNG {
    TNG_CB *pcb;
    ushort flags;
    errtype (*draw_func)(struct _TNG *ptng, ushort partmask, LGPoint loc);
-   bool (*mousebutt)(struct _TNG *ptng, uchar type, LGPoint rel);
-   bool (*keycooked)(struct _TNG *ptng, ushort key);
-   bool (*signal)(struct _TNG *ptng, ushort signal);
-   bool (*keyscan)(struct _TNG *ptng, ushort scan);
-   bool (*mousemove)(struct _TNG *ptng, LGPoint loc);
+   uchar (*mousebutt)(struct _TNG *ptng, uchar type, LGPoint rel);
+   uchar (*keycooked)(struct _TNG *ptng, ushort key);
+   uchar (*signal)(struct _TNG *ptng, ushort signal);
+   uchar (*keyscan)(struct _TNG *ptng, ushort scan);
+   uchar (*mousemove)(struct _TNG *ptng, LGPoint loc);
 } TNG;
 
 #define TNG_MOUSE_MOTION			0x0001
@@ -200,11 +200,11 @@ errtype TNGDrawText(Id id, char *text, int x, int y);
 
 errtype tng_install_callback(TNG *ptng, ushort event_type, ushort cond, TNGCallback cbfn, void *user_data, int *pid);
 errtype tng_uninstall_callback(TNG *ptng, int id);
-bool tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc);
-bool tng_cb_keycooked(TNG *ptng, ushort key);
-bool tng_cb_signal(TNG *ptng, ushort signal);
-bool tng_cb_keyscan(TNG *ptng, ushort scan);
-bool tng_cb_mousemove(TNG *ptng, LGPoint loc);
+uchar tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc);
+uchar tng_cb_keycooked(TNG *ptng, ushort key);
+uchar tng_cb_signal(TNG *ptng, ushort signal);
+uchar tng_cb_keyscan(TNG *ptng, ushort scan);
+uchar tng_cb_mousemove(TNG *ptng, LGPoint loc);
 errtype tng_cb_draw(TNG *ptng, ushort partmask, LGPoint loc);
 
 // Macros

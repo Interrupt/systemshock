@@ -27,18 +27,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 
-#include "MacTune.h"
+//#include "MacTune.h"
 #include "musicai.h"
 #include "player.h"
 #include "map.h"
 #include "mapflags.h"
 #include "tools.h"
+#include "mlimbs.h"
 
-extern errtype musicai_reset(bool runai);
+extern errtype musicai_reset(uchar runai);
 extern errtype musicai_shutdown();
 
-struct mlimbs_request_info default_request =
-   { 0, 0, 4, 100, 0, 64, TRUE, 0, 0 };
+struct mlimbs_request_info default_request = { 0, 0, 4, 100, 0, 64, TRUE, 0, 0 };
 
 extern int ext_rp ;
 extern char mlimbs_machine;
@@ -96,9 +96,9 @@ extern char tmode_time ;
 extern int actual_score ;
 extern uchar decon_count ;
 extern uchar decon_time ;
-extern bool in_deconst , old_deconst ;
-extern bool in_peril ;
-extern bool just_started ;
+extern uchar in_deconst , old_deconst ;
+extern uchar in_peril ;
+extern uchar just_started ;
 extern int score_playing ;
 extern short curr_ramp_time, curr_ramp;
 extern char curr_prioritize, curr_crossfade;
@@ -107,7 +107,7 @@ extern errtype mai_transition(int new_trans);
 extern errtype make_request(int chunk_num, int piece_ID);
 extern int digifx_volume_shift(short x, short y, short z, short phi, short theta, short basevol);
 extern int digifx_pan_shift(short x, short y, short z, short phi, short theta);
-extern bool mai_semaphor;
+extern uchar mai_semaphor;
 
 extern uchar park_random ;
 extern uchar park_playing ;
@@ -126,14 +126,14 @@ extern int mai_damage_sum ;
 // How long an attack keeps us in combat music mode
 extern int mai_combat_length ;
 
-extern bool bad_digifx;
+extern uchar bad_digifx;
 
-extern bool mlimbs_semaphore;
+extern uchar mlimbs_semaphore;
 
-bool run_asynch_music_ai = FALSE;
-bool mai_semaphor = FALSE;
+uchar run_asynch_music_ai = FALSE;
+uchar mai_semaphor = FALSE;
 
-errtype check_asynch_ai(bool new_score_ok);
+errtype check_asynch_ai(uchar new_score_ok);
 void grind_music_ai(void);
 
 void music_ai()
@@ -521,9 +521,9 @@ void grind_music_ai(void)
    old_deconst = in_deconst;
 }
 
-errtype check_asynch_ai(bool /*new_score_ok*/)
+errtype check_asynch_ai(uchar new_score_ok)
 {
-//   extern bool mlimbs_semaphore;
+//   extern uchar mlimbs_semaphore;
 //Â¥Â¥Â¥   if (ai_cycle)
 //Â¥Â¥Â¥   {
       ai_cycle = 0;

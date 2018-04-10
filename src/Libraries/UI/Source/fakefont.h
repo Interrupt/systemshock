@@ -34,11 +34,11 @@ int fnt_no_cursor(int x, int y);
 int fnt_init(char *def_fname);      // ret handle of def_fname, -1 fail,
                                     //  0 if def_fname NULL + succesful
 int fnt_init_from_style(void *style_ptr);
-bool fnt_free(void);                // free the font system
+uchar fnt_free(void);                // free the font system
 int fnt_load(char *fnt_fname);      // returns the handle
 int fnt_load_from_style(void *style_ptr);
-bool fnt_unload(int fnt_handle);    // these both
-bool fnt_select(int fnt_handle);    //   return success or not
+uchar fnt_unload(int fnt_handle);    // these both
+uchar fnt_select(int fnt_handle);    //   return success or not
 
 // for texttools...
 #ifdef NOT

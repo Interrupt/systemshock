@@ -60,9 +60,9 @@ void llist_insert_queue(llist_head *plh, queue *plq)
 //
 //	llist_move_queue() moves a queue item after inserting new priority.
 
-bool llist_move_queue(llist_head *plh, queue *plq)
+uchar llist_move_queue(llist_head *plh, queue *plq)
 {
-	bool moved;
+	uchar moved;
 
 //	See if priority warrants moving the queue node
 

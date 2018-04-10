@@ -72,6 +72,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "dynmem.h"
 
+#include "lg.h"
+#include "error.h"
+
 /*Â¥Â¥Â¥
 #define AIL_SOUND
 #include "tminit.h"
@@ -130,10 +133,10 @@ errtype init_load_resources();
 errtype init_3d_objects();
 errtype obj_3d_shutdown();
 void init_popups();
-bool pause_for_input(ulong wait_time);
+uchar pause_for_input(ulong wait_time);
 Handle shock_alloc_ipal();		// KLC - Mac style
 
-extern void rendedit_process_tilemap(FullMap* fmap, LGRect* r, bool newMap);
+extern void rendedit_process_tilemap(FullMap* fmap, LGRect* r, uchar newMap);
 extern void mac_get_pal (int start, int n, uchar *pal_data);
 
 errtype init_pal_fx();
@@ -144,7 +147,7 @@ void byebyemessage(void);
 
 extern void load_weapons_data(void);
 extern errtype setup_init(void);
-extern bool toggle_heap_check(short keycode, ulong context, void *data);
+extern uchar toggle_heap_check(short keycode, ulong context, void *data);
 */
 
 extern errtype sanity_check_obj_props();
@@ -156,9 +159,9 @@ errtype object_data_load(void);
 int   global_timer_id;
 extern int mlimbs_peril;
 */
-bool init_done = FALSE;
-bool clear_player_data = TRUE;
-bool objdata_loaded = FALSE;
+uchar init_done = FALSE;
+uchar clear_player_data = TRUE;
+uchar objdata_loaded = FALSE;
 grs_screen  *cit_screen;
 /*
 extern void (*enter_modes[])(void);
@@ -186,7 +189,7 @@ uchar real_archive_fn[64];
 MemStack temp_memstack;
 #define TEMP_STACK_SIZE (16 * 1024)
 
-bool pause_for_input(ulong wait_time)
+uchar pause_for_input(ulong wait_time)
 {
 	Boolean	gotInput = FALSE;
 	while (!gotInput && ((ulong)TickCount() < wait_time))
@@ -244,7 +247,7 @@ void init_all(void)
 	bool		speed_splash = FALSE;
 /*
 
-   bool        dofault = TRUE;
+   uchar        dofault = TRUE;
 	int dummy_count;
    int   data[1];
    int   cnt;
@@ -704,7 +707,7 @@ errtype init_pal_fx()
 #endif
 
 {
-   extern bool _g3d_enable_blend;
+   extern uchar _g3d_enable_blend;
    uchar tmppal_lower[32*3];
    extern uchar ppall[]; // pointer to main shadow palette
 
@@ -833,7 +836,7 @@ errtype init_editor_gadgets()
 void free_all(void)
 {
    extern void shutdown_config(void);
-   extern bool cit_success;
+   extern uchar cit_success;
    extern void map_free(void);
    extern void music_free(void);
    extern void free_dpaths(void);
@@ -886,7 +889,7 @@ void free_all(void)
 // im going im going im going im gone
 void byebyemessage(void)
 {
-   extern bool cit_success;
+   extern uchar cit_success;
    if (cit_success)
 #ifdef DEMO
 	   lg_printf("Thanks for playing the System Shock CD Demo %s.\n",SYSTEM_SHOCK_VERSION);

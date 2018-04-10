@@ -158,7 +158,7 @@ void main (void)
 		fix					vecX = 0, vecY = 0, vecZ = 0;
 		fix					vec2X = 0, vec2Y = 0;
 		ushort 			cooked = 0;
-		bool 				result;
+		uchar 				result;
 		Boolean			done = FALSE;
 		Rect				clrRect;
 		Boolean			optDown, cmdDown, shiftDown;

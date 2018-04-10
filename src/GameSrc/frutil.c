@@ -38,6 +38,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frparams.h"
 #include "frflags.h"
 
+#include "lg.h"
+#include "error.h"
+
 uchar  fr_cur_obj_col;
 ushort fr_col_to_obj[256];
 
@@ -123,7 +126,7 @@ ushort fr_get_real(fauxrend_context *cur_fr, int x, int y)
 
 int         fr_cspace_idx(void)              {gr_set_fill_parm(1); return 1;}
 
-ushort fr_get_at(frc *fr, int x, int y, bool transp)
+ushort fr_get_at(frc *fr, int x, int y, uchar transp)
 {
    int (*fr_ptr_idx)(void)=fr_get_idx, of=_fr_glob_flags;
 

@@ -139,6 +139,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 #include "star.h"
 
+#include "lg.h"
+#include "error.h"
+
 #ifdef STEREO_SUPPORT
 #include <inp6d.h>
 #include <i6dvideo.h>
@@ -153,8 +156,8 @@ void _fr_change_detail(int det);
 // Globals
 void  (*fr_mouse_hide)(void), (*fr_mouse_show)(void);
 int   (*fr_get_idx)(void);
-bool  (*fr_obj_block)(void *vmptr, uchar *_sclip, int *loc);
-void  (*fr_clip_start)(bool headnorth);
+uchar  (*fr_obj_block)(void *vmptr, uchar *_sclip, int *loc);
+void  (*fr_clip_start)(uchar headnorth);
 void  (*fr_rend_start)(void);
 grs_bitmap *(*fr_get_tmap)(void);
 
@@ -179,8 +182,8 @@ uchar det_sizing[4][2]={{0,0},{0,0},{0,0},{0,0}};     /* sizing for detail modes
 #endif
 
 /* KLC - no stereo in Mac version
-extern bool inp6d_headset;
-extern bool inp6d_stereo_active;
+extern uchar inp6d_headset;
+extern uchar inp6d_stereo_active;
 extern int inp6d_stereo_div;
 */
 fauxrend_context *_fr, *_sr;           /* current and default fauxrend contexts */
@@ -260,8 +263,8 @@ grs_bitmap *fr_default_tmap(void)            {return &tmap_bm[fr_default_idx()%F
 #else
 grs_bitmap *fr_default_tmap(void)            {return NULL;}
 #endif
-bool        fr_default_block(void *, uchar *, int *) {return FALSE;}
-void        fr_default_clip_start(bool ) {}
+uchar        fr_default_block(void *, uchar *, int *) {return FALSE;}
+void        fr_default_clip_start(uchar ) {}
 void        fr_default_rend_start(void)      {}
 
 void fr_set_default_ptrs(void)
@@ -761,14 +764,14 @@ int fr_start_view(void)
 
 /* send the actual frame out a here.... */
 // you're so kind when it serves you well
-bool smooth_double=FALSE;
+uchar smooth_double=FALSE;
 g3s_vector zvec = {0,0,0};
 
-extern bool view360_is_rendering;
+extern uchar view360_is_rendering;
 
 int fr_send_view (void)
 {
-   bool 	snd_frm=TRUE;
+   uchar 	snd_frm=TRUE;
    bool	ok_to_double;
 
    // JAEMZ JAEMZ JAEMZ

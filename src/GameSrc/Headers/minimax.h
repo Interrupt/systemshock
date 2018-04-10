@@ -25,10 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-void minimax_setup(void* boardpos, uint pos_siz, char depth, bool minimize,
-   int (*evaluator)(void*), bool (*generate)(void*,int,bool),
-   bool (*horizon)(void*));
+void minimax_setup(void* boardpos, uint pos_siz, char depth, uchar minimize,
+   int (*evaluator)(void*), uchar (*generate)(void*,int,bool),
+   uchar (*horizon)(void*));
 void minimax_step(void);
-bool minimax_done(void);
+uchar minimax_done(void);
 void minimax_get_result(int* value, char* which);
 void fstack_init(uchar* fs, uint siz);

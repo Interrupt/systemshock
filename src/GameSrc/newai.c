@@ -82,19 +82,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern ObjLoc last_known_loc;
 ulong time_last_seen;
-bool priority_check;
-extern bool door_moving(ObjID id,bool dir);
+uchar priority_check;
+extern uchar door_moving(ObjID id,uchar dir);
 extern errtype set_posture_movesafe(ObjSpecID osid, ubyte new_pos);
 
 short compute_base_visibility();
 errtype run_evil_otto(ObjID id, int dist);
 errtype run_cspace_ice();
-errtype ai_spot_player(ObjID id, bool *raycast_success);
-bool do_physics_stupidity(ObjID id, int big_dist);
-void check_attitude_adjustment(ObjID id, ObjSpecID osid,int big_dist,bool raycast_success);
+errtype ai_spot_player(ObjID id, uchar *raycast_success);
+uchar do_physics_stupidity(ObjID id, int big_dist);
+void check_attitude_adjustment(ObjID id, ObjSpecID osid,int big_dist,uchar raycast_success);
 void load_combat_art(int cp_num);
-errtype run_combat_ai(ObjID id, bool raycast_success);
-errtype do_stealth_stuff(ObjID id, short base_vis, bool *raycast_success, fix dist);
+errtype run_combat_ai(ObjID id, uchar raycast_success);
+errtype do_stealth_stuff(ObjID id, short base_vis, uchar *raycast_success, fix dist);
 void set_des_heading(ObjID id, ObjSpecID osid, fix targ_x, fix targ_y, fixang *angdiff, fixang *target_ang);
 errtype follow_pathfinding(ObjID id, ObjSpecID osid);
 LGPoint ai_patrol_func(ObjID id, ObjSpecID osid);
@@ -237,7 +237,7 @@ errtype run_evil_otto(ObjID id, int dist)
 // about this particular creature.
 short ignore_distance[] = {6, 10} ;
 
-bool do_physics_stupidity(ObjID id, int big_dist)
+uchar do_physics_stupidity(ObjID id, int big_dist)
 {
    ObjSpecID osid = objs[id].specID;
    int dist = big_dist >> 8;
@@ -286,7 +286,7 @@ bool do_physics_stupidity(ObjID id, int big_dist)
 // If our current pathfind is greater than REPATHFIND_DIST away from reality,
 // punt and repathfind 
 #define REPATHFIND_DIST 0x4
-errtype ai_spot_player(ObjID id, bool *raycast_success)
+errtype ai_spot_player(ObjID id, uchar *raycast_success)
 {
    ObjSpecID osid = objs[id].specID;
    ObjCritter *pcrit = &objCritters[osid];
@@ -340,7 +340,7 @@ errtype ai_spot_player(ObjID id, bool *raycast_success)
 
 // Do appropriate stuff for critter object id to try and find the
 // player
-errtype do_stealth_stuff(ObjID id, short base_vis, bool *raycast_success, fix dist)
+errtype do_stealth_stuff(ObjID id, short base_vis, uchar *raycast_success, fix dist)
 {
    short use_vis;
    State plr_state, our_state;
@@ -521,7 +521,7 @@ errtype follow_pathfinding(ObjID id, ObjSpecID osid)
       //         csq.x,csq.y,sq.x,sq.y));
             if ((open_me != OBJ_NULL) && (DOOR_CLOSED(open_me)) && !(door_moving(open_me,FALSE)))
             {
-               bool use_door(ObjID id, uchar in_inv, ObjID cursor_obj);
+               uchar use_door(ObjID id, uchar in_inv, ObjID cursor_obj);
                use_door(open_me,0x2,OBJ_NULL);
             }
       }
@@ -559,7 +559,7 @@ char ai_ranges;
 
 // Hey Rocky, watch me pull this constant out of my butt!
 #define SHORT_RANGE_Z   0xA0
-void check_attitude_adjustment(ObjID id, ObjSpecID osid,int big_dist,bool raycast_success)
+void check_attitude_adjustment(ObjID id, ObjSpecID osid,int big_dist,uchar raycast_success)
 {
    char i;
    short dist = big_dist >> 8;
@@ -686,7 +686,7 @@ void load_combat_art(int cp_num)
 // This really needs to have gnosis of:
 // -- beelining for player when close enough & appropriate
 // -- sidestepping intelligently, using cover and such (we sidestep very stupidly now)
-errtype run_combat_ai(ObjID id, bool raycast_success)
+errtype run_combat_ai(ObjID id, uchar raycast_success)
 {
    ObjSpecID osid = objs[id].specID;
    ObjCritter *pcrit = &objCritters[osid];
@@ -707,7 +707,7 @@ errtype run_combat_ai(ObjID id, bool raycast_success)
             if (pcrit->attack_count < player_struct.game_time)
             {
                char posture;
-               extern bool music_on;
+               extern uchar music_on;
 
                load_combat_art(cp_num);
                if (!(ai_ranges & 0x1))
@@ -856,7 +856,7 @@ LGPoint ai_roam_func(ObjID id, ObjSpecID osid)
 {
    LGPoint dest,source;
    char tries=0;
-   bool okay;
+   uchar okay;
    short bd;
 
    source.x = OBJ_LOC_BIN_X(objs[id].loc);
@@ -903,7 +903,7 @@ errtype run_peaceful_ai(ObjID id, int big_dist)
 {
    ObjSpecID osid = objs[id].specID;
    LGPoint source,dest;
-   bool do_path = TRUE;
+   uchar do_path = TRUE;
 
    objCritters[osid].sidestep = 0;
    if (objCritters[osid].path_id != -1)
@@ -973,15 +973,15 @@ errtype ai_run()
    ObjSpecID osid;
    ObjID id;
    short visibility;
-   bool raycast_success;
+   uchar raycast_success;
    int dist;
    char mood;
 #ifdef PLAYTEST
    short crit_count = 0;
 #endif
-   extern bool physics_running;
+   extern uchar physics_running;
    extern ObjID shodan_avatar_id;
-   extern bool ai_on;
+   extern uchar ai_on;
    extern errtype apply_EDMS_controls(ObjSpecID osid);
 
 #ifndef GAMEONLY

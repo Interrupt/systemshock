@@ -65,7 +65,7 @@ physics_handle	EDMS_FF_beam_weapon_new(    fix X[3],
 					physics_handle shooter,
 					long &g_info,
 					long &w_info,
-					bool &hit )
+					uchar &hit )
 {
 
 //	Return me, baby...
@@ -130,7 +130,7 @@ physics_handle	EDMS_FF_beam_weapon(    fix X[3],
 					physics_handle shooter,
 					long &g_info,
 					long &w_info,
-					bool &hit )
+					uchar &hit )
 {
 
 //	Return me, baby...

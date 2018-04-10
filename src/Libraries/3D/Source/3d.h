@@ -567,11 +567,11 @@ void g3_draw_horizon(int sky_color,int ground_color);
 g3s_codes g3_check_codes(int n_verts,g3s_phandle *p);
 	//returns codes_and & codes_or of points
 
-bool g3_check_normal_facing(g3s_vector *v,g3s_vector *normal);
+uchar g3_check_normal_facing(g3s_vector *v,g3s_vector *normal);
 	//takes surface normal and unrotated point on poly. normal need not
 	//be normalized
 
-bool g3_check_poly_facing(g3s_phandle p0,g3s_phandle p1,g3s_phandle p2);
+uchar g3_check_poly_facing(g3s_phandle p0,g3s_phandle p1,g3s_phandle p2);
 	//takes 3 rotated points on poly
 
 void g3_get_FOV(fixang *x,fixang *y);
@@ -591,19 +591,19 @@ void g3_get_slew_step(fix step_size,g3s_vector *x_step,g3s_vector *y_step,g3s_ve
 
 // Instancing. These all return true if everything ok
 
-bool g3_start_object(g3s_vector *p);    //position only (no orientation).
+uchar g3_start_object(g3s_vector *p);    //position only (no orientation).
 
-bool g3_start_object_matrix(g3s_vector *p,g3s_matrix *m);       //position and orientation. these can nest
+uchar g3_start_object_matrix(g3s_vector *p,g3s_matrix *m);       //position and orientation. these can nest
 
-bool g3_start_object_angles_v(g3s_vector *p,g3s_angvec *o,int rotation_order);  //position and orientation vector. these can nest
-bool g3_start_object_angles_xyz(g3s_vector *p,fixang tx,fixang ty,fixang tz,int rotation_order);
+uchar g3_start_object_angles_v(g3s_vector *p,g3s_angvec *o,int rotation_order);  //position and orientation vector. these can nest
+uchar g3_start_object_angles_xyz(g3s_vector *p,fixang tx,fixang ty,fixang tz,int rotation_order);
 
-bool g3_start_object_angles_x(g3s_vector *p,fixang tx);
-bool g3_start_object_angles_y(g3s_vector *p,fixang ty);
-bool g3_start_object_angles_z(g3s_vector *p,fixang tz);
-bool g3_start_object_angles_xy(g3s_vector *p,fixang tx,fixang ty,int rotation_order);
-bool g3_start_object_angles_xz(g3s_vector *p,fixang tx,fixang tz,int rotation_order);
-bool g3_start_object_angles_yz(g3s_vector *p,fixang ty,fixang tz,int rotation_order);
+uchar g3_start_object_angles_x(g3s_vector *p,fixang tx);
+uchar g3_start_object_angles_y(g3s_vector *p,fixang ty);
+uchar g3_start_object_angles_z(g3s_vector *p,fixang tz);
+uchar g3_start_object_angles_xy(g3s_vector *p,fixang tx,fixang ty,int rotation_order);
+uchar g3_start_object_angles_xz(g3s_vector *p,fixang tx,fixang tz,int rotation_order);
+uchar g3_start_object_angles_yz(g3s_vector *p,fixang ty,fixang tz,int rotation_order);
 
 // you can use this to scale things like make small boxes and the like.  The effect is to 
 // shrink or expand the points in their SOURCE coordinate system.  Only call this after

@@ -70,7 +70,7 @@ Handle LoadSound(short resID)
 
 void main(int argc, char *argv[])
 {
-   bool 	inloop = TRUE;
+   uchar 	inloop = TRUE;
    int 		dres;
 //   int		mres;
 //   int		msc[8][2];

@@ -29,7 +29,7 @@ physics_handle EDMS_FF_cast_projectile(   Q *X,
 														int shooter,
 														long &g_info,
 														long &w_info,
-														bool &hit );
+														uchar &hit );
 
 physics_handle EDMS_FF_cast_projectile_new(
                                           Q *X,
@@ -42,4 +42,4 @@ physics_handle EDMS_FF_cast_projectile_new(
 														int shooter,
 														long &g_info,
 														long &w_info,
-														bool &hit );
+														uchar &hit );

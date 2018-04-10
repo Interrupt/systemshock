@@ -47,6 +47,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools.h"
 #include "wares.h"
 
+#include "lg.h"
+#include "error.h"
+
 //--------------
 //  PROTOTYPES
 //--------------
@@ -83,12 +86,12 @@ int select_object_by_class(int obclass, int num, ubyte* quantlist);
 
 #define SIGNATURE "giSoink"
 #define CFG_HKEY_GO "cyberia"
-bool yes_3d = TRUE;
-extern bool properties_changed;
+uchar yes_3d = TRUE;
+extern uchar properties_changed;
 
 #ifdef PLAYTEST
 #pragma disable_message(202)
-bool maim_player(short keycode, ulong context, void* data)
+uchar maim_player(short keycode, ulong context, void* data)
 {
    player_struct.hit_points = 5;
    return TRUE;
@@ -96,7 +99,7 @@ bool maim_player(short keycode, ulong context, void* data)
 #pragma enable_message(202)
 
 #pragma disable_message(202)
-bool salt_the_player(short keycode, ulong context, void* data)
+uchar salt_the_player(short keycode, ulong context, void* data)
 {
    if (config_get_raw(CFG_HKEY_GO,NULL,0))
    {
@@ -116,7 +119,7 @@ bool salt_the_player(short keycode, ulong context, void* data)
    return TRUE;
 }
 
-bool automap_seen(short keycode, ulong context, void* data)
+uchar automap_seen(short keycode, ulong context, void* data)
 {
    ushort x,y;
    MapElem* pme;
@@ -134,7 +137,7 @@ bool automap_seen(short keycode, ulong context, void* data)
 
 extern errtype give_player_loot(Player *pplr);
 
-bool give_player_hotkey(short keycode, ulong context, void *data)
+uchar give_player_hotkey(short keycode, ulong context, void *data)
 {
    if (config_get_raw(CFG_HKEY_GO,NULL,0))
    {
@@ -149,10 +152,10 @@ bool give_player_hotkey(short keycode, ulong context, void *data)
 #endif
 
 #ifdef PLAYTEST
-bool new_cone_clip = TRUE;
+uchar new_cone_clip = TRUE;
 
 #pragma disable_message(202)
-bool change_clipper(short keycode, ulong context, void *data)
+uchar change_clipper(short keycode, ulong context, void *data)
 {
    extern errtype render_run(void);
    new_cone_clip = !new_cone_clip;
@@ -167,10 +170,10 @@ bool change_clipper(short keycode, ulong context, void *data)
 #endif
 
 #pragma disable_message(202)
-bool quit_key_func(short keycode, ulong context, void* data)
+uchar quit_key_func(short keycode, ulong context, void* data)
 {
 #ifndef GAMEONLY
-   extern bool possible_change;
+   extern uchar possible_change;
 #endif
 
 #ifndef GAMEONLY
@@ -185,11 +188,11 @@ bool quit_key_func(short keycode, ulong context, void* data)
 
 extern void loopmode_exit(short),loopmode_enter(short);
 
-bool keyhelp_hotkey_func(short keycode, ulong context, void* data)
+uchar keyhelp_hotkey_func(short keycode, ulong context, void* data)
 {
    void* keyhelp_txtscrn;
    int fake_inp=0;
-   extern errtype update_state(bool time_passes);
+   extern errtype update_state(uchar time_passes);
 
 
    loopmode_exit(_current_loop);
@@ -224,14 +227,14 @@ bool keyhelp_hotkey_func(short keycode, ulong context, void* data)
 }
 
 
-bool really_quit_key_func(short keycode, ulong context, void* data)
+uchar really_quit_key_func(short keycode, ulong context, void* data)
 {
    _new_mode = -1;
    chg_set_flg(GL_CHG_LOOP);
    return TRUE;
 }
 
-bool toggle_bool_func(short keycode, ulong context, bool* tgl)
+uchar toggle_bool_func(short keycode, ulong context, bool* tgl)
 {
    *tgl = !*tgl;
    return TRUE;
@@ -241,7 +244,7 @@ bool toggle_bool_func(short keycode, ulong context, bool* tgl)
 
 extern Boolean	DoubleSize;
 
-bool change_mode_func(short , ulong , void* data)
+uchar change_mode_func(short , ulong , void* data)
 {
    int newm = (int)data;
    
@@ -259,7 +262,7 @@ bool change_mode_func(short , ulong , void* data)
 short    hdx=0, hdy=0;
 ubyte    hcount = 0;
 
-bool move_handart(short keycode, ulong context, void *data)
+uchar move_handart(short keycode, ulong context, void *data)
 {
    short amt=1;
    ubyte foo = (ubyte) data;
@@ -284,7 +287,7 @@ bool move_handart(short keycode, ulong context, void *data)
    return TRUE;
 }
 
-bool adv_handart(short keycode, ulong context, void* data)
+uchar adv_handart(short keycode, ulong context, void* data)
 {
    hcount = (hcount+1)%5;
    return TRUE;
@@ -292,9 +295,9 @@ bool adv_handart(short keycode, ulong context, void* data)
 
 #endif // HANDART_ADJUST
 
-bool toggle_view_func(short keycode, ulong context, void* data)
+uchar toggle_view_func(short keycode, ulong context, void* data)
 {
-   extern bool full_game_3d;
+   extern uchar full_game_3d;
    return(change_mode_func(keycode,context, (full_game_3d) ? (void *)GAME_LOOP : (void *)FULLSCREEN_LOOP));
 }
 
@@ -325,7 +328,7 @@ void start_music(void)
 
 void stop_music(void)
 {
-	extern bool mlimbs_on;
+	extern uchar mlimbs_on;
 	
 	MacTuneShutdown();
 	music_on = FALSE;
@@ -334,7 +337,7 @@ void stop_music(void)
 	mlimbs_monster = NO_MONSTER;
 }
 
-bool toggle_music_func(short, ulong, void*)
+uchar toggle_music_func(short, ulong, void*)
 {
 	if (music_on)
 	{
@@ -357,14 +360,14 @@ bool toggle_music_func(short, ulong, void*)
 }
 
 
-bool arm_grenade_hotkey(short , ulong , void* )
+uchar arm_grenade_hotkey(short , ulong , void* )
 {
-   extern bool show_all_actives;
+   extern uchar show_all_actives;
    extern void super_drop_func(int dispnum, int row);
    extern void mfd_force_update(void);
    extern errtype inventory_draw(void);
    extern short inv_last_page;
-   extern bool activate_grenade_on_cursor(void);
+   extern uchar activate_grenade_on_cursor(void);
    int i, row, act;
 
    if(!show_all_actives) {
@@ -385,7 +388,7 @@ bool arm_grenade_hotkey(short , ulong , void* )
 
 int select_object_by_class(int obclass, int num, ubyte* quantlist)
 {
-   extern bool show_all_actives;
+   extern uchar show_all_actives;
    extern short inv_last_page;
    int act=player_struct.actives[obclass];
    int newobj=act;
@@ -404,7 +407,7 @@ int select_object_by_class(int obclass, int num, ubyte* quantlist)
    return newobj;
 }
 
-bool select_grenade_hotkey(short , ulong , void* )
+uchar select_grenade_hotkey(short , ulong , void* )
 {
    int newobj;
 
@@ -413,7 +416,7 @@ bool select_grenade_hotkey(short , ulong , void* )
    return TRUE;
 }
 
-bool select_drug_hotkey(short , ulong , void* )
+uchar select_drug_hotkey(short , ulong , void* )
 {
    int newobj;
 
@@ -422,9 +425,9 @@ bool select_drug_hotkey(short , ulong , void* )
    return TRUE;
 }
 
-bool use_drug_hotkey(short , ulong , void* )
+uchar use_drug_hotkey(short , ulong , void* )
 {
-   extern bool show_all_actives;
+   extern uchar show_all_actives;
    extern void super_use_func(int dispnum, int row);
    extern void mfd_force_update(void);
    extern errtype inventory_draw(void);
@@ -444,7 +447,7 @@ bool use_drug_hotkey(short , ulong , void* )
    return TRUE;
 }
 
-bool clear_fullscreen_func(short , ulong , void* )
+uchar clear_fullscreen_func(short , ulong , void* )
 {
    extern char last_message[128];
    extern MFD mfd[2];
@@ -461,7 +464,7 @@ bool clear_fullscreen_func(short , ulong , void* )
 #ifdef NOT_YET  //KLC
 
 #ifndef GAMEONLY
-bool zoom_func(short keycode, ulong context, void* data)
+uchar zoom_func(short keycode, ulong context, void* data)
 {
    ushort zoom;
    
@@ -475,7 +478,7 @@ bool zoom_func(short keycode, ulong context, void* data)
    return TRUE;
 }
 
-bool do_popup_textmenu(short keycode, ulong context, void* g)
+uchar do_popup_textmenu(short keycode, ulong context, void* g)
 {
    extern errtype textmenu_popup(Gadget* parent);
 
@@ -551,11 +554,11 @@ void edit_load_func(char* fn, uchar source, short level_num)
 #endif
 
 #ifdef GADGET
-bool load_level_func(short keycode, ulong context, void* data)
+uchar load_level_func(short keycode, ulong context, void* data)
 {
    char fn[256];
 #ifndef GAMEONLY
-   extern bool possible_change;
+   extern uchar possible_change;
 #endif
    extern Gadget* edit_root_gadget;
 
@@ -576,7 +579,7 @@ void edit_save_func(char* fn, uchar source, short level_num)
    char buf[64],b2[64];
    extern void reset_schedules(void);
 #ifndef GAMEONLY
-   extern bool possible_change;
+   extern uchar possible_change;
 #endif
    extern char savegame_dir[50];
    extern Datapath savegame_dpath;
@@ -611,7 +614,7 @@ void edit_save_func(char* fn, uchar source, short level_num)
 #endif
 
 #ifdef GADGET
-bool save_level_func(short keycode, ulong context, void* data)
+uchar save_level_func(short keycode, ulong context, void* data)
 {
    if (!saves_allowed)
    {
@@ -627,10 +630,10 @@ bool save_level_func(short keycode, ulong context, void* data)
 #endif
 
 #ifndef GAMEONLY
-bool toggle_3d_func(short keycode, ulong context, void* data)
+uchar toggle_3d_func(short keycode, ulong context, void* data)
 {
    TileEditor* te = (TileEditor*)data;
-//   bool yes3d = !chg_get_sta(EDITVIEW_UPDATE);
+//   uchar yes3d = !chg_get_sta(EDITVIEW_UPDATE);
    Point newsize;
    Point newloc;
    int z;
@@ -661,7 +664,7 @@ bool toggle_3d_func(short keycode, ulong context, void* data)
    return TRUE;
 }
 
-bool tilemap_mode_func(short keycode, ulong context, void* data)
+uchar tilemap_mode_func(short keycode, ulong context, void* data)
 {
    int mode;
    extern errtype terrain_palette_popup(void);
@@ -699,13 +702,13 @@ bool tilemap_mode_func(short keycode, ulong context, void* data)
    return(TRUE);
 }
 
-bool draw_mode_func(short keycode, ulong context, void* data)
+uchar draw_mode_func(short keycode, ulong context, void* data)
 {
    TileEditorSetMode(NULL,(int)data);
    return(TRUE);
 }
 
-bool clear_highlight_func(short keycode, ulong context, void* data)
+uchar clear_highlight_func(short keycode, ulong context, void* data)
 {
    TileMapClearHighlights(NULL);
    TileMapRedrawPixels(NULL,NULL);
@@ -714,7 +717,7 @@ bool clear_highlight_func(short keycode, ulong context, void* data)
 #endif
 
 #ifndef GAMEONLY
-bool texture_selection_func(short keycode, ulong context, void* data)
+uchar texture_selection_func(short keycode, ulong context, void* data)
 {
 #ifdef TEXTURE_SELECTION
    textpal_create_selector();   
@@ -724,26 +727,26 @@ bool texture_selection_func(short keycode, ulong context, void* data)
 #endif
 
 #ifdef GADGET
-bool lighting_func(short keycode, ulong context, void* data)
+uchar lighting_func(short keycode, ulong context, void* data)
 {
    panel_create_lighting();
    return(TRUE);
 }                    
 
-bool inp6d_panel_func(short keycode, ulong context, void* data)
+uchar inp6d_panel_func(short keycode, ulong context, void* data)
 {
    extern void panel_create_inp6d(void);
    panel_create_inp6d();
    return(TRUE);
 }
 
-bool render_panel_func(short keycode, ulong context, void* data)
+uchar render_panel_func(short keycode, ulong context, void* data)
 {
    panel_create_renderer();
    return(TRUE);
 }
 
-bool popup_tilemap_func(short keycode, ulong context, void* data)
+uchar popup_tilemap_func(short keycode, ulong context, void* data)
 {
    return(TRUE);
 }
@@ -751,28 +754,28 @@ bool popup_tilemap_func(short keycode, ulong context, void* data)
 #endif
 
 #ifdef PLAYTEST
-bool bkpt_me(short keycode, ulong context, void* data)
+uchar bkpt_me(short keycode, ulong context, void* data)
 {  // put a break point here, goof
    return TRUE;
 }
 #endif
 
 #ifdef GADGET
-bool editor_options_func(short keycode, ulong context, void* data)
+uchar editor_options_func(short keycode, ulong context, void* data)
 {
    editor_options->parent = _current_root;
    gad_menu_popup_at_mouse(editor_options);
    return(TRUE);
 }
 
-bool editor_modes_func(short keycode, ulong context, void* data)
+uchar editor_modes_func(short keycode, ulong context, void* data)
 {
    editor_modes->parent = _current_root;
    gad_menu_popup_at_mouse(editor_modes);
    return(TRUE);
 }
 
-bool misc_menu_func(short keycode, ulong context, void* data)
+uchar misc_menu_func(short keycode, ulong context, void* data)
 {
    main_misc_menu->parent = _current_root;
    main_misc_menu->parent = _current_root;
@@ -785,7 +788,7 @@ bool misc_menu_func(short keycode, ulong context, void* data)
    return(TRUE);
 }
 
-bool control_panel_func(short keycode, ulong context, void* data)
+uchar control_panel_func(short keycode, ulong context, void* data)
 {
    panel_create_control();
    return(TRUE);
@@ -793,7 +796,7 @@ bool control_panel_func(short keycode, ulong context, void* data)
 #endif
 
 #ifndef GAMEONLY
-bool do_find_func(short keycode, ulong context, void* data)
+uchar do_find_func(short keycode, ulong context, void* data)
 {
    int hilite_num;
    extern errtype generic_tile_eyedropper(TileEditor* te);
@@ -827,17 +830,17 @@ bool do_find_func(short keycode, ulong context, void* data)
 
 #ifdef PLAYTEST
 #ifndef GAMEONLY
-bool inp6d_kbd=TRUE;
+uchar inp6d_kbd=TRUE;
 #else
-bool inp6d_kbd=FALSE;
+uchar inp6d_kbd=FALSE;
 #endif
 
-bool stupid_slew_func(short keycode, ulong context, void* data)
+uchar stupid_slew_func(short keycode, ulong context, void* data)
 {
    int dir = (int)data;
    int v1,v2;
    static int slew_scale=16;
-   extern bool inp6d_kbd;
+   extern uchar inp6d_kbd;
 
    if (inp6d_kbd==FALSE) return TRUE;
 
@@ -872,9 +875,9 @@ bool stupid_slew_func(short keycode, ulong context, void* data)
    return(TRUE);
 }
 
-bool zoom_3d_func(short keycode, ulong context, void* data)
+uchar zoom_3d_func(short keycode, ulong context, void* data)
 {
-   bool zoomin = (bool)data;
+   uchar zoomin = (bool)data;
 
    // cant this be current based?
    if (zoomin)
@@ -886,20 +889,20 @@ bool zoom_3d_func(short keycode, ulong context, void* data)
 #endif
 
 #ifdef GADGET
-bool menu_close_func(short keycode, ulong context, void* data)
+uchar menu_close_func(short keycode, ulong context, void* data)
 {
    return(menu_all_popdown());
 }
 #endif
 
 #ifdef PLAYTEST
-bool mono_clear_func(short keycode, ulong context, void* data)
+uchar mono_clear_func(short keycode, ulong context, void* data)
 {
    mono_clear();
    return(FALSE);
 }
 
-bool mono_toggle_func(short keycode, ulong context, void* data)
+uchar mono_toggle_func(short keycode, ulong context, void* data)
 {
    mono_setmode(MONO_TOG);
    message_info("Monochrome Toggled.");
@@ -909,9 +912,9 @@ bool mono_toggle_func(short keycode, ulong context, void* data)
 
 #ifdef GADGET
 Gadget *edit_flags_gadget = NULL;
-bool f0, f1, f2;
+uchar f0, f1, f2;
 
-bool edit_flags_close(void *vg, void *ud)
+uchar edit_flags_close(void *vg, void *ud)
 {
    // Postprocess results into change flags
    if (f0)
@@ -948,7 +951,7 @@ bool edit_flags_close(void *vg, void *ud)
    return(FALSE);
 }
 
-bool edit_flags_func(short keycode, ulong context, void* data)
+uchar edit_flags_func(short keycode, ulong context, void* data)
 {
    Point pt, ss;
 
@@ -970,14 +973,14 @@ bool edit_flags_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-bool music_ai_params_func(short keycode, ulong context, void* data)
+uchar music_ai_params_func(short keycode, ulong context, void* data)
 {
    panel_ai_param_create();
    return(FALSE);
 }
 #endif
 
-bool version_spew_func(short keycode, ulong context, void* data)
+uchar version_spew_func(short keycode, ulong context, void* data)
 {
    char tmpstr[]=SIGNATURE;          /* for tracking versions */
    char temp[40];
@@ -998,7 +1001,7 @@ bool version_spew_func(short keycode, ulong context, void* data)
 #endif //Â¥Â¥Â¥ NOT_YET
 
 char conv_hex(char val);
-bool location_spew_func(short , ulong , void* );
+uchar location_spew_func(short , ulong , void* );
 
 
 char conv_hex(char val)
@@ -1023,7 +1026,7 @@ int str_to_hex(char val)
    return(retval);
 }
 
-bool location_spew_func(short , ulong , void* )
+uchar location_spew_func(short , ulong , void* )
 {
    char goofy_string[32];
 
@@ -1051,7 +1054,7 @@ bool location_spew_func(short , ulong , void* )
 #ifdef NOT_YET	//Â¥Â¥Â¥
 
 #ifdef PLAYTEST
-bool toggle_physics_func(short keycode, ulong context, void* data)
+uchar toggle_physics_func(short keycode, ulong context, void* data)
 {
    physics_running = !physics_running;
    if (physics_running)
@@ -1062,7 +1065,7 @@ bool toggle_physics_func(short keycode, ulong context, void* data)
 }
 
 #define camera_info message_info
-bool reset_camera_func(short keycode, ulong context, void* data)
+uchar reset_camera_func(short keycode, ulong context, void* data)
 {
    extern uchar cam_mode;
    extern cams objmode_cam, *motion_cam, player_cam;
@@ -1091,7 +1094,7 @@ bool reset_camera_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-bool current_camera_func(short keycode, ulong context, void* data)
+uchar current_camera_func(short keycode, ulong context, void* data)
 {
    extern cams objmode_cam, *motion_cam;
    extern uchar cam_mode;
@@ -1124,9 +1127,9 @@ bool current_camera_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-bool mono_log_on = FALSE;
+uchar mono_log_on = FALSE;
 
-bool log_mono_func(short keycode, ulong context, void* data)
+uchar log_mono_func(short keycode, ulong context, void* data)
 {
    if (mono_log_on)
    {
@@ -1143,7 +1146,7 @@ bool log_mono_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-bool clear_transient_lighting_func(short keycode, ulong context, void* data)
+uchar clear_transient_lighting_func(short keycode, ulong context, void* data)
 {
    int x,y;
    MapElem *pme;
@@ -1160,7 +1163,7 @@ bool clear_transient_lighting_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-bool level_entry_trigger_func(short keycode, ulong context, void* data)
+uchar level_entry_trigger_func(short keycode, ulong context, void* data)
 {
    extern errtype do_level_entry_triggers();
    do_level_entry_triggers();
@@ -1168,7 +1171,7 @@ bool level_entry_trigger_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-bool convert_one_level_func(short keycode, ulong context, void* data)
+uchar convert_one_level_func(short keycode, ulong context, void* data)
 {
    extern errtype obj_level_munge();
 #ifdef TEXTURE_CRUNCH_HACK
@@ -1185,7 +1188,7 @@ bool convert_one_level_func(short keycode, ulong context, void* data)
 
 #define NUM_CONVERT_LEVELS 16
 
-bool convert_all_levels_func(short keycode, ulong context, void* data)
+uchar convert_all_levels_func(short keycode, ulong context, void* data)
 {
    int i;
    char atoi_buf[10], fn[10], curr_fname[40], new_fname[40];
@@ -1246,7 +1249,7 @@ bool convert_all_levels_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-bool invulnerable_func(short keycode, ulong context, void* data)
+uchar invulnerable_func(short keycode, ulong context, void* data)
 {
    if (config_get_raw(CFG_HKEY_GO,NULL,0))
    {
@@ -1264,9 +1267,9 @@ bool invulnerable_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-bool pacifist_func(short keycode, ulong context, void* data)
+uchar pacifist_func(short keycode, ulong context, void* data)
 {
-   extern bool pacifism_on;
+   extern uchar pacifism_on;
    pacifism_on = !pacifism_on;
    if (pacifism_on)
       message_info ("pacifism on");
@@ -1278,23 +1281,23 @@ bool pacifist_func(short keycode, ulong context, void* data)
 #endif
 
 int pause_id;
-bool remove_pause_handler = FALSE;
+uchar remove_pause_handler = FALSE;
 
-bool pause_callback(uiEvent *, LGRegion *, void *)
+uchar pause_callback(uiEvent *, LGRegion *, void *)
 {
    return(TRUE);
 }
 
-bool unpause_callback(uiEvent *, LGRegion *, void *)
+uchar unpause_callback(uiEvent *, LGRegion *, void *)
 {
    return(TRUE);
 }
 
 #endif //Â¥Â¥Â¥ NOT_YET
 
-bool pause_game_func(short, ulong, void*)
+uchar pause_game_func(short, ulong, void*)
 {
-	extern bool game_paused, redraw_paused;
+	extern uchar game_paused, redraw_paused;
 	extern LGRegion *inventory_region;
 	
 	game_paused = TRUE;
@@ -1320,9 +1323,9 @@ bool pause_game_func(short, ulong, void*)
 }
 
 /*KLC - not needed for Mac version
-bool unpause_game_func(short, ulong, void*)
+uchar unpause_game_func(short, ulong, void*)
 {
-	extern bool game_paused;
+	extern uchar game_paused;
 	extern LGRegion *inventory_region;
 	
 	if (game_paused)
@@ -1339,7 +1342,7 @@ bool unpause_game_func(short, ulong, void*)
 //--------------------------------------------------------------------
 //  For Mac version.  Save the current game.
 //--------------------------------------------------------------------
-bool save_hotkey_func(short, ulong, void *)
+uchar save_hotkey_func(short, ulong, void *)
 {
 	if (global_fullmap->cyber)					// Can't save in cyberspace.
 	{
@@ -1378,7 +1381,7 @@ bool save_hotkey_func(short, ulong, void *)
 
 //#define CHECK_STATE_N_HOTKEY
 #ifdef PLAYTEST
-bool check_state_func(short keycode, ulong context, void* data)
+uchar check_state_func(short keycode, ulong context, void* data)
 {
    int avail_memory(int debug_src);
    avail_memory(DSRC_TESTING_Test3);
@@ -1387,7 +1390,7 @@ bool check_state_func(short keycode, ulong context, void* data)
    check_state_every_n_seconds();
 #endif
 #ifdef CORVIN_ZILM_HKEY
-   extern bool CorvinZilm;
+   extern uchar CorvinZilm;
    extern int watchcount;
    MemStat pms;
    watchcount = 0;
@@ -1397,7 +1400,7 @@ bool check_state_func(short keycode, ulong context, void* data)
    return(TRUE);
 }
 
-bool diffdump_game_func(short keycode, ulong context, void* data)
+uchar diffdump_game_func(short keycode, ulong context, void* data)
 {
    char goof[45];
    sprintf(goof, "diff=%d,%d,%d,%d\n",player_struct.difficulty[0],player_struct.difficulty[1],player_struct.difficulty[2],
@@ -1406,7 +1409,7 @@ bool diffdump_game_func(short keycode, ulong context, void* data)
    return(TRUE);
 }
 
-bool toggle_difficulty_func(short keycode, ulong context, void *data)
+uchar toggle_difficulty_func(short keycode, ulong context, void *data)
 {
    ubyte which = (ubyte) data-1;
 
@@ -1415,9 +1418,9 @@ bool toggle_difficulty_func(short keycode, ulong context, void *data)
    return (TRUE);
 }
 
-bool toggle_ai_func(short keycode, ulong context, void* data)
+uchar toggle_ai_func(short keycode, ulong context, void* data)
 {
-   extern bool ai_on;
+   extern uchar ai_on;
    ai_on = !ai_on;
    if (ai_on)
       message_info("AI state on\n");
@@ -1426,9 +1429,9 @@ bool toggle_ai_func(short keycode, ulong context, void* data)
    return(TRUE);
 }
 
-bool toggle_safety_net_func(short keycode, ulong context, void* data)
+uchar toggle_safety_net_func(short keycode, ulong context, void* data)
 {
-   extern bool safety_net_on;
+   extern uchar safety_net_on;
    safety_net_on = !safety_net_on;
    if (safety_net_on)
       message_info("Safety Net on\n");
@@ -1439,9 +1442,9 @@ bool toggle_safety_net_func(short keycode, ulong context, void* data)
 #endif
 
 #ifdef NEW_RES_LIB_INSTALLED
-bool res_cache_usage_func(short keycode, ulong context, void* data)
+uchar res_cache_usage_func(short keycode, ulong context, void* data)
 {
-   extern long ResViewCache(bool only_locks);
+   extern long ResViewCache(uchar only_locks);
    ResViewCache((bool)data);
    return(TRUE);
 }

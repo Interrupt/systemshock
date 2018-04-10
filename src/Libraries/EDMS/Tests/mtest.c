@@ -102,12 +102,12 @@ void main(void)
 
 	fix dx, dy;
 	physics_handle m1, m2, m3;
-	bool killed_m2 = FALSE;
+	uchar killed_m2 = FALSE;
 
 	int i;
 
 	short mousex, mousey;
-	bool mbut1, mbut2;
+	uchar mbut1, mbut2;
 
 	dx = dy = 5;
 

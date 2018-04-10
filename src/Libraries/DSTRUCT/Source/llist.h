@@ -130,7 +130,7 @@ void llist_insert_queue(llist_head *plh, queue *plq);
 
 //	Move to new spot in queue (after inserting new priority)
 
-bool llist_move_queue(llist_head *plh, queue *plq);
+uchar llist_move_queue(llist_head *plh, queue *plq);
 
 //	Remove node
 
@@ -195,7 +195,7 @@ void LlistInit(LlistHead *plh, ushort nodeSize, short numNodesPerBlock);
 void *LlistAddHead(LlistHead *plh);						// add 1st free to head, return ptr
 void *LlistAddTail(LlistHead *plh);						// add 1st free to tail, return ptr
 void *LlistAddQueue(LlistHead *plh, short prior);	// add in priority order
-bool LlistMoveQueue(LlistHead *plh, void *pnode, short newprior);	// move pri
+uchar LlistMoveQueue(LlistHead *plh, void *pnode, short newprior);	// move pri
 void LlistFree(LlistHead *plh, void *pnode);			// free node
 void LlistFreeAll(LlistHead *plh);						// free all nodes
 void LlistDestroy(LlistHead *plh);						// destroy list, reclaim storage

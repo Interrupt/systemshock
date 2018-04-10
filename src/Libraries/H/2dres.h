@@ -45,9 +45,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _2DRES_H
 #define _2DRES_H
 
-#include "2d.h"
-#include "res.h"
-#include "rect.h"
+#include "../2D/Source/2d.h"
+#include "../RES/Source/res.h"
+#include "../DSTRUCT/Source/rect.h"
 
 // A Ref in a resource gets you a Frame Descriptor:
 
@@ -124,7 +124,7 @@ typedef struct {
 typedef struct {
    int nviews;    // number of views
    fix ppu;       // pixels per unit
-   bool bisym;    // bilateral symmetry or not (means its a mirror)
+   uchar bisym;    // bilateral symmetry or not (means its a mirror)
    int off[1];    // offsets, in reality there should be off[nview] of them
 } CylBMObj;       // cylindrical 3d bitmap object
 

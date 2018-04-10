@@ -99,7 +99,7 @@ errtype automap_delete_entry(AutoText *victim);
 // Stubs for the MFD system
 void mfd_map_expose(MFD *m, ubyte control);
 errtype mfd_map_init(MFD_Func *);
-bool mfd_map_handler(MFD *m, uiEvent *e);
+uchar mfd_map_handler(MFD *m, uiEvent *e);
 
 // Globals
 

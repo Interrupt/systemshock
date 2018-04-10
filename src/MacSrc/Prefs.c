@@ -47,7 +47,7 @@ ShockPrefs		gShockPrefs;
 //  Externs
 //--------------------
 extern char		which_lang;
-extern bool 		sfx_on;
+extern uchar 		sfx_on;
 extern int 			_fr_global_detail;
 extern Boolean	DoubleSize;
 extern Boolean	SkipLines;

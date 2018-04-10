@@ -105,7 +105,7 @@ uchar ammo_line_colors[] = { GREEN_BASE+6, GREEN_BASE+2, GREEN_YELLOW_BASE+1 };
 // ----------
 uchar player_has_weapon(int trip);
 void mfd_ammo_expose(ubyte control);
-bool mfd_ammo_handler(MFD* m, uiEvent* ev);
+uchar mfd_ammo_handler(MFD* m, uiEvent* ev);
 
 
 // return 0 if player does not have weapon of this type.
@@ -115,7 +115,7 @@ bool mfd_ammo_handler(MFD* m, uiEvent* ev);
 uchar player_has_weapon(int trip)
 {
    int num;
-   bool retval=PLAYER_HASNT;
+   uchar retval=PLAYER_HASNT;
    weapon_slot* wp=player_struct.weapons;
 
    for(num=0;num<NUM_WEAPON_SLOTS && wp[num].type!=EMPTY_WEAPON_SLOT; num++) {
@@ -132,7 +132,7 @@ uchar player_has_weapon(int trip)
 #define HARDWIRED_HEIGHT_CONSTANT   5
 void mfd_ammo_expose(ubyte control)
 {
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    if (control & MFD_EXPOSE) // Time to draw stuff
    {
       gr_set_font((grs_font*)ResGet(MFD_FONT));
@@ -146,7 +146,7 @@ void mfd_ammo_expose(ubyte control)
          int num, guntrip, typemask, type, subc, ammonum, count;
          short w,h,ypos=0,y_list;
          uchar col,has;
-         bool gotammo;
+         uchar gotammo;
          char ammoline[30], weapline[30], minibuf[3]=" /", *title;
 
          if(full) {
@@ -214,7 +214,7 @@ void mfd_ammo_expose(ubyte control)
   
 }
 
-bool mfd_ammo_handler(MFD* m, uiEvent* ev)
+uchar mfd_ammo_handler(MFD* m, uiEvent* ev)
 {
    LGPoint pos;
    short w,h,line;

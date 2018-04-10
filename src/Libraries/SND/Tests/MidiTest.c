@@ -118,7 +118,7 @@ void main(void)
 	WDPBRec	wdpb;
 	OSErr		err;
  	kbs_event	event;
-	bool 		inloop = TRUE;
+	uchar 		inloop = TRUE;
 	long			statusCount;
 	int			seq;
 	FSSpec		themeSpec;

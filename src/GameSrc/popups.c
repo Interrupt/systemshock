@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define EMAIL_CURS_MARG 5
 #define EMAIL_CURS_FONT RES_tinyTechFont
 
-bool 				popup_cursors = TRUE;
+uchar 				popup_cursors = TRUE;
 grs_bitmap	popup_bitmaps[NUM_POPUPS];
 LGRect			popup_rects[NUM_POPUPS];
 LGPoint			popup_hotspots[NUM_POPUPS] = 	// in 0-16 dimension-independent units
@@ -72,7 +72,7 @@ void init_popups(void)
 }
 
 
-void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* s, uint tmplt,bool allocate, LGPoint offset)
+void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* s, uint tmplt,uchar allocate, LGPoint offset)
 {
 	LGRect* r = &popup_rects[tmplt];
 	grs_bitmap* pbm = &popup_bitmaps[tmplt];
@@ -141,7 +141,7 @@ static char cursor_buf[4096];
 static char cursor_buf[512];
 #endif
 
-void make_email_cursor(LGCursor* c, grs_bitmap* bm, uchar page, bool init)
+void make_email_cursor(LGCursor* c, grs_bitmap* bm, uchar page, uchar init)
 {
    grs_canvas gc;
    short x,y,w,h;

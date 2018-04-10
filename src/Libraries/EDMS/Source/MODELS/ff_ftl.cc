@@ -81,7 +81,7 @@ physics_handle EDMS_FF_cast_projectile_new
                int shooter,            // not used
                long &g_info,           // information about ground hit
                long &w_info,           // information about wall hit
-               bool &hit )             // whether it hit something
+               uchar &hit )             // whether it hit something
 {
    sampling_period = size*2;           // diameter of projectile
                                        // this is four times what Seamus had it as originally
@@ -152,7 +152,7 @@ physics_handle EDMS_FF_cast_projectile_new
    TFF.my_size = size.to_fix();
 
    Q where_hit[3];
-   bool hit_terrain;
+   uchar hit_terrain;
 
    // The EDMS raycaster works by first calculating the endpoint of the ray disregarding
    // objects (thus it can only be terminated by hitting terrain or ranging out).  Then
@@ -470,7 +470,7 @@ physics_handle EDMS_FF_cast_projectile( Q *X, // source
                int shooter,            // not used
                long &g_info,           // information about ground hit
                long &w_info,           // information about wall hit
-               bool &hit )             // whether it hit something
+               uchar &hit )             // whether it hit something
 {
    sampling_period = size*2;           // diameter of projectile
                                        // this is four times what Seamus had it as originally
@@ -562,7 +562,7 @@ physics_handle EDMS_FF_cast_projectile( Q *X, // source
       {
          checker = 0;
 
-         bool maybe_hit = ff_terrain (X[0],                //Get the info...
+         uchar maybe_hit = ff_terrain (X[0],                //Get the info...
                           X[1],
                           X[2],
                           TRUE,

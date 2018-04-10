@@ -34,9 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //#include <mprintf.h>
 
-#include <texttool.h>
-#include <fakefont.h>
-#include <2d.h>
+#include "texttool.h"
+#include "fakefont.h"
+#include "2d.h"
 
 struct _fnt_data {
    uchar wids[FNT_MAX_CHARS];           /* width of each character */
@@ -121,7 +121,7 @@ int fnt_init(char *def_fname)
 }
 
 // 
-bool fnt_free(void)
+uchar fnt_free(void)
 {
    if (_fnt_count==-1) return FALSE;
    free(_fnt_lists);
@@ -172,7 +172,7 @@ int fnt_load(char *fnt_fname)
 }
 
 // unload the specified font
-bool fnt_unload(int fnt_handle)
+uchar fnt_unload(int fnt_handle)
 {
    if (fnt_handle>=_fnt_count) return FALSE;
    if (fnt_handle!=_fnt_count-1)
@@ -185,7 +185,7 @@ bool fnt_unload(int fnt_handle)
 */
 
 // set the current font
-bool fnt_select(int fnt_handle)
+uchar fnt_select(int fnt_handle)
 {
    if (fnt_handle>=_fnt_count) return FALSE;
    _fnt_current=fnt_handle;

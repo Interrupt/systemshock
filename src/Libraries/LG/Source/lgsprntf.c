@@ -143,13 +143,13 @@ int lg_vsprintf(char *buf, const char *format, va_list arglist)
 {
    fix arg_fix;
    fix24 arg_fix24;
-   bool arg_bool;
+   uchar arg_bool;
    char *arg_str;
    uint arg_uint;
    int arg_int;
    char fix_frac_buf[5];
 
-   bool ladjust, altform, pspec, this_is_len;
+   uchar ladjust, altform, pspec, this_is_len;
    bigness big;
    char pad_char;
    char src_char;

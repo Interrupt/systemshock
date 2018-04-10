@@ -37,13 +37,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // INTERNAL PROTOTYPES
 // ---------------------
 void event_queue_add(uiEvent* e);
-bool event_queue_next(uiEvent** e);
-bool region_check_opacity(LGRegion* reg, ulong evmask);
-bool event_dispatch_callback(LGRegion* reg, LGRect* r, void* v);
+uchar event_queue_next(uiEvent** e);
+uchar region_check_opacity(LGRegion* reg, ulong evmask);
+uchar event_dispatch_callback(LGRegion* reg, LGRect* r, void* v);
 void ui_set_last_mouse_region(LGRegion* reg,uiMouseEvent* ev);
 uchar ui_try_region(LGRegion* reg, LGPoint pos, uiEvent* ev);
 uchar ui_traverse_point(LGRegion* reg, LGPoint pos, uiEvent* data);
-bool send_event_to_region(LGRegion* r, uiEvent* ev);
+uchar send_event_to_region(LGRegion* r, uiEvent* ev);
 void ui_purge_mouse_events(void);
 void ui_flush_mouse_events(ulong timestamp, LGPoint pos);
 void ui_dispatch_mouse_event(uiMouseEvent* mout);
@@ -318,10 +318,10 @@ errtype uiReleaseFocus(LGRegion* r, ulong evmask)
 
 ushort uiDoubleClickTime = DEFAULT_DBLCLICKTIME;
 ushort uiDoubleClickDelay = DEFAULT_DBLCLICKDELAY;
-bool   uiDoubleClicksOn[NUM_MOUSE_BTNS] = { FALSE, FALSE, FALSE } ;
-bool   uiAltDoubleClick = FALSE;
+uchar   uiDoubleClicksOn[NUM_MOUSE_BTNS] = { FALSE, FALSE, FALSE } ;
+uchar   uiAltDoubleClick = FALSE;
 ushort uiDoubleClickTolerance = 5;
-static bool   poll_mouse_motion = FALSE;
+static uchar   poll_mouse_motion = FALSE;
 static uiMouseEvent last_down_events[NUM_MOUSE_BTNS];
 static uiMouseEvent last_up_events[NUM_MOUSE_BTNS];
 
@@ -354,7 +354,7 @@ void event_queue_add(uiEvent* e)
    if (EventQueue.in >= EventQueue.size) EventQueue.in = 0;
 }
 
-bool event_queue_next(uiEvent** e)
+uchar event_queue_next(uiEvent** e)
 {
    if (EventQueue.in != EventQueue.out)
    {
@@ -368,12 +368,12 @@ bool event_queue_next(uiEvent** e)
 
 
 // TRUE we are opaque to this mask.
-bool region_check_opacity(LGRegion* reg, ulong evmask)
+uchar region_check_opacity(LGRegion* reg, ulong evmask)
 {
    return (evmask & uiGetRegionOpacity(reg)) != 0;
 }
 
-bool event_dispatch_callback(LGRegion* reg, LGRect*, void* v)
+uchar event_dispatch_callback(LGRegion* reg, LGRect* rect, void* v)
 {
    uiEvent* ev = (uiEvent*)v;
    handler_chain *ch = (handler_chain*)(reg->handler);
@@ -478,13 +478,13 @@ uchar ui_traverse_point(LGRegion* reg, LGPoint pos, uiEvent* data)
    return TRAVERSE_MISS;
 }
 
-bool send_event_to_region(LGRegion* r, uiEvent* ev)
+uchar send_event_to_region(LGRegion* r, uiEvent* ev)
 {
    // Spew(DSRC_UI_Dispatch,("send_event_to_region(%x,%x)\n",r,ev));
    return ui_traverse_point(r,ev->pos,ev) == TRAVERSE_HIT;
 }
 
-bool uiDispatchEventToRegion(uiEvent* ev, LGRegion* reg)
+uchar uiDispatchEventToRegion(uiEvent* ev, LGRegion* reg)
 {
    LGPoint pos;
    uiEvent nev = *ev;
@@ -506,7 +506,7 @@ bool uiDispatchEventToRegion(uiEvent* ev, LGRegion* reg)
 }
 
 
-bool uiDispatchEvent(uiEvent* ev)
+uchar uiDispatchEvent(uiEvent* ev)
 {
    int i;
    // Spew(DSRC_UI_Dispatch,("dispatch_event(%x), CurFocus = %d\n",ev,CurFocus));
@@ -581,7 +581,7 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
          int crit = uiDoubleClickDelay;
          ulong timediff = timestamp - last_down_events[i].tstamp;
          LGPoint downpos = last_down_events[i].pos;
-         bool out = (abs(pos.x - downpos.x) > uiDoubleClickTolerance ||
+         uchar out = (abs(pos.x - downpos.x) > uiDoubleClickTolerance ||
                      abs(pos.y - downpos.y) > uiDoubleClickTolerance);
 
          // OK, if we've waited DoubleClickDelay after a down event, send it out.
@@ -626,7 +626,7 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
 void ui_dispatch_mouse_event(uiMouseEvent* mout)
 {
    int i;
-   bool eaten = FALSE;
+   uchar eaten = FALSE;
 //   ui_mouse_do_conversion(&(mout->pos.x),&(mout->pos.y),TRUE);
    ui_flush_mouse_events(mout->tstamp,mout->pos);
    for (i = 0; i < NUM_MOUSE_BTNS; i++)
@@ -755,8 +755,8 @@ errtype uiPoll(void)
    static LGPoint last_mouse = { -1, -1 };
    errtype err;
    uiEvent out,*ev;
-   bool kbdone = FALSE;
-   bool msdone = FALSE;
+   uchar kbdone = FALSE;
+   uchar msdone = FALSE;
    LGPoint mousepos = last_mouse;
    extern LGPoint LastCursorPos;
    extern struct _cursor* LastCursor;
@@ -767,7 +767,7 @@ errtype uiPoll(void)
    // burn through queue
    while(event_queue_next(&ev))
    {
-      bool result = TRUE;
+      uchar result = TRUE;
 //      ui_mouse_do_conversion(&(ev->pos.x),&(ev->pos.y),TRUE);
       if (ev->type == UI_EVENT_MOUSE)
          ui_dispatch_mouse_event((uiMouseEvent*)ev);
@@ -800,7 +800,7 @@ errtype uiPoll(void)
          kbs_event kbe = kb_next();
          if (kbe.code != KBC_NONE)
          {
-            bool eaten;
+            uchar eaten;
             uiRawKeyEvent* ev = (uiRawKeyEvent*)&out;
             // Spew(DSRC_UI_Polling,("uiPoll(): got a keyboard event: <%d,%x>\n",kbe.state,kbe.code));
             ev->pos = mousepos;
@@ -811,7 +811,7 @@ errtype uiPoll(void)
             if (!eaten)
             {
               ushort cooked;
-              bool result;
+              uchar result;
               // Spew(DSRC_UI_Polling,("uiPoll(): cooking keyboard event: <%d,%x>\n",kbe.state,kbe.code));
               err = kb_cook(kbe,&cooked,&result);
               if (err != OK) return err;
@@ -872,7 +872,7 @@ errtype uiPoll(void)
    return OK;
 }
 
-errtype uiSetMouseMotionPolling(bool poll)
+errtype uiSetMouseMotionPolling(uchar poll)
 {
    if (poll) mouseMask &= ~MOUSE_MOTION;
    else mouseMask |= MOUSE_MOTION;
@@ -891,7 +891,7 @@ errtype uiFlush(void)
    while (kbe.code != KBC_NONE)
    {
       ushort dummy;
-      bool result;
+      uchar result;
       kb_cook(kbe,&dummy,&result);
       kbe = kb_next();
    }
@@ -901,7 +901,7 @@ errtype uiFlush(void)
    return OK;
 }
 
-bool uiCheckInput(void)
+uchar uiCheckInput(void)
 {
    kbs_event kbe;
    mouse_event mse;
@@ -909,7 +909,7 @@ bool uiCheckInput(void)
    if (kbe.code != KBC_NONE)
    {
       ushort cooked;
-      bool res;
+      uchar res;
       kb_cook(kbe,&cooked,&res);
       if (kbe.state == KBS_DOWN)
       {

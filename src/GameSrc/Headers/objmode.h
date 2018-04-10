@@ -99,7 +99,7 @@ errtype object_palette_popup(void);
 errtype object_load_subclass(ObjClass loadclass);
 errtype object_load_type(ObjClass loadclass, ubyte subclass);
 
-bool object_find_func(int highlight_num);
+uchar object_find_func(int highlight_num);
 
 void object_mode_brush(MapElem *paint, FullMap *map, LGRect *r, LGPoint square, void *brushdata);
 

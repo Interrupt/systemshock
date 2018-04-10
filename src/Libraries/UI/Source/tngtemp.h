@@ -39,9 +39,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Includes
-#include <lg.h>  // every file should have this
-#include <base.h>
-#include <tng.h>
+#include "lg.h"  // every file should have this
+//#include "base.h"
+#include "tng.h"
 
 // Typedefs
 typedef struct {
@@ -66,13 +66,13 @@ errtype tng_GADGET_NAME_size(TNG *ptng, LGPoint *ppt);
 int tng_GADGET_NAME_getvalue(TNG *ptng);
 
 // React appropriately for receiving the specified cooked key
-bool tng_GADGET_NAME_keycooked(TNG *ptng, ushort key);
+uchar tng_GADGET_NAME_keycooked(TNG *ptng, ushort key);
 
 // React appropriately for receiving the specified mouse button event
-bool tng_GADGET_NAME_mousebutt(TNG *ptng, uchar type, LGPoint loc);
+uchar tng_GADGET_NAME_mousebutt(TNG *ptng, uchar type, LGPoint loc);
 
 // Handle incoming signals
-bool tng_GADGET_NAME_signal(TNG *ptng, ushort signal);
+uchar tng_GADGET_NAME_signal(TNG *ptng, ushort signal);
 
 // Macros
 

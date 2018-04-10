@@ -41,15 +41,15 @@ int num_slots;
 // Protoytpes
 errtype tng_increm_slot(TNG *ptng, int quan);
 errtype tng_decrem_slot(TNG *ptng, int quan);
-bool tng_quickbox_scroll_changed(void *ui_data, void *user_data);
-bool quickbox_fix_text_changed(QuickboxSlot *qbs);
-bool quickbox_uint_text_changed(QuickboxSlot *qbs);
-bool tng_quickbox_text_changed(void *ui_data, void *user_data);
+uchar tng_quickbox_scroll_changed(void *ui_data, void *user_data);
+uchar quickbox_fix_text_changed(QuickboxSlot *qbs);
+uchar quickbox_uint_text_changed(QuickboxSlot *qbs);
+uchar tng_quickbox_text_changed(void *ui_data, void *user_data);
 errtype tng_draw_qb_int_slot(TNG *ptng, QuickboxSlot *curp, LGRect r);
 errtype tng_draw_qb_text_slot(TNG *ptng, QuickboxSlot *curp, LGRect r);
 errtype tng_draw_qb_bool_slot(TNG *ptng, QuickboxSlot *curp, LGRect r);
 errtype tng_draw_qb_pb_slot(TNG *ptng, QuickboxSlot *curp, LGRect r);
-errtype gad_qbox_display_slot(QuickboxSlot *qbs, bool recurse);
+errtype gad_qbox_display_slot(QuickboxSlot *qbs, uchar recurse);
 errtype _draw_text(TNG *ptng, char *txt, int x_coord, int y_coord);
 int _text_width(TNG *ptng, char *t);
 int _label_extent(TNG *ptng);
@@ -62,7 +62,7 @@ errtype tng_increm_slot(TNG *ptng, int quan)
    int *val_i;
    uint *val_ui;
    short *val_s;
-   bool *val_b;
+   uchar *val_b;
    ubyte *val_by;
 
    pqs = QB_CURRENT(ptng);
@@ -112,7 +112,7 @@ errtype tng_increm_slot(TNG *ptng, int quan)
    }
    if (pqs->vartype == QB_BOOL_SLOT)
    {
-      val_b = (bool *)(pqs->var);
+      val_b = (uchar *)(pqs->var);
       if (*val_b)
          *val_b = FALSE;
       else
@@ -129,7 +129,7 @@ errtype tng_decrem_slot(TNG *ptng, int quan)
    int *val_i;
    uint *val_ui;
    short *val_s;
-   bool *val_b;
+   uchar *val_b;
    ubyte *val_by;
 
    pqs = QB_CURRENT(ptng);
@@ -181,7 +181,7 @@ errtype tng_decrem_slot(TNG *ptng, int quan)
    }
    if (pqs->vartype == QB_BOOL_SLOT)
    {
-      val_b = (bool *)(pqs->var);
+      val_b = (uchar *)(pqs->var);
       if (*val_b)
          *val_b = FALSE;
       else
@@ -192,7 +192,7 @@ errtype tng_decrem_slot(TNG *ptng, int quan)
    return(OK);
 }
 
-bool tng_quickbox_scroll_changed(void *ui_data, void *user_data)
+uchar tng_quickbox_scroll_changed(void *ui_data, void *user_data)
 {
    QuickboxSlot *qbs;
    TNG *ptng;
@@ -216,19 +216,19 @@ bool tng_quickbox_scroll_changed(void *ui_data, void *user_data)
    return(FALSE);
 }
 
-bool quickbox_fix_text_changed(QuickboxSlot *qbs)
+uchar quickbox_fix_text_changed(QuickboxSlot *qbs)
 {
    char* stringval = TNG_TX_GETLINE(qbs->aux_tng,0);
    *((fix *)(qbs->var)) = fix_from_float(atof(stringval));
    return TRUE;
 }
 
-bool quickbox_uint_text_changed(QuickboxSlot *qbs)
+uchar quickbox_uint_text_changed(QuickboxSlot *qbs)
 {
    char *convstring;
    uint atoival, newval;
    short base,i,cap;
-   bool okay;
+   uchar okay;
 
    base = 10;
    //Spew(DSRC_UI_Quickbox, ("Hey, at top of parsing algorithm!\n"));
@@ -286,13 +286,13 @@ bool quickbox_uint_text_changed(QuickboxSlot *qbs)
    return TRUE;
 }
 
-bool tng_quickbox_text_changed(void *ui_data, void *user_data)
+uchar tng_quickbox_text_changed(void *ui_data, void *user_data)
 {
    QuickboxSlot *qbs;
    TNG *ptng;
    int atoival, base, i, cap,newval;
    char *convstring;
-   bool okay;
+   uchar okay;
 
 #ifndef NO_DUMMIES
    void *dummy; dummy = ui_data;
@@ -646,14 +646,14 @@ errtype tng_draw_qb_text_slot(TNG *ptng, QuickboxSlot *curp, LGRect r)
 
 errtype tng_draw_qb_bool_slot(TNG *ptng, QuickboxSlot *curp, LGRect r)
 {
-   bool *argp;
+   uchar *argp;
    LGRect argrect;     // Where the actual variable should go
    LGPoint p1,p2,p3,p4;
    char temp[100];
    short base;
 
    // Set some variables, compute some stuff
-   argp = (bool *)curp->var;
+   argp = (uchar *)curp->var;
    r.ul.x += TNG_QB(ptng)->border.x;
    r.ul.y += TNG_QB(ptng)->spacing.y;
    argrect = r;
@@ -761,7 +761,7 @@ errtype tng_draw_qb_pb_slot(TNG *ptng, QuickboxSlot *curp, LGRect r)
 }
 
 // assumes all appropriate setup has already been done!
-errtype tng_quickbox_2d_draw(TNG *ptng, ushort , LGPoint loc)
+errtype tng_quickbox_2d_draw(TNG *ptng, ushort us, LGPoint loc)
 {
    TNG_quickbox *pqbtng;
    QuickboxSlot *curp;
@@ -819,10 +819,10 @@ int tng_quickbox_getvalue(TNG *ptng)
 }
 
 // React appropriately for receiving the specified cooked key
-bool tng_quickbox_keycooked(TNG *ptng, ushort key)
+uchar tng_quickbox_keycooked(TNG *ptng, ushort key)
 {
    int code = key & 0xff;
-   bool retval =FALSE;
+   uchar retval =FALSE;
    QuickboxSlot *qbs, *prevp, *curp;
 
    qbs = QB_CURRENT(ptng);
@@ -879,13 +879,13 @@ bool tng_quickbox_keycooked(TNG *ptng, ushort key)
 }
 
 // React appropriately for receiving the specified mouse button event
-bool tng_quickbox_mousebutt(TNG *ptng, uchar type, LGPoint loc)
+uchar tng_quickbox_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
    int localy, tw;
    int slotcount = 0;
    TNG_quickbox *pqbtng;
    QuickboxSlot *oldcur, *curp;
-   bool retval = FALSE;
+   uchar retval = FALSE;
 
    if ((type == TNG_MOUSE_LDOWN) || (type == TNG_MOUSE_RDOWN))
    {
@@ -959,9 +959,9 @@ bool tng_quickbox_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 }
 
 // Handle incoming signals
-bool tng_quickbox_signal(TNG *ptng, ushort signal)
+uchar tng_quickbox_signal(TNG *ptng, ushort signal)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    if (signal & TNG_SIGNAL_INCREMENT)
       tng_increm_slot(ptng, 1);
    if (signal & TNG_SIGNAL_DECREMENT)
@@ -1176,7 +1176,7 @@ int _text_width(TNG *ptng, char *t)
    return(retval);
 }
 
-errtype gad_qbox_display_slot(QuickboxSlot *qbs, bool recurse)
+errtype gad_qbox_display_slot(QuickboxSlot *qbs, uchar recurse)
 {
    LGRect srect;
    TNG *ptng;
@@ -1331,7 +1331,7 @@ int _total_extent(TNG *ptng)
                v += TNG_QB(ptng)->aux_size;
             if (qbs->options & QB_RD_ONLY)
             {
-               if (*((bool *)(qbs->var)))
+               if (*((uchar *)(qbs->var)))
                   sprintf(temp, "TRUE");
                else
                   sprintf(temp, "FALSE");

@@ -105,7 +105,7 @@ void ResAddPath(char *path)
 //		-3 = invalid resource file
 //		-4 = memory allocation failure
 
-int ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo)
+int ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 {
 //static int openMode[] = {
 //	O_RDONLY | O_BINARY,
@@ -117,7 +117,7 @@ int ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo)
 	ResFile *prf;
 	ResFileHeader fileHead;
 	ResDirHeader dirHead;
-   bool cd_spoof = FALSE;
+   uchar cd_spoof = FALSE;
 
 //	Find free file number, else return -1
 

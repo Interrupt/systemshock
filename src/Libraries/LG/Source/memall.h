@@ -121,7 +121,7 @@ void *CallocNorm(size_t size);
 
 //	Memory checking
 
-void MemCheckOn(bool hard);
+void MemCheckOn(uchar hard);
 void MemCheckOff(void);
 
 //	Heap management (memgrow.c)
@@ -176,7 +176,7 @@ MemStack;
 void MemStackInit (MemStack *ms);
 void *MemStackAlloc (MemStack *ms, long size);
 void *MemStackRealloc (MemStack *ms, void *ptr, long newsize);
-bool MemStackFree (MemStack *ms, void *ptr);
+uchar MemStackFree (MemStack *ms, void *ptr);
 
 
 #endif

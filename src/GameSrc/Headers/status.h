@@ -215,11 +215,11 @@ void status_bio_update(void);
 
 // Draw in the health / energy diagram.  Keep track of
 // previous draws to do clever incremental strategies.
-errtype status_vitals_update(bool Full_Redraw);
+errtype status_vitals_update(uchar Full_Redraw);
 
 // Globals
 
-extern bool flatline_heart;
+extern uchar flatline_heart;
 extern uchar chi_amp;
 
 #endif //__STATUS_H

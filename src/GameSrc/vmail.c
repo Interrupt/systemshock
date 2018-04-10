@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //#include <mprintf.h>
 //#define LOTS_O_SPEW
-// KLC  bool vmail_wait_for_input = TRUE;
+// KLC  uchar vmail_wait_for_input = TRUE;
 
 //#define CONTINUOUS_VMAIL_TEST
 
@@ -63,8 +63,8 @@ extern LGCursor   vmail_cursor;
 //
 errtype play_vmail(byte vmail_no)
 {
-	extern bool game_paused;   
-	extern bool citadel_check_input(void);
+	extern uchar game_paused;   
+	extern uchar citadel_check_input(void);
 	extern void email_page_exit(void);
 	extern short old_invent_page;
 	
@@ -180,9 +180,9 @@ ubyte vmail_len[NUM_VMAIL] = {
 //
 
 extern grs_canvas *anim_offscreen;
-bool copied_background = FALSE;
+uchar copied_background = FALSE;
 grs_bitmap *vmail_background = NULL;
-extern bool uiCheckInput(void);
+extern uchar uiCheckInput(void);
 
 #pragma disable_message(202)
 void vmail_intro(Rect *area, ubyte flags)
@@ -238,7 +238,7 @@ void vmail_start_anim_end(ActAnim *paa, AnimCode ancode, AnimCodeData *pdata)
 
 #define MOVIE_BUFFER_SIZE  (512 * 1024)
 
-errtype play_vmail_intro(bool use_texture_buffer)
+errtype play_vmail_intro(uchar use_texture_buffer)
 {
    Point animloc = {VINTRO_X, VINTRO_Y};
    uchar *p, *useBuffer;
@@ -314,9 +314,9 @@ errtype play_vmail(byte vmail_no)
    Point    animloc = {VINTRO_X, VINTRO_Y};
    errtype  intro_error;
    int      vmail_animfile_num = 0;
-   bool     early_exit = FALSE;
-   bool     preload_animation= TRUE;
-   bool     use_texture_buffer = FALSE;
+   uchar     early_exit = FALSE;
+   uchar     preload_animation= TRUE;
+   uchar     use_texture_buffer = FALSE;
    int      len = vmail_len[vmail_no];
    int      i;
    MemStat  data;
@@ -327,9 +327,9 @@ errtype play_vmail(byte vmail_no)
    // art - what were you thinking
    extern uiSlab fullscreen_slab;
    extern uiSlab main_slab;
-   extern bool game_paused;   
-   extern bool checking_mouse_button_emulation;
-   extern bool citadel_check_input(void);
+   extern uchar game_paused;   
+   extern uchar checking_mouse_button_emulation;
+   extern uchar citadel_check_input(void);
    extern void email_page_exit(void);
    extern short old_invent_page;
 
@@ -364,7 +364,7 @@ errtype play_vmail(byte vmail_no)
    // preload the animations
    if (!use_texture_buffer)
    {
-      bool  cant_preload_all = FALSE;
+      uchar  cant_preload_all = FALSE;
 
       // load the intro in first! before checking for preloading
       if (ResLock(RES_FRAMES_vintro) == NULL)
@@ -536,7 +536,7 @@ errtype play_vmail(byte vmail_no)
 
 byte test_vmail = 0;
 #pragma disable_message(202)
-bool shield_test_func(short keycode, ulong context, void* data)
+uchar shield_test_func(short keycode, ulong context, void* data)
 {
    int   i;
    vmail_wait_for_input = FALSE;
@@ -552,7 +552,7 @@ bool shield_test_func(short keycode, ulong context, void* data)
 
 #ifdef PLAYTEST
 #pragma disable_message(202)
-bool shield_off_func(short keycode, ulong context, void* data)
+uchar shield_off_func(short keycode, ulong context, void* data)
 {
    return(TRUE);
 }

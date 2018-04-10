@@ -62,11 +62,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  PROTOTYPES
 // -------------
 void right_justify_num(char *num, int dlen);
-bool iter_eligible_targets(ObjSpecID *sid);
+uchar iter_eligible_targets(ObjSpecID *sid);
 void select_closest_target(void);
 void toggle_current_target_backwards(void);
 void mfd_targetware_expose(MFD* mfd, ubyte control);
-bool mfd_targetware_handler(MFD *m, uiEvent *e);
+uchar mfd_targetware_handler(MFD *m, uiEvent *e);
 
 
 
@@ -93,7 +93,7 @@ bool mfd_targetware_handler(MFD *m, uiEvent *e);
 #define GET_DAMAGE_STRING(scl,dmg) (DAMAGE_STRING_BASE + (scl)*DAMAGE_DEGREES+(dmg))
 
 
-extern bool full_game_3d;
+extern uchar full_game_3d;
 extern int mfd_bmap_id(int triple);
 
 #define PAGEBUTT_W 8
@@ -131,7 +131,7 @@ void right_justify_num(char *num, int dlen)
 void mfd_target_expose(MFD *m, ubyte control)
 {
    int version = player_struct.hardwarez[CPTRIP(TARG_GOG_TRIPLE)];
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    ObjSpecID target = objs[player_struct.curr_target].specID;
 
    if (version < 1)
@@ -367,7 +367,7 @@ void mfd_target_expose(MFD *m, ubyte control)
 #define NUM_TARG_FRAMES 5
 extern ubyte targ_frame;
 
-void select_current_target(ObjID id, bool force_mfd)
+void select_current_target(ObjID id, uchar force_mfd)
 {
 #ifdef ANNOY_PLAYERS_TRYING_TO_TARGET_THINGS
    extern errtype change_current(ObjRefID new_current_ref);
@@ -407,7 +407,7 @@ void select_current_target(ObjID id, bool force_mfd)
 // returns FALSE, setting the specID to OBJ_SPEC_NULL.  If *sid is OBJ_SPEC_NULL, sets *sid to the first 
 // eligible critter, or returns FALSE if none exists. 
 
-bool iter_eligible_targets(ObjSpecID *sid) 
+uchar iter_eligible_targets(ObjSpecID *sid) 
 {
    ObjLoc ploc = objs[PLAYER_OBJ].loc;
    LGPoint plr;
@@ -557,7 +557,7 @@ void toggle_current_target()
 //
 // Iterates through all possible targets
 
-bool mfd_target_handler(MFD *m, uiEvent *e)
+uchar mfd_target_handler(MFD *m, uiEvent *e)
 {
    LGPoint pos;
    uiMouseEvent *ratbert = (uiMouseEvent*)e;
@@ -586,7 +586,7 @@ bool mfd_target_handler(MFD *m, uiEvent *e)
 //                 THE TARGET WARE ITEM MFD
 // ----------------------------------------------------------
 
-extern void mfd_item_micro_hires_expose(bool full, int triple);
+extern void mfd_item_micro_hires_expose(uchar full, int triple);
 extern void draw_mfd_item_spew(Ref id, int n);
 #define STRINGS_PER_WARE (REF_STR_wareSpew1 - REF_STR_wareSpew0)
 
@@ -594,7 +594,7 @@ void mfd_targetware_expose(MFD* mfd, ubyte control)
 {
    uchar n = CPTRIP(TARG_GOG_TRIPLE);
    uchar v = player_struct.hardwarez[n];
-   bool full = control & MFD_EXPOSE_FULL;
+   uchar full = control & MFD_EXPOSE_FULL;
    if (control == 0) return;
    gr_push_canvas(pmfd_canvas);
    mfd_clear_rects();
@@ -612,7 +612,7 @@ void mfd_targetware_expose(MFD* mfd, ubyte control)
 
 #define BUTTON_SIZE 30
 
-bool mfd_targetware_handler(MFD *m, uiEvent *e)
+uchar mfd_targetware_handler(MFD *m, uiEvent *e)
 {
    LGPoint pos;
    uiMouseEvent *ratbert = (uiMouseEvent*)e;

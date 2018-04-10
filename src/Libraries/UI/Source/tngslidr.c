@@ -238,11 +238,11 @@ int tng_slider_getvalue(TNG *ptng)
 }
 
 // React appropriately for receiving the specified cooked key
-bool tng_slider_keycooked(TNG *ptng, ushort key)
+uchar tng_slider_keycooked(TNG *ptng, ushort key)
 {
    TNG_slider *psltng;
    int code = key & 0xff;
-   bool retval = FALSE;
+   uchar retval = FALSE;
 
    psltng = (TNG_slider *)ptng->type_data;
    if (psltng->alignment == TNG_SL_VERTICAL)
@@ -263,12 +263,12 @@ bool tng_slider_keycooked(TNG *ptng, ushort key)
    return(retval);
 }
 
-bool tng_slider_apply_click(TNG *ptng, LGPoint loc)
+uchar tng_slider_apply_click(TNG *ptng, LGPoint loc)
 {
    int perc;
    TNG_slider *psltng;
    int right_edge, left_edge, top_edge, bottom_edge;
-   bool inc_area, dec_area, retval = FALSE;
+   uchar inc_area, dec_area, retval = FALSE;
    float t1,t2;
 
    psltng = (TNG_slider *)ptng->type_data;
@@ -331,10 +331,10 @@ bool tng_slider_apply_click(TNG *ptng, LGPoint loc)
 }
 
 // React appropriately for receiving the specified mouse button event
-bool tng_slider_mousebutt(TNG *ptng, uchar type, LGPoint loc)
+uchar tng_slider_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
    TNG_slider *psltng;
-   bool retval = FALSE;
+   uchar retval = FALSE;
 
    psltng = (TNG_slider *)ptng->type_data;
    //Spew(DSRC_UI_Slider, ("type == %x  MOUSE_LDOWN = %x  MOUSE_LUP = %x\n",type, TNG_MOUSE_LDOWN,TNG_MOUSE_LUP));
@@ -358,9 +358,9 @@ bool tng_slider_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 }
 
 // Handle incoming signals
-bool tng_slider_signal(TNG *ptng, ushort signal)
+uchar tng_slider_signal(TNG *ptng, ushort signal)
 {
-   bool retval = FALSE;
+   uchar retval = FALSE;
    //Spew(DSRC_UI_Slider, ("Slider Received signal: %x\n",signal));
    if (signal & TNG_SIGNAL_INCREMENT)
       IF_SET_RV(tng_slider_increm((TNG_slider *)ptng->type_data));
@@ -372,7 +372,7 @@ bool tng_slider_signal(TNG *ptng, ushort signal)
    return(retval);
 }
 
-bool tng_slider_increm(TNG_slider *psltng)
+uchar tng_slider_increm(TNG_slider *psltng)
 {
    psltng->value += psltng->increm;
    if (psltng->value > psltng->max)
@@ -381,7 +381,7 @@ bool tng_slider_increm(TNG_slider *psltng)
    return(TRUE);
 }
 
-bool tng_slider_decrem(TNG_slider *psltng)
+uchar tng_slider_decrem(TNG_slider *psltng)
 {
    psltng->value -= psltng->increm;
    if (psltng->value < psltng->min)

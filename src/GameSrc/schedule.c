@@ -67,7 +67,7 @@ int expand_tstamp(ushort s);
 int compare_tstamps(ushort t1, ushort t2);
 int compare_events(void* e1, void* e2);
 
-bool register_h_event(uchar x, uchar y, bool floor, char* sem, char* key, bool no_sfx);
+uchar register_h_event(uchar x, uchar y, uchar floor, char* sem, char* key, uchar no_sfx);
 void unregister_h_event(char sem);
 
 void null_event_handler(Schedule* s, SchedEvent* ev);
@@ -120,7 +120,7 @@ int compare_events(void* e1, void* e2)
 // SUPPORT FUNCTIONS
 // -----------------
 
-bool register_h_event(uchar x, uchar y, bool floor, char* sem, char* key, bool no_sfx)
+uchar register_h_event(uchar x, uchar y, uchar floor, char* sem, char* key, uchar no_sfx)
 {
    int i,fr;
 
@@ -194,7 +194,7 @@ void null_event_handler(Schedule*, SchedEvent*)
 void trap_event_handler(Schedule*, SchedEvent *ev)
 {
    ObjID    id1,id2;
-   bool dummy;
+   uchar dummy;
 
    id1 = ((TrapSchedEvent *) ev)->target_id;
    id2 = ((TrapSchedEvent *) ev)->source_id;
@@ -209,7 +209,7 @@ void height_event_handler(Schedule*, SchedEvent *ev)
 {
    MapElem *pme;
    HeightSchedEvent hse = *(HeightSchedEvent *)ev;
-   extern void rendedit_process_tilemap(FullMap* map,LGRect* r,bool newMap);
+   extern void rendedit_process_tilemap(FullMap* map,LGRect* r,uchar newMap);
    short x,y;
    LGRect bounds;
    char ht, sign=(hse.steps_remaining>0)?1:-1;
@@ -289,7 +289,7 @@ void door_event_handler(Schedule*,SchedEvent *ev)
    ObjID    id;
    short old_dest;
    ushort code, curr_code;
-   extern bool door_moving(ObjID id,bool dir);
+   extern uchar door_moving(ObjID id,uchar dir);
 
    id = ((DoorSchedEvent *) ev)->door_id;
    code = ((DoorSchedEvent *) ev)->secret_code;
@@ -403,9 +403,9 @@ void exposure_event_handler(Schedule* s,SchedEvent* ev)
    }
 }
 
-extern bool muzzle_fire_light;
-extern void lamp_turnon(bool visible, bool real);
-extern void lamp_turnoff(bool visible, bool real);
+extern uchar muzzle_fire_light;
+extern void lamp_turnon(uchar visible, uchar real);
+extern void lamp_turnoff(uchar visible, uchar real);
 
 void light_event_handler(Schedule*, SchedEvent *)
 {
@@ -422,7 +422,7 @@ void light_event_handler(Schedule*, SchedEvent *)
 void bark_event_handler(Schedule*, SchedEvent *)
 {
    ubyte mfd_id;
-   void check_panel_ref(bool puntme);
+   void check_panel_ref(uchar puntme);
    ubyte mfd_get_func(ubyte mfd_id,ubyte s);
 
    // timeout bark, if it's still there at all.
@@ -436,7 +436,7 @@ void bark_event_handler(Schedule*, SchedEvent *)
 
 void email_event_handler(Schedule*, SchedEvent* ev)
 {
-   extern void add_email_datamunge(short mung, bool select);
+   extern void add_email_datamunge(short mung, uchar select);
    EmailSchedEvent *e = (EmailSchedEvent*)ev;
    add_email_datamunge(e->datamunge,TRUE);
 }
@@ -469,7 +469,7 @@ static SchedHandler sched_handlers[] =
 
 static ushort current_tstamp = 0;
 
-errtype schedule_init(Schedule* s, int size, bool grow)
+errtype schedule_init(Schedule* s, int size, uchar grow)
 {
    return pqueue_init(&s->queue,size,sizeof(SchedEvent),compare_events,grow);
 }
@@ -535,7 +535,7 @@ void run_schedules(void)
 }
 
 /*Â¥Â¥Â¥
-bool schedule_test_hotkey(short keycode, ulong context, void* data)
+uchar schedule_test_hotkey(short keycode, ulong context, void* data)
 {
    SchedEvent e;
 #ifndef NO_DUMMIES
