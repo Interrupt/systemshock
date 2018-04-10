@@ -39,9 +39,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gameobj.h"
 #include "gamesort.h"
 
-#include "lg.h"
-#include "error.h"
-
 //#include <frintern.h>
 //#include <frparams.h>
 //#include <frflags.h>

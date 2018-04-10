@@ -40,9 +40,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 #include "gr2ss.h"
 
-#include "lg.h"
-#include "error.h"
-
 // ============================================================
 //                   THE FIXTURE MFD
 // ============================================================

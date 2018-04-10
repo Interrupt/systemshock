@@ -27,11 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#include "lg.h"
-#include "rect.h"
-#include "cursors.h"
-#include "res.h"
-
 // Includes
 
 // Defines

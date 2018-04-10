@@ -139,9 +139,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 #include "star.h"
 
-#include "lg.h"
-#include "error.h"
-
 #ifdef STEREO_SUPPORT
 #include <inp6d.h>
 #include <i6dvideo.h>

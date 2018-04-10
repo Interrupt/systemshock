@@ -87,9 +87,6 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "tools.h"
 #include "weapons.h"
 
-#include "lg.h"
-#include "error.h"
-
 #ifdef NOT_YET //KLC - for VR headsets
 
 #include <conio.h>

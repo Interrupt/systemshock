@@ -67,9 +67,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "amap.h"
 #include "citres.h"
 
-#include "lg.h"
-#include "error.h"
-
 //#include <inp6d.h>
 //#include <i6dvideo.h>
 

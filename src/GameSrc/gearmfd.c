@@ -36,9 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybstrng.h"
 #include "gr2ss.h"
 
-#include "lg.h"
-#include "error.h"
-
 
 // ============================================================
 //                   THE GEAR MFD

@@ -72,9 +72,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "dynmem.h"
 
-#include "lg.h"
-#include "error.h"
-
 /*Â¥Â¥Â¥
 #define AIL_SOUND
 #include "tminit.h"

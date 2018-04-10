@@ -67,9 +67,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "status.h"
 #include "statics.h"
 
-#include "lg.h"
-#include "error.h"
-
 #ifdef AUDIOLOGS
 #include "audiolog.h"
 #endif

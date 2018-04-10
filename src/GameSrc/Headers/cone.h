@@ -56,10 +56,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Includes
 
-#include "lg.h"
-#include "fix.h"
-#include "3d.h"
-
 // finds the view area polygon - modifies first argument to become
 // an array of fix points that represents the view area
 // polygon is in clockwise order

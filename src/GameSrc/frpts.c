@@ -48,9 +48,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frparams.h"
 #include "frflags.h"
 
-#include "lg.h"
-#include "error.h"
-
 #define ptLst(i)     pt_lsts[i]
 #define ptLstx(i,x)  (*(ptLst(i)+x))
 #define ptRow(i)     pt_rowv[i]

@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "textmaps.h"
 #include "objcrit.h"
 #include "dynmem.h"
-#include "../MacSrc/Shock.h"
+#include "Shock.h"
 #include "sideicon.h"
 #include "criterr.h"
 

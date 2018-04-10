@@ -22,9 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gameloop.h"
 #include "frtypesx.h"
 
-#include "lg.h"
-#include "error.h"
-
 #define QUIT_LOOP    -1
 #define GAME_LOOP     0
 #define FULLSCREEN_LOOP 1

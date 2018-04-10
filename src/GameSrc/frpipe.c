@@ -74,9 +74,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "refstuf.h"
 
-#include "lg.h"
-#include "error.h"
-
 //#include <mprintf.h>
 
 // tell me tell me what you're after

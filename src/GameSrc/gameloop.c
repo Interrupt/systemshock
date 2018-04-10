@@ -53,9 +53,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "screen.h"
 #include "gr2ss.h"
 
-#include "lg.h"
-#include "error.h"
-
 
 #undef RECT_FILL
 #define RECT_FILL(pr,x1,y1,x2,y2) \

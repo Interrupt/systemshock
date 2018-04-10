@@ -54,9 +54,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CAM_COOR_CNT    6
 #define CAM_ARGS_CNT    3
 
-#include "lg.h"
-#include "fix.h"
-
 typedef struct {
    uchar  type;                 // camera type code
    ushort obj_id;               // current obj_id, or null if abs used

@@ -55,9 +55,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "physunit.h"
 #include "trigger.h"    // for trap_sfx_func()
 
-#include "lg.h"
-#include "error.h"
-
 //----------------
 //  Internal Prototypes
 //----------------

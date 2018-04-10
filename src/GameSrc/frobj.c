@@ -43,9 +43,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tilename.h"
 
-#include "lg.h"
-#include "error.h"
-
 extern void render_sorted_objs(void);
 extern void sort_show_obj(ObjID cobjid);
 extern void facelet_obj(ObjID cobjid);

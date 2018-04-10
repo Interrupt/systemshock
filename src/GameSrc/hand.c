@@ -35,9 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "screen.h"
 #include "faketime.h"
 
-#include "lg.h"
-#include "error.h"
-
 
 typedef struct {
    char   handart_frame;

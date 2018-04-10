@@ -55,9 +55,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lvldata.h"
 #include "diffq.h"
 
-#include "lg.h"
-#include "error.h"
-
 
 LGRect target_screen_rect;
 

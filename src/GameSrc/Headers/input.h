@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __INPUT_H
 
 #include "frtypesx.h"
-#include "lg.h"
-#include "region.h"
 #include <Carbon/Carbon.h>
 
 // -------

@@ -33,8 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objprop.h"
 #include "cybstrng.h"
 
-#include "lg.h"
-#include "error.h"
 
 // -------------------
 // FILE NAMES AND VARS

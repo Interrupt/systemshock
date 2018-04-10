@@ -84,9 +84,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mapflags.h"
 #include "tilename.h"
 
-#include "lg.h"
-#include "error.h"
-
 // pre prototyping
 static void   _fr_rebuild_nVecWork(void);
 static void   _fr_init_vecwork(void);

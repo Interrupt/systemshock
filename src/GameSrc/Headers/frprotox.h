@@ -51,9 +51,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
-#include "lg.h"
-#include "error.h"
-
 #ifndef __FRTYPESX_H
 typedef void frc;
 typedef void fmp;

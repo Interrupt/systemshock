@@ -41,9 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "map.h"
 #include "mapflags.h"
 
-#include "lg.h"
-#include "error.h"
-
 void fr_compile_rect(fmp *fmptr, int llx, int lly, int ulx, int uly, uchar seen_bits)
 {
    FullMap *fm = (FullMap *)fmptr;

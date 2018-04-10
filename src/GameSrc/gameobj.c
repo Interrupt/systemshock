@@ -61,9 +61,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "models.h"
 #include "objload.h"
 
-#include "lg.h"
-#include "error.h"
-
 #include "ai.h"
 
 #ifdef DOOM_EMULATION_MODE

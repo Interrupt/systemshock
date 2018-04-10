@@ -24,8 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frprotox.h"
 #include "gamescr.h"
 
-#include "lg.h"
-#include "error.h"
 
 //Â¥Â¥#include <inp6d.h>
 

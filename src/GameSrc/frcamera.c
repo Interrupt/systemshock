@@ -91,9 +91,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fauxrint.h"
 #include "map.h"
 
-#include "lg.h"
-#include "error.h"
-
 fix    fr_camera_last[CAM_COOR_CNT]={0,0,0,0,0,0};
 fix    cam_slew_scale[CAM_COOR_CNT]={fix_make(4,0),fix_make(4,0),fix_make(4,0),128,128,128};
 cams  *_def_cam=NULL;

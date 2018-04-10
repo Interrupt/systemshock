@@ -64,9 +64,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tilename.h"
 #include "mapflags.h"
 
-#include "lg.h"
-#include "error.h"
-
 long eye_mods[3]={0,0,0};
 
 // prototype

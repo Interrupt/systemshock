@@ -57,8 +57,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "status.h"
 #include "tools.h"
 
-#include "lg.h"
-#include "error.h"
 
 /*
 #include <physics.h>

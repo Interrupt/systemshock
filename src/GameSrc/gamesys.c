@@ -76,9 +76,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "wares.h"
 #include "weapons.h"
 
-#include "lg.h"
-#include "error.h"
-
 
 // -------
 // DEFINES

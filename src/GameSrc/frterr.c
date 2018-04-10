@@ -47,9 +47,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "textmaps.h"  // pain, sadness
 #include "star.h"
 
-#include "lg.h"
-#include "error.h"
-
 #define FLIP_BITS
 
 // for the game system to grab and deparse for distance and all

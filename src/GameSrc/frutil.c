@@ -38,9 +38,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frparams.h"
 #include "frflags.h"
 
-#include "lg.h"
-#include "error.h"
-
 uchar  fr_cur_obj_col;
 ushort fr_col_to_obj[256];
 
