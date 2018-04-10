@@ -24,11 +24,11 @@
 #include "lg_types.h"
 #include "lgsprntf.h"
 
-#include "kb.h"
-#include "kbcook.h"
-#include "kbglob.h"
-#include "mouse.h"
-#include "mousevel.h"
+//#include "kb.h"
+//#include "kbcook.h"
+//#include "kbglob.h"
+//#include "mouse.h"
+//#include "mousevel.h"
 
 #include "dbg.h"
 #include "lg.h"
@@ -47,9 +47,9 @@
 //#include "digi.h"
 //#include "midi.h"
 
-#include "cursors.h"
+//#include "cursors.h"
 //#include "curtyp.h"
-#include "curdat.h"
+//#include "curdat.h"
 #include "butarray.h"
 #include "event.h"
 #include "gadgets.h"

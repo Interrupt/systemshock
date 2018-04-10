@@ -146,6 +146,10 @@ include_directories(
 	src/MacSrc
 )
 
+add_definitions(
+	-include precompiled.h
+)
+
 add_executable(systemshock
 	${GAME_SRC}
 )
