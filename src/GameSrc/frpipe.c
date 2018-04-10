@@ -196,7 +196,7 @@ int fr_pipe_freemem(void)
  * also sets up the globals used in the clippers
  */
 //#pragma disable_message(202)
-int fr_pipe_start(int /*rad*/)
+int fr_pipe_start(int rad)
 {
    _fr_x_cen=coor(EYE_X)>>(8+MAP_SH);
    _fr_y_cen=coor(EYE_Y)>>(8+MAP_SH);
@@ -284,7 +284,7 @@ extern ushort frpipe_dist; // furtherest walking distance away
 #define Q_E 1
 #define Q_S 2
 #define Q_W 3
-#define QoL(a,b,c,d) {Q_##a##,Q_##b##,Q_##c##,Q_##d##}
+#define QoL(a,b,c,d) {Q_##a,Q_##b,Q_##c,Q_##d}
 
 uchar quad_order_lists[8][4]=
 {
