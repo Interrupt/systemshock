@@ -32,3 +32,7 @@ CMakeLists.txt.user
 *.exe
 *.out
 *.app
+
+# CMake
+CMakeFiles
+src/Libraries/CMakeFiles
