@@ -59,8 +59,8 @@ void flat8_clear (long color)
    uint		temp;
 	 
 	 color &= 0x00ff;
-   p = grd_bm.bits;
-   h = grd_bm.h;
+   	p = grd_bm.bits;
+   	h = grd_bm.h;
 	 w = grd_bm.w;
 	 row = grd_bm.row;
 	 if (w>=16)	// only do doubles if at least two of them (16 bytes)
@@ -86,8 +86,7 @@ void flat8_clear (long color)
    while (h--)
    {
 // MLA - inlined this code
-   	 if(p != NULL)
-	 	LG_memset (p, color, w);
+	 	LG_memset (p, color, w * 4);
      /*{
 		  firstbytes = fb,middoubles = md,lastbytes = lb;
 		 	dst = p;

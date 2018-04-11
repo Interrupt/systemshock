@@ -50,8 +50,6 @@ void gri_clut_tpoly_init (grs_tmap_loop_info *ti);
 
 int gri_poly_loop (grs_tmap_loop_info *ti)
 {
-	DebugStr("gri_poly_loop");
-
 	int d;
 	uchar c=(uchar )(ti->bm.bits); /* actually, fill_parm */
 	uchar *bm_bits = ti->bm.bits;
@@ -69,7 +67,7 @@ int gri_poly_loop (grs_tmap_loop_info *ti)
 	     switch (ti_hlog) {
 	        int x;
 	     case GRL_OPAQUE:
-	        LG_memset(ti_d+fix_cint(ti_left_x), c, d);
+	        LG_memset(ti_d+fix_cint(ti_left_x), c, d * 4);
 	        break;
 	     case GRL_TLUC8:
 	        for (x=fix_cint(ti_left_x); x<fix_cint(ti_right_x); x++)
@@ -97,7 +95,6 @@ int gri_poly_loop (grs_tmap_loop_info *ti)
 
 void gri_solid_poly_init (grs_tmap_loop_info *ti)
 {
-   DebugStr("gri_solid_poly_init");
    ti->bm.bits=ti->clut;      /* set fill_parm */
    ti->bm.hlog=GRL_OPAQUE;
    ti->d=ti->y*grd_bm.row+grd_bm.bits;
@@ -108,7 +105,6 @@ void gri_solid_poly_init (grs_tmap_loop_info *ti)
 
 void gri_poly_init (grs_tmap_loop_info *ti)
 {
-   DebugStr("gri_poly_init");
    ti->bm.hlog=GRL_OPAQUE;
    ti->d=ti->y*grd_bm.row+grd_bm.bits;
    ti->loop_func= (void (*)()) gri_poly_loop;
@@ -118,7 +114,6 @@ void gri_poly_init (grs_tmap_loop_info *ti)
 
 void gri_clut_poly_init (grs_tmap_loop_info *ti)
 {
-   DebugStr("gri_clut_poly_init");
    ti->bm.bits=(uchar *)(ti->clut[(int )(ti->bm.bits)]);
    ti->bm.hlog=GRL_OPAQUE;
    ti->d=ti->y*grd_bm.row+grd_bm.bits;
@@ -129,7 +124,6 @@ void gri_clut_poly_init (grs_tmap_loop_info *ti)
 
 void gri_tpoly_init (grs_tmap_loop_info *ti)
 {
-   DebugStr("gri_tpoly_init");
    if (tluc8tab[(uchar )(ti->bm.bits)]!=NULL) {
       ti->bm.bits=tluc8tab[(uchar )(ti->bm.bits)];
       ti->bm.hlog=GRL_TLUC8;

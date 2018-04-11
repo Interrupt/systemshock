@@ -54,11 +54,7 @@ void DoTest(void);
 	 _vertex.u = fix_make(_u,0),             \
 	 _vertex.v = fix_make(_v,0),_vertex.w = _w, _vertex.i = _i; 
 
-#if Mac
-#define clear_color 0x0
-#else
-#define clear_color 0
-#endif
+#define clear_color 400
 
 char test_clut[111] = { 0,0,0,0,0,0,0,0,0,0,
 						 0,0,0,0,0,0,0,0,0,0,
@@ -79,6 +75,10 @@ uchar pal_buf[768];
 uchar bitmap_buf[17000];
 uchar shade_buf[4096];
 
+SDL_Window *window;
+SDL_Renderer *renderer;
+SDL_Surface *screenSurface;
+
 void main(void)
  {      
  	DebugStr("Starting Test");
@@ -92,22 +92,21 @@ void main(void)
 	grs_canvas	canvas;
 
 	SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window *window = SDL_CreateWindow("SimpleMain", 320, 480, 640, 480, SDL_WINDOW_SHOWN);
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    window = SDL_CreateWindow("SimpleMain", 320, 480, 640, 480, SDL_WINDOW_SHOWN);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
   	screenSurface = SDL_GetWindowSurface( window );
   	gScreenAddress = screenSurface->pixels;
 
   	SDL_SetRenderDrawColor(&renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   	SDL_RenderClear(&renderer);
   	SDL_RenderPresent(&renderer);
-  	SDL_UpdateWindowSurface(&window);
-  	SDL_Delay(200);
 
 	DebugStr("Initializing");
 	gr_init();
 	gr_set_mode (GRM_640x480x8, TRUE);
 	screen = gr_alloc_screen (640, 480);
 	gr_set_screen (screen);
+	grd_bm.row = 640 * 4;
 
 	DebugStr("Opening test.img");
 	fp = fopen("test.img","rb");
@@ -116,10 +115,6 @@ void main(void)
 
 	bm = * (grs_bitmap *) bitmap_buf;
 	bm.bits = bitmap_buf+28;
-
-	gr_bitmap(&bm,20,20);
-	SDL_UpdateWindowSurface(&window);
-  	SDL_Delay(200);
 
 	DebugStr("Opening test.pal");
 	fp = fopen("test.pal","rb");
@@ -132,7 +127,8 @@ void main(void)
 	DebugStr("Alloc Ipal");
 	gr_alloc_ipal();
 	gr_init_blend(1);
-	gr_clear(clear_color);
+	gr_clear(0x0);
+	WaitKey();
 
 	DebugStr("Setting points");
 	points[0] = &v0;
@@ -148,7 +144,11 @@ void main(void)
 	DebugStr("Set Light Table");	
 	gr_set_light_tab(shade_buf);
 
-	DebugStr("Settting Vertices");
+	gr_clear(clear_color);
+	gr_bitmap(&bm,20,20);
+  	WaitKey();
+
+	DebugStr("Setting Vertices");
 
 // ==
 	// linear
@@ -157,12 +157,8 @@ void main(void)
 	WaitKey();
 
 	gr_per_umap(&bm, 4, points);
-	SDL_UpdateWindowSurface( &window );
-	SDL_Delay(500);
-	
 	WaitKey();
 	gr_clut_per_umap(&bm, 4, points, test_clut);
-
 	gr_lit_per_umap(&bm, 4, points);
 
 	WaitKey();
@@ -200,6 +196,7 @@ void main(void)
 	gr_lit_per_umap(&bm, 4, points);
 	WaitKey();
 	gr_clear(clear_color);
+	WaitKey();
 
 	// perspective(vscan)
 	SetVertexPerVScan(points);
@@ -209,7 +206,7 @@ void main(void)
 	WaitKey();
 	gr_lit_per_umap(&bm, 4, points);
 	WaitKey();
-	gr_clear(clear_color);
+	WaitKey();
 		
 
 // ===== test code     
@@ -232,7 +229,7 @@ void main(void)
     	gr_clut_per_umap(&bm, 4, points, test_clut);
 		gr_lit_per_umap(&bm, 4, points);
 		SDL_UpdateWindowSurface( window );
-		SDL_Delay(50);
+		SDL_Delay(2);
 	}
 
 //	time = TickCount()-time;
@@ -245,7 +242,8 @@ void main(void)
 
 void WaitKey(void)
 {
-	SDL_Delay(100);
+  	SDL_UpdateWindowSurface(window);
+	SDL_Delay(1000);
 }
  
 
