@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <Carbon/Carbon.h>
+#include <sdl.h>
 
 //--------------------
 //  Types
@@ -54,7 +55,11 @@ typedef struct
 extern PixMapHandle 		gScreenPixMap;
 extern CTabHandle			gMainColorHand;
 extern Boolean				gChangedColors;
-extern ShockBitmap		gMainOffScreen;
+extern ShockBitmap			gMainOffScreen;
+
+/*extern SDL_Window* 			window;
+extern SDL_Surface* 		screenSurface;
+extern SDL_Renderer* 		renderer;*/
 
 
 //--------------------

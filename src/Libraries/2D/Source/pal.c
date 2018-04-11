@@ -86,6 +86,7 @@ void gr_set_pal (int start, int n, uchar *pal_data)
 
    if (n <= 0)
       return;
+
    LG_memcpy (grd_pal+3*start, pal_data, 3*n);
    for (i=start; i<start+n; i++) {
       r = grd_pal[3*i];

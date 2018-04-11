@@ -75,8 +75,7 @@ extern Ptr		gScreenAddress;
 //
 void mac_set_mode(void)
  {
- 	grd_mode_cap.vbase = (uchar *) gScreenAddress; 
- 	grd_valloc_mode = 0;
+ 	grd_mode_cap.vbase = (uchar *) gScreenAddress;
  	
  	grd_canvas_table_list[BMT_DEVICE] = flat8_canvas_table;
  	grd_function_table_list[BMT_DEVICE] = (grt_function_table *) flat8_function_table;
@@ -89,7 +88,8 @@ void mac_set_mode(void)
 // and ResetCTSeed).
 void mac_set_pal (int start, int n, uchar *pal_data)
  {
- 	if (n)	// ignore if count == 0
+ 	/*
+        if (n)	// ignore if count == 0
  	 {
  	 	short			i;
  	 	ColorSpec	*cSpec;
@@ -107,9 +107,10 @@ void mac_set_pal (int start, int n, uchar *pal_data)
  	 	 	cSpec++;
  	 	 }
  	 
-		//SetEntries(start, n, &(**(gMainColorHand)).ctTable[start]);
+		SetEntries(start, n, &(**(gMainColorHand)).ctTable[start]);
 		ResetCTSeed();
  	 }
+         */
  }
  
 //------------------------------------------------------------------------

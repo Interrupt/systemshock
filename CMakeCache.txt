@@ -252,6 +252,18 @@ RES_LIB_LIB_DEPENDS:STATIC=
 //Dependencies for target
 RND_LIB_LIB_DEPENDS:STATIC=
 
+//Path to a library.
+SDL2MAIN_LIBRARY:FILEPATH=/usr/local/lib/libSDL2main.a
+
+//The directory containing a CMake configuration file for SDL2.
+SDL2_DIR:PATH=/usr/local/lib/cmake/SDL2
+
+//Path to a file.
+SDL2_INCLUDE_DIR:PATH=/usr/local/include/SDL2
+
+//Where the SDL Library can be found
+SDL2_LIBRARY:STRING=/usr/local/lib/libSDL2main.a;/usr/local/lib/libSDL2.dylib;-framework Cocoa
+
 //Dependencies for target
 SND_LIB_LIB_DEPENDS:STATIC=
 
@@ -420,4 +432,6 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Path to a library.
+SDL2_LIBRARY_TEMP:INTERNAL=/usr/local/lib/libSDL2.dylib
 

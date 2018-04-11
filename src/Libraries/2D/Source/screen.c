@@ -84,6 +84,7 @@ grs_screen *gr_alloc_screen (short w, short h)
   s->c = c;
   gr_init_canvas (c, s->bm.bits, BMT_DEVICE, w, h);
   gr_init_canvas (c+1, s->bm.bits, BMT_DEVICE, grd_cap->w, grd_cap->h);
+
   return s;
 
 bailout1:

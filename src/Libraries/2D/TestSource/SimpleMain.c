@@ -18,24 +18,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // simple test code for 2d library 
 
-//#define Mac 1
-
 #include <2d.h>
 #include <fix.h>
 #include "lg.h"
 #include <stdio.h>
 
-//#if Mac
 #include <InitMac.h>
 #include "ShockBitmap.h"
 #include <Carbon/Carbon.h>
-//#endif
+#include <sdl.h>
 
-//#if Mac
 WindowPtr 	gMainWindow;
 long		gScreenRowbytes;
 CTabHandle	gMainColorHand;
-//#endif
+
+SDL_Surface* screenSurface;
 
 Ptr				gScreenAddress;
 
@@ -58,25 +55,25 @@ void DoTest(void);
 	 _vertex.v = fix_make(_v,0),_vertex.w = _w, _vertex.i = _i; 
 
 #if Mac
-#define clear_color 0xff
+#define clear_color 0x0
 #else
 #define clear_color 0
 #endif
 
-/*#if Mac
-void main (void)
- {    
-	InitMac();
-	CheckConfig();
-	
-	SetupWindows(&gMainWindow);               // setup everything
-	SetupOffscreenBitmaps();      
-				
-	DoTest();     
- 
-	ExitToShell();
- }
-#endif*/
+char test_clut[111] = { 0,0,0,0,0,0,0,0,0,0,
+						 0,0,0,0,0,0,0,0,0,0,
+						 0,0,0,0,0,0,0,0,0,0,
+						 0,0,0,0,54,0,0,0,0,0,
+						 0,0,0,0,0,0,0,0,0,0,
+						 0,0,0,0,0,0,0,0,0,0,
+						 0,0,0,0,0,0,0,0,0,0,
+						 0,0,0,0,0,0,0,0,0,0,
+						 0,0,0,0,0,0,0,0,0,0,
+						 0,0,0,0,0,0,0,0,0,0,
+						 0,0,0,0,0,0,0,0,0,0,
+						 80
+						};
+
 
 uchar pal_buf[768];
 uchar bitmap_buf[17000];
@@ -92,16 +89,27 @@ void main(void)
 	grs_bitmap  bm;
 	grs_vertex  v0,v1,v2,v3;
 	grs_vertex  *points[4];
+	grs_canvas	canvas;
+
+	SDL_Init(SDL_INIT_VIDEO);
+    SDL_Window *window = SDL_CreateWindow("SimpleMain", 320, 480, 640, 480, SDL_WINDOW_SHOWN);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+  	screenSurface = SDL_GetWindowSurface( window );
+  	gScreenAddress = screenSurface->pixels;
+
+  	SDL_SetRenderDrawColor(&renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+  	SDL_RenderClear(&renderer);
+  	SDL_RenderPresent(&renderer);
+  	SDL_UpdateWindowSurface(&window);
+  	SDL_Delay(200);
 
 	DebugStr("Initializing");
-
 	gr_init();
 	gr_set_mode (GRM_640x480x8, TRUE);
-	screen = gr_alloc_screen (grd_cap->w, grd_cap->h);
+	screen = gr_alloc_screen (640, 480);
 	gr_set_screen (screen);
 
 	DebugStr("Opening test.img");
-
 	fp = fopen("test.img","rb");
 	fread (bitmap_buf, 1, 16412, fp);
 	fclose (fp);
@@ -109,45 +117,62 @@ void main(void)
 	bm = * (grs_bitmap *) bitmap_buf;
 	bm.bits = bitmap_buf+28;
 
+	gr_bitmap(&bm,20,20);
+	SDL_UpdateWindowSurface(&window);
+  	SDL_Delay(200);
+
 	DebugStr("Opening test.pal");
-	
 	fp = fopen("test.pal","rb");
 	fread (pal_buf, 1, 768, fp);
 	fclose (fp);
 
+	DebugStr("Setting pallete");
 	gr_set_pal(0, 256, pal_buf);
-		
+
+	DebugStr("Alloc Ipal");
 	gr_alloc_ipal();
 	gr_init_blend(1);
 	gr_clear(clear_color);
-	
+
+	DebugStr("Setting points");
 	points[0] = &v0;
 	points[1] = &v1;
 	points[2] = &v2;
 	points[3] = &v3;
 
-		DebugStr("Opening test.shd");
-
+	DebugStr("Opening test.shd");
 	fp = fopen("test.shd","rb");
 	fread (shade_buf, 1, 4096, fp);
 	fclose (fp);
+
+	DebugStr("Set Light Table");	
 	gr_set_light_tab(shade_buf);
+
+	DebugStr("Settting Vertices");
 
 // ==
 	// linear
 	SetVertexLinear(points);
 	gr_poly(2, 4, points);
 	WaitKey();
+
 	gr_per_umap(&bm, 4, points);
+	SDL_UpdateWindowSurface( &window );
+	SDL_Delay(500);
+	
 	WaitKey();
-//  gr_clut_per_umap(&bm, 4, points, (uchar *) test_clut);
+	gr_clut_per_umap(&bm, 4, points, test_clut);
+
 	gr_lit_per_umap(&bm, 4, points);
+
 	WaitKey();
 	gr_clear(clear_color);
 	
 	// wall 
 	SetVertexWall(points);
 	gr_poly(2, 4, points);
+
+	
 	WaitKey();
 	gr_per_umap(&bm, 4, points);
 	WaitKey();
@@ -162,6 +187,7 @@ void main(void)
 	gr_per_umap(&bm, 4, points);
 	WaitKey();
 	gr_lit_per_umap(&bm, 4, points);
+
 	WaitKey();
 	gr_clear(clear_color);
 
@@ -185,39 +211,42 @@ void main(void)
 	WaitKey();
 	gr_clear(clear_color);
 		
+
 // ===== test code     
-/*  SetVertexPerHScan(points);
+    SetVertexPerHScan(points);
 	SetVertexLinear(points);
 	bm.flags = 0;
-		
-//  gr_set_fill_type(FILL_SOLID);
-//  gr_set_fill_parm(33);
-	time = TickCount();  
-	for (i=0; i<100; i++)
-//    gr_clear(i);
-//    gr_per_umap(&bm, 4, points);
-//    gr_clut_per_umap(&bm, 4, points, (uchar *) test_clut);
-		gr_lit_per_umap(&bm, 4, points);
 
-	time = TickCount()-time;
-	NumToString(time,str);
+    gr_set_fill_type(FILL_SOLID);
+    gr_set_fill_parm(33);
+
+    gr_per_umap(&bm, 4, points);
+    gr_clut_per_umap(&bm, 4, points, test_clut);
+    gr_lit_per_umap(&bm, 4, points);
+
+    WaitKey();
+
+	for (int i=0; i<100; i++) {
+    	gr_clear(i);
+    	gr_per_umap(&bm, 4, points);
+    	gr_clut_per_umap(&bm, 4, points, test_clut);
+		gr_lit_per_umap(&bm, 4, points);
+		SDL_UpdateWindowSurface( window );
+		SDL_Delay(50);
+	}
+
+//	time = TickCount()-time;
+//	NumToString(time,str);
 //  DebugStr(str);  
-		 */   
+		 
  
 	gr_close();
 }
 
 void WaitKey(void)
- {
-/*
-#if Mac
- {EventRecord evt; while (true){if (GetNextEvent(mDownMask+keyDownMask,&evt))
-	{if (evt.what==mouseDown) break;}}}
-#else
-	while (!getch());
-#endif
-*/
- }
+{
+	SDL_Delay(100);
+}
  
 
 void SetVertexLinear(grs_vertex **points)

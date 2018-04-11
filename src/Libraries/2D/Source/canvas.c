@@ -151,6 +151,7 @@ grs_canvas *gr_alloc_canvas (int type, short w, short h)
 
 void gr_free_canvas (grs_canvas *c)
 {
+   printf("Free canvas");
    if (c->bm.type == BMT_DEVICE)
       vfree (c->bm.bits);
    else

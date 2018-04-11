@@ -107,7 +107,9 @@ int	gOVResult;
 #if defined(powerc) || defined(__powerc)
 fix fix_mul(fix a, fix b)
 {
-	return a * b;
+	float af = fix_float(a);
+	float bf = fix_float(b);
+	return fix_from_float(af * bf);
 }
 #else
 fix asm fix_mul(fix a, fix b)
@@ -127,7 +129,10 @@ fix asm fix_mul(fix a, fix b)
 #if defined(powerc) || defined(__powerc)
 fix fast_fix_mul_int(fix a, fix b)
 {
-	return a;
+	float af = fix_float(a);
+	float bf = fix_float(b);
+	fix f = fix_from_float(af * bf);
+	return fix_int(f);
 }
 #else
 fix asm fast_fix_mul_int(fix a, fix b)
@@ -146,7 +151,9 @@ fix asm fast_fix_mul_int(fix a, fix b)
 #if defined(powerc) || defined(__powerc)
 fix fix_mul_asm_safe(fix a, fix b)
 {
-	return a;
+	float af = fix_float(a);
+	float bf = fix_float(b);
+	return fix_from_float(af * bf);
 }
 #else
 fix asm fix_mul_asm_safe(fix a, fix b)
@@ -178,7 +185,9 @@ fix asm fix_mul_asm_safe(fix a, fix b)
 #if defined(powerc) || defined(__powerc)
 fix fix_div(fix a, fix b)
 {
-	return a;
+	float af = fix_float(a);
+	float bf = fix_float(b);
+	return fix_from_float(af / bf);
 }
 #else
 fix asm fix_div(fix a, fix b)
@@ -223,7 +232,10 @@ fix asm fix_div(fix a, fix b)
 #if defined(powerc) || defined(__powerc)
 fix fix_mul_div(fix m0, fix m1, fix d)
 {
-	return m0;
+	float af = fix_float(m0);
+	float bf = fix_float(m1);
+	float df = fix_float(d);
+	return fix_from_float((af / bf) / d);
 }
 #else
 fix asm fix_mul_div (fix m0, fix m1, fix d)

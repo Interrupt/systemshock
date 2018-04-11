@@ -5,6 +5,10 @@ set(MAC_SRC
 	../MacSrc/ShockBitmap.c
 )
 
+find_file(SDL2_INCLUDE_DIR NAME SDL.h HINTS SDL2)
+find_library(SDL2_LIBRARY NAME SDL2)
+include_directories(${SDL2_INCLUDE_DIR})
+
 set(2D_SRC
 	2D/Source/bit.c
 	2D/Source/bitmap.c

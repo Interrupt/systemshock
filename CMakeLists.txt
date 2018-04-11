@@ -143,6 +143,8 @@ include_directories(
 	src/MacSrc
 )
 
+include_directories(${SDL2_INCLUDE_DIR})
+
 add_executable(TestSimpleMain
 	src/Libraries/2D/TestSource/SimpleMain.c
 )
@@ -158,6 +160,11 @@ target_link_libraries(TestSimpleMain
 	LG_LIB
 	MAC_LIB
 )
+
+find_file(SDL2_INCLUDE_DIR NAME SDL.h HINTS SDL2)
+find_library(SDL2_LIBRARY NAME SDL2)
+include_directories(${SDL2_INCLUDE_DIR})
+target_link_libraries(TestSimpleMain ${SDL2_LIBRARY})    
 
 #add_definitions(
 #	-include precompiled.h

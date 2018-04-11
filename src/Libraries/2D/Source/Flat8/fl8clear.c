@@ -46,6 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #if (defined(powerc) || defined(__powerc))	
 void flat8_clear (long color)
 {
+
    uchar 	*p;
    int	 	h;
 	 int		w;
@@ -85,8 +86,9 @@ void flat8_clear (long color)
    while (h--)
    {
 // MLA - inlined this code
-//		LG_memset (p, color, w);
-     {
+   	 if(p != NULL)
+	 	LG_memset (p, color, w);
+     /*{
 		  firstbytes = fb,middoubles = md,lastbytes = lb;
 		 	dst = p;
 		 	
@@ -103,7 +105,7 @@ void flat8_clear (long color)
 		 	
 		 	// do remaining bytes
 		 	while (lastbytes--) *(dst++) = color;
-     }
+     }*/
      
     p += row;
    }
