@@ -27,10 +27,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <string.h>
 
-#define __FAUXREND_SRC
+//#define __FAUXREND_SRC
 #include "2d.h"
 #include "3d.h"
 #include "fauxrend.h"
+
+#include <Carbon/Carbon.h>
 
 // prototypes
 uchar fauxrend_start_frame(void);

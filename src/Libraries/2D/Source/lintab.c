@@ -263,7 +263,7 @@ grt_uline_fill bank8_uline_fill_table [GRD_FILL_TYPES][GRD_LINE_TYPES] =
 
   {	gri_gen_uline_fill, 
 		gri_all_uiline_fill, 
-		gri_bank8_uhline_ns, 
+		(void *) gr_null, //MLA		gri_bank8_uhline_ns, 
 		gri_gen_uvline_fill, 
 	 	gri_gen_uline_fill, 
 		gri_gen_uline_fill,

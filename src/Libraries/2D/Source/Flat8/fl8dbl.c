@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cnvdat.h"
 #include "flat8.h"
 #include "blndat.h"
+#include <stdlib.h>
+#include <stdbool.h>
 
 #if !(defined(powerc) || defined(__powerc))
 asm void Handle_Smooth_H_Asm(int	endh, int endv, long srcAdd, long dstAdd,

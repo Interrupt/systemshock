@@ -1,4 +1,5 @@
-
+enable_language(ASM)
+set(can_use_assembler TRUE)
 
 set(MAC_SRC
 	../MacSrc/ShockBitmap.c
@@ -48,11 +49,135 @@ set(2D_SRC
 	2D/Source/vtab.c
 	2D/Source/wirpoly.c
 	2D/Source/MacDev.c
-)	
+	2D/Source/GR/grilin.c
+	2D/Source/GR/grmalloc.c
+	2D/Source/GR/grnull.c
+	2D/Source/GR/gruilin.c
+	2D/Source/GR/grd.c
+	2D/Source/Gen/gendisk.c
+	2D/Source/Gen/gentm.c
+	2D/Source/Gen/genwclin.c
+	2D/Source/Gen/genuclin.c
+	2D/Source/Gen/genrsd8.c
+	2D/Source/Gen/genuvlin.c
+	2D/Source/Gen/genhlin.c
+	2D/Source/Gen/genrsdbm.c
+	2D/Source/Gen/genuchr.c
+	2D/Source/Gen/genvlin.c
+	2D/Source/Gen/genvcply.c
+	2D/Source/Gen/genstr.c
+	2D/Source/Gen/genclin.c
+	2D/Source/Gen/genfl8c.c
+	2D/Source/Gen/genrsdtm.c
+	2D/Source/Gen/genel.c
+	2D/Source/Gen/genchr.c
+	2D/Source/Gen/genwlin.c
+	2D/Source/Gen/genpix.c
+	2D/Source/Gen/genuhlin.c
+	2D/Source/Gen/genustr.c
+	2D/Source/Gen/genhfl8.c
+	2D/Source/Gen/genov.c
+	2D/Source/Gen/gente.c
+	2D/Source/Gen/genlin.c
+	2D/Source/Gen/gencwlin.c
+	2D/Source/Gen/genchfl8.c
+	2D/Source/Gen/gengfl8.c
+	2D/Source/Gen/genbox.c
+	2D/Source/Gen/genmono.c
+	2D/Source/Gen/genulin.c
+	2D/Source/Gen/gencnv.c
+	2D/Source/Gen/genuslin.c
+	2D/Source/Gen/genvpoly.c
+	2D/Source/Gen/general.c
+	2D/Source/Gen/gencirc.c
+	2D/Source/Gen/genfl8.c
+	2D/Source/Gen/genf24.c
+	2D/Source/Gen/gentl8.c
+	2D/Source/Gen/genrect.c
+	2D/Source/Gen/genvrect.c
+	2D/Source/Gen/genslin.c
+	2D/Source/Flat8/fl8vlin.c
+	2D/Source/Flat8/FL8OPL.c
+	2D/Source/Flat8/fl8cply.c
+	2D/Source/Flat8/fl8clin.c
+	2D/Source/Flat8/fl8lp.c
+	2D/Source/Flat8/fl8cft.h
+	2D/Source/Flat8/fl8lf.c
+	2D/Source/Flat8/fl8ll.c
+	2D/Source/Flat8/fl8s.c
+	2D/Source/Flat8/fl8hfl8.c
+	2D/Source/Flat8/fl8pnt.c
+	2D/Source/Flat8/fl8fl8m.c
+	2D/Source/Flat8/fl8ltp.c
+	2D/Source/Flat8/fl8fl8c.c
+	2D/Source/Flat8/fl8w.c
+	2D/Source/Flat8/fl8cop.c
+	2D/Source/Flat8/fl8wlin.c
+	2D/Source/Flat8/fl8lw.c
+	2D/Source/Flat8/fl8pix.c
+	2D/Source/Flat8/fl8row.c
+	2D/Source/Flat8/fl8ft.c
+	2D/Source/Flat8/fl8rsd8.c
+	2D/Source/Flat8/Fl8F.c
+	2D/Source/Flat8/fl8bldbl.c
+	2D/Source/Flat8/fl8clear.c
+	2D/Source/Flat8/fl8p.c
+	2D/Source/Flat8/fl8wclin.c
+	2D/Source/Flat8/fl8hlin.c
+	2D/Source/Flat8/fl8bl.c
+	2D/Source/Flat8/fl8gpix.c
+	2D/Source/Flat8/fl8ns.c
+	2D/Source/Flat8/fl8lnop.c
+	2D/Source/Flat8/fl8dbl.c
+	2D/Source/Flat8/fl8clin.h
+	2D/Source/Flat8/fl8cnv.c
+	2D/Source/Flat8/fl8slin.c
+	2D/Source/Flat8/fl8lin.c
+	2D/Source/Flat8/fl8tsmap.c
+	2D/Source/Flat8/fl8ply.c
+	2D/Source/Flat8/fl8sply.c
+	2D/Source/Flat8/fl8rect.c
+	2D/Source/Flat8/fl8gfl8.c
+	2D/Source/Flat8/fl8tl8.c
+	2D/Source/Flat8/fl8p24.c
+	2D/Source/Flat8/fl8g24.c
+	2D/Source/Flat8/fl8ctp.c
+	2D/Source/Flat8/fl8mscl.c
+	2D/Source/Flat8/fl8lop.c
+	2D/Source/Flat8/fl8ntrp2.c
+	2D/Source/Flat8/fl8sub.c
+	2D/Source/Flat8/fl8tpl.c
+	2D/Source/Flat8/fl8wclin.h
+	2D/Source/Flat8/fl8nl.c
+	2D/Source/Flat8/fl8fltr2.c
+	2D/Source/Flat8/fl8mono.c
+	2D/Source/Flat8/fl8fl8.c
+	2D/Source/Flat8/fl8chfl8.c
+	2D/Source/Clip/clpply.c
+	2D/Source/Clip/clplin.c
+	2D/Source/Clip/clpclin.c
+	2D/Source/Clip/clpltab.c
+	2D/Source/Clip/clpf24.c
+	2D/Source/Clip/clplin2.c
+	2D/Source/Clip/clppoly.c
+	2D/Source/Clip/clpslin.c
+	2D/Source/Clip/clprect.c
+	2D/Source/Clip/clpmono.c
+	2D/Source/RSD/rsdcvt.c
+	2D/Source/RSD/RSDUnpack.c
+)
+
+set(GR_SRC
+	2D/Source/GR/grd.c
+	2D/Source/GR/grilin.c
+	2D/Source/GR/grmalloc.c
+	2D/Source/GR/grnull.c
+	2D/Source/GR/gruilin.c
+)
 
 
 set(3D_SRC
-	3D/Source/3dTest.c
+	#3D/Source/3dTest.c
 	3D/Source/alloc.c
 	3D/Source/Bitmap.c
 	3D/Source/clip.c
@@ -118,15 +243,14 @@ set(INPUT_SRC
 	INPUT/Source/mouse.c
 )
 
-# Need cleanup
-#set(LG_SRC
-#	LG/Source/dbg.c
-#	LG/Source/LGmem.c
-#	LG/Source/lgsprntf.c
-#	LG/Source/memall.c
-#	LG/Source/stack.c
-#	LG/Source/tmpalloc.c
-#)
+set(LG_SRC
+	LG/Source/dbg.c
+	LG/Source/LGmem.c
+	LG/Source/lgsprntf.c
+	LG/Source/memall.c
+	LG/Source/stack.c
+	LG/Source/tmpalloc.c
+)
 
 set(PALETTE_SRC
         PALETTE/Source/palette.c
@@ -215,13 +339,14 @@ include_directories(
 
 add_library(MAC_LIB ${MAC_SRC})
 add_library(2D_LIB ${2D_SRC})
+add_library(GR_LIB ${GR_SRC})
 add_library(3D_LIB ${3D_SRC})
 #add_library(AFILE_LIB ${AFILE_SRC})
 add_library(PALLETE_LIB ${PALETTE_SRC})
 add_library(DSTRUCT_LIB ${DSTRUCT_SRC})
 add_library(FIX_LIB ${FIX_SRC})
 add_library(INPUT_LIB ${INPUT_SRC})
-#add_library(LG_LIB ${LG_SRC})
+add_library(LG_LIB ${LG_SRC})
 add_library(RES_LIB ${RES_SRC})
 add_library(RND_LIB ${RND_SRC})
 #add_library(SND_LIB ${SND_SRC})

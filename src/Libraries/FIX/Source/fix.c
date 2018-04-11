@@ -96,6 +96,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fix.h"
 #include "trigtab.h"
 
+#include <Carbon/Carbon.h>
+
 int	gOVResult;
 
 
@@ -103,6 +105,10 @@ int	gOVResult;
 // fix_mul: Multiply two fixed numbers.
 //----------------------------------------------------------------------------
 #if defined(powerc) || defined(__powerc)
+fix fix_mul(fix a, fix b)
+{
+	return a * b;
+}
 #else
 fix asm fix_mul(fix a, fix b)
 {
@@ -119,6 +125,10 @@ fix asm fix_mul(fix a, fix b)
 // fast_fix_mul_int: Return the high word of a fixed multiply.
 //----------------------------------------------------------------------------
 #if defined(powerc) || defined(__powerc)
+fix fast_fix_mul_int(fix a, fix b)
+{
+	return a;
+}
 #else
 fix asm fast_fix_mul_int(fix a, fix b)
 {
@@ -134,8 +144,11 @@ fix asm fast_fix_mul_int(fix a, fix b)
 // fix_mul_asm_safe: Multiply two fixed numbers, checking for -1/0 problems
 //----------------------------------------------------------------------------
 #if defined(powerc) || defined(__powerc)
+fix fix_mul_asm_safe(fix a, fix b)
+{
+	return a;
+}
 #else
-fix asm fix_mul_asm_safe(fix a, fix b);
 fix asm fix_mul_asm_safe(fix a, fix b)
 {
  	move.l	4(sp),d0
@@ -163,6 +176,10 @@ fix asm fix_mul_asm_safe(fix a, fix b)
 // fix_div: Divide two fixed numbers.
 //----------------------------------------------------------------------------
 #if defined(powerc) || defined(__powerc)
+fix fix_div(fix a, fix b)
+{
+	return a;
+}
 #else
 fix asm fix_div(fix a, fix b)
 {
@@ -204,6 +221,10 @@ fix asm fix_div(fix a, fix b)
 // now in C.
 //----------------------------------------------------------------------------
 #if defined(powerc) || defined(__powerc)
+fix fix_mul_div(fix m0, fix m1, fix d)
+{
+	return m0;
+}
 #else
 fix asm fix_mul_div (fix m0, fix m1, fix d)
  {
@@ -532,6 +553,20 @@ fixang fix_atan2 (fix y, fix x)
 // fix24_div: Divide two fix24 numbers.
 //----------------------------------------------------------------------------
 #if defined(powerc) || defined(__powerc)
+fix fix24_div(fix24 a, fix24 b)
+{
+	return a;
+}
+
+fix fix24_mul(fix24 a, fix24 b)
+{
+	return a;
+}
+
+fix fix24_pow(fix24 a, fix24 b)
+{
+	return a;
+}
 #else
 fix24 asm fix24_div(fix24 a, fix24 b)
  {
@@ -609,25 +644,43 @@ fix fix_pow(fix x,fix y)
 //----------------------------------------------------------------------------
 // AsmWideDivide: Divide a 64 bit long by a 32 bit long, return 32 bit result.
 //----------------------------------------------------------------------------
-#if defined(powerc) || defined(__powerc)
-#else
 
-asm AWide *AsmWideAdd(AWide *target, AWide *source)
- {
- 	move.l	4(sp),a0		// target
- 	move.l	8(sp),a1		// source
- 	
- 	move.l	(a0),d1			// get high bytes
- 	move.l	(a1),d2
- 	
- 	move.l	4(a1),d0		// get low byte
- 	add.l		d0,4(a0)		// target.lo += source.lo
- 	
- 	addx.l	d2,d1				// target.hi += source.hi + X
- 	move.l	d1,(a0)			// save it
- 	
-	rts
- }
+#if defined(powerc) || defined(__powerc)
+AWide *AsmWideAdd(AWide *target, AWide *source)
+{
+	return target;
+}
+
+AWide *AsmWideSub(AWide *target, AWide *source)
+{
+	return target;
+}
+
+AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target)
+{
+	return target;
+}
+
+long AsmWideDivide(long hi, long lo, long divisor)
+{
+	return hi;
+}
+
+AWide *AsmWideNegate(AWide *target)
+{
+	return target;
+}
+
+AWide *AsmWideBitShift(AWide *src, long shift)
+{
+	return src;
+}
+
+AWide *WideSquareRoot(AWide *src, long div)
+{
+	return src;
+}
+#else
  
 asm AWide *AsmWideSub(AWide *target, AWide *source)
  {

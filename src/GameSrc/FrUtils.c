@@ -379,11 +379,11 @@ extern Boolean SkipLines;
 
 // copy the slot view from offscreen to on, doubling it
 #if (defined(powerc) || defined(__powerc))	
-extern "C" 
- {
+//extern "C" 
+ //{
  	extern void BlitLargeAlign(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
  	extern void BlitLargeAlignSkip(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
- }
+ //}
  
 void Fast_Slot_Double(grs_bitmap *bm, long w, long h)
  {

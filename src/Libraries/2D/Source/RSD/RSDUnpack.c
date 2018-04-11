@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grs.h"
 #include "rsdunpck.h"
+#include <stdbool.h>
 
 // some handy 68000 assembly defines
 #define blo	bcs		// branch low (unsigned <)

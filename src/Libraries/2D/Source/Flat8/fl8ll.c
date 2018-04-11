@@ -65,7 +65,7 @@ uchar	*l_l_ltab;
 
 
 // PPC specific optimized routines
-extern "C"
+/*extern "C"
 {
 int Handle_Lit_Lin_Loop_PPC(fix u, fix v, fix du, fix dv, fix dx,
 														grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row,
@@ -74,8 +74,8 @@ int Handle_Lit_Lin_Loop_PPC(fix u, fix v, fix du, fix dv, fix dx,
 int Handle_TLit_Lin_Loop2_PPC(fix u, fix v, fix du, fix dv, fix dx,
 															grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row,
 															fix i, fix di, uchar *g_ltab, uchar	t_wlog, ulong	t_mask);
-}
-/*
+}*/
+
 
 int Handle_Lit_Lin_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
 														grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row,
@@ -199,7 +199,7 @@ int Handle_TLit_Lin_Loop2_C(fix u, fix v, fix du, fix dv, fix dx,
 
    return FALSE; // tmap OK 
  }
-*/
+
 
 int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
    fix u,v,i,du,dv,di,dx,d;
@@ -238,9 +238,9 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
 #if (defined(powerc) || defined(__powerc))	
 	// handle optimized cases first
 	if (tli->bm.hlog == (GRL_OPAQUE|GRL_LOG2))
-		return(Handle_Lit_Lin_Loop_PPC(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row,i,di,g_ltab,t_wlog,t_mask));
+		return(Handle_Lit_Lin_Loop_C(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row,i,di,g_ltab,t_wlog,t_mask));
 	if (tli->bm.hlog == (GRL_TRANS|GRL_LOG2))
-		return(Handle_TLit_Lin_Loop2_PPC(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row,i,di,g_ltab,t_wlog,t_mask));
+		return(Handle_TLit_Lin_Loop2_C(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row,i,di,g_ltab,t_wlog,t_mask));
 		
    do {
       if ((d = fix_ceil(tli->right.x)-fix_ceil(tli->left.x)) > 0) 

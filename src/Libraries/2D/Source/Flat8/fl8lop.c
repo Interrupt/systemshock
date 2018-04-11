@@ -57,14 +57,6 @@ int		ol_gr_row;
 uchar *ol_ltab;
 #endif
 
-extern "C"
-{
-void opaque_lit_per_hscan_Loop_PPC(int dx, fix l_du, fix l_dv, fix *pl_u, fix *pl_v,
-																	 uchar **pp, fix *pl_y_fix, int *py_cint, fix l_di, fix *pl_i,
-																	 int l_u_mask, int l_v_shift, int l_v_mask, fix l_scan_slope,
-		 														 	 uchar *bm_bits, int gr_row, uchar *ltab);
-}
-/*
 void opaque_lit_per_hscan_Loop_C(int dx, fix l_du, fix l_dv, fix *pl_u, fix *pl_v,
 																 uchar **pp, fix *pl_y_fix, int *py_cint, fix l_di, fix *pl_i,
 																 int l_u_mask, int l_v_shift, int l_v_mask, fix l_scan_slope,
@@ -104,16 +96,14 @@ void opaque_lit_per_hscan_Loop_C(int dx, fix l_du, fix l_dv, fix *pl_u, fix *pl_
  	*pl_i = l_i;
  	*pp = p;
  	*py_cint = y_cint;
- }
-*/															 
-
+ }													 
 
 void gri_opaque_lit_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
-   register uchar *ltab=grd_screen->ltab;
-   register int 	l_x,y_cint,l_u_mask,l_v_mask,l_v_shift;
-   register fix 	k,l_u,l_v,l_du,l_dv,l_i,l_di,l_y_fix,l_scan_slope;
-	 register int		gr_row;
-   register uchar *bm_bits,*p;
+   	uchar *ltab=grd_screen->ltab;
+   	int 	l_x,y_cint,l_u_mask,l_v_mask,l_v_shift;
+   	fix 	k,l_u,l_v,l_du,l_dv,l_i,l_di,l_y_fix,l_scan_slope;
+	int		gr_row;
+  	uchar *bm_bits,*p;
 
 	 // locals used to speed PPC code
 	 fix	test,l_dtl,l_dxl,l_dyl,l_dtr,l_dyr;
@@ -191,11 +181,7 @@ void gri_opaque_lit_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 #if (defined(powerc) || defined(__powerc))	
 	if (l_x<l_xr0)
 	{
-	 opaque_lit_per_hscan_Loop_PPC(l_xr0-l_x, l_du, l_dv, 
-		 														 &l_u, &l_v, &p, &l_y_fix, 
-		 														 &y_cint, l_di, &l_i,
-		 														 l_u_mask, l_v_shift, l_v_mask, l_scan_slope,
-		 														 bm_bits, gr_row, ltab);	
+	 opaque_lit_per_hscan_Loop_C(l_xr0-l_x, l_du, l_dv, &l_u, &l_v, &p, &l_y_fix,  &y_cint, l_di, &l_i, l_u_mask, l_v_shift, l_v_mask, l_scan_slope, bm_bits, gr_row, ltab);	
    l_x=l_xr0;
 	}  
 #else
@@ -365,14 +351,6 @@ asm void opaque_lit_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fix
 #endif
 
 
-extern "C"
-{
-void opaque_lit_per_vscan_Loop_PPC(int dy, fix l_du, fix l_dv, fix *pl_u, fix *pl_v,
-																	 uchar **pp, fix *pl_y_fix, int *py_cint, fix l_di, fix *pl_i,
-																	 int l_u_mask, int l_v_shift, int l_v_mask, fix l_scan_slope,
-		 														 	 uchar *bm_bits, int gr_row, uchar *ltab);
-}
-/*
 void opaque_lit_per_vscan_Loop_C(int dy, fix l_du, fix l_dv, fix *pl_u, fix *pl_v,
 																 uchar **pp, fix *pl_x_fix, int *px_cint, fix l_di, fix *pl_i,
 																 int l_u_mask, int l_v_shift, int l_v_mask, fix l_scan_slope,
@@ -414,11 +392,10 @@ void opaque_lit_per_vscan_Loop_C(int dy, fix l_du, fix l_dv, fix *pl_u, fix *pl_
  	*pp = p;
  	*px_cint = x_cint;
  }
-*/
 
 void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
-	 register int 	 k,x_cint;
-   register uchar *ltab=grd_screen->ltab;
+	 int 	 k,x_cint;
+   	 uchar *ltab=grd_screen->ltab;
    
 	 // locals used to speed PPC code
 	 fix	l_dxr,l_x_fix,l_u,l_v,l_du,l_dv,l_scan_slope,l_dtl,l_dxl,l_dyl,l_dtr,l_dyr,l_i,l_di;
@@ -503,11 +480,7 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 #if (defined(powerc) || defined(__powerc))	
 	if (l_y<l_yr0)
 	 {
-		 opaque_lit_per_vscan_Loop_PPC(l_yr0-l_y, l_du, l_dv, 
-			 														 &l_u, &l_v, &p, &l_x_fix, 
-			 														 &x_cint, l_di, &l_i,
-			 														 l_u_mask, l_v_shift, l_v_mask, l_scan_slope,
-			 														 bm_bits, gr_row, ltab);	
+		 opaque_lit_per_vscan_Loop_C(l_yr0-l_y, l_du, l_dv,  &l_u, &l_v, &p, &l_x_fix,  &x_cint, l_di, &l_i, l_u_mask, l_v_shift, l_v_mask, l_scan_slope, bm_bits, gr_row, ltab);	
 	   l_y=l_yr0;
    }
  #else

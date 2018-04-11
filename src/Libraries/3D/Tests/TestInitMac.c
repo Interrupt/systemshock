@@ -28,10 +28,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
-#include <Palettes.h>
-#include <GestaltEqu.h>
-#include <Movies.h>
-#include <Timer.h>
+#include <Carbon/Carbon.h>
+//#include <Palettes.h>
+//#include <GestaltEqu.h>
+//#include <Movies.h>
+//#include <Timer.h>
 
 #include "Shock.h"
 #include "InitMac.h"
@@ -70,9 +71,8 @@ short				gBarkVref;
 typedef struct
 {
 	TMTask			task;					// The actual TimeManager task structure
-	long				appA5;				// We need this silly thing for 68K programs
-}
-ShockTask, *ShockTaskPtr;
+	long			appA5;				// We need this silly thing for 68K programs
+} ShockTask;
 
 #define			kShockTicksFreq		-3571
 TimerUPP		pShockTicksPtr;				// Globals for the Shock "tickcount" TM task.
@@ -87,7 +87,7 @@ long 				*tmd_ticks;
 #pragma require_prototypes off
 
 #ifndef __powerc
-ShockTaskPtr GetShockTask(void) = 0x2049;							// MOVE.L A1,A0
+ShockTaskPtr = 0x2049;							// MOVE.L A1,A0
 #endif
 
 //---------------------------------------------------------------
@@ -142,8 +142,8 @@ void InitMac(void)
 	
 	GetVol(nil,	&gMainVRef);									// Where was I launched from?
 	
-	gWatchCurs = GetCursor(watchCursor);
-	HNoPurge((Handle)gWatchCurs);
+	//gWatchCurs = GetCursor(watchCursor);
+	//HNoPurge((Handle)gWatchCurs);
 	
 //	EnterMovies();
 //	InstallShockTimers();
@@ -267,7 +267,7 @@ void SetupWindows(WindowPtr *mainWind)
 	OffsetRect(&gActiveArea, -gActiveLeft, -gActiveTop);
 	
 	ShowWindow(*mainWind);
-	PaintRect(&(*mainWind)->portRect);		// black it out
+	//PaintRect(&(*mainWind)->portRect);		// black it out
  }
 
 //------------------------------------------------------------------------------------
@@ -293,35 +293,35 @@ void SetUpMenus(MenuHandle *theMenus, short numMenus)
 //------------------------------------------------------------------------------------
 void GetFolders(void)
 {
-	long						temp;
-	HParamBlockRec 	hpb;
+	/*long						temp;
+	//ParamBlockRec 	hpb;
 	OSErr					err;
 	
 	// Get the location of our current working directory.
 	
-	hpb.ioParam.ioCompletion = 0L;
-	hpb.fileParam.ioFDirIndex = 0;
+	//hpb.ioParam.ioCompletion = 0L;
+	//hpb.fileParam.ioFDirIndex = 0;
  	GetWDInfo(gMainVRef, &hpb.fileParam.ioVRefNum, &hpb.fileParam.ioDirID, &temp);
  	
  	// Now get info on the "Data" directory.
  	
-	hpb.fileParam.ioNamePtr = "\pData";
-	err = PBGetCatInfo((CInfoPBPtr)&hpb, false);
+	//hpb.fileParam.ioNamePtr = "\pData";
+	//err = PBGetCatInfo((CInfoPBPtr)&hpb, false);
 	
 	// If we found it, then set our globals, otherwise die.
 	
 	if (err == noErr)
 	{
-		gDataVref = hpb.fileParam.ioVRefNum;
-		gDataDirID = hpb.fileParam.ioDirID;
+		//gDataVref = hpb.fileParam.ioVRefNum;
+		//gDataDirID = hpb.fileParam.ioDirID;
 	}
 	else
 		ErrorDie(12);		// No "Data" folder.
 	
 	// Now go into the data folder and get the "Alogs" and "Barks" folders.
 	
-	hpb.fileParam.ioNamePtr = "\pAlogs";
-	err = PBGetCatInfo((CInfoPBPtr)&hpb, false);
+	//hpb.fileParam.ioNamePtr = "\pAlogs";
+	//err = PBGetCatInfo((CInfoPBPtr)&hpb, false);
 	if (err == noErr)
 	{
 		gAlogVref = hpb.fileParam.ioVRefNum;
@@ -333,14 +333,14 @@ void GetFolders(void)
 	hpb.fileParam.ioVRefNum = gDataVref;
 	hpb.fileParam.ioDirID = gDataDirID;
 	hpb.fileParam.ioNamePtr = "\pBarks";
-	err = PBGetCatInfo((CInfoPBPtr)&hpb, false);
+	//err = PBGetCatInfo((CInfoPBPtr)&hpb, false);
 	if (err == noErr)
 	{
 		gBarkVref = hpb.fileParam.ioVRefNum;
 		gBarkDirID = hpb.fileParam.ioDirID;
 	}
 	else
-		ErrorDie(14);		// No "Barks" folder.
+		ErrorDie(14);		// No "Barks" folder.*/
 }
 
 //------------------------------------------------------------------------------------
@@ -397,9 +397,9 @@ void InstallShockTimers(void)
 	pShockTicksTask.task.tmAddr = pShockTicksPtr;				// Insert the Shock ticks TM task
 	pShockTicksTask.task.tmWakeUp = 0;
 	pShockTicksTask.task.tmReserved = 0;
-#ifndef __powerc
-	pShockTicksTask.appA5 = SetCurrentA5();
-#endif
+//#ifndef __powerc
+//	pShockTicksTask.appA5 = SetCurrentA5();
+//#endif
 	InsTime((QElemPtr)&pShockTicksTask);
 	PrimeTime((QElemPtr)&pShockTicksTask, kShockTicksFreq);	// Increment 280 times a second
 }

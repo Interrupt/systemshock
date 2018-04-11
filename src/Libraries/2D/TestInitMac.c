@@ -28,10 +28,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
-#include <Palettes.h>
-#include <GestaltEqu.h>
-#include <Movies.h>
-#include <Timer.h>
+#include <Carbon/Carbon.h>
+//#include "OldCarbonLibraries.h"
+//#include <Palettes.h>
+//#include <GestaltEqu.h>
+//#include <Movies.h>
+//#include <Timer.h>
 
 #include "Shock.h"
 #include "InitMac.h"
@@ -39,16 +41,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <Carbon/Carbon.h>
 
-QDGlobals	qd;
+//QDGlobals	qd;
 
 //--------------------
 //  Globals
 //--------------------
-Handle			gExtraMemory = nil;
+/*Handle			gExtraMemory = nil;
 ColorSpec 		*gOriginalColors;
 unsigned long	gRandSeed;
 short				gMainVRef;
-CursHandle		gWatchCurs;
+//CursHandle		gWatchCurs;
 short				gOriginalDepth = -1;
 short				gLastAlertDepth = -1;
 short				gStartupDepth;
@@ -64,54 +66,24 @@ short				gDataVref;
 long				gAlogDirID;
 short				gAlogVref;
 long				gBarkDirID;
-short				gBarkVref;
+short				gBarkVref;*/
 
 //---------------------------
 //  Time Manager routines and globals
 //---------------------------
-typedef struct
+/*typedef struct
 {
 	TMTask			task;					// The actual TimeManager task structure
 	long				appA5;				// We need this silly thing for 68K programs
 }
-ShockTask, *ShockTaskPtr;
+ShockTask, *ShockTaskPtr;*/
 
-#define			kShockTicksFreq		-3571
+/*#define			kShockTicksFreq		-3571
 TimerUPP		pShockTicksPtr;				// Globals for the Shock "tickcount" TM task.
 ShockTask		pShockTicksTask;			// It increments gShockTicks 280 times per second.
 long				gShockTicks;
-long 				*tmd_ticks;
+long 				*tmd_ticks;*/
 
-
-//---------------------------------------------------------------
-//  The following section is the time manager task for incrementing the Shock timer.
-//---------------------------------------------------------------
-#pragma require_prototypes off
-
-#ifndef __powerc
-ShockTaskPtr GetShockTask(void) = 0x2049;							// MOVE.L A1,A0
-#endif
-
-//---------------------------------------------------------------
-#ifdef __powerc
-pascal void ShockTicksProc(TMTaskPtr tmTaskPtr)
-#else
-pascal void ShockTicksProc(void)
-#endif
-{
-#ifndef __powerc
-	 ShockTaskPtr	tmTaskPtr = GetShockTask();				// get address of task record
-	long					curA5 = SetA5(tmTaskPtr->appA5);		// save and set value of A5
-#endif
-	
-	gShockTicks++;
-	PrimeTime((QElemPtr)tmTaskPtr, kShockTicksFreq);	// Do this 280 times a second.
-
-#ifndef __powerc
-	SetA5(curA5);															// restore A5
-#endif
-}
-#pragma require_prototypes on
 
 
 //------------------------------------------------------------------------------------
@@ -121,8 +93,8 @@ void InitMac(void)
 {
 	short		i;
 	
-	InitGraf(&qd.thePort);
-	InitFonts();
+	//InitGraf(&qd.thePort);
+	/*InitFonts();
 	InitWindows();
 	InitMenus();
 	TEInit();
@@ -143,9 +115,10 @@ void InitMac(void)
 	gRandSeed += TickCount()<<8;
 	
 	GetVol(nil,	&gMainVRef);									// Where was I launched from?
+	*/
 	
-	gWatchCurs = GetCursor(watchCursor);
-	HNoPurge((Handle)gWatchCurs);
+	//gWatchCurs = GetCursor(watchCursor);
+	//HNoPurge((Handle)gWatchCurs);
 	
 //	EnterMovies();
 //	InstallShockTimers();
@@ -156,7 +129,7 @@ void InitMac(void)
 //------------------------------------------------------------------------------------
 void CheckConfig(void)
 {
-	OSErr				err;
+	/*OSErr				err;
 	long					resp;
 	int					depth;
 	GDHandle     		devhandle;
@@ -251,7 +224,7 @@ void CheckConfig(void)
 	// Check to see if we're running on a PowerPC
 	err = Gestalt(gestaltSysArchitecture, &resp);
 	if (!err && (resp & (1 << gestaltPowerPC)))
-		gIsPowerPC = true;
+		gIsPowerPC = true;*/
 }
 
 //------------------------------------------------------------------------------------
@@ -259,7 +232,7 @@ void CheckConfig(void)
 //------------------------------------------------------------------------------------
 void SetupWindows(WindowPtr *mainWind)
 {	
-	FailNIL(*mainWind = GetNewCWindow(1000, 0L, (WindowPtr)-1L));
+	/*FailNIL(*mainWind = GetNewCWindow(1000, 0L, (WindowPtr)-1L));
 	
 	SizeWindow(*mainWind, gScreenWide, gScreenHigh, false);
 	MoveWindow(*mainWind, 0, 0, true);
@@ -268,8 +241,8 @@ void SetupWindows(WindowPtr *mainWind)
 	SetOrigin(-gActiveLeft, -gActiveTop);								// Set the main window's origin
 	OffsetRect(&gActiveArea, -gActiveLeft, -gActiveTop);
 	
-	ShowWindow(*mainWind);
-	PaintRect(&(*mainWind)->portRect);		// black it out
+	ShowWindow(*mainWind);*/
+	//PaintRect(&(*mainWind)->portRect);		// black it out
  }
 
 //------------------------------------------------------------------------------------
@@ -277,7 +250,7 @@ void SetupWindows(WindowPtr *mainWind)
 //------------------------------------------------------------------------------------
 void SetUpMenus(MenuHandle *theMenus, short numMenus)
 {
-	short		i;
+	/*short		i;
 	
 	for (i=0; i<numMenus; i++)
 		FailNIL(theMenus[i] = GetMenu(128+i));		// get menu resources
@@ -287,7 +260,7 @@ void SetUpMenus(MenuHandle *theMenus, short numMenus)
 	for (i=0; i<numMenus; i++)
 		InsertMenu(theMenus[i], 0);							// Insert apple, file, edit, etc.
 	
-	DrawMenuBar();
+	DrawMenuBar();*/
 }
 
 //------------------------------------------------------------------------------------
@@ -295,7 +268,7 @@ void SetUpMenus(MenuHandle *theMenus, short numMenus)
 //------------------------------------------------------------------------------------
 void GetFolders(void)
 {
-	long						temp;
+	/*long						temp;
 	HParamBlockRec 	hpb;
 	OSErr					err;
 	
@@ -343,6 +316,8 @@ void GetFolders(void)
 	}
 	else
 		ErrorDie(14);		// No "Barks" folder.
+
+	*/
 }
 
 //------------------------------------------------------------------------------------
@@ -351,13 +326,13 @@ void GetFolders(void)
 //------------------------------------------------------------------------------------
 void FailNIL(void *memory)
 {	
-	if (!memory)
+	/*if (!memory)
 	{
 		if (gExtraMemory)
 			DisposHandle(gExtraMemory);
 		
 		ErrorDie(1);
-	} 
+	}*/
 }
 
 //------------------------------------------------------------------------------------
@@ -365,7 +340,7 @@ void FailNIL(void *memory)
 //------------------------------------------------------------------------------------
 Handle GetResourceFail(long id, short num)
 {
-	Handle 	h;
+	/*Handle 	h;
 	
 	h = GetResource(id, num);
 	if (h) return(h);
@@ -383,7 +358,7 @@ Handle GetResourceFail(long id, short num)
 	else
 		ErrorDie(3);		// resource not there, somethings bad
 		
-	return (nil);
+	return (nil);*/
 }
 
 
@@ -392,18 +367,18 @@ Handle GetResourceFail(long id, short num)
 //------------------------------------------------------------------------------------
 void InstallShockTimers(void)
 {
-	gShockTicks = 0;
+	/*gShockTicks = 0;
 	tmd_ticks = &gShockTicks;
 
-	pShockTicksPtr = NewTimerProc(ShockTicksProc);		// Make a UPP for the TM task
+	//pShockTicksPtr = NewTimerProc(ShockTicksProc);		// Make a UPP for the TM task
 	pShockTicksTask.task.tmAddr = pShockTicksPtr;				// Insert the Shock ticks TM task
 	pShockTicksTask.task.tmWakeUp = 0;
 	pShockTicksTask.task.tmReserved = 0;
 #ifndef __powerc
-	pShockTicksTask.appA5 = SetCurrentA5();
+	//pShockTicksTask.appA5 = SetCurrentA5();
 #endif
 	InsTime((QElemPtr)&pShockTicksTask);
-	PrimeTime((QElemPtr)&pShockTicksTask, kShockTicksFreq);	// Increment 280 times a second
+	PrimeTime((QElemPtr)&pShockTicksTask, kShockTicksFreq);	// Increment 280 times a second*/
 }
 
 
@@ -412,8 +387,8 @@ void InstallShockTimers(void)
 //------------------------------------------------------------------------------------
 void RemoveShockTimers(void)
 {
-	RmvTime((QElemPtr)&pShockTicksTask);					// Stop the Shock ticks task
-	DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP
+	/*RmvTime((QElemPtr)&pShockTicksTask);					// Stop the Shock ticks task
+	DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP*/;
 }
 
 
@@ -422,11 +397,11 @@ void RemoveShockTimers(void)
 //------------------------------------------------------------------------------------
 void ErrorDie(short stringnum)
 {
-	if (gExtraMemory)
+	/*if (gExtraMemory)
 		DisposHandle(gExtraMemory);	// free our extra space
  
  	StringAlert(stringnum);
-	CleanupAndExit();
+	CleanupAndExit();*/
 }
 
 //------------------------------------------------------------------------------------
@@ -434,7 +409,7 @@ void ErrorDie(short stringnum)
 //------------------------------------------------------------------------------------
 void StringAlert(short stringnum)
 {
-	Str255		message, explain;
+	/*Str255		message, explain;
 	
 	InitCursor();
 	GetIndString(message, 1000, stringnum);
@@ -444,7 +419,7 @@ void StringAlert(short stringnum)
 	if (*explain)
 		StopAlert(1001, nil);
 	else
-		StopAlert(1000, nil);
+		StopAlert(1000, nil);*/
 }
 
 //------------------------------------------------------------------------------------
@@ -452,14 +427,8 @@ void StringAlert(short stringnum)
 //------------------------------------------------------------------------------------
 void CleanupAndExit(void)
 {
-	GDHandle	devhandle;
+	/*GDHandle	devhandle;
 
-/*¥¥¥
-	DeleteTempRecFiles();
-	FreeSoundStuff();
-	RemoveAEHandlers();
-	RemoveShockTimers();
-*/
 	
 	if (gOriginalDepth != -1)											// If color depth was changed at beginning of app,
 	{																				// then switch it back to the original.
@@ -473,5 +442,5 @@ void CleanupAndExit(void)
 	
 //	ExitMovies();
 	
-	ExitToShell();
+	ExitToShell();*/
 }

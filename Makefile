@@ -124,17 +124,30 @@ systemshock/fast:
 .PHONY : systemshock/fast
 
 #=============================================================================
-# Target rules for targets named RND_LIB
+# Target rules for targets named TestSimpleMain
 
 # Build rule for target.
-RND_LIB: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 RND_LIB
-.PHONY : RND_LIB
+TestSimpleMain: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 TestSimpleMain
+.PHONY : TestSimpleMain
 
 # fast build rule for target.
-RND_LIB/fast:
-	$(MAKE) -f src/Libraries/CMakeFiles/RND_LIB.dir/build.make src/Libraries/CMakeFiles/RND_LIB.dir/build
-.PHONY : RND_LIB/fast
+TestSimpleMain/fast:
+	$(MAKE) -f CMakeFiles/TestSimpleMain.dir/build.make CMakeFiles/TestSimpleMain.dir/build
+.PHONY : TestSimpleMain/fast
+
+#=============================================================================
+# Target rules for targets named VOX_LIB
+
+# Build rule for target.
+VOX_LIB: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 VOX_LIB
+.PHONY : VOX_LIB
+
+# fast build rule for target.
+VOX_LIB/fast:
+	$(MAKE) -f src/Libraries/CMakeFiles/VOX_LIB.dir/build.make src/Libraries/CMakeFiles/VOX_LIB.dir/build
+.PHONY : VOX_LIB/fast
 
 #=============================================================================
 # Target rules for targets named UI_LIB
@@ -150,6 +163,32 @@ UI_LIB/fast:
 .PHONY : UI_LIB/fast
 
 #=============================================================================
+# Target rules for targets named LG_LIB
+
+# Build rule for target.
+LG_LIB: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 LG_LIB
+.PHONY : LG_LIB
+
+# fast build rule for target.
+LG_LIB/fast:
+	$(MAKE) -f src/Libraries/CMakeFiles/LG_LIB.dir/build.make src/Libraries/CMakeFiles/LG_LIB.dir/build
+.PHONY : LG_LIB/fast
+
+#=============================================================================
+# Target rules for targets named RND_LIB
+
+# Build rule for target.
+RND_LIB: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 RND_LIB
+.PHONY : RND_LIB
+
+# fast build rule for target.
+RND_LIB/fast:
+	$(MAKE) -f src/Libraries/CMakeFiles/RND_LIB.dir/build.make src/Libraries/CMakeFiles/RND_LIB.dir/build
+.PHONY : RND_LIB/fast
+
+#=============================================================================
 # Target rules for targets named RES_LIB
 
 # Build rule for target.
@@ -161,19 +200,6 @@ RES_LIB: cmake_check_build_system
 RES_LIB/fast:
 	$(MAKE) -f src/Libraries/CMakeFiles/RES_LIB.dir/build.make src/Libraries/CMakeFiles/RES_LIB.dir/build
 .PHONY : RES_LIB/fast
-
-#=============================================================================
-# Target rules for targets named VOX_LIB
-
-# Build rule for target.
-VOX_LIB: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 VOX_LIB
-.PHONY : VOX_LIB
-
-# fast build rule for target.
-VOX_LIB/fast:
-	$(MAKE) -f src/Libraries/CMakeFiles/VOX_LIB.dir/build.make src/Libraries/CMakeFiles/VOX_LIB.dir/build
-.PHONY : VOX_LIB/fast
 
 #=============================================================================
 # Target rules for targets named PALLETE_LIB
@@ -239,6 +265,19 @@ DSTRUCT_LIB: cmake_check_build_system
 DSTRUCT_LIB/fast:
 	$(MAKE) -f src/Libraries/CMakeFiles/DSTRUCT_LIB.dir/build.make src/Libraries/CMakeFiles/DSTRUCT_LIB.dir/build
 .PHONY : DSTRUCT_LIB/fast
+
+#=============================================================================
+# Target rules for targets named GR_LIB
+
+# Build rule for target.
+GR_LIB: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 GR_LIB
+.PHONY : GR_LIB
+
+# fast build rule for target.
+GR_LIB/fast:
+	$(MAKE) -f src/Libraries/CMakeFiles/GR_LIB.dir/build.make src/Libraries/CMakeFiles/GR_LIB.dir/build
+.PHONY : GR_LIB/fast
 
 #=============================================================================
 # Target rules for targets named 2D_LIB
@@ -3290,6 +3329,33 @@ src/GameSrc/wrapper.c.s:
 	$(MAKE) -f CMakeFiles/systemshock.dir/build.make CMakeFiles/systemshock.dir/src/GameSrc/wrapper.c.s
 .PHONY : src/GameSrc/wrapper.c.s
 
+src/Libraries/2D/TestSource/SimpleMain.o: src/Libraries/2D/TestSource/SimpleMain.c.o
+
+.PHONY : src/Libraries/2D/TestSource/SimpleMain.o
+
+# target to build an object file
+src/Libraries/2D/TestSource/SimpleMain.c.o:
+	$(MAKE) -f CMakeFiles/TestSimpleMain.dir/build.make CMakeFiles/TestSimpleMain.dir/src/Libraries/2D/TestSource/SimpleMain.c.o
+.PHONY : src/Libraries/2D/TestSource/SimpleMain.c.o
+
+src/Libraries/2D/TestSource/SimpleMain.i: src/Libraries/2D/TestSource/SimpleMain.c.i
+
+.PHONY : src/Libraries/2D/TestSource/SimpleMain.i
+
+# target to preprocess a source file
+src/Libraries/2D/TestSource/SimpleMain.c.i:
+	$(MAKE) -f CMakeFiles/TestSimpleMain.dir/build.make CMakeFiles/TestSimpleMain.dir/src/Libraries/2D/TestSource/SimpleMain.c.i
+.PHONY : src/Libraries/2D/TestSource/SimpleMain.c.i
+
+src/Libraries/2D/TestSource/SimpleMain.s: src/Libraries/2D/TestSource/SimpleMain.c.s
+
+.PHONY : src/Libraries/2D/TestSource/SimpleMain.s
+
+# target to generate assembly for a file
+src/Libraries/2D/TestSource/SimpleMain.c.s:
+	$(MAKE) -f CMakeFiles/TestSimpleMain.dir/build.make CMakeFiles/TestSimpleMain.dir/src/Libraries/2D/TestSource/SimpleMain.c.s
+.PHONY : src/Libraries/2D/TestSource/SimpleMain.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -3299,15 +3365,18 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... systemshock"
-	@echo "... RND_LIB"
-	@echo "... UI_LIB"
-	@echo "... RES_LIB"
+	@echo "... TestSimpleMain"
 	@echo "... VOX_LIB"
+	@echo "... UI_LIB"
+	@echo "... LG_LIB"
+	@echo "... RND_LIB"
+	@echo "... RES_LIB"
 	@echo "... PALLETE_LIB"
 	@echo "... FIX_LIB"
 	@echo "... 3D_LIB"
 	@echo "... INPUT_LIB"
 	@echo "... DSTRUCT_LIB"
+	@echo "... GR_LIB"
 	@echo "... 2D_LIB"
 	@echo "... MAC_LIB"
 	@echo "... src/GameSrc/FrUtils.o"
@@ -3646,6 +3715,9 @@ help:
 	@echo "... src/GameSrc/wrapper.o"
 	@echo "... src/GameSrc/wrapper.i"
 	@echo "... src/GameSrc/wrapper.s"
+	@echo "... src/Libraries/2D/TestSource/SimpleMain.o"
+	@echo "... src/Libraries/2D/TestSource/SimpleMain.i"
+	@echo "... src/Libraries/2D/TestSource/SimpleMain.s"
 .PHONY : help
 
 

@@ -40,6 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "2dDiv.h"
 #include "fl8tmapdv.h"
 
+#include <stdbool.h>
+
 int gri_wall_umap_loop(grs_tmap_loop_info *tli);
 int gri_wall_umap_loop_1D(grs_tmap_loop_info *tli);
 
@@ -593,14 +595,14 @@ void gri_opaque_clut_wall_umap_init(grs_tmap_loop_info *tli) {
    tli->right_edge_func=(void (*)()) gri_uvwy_edge;
 }
 
-extern "C"
+/*extern "C"
 {
 extern int HandleWallLoop1D_PPC(grs_tmap_loop_info *tli,
 																fix u, fix v, fix dv, fix dy,
 																uchar *t_clut, long *t_vtab, uchar *o_bits,
 																long gr_row, ulong t_mask, ulong t_wlog);
-}
-/*
+}*/
+
 int HandleWallLoop1D_C(grs_tmap_loop_info *tli,
 																fix u, fix v, fix dv, fix dy,
 																uchar *t_clut, long *t_vtab, uchar *o_bits,
@@ -665,7 +667,6 @@ int HandleWallLoop1D_C(grs_tmap_loop_info *tli,
 
   return false;
  }
-*/
 
 // ==================================================================
 // 1D versions 
@@ -708,7 +709,7 @@ int gri_wall_umap_loop_1D(grs_tmap_loop_info *tli) {
 
 // handle PowerPC loop
 #if (defined(powerc) || defined(__powerc))	
-	return HandleWallLoop1D_PPC(tli, u, v, dv, dy, t_clut, t_vtab, o_bits, gr_row, t_mask, t_wlog);
+	return HandleWallLoop1D_C(tli, u, v, dv, dy, t_clut, t_vtab, o_bits, gr_row, t_mask, t_wlog);
 // handle 68K loops
 #else
 	return(Handle_Wall_68K_Loop_1D(u,v,dv,dy,tli,grd_bm.bits,o_bits,gr_row)); 

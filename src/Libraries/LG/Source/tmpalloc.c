@@ -82,8 +82,8 @@ int temp_mem_uninit(void)
    if (stack_dynamic==TRUE) {
 //      Spew(DSRC_LG_Tempmem,
 //           ("TempMemUninit: freeing dynamically allocated stack\n"));
-//      free(temp_mem_stack);
-      free((Ptr)temp_mem_stack);
+      free(temp_mem_stack);
+//      free((Ptr)temp_mem_stack);
       stack_dynamic=FALSE;
    }
    temp_mem_stack=NULL;

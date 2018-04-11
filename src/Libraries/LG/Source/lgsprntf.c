@@ -70,6 +70,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lgsprntf.h"
 #include "fix.h"
 
+#include <stdlib.h>
+#include <stdbool.h>
+
 #define MAX_FIX_PRECIS 4
 
 static int int_to_str(char *buf, int val);

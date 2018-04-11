@@ -29,9 +29,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <string.h>
 
+#include <Carbon/Carbon.h>
+
 #include "2d.h"
 #include "2dRes.h"
 #include "3d.h"
+
+#include "lg.h"
 
 #define pitch        tx
 #define bank         tz

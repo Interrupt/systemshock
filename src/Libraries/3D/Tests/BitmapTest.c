@@ -157,7 +157,7 @@ void test_3d(uchar *tmap, uchar* pal)
    int i,j,c=0;
    int fd;
    grs_bitmap bm;
-	 EventRecord evt;
+	 //EventRecord evt;
 	 g3s_point	*my_pt;
    grs_screen *screen;
    g3s_vector vec[4];

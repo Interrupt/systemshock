@@ -57,13 +57,13 @@ ulong	f_l_wlog_68K;
 ulong	f_l_mask_68K;
 uchar	*f_l_ltab;
 
-extern "C"
+/*extern "C"
 {
 extern int HandleFloorLoop_PPC(grs_tmap_loop_info *tli,
 															 fix u, fix v, fix du, fix dv, fix dx, fix i, fix di,
 													 		 uchar t_wlog, ulong	t_mask, uchar *t_bits, uchar *g_ltab);
-}
-/*
+}*/
+
 int HandleFloorLoop_C(grs_tmap_loop_info *tli,
 										  fix u, fix v, fix du, fix dv, fix dx, fix i, fix di,
 								 		  uchar t_wlog, ulong	t_mask, uchar *t_bits, uchar *g_ltab)
@@ -149,7 +149,6 @@ int HandleFloorLoop_C(grs_tmap_loop_info *tli,
    
    return FALSE; // tmap OK 
  }
- */
 
 int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
    fix u,v,i,du,dv,di,dx,d;
@@ -194,7 +193,7 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
 // handle PowerPC loop
 #if (defined(powerc) || defined(__powerc))	
 	if (tli->bm.hlog==(GRL_OPAQUE|GRL_LOG2))
-	  return HandleFloorLoop_PPC(tli, u, v, du, dv, dx, i, di, t_wlog, t_mask, t_bits, g_ltab);
+	  return HandleFloorLoop_C(tli, u, v, du, dv, dx, i, di, t_wlog, t_mask, t_bits, g_ltab);
 
    do {
       if ((d = fix_ceil(tli->right.x)-fix_ceil(tli->left.x)) > 0) {

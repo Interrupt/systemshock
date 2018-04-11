@@ -124,9 +124,6 @@ set(GAME_SRC
 	src/GameSrc/wrapper.c
 )
 
-
-
-
 include_directories(
 	src/Libraries/2D/Source
 	src/Libraries/3D/Source
@@ -146,9 +143,25 @@ include_directories(
 	src/MacSrc
 )
 
-add_definitions(
-	-include precompiled.h
+add_executable(TestSimpleMain
+	src/Libraries/2D/TestSource/SimpleMain.c
 )
+
+#src/Libraries/2D/TestInitMac.c
+
+target_link_libraries(TestSimpleMain
+	2D_LIB
+	GR_LIB
+	3D_LIB
+	RES_LIB
+	FIX_LIB
+	LG_LIB
+	MAC_LIB
+)
+
+#add_definitions(
+#	-include precompiled.h
+#)
 
 add_executable(systemshock
 	${GAME_SRC}
@@ -156,6 +169,7 @@ add_executable(systemshock
 
 target_link_libraries(systemshock
 	2D_LIB
+	GR_LIB
 	3D_LIB
 	AFILE_LIB
 	DSTRUCT_LIB

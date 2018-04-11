@@ -18,21 +18,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // simple test code for 2d library 
 
-#define Mac 1
+//#define Mac 1
 
 #include <2d.h>
 #include <fix.h>
 #include "lg.h"
-#include <Stdio.h>
+#include <stdio.h>
 
-#if Mac
+//#if Mac
 #include <InitMac.h>
 #include "ShockBitmap.h"
-#endif
+#include <Carbon/Carbon.h>
+//#endif
 
-#if Mac
-WindowPtr gMainWindow;
-#endif
+//#if Mac
+WindowPtr 	gMainWindow;
+long		gScreenRowbytes;
+CTabHandle	gMainColorHand;
+//#endif
+
+Ptr				gScreenAddress;
 
 // prototypes
 void SetVertexLinear(grs_vertex **points);
@@ -58,7 +63,7 @@ void DoTest(void);
 #define clear_color 0
 #endif
 
-#if Mac
+/*#if Mac
 void main (void)
  {    
 	InitMac();
@@ -71,18 +76,16 @@ void main (void)
  
 	ExitToShell();
  }
-#endif
+#endif*/
 
 uchar pal_buf[768];
 uchar bitmap_buf[17000];
 uchar shade_buf[4096];
 
-#if Mac
-void DoTest(void)
-#else
 void main(void)
-#endif
  {      
+ 	DebugStr("Starting Test");
+
 	FILE        *fp;
 	grs_screen  *screen;
 	char        *fd;
@@ -90,10 +93,14 @@ void main(void)
 	grs_vertex  v0,v1,v2,v3;
 	grs_vertex  *points[4];
 
+	DebugStr("Initializing");
+
 	gr_init();
 	gr_set_mode (GRM_640x480x8, TRUE);
 	screen = gr_alloc_screen (grd_cap->w, grd_cap->h);
 	gr_set_screen (screen);
+
+	DebugStr("Opening test.img");
 
 	fp = fopen("test.img","rb");
 	fread (bitmap_buf, 1, 16412, fp);
@@ -101,6 +108,8 @@ void main(void)
 
 	bm = * (grs_bitmap *) bitmap_buf;
 	bm.bits = bitmap_buf+28;
+
+	DebugStr("Opening test.pal");
 	
 	fp = fopen("test.pal","rb");
 	fread (pal_buf, 1, 768, fp);
@@ -116,6 +125,8 @@ void main(void)
 	points[1] = &v1;
 	points[2] = &v2;
 	points[3] = &v3;
+
+		DebugStr("Opening test.shd");
 
 	fp = fopen("test.shd","rb");
 	fread (shade_buf, 1, 4096, fp);
@@ -198,12 +209,14 @@ void main(void)
 
 void WaitKey(void)
  {
+/*
 #if Mac
  {EventRecord evt; while (true){if (GetNextEvent(mDownMask+keyDownMask,&evt))
 	{if (evt.what==mouseDown) break;}}}
 #else
 	while (!getch());
 #endif
+*/
  }
  
 

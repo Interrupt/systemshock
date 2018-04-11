@@ -541,14 +541,14 @@ void gri_opaque_lit_wall_umap_init(grs_tmap_loop_info *tli) {
    tli->right_edge_func=(void (*)()) gri_uviwy_edge;
 }
 
-extern "C"
+/*extern "C"
 {
 extern int HandleWallLitLoop1D_PPC(grs_tmap_loop_info *tli,
 																		fix u, fix v, fix i, fix dv, fix di, fix dy,
 																		uchar *g_ltab, long *t_vtab, uchar *o_bits,
 																		long gr_row, ulong t_mask, ulong t_wlog);
-}
-/*
+}*/
+
 int HandleWallLitLoop1D_C(grs_tmap_loop_info *tli,
 													fix u, fix v, fix i, fix dv, fix di, fix dy,
 													uchar *g_ltab, uchar *o_bits,
@@ -629,7 +629,6 @@ int HandleWallLitLoop1D_C(grs_tmap_loop_info *tli,
 	 
    return FALSE; // tmap OK 
  }
-*/
 
 // ==================================================================================
 // Wall_1D versions of routines
@@ -672,7 +671,7 @@ int gri_lit_wall_umap_loop_1D(grs_tmap_loop_info *tli) {
 
 // handle PowerPC loop
 #if (defined(powerc) || defined(__powerc))	 
-	return HandleWallLitLoop1D_PPC(tli, u, v, i, dv, di, dy, g_ltab, NULL, o_bits,
+	return HandleWallLitLoop1D_C(tli, u, v, i, dv, di, dy, g_ltab, o_bits,
 													 			 gr_row, t_mask, t_wlog);
 // handle 68K loops
 #else

@@ -28,23 +28,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
-#include <Palettes.h>
+//#include "OldCarbonHeaders.h"
+//#include <Palettes.h>
 #include "Shock.h"
 #include "InitMac.h"
 #include "ShockBitmap.h"
 
+//#import <Cocoa/Cocoa.h>
+
 //--------------------
 //  Prototypes
 //--------------------
-int TrackTitleButton(int btn);
+//int TrackTitleButton(int btn);
 
 //--------------------
 //  Globals
 //--------------------
-PixMapHandle 	gScreenPixMap;
+/*PixMapHandle 	gScreenPixMap;
 CTabHandle			gMainColorHand;
 Boolean				gChangedColors = false;
-ShockBitmap		gMainOffScreen;
+ShockBitmap		gMainOffScreen;*/
 
 
 //------------------------------------------------------------------------------------
@@ -52,7 +55,7 @@ ShockBitmap		gMainOffScreen;
 //------------------------------------------------------------------------------------
 void SetupOffscreenBitmaps(void)
 {
-	GDHandle     	devhandle;
+	/*GDHandle     	devhandle;
 	
 	devhandle = GetMainDevice();
 	gScreenPixMap = (*devhandle)->gdPMap;
@@ -66,7 +69,7 @@ void SetupOffscreenBitmaps(void)
 	ResetCTSeed();
 	
 	// allocate main offscreen buffer
-	NewShockBitmap(&gMainOffScreen, gActiveWide, gActiveHigh, true);
+	NewShockBitmap(&gMainOffScreen, gActiveWide, gActiveHigh, true);*/
 }
 
 //------------------------------------------------------------------------------------
@@ -74,8 +77,8 @@ void SetupOffscreenBitmaps(void)
 //------------------------------------------------------------------------------------
 void ResetCTSeed(void)
 {
-	(*gMainColorHand)->ctSeed = (*(*gScreenPixMap)->pmTable)->ctSeed; 
-	(*(**(*(CWindowPtr)gMainWindow).portPixMap).pmTable)->ctSeed = (*gMainColorHand)->ctSeed;
+	//(*gMainColorHand)->ctSeed = (*(*gScreenPixMap)->pmTable)->ctSeed; 
+	//(*(**(*(CWindowPtr)gMainWindow).portPixMap).pmTable)->ctSeed = (*gMainColorHand)->ctSeed;
 }
 
 //------------------------------------------------------------------------------------
@@ -84,7 +87,7 @@ void ResetCTSeed(void)
 long oldctSeed;
 void RememberSeed(void)
 {
-	oldctSeed =	(*(*gScreenPixMap)->pmTable)->ctSeed;
+	//oldctSeed =	(*(*gScreenPixMap)->pmTable)->ctSeed;
 }
 
 //------------------------------------------------------------------------------------
@@ -92,14 +95,14 @@ void RememberSeed(void)
 //------------------------------------------------------------------------------------
 void FixPalette(void)
 {
-	if ((*(*gScreenPixMap)->pmTable)->ctSeed != oldctSeed)
+	/*if ((*(*gScreenPixMap)->pmTable)->ctSeed != oldctSeed)
 	{
 		if (CurScreenDepth() == 8)
 			SetEntries(0, 255, (**(gMainColorHand)).ctTable);
 		ResetCTSeed();
 		DrawMenuBar();
 		UpdateWindow(gMainWindow);
-	}
+	}*/
 }
 
 //------------------------------------------------------------------------------------
@@ -107,7 +110,7 @@ void FixPalette(void)
 //------------------------------------------------------------------------------------
 void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color)
 {
-	GrafPtr 			savePort;
+	/*GrafPtr 			savePort;
 	PixMapPtr		pmaptr;
 	
 	GetPort(&savePort);
@@ -123,7 +126,7 @@ void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean colo
 		SetPort((GrafPtr)&theMap->CPort);
 		EraseRect(&theMap->bounds);
 		
-		pmaptr = *(theMap->CPort.portPixMap);
+		//pmaptr = *(theMap->CPort.portPixMap);
 		theMap->Address = StripAddress(pmaptr->baseAddr);
 		theMap->RowBytes = (long)(pmaptr->rowBytes & 0x7FFF);
 		theMap->bits = (GrafPtr) &theMap->CPort;
@@ -142,8 +145,8 @@ void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean colo
 		SetPortBits(&theMap->BWBits);
 		
 		// make sure the clip & vis regions are big enough
-		SetRectRgn(theMap->BWPort.visRgn,theMap->bounds.left,theMap->bounds.top,theMap->bounds.right,theMap->bounds.bottom);
-		SetRectRgn(theMap->BWPort.clipRgn,theMap->bounds.left,theMap->bounds.top,theMap->bounds.right,theMap->bounds.bottom);
+		//SetRectRgn(theMap->BWPort.visRgn,theMap->bounds.left,theMap->bounds.top,theMap->bounds.right,theMap->bounds.bottom);
+		//SetRectRgn(theMap->BWPort.clipRgn,theMap->bounds.left,theMap->bounds.top,theMap->bounds.right,theMap->bounds.bottom);
 		EraseRect(&theMap->bounds);
 		  
 		theMap->Address = theMap->BWBits.baseAddr;
@@ -151,7 +154,7 @@ void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean colo
 		theMap->bits = (GrafPtr) &theMap->BWPort;
 	}
 
-	SetPort(savePort);
+	SetPort(savePort);*/
 }
 
 //------------------------------------------------------------------------------------
@@ -159,7 +162,7 @@ void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean colo
 //------------------------------------------------------------------------------------
 void FreeShockBitmap(ShockBitmap *theMap)
 {
-	if (theMap->Color)
+	/*if (theMap->Color)
 	{
 		if (theMap->OrigBits != 0L)
 			DisposeHandle(theMap->OrigBits);
@@ -169,7 +172,7 @@ void FreeShockBitmap(ShockBitmap *theMap)
 	{
 		ClosePort(&theMap->BWPort);
 		free(theMap->Address);
-	}
+	}*/
 }
 
 //------------------------------------------------------------------------------------
@@ -178,7 +181,7 @@ void FreeShockBitmap(ShockBitmap *theMap)
 //------------------------------------------------------------------------------------
 Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height) 
 {
-	Rect        			bRect;
+	/*Rect        			bRect;
 	PixMapHandle		pmap;
 	PixMapPtr			pmaptr;
 	long         			bytes;
@@ -192,8 +195,8 @@ Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height)
 	MoveHHi((Handle)pmap);
 	HLock((Handle)pmap);
 	
-	theCGrafPtr->portPixMap = pmap;
-	pmaptr = *(theCGrafPtr->portPixMap);
+	//theCGrafPtr->portPixMap = pmap;
+	//pmaptr = *(theCGrafPtr->portPixMap);
 	pmaptr->bounds=bRect;
 	
 	pmaptr->rowBytes = ((width+1)>>1)<<1;
@@ -209,12 +212,12 @@ Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height)
 	pmaptr->pmTable = gMainColorHand;
 	
 	// make sure the clip & vis regions are big enough
-	SetRectRgn(theCGrafPtr->visRgn,bRect.left,bRect.top,bRect.right,bRect.bottom);
-	SetRectRgn(theCGrafPtr->clipRgn,bRect.left,bRect.top,bRect.right,bRect.bottom);
+	//SetRectRgn(theCGrafPtr->visRgn,bRect.left,bRect.top,bRect.right,bRect.bottom);
+	//SetRectRgn(theCGrafPtr->clipRgn,bRect.left,bRect.top,bRect.right,bRect.bottom);
 	
-	PenNormal();
+	PenNormal();*/
 	
-	return (hand);
+	return (NULL);
 }
 
 //------------------------------------------------------------------------------------
@@ -222,7 +225,7 @@ Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height)
 //------------------------------------------------------------------------------------
 void LoadPictShockBitmap(ShockBitmap *theMap, short PictID)
 {
-	PicHandle 	pic;
+	/*PicHandle 	pic;
 	Rect			r;
 	GrafPtr		savePort;
 	
@@ -240,7 +243,7 @@ void LoadPictShockBitmap(ShockBitmap *theMap, short PictID)
 		
 		ReleaseResource((Handle)pic);
 		SetPort(savePort);
-	}
+	}*/
 }
 
 //------------------------------------------------------------------------------------
@@ -248,7 +251,7 @@ void LoadPictShockBitmap(ShockBitmap *theMap, short PictID)
 //------------------------------------------------------------------------------------
 short CurScreenDepth(void)
 {
-	short					depth;
+	/*short					depth;
 	GDHandle     		devhandle;
 	PixMapHandle 	pmhan;
 	
@@ -256,7 +259,8 @@ short CurScreenDepth(void)
 	pmhan = (*devhandle)->gdPMap;
 	depth = (*pmhan)->pixelSize;
 	
-	return(depth);
+	return(depth);*/
+	return 16;
 }
 
 //------------------------------------------------------------------------------------
@@ -266,7 +270,7 @@ short CurScreenDepth(void)
 //------------------------------------------------------------------------------------
 void CheckBitDepth(void)
 {
- 	short		newDepth;
+ 	/*short		newDepth;
 
 	if (gInForeground)
 	{
@@ -300,7 +304,7 @@ void CheckBitDepth(void)
 			if (gStartupDepth == 8)
 				FixPalette();
 		}
-	}
+	}*/
 }
 
 //------------------------------------------------------------------------------------
@@ -308,12 +312,12 @@ void CheckBitDepth(void)
 //------------------------------------------------------------------------------------
 void CleanupPalette(void)
 {
-	if (gChangedColors)										// reset palette
+	/*if (gChangedColors)										// reset palette
 	{	
 		if (CurScreenDepth() == 8)
 			SetEntries(0, 255, gOriginalColors);
 		DrawMenuBar();									// redraw with new colors
-	}
+	}*/
 }
 
 
@@ -324,7 +328,7 @@ Rect	pBtnRect[4];
 //------------------------------------------------------------------------------------
 void SetupTitleScreen(void)
 {
-	PicHandle 	pic;
+	/*PicHandle 	pic;
 	Rect			r;
 	GrafPtr		savePort;
 	
@@ -368,7 +372,7 @@ void SetupTitleScreen(void)
 		pBtnRect[3] = r;
 	}
 	
-	SetPort(savePort);
+	SetPort(savePort);*/
 }
 
 //------------------------------------------------------------------------------------
@@ -377,12 +381,12 @@ void SetupTitleScreen(void)
 //------------------------------------------------------------------------------------
 int DoShockTitleButtons(Point mousePt)
 {
-	for (int i = 0; i < 4; i++)
+	/*for (int i = 0; i < 4; i++)
 	{
 		if (PtInRect(mousePt, &pBtnRect[i]))
 			return (TrackTitleButton(i));
 	}
-	return (-1);
+	return (-1);*/
 }
 
 //------------------------------------------------------------------------------------
@@ -390,7 +394,7 @@ int DoShockTitleButtons(Point mousePt)
 //------------------------------------------------------------------------------------
 int TrackTitleButton(int btn)
 {
-	PicHandle	phNorm, phClick;
+	/*PicHandle	phNorm, phClick;
 	Point			currPt;
 	Boolean		oldState = TRUE;
 	Boolean		newState;
@@ -423,5 +427,7 @@ int TrackTitleButton(int btn)
 	ReleaseResource((Handle)phClick);
 	
 	// If in rect when released, return the button number, else return -1.
-	return ((newState) ? btn : -1);
+	return ((newState) ? btn : -1);*/
+
+	return 0;
 }

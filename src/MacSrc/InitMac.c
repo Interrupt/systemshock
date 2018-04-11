@@ -28,9 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
-#include <Palettes.h>
-#include <GestaltEqu.h>
-#include <Movies.h>
+//#include <Palettes.h>
+//#include <GestaltEqu.h>
+//#include <Movies.h>
 
 #include "Shock.h"
 #include "InitMac.h"

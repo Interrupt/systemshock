@@ -68,13 +68,13 @@ uchar *l_clut_68K;
 ulong	l_wlog_68K;
 ulong	l_mask_68K;
 
-extern "C"
+/*extern "C"
 {
 int Handle_LinClut_Loop_PPC(fix u, fix v, fix du, fix dv, fix dx,
 														grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row, uchar *t_clut,
 														uchar	t_wlog, ulong t_mask);
-}
-/*
+}*/
+
 int Handle_LinClut_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
 													grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row, uchar *t_clut,
 													uchar	t_wlog, ulong t_mask)
@@ -126,7 +126,7 @@ int Handle_LinClut_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
 	tli->left.x = lx;
 
 	return FALSE; // tmap OK 
- }*/
+ }
 								
 
 int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
@@ -163,7 +163,7 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 // handle PowerPC loop
 #if (defined(powerc) || defined(__powerc))	
 	if (tli->bm.hlog == (GRL_OPAQUE|GRL_LOG2|GRL_CLUT))
-		return(Handle_LinClut_Loop_PPC(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row,t_clut,t_wlog,t_mask));
+		return(Handle_LinClut_Loop_C(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row,t_clut,t_wlog,t_mask));
 
 	do {
 	  if ((d = fix_ceil(tli->right.x)-fix_ceil(tli->left.x)) > 0) 

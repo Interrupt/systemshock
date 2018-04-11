@@ -107,7 +107,7 @@ void mac_set_pal (int start, int n, uchar *pal_data)
  	 	 	cSpec++;
  	 	 }
  	 
-		SetEntries(start, n, &(**(gMainColorHand)).ctTable[start]);
+		//SetEntries(start, n, &(**(gMainColorHand)).ctTable[start]);
 		ResetCTSeed();
  	 }
  }
