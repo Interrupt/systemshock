@@ -106,6 +106,8 @@ void main(void)
 	gr_set_mode (GRM_640x480x8, TRUE);
 	screen = gr_alloc_screen (640, 480);
 	gr_set_screen (screen);
+
+	// HAX: Why aren't the canvas rows set by default from gr_set_screen?
 	grd_bm.row = 640 * 4;
 
 	DebugStr("Opening test.img");
@@ -114,7 +116,7 @@ void main(void)
 	fclose (fp);
 
 	bm = * (grs_bitmap *) bitmap_buf;
-	bm.bits = bitmap_buf+28;
+   	gr_init_bm(&bm, (uchar *) bitmap_buf+28, BMT_FLAT8, 0, 64, 64);
 
 	DebugStr("Opening test.pal");
 	fp = fopen("test.pal","rb");
@@ -144,37 +146,34 @@ void main(void)
 	DebugStr("Set Light Table");	
 	gr_set_light_tab(shade_buf);
 
-	gr_clear(clear_color);
-	gr_bitmap(&bm,20,20);
-  	WaitKey();
 
-	DebugStr("Setting Vertices");
-
+	DebugStr("Starting Drawing");
 // ==
 	// linear
 	SetVertexLinear(points);
 	gr_poly(2, 4, points);
 	WaitKey();
-
 	gr_per_umap(&bm, 4, points);
 	WaitKey();
 	gr_clut_per_umap(&bm, 4, points, test_clut);
+	WaitKey();
 	gr_lit_per_umap(&bm, 4, points);
 
 	WaitKey();
 	gr_clear(clear_color);
+	WaitKey();
 	
 	// wall 
 	SetVertexWall(points);
 	gr_poly(2, 4, points);
-
-	
 	WaitKey();
 	gr_per_umap(&bm, 4, points);
 	WaitKey();
 	gr_lit_per_umap(&bm, 4, points);
+
 	WaitKey();
 	gr_clear(clear_color);
+	WaitKey();
 
 	// floor
 	SetVertexFloor(points);
@@ -186,6 +185,7 @@ void main(void)
 
 	WaitKey();
 	gr_clear(clear_color);
+	WaitKey();
 
 	// perspective(hscan)
 	SetVertexPerHScan(points);
@@ -194,6 +194,7 @@ void main(void)
 	gr_per_umap(&bm, 4, points);
 	WaitKey();
 	gr_lit_per_umap(&bm, 4, points);
+
 	WaitKey();
 	gr_clear(clear_color);
 	WaitKey();
@@ -205,14 +206,15 @@ void main(void)
 	gr_per_umap(&bm, 4, points);
 	WaitKey();
 	gr_lit_per_umap(&bm, 4, points);
+
 	WaitKey();
+	gr_clear(clear_color);
 	WaitKey();
 		
 
 // ===== test code     
     SetVertexPerHScan(points);
 	SetVertexLinear(points);
-	bm.flags = 0;
 
     gr_set_fill_type(FILL_SOLID);
     gr_set_fill_parm(33);
@@ -228,6 +230,7 @@ void main(void)
     	gr_per_umap(&bm, 4, points);
     	gr_clut_per_umap(&bm, 4, points, test_clut);
 		gr_lit_per_umap(&bm, 4, points);
+
 		SDL_UpdateWindowSurface( window );
 		SDL_Delay(2);
 	}
@@ -243,7 +246,7 @@ void main(void)
 void WaitKey(void)
 {
   	SDL_UpdateWindowSurface(window);
-	SDL_Delay(1000);
+	SDL_Delay(200);
 }
  
 
