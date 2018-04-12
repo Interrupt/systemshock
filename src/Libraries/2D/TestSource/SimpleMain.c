@@ -95,11 +95,11 @@ int main(void)
 
 	window = SDL_CreateWindow(
 		"SimpleMain", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		1024, 768, SDL_WINDOW_SHOWN);
+		640, 480, SDL_WINDOW_SHOWN);
 	
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
-	drawSurface = SDL_CreateRGBSurface(0, 1024, 768, 8, 0, 0, 0, 0);
+	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
 	if(!drawSurface) {
 		DebugStr("Failed to create draw surface");
 		return 1;
@@ -114,7 +114,7 @@ int main(void)
 
 	DebugStr("Initializing");
 	gr_init();
-	gr_set_mode (GRM_1024x768x24, TRUE);
+	gr_set_mode (GRM_640x480x8, TRUE);
 	screen = gr_alloc_screen (drawSurface->w, drawSurface->h);
 	gr_set_screen (screen);
 
