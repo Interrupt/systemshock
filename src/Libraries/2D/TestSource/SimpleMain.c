@@ -23,15 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 #include <stdio.h>
 
-// #include <InitMac.h>
-// #include "ShockBitmap.h"
-// #include <Carbon/Carbon.h>
-#include <SDL2/SDL.h>
+//#include <SDL2/SDL.h>
+#include <sdl.h>
 
-// WindowPtr 	gMainWindow;
 long		gScreenRowbytes;
 CTabHandle	gMainColorHand;
-Ptr				gScreenAddress;
+Ptr			gScreenAddress;
 
 // prototypes
 void SetVertexLinear(grs_vertex **points);
@@ -41,10 +38,6 @@ void SetVertexPerHScan(grs_vertex **points);
 void SetVertexPerVScan(grs_vertex **points);
 void WaitKey(void);
 void SetSDLPalette(int index, int count, uchar *pal);
-
-#if Mac
-void DoTest(void);
-#endif
 
 #define make_vertex(_vertex,_x,_y,_u,_v,_w,_i) \
 	 _vertex.x = fix_make(_x,0), \
@@ -116,7 +109,7 @@ int main(void)
 	gr_set_screen (screen);
 
 	// HAX: Why aren't the canvas rows set by default from gr_set_screen?
-	grd_bm.row = drawSurface->w;
+	//grd_bm.row = drawSurface->w;
 
 	DebugStr("Opening test.img");
 	if(fp = fopen("test.img","rb")) {
@@ -141,11 +134,8 @@ int main(void)
 
 	DebugStr("Setting palette");
 	gr_set_pal(0, 256, pal_buf);
-	SetSDLPalette(0, 256, pal_buf);
 
-	SDL_Palette* palette = SDL_AllocPalette(256);
-	SDL_SetPaletteColors(palette, (const SDL_Color*) pal_buf, 0, 256);
-	SDL_SetSurfacePalette(drawSurface, palette);
+	SetSDLPalette(0, 256, pal_buf);
 
 	DebugStr("Alloc Ipal");
 	gr_alloc_ipal();
@@ -268,18 +258,9 @@ int main(void)
 	gr_close();
 }
 
-void WaitKey(void)
-{
-	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
-	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
-  	SDL_UpdateWindowSurface(window);
-
-  	SDL_PumpEvents();
-	SDL_Delay(200);
-}
-
 void SetSDLPalette(int index, int count, uchar *pal)
 {
+	SDL_Color gamePalette[256];
 	for(int i = index; i < count; i++) {
 		gamePalette[index+i].r = *pal++;
 		gamePalette[index+i].g = *pal++;
@@ -289,9 +270,18 @@ void SetSDLPalette(int index, int count, uchar *pal)
 
 	SDL_Palette* sdlPalette = SDL_AllocPalette(count);
 	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
-	SDL_SetSurfacePalette(blitSurface, sdlPalette);
+	SDL_SetSurfacePalette(drawSurface, sdlPalette);
 }
- 
+
+void WaitKey(void)
+{
+	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
+  	SDL_UpdateWindowSurface(window);
+
+  	SDL_PumpEvents();
+	SDL_Delay(200);
+}
 
 void SetVertexLinear(grs_vertex **points)
  {

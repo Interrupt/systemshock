@@ -36,8 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tlucdat.h"
 #include "lg.h"
 
-#include <SDL2/SDL.h>
-
 // prototypes
 int gri_poly_loop (grs_tmap_loop_info *ti);
 void gri_solid_poly_init (grs_tmap_loop_info *ti);
