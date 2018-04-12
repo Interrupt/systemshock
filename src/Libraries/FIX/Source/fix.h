@@ -280,7 +280,7 @@ typedef ushort fixang;
 
 // For Mac version: The PowerPC version uses two assembly language routines
 // to do the multiply and divide.
-#if defined(powerc) || defined(__powerc)
+#if 0 && defined(powerc) || defined(__powerc)
 
 #ifdef __cplusplus
 extern "C"

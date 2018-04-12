@@ -95,17 +95,17 @@ int main(void)
 
 	window = SDL_CreateWindow(
 		"SimpleMain", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		640, 480, SDL_WINDOW_SHOWN);
+		1024, 768, SDL_WINDOW_SHOWN);
 	
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
-	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+	drawSurface = SDL_CreateRGBSurface(0, 1024, 768, 8, 0, 0, 0, 0);
 	if(!drawSurface) {
 		DebugStr("Failed to create draw surface");
 		return 1;
 	}
 
-	gScreenRowbytes = 640;
+	gScreenRowbytes = drawSurface->w;
 	gScreenAddress = drawSurface->pixels;
 
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -114,12 +114,12 @@ int main(void)
 
 	DebugStr("Initializing");
 	gr_init();
-	gr_set_mode (GRM_640x480x8, TRUE);
-	screen = gr_alloc_screen (640, 480);
+	gr_set_mode (GRM_1024x768x24, TRUE);
+	screen = gr_alloc_screen (drawSurface->w, drawSurface->h);
 	gr_set_screen (screen);
 
 	// HAX: Why aren't the canvas rows set by default from gr_set_screen?
-	grd_bm.row = 640;
+	grd_bm.row = drawSurface->w;
 
 	DebugStr("Opening test.img");
 	if(fp = fopen("test.img","rb")) {
@@ -207,8 +207,12 @@ int main(void)
 	gr_lit_per_umap(&bm, 4, points);
 
 	WaitKey();
+	WaitKey();
+	WaitKey();
+	WaitKey();
 	gr_clear(clear_color);
 	WaitKey();
+
 
 	// perspective(hscan)
 	SetVertexPerHScan(points);
@@ -288,9 +292,9 @@ void SetVertexLinear(grs_vertex **points)
 void SetVertexFloor(grs_vertex **points)
  {
 	make_vertex((*(points[0])),100,   100,    0,    0,    fix_div(FIX_UNIT,fix_make(10,0)), 0);
-	make_vertex((*(points[1])),200,   100,    128,    0,    fix_div(FIX_UNIT,fix_make(10,0)), 0);
-	make_vertex((*(points[2])),180,   200,    128,    128,    fix_div(FIX_UNIT,fix_make(20,0)), 16*FIX_UNIT-1);
-	make_vertex((*(points[3])),120,   200,    0,    128,    fix_div(FIX_UNIT,fix_make(20,0)), 0);
+	make_vertex((*(points[1])),1000,   100,    128,    0,    fix_div(FIX_UNIT,fix_make(10,0)), 0);
+	make_vertex((*(points[2])),1080,   500,    128,    128,    fix_div(FIX_UNIT,fix_make(20,0)), 16*FIX_UNIT-1);
+	make_vertex((*(points[3])),120,   500,    0,    128,    fix_div(FIX_UNIT,fix_make(20,0)), 0);
  }
  
 
