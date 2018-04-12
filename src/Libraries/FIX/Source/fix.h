@@ -280,21 +280,25 @@ typedef ushort fixang;
 
 // For Mac version: The PowerPC version uses two assembly language routines
 // to do the multiply and divide.
-#if defined(powerc) || defined(__powerc)
+#if 0 && defined(powerc) || defined(__powerc)
+
 #ifdef __cplusplus
 extern "C"
 {
+#endif // __cplusplus
 fix fix_mul_asm(fix a, fix b);
 fix fast_fix_mul_int_asm(fix a, fix b);
 fix fix_div_asm(fix a, fix b);
 fix fix_mul_div_asm (fix m0, fix m1, fix d);
+#ifdef __cplusplus
 }
+#endif // __cplusplus
+
 #define fix_mul fix_mul_asm
 #define fast_fix_mul fix_mul_asm
 #define fast_fix_mul_int fast_fix_mul_int_asm
 #define fix_div fix_div_asm
 #define fix_mul_div fix_mul_div_asm
-#endif
 
 
 #else
@@ -508,6 +512,8 @@ extern asm long AsmWideDivide(long hi, long lo, long divisor);
 extern asm AWide *AsmWideNegate(AWide *target);
 extern asm AWide *AsmWideBitShift(AWide *src, long shift);
 #endif
+
+AWide *WideSquareRoot(AWide *src);
 
 
 #endif /* !__fix24_H */

@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision
  */
 
-#include "LG.h" 
+#include "lg.h" 
 
 /* used by monochrome bitmap routines. */
 uchar bitmask[9] = { 128, 64, 32, 16, 8, 4, 2, 1, 0 };

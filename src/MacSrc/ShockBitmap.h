@@ -25,8 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //====================================================================================
 
 
-#include <Carbon/Carbon.h>
-#include <sdl.h>
+// #include <Carbon/Carbon.h>
+#include <SDL2/SDL.h>
 
 //--------------------
 //  Types

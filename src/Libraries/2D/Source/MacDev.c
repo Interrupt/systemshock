@@ -26,9 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "bitmap.h"
 #include "fcntab.h"
 #include "lintab.h"
-#include "ShockBitmap.h"
+// #include "ShockBitmap.h"
 
-#include <Carbon/Carbon.h>
+extern CTabHandle           gMainColorHand;
+
+// #include <Carbon/Carbon.h>
 
 // NOTE!
 //

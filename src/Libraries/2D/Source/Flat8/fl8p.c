@@ -75,9 +75,13 @@ void gri_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *
    pi.v_mask=(bm->h-1)<<bm->wlog;
    pi.v_shift=16-bm->wlog;
 
-   yp_min=yp_max=fix_cint(y_prime[n_min=0]=vpl[0]->y-fix_mul(vpl[0]->x,ps->scan_slope));
+   n_min = 0;
+   y_prime[n_min] = vpl[n_min]->y - fix_mul(vpl[n_min]->x, ps->scan_slope);
+   yp_min = yp_max = fix_cint(y_prime[n_min]);
+   
    for (j=1; j<n; j++) {
-      pi.yp=fix_cint(y_prime[j]=vpl[j]->y-fix_mul(vpl[j]->x,ps->scan_slope));
+      y_prime[j] = vpl[j]->y - fix_mul(vpl[j]->x,ps->scan_slope);
+      pi.yp = fix_cint(y_prime[j]);
       if (pi.yp<yp_min) {
          yp_min=pi.yp;
          n_min=j;
@@ -85,7 +89,9 @@ void gri_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *
       if (pi.yp>yp_max)
          yp_max=pi.yp;
    }
+
    if (yp_max==yp_min) return;
+
    pi.denom=fix_16_20(ps->c+fix_mul(ps->b,y_prime[0]));
    pi.u0=vpl[0]->u-fix_div(
       fix_mul(vpl[0]->x,ps->alpha_u)+fix_mul(vpl[0]->y,ps->beta_u)+ps->gamma_u,

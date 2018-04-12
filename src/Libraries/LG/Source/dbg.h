@@ -122,6 +122,9 @@ void DoWarningMsg(char *msg);
 #define Warning(msg) DoWarningMsg msg
 void DoWarningMsg(char *msg);
 
+void DebugString(char* msg);
+void DebugStr(char* msg);
+
 /*
 #include <stdio.h>
 #include "types.h"

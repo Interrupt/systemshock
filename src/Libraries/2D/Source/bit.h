@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __BIT_H
 #define __BIT_H
 
-#include "LG.h"
+#include "lg.h"
 extern uchar bitmask[];
 
 #endif /* __BIT_H */

@@ -72,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 #include "lg.h"
-#include "gr/grs.h"
+#include "GR/grs.h"
 #include "bitmap.h"
 #include "grbm.h"
 #include "grmalloc.h"
