@@ -251,8 +251,8 @@ extern int unpack_rsd8_scale_bitmap
    (grs_bitmap *bm, short x, short y, short w, short h);
 extern void gen_tluc8_scale_ubitmap
    (grs_bitmap *bm, short x, short y, short w, short h);
-extern gen_tluc8_scale_bitmap
-   (grs_bitmap *bm, short x, short y, short w, short h);
+// extern gen_tluc8_scale_bitmap
+//    (grs_bitmap *bm, short x, short y, short w, short h);
 
 extern void gen_rsd8_clut_scale_ubitmap
    (grs_bitmap *bm, short x, short y, short w, short h, uchar *cl);
@@ -273,7 +273,7 @@ extern void gen_clut_scale_bitmap
 
 extern void gen_roll_ubitmap
    (grs_bitmap *bm, fix angle, short x, short y);
-extern gen_roll_bitmap ();
+extern void gen_roll_bitmap ();
 
 extern void gen_flat8_wall_umap
    (grs_bitmap *bm, int n, fix **vpl);

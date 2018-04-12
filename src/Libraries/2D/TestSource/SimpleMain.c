@@ -19,24 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // simple test code for 2d library 
 
 #include <2d.h>
-#include <fix.h>
+#include "fix.h"
 #include "lg.h"
 #include <stdio.h>
 
-#include <InitMac.h>
-#include "ShockBitmap.h"
-#include <Carbon/Carbon.h>
-#include <sdl.h>
+// #include <InitMac.h>
+// #include "ShockBitmap.h"
+// #include <Carbon/Carbon.h>
+#include <SDL2/SDL.h>
 
-WindowPtr 	gMainWindow;
+// WindowPtr 	gMainWindow;
 long		gScreenRowbytes;
 CTabHandle	gMainColorHand;
-
-SDL_Surface* screenSurface;
-SDL_Surface* blitSurface;
-
-SDL_Color gamePalette[256];
-
 Ptr				gScreenAddress;
 
 // prototypes
@@ -79,13 +73,12 @@ uchar pal_buf[768];
 uchar bitmap_buf[17000];
 uchar shade_buf[4096];
 
-SDL_Window *window;
-SDL_Renderer *renderer;
-SDL_Surface *screenSurface;
+SDL_Window* window;
+SDL_Surface* drawSurface;
 
-void main(void)
- {      
- 	DebugStr("Starting Test");
+int main(void)
+{
+	DebugStr("Starting Test");
 
 	FILE        *fp;
 	grs_screen  *screen;
@@ -95,45 +88,64 @@ void main(void)
 	grs_vertex  *points[4];
 	grs_canvas	canvas;
 
-	SDL_Init(SDL_INIT_VIDEO);
-    window = SDL_CreateWindow("System Shock - SimpleMain Test", 320, 480, 640, 480, SDL_WINDOW_SHOWN);
-    SDL_RaiseWindow(window);
+	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+		DebugStr("SDL: Init failed");
+		return 1;
+	}
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+	window = SDL_CreateWindow(
+		"System Shock - SimpleMain Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		640, 480, SDL_WINDOW_SHOWN);
 
-  	screenSurface = SDL_GetWindowSurface( window );
-  	blitSurface = SDL_CreateRGBSurfaceWithFormat(0, 640, 480, 8, SDL_PIXELFORMAT_INDEX8);
-  	gScreenAddress = blitSurface->pixels;
+	SDL_RaiseWindow(window);
+	
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
-  	SDL_SetRenderDrawColor(&renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-  	SDL_RenderClear(&renderer);
-  	SDL_RenderPresent(&renderer);
+	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+	if(!drawSurface) {
+		DebugStr("SDL: Failed to create draw surface");
+		return 1;
+	}
 
-	DebugStr("Initializing");
+	gScreenRowbytes = drawSurface->w;
+	gScreenAddress = drawSurface->pixels;
+
 	gr_init();
 	gr_set_mode (GRM_640x480x8, TRUE);
-	screen = gr_alloc_screen (640, 480);
+	screen = gr_alloc_screen (drawSurface->w, drawSurface->h);
 	gr_set_screen (screen);
 
 	// HAX: Why aren't the canvas rows set by default from gr_set_screen?
-	grd_bm.row = 640;
+	grd_bm.row = drawSurface->w;
 
 	DebugStr("Opening test.img");
-	fp = fopen("test.img","rb");
-	fread (bitmap_buf, 1, 16412, fp);
-	fclose (fp);
+	if(fp = fopen("test.img","rb")) {
+		fread (bitmap_buf, 1, 16412, fp);
+		fclose (fp);
+	} else {
+		DebugStr("Open failed");
+		return 1;
+	}
 
 	bm = * (grs_bitmap *) bitmap_buf;
    	gr_init_bm(&bm, (uchar *) bitmap_buf+28, BMT_FLAT8, 0, 128, 128);
 
 	DebugStr("Opening test.pal");
-	fp = fopen("test.pal","rb");
-	fread (pal_buf, 1, 768, fp);
-	fclose (fp);
+	if(fp = fopen("test.pal","rb")) {
+		fread (pal_buf, 1, 768, fp);
+		fclose (fp);
+	} else {
+		DebugStr("Open failed");
+		return 1;
+	}
 
 	DebugStr("Setting palette");
 	gr_set_pal(0, 256, pal_buf);
 	SetSDLPalette(0, 256, pal_buf);
+
+	SDL_Palette* palette = SDL_AllocPalette(256);
+	SDL_SetPaletteColors(palette, (const SDL_Color*) pal_buf, 0, 256);
+	SDL_SetSurfacePalette(drawSurface, palette);
 
 	DebugStr("Alloc Ipal");
 	gr_alloc_ipal();
@@ -226,22 +238,22 @@ void main(void)
 		
 
 // ===== test code     
-    SetVertexPerHScan(points);
+	SetVertexPerHScan(points);
 	SetVertexLinear(points);
 
-    gr_set_fill_type(FILL_SOLID);
-    gr_set_fill_parm(33);
+	gr_set_fill_type(FILL_SOLID);
+	gr_set_fill_parm(33);
 
-    gr_per_umap(&bm, 4, points);
-    gr_clut_per_umap(&bm, 4, points, test_clut);
-    gr_lit_per_umap(&bm, 4, points);
+	gr_per_umap(&bm, 4, points);
+	gr_clut_per_umap(&bm, 4, points, test_clut);
+	gr_lit_per_umap(&bm, 4, points);
 
-    WaitKey();
+	WaitKey();
 
 	for (int i=0; i<100; i++) {
-    	gr_clear(i);
-    	gr_per_umap(&bm, 4, points);
-    	gr_clut_per_umap(&bm, 4, points, test_clut);
+		gr_clear(i);
+		gr_per_umap(&bm, 4, points);
+		gr_clut_per_umap(&bm, 4, points, test_clut);
 		gr_lit_per_umap(&bm, 4, points);
 
 		SDL_UpdateWindowSurface( window );
@@ -258,7 +270,8 @@ void main(void)
 
 void WaitKey(void)
 {
-	SDL_BlitSurface(blitSurface, NULL, screenSurface, NULL);
+	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
   	SDL_UpdateWindowSurface(window);
 
   	SDL_PumpEvents();

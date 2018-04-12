@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#include "LG.h"
+#include "lg.h"
 
 uchar *tluc8tab[256];
 uchar *tluc8ltab[256];

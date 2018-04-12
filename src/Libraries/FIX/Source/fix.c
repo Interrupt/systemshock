@@ -90,13 +90,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdlib.h>
-#include <FixMath.h>
+// #include <FixMath.h>
 //#include <stdio.h>
 //#include <lg.h>
 #include "fix.h"
 #include "trigtab.h"
 
-#include <Carbon/Carbon.h>
+// #include <Carbon/Carbon.h>
 
 int	gOVResult;
 
@@ -235,7 +235,7 @@ fix fix_mul_div(fix m0, fix m1, fix d)
 	float af = fix_float(m0);
 	float bf = fix_float(m1);
 	float df = fix_float(d);
-	return fix_from_float((af * bf) / d);
+	return fix_from_float((af * bf) / df);
 }
 #else
 fix asm fix_mul_div (fix m0, fix m1, fix d)
@@ -702,7 +702,7 @@ AWide *AsmWideBitShift(AWide *src, long shift)
 	return src;
 }
 
-AWide *WideSquareRoot(AWide *src, long div)
+AWide *WideSquareRoot(AWide *src)
 {
 	printf("WideSquareRoot\n");
 	return src;

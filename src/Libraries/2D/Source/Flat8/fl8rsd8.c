@@ -69,7 +69,7 @@ void gr_rsd8_blit (uchar *rsd_src, uchar *dst, int grd_bm_row, int bm_w);
 //### MLA- not supposed to be used (PC code is in RSDBLT.ASM)
 void gr_rsd8_blit (uchar *rsd_src, uchar *dst, int grd_bm_row, int bm_w)
  {
-	DebugStr("\pask mark");
+	DebugStr("ask mark");
  }
  
 

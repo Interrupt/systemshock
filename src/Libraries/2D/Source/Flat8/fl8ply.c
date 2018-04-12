@@ -32,12 +32,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gente.h"
 #include "poly.h"
 #include <string.h>
+#include <stdint.h>
 #include "tlucdat.h"
 #include "lg.h"
 
-#include <sdl.h>
-
-extern SDL_Surface* screenSurface;
+#include <SDL2/SDL.h>
 
 // prototypes
 int gri_poly_loop (grs_tmap_loop_info *ti);
@@ -51,7 +50,7 @@ void gri_clut_tpoly_init (grs_tmap_loop_info *ti);
 int gri_poly_loop (grs_tmap_loop_info *ti)
 {
 	int d;
-	uchar c=(uchar )(ti->bm.bits); /* actually, fill_parm */
+	uchar c=(uchar )(intptr_t)(ti->bm.bits); /* actually, fill_parm */
 	uchar *bm_bits = ti->bm.bits;
 	uchar *ti_d = ti->d;
 	fix 	ti_left_x = ti->left.x;
@@ -64,8 +63,9 @@ int gri_poly_loop (grs_tmap_loop_info *ti)
 	
 	do {
 	  if ((d=fix_cint(ti_right_x)-fix_cint(ti_left_x)) > 0) {
+        int x;
+
 	     switch (ti_hlog) {
-	        int x;
 	     case GRL_OPAQUE:
 	        LG_memset(ti_d+fix_cint(ti_left_x), c, d);
 	        break;
@@ -114,7 +114,7 @@ void gri_poly_init (grs_tmap_loop_info *ti)
 
 void gri_clut_poly_init (grs_tmap_loop_info *ti)
 {
-   ti->bm.bits=(uchar *)(ti->clut[(int )(ti->bm.bits)]);
+   ti->bm.bits=(uchar *)(intptr_t)ti->clut[(intptr_t)ti->bm.bits];
    ti->bm.hlog=GRL_OPAQUE;
    ti->d=ti->y*grd_bm.row+grd_bm.bits;
    ti->loop_func= (void (*)()) gri_poly_loop;
@@ -124,8 +124,8 @@ void gri_clut_poly_init (grs_tmap_loop_info *ti)
 
 void gri_tpoly_init (grs_tmap_loop_info *ti)
 {
-   if (tluc8tab[(uchar )(ti->bm.bits)]!=NULL) {
-      ti->bm.bits=tluc8tab[(uchar )(ti->bm.bits)];
+   if (tluc8tab[(intptr_t)(ti->bm.bits)]!=NULL) {
+      ti->bm.bits=tluc8tab[(intptr_t)ti->bm.bits];
       ti->bm.hlog=GRL_TLUC8;
    } else {
       ti->bm.hlog=GRL_OPAQUE;
@@ -139,11 +139,11 @@ void gri_tpoly_init (grs_tmap_loop_info *ti)
 void gri_clut_tpoly_init (grs_tmap_loop_info *ti)
 {
    DebugStr("gri_clut_tpoly_init");
-   if (tluc8tab[(uchar )(ti->bm.bits)]!=NULL) {
-      ti->bm.bits=tluc8tab[(uchar )(ti->bm.bits)];
+   if (tluc8tab[(intptr_t)(ti->bm.bits)]!=NULL) {
+      ti->bm.bits=tluc8tab[(intptr_t)ti->bm.bits];
       ti->bm.hlog=GRL_TLUC8|GRL_CLUT;
    } else {
-      ti->bm.bits=(uchar *)(ti->clut[(int )(ti->bm.bits)]);
+      ti->bm.bits=(uchar *)(intptr_t)ti->clut[(intptr_t)ti->bm.bits];
       ti->bm.hlog=GRL_OPAQUE;
    }
    ti->d=ti->y*grd_bm.row+grd_bm.bits;

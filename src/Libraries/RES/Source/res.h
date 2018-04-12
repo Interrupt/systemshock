@@ -62,11 +62,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define DBG_ON		1
 
 //#include <Files.h> (hmm!)
-#include <MacTypes.h>
+// #include <MacTypes.h>
 #include "lg.h"
 #include "restypes.h"
 
-#include <Carbon/Carbon.h>
+// #include <Carbon/Carbon.h>
 
 //#ifndef DATAPATH_H
 //#include <datapath.h>

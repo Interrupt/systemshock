@@ -924,7 +924,6 @@ extern struct {
    fix u0,v0;
 } grd_pc_point;
 #endif
-extern gr_per_set_tol(ubyte ltol, ubyte wftol);
    
 #define gr_clut_ubitmap(bm,x,y,cl) \
    ((void (*)(grs_bitmap *_bm,short _x,short _y, uchar *_cl)) \
