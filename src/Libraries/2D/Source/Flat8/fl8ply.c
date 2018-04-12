@@ -67,7 +67,7 @@ int gri_poly_loop (grs_tmap_loop_info *ti)
 	     switch (ti_hlog) {
 	        int x;
 	     case GRL_OPAQUE:
-	        LG_memset(ti_d+fix_cint(ti_left_x), c, d * 4);
+	        LG_memset(ti_d+fix_cint(ti_left_x), c, d);
 	        break;
 	     case GRL_TLUC8:
 	        for (x=fix_cint(ti_left_x); x<fix_cint(ti_right_x); x++)

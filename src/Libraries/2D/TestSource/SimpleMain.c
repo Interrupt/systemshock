@@ -33,6 +33,9 @@ long		gScreenRowbytes;
 CTabHandle	gMainColorHand;
 
 SDL_Surface* screenSurface;
+SDL_Surface* blitSurface;
+
+SDL_Color gamePalette[256];
 
 Ptr				gScreenAddress;
 
@@ -43,6 +46,7 @@ void SetVertexWall(grs_vertex **points);
 void SetVertexPerHScan(grs_vertex **points);
 void SetVertexPerVScan(grs_vertex **points);
 void WaitKey(void);
+void SetSDLPalette(int index, int count, uchar *pal);
 
 #if Mac
 void DoTest(void);
@@ -92,10 +96,14 @@ void main(void)
 	grs_canvas	canvas;
 
 	SDL_Init(SDL_INIT_VIDEO);
-    window = SDL_CreateWindow("SimpleMain", 320, 480, 1024, 768, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("System Shock - SimpleMain Test", 320, 480, 640, 480, SDL_WINDOW_SHOWN);
+    SDL_RaiseWindow(window);
+
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
   	screenSurface = SDL_GetWindowSurface( window );
-  	gScreenAddress = screenSurface->pixels;
+  	blitSurface = SDL_CreateRGBSurfaceWithFormat(0, 640, 480, 8, SDL_PIXELFORMAT_INDEX8);
+  	gScreenAddress = blitSurface->pixels;
 
   	SDL_SetRenderDrawColor(&renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   	SDL_RenderClear(&renderer);
@@ -103,12 +111,12 @@ void main(void)
 
 	DebugStr("Initializing");
 	gr_init();
-	gr_set_mode (GRM_1024x768x24, TRUE);
-	screen = gr_alloc_screen (1024, 768);
+	gr_set_mode (GRM_640x480x8, TRUE);
+	screen = gr_alloc_screen (640, 480);
 	gr_set_screen (screen);
 
 	// HAX: Why aren't the canvas rows set by default from gr_set_screen?
-	grd_bm.row = 1024 * 4;
+	grd_bm.row = 640;
 
 	DebugStr("Opening test.img");
 	fp = fopen("test.img","rb");
@@ -116,15 +124,16 @@ void main(void)
 	fclose (fp);
 
 	bm = * (grs_bitmap *) bitmap_buf;
-   	gr_init_bm(&bm, (uchar *) bitmap_buf+28, BMT_FLAT8, 0, 64, 64);
+   	gr_init_bm(&bm, (uchar *) bitmap_buf+28, BMT_FLAT8, 0, 128, 128);
 
 	DebugStr("Opening test.pal");
 	fp = fopen("test.pal","rb");
 	fread (pal_buf, 1, 768, fp);
 	fclose (fp);
 
-	DebugStr("Setting pallete");
+	DebugStr("Setting palette");
 	gr_set_pal(0, 256, pal_buf);
+	SetSDLPalette(0, 256, pal_buf);
 
 	DebugStr("Alloc Ipal");
 	gr_alloc_ipal();
@@ -249,8 +258,25 @@ void main(void)
 
 void WaitKey(void)
 {
+	SDL_BlitSurface(blitSurface, NULL, screenSurface, NULL);
   	SDL_UpdateWindowSurface(window);
+
+  	SDL_PumpEvents();
 	SDL_Delay(200);
+}
+
+void SetSDLPalette(int index, int count, uchar *pal)
+{
+	for(int i = index; i < count; i++) {
+		gamePalette[index+i].r = *pal++;
+		gamePalette[index+i].g = *pal++;
+		gamePalette[index+i].b = *pal++;
+		gamePalette[index+i].a = 0xFF;
+	}
+
+	SDL_Palette* sdlPalette = SDL_AllocPalette(count);
+	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
+	SDL_SetSurfacePalette(blitSurface, sdlPalette);
 }
  
 
@@ -267,8 +293,8 @@ void SetVertexFloor(grs_vertex **points)
  {
 	make_vertex((*(points[0])),100,   100,    0,    0,    fix_div(FIX_UNIT,fix_make(10,0)), 0);
 	make_vertex((*(points[1])),1000,   100,    128,    0,    fix_div(FIX_UNIT,fix_make(10,0)), 0);
-	make_vertex((*(points[2])),1080,   500,    128,    128,    fix_div(FIX_UNIT,fix_make(20,0)), 16*FIX_UNIT-1);
-	make_vertex((*(points[3])),120,   500,    0,    128,    fix_div(FIX_UNIT,fix_make(20,0)), 0);
+	make_vertex((*(points[2])),1080,   300,    128,    128,    fix_div(FIX_UNIT,fix_make(20,0)), 16*FIX_UNIT-1);
+	make_vertex((*(points[3])),120,   300,    0,    128,    fix_div(FIX_UNIT,fix_make(20,0)), 0);
  }
  
 
