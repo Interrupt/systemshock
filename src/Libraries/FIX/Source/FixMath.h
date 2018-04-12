@@ -17,7 +17,11 @@
 #define __FIXMATH__
 
 #ifndef __MACTYPES__
-#include <MacTypes.h>
+// #include <MacTypes.h>
+
+#include <stdint.h>
+
+typedef int32_t Fixed;
 #endif
 
 

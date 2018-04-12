@@ -90,13 +90,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdlib.h>
-#include <FixMath.h>
+// #include <FixMath.h>
 //#include <stdio.h>
 //#include <lg.h>
 #include "fix.h"
 #include "trigtab.h"
 
-#include <Carbon/Carbon.h>
+// #include <Carbon/Carbon.h>
 
 int	gOVResult;
 
@@ -688,7 +688,7 @@ AWide *AsmWideBitShift(AWide *src, long shift)
 	return src;
 }
 
-AWide *WideSquareRoot(AWide *src, long div)
+AWide *WideSquareRoot(AWide *src)
 {
 	return src;
 }

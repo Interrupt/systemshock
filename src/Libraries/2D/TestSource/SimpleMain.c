@@ -19,20 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // simple test code for 2d library 
 
 #include <2d.h>
-#include <fix.h>
+#include "fix.h"
 #include "lg.h"
 #include <stdio.h>
 
-#include <InitMac.h>
-#include "ShockBitmap.h"
-#include <Carbon/Carbon.h>
-#include <sdl.h>
+// #include <InitMac.h>
+// #include "ShockBitmap.h"
+// #include <Carbon/Carbon.h>
+#include <SDL2/SDL.h>
 
-WindowPtr 	gMainWindow;
+// WindowPtr 	gMainWindow;
 long		gScreenRowbytes;
 CTabHandle	gMainColorHand;
-
-SDL_Surface* screenSurface;
 
 Ptr				gScreenAddress;
 
@@ -75,13 +73,12 @@ uchar pal_buf[768];
 uchar bitmap_buf[17000];
 uchar shade_buf[4096];
 
-SDL_Window *window;
-SDL_Renderer *renderer;
-SDL_Surface *screenSurface;
+SDL_Window* window;
+SDL_Surface* drawSurface;
 
-void main(void)
- {      
- 	DebugStr("Starting Test");
+int main(void)
+{
+	DebugStr("Starting Test");
 
 	FILE        *fp;
 	grs_screen  *screen;
@@ -91,15 +88,29 @@ void main(void)
 	grs_vertex  *points[4];
 	grs_canvas	canvas;
 
-	SDL_Init(SDL_INIT_VIDEO);
-    window = SDL_CreateWindow("SimpleMain", 320, 480, 640, 480, SDL_WINDOW_SHOWN);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-  	screenSurface = SDL_GetWindowSurface( window );
-  	gScreenAddress = screenSurface->pixels;
+	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+		DebugStr("Init failed");
+		return 1;
+	}
 
-  	SDL_SetRenderDrawColor(&renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-  	SDL_RenderClear(&renderer);
-  	SDL_RenderPresent(&renderer);
+	window = SDL_CreateWindow(
+		"SimpleMain", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		640, 480, SDL_WINDOW_SHOWN);
+	
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
+	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+	if(!drawSurface) {
+		DebugStr("Failed to create draw surface");
+		return 1;
+	}
+
+	gScreenRowbytes = 640;
+	gScreenAddress = drawSurface->pixels;
+
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	SDL_RenderClear(renderer);
+	SDL_RenderPresent(renderer);
 
 	DebugStr("Initializing");
 	gr_init();
@@ -108,23 +119,35 @@ void main(void)
 	gr_set_screen (screen);
 
 	// HAX: Why aren't the canvas rows set by default from gr_set_screen?
-	grd_bm.row = 640 * 4;
+	grd_bm.row = 640;
 
 	DebugStr("Opening test.img");
-	fp = fopen("test.img","rb");
-	fread (bitmap_buf, 1, 16412, fp);
-	fclose (fp);
+	if(fp = fopen("test.img","rb")) {
+		fread (bitmap_buf, 1, 16412, fp);
+		fclose (fp);
+	} else {
+		DebugStr("Open failed");
+		return 1;
+	}
 
 	bm = * (grs_bitmap *) bitmap_buf;
-   	gr_init_bm(&bm, (uchar *) bitmap_buf+28, BMT_FLAT8, 0, 64, 64);
+	gr_init_bm(&bm, (uchar *) bitmap_buf+28, BMT_FLAT8, 0, 64, 64);
 
 	DebugStr("Opening test.pal");
-	fp = fopen("test.pal","rb");
-	fread (pal_buf, 1, 768, fp);
-	fclose (fp);
+	if(fp = fopen("test.pal","rb")) {
+		fread (pal_buf, 1, 768, fp);
+		fclose (fp);
+	} else {
+		DebugStr("Open failed");
+		return 1;
+	}
 
 	DebugStr("Setting pallete");
 	gr_set_pal(0, 256, pal_buf);
+
+	SDL_Palette* palette = SDL_AllocPalette(256);
+	SDL_SetPaletteColors(palette, (const SDL_Color*) pal_buf, 0, 256);
+	SDL_SetSurfacePalette(drawSurface, palette);
 
 	DebugStr("Alloc Ipal");
 	gr_alloc_ipal();
@@ -213,22 +236,22 @@ void main(void)
 		
 
 // ===== test code     
-    SetVertexPerHScan(points);
+	SetVertexPerHScan(points);
 	SetVertexLinear(points);
 
-    gr_set_fill_type(FILL_SOLID);
-    gr_set_fill_parm(33);
+	gr_set_fill_type(FILL_SOLID);
+	gr_set_fill_parm(33);
 
-    gr_per_umap(&bm, 4, points);
-    gr_clut_per_umap(&bm, 4, points, test_clut);
-    gr_lit_per_umap(&bm, 4, points);
+	gr_per_umap(&bm, 4, points);
+	gr_clut_per_umap(&bm, 4, points, test_clut);
+	gr_lit_per_umap(&bm, 4, points);
 
-    WaitKey();
+	WaitKey();
 
 	for (int i=0; i<100; i++) {
-    	gr_clear(i);
-    	gr_per_umap(&bm, 4, points);
-    	gr_clut_per_umap(&bm, 4, points, test_clut);
+		gr_clear(i);
+		gr_per_umap(&bm, 4, points);
+		gr_clut_per_umap(&bm, 4, points, test_clut);
 		gr_lit_per_umap(&bm, 4, points);
 
 		SDL_UpdateWindowSurface( window );
@@ -245,7 +268,10 @@ void main(void)
 
 void WaitKey(void)
 {
-  	SDL_UpdateWindowSurface(window);
+	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
+
+	SDL_UpdateWindowSurface(window);
 	SDL_Delay(200);
 }
  

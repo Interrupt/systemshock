@@ -86,7 +86,7 @@ void flat8_clear (long color)
    while (h--)
    {
 // MLA - inlined this code
-	 	LG_memset (p, color, w * 4);
+	 	LG_memset (p, color, w);
      /*{
 		  firstbytes = fb,middoubles = md,lastbytes = lb;
 		 	dst = p;

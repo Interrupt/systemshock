@@ -36,3 +36,10 @@ CMakeLists.txt.user
 # CMake
 CMakeFiles
 src/Libraries/CMakeFiles
+
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/Makefile
+
+TestSimpleMain
+**/core

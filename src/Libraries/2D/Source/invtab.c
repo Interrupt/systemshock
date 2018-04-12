@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "fix.h"
-#include "Invtab.h"
+#include "invtab.h"
 
 fix inverse_table[1024];
 
