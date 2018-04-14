@@ -33,11 +33,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "3d.h"
 #include "fauxrend.h"
 
+#include "lg.h"
+
 // prototypes
 uchar fauxrend_start_frame(void);
 void fauxrend_send_frame(void);
 void setup_quad(fix x, fix y, fix z, int d, g3s_phandle *trans_p);
 void test_3d(uchar *tmap, uchar* pal);
+void checkKeyPress();
 
 long fr_clear_color = 0xff;
 
@@ -164,7 +167,7 @@ int main(int argc, char *argv[])
    DebugString("Starting Test");
 
    if (argc != 3) {
-      printf("usage: tmap bytfile palfile\n");
+      printf("usage: tmap bytfile, palfile\n");
       exit(1);
    }
 
@@ -186,10 +189,9 @@ void test_3d(uchar *tmap, uchar* pal)
    grs_bitmap bm;
    g3s_vector du, dv;
    grs_screen *screen;
-	//EventRecord	evt;
    
-	//BlockMove(tmap,byt_buf,4096);
-	//BlockMove(pal,pal_buf,768);
+	BlockMove(tmap,byt_buf,4096);
+	BlockMove(pal,pal_buf,768);
 
    gr_init();
    gr_set_mode(GRM_640x480x8, TRUE);
@@ -202,18 +204,36 @@ void test_3d(uchar *tmap, uchar* pal)
    main_view=fauxrend_place_3d(NULL,FALSE,0,0,0,0,640,480);
    fauxrend_set_context(main_view);
 
-   /*while (c!=0x1b) {
+   while (true) {
       _fr_top(NULL);
       fauxrend_start_frame();
       setup_quad(-32768,-32768,4<<16,1,trans);
       g3_vec_sub(&du, &trans[1]->vec, &trans[0]->vec);
       g3_vec_sub(&dv, &trans[3]->vec, &trans[0]->vec);
-      g3_draw_tmap_tile(trans[0], &du, &dv, 4, trans, &bm);
-//      g3_draw_tmap_quad_tile (trans,&bm,1,1);
+
+      // Needs BlockMove
+      //g3_draw_tmap_tile(trans[0], &du, &dv, 4, trans, &bm);
+
+//    g3_draw_tmap_quad_tile (trans,&bm,1,1);
+
       fauxrend_send_frame();
       
-			c = 0;
-			if (GetNextEvent(keyDownMask+autoKeyMask,&evt)) c = evt.message & charCodeMask;
+      checkKeyPress();
+      
+      // Needs BlockMove
+      //g3_draw_poly (0xff, 4, trans);
+   }
+
+	g3_shutdown();
+   gr_close();
+}
+
+void checkKeyPress()
+{
+   /*
+   c = 0;
+   EventRecord  evt;
+   if (GetNextEvent(keyDownMask+autoKeyMask,&evt)) c = evt.message & charCodeMask;
       switch (c) {
       case 'i': eyepos_moveone(EYE_Y,16); break;
       case 'j': eyepos_moveone(EYE_H,-16); break;
@@ -242,11 +262,6 @@ void test_3d(uchar *tmap, uchar* pal)
       case '>': eyepos_moveone(EYE_B,4); break;
 
       default: break;
-      }
-      
-     g3_draw_poly (0xff, 4, trans);
-   }*/
-
-	g3_shutdown();
-   gr_close();
+   }
+   */
 }
