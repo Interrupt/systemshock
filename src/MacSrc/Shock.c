@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //====================================================================================
 
 
+#ifdef IS_REALLY_OSX
+
 //--------------------
 //  Includes
 //--------------------
@@ -1116,3 +1118,5 @@ errtype CheckFreeSpace(short	checkRefNum)
 	}
 	return (OK);
 }
+
+#endif

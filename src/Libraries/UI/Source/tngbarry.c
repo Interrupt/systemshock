@@ -347,7 +347,7 @@ uchar tng_buttonarray_keycooked(TNG *ptng, ushort key)
 	char buff[100];
 	sprintf(buff+1, "code = %x\0",code);
 	buff[0] = strlen(buff+1);
-	DebugStr((uchar *)buff);
+	DebugString((uchar *)buff);
 }
 */
    switch(code)

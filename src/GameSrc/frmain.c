@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frparams.h"
 #include "frflags.h"
 #include "error.h"
-#include <Carbon/Carbon.h>
+//#include <Carbon/Carbon.h>
 
 int fr_pipe_go_2(void);
 int fr_pipe_go_3(void);

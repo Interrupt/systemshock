@@ -197,9 +197,9 @@ void test_3d(void)
 	  vx = g3_vec_mag(&v);
   time=TickCount()-time;
   NumToString(time,str);
-  DebugStr(str); 
+  DebugString(str); 
   NumToString(vx,str);
-  DebugStr(str); 
+  DebugString(str); 
   return;
 	*/
 	
@@ -337,7 +337,7 @@ void test_3d(void)
    
 /*  time = TickCount()-time;
   NumToString(time,str);
-  DebugStr(str); */
+  DebugString(str); */
    
 	g3_shutdown();
   gr_close();

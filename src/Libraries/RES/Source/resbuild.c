@@ -90,7 +90,7 @@ void ResSetComment(int filenum, char* comment)
 
 int ResWrite(Id id)
 {
-	ResDesc 	*prd;
+	/*ResDesc 	*prd;
 	long 			compsize = -1;
 	long 			size = 0;
 	long 			sizeTable = 0;
@@ -106,7 +106,7 @@ int ResWrite(Id id)
 			compHdl = NewHandle(size + EXTRA);			// Make a new handle to compress to.
 			if (compHdl == NULL)
 			{
-				DebugStr("\pResWrite: Can't allocate LZW buffer for resource.\n");
+				DebugString("\pResWrite: Can't allocate LZW buffer for resource.\n");
 			}
 			else
 			{
@@ -138,7 +138,7 @@ int ResWrite(Id id)
 				}
 				else
 				{
-					DebugStr("\pResWrite: LZW compression did not work.\n");
+					DebugString("\pResWrite: LZW compression did not work.\n");
 				}
 			}
 		}
@@ -273,7 +273,7 @@ if (tell(prf->fd) & 3)
 
 void ResKill(Id id)
 {
-	Handle	resHdl;
+	/*Handle	resHdl;
 	ResDesc *prd = RESDESC(id);
 
 	if (prd->hdl)

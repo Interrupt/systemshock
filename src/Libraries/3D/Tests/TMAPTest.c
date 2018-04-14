@@ -26,13 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 
 //#define __FAUXREND_SRC
 #include "2d.h"
 #include "3d.h"
 #include "fauxrend.h"
-
-#include <Carbon/Carbon.h>
 
 // prototypes
 uchar fauxrend_start_frame(void);
@@ -49,6 +48,13 @@ g3s_angvec viewer_orientation;
 #define _fr_top(vr) if (vr==NULL) _fr=_sr; else _fr=vr;
 #define coor(val) (fix_make((eye[val]>>MAP_SH),(eye[val]&MAP_MK)<<MAP_MS))
 #define ang(val)  (eye[val])
+
+long gScreenRowbytes;
+Ptr  gScreenAddress;
+
+long eye[6] = {0,0,0,0,0,0};
+long eye_scale[6]={1,1,1,128,128,128};
+char eye_slew;
 
 void eyepos_init(void)
 {
@@ -152,6 +158,25 @@ void setup_quad(fix x, fix y, fix z, int d, g3s_phandle *trans_p)
 char byt_buf[64000];
 char pal_buf[768];
 
+
+int main(int argc, char *argv[])
+{
+   DebugString("Starting Test");
+
+   if (argc != 3) {
+      printf("usage: tmap bytfile palfile\n");
+      exit(1);
+   }
+
+   int fd = fopen(argv[1], "rb");
+   fread(byt_buf, 1, 4096, fd);
+   fclose(fd);
+
+   fd = fopen(argv[2], "rb");
+   fread(pal_buf, 1, 768, fd);
+   fclose(fd);
+}
+
 void test_3d(uchar *tmap, uchar* pal)
 {
    fauxrend_context *main_view;
@@ -161,19 +186,10 @@ void test_3d(uchar *tmap, uchar* pal)
    grs_bitmap bm;
    g3s_vector du, dv;
    grs_screen *screen;
-	 EventRecord	evt;
-	 
-/*   if (argc != 3) {
-      printf("usage: tmap bytfile palfile\n");
-      exit(1);
-   }
-   fd = open(argv[1], O_RDONLY|O_BINARY);
-   read(fd, byt_buf, 4096);
-   fd = open(argv[2], O_RDONLY|O_BINARY);
-   read(fd, pal_buf, 768);*/
+	//EventRecord	evt;
    
-	 BlockMove(tmap,byt_buf,4096);
-	 BlockMove(pal,pal_buf,768);
+	//BlockMove(tmap,byt_buf,4096);
+	//BlockMove(pal,pal_buf,768);
 
    gr_init();
    gr_set_mode(GRM_640x480x8, TRUE);
@@ -186,7 +202,7 @@ void test_3d(uchar *tmap, uchar* pal)
    main_view=fauxrend_place_3d(NULL,FALSE,0,0,0,0,640,480);
    fauxrend_set_context(main_view);
 
-   while (c!=0x1b) {
+   /*while (c!=0x1b) {
       _fr_top(NULL);
       fauxrend_start_frame();
       setup_quad(-32768,-32768,4<<16,1,trans);
@@ -229,8 +245,8 @@ void test_3d(uchar *tmap, uchar* pal)
       }
       
      g3_draw_poly (0xff, 4, trans);
-   }
+   }*/
 
 	g3_shutdown();
-  gr_close();
+   gr_close();
 }

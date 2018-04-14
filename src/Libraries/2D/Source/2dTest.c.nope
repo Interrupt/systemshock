@@ -253,7 +253,7 @@ extern void v_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 	gr_bitmap(&cnv->bm,0,0);
 
   NumToString(time,str);
-//  DebugStr(str);  
+//  DebugString(str);  
   MoveTo(10,420);
 	RGBForeColor(&col);
   DrawString(str);

@@ -515,7 +515,7 @@ message_info(temp);
 	if (rv == 1)
 		musicai_reset(TRUE);
 	else  //Â¥Â¥Â¥ handle this a better way.
-		DebugStr("\pLoad theme failed!");
+		DebugString("\pLoad theme failed!");
 }
 
 errtype load_score_for_location(int x, int y)

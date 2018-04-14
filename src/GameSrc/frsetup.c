@@ -332,7 +332,7 @@ int fr_free_view(frc *view)
       if ((_fr->flags&FR_DOUBLEB_MASK)&&((_fr->flags&FR_OWNBITS_MASK)==0))
       {
 //         free(_fr->main_canvas.bm.bits);  // deal w/any other canvii
-		DebugStr("\pHey!  We shouldn't ever be doing this!");
+		DebugString("\pHey!  We shouldn't ever be doing this!");
 		free(_fr->realCanvasPtr);
       }
   	 free(_fr);
@@ -449,7 +449,7 @@ frc *fr_place_view (frc *view, void *v_cam, void *cnvs, int pflags, char axis, i
 	{
 		if (cnvs==NULL)
 		{
-DebugStr("\pHey! I though we always supplied a canvas");
+DebugString("\pHey! I though we always supplied a canvas");
 /*
 			uchar *p;
 			int	rowbytes = (wid + 31) & 0xFFFFFFE0;

@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lintab.h"
 // #include "ShockBitmap.h"
 
-extern CTabHandle           gMainColorHand;
+//extern CTabHandle           gMainColorHand;
 
 // #include <Carbon/Carbon.h>
 
@@ -119,7 +119,7 @@ void mac_set_pal (int start, int n, uchar *pal_data)
 // get the current color palette (copy entries from gMainColorHand)
 void mac_get_pal (int start, int n, uchar *pal_data)
  {
- 	if (n)	// ignore if count == 0
+ 	/*if (n)	// ignore if count == 0
  	 {
  	 	short			i;
  	 	ColorSpec	*cSpec;
@@ -132,7 +132,7 @@ void mac_get_pal (int start, int n, uchar *pal_data)
  	 	 	*(pal_data++) = cSpec->rgb.blue >> 8;
  	 	 	cSpec++;
  	 	 }
-	 }		 
+	 }*/		 
  }
  
 

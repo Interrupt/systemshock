@@ -123,7 +123,7 @@ void DoWarningMsg(char *msg);
 void DoWarningMsg(char *msg);
 
 void DebugString(char* msg);
-void DebugStr(char* msg);
+//void DebugString(char* msg);
 
 /*
 #include <stdio.h>

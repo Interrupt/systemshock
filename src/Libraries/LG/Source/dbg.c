@@ -455,9 +455,9 @@ void DebugString(char* msg) {
 	printf("\n%s\n", msg);
 }
 
-void DebugStr(char* msg) {
+/*void DebugString(char* msg) {
 	printf("\n%s\n", msg);
-}
+}*/
 
 /*
 #ifdef DBG_ON

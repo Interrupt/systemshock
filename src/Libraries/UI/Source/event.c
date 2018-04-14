@@ -386,7 +386,7 @@ if (ev->type == UI_EVENT_KBD_COOKED)
 	char buff[100];
 	sprintf(buff+1, "event_dispatch_callback(%x,%x,%x) event type %x\0",reg,r,v,ev->type);
 	buff[0] = strlen(buff+1);
-	DebugStr((uchar *)buff);
+	DebugString((uchar *)buff);
 }
 */
    if (ch == NULL || handlers ==  NULL)
@@ -691,7 +691,7 @@ void ui_poll_keyboard(void)
 {
 	extern uchar	pKbdGetKeys[16];
 	long			*keys = (long *)pKbdGetKeys;
-	GetKeys((UInt32 *)keys);
+	//GetKeys((UInt32 *)keys);
 
 	uchar *key;
 	for (key = ui_poll_keys; *key != KBC_NONE; key++)

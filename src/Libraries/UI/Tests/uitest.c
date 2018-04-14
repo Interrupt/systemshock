@@ -276,17 +276,17 @@ uchar goofy_key_callback(uiEvent* h, LGRegion* r, void* state)
 //   if (h->type != UI_EVENT_KBD_COOKED || (inkey & KB_FLAG_SPECIAL) || !(inkey & KB_FLAG_DOWN)) return FALSE;
    if (h->type != UI_EVENT_KBD_COOKED)
    {
-     DebugStr("\pKey's not cooked!");
+     DebugString("\pKey's not cooked!");
      return FALSE;
    }
    if (inkey & KB_FLAG_SPECIAL)
    {
-     DebugStr("\pIsn't that special!");
+     DebugString("\pIsn't that special!");
      return FALSE;
    }
    if (!(inkey & KB_FLAG_DOWN))
    {
-     DebugStr("\pKey's not down!");
+     DebugString("\pKey's not down!");
      return FALSE;
    }
 

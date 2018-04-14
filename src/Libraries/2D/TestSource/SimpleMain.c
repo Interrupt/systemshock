@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <sdl.h>
 
 long		gScreenRowbytes;
-CTabHandle	gMainColorHand;
 Ptr			gScreenAddress;
 
 // prototypes
@@ -71,7 +70,7 @@ SDL_Surface* drawSurface;
 
 int main(void)
 {
-	DebugStr("Starting Test");
+	DebugString("Starting Test");
 
 	FILE        *fp;
 	grs_screen  *screen;
@@ -82,7 +81,7 @@ int main(void)
 	grs_canvas	canvas;
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		DebugStr("SDL: Init failed");
+		DebugString("SDL: Init failed");
 		return 1;
 	}
 
@@ -96,7 +95,7 @@ int main(void)
 
 	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
 	if(!drawSurface) {
-		DebugStr("SDL: Failed to create draw surface");
+		DebugString("SDL: Failed to create draw surface");
 		return 1;
 	}
 
@@ -111,54 +110,54 @@ int main(void)
 	// HAX: Why aren't the canvas rows set by default from gr_set_screen?
 	//grd_bm.row = drawSurface->w;
 
-	DebugStr("Opening test.img");
+	DebugString("Opening test.img");
 	if(fp = fopen("test.img","rb")) {
 		fread (bitmap_buf, 1, 16412, fp);
 		fclose (fp);
 	} else {
-		DebugStr("Open failed");
+		DebugString("Open failed");
 		return 1;
 	}
 
 	bm = * (grs_bitmap *) bitmap_buf;
    	gr_init_bm(&bm, (uchar *) bitmap_buf+28, BMT_FLAT8, 0, 128, 128);
 
-	DebugStr("Opening test.pal");
+	DebugString("Opening test.pal");
 	if(fp = fopen("test.pal","rb")) {
 		fread (pal_buf, 1, 768, fp);
 		fclose (fp);
 	} else {
-		DebugStr("Open failed");
+		DebugString("Open failed");
 		return 1;
 	}
 
-	DebugStr("Setting palette");
+	DebugString("Setting palette");
 	gr_set_pal(0, 256, pal_buf);
 
 	SetSDLPalette(0, 256, pal_buf);
 
-	DebugStr("Alloc Ipal");
+	DebugString("Alloc Ipal");
 	gr_alloc_ipal();
 	gr_init_blend(1);
 	gr_clear(0x0);
 	WaitKey();
 
-	DebugStr("Setting points");
+	DebugString("Setting points");
 	points[0] = &v0;
 	points[1] = &v1;
 	points[2] = &v2;
 	points[3] = &v3;
 
-	DebugStr("Opening test.shd");
+	DebugString("Opening test.shd");
 	fp = fopen("test.shd","rb");
 	fread (shade_buf, 1, 4096, fp);
 	fclose (fp);
 
-	DebugStr("Set Light Table");	
+	DebugString("Set Light Table");	
 	gr_set_light_tab(shade_buf);
 
 
-	DebugStr("Starting Drawing");
+	DebugString("Starting Drawing");
 // ==
 	// linear
 	SetVertexLinear(points);
@@ -252,7 +251,7 @@ int main(void)
 
 //	time = TickCount()-time;
 //	NumToString(time,str);
-//  DebugStr(str);  
+//  DebugString(str);  
 		 
  
 	gr_close();

@@ -447,7 +447,7 @@ uchar *do_multires(uchar *opcode)
 uchar *do_scaleres(uchar *opcode)
  {
  	// MLA - this routine appears to be buggy and can't possibly work, so I'm not doing it yet.
- 	DebugStr("\pCall Mark!");
+ 	DebugString("\pCall Mark!");
  	
 /* 	int					count,scale;
 	long				temp_pnt[3];

@@ -65,7 +65,7 @@ void h_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti)
 /*{
  Str255 s;
  NumToString(info.n,s);
- DebugStr(s);
+ DebugString(s);
 }*/
 
 

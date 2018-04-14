@@ -150,7 +150,20 @@ add_executable(TestSimpleMain
 target_link_libraries(TestSimpleMain
 	2D_LIB
 	GR_LIB
-	# 3D_LIB
+	3D_LIB
+	# RES_LIB
+	FIX_LIB
+	LG_LIB
+)
+
+add_executable(TestTMAP
+	src/Libraries/3D/Tests/TMAPTest.c
+)
+
+target_link_libraries(TestTMAP
+	2D_LIB
+	GR_LIB
+	3D_LIB
 	# RES_LIB
 	FIX_LIB
 	LG_LIB
@@ -158,19 +171,14 @@ target_link_libraries(TestSimpleMain
 
 
 # Find SDL, please?
-#INCLUDE(FindPkgConfig)
-#PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-#include_directories(${SDL2_INCLUDEDIR})
-#target_link_libraries(TestSimpleMain ${SDL2_LIBRARIES})
-
-find_file(SDL2_INCLUDE_DIR NAME SDL.h HINTS SDL2)
-find_library(SDL2_LIBRARY NAME SDL2)
+#find_file(SDL2_INCLUDE_DIR NAME SDL.h HINTS SDL2)
+#find_library(SDL2_LIBRARY NAME SDL2)
 include_directories(${SDL2_INCLUDE_DIR})
 target_link_libraries(TestSimpleMain ${SDL2_LIBRARY}) 
 
-#add_definitions(
-#	-include precompiled.h
-#)
+add_definitions(
+	-include precompiled.h
+)
 
 add_executable(systemshock
 	${GAME_SRC}

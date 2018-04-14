@@ -306,9 +306,9 @@ ubyte set_player_energy_spend(ubyte new_val)
 // KLC - Probably a goofy way to do this, but what the hey!  This tells me if the player struct
 //            has the fullscreen ware on.
 //----------------------------------------------------------------
-Boolean IsFullscreenWareOn(void)
+bool IsFullscreenWareOn(void)
 {
 	ubyte		status = player_struct.hardwarez_status[CPTRIP(FULLSCR_HARD_TRIPLE)];
 	
-	return ((Boolean)(status & WARE_ON));
+	return ((bool)(status & WARE_ON));
 }

@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void *ResLock(Id id)
 {
-	ResDesc *prd;
+	/*ResDesc *prd;
 
 	//	Check if valid id
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
@@ -81,7 +81,7 @@ void *ResLock(Id id)
 
 	if (prd->lock == 1)
 		HLock(prd->hdl);
-	return(*prd->hdl);
+	return(*prd->hdl);*/
 }
 
 //	---------------------------------------------------------
@@ -94,7 +94,7 @@ void *ResLock(Id id)
 //	---------------------------------------------------------
 void *ResLockHi(Id id)
 {
-	ResDesc *prd;
+	/*ResDesc *prd;
 
 	//	If resource not loaded, load it.
 	prd = RESDESC(id);
@@ -106,7 +106,7 @@ void *ResLockHi(Id id)
 	if (prd->lock == 1)
 		HLockHi(prd->hdl);
 	
-	return(*prd->hdl);
+	return(*prd->hdl);*/
 }
 
 //	---------------------------------------------------------
@@ -119,7 +119,7 @@ void *ResLockHi(Id id)
 
 void ResUnlock(Id id)
 {
-	ResDesc *prd;
+	/*ResDesc *prd;
 
 	//	Check if valid id
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
@@ -139,7 +139,7 @@ void ResUnlock(Id id)
 		HUnlock(prd->hdl);
 //		ResAddToTail(prd);
 //		DBG(DSRC_RES_Stat, {resStat.numLocked--;});
-	}
+	}*/
 }
 
 //	-------------------------------------------------------------
@@ -155,7 +155,7 @@ void ResUnlock(Id id)
 
 void *ResGet(Id id)
 {
-	ResDesc *prd = RESDESC(id);
+	/*ResDesc *prd = RESDESC(id);
 
 //	Check if valid id
 
@@ -177,7 +177,7 @@ void *ResGet(Id id)
 	//	Return ptr
 	
 	HLock(prd->hdl);
-	return(*prd->hdl);
+	return(*prd->hdl);*/
 }
 
 
@@ -194,7 +194,7 @@ void *ResGet(Id id)
 
 void *ResExtract(Id id, void *buffer)
 {
-	ResDesc *prd = RESDESC(id);
+	/*ResDesc *prd = RESDESC(id);
 
 	if (ResLoadResource(id) == NULL)
 		return(NULL);
@@ -230,7 +230,7 @@ void *ResExtract(Id id, void *buffer)
 
 void ResDrop(Id id)
 {
-	ResDesc *prd;
+	/*ResDesc *prd;
 
 	//	Check for locked
 
@@ -261,7 +261,7 @@ void ResDrop(Id id)
 	if (prd->hdl)
 	{
 		EmptyHandle(prd->hdl);
-	}
+	}*/
 }
 
 //	-------------------------------------------------------
@@ -275,7 +275,7 @@ void ResDrop(Id id)
 
 void ResDelete(Id id)
 {
-	ResDesc *prd;
+	/*ResDesc *prd;
 
 	//	If locked, issue warning
 
@@ -312,7 +312,7 @@ void ResDelete(Id id)
 //	else
 //		{
 //		Spew(DSRC_RES_DelDrop, ("ResDelete: $%x not in use\n", id));
-//		}
+//		}*/
 }
 
 /*

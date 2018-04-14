@@ -52,7 +52,7 @@ typedef unsigned char ubyte;
 typedef char* Ptr;
 
 // from Quickdraw.h
-struct RGBColor {
+/*struct RGBColor {
   unsigned short      red;
   unsigned short      green;
   unsigned short      blue;
@@ -76,7 +76,7 @@ struct ColorTable {
 
 typedef struct ColorTable               ColorTable;
 typedef ColorTable *                    CTabPtr;
-typedef CTabPtr *                       CTabHandle;
+typedef CTabPtr *                       CTabHandle;*/
 
 //typedef unsigned char bool;
 

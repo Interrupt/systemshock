@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
-#include <Carbon/Carbon.h>
+//#include <Carbon/Carbon.h>
 //#include "OldCarbonLibraries.h"
 //#include <Palettes.h>
 //#include <GestaltEqu.h>
@@ -38,8 +38,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Shock.h"
 #include "InitMac.h"
 #include "ShockBitmap.h"
-
-#include <Carbon/Carbon.h>
 
 //QDGlobals	qd;
 
@@ -248,9 +246,9 @@ void SetupWindows(WindowPtr *mainWind)
 //------------------------------------------------------------------------------------
 //  Load and install the standard menus.
 //------------------------------------------------------------------------------------
-void SetUpMenus(MenuHandle *theMenus, short numMenus)
+/*void SetUpMenus(MenuHandle *theMenus, short numMenus)
 {
-	/*short		i;
+	short		i;
 	
 	for (i=0; i<numMenus; i++)
 		FailNIL(theMenus[i] = GetMenu(128+i));		// get menu resources
@@ -260,8 +258,8 @@ void SetUpMenus(MenuHandle *theMenus, short numMenus)
 	for (i=0; i<numMenus; i++)
 		InsertMenu(theMenus[i], 0);							// Insert apple, file, edit, etc.
 	
-	DrawMenuBar();*/
-}
+	DrawMenuBar();
+}*/
 
 //------------------------------------------------------------------------------------
 //  Get the dirID and Vref for any folders Shock uses.

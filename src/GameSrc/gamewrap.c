@@ -226,7 +226,7 @@ errtype save_game(FSSpec *saveSpec)
 	filenum = ResEditFile(&currSpec, FALSE);
 	if (filenum < 0)
 	{
-		DebugStr("\pCouldn't open Current Game\n");
+		DebugString("\pCouldn't open Current Game\n");
 		return ERR_FOPEN;
 	}
 
@@ -274,7 +274,7 @@ errtype save_game(FSSpec *saveSpec)
 	retval = write_level_to_disk(ResIdFromLevel(player_struct.level), TRUE);
 	if (retval)
 	{
-		DebugStr("\pReturn value from write_level_to_disk is non-zero!\n");//Â¥Â¥Â¥
+		DebugString("\pReturn value from write_level_to_disk is non-zero!\n");//Â¥Â¥Â¥
 		critical_error(CRITERR_FILE|3);
 	}
 
@@ -282,7 +282,7 @@ errtype save_game(FSSpec *saveSpec)
 	if (copy_file(&currSpec, saveSpec, TRUE) != OK)
 	{
 		//Â¥Â¥Â¥ Put up some alert here.
-		DebugStr("\pNo good copy, dude!\n");
+		DebugString("\pNo good copy, dude!\n");
 //		string_message_info(REF_STR_SaveGameFail);
 	}
 //KLC	else

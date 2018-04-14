@@ -168,7 +168,7 @@ void RefExtractInBlocks(RefTable *prt, Ref ref, void *buff, long blockSize,
 
 typedef struct 
 {
-	Handle	hdl;			// Mac resource handle.  NULL if not in memory (on disk)
+	//Handle	hdl;			// Mac resource handle.  NULL if not in memory (on disk)
 	short	 	filenum;	// Mac resource file number
 	uchar 	lock;			// lock count
 	uchar	flags;			// misc flags (RDF_XXX, see below)
@@ -222,7 +222,7 @@ typedef enum
 } ResOpenMode;
 
 void ResAddPath(char *path);		// add search path for resfiles
-short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, uchar auxinfo);
+//short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, uchar auxinfo);
 void ResCloseFile(short filenum);	// close res file
 
 #define ResOpenFile(specPtr) ResOpenResFile(specPtr, ROM_READ, FALSE)

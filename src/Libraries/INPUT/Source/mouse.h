@@ -60,7 +60,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg.h"
 #include "error.h"
-#include <Carbon/Carbon.h>
+#include <stdbool.h>
+//#include <Carbon/Carbon.h>
 
 typedef struct _mouse_event
 {

@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void *RefLock(Ref ref)
 {
-	ResDesc *prd;
+	/*ResDesc *prd;
 	RefTable *prt;
 	RefIndex index;
 
@@ -98,7 +98,7 @@ void *RefLock(Ref ref)
 	if (!RefIndexValid(prt, index))
 		return (NULL);
 	else
-		return (((uchar *)prt) + (prt->offset[index]));
+		return (((uchar *)prt) + (prt->offset[index]));*/
 }
 
 
@@ -116,7 +116,7 @@ void *RefLock(Ref ref)
 
 void *RefGet(Ref ref)
 {
-	ResDesc *prd;
+	/*ResDesc *prd;
 	RefTable *prt;
 	RefIndex index;
 
@@ -150,7 +150,7 @@ void *RefGet(Ref ref)
 	if (!RefIndexValid(prt, index))
 		return (NULL);
 	else
-		return (((uchar *)prt) + (prt->offset[index]));
+		return (((uchar *)prt) + (prt->offset[index]));*/
 }
 
 
@@ -166,7 +166,7 @@ void *RefGet(Ref ref)
 
 RefTable *ResReadRefTable(Id id)
 {
-	ResDesc 	*prd;
+	/*ResDesc 	*prd;
 	Handle		resHdl;
 	RefIndex	numRefs;
 	short			tableSize;
@@ -189,13 +189,13 @@ RefTable *ResReadRefTable(Id id)
 		err = ResError();
 		if (err != 0)
 		{
-			DebugStr("\pResReadRefTable: Can't partial read the RefTable\n");
+			DebugString("\pResReadRefTable: Can't partial read the RefTable\n");
 			return (NULL);
 		}
 	}
 	else
 	{
-		DebugStr("\pResReadRefTable: Can't allocate pointer for RefTable\n");
+		DebugString("\pResReadRefTable: Can't allocate pointer for RefTable\n");
 	}
 	
 	return (prt);
@@ -330,7 +330,7 @@ int ResNumRefs(Id id)
 
 void *RefExtract(RefTable *prt, Ref ref, void *buff)
 {
-	RefIndex	index = REFINDEX(ref);
+	/*RefIndex	index = REFINDEX(ref);
 	ResDesc		*prd = RESDESC(REFID(ref));
 	Handle		resHdl;
 	short			err;
@@ -340,7 +340,7 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
 	SetResLoad(TRUE);														// actually loading res into mem
 	
 	if (prd->flags & RDF_LZW)
-	{
+	{*/
 /*
 		rs = RefSize(prt, index);
 		compPtr = malloc(rs + 100);								// Just to be safe.
@@ -355,7 +355,7 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
 			prt->offset[index] - REFTABLESIZE(prt->numRefs),	// skip amt
 			RefSize(prt, index));												// data amt
 */
-		DebugStr("\pRefExtract: Not implemented for compressed compound resources.\n");
+		/*DebugString("\pRefExtract: Not implemented for compressed compound resources.\n");
 		return (NULL);
 	}
 	else
@@ -364,11 +364,11 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
 		err = ResError();
 		if (err != 0)
 		{
-			DebugStr("\pRefExtract: Can't partial read the normal resource.\n");
+			DebugString("\pRefExtract: Can't partial read the normal resource.\n");
 			return (NULL);
 		}
 	}
-	return (buff);
+	return (buff);*/
 
 /*
 	int fd;

@@ -288,7 +288,7 @@ errtype player_create_initial(void);
 errtype player_startup(void);
 errtype player_shutdown(void);
 ubyte set_player_energy_spend(ubyte new_val);
-Boolean IsFullscreenWareOn(void);
+bool IsFullscreenWareOn(void);
 
 // Globals
 #ifdef __PLAYER_SRC

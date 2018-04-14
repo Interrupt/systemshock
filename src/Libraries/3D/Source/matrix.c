@@ -82,7 +82,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 
 
 
-#include <FixMath.h>
+//#include <FixMath.h>
 #include "lg.h"
 #include "3d.h"
 #include "GlobalV.h"
@@ -252,25 +252,25 @@ void compute_YXZ(g3s_matrix *view_matrix)
 
 void compute_YZX(g3s_matrix *view_matrix)
  {
- 	DebugStr("\pcompute_YZX needs to be implemented");
+ 	DebugString("\pcompute_YZX needs to be implemented");
  }
  
 
 void compute_XZY(g3s_matrix *view_matrix)
  {
- 	DebugStr("\pcompute_XZY needs to be implemented");
+ 	DebugString("\pcompute_XZY needs to be implemented");
  }
  
 
 void compute_ZXY(g3s_matrix *view_matrix)
  {
- 	DebugStr("\pcompute_ZXY needs to be implemented");
+ 	DebugString("\pcompute_ZXY needs to be implemented");
  }
  
 
 void compute_ZYX(g3s_matrix *view_matrix)
  {
- 	DebugStr("\pcompute_ZYX needs to be implemented");
+ 	DebugString("\pcompute_ZYX needs to be implemented");
  }
  
 // invalid does nothing (and does it well!)

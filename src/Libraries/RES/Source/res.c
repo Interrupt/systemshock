@@ -82,10 +82,10 @@ void ResInit()
 
 //	Allocate initial resource descriptor table, default size (can't fail)
 
-	resDescMax = DEFAULT_RESMAX;
+	/*resDescMax = DEFAULT_RESMAX;
 	gResDesc = (ResDesc *)malloc( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
 	if (MemError())
-		DebugStr("\pResInit: Can't allocate the global resource descriptor table.\n");
+		DebugString("\pResInit: Can't allocate the global resource descriptor table.\n");*/
 	
 //	gResDesc[ID_HEAD].prev = 0;
 //	gResDesc[ID_HEAD].next = ID_TAIL;
@@ -135,12 +135,12 @@ void ResTerm()
 
 //	Free up resource descriptor table
 
-	if (gResDesc)
+	/*if (gResDesc)
 	{
 		free(gResDesc);
 		gResDesc = NULL;
 		resDescMax = 0;
-	}
+	}*/
 /*
 //	Pop allocators
 
@@ -162,7 +162,7 @@ void ResTerm()
 //	---------------------------------------------------------
 long ResSize(Id id)
 {
-	ResDesc *prd = RESDESC(id);
+	/*ResDesc *prd = RESDESC(id);
 
 	if (prd->flags & RDF_LZW)							// If it's compressed...
 	{
@@ -172,7 +172,7 @@ long ResSize(Id id)
 			return (MaxSizeRsrc(prd->hdl));		// else return the res map size.
 	}
 	else
-		return (MaxSizeRsrc(prd->hdl));			// For normal resources, 
+		return (MaxSizeRsrc(prd->hdl));			// For normal resources, */
 }																	// return the res map size.
 
 //	---------------------------------------------------------
@@ -187,7 +187,7 @@ long ResSize(Id id)
 
 void ResGrowResDescTable(Id id)
 {
-	long	newAmt, currAmt;
+	/*long	newAmt, currAmt;
 	Ptr	growPtr;
 
 //	Calculate size of new table and size of current
@@ -206,14 +206,14 @@ void ResGrowResDescTable(Id id)
 		growPtr = malloc(newAmt * sizeof(ResDesc));
 		if (MemError() != noErr)
 		{
-			DebugStr("\pResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
+			DebugString("\pResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
 			return;
 		}
 		BlockMove(gResDesc, growPtr, currAmt * sizeof(ResDesc));
 		free(gResDesc);
 		gResDesc = (ResDesc *)growPtr;
 		LG_memset(gResDesc + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc));
-		resDescMax = newAmt - 1;
+		resDescMax = newAmt - 1;*/
 
 //	Grow cumulative stats table too
 /*
@@ -233,7 +233,7 @@ void ResGrowResDescTable(Id id)
 				}
 			});
 */
-	}
+	//}
 }
 
 //	---------------------------------------------------------

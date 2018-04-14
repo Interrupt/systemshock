@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include "2d.h"
 
 #include "3d.h"

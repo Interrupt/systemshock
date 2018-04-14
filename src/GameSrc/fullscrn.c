@@ -293,7 +293,7 @@ void change_svga_screen_mode()
 	 	if (DoubleSize)
 	 	{
 			if (!AllocDoubleBuffer(640, 480))
-				DebugStr("\pCan't allocate low-res double buffer!"); 		//Â¥Â¥Â¥Handle memory error!!
+				DebugString("\pCan't allocate low-res double buffer!"); 		//Â¥Â¥Â¥Handle memory error!!
 			svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address,
 																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK,0,0,
 	 																0,0,cur_w>>1,cur_h>>1);
@@ -311,7 +311,7 @@ void change_svga_screen_mode()
 	 	if (DoubleSize)
 	 	{
 			if (!AllocDoubleBuffer(536, 259))
-				DebugStr("\pCan't allocate low-res double buffer!"); 		//Â¥Â¥Â¥Handle memory error!!
+				DebugString("\pCan't allocate low-res double buffer!"); 		//Â¥Â¥Â¥Handle memory error!!
 			svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address, 
 																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0, 
 																	SCONV_X(SCREEN_VIEW_X)>>1, SCONV_Y(SCREEN_VIEW_Y)>>1, 

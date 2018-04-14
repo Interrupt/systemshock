@@ -190,7 +190,7 @@ void main(void)
 
 	time = TickCount()-time;
 	NumToString(time,str);
-//  DebugStr(str);  
+//  DebugString(str);  
 		 */   
  
 	gr_close();
