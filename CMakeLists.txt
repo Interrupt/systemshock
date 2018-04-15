@@ -173,8 +173,12 @@ target_link_libraries(TestTMAP
 # Find SDL, please?
 #find_file(SDL2_INCLUDE_DIR NAME SDL.h HINTS SDL2)
 #find_library(SDL2_LIBRARY NAME SDL2)
-include_directories(${SDL2_INCLUDE_DIR})
-target_link_libraries(TestSimpleMain ${SDL2_LIBRARY}) 
+#include_directories(${SDL2_INCLUDE_DIR})
+#target_link_libraries(TestSimpleMain ${SDL2_LIBRARY}) 
+
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
+target_link_libraries(TestSimpleMain ${SDL2_LIBRARIES})
 
 add_definitions(
 	-include precompiled.h
