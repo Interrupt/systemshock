@@ -78,8 +78,8 @@ errtype res_draw_string(Id font, int strid, int x, int y);
 
 // hmmm, why dont these work, eh
 // note the void's so we dont need LGRect.h in here, neat huh?
-void Rect_gr_box(void *rv);
-void Rect_gr_rect(void *rv);
+void Rect_gr_box(LGRect *rv);
+void Rect_gr_rect(LGRect *rv);
 
 // Dump the current screen out to a .GIF in the GEN directory
 uchar gifdump_func(short keycode, ulong context, void* data);

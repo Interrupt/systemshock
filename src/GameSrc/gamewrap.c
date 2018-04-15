@@ -137,7 +137,7 @@ errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile)
 	}
 	FSClose(destRefNum);
 	FSClose(srcRefNum);
-	FlushVol(nil, destFile->vRefNum);
+	// FlushVol(nil, destFile->vRefNum); No more vRefNum?
 	return(retv);
 }
 
@@ -486,7 +486,7 @@ void check_and_update_initial(void)
 #endif //NOT_YET Â¥Â¥Â¥
 
 
-uchar create_initial_game_func(short , ulong , void* )
+uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefined3)
 {
 	FSSpec	archiveSpec, currSpec;
 	OSErr	err;

@@ -472,7 +472,7 @@ WideShift(
  *    CarbonLib:        in CarbonLib 1.0 and later
  *    Mac OS X:         in version 10.0 and later
  */
-EXTERN_API_C( unsigned long )
+EXTERN_API_C( wide * )
 WideSquareRoot(const wide * source);
 
 

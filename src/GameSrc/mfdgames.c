@@ -259,7 +259,7 @@ extern uchar (*game_handler_funcs[])(MFD *m,uiEvent* ev);
 // ===========================================================================
 //                         * THE MFD GAMES CODE *        
 // ===========================================================================
-errtype mfd_games_init(MFD_Func*)
+errtype mfd_games_init(MFD_Func* m)
 {
    GamesMenu.ul.x=1; GamesMenu.ul.y=1; GamesMenu.lr.x=6; GamesMenu.lr.y=6;
    player_struct.mfd_func_status[MFD_GAMES_FUNC]|=1<<4;
@@ -392,7 +392,7 @@ static void init_screen_save(menu_state *ms)
 
 #define draw_shadowed_text(s,x,y) draw_shadowed_string((s),(x),(y),full_game_3d)
 
-void games_expose_menu(MFD *, ubyte )
+void games_expose_menu(MFD *m, ubyte control)
 {
    char buf[80];
    int i;
@@ -487,12 +487,12 @@ uchar games_handle_menu(MFD* m, uiEvent* ev)
    return TRUE;
 }
 
-void games_init_null(void*)
+void games_init_null(void* data)
 {
    return;
 }
 
-void games_expose_null(MFD *, ubyte )
+void games_expose_null(MFD *m, ubyte control)
 {
    int  cur_games=0xff;
 
@@ -504,7 +504,7 @@ void games_expose_null(MFD *, ubyte )
    mfd_add_rect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
 }
 
-uchar games_handle_null(MFD* , uiEvent* )
+uchar games_handle_null(MFD *m, uiEvent *e)
 {
    return FALSE;
 }
@@ -813,7 +813,7 @@ uchar games_handle_pong(MFD* m, uiEvent* e)
 #define CAR_IDX          3
 static uchar c_cols[][2]={{BRIGHT_LED,DIM_LED},{BRIGHT_PHOSPHOR,DIM_PHOSPHOR},{45,61},{BRIGHT_CAR,DIM_CAR}};
 
-void games_init_road(void *)
+void games_init_road(void *data)
 {
    road_state *cur_rs=(road_state *)GAME_DATA;
    games_time_diff=0;
@@ -823,7 +823,7 @@ void games_init_road(void *)
    LG_memset(&cur_rs->player_move,0,sizeof(road_state)-4);     // clear rest of fields
 }
 
-void games_run_road(road_state *)
+void games_run_road(road_state *s)
 {
    road_state *cur_rs=(road_state *)GAME_DATA;
    int i;
@@ -941,7 +941,7 @@ void games_expose_road(MFD *m, ubyte tac)
    mfd_notify_func(MFD_GAMES_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
 }
 
-uchar games_handle_road(MFD *, uiEvent *e)
+uchar games_handle_road(MFD *m, uiEvent *e)
 {
 	uiMouseEvent *me=(uiMouseEvent *)e;
 	
@@ -1151,7 +1151,7 @@ void games_run_bots(bots_state *bs)
   }
 }
 
-void games_expose_bots(MFD *m, uchar)
+void games_expose_bots(MFD *m, uchar control)
 {
    bots_state *bs = (bots_state *) GAME_DATA;
    uiEvent fake_event;
@@ -1585,7 +1585,7 @@ static void draw_silo(int x, int num)
 
 static int hack[] = { 0, SCORE_PER_GUY_ALIVE, 
 		      SCORE_PER_GUY_ALIVE, SCORE_PER_GUY_ALIVE*2 };
-static void games_expose_mcom(MFD *, ubyte )
+static void games_expose_mcom(MFD *m, ubyte control)
 {
   int i,k;
   mcom_state *ms = (mcom_state *) GAME_DATA;
@@ -1846,7 +1846,7 @@ static uchar puzz15_move(int x, int y)
    return TRUE;
 }
 
-void games_expose_15(MFD *, ubyte control)
+void games_expose_15(MFD *m, ubyte control)
 {
    int i,x,y,t,dx,dy,dt;
    short sw,sh;
@@ -2124,7 +2124,7 @@ static char move_to_index(char move,tictactoe* st)
    return -1;
 }
 
-void games_expose_ttt(MFD *, ubyte control)
+void games_expose_ttt(MFD *m, ubyte control)
 {
    uchar full;
    int val;
@@ -3568,7 +3568,7 @@ uchar games_handle_wing(MFD *m, uiEvent *e)
    return TRUE;
 }
 
-void games_init_wing(void *)
+void games_init_wing(void *data)
 {
   int i;
   wing_level = QUESTVAR_GET(WING_QUEST_VAR);
@@ -3581,7 +3581,7 @@ void games_init_wing(void *)
   }
 }
 
-void games_expose_wing(MFD *, ubyte)
+void games_expose_wing(MFD *m, ubyte control)
 {
   switch(wing_game_mode) {
     case WING_PLAY_GAME:
@@ -3634,7 +3634,7 @@ uchar mfd_games_hack_func(short keycode, ulong context, void* data)
 }
 */
 
-void mfd_games_turnon(bool, uchar real_start)
+void mfd_games_turnon(bool b, uchar real_start)
 {
    if (real_start)
    {
@@ -3646,7 +3646,7 @@ void mfd_games_turnon(bool, uchar real_start)
    }
 }
 
-void mfd_games_turnoff(bool, uchar )
+void mfd_games_turnoff(bool b, uchar real_start)
 {
 
    // game shutdown code goes here. 

@@ -1015,7 +1015,7 @@ void do_stuff_every_second()
 
 int enviro_suit_absorb(int damage, int exposure, ubyte dtype);
 
-void expose_player_real(short damage, ubyte type, ushort )
+void expose_player_real(short damage, ubyte type, ushort undefined)
 {
    int cval = player_struct.hit_points_lost[type-1];
    if (damage == 0) return;

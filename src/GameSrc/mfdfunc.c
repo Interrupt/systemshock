@@ -595,7 +595,7 @@ void mfd_weapon_draw_temp(ubyte temp)
 // Takes the current charge and the maximum charge, and draws the dynamic
 // portion of the beam weapon status bar
 
-void mfd_weapon_draw_beam_status_bar(int, int setting, uchar does_overload)
+void mfd_weapon_draw_beam_status_bar(int amt, int setting, uchar does_overload)
 {
    ubyte setting_x;
 
@@ -1002,7 +1002,7 @@ LGRect MfdGrenadeBox[2];
 //
 // Sets some info.
 
-errtype mfd_item_init(MFD_Func *)
+errtype mfd_item_init(MFD_Func *mfd)
 {
    MFDSetCurrItemClass(0,MFD_INV_NULL);
    MFDSetCurrItemClass(1,MFD_INV_NULL);
@@ -1157,7 +1157,7 @@ Ref smallstuffSpews[] = {
    REF_STR_plotSpew0
 };
 
-void mfd_general_inv_expose(MFD*, ubyte, ObjID id, uchar full)
+void mfd_general_inv_expose(MFD *mfd, ubyte control, ObjID id, uchar full)
 {
    int triple;
    Ref spew=NULL_REF;
@@ -1494,7 +1494,7 @@ extern uchar muzzle_fire_light;
 
 int energy_cost(int warenum);
 
-uchar mfd_lantern_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_lantern_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
 {
    int n = CPTRIP(LANTERN_HARD_TRIPLE);
    int s = player_struct.hardwarez_status[n];
@@ -1638,7 +1638,7 @@ uchar mfd_shield_handler(MFD* m, uiEvent* e)
    return retval;
 }
 
-uchar mfd_shield_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_shield_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
 {
    int n = CPTRIP(SHIELD_HARD_TRIPLE);
    int s = player_struct.hardwarez_status[n];
@@ -1765,7 +1765,7 @@ uchar mfd_motion_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data);
 errtype mfd_motion_init(MFD_Func* f);
 void mfd_motionware_expose(MFD* mfd, ubyte control);
 
-uchar mfd_motion_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_motion_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
 {
    int n = CPTRIP(MOTION_HARD_TRIPLE);
    int s = player_struct.hardwarez_status[n];
@@ -1881,7 +1881,7 @@ uchar mfd_grenade_handler(MFD* m, uiEvent* ev);
 errtype mfd_grenade_init(MFD_Func* f);
 void mfd_grenade_expose(MFD* mfd, ubyte control);
 
-uchar mfd_grenade_slider_handler(MFD* m,short val, uiEvent* ev, void*)
+uchar mfd_grenade_slider_handler(MFD* m,short val, uiEvent* ev, void* data)
 {
    uiMouseEvent* mev = (uiMouseEvent*)ev;
    int n = player_struct.actives[ACTIVE_GRENADE];
@@ -2306,7 +2306,7 @@ void mfd_anim_expose(MFD *m, ubyte control)
 
 errtype draw_shodan_influence(MFD *mfd, uchar amt);
 
-errtype draw_shodan_influence(MFD *, uchar amt)
+errtype draw_shodan_influence(MFD *mfd, uchar amt)
 {
    char			*s = get_temp_string(SHODAN_FAILURE_STRING);
    grs_bitmap	bm;
@@ -2380,7 +2380,7 @@ errtype mfd_elevator_setlev(MFD *mfd, short lev, elev_data_type *elev_data)
    return(OK);
 }
 
-uchar mfd_elevator_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_elevator_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
 {
    elev_data_type* elev_data = (elev_data_type*)&player_struct.mfd_func_data[MFD_ELEV_FUNC][0];
    int b = bttn.x*ELEV_BTTN_ROWS+bttn.y;
@@ -2705,7 +2705,7 @@ char *mfd_keypad_assemble(keypad_data_type *keypad_data, char *buf)
 }
 
 
-errtype mfd_keypad_input(MFD *, char b_num)
+errtype mfd_keypad_input(MFD * mfd, char b_num)
 {
    keypad_data_type* keypad_data = (keypad_data_type*)&player_struct.mfd_func_data[MFD_KEYPAD_FUNC][0];
    extern errtype keypad_trigger(ObjID id, uchar digits[MAX_KEYPAD_DIGITS]);
@@ -2735,7 +2735,7 @@ errtype mfd_keypad_input(MFD *, char b_num)
    return(OK);
 }
 
-uchar keypad_hotkey_func(short keycode, ulong, void*)
+uchar keypad_hotkey_func(short keycode, ulong context, void* data)
 {
    extern MFD mfd[];
    uchar digit = kb2ascii(keycode) - '0';
@@ -2774,7 +2774,7 @@ uchar mfd_keypad_handler(MFD* m, uiEvent* ev)
    return(FALSE);
 }
 
-uchar mfd_keypad_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_keypad_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
 {
    int b = bttn.x*KEYPAD_BTTN_ROWS+bttn.y;
 

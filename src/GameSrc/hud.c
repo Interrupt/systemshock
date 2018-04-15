@@ -33,7 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "gr2ss.h"
 #include "colors.h"
-#include "screen.h"
 #include "tools.h"
 #include "gamescr.h"
 #include "effect.h"
@@ -54,6 +53,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "otrip.h"
 #include "lvldata.h"
 #include "diffq.h"
+
+#include "game_screen.h" //was screen.h?
 
 
 LGRect target_screen_rect;
@@ -159,7 +160,7 @@ void hud_shutdown_lines(void);
 // --------------
 //  FUNCTIONS
 // --------------
-uchar hud_color_bank_cycle(short , ulong , void* )
+uchar hud_color_bank_cycle(short keycode, ulong context, void* data)
 {
    hud_color_bank=(hud_color_bank+1)%HUD_COLOR_BANKS;
    return TRUE;
@@ -266,7 +267,7 @@ void compute_hud_var(HudLine* hl)
    }
 }
 
-void hud_update_lines(short x, short* y, short , short )
+void hud_update_lines(short x, short* y, short unused1, short unused2)
 {
    int i;
    short use_x, use_y;
@@ -556,7 +557,7 @@ ubyte targ_frame = NUM_TARG_FRAMES;
 void hud_do_objs(short xtop, short ytop, short xwid, short ywid, uchar reverse);
 
 
-void hud_do_objs(short xtop, short ytop, short , short , uchar reverse)
+void hud_do_objs(short xtop, short ytop, short unused1, short unused2, uchar reverse)
 {
    int i;
    extern ObjID beam_effect_id;
@@ -601,7 +602,7 @@ void hud_do_objs(short xtop, short ytop, short , short , uchar reverse)
 // ------------------------------------------
 // hud_update()
 
-errtype hud_update(bool, frc* context)
+errtype hud_update(uchar redraw_whole, frc* context)
 {
    extern uchar fullscrn_vitals;
    extern uchar fullscrn_icons;

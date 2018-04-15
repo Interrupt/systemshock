@@ -104,7 +104,7 @@ LGPoint shield_offsets[9] =
 		{4,3}, {4,3}, {2,3}, {4,2}, {4,2}, {2,2}, {8,1}, {4,2}, {0,1}
 	};
 	
-void EDMS_lean_o_meter(physics_handle ph, fix& lean, fix& crouch);
+void EDMS_lean_o_meter(physics_handle ph, fix lean, fix crouch);
 
 
 // -------
@@ -393,7 +393,7 @@ int player_get_eye_fixang(void)
    return theta;
 }
 
-uchar eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *)
+uchar eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void * data)
 {
    short x = ev->pos.x - r->abs_x;
    short y = ev->pos.y - r->abs_y;
@@ -422,7 +422,7 @@ uchar eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *)
 }
 
 
-uchar lean_mouse_handler(uiMouseEvent* ev, LGRegion* r, void *)
+uchar lean_mouse_handler(uiMouseEvent* ev, LGRegion* r, void * data)
 {
    short x = ev->pos.x - r->abs_x - LEANOMETER_XOFF;
    short y = ev->pos.y - r->abs_y - LEANOMETER_YOFF;

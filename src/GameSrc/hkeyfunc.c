@@ -241,7 +241,7 @@ uchar toggle_bool_func(short keycode, ulong context, bool* tgl)
 
 extern Boolean	DoubleSize;
 
-uchar change_mode_func(short , ulong , void* data)
+uchar change_mode_func(short keycode, ulong context, void* data)
 {
    int newm = (int)data;
    
@@ -334,7 +334,7 @@ void stop_music(void)
 	mlimbs_monster = NO_MONSTER;
 }
 
-uchar toggle_music_func(short, ulong, void*)
+uchar toggle_music_func(short keycode, ulong context, void* data)
 {
 	if (music_on)
 	{
@@ -357,7 +357,7 @@ uchar toggle_music_func(short, ulong, void*)
 }
 
 
-uchar arm_grenade_hotkey(short , ulong , void* )
+uchar arm_grenade_hotkey(short keycode, ulong context, void* data)
 {
    extern uchar show_all_actives;
    extern void super_drop_func(int dispnum, int row);
@@ -404,7 +404,7 @@ int select_object_by_class(int obclass, int num, ubyte* quantlist)
    return newobj;
 }
 
-uchar select_grenade_hotkey(short , ulong , void* )
+uchar select_grenade_hotkey(short keycode, ulong context, void* data)
 {
    int newobj;
 
@@ -413,7 +413,7 @@ uchar select_grenade_hotkey(short , ulong , void* )
    return TRUE;
 }
 
-uchar select_drug_hotkey(short , ulong , void* )
+uchar select_drug_hotkey(short keycode, ulong context, void* data)
 {
    int newobj;
 
@@ -422,7 +422,7 @@ uchar select_drug_hotkey(short , ulong , void* )
    return TRUE;
 }
 
-uchar use_drug_hotkey(short , ulong , void* )
+uchar use_drug_hotkey(short keycode, ulong context, void* data)
 {
    extern uchar show_all_actives;
    extern void super_use_func(int dispnum, int row);
@@ -444,7 +444,7 @@ uchar use_drug_hotkey(short , ulong , void* )
    return TRUE;
 }
 
-uchar clear_fullscreen_func(short , ulong , void* )
+uchar clear_fullscreen_func(short keycode, ulong context, void* data)
 {
    extern char last_message[128];
    extern MFD mfd[2];
@@ -1292,7 +1292,7 @@ uchar unpause_callback(uiEvent *, LGRegion *, void *)
 
 #endif //Â¥Â¥Â¥ NOT_YET
 
-uchar pause_game_func(short, ulong, void*)
+uchar pause_game_func(short keycode, ulong context, void* data)
 {
 	extern uchar game_paused, redraw_paused;
 	extern LGRegion *inventory_region;
@@ -1339,7 +1339,7 @@ uchar unpause_game_func(short, ulong, void*)
 //--------------------------------------------------------------------
 //  For Mac version.  Save the current game.
 //--------------------------------------------------------------------
-uchar save_hotkey_func(short, ulong, void *)
+uchar save_hotkey_func(short keycode, ulong context, void* data)
 {
 	if (global_fullmap->cyber)					// Can't save in cyberspace.
 	{
@@ -1351,7 +1351,8 @@ uchar save_hotkey_func(short, ulong, void *)
 		MacTuneKillCurrentTheme();
 	uiHideMouse(NULL);
 	ShowCursor();
-	CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
+
+	// CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
 	
 	if (gIsNewGame)									// Do the save thang.
 	{

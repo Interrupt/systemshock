@@ -75,7 +75,7 @@ void DoGraphicsOptionsDlg(void);
 Boolean DoNewGameDlg(void);
 void DoEndgameDlg(void);
 
-void StartProgressDlg(const Str255& title, int numSteps);
+void StartProgressDlg(const char* title, int numSteps);
 void AdvanceProgress(void);
 void EndProgressDlg(void);
 

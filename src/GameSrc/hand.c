@@ -32,8 +32,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "handart.h"
 #include "hand.h"
 #include "fullscrn.h"
-#include "screen.h"
 #include "faketime.h"
+
+#include "game_screen.h" // Was screen.h?
 
 
 typedef struct {

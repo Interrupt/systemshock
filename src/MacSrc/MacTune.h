@@ -59,14 +59,14 @@ typedef struct
 //-----------------
 //  EXTERN GLOBALS
 //-----------------
-extern bool		mlimbs_on;
+extern uchar	mlimbs_on;
 extern char	mlimbs_status;
 
 extern mlimbs_request_info	current_request[MLIMBS_MAX_SEQUENCES - 1]; // Request information
 
 extern ulong	mlimbs_counter;
 extern long		mlimbs_error;
-extern bool		mlimbs_semaphore;
+extern uchar	mlimbs_semaphore;
 
 extern Handle			gHeaderHdl, gTuneHdl, gOfsHdl;		// Holds the tune-related data for the current theme file.
 extern long				*gOffsets;									// Array of offsets for the beginning of each tune.

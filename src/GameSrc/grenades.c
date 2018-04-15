@@ -686,7 +686,7 @@ void reactivate_mine(ObjID id)
 //
 // called when grenade contact something
 
-void grenade_contact(ObjID id, int)
+void grenade_contact(ObjID id, int undefined)
 {
    if (is_obj_destroyed(id))
    {

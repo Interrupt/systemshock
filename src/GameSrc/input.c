@@ -1009,7 +1009,7 @@ uchar posture_hotkey_func(short keycode, ulong context, void* data)
 }
 
 
-uchar eye_hotkey_func(short, ulong , int data)
+uchar eye_hotkey_func(short keycode, ulong context, int data)
 {
    extern void player_set_eye(byte);
    extern byte player_get_eye(void);
@@ -1197,7 +1197,7 @@ extern void change_svga_screen_mode(void);
 Boolean	gShowFrameCounter = FALSE;
 Boolean	gShowMusicGlobals = FALSE;
 
-uchar MacQuitFunc(short , ulong , void*)
+uchar MacQuitFunc(short keycode, ulong context, void* data)
 {
 	if (*tmd_ticks > (gGameSavedTime + (5 * CIT_CYCLE)))		// If the current game needs saving...
 	{
@@ -1207,7 +1207,8 @@ uchar MacQuitFunc(short , ulong , void*)
 		
 		uiHideMouse(NULL);								// Setup the environment for doing Mac stuff.
 		ShowCursor();
-		CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
+
+		//CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
 
 		ShowMenuBar();
 		stdFilterProcPtr = NewModalFilterProc(ShockAlertFilterProc);
@@ -1217,7 +1218,9 @@ uchar MacQuitFunc(short , ulong , void*)
  		
 		SetPort(gMainWindow);							// Update area behind the alert
 		BeginUpdate(gMainWindow);
-  		CopyBits(&gMainOffScreen.bits->portBits, &gMainWindow->portBits, &gOffActiveArea, &gActiveArea, srcCopy, 0L);
+
+  		//CopyBits(&gMainOffScreen.bits->portBits, &gMainWindow->portBits, &gOffActiveArea, &gActiveArea, srcCopy, 0L);
+
 		EndUpdate(gMainWindow);
 
 		if (global_fullmap->cyber)						// In cyberspace, all you can do is end the game
@@ -1254,7 +1257,7 @@ uchar MacQuitFunc(short , ulong , void*)
 	return TRUE;
 }
 
-uchar MacResFunc(short , ulong , void *)
+uchar MacResFunc(short keycode, ulong context, void* data)
 {
  	DoubleSize = !DoubleSize;
 	change_svga_screen_mode();
@@ -1273,7 +1276,7 @@ uchar MacResFunc(short , ulong , void *)
 	return TRUE;
 }
 
-uchar MacSkiplinesFunc(short , ulong , void *)
+uchar MacSkiplinesFunc(short keycode, ulong context, void* data)
 {
 	if (!DoubleSize)							// Skip lines only applies in double-size mode.
 	{
@@ -1286,7 +1289,7 @@ uchar MacSkiplinesFunc(short , ulong , void *)
 	return TRUE;
 }
 
-uchar MacDetailFunc(short , ulong , void *)
+uchar MacDetailFunc(short keycode, ulong context, void* data)
 {
 	char	msg[32];
 	char	detailStr[8];
@@ -1325,7 +1328,7 @@ uchar MacDetailFunc(short , ulong , void *)
 /*
 // Temporary function.  Remove for final build
 
-uchar temp_FrameCounter_func(short , ulong , void *)
+uchar temp_FrameCounter_func(short keycode, ulong context, void* data)
 {
 	gShowFrameCounter = !gShowFrameCounter;
 	
@@ -1338,13 +1341,15 @@ uchar temp_FrameCounter_func(short , ulong , void *)
 // end temp functions
 */
 
-uchar MacHelpFunc(short , ulong , void*)
+uchar MacHelpFunc(short keycode, ulong context, void* data)
 {
 	if (music_on)									// Setup the environment for doing Mac stuff.
 		MacTuneKillCurrentTheme();
 	uiHideMouse(NULL);
 	status_bio_end();
-	CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
+
+	//CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
+
 	ShowMenuBar();
 	ShowCursor();
 
@@ -1352,7 +1357,9 @@ uchar MacHelpFunc(short , ulong , void*)
  		
 	SetPort(gMainWindow);							// Update area behind the alert
 	BeginUpdate(gMainWindow);
-	CopyBits(&gMainOffScreen.bits->portBits, &gMainWindow->portBits, &gOffActiveArea, &gActiveArea, srcCopy, 0L);
+
+	//CopyBits(&gMainOffScreen.bits->portBits, &gMainWindow->portBits, &gOffActiveArea, &gActiveArea, srcCopy, 0L);
+
 	EndUpdate(gMainWindow);
 
 	HideCursor();										// go back to Shock.
@@ -2299,7 +2306,7 @@ void look_at_object(ObjID id)
 // view3d_dclick dispatches double clicks based on cursor mode
 
 // Not a directly-installed mouse handler, called from view3d_mouse_handler
-void view3d_dclick(LGPoint pos, frc* )
+void view3d_dclick(LGPoint pos, frc* fr)
 {
    extern short loved_textures[];
    extern char* get_texture_use_string(int,char*,int);
@@ -2519,7 +2526,7 @@ typedef struct _view3d_kdata
 
 #define FIRE_KEY KEY_SPACE  //KLC for PC was KEY_ENTER
 
-uchar view3d_key_handler(uiCookedKeyEvent* ev, LGRegion* r, void* )
+uchar view3d_key_handler(uiCookedKeyEvent* ev, LGRegion* r, void* data)
 {
 	uchar retval = FALSE;
 //KLC   static uchar fire_key_down = FALSE;

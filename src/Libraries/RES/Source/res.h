@@ -61,12 +61,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //¥¥¥ For now
 //#define DBG_ON		1
 
-//#include <Files.h> (hmm!)
-// #include <MacTypes.h>
+#include <Carbon/Carbon.h>
+#include <MacTypes.h>
 #include "lg.h"
 #include "restypes.h"
-
-// #include <Carbon/Carbon.h>
 
 //#ifndef DATAPATH_H
 //#include <datapath.h>
@@ -168,7 +166,7 @@ void RefExtractInBlocks(RefTable *prt, Ref ref, void *buff, long blockSize,
 
 typedef struct 
 {
-	//Handle	hdl;			// Mac resource handle.  NULL if not in memory (on disk)
+	Handle	hdl;			// Mac resource handle.  NULL if not in memory (on disk)
 	short	 	filenum;	// Mac resource file number
 	uchar 	lock;			// lock count
 	uchar	flags;			// misc flags (RDF_XXX, see below)

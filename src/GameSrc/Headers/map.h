@@ -297,7 +297,7 @@ typedef struct {
 
 // implicit me_ptr and v
 #define _me_merge_set(me_ptr,v,strname,maskname) \
-                                         ((me_ptr)->##strname##=((me_ptr)->##strname##&~(##maskname##_MASK))|((v)<<(##maskname##_SHF)))
+                                         ((me_ptr)->strname=((me_ptr)->strname&~(maskname##_MASK))|((v)<<(maskname##_SHF)))
 
 // Now all the set primitives
 #define _me_tiletype_set(me_ptr,v)       ((me_ptr)->tiletype=(v))

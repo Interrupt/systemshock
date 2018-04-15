@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //#define TESTING		1
 
-#ifdef IS_REALLY_OSX
+//#ifdef IS_REALLY_OSX
 
 //--------------------
 // Menus
@@ -39,8 +39,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #else
 #define kNumMenus			4
 #endif
-
-//#include <Carbon/Carbon.h>
 
 #define mApple					128					// Menu IDs
 #define mFile						129
@@ -132,8 +130,8 @@ void ScrollCredits(void);
 //--------------------
 // Public Globals
 //--------------------
-//extern WindowPtr		gMainWindow;
-//extern MenuHandle		gMainMenus[kNumMenus];
+extern WindowPtr		gMainWindow;
+extern MenuHandle		gMainMenus[kNumMenus];
 //extern RgnHandle		gCursorRgn;
 //extern short				gCursorSet;
 extern bool			gDone;
@@ -170,7 +168,7 @@ extern long					gBarkDirID;
 extern short				gBarkVref;
 
 
-#else
+/*#else
 extern short				gOriginalDepth;
 extern short				gStartupDepth;
 extern short				gLastAlertDepth;
@@ -179,4 +177,4 @@ extern long					gScreenRowbytes;
 extern short				gScreenWide, gScreenHigh;
 extern short				gActiveWide, gActiveHigh;
 extern short				gActiveLeft, gActiveTop;
-#endif
+#endif*/

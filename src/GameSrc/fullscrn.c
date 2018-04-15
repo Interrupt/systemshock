@@ -48,18 +48,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "otrip.h"
 #include "palfx.h"
 #include "rendtool.h"
-#include "screen.h"
 #include "sideicon.h"
 #include "status.h"
 #include "textmaps.h"
 #include "tools.h"
 #include "wares.h"
 
-// Why can't these be pulled from screen.h?
-#define SCREEN_VIEW_X   28
-#define SCREEN_VIEW_Y   24
-#define SCREEN_VIEW_HEIGHT 108
-#define SCREEN_VIEW_WIDTH  268
+#include "game_screen.h" // was screen.h?
 
 #ifdef NOT_YET //KLC stereo 
 

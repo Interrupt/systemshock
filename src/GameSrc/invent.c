@@ -49,7 +49,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdext.h"
 #include "objbit.h"
 #include "fullscrn.h"
-#include "screen.h"
 #include "cit2d.h"
 #include "gr2ss.h"
 #include "criterr.h"
@@ -66,6 +65,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gamescr.h"
 #include "amap.h"
 #include "citres.h"
+
+#include "game_screen.h" // was screen.h?
 
 //#include <inp6d.h>
 //#include <i6dvideo.h>
@@ -707,7 +708,7 @@ int get_item_at_pixrow(inv_display *dp, int row)
 #define WEAP_CLASSES (1 << CLASS_GUN)
 #define WEAP_TRIP    MAKETRIP(CLASS_GUN,0,0)
 
-char* weapon_name_func(void *, int num, char* buf)
+char* weapon_name_func(void * v, int num, char* buf)
 {
    weapon_slot* ws = &player_struct.weapons[num];
    get_weapon_name(ws->type,ws->subtype,buf);
@@ -1058,7 +1059,7 @@ char* null_name_func(inv_display* dp, int n, char* buf)
 #define GREN_CLASSES (1 << CLASS_GRENADE)
 #define GREN_TRIP    MAKETRIP(CLASS_GRENADE,0,0)
 
-static char* grenade_name_func(void *, int n, char* buf)
+static char* grenade_name_func(void * dp, int n, char* buf)
 {
    return get_grenade_name(n,buf);
 }
@@ -1246,7 +1247,7 @@ uchar drug_use_func(inv_display* dp, int row)
 #define AMMO_CLASSES (1 << CLASS_AMMO)
 #define AMMO_TRIP    MAKETRIP(CLASS_AMMO,0,0)
 
-char* ammo_name_func(void* , int n, char* buf)
+char* ammo_name_func(void* dp, int n, char* buf)
 {
    int triple;
 
@@ -1370,7 +1371,7 @@ void hardware_add_specials(int n, int ver)
    }
 }
 
-ubyte ware_add_func(inv_display* dp, int, ObjID* idP,uchar select)
+ubyte ware_add_func(inv_display* dp, int nn, ObjID* idP,uchar select)
 {
    ObjID id = *idP;
    int trip = ID2TRIP(id);
@@ -1433,7 +1434,7 @@ ubyte ware_add_func(inv_display* dp, int, ObjID* idP,uchar select)
 
 }
 
-void ware_drop_func(inv_display*, int)
+void ware_drop_func(inv_display* dp, int n)
 {
 #ifndef GAMEONLY
    int itemnum = dp->lines[row].num;
@@ -1485,7 +1486,7 @@ void ware_drop_func(inv_display*, int)
 }
 
 
-char* null_quant_func(inv_display*, int, int, char* buf)
+char* null_quant_func(inv_display* dp, int n, int q, char* buf)
 {
    *buf = '\0';
    return buf;
@@ -1506,7 +1507,7 @@ char* null_quant_func(inv_display*, int, int, char* buf)
 #define VERSION_PREFIX (get_temp_string(REF_STR_VersionPrefix)[0])
 
 // QUANTS *******************************
-static char* soft_quant_func(inv_display*, int, int q, char* buf)
+static char* soft_quant_func(inv_display* dp, int n, int q, char* buf)
 {
    int l=1;
    buf[0] = VERSION_PREFIX;
@@ -1821,7 +1822,7 @@ void remove_general_item(ObjID obj)
 }
 
 
-void general_drop_func(inv_display*, int row)
+void general_drop_func(inv_display* dp, int row)
 {
    ObjID obj = player_struct.inventory[row];
    if (obj != OBJ_NULL && ID2TRIP(obj) != GENCARDS_TRIPLE) // don't let us drop access cards.
@@ -1894,7 +1895,7 @@ void email_more_draw(inv_display *dp)
 }
 
 
-uchar email_more_use(inv_display* dp, int)
+uchar email_more_use(inv_display* dp, int w)
 {
    uchar retval = FALSE;
    if (dp->relnum != 0 && email_morebuttons[dp->relnum % 2])
@@ -1982,7 +1983,7 @@ void add_email_datamunge(short mung,uchar select)
    select_email(n,select);
 }
 
-ubyte email_add_func(inv_display*, int, ObjID* idP,uchar select)
+ubyte email_add_func(inv_display* dp, int w, ObjID* idP,uchar select)
 {
    play_digi_fx(SFX_INVENT_ADD, 1);
    if (ID2TRIP(*idP) != EMAIL1_TRIPLE && ID2TRIP(*idP) != TEXT1_TRIPLE) return ADD_REJECT;
@@ -1991,7 +1992,7 @@ ubyte email_add_func(inv_display*, int, ObjID* idP,uchar select)
 }
 
 
-void email_drop_func(inv_display*, int )
+void email_drop_func(inv_display* dp, int n)
 {
    // For now, do nothing.
 }
@@ -2005,7 +2006,7 @@ void email_drop_func(inv_display*, int )
 
 #define FIRST_LOG_PAGE 20
 
-char* log_name_func(void*, int num, char* buf)
+char* log_name_func(void* v, int num, char* buf)
 {
    return get_string(REF_STR_LogName0+num,buf,BUFSZ);
 }
@@ -2396,7 +2397,7 @@ uchar inventory_handle_rightbutton(uiEvent* ev, LGRegion* reg, inv_display* dp, 
 
 #define SEARCH_MARGIN 2
 
-uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void*)
+uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void* data)
 {
    uchar retval = FALSE;
    uiMouseEvent *mev = (uiMouseEvent*) ev;
@@ -2529,7 +2530,7 @@ uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void*)
       
 
 int last_invent_cnum = -1; // last cursor num set for region
-uchar pagebutton_mouse_handler(uiMouseEvent* ev, LGRegion* r, void*)
+uchar pagebutton_mouse_handler(uiMouseEvent* ev, LGRegion* r, void* data)
 {
    LGPoint pos = ev->pos;
    int cnum;
@@ -2625,7 +2626,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent* ev, LGRegion* r, void*)
 #define EMPTY_PAGE(i) (page_button_state[i] == BttnDummy)
 
 
-uchar invent_hotkey_func(ushort, ulong, int data)
+uchar invent_hotkey_func(ushort keycode, ulong context, int data)
 {
    if (inventory_page < 0)
       inventory_page = MAX_HOTKEY_PAGES;
@@ -2664,7 +2665,7 @@ uchar invent_hotkey_func(ushort, ulong, int data)
    return TRUE;
 }
 
-uchar cycle_weapons_func(ushort, ulong, int data)
+uchar cycle_weapons_func(ushort keycode, ulong context, int data)
 {
    if (global_fullmap->cyber)
    {
@@ -3193,7 +3194,7 @@ uchar gen_inv_displays(int *i, inv_display** dp)
 }
 
 
-void absorb_object_on_cursor(short, ulong, void*)
+void absorb_object_on_cursor(short keycode, ulong context, void* data)
 {
    if(object_on_cursor==NULL) return;
 
