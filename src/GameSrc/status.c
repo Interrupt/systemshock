@@ -33,8 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <math.h>
  
-#include "player.h"
 #include "status.h"
+#include "player.h"
 #include "tools.h"
 #include "colors.h"
 #include "mainloop.h"
@@ -50,6 +50,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "biotrax.h"
 #include "statics.h"
 #include "otrip.h"
+
+#include "curdat.h"
 
 #include "gamesys.h"
 #include "gr2ss.h"
@@ -121,6 +123,8 @@ grs_bitmap bio_bitmap;
 #define BIO_BITMAP_SIZE ((GAMESCR_BIO_X + GAMESCR_BIO_WIDTH) * (GAMESCR_BIO_Y + GAMESCR_BIO_HEIGHT))
 uchar bio_bitmap_bits[BIO_BITMAP_SIZE];
 #endif
+
+extern LGPoint LastCursorPos;
 
 // Internal Prototype
 

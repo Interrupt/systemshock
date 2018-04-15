@@ -795,7 +795,7 @@ errtype run_combat_ai(ObjID id, uchar raycast_success)
 }
 
 
-LGPoint ai_patrol_func(ObjID, ObjSpecID osid)
+LGPoint ai_patrol_func(ObjID oid, ObjSpecID osid)
 {
    char temp_x, temp_y;
    ObjCritter *pcrit = &objCritters[osid];
@@ -811,7 +811,7 @@ LGPoint ai_patrol_func(ObjID, ObjSpecID osid)
    return(dest);
 }
 
-LGPoint ai_highway_func(ObjID, ObjSpecID osid)
+LGPoint ai_highway_func(ObjID oid, ObjSpecID osid)
 {
    LGPoint dest = {-1,-1};
    ObjID curr_id;
@@ -878,7 +878,7 @@ LGPoint ai_roam_func(ObjID id, ObjSpecID osid)
    return(dest);
 }
 
-LGPoint ai_none_func(ObjID, ObjSpecID osid)
+LGPoint ai_none_func(ObjID oid, ObjSpecID osid)
 {
    LGPoint goof = {-1,-1};
    objCritters[osid].urgency = 0;

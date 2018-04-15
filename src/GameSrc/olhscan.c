@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "olhint.h"
 #include "objects.h"
 #include "objprop.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "fullscrn.h"
 
 

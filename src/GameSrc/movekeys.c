@@ -444,7 +444,7 @@ void process_motion_keys(void)
 
 extern Boolean	gKeypadOverride;
 
-uchar motion_keycheck_handler(uiEvent* ev, LGRegion*, void*)
+uchar motion_keycheck_handler(uiEvent* ev, LGRegion* r, void* data)
 {
 	uiPollKeyEvent	*ke = (uiPollKeyEvent *)ev;
 	

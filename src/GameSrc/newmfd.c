@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <string.h>
 
-#include "screen.h"                                     // for the root region
+#include "game_screen.h"                                     // for the root region
 #include "fullscrn.h"
 #include "mfdint.h"
 #include "mfdext.h"
@@ -802,7 +802,7 @@ void mfd_zoom_rect(LGRect* start, int mfdnum)
 extern uchar inventory_add_object(ObjID,bool);
 uchar object_button_down = FALSE;
 
-uchar mfd_object_cursor_handler(uiEvent* ev, LGRegion*, int which_mfd)
+uchar mfd_object_cursor_handler(uiEvent* ev, LGRegion* reg, int which_mfd)
 {
    uchar retval = FALSE;
    int trip, mid;

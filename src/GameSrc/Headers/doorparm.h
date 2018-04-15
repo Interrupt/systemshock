@@ -27,4 +27,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern uchar check_object_dist(ObjID obj1, ObjID obj2, fix crit);
 extern uchar door_locked(ObjID);
-extern uchar door_moving(ObjID,bool);
+extern uchar door_moving(ObjID,uchar);

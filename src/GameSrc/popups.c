@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <string.h>
-#include <TextUtils.h>
+//#include <TextUtils.h>
 
 #include "popups.h"
 #include "citres.h"
@@ -37,6 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "colors.h"
 #include "cit2d.h"
 #include "gr2ss.h"
+
+#include "curdat.h"
 
 #define BUF_SIZ 80
 #define EMAIL_CURS_WID 40

@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "render.h"
 #include "strwrap.h"
 #include "tools.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "fullscrn.h"
 #include "input.h"
 #include "grenades.h"
@@ -566,7 +566,7 @@ void olh_overlay(void)
    status_bio_start();
 }
 
-uchar toggle_olh_func(short , ulong , void* )
+uchar toggle_olh_func(short keycode, ulong context, void* data)
 {
    if (!olh_active)
    {
@@ -585,7 +585,7 @@ uchar toggle_olh_func(short , ulong , void* )
 }
 
 
-uchar olh_overlay_func(short keycode, ulong context, void* )
+uchar olh_overlay_func(short keycode, ulong context, void* data)
 {
    if (global_fullmap->cyber)
    {

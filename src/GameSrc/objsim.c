@@ -132,7 +132,7 @@ grs_bitmap *get_text_bitmap_obj(ObjID cobjid, char dest_type, char *pscale);
 grs_bitmap *obj_get_model_data(ObjID id, fix *x, fix *y, fix *z, grs_bitmap *bm2, Ref *ref1, Ref *ref2);
 void place_obj_at_objloc(ObjID id, ObjLoc *newloc, ushort xsize, ushort ysize);
 char extract_object_special_color(ObjID id);
-Ref ref_from_critter_data(ObjID oid, int triple, ubyte posture, ubyte frame, ubyte view);
+Ref ref_from_critter_data(ObjID oid, int triple, byte posture, short frame, short view);
 void spew_contents(ObjID id, int d1, int d2);
 uchar obj_is_useless(ObjID oid);
 uchar obj_is_display(int triple);
@@ -262,7 +262,7 @@ Id posture_bases[] = {
 
 #define CRITTER_LOADING_PAGE_LIMIT 45000
 
-Ref ref_from_critter_data(ObjID, int triple, ubyte posture, ubyte frame, ubyte view) //, uchar *pmirror)
+Ref ref_from_critter_data(ObjID oid, int triple, byte posture, short frame, short view) //, uchar *pmirror)
 {
    Ref retval;
    ubyte v,p;
@@ -2175,7 +2175,7 @@ void diego_teleport_callback(ObjID id, void *user_data);
 
 #define DESTROYED_SCREEN_ANIM_BASE 0x1B
 
-void destroy_screen_callback_func(ObjID id, void *)
+void destroy_screen_callback_func(ObjID id, void *data)
 {
    ObjSpecID osid = objs[id].specID;
    objBigstuffs[osid].cosmetic_value = 1;
@@ -2183,7 +2183,7 @@ void destroy_screen_callback_func(ObjID id, void *)
    objs[id].info.current_frame = 0;
 }
 
-void diego_teleport_callback(ObjID id, void *)
+void diego_teleport_callback(ObjID id, void *data)
 {
 	obj_destroy(id);
 }
@@ -2195,7 +2195,7 @@ void diego_teleport_callback(ObjID id, void *)
 // in gameobj.c also
 #define DIEGO_DEATH_BATTLE_LEVEL 8
 
-uchar death_check(ObjID id, bool*)
+uchar death_check(ObjID id, bool* b)
 {
    extern char damage_sound_fx;
    if(ID2TRIP(id)==DIEGO_TRIPLE && player_struct.level!=DIEGO_DEATH_BATTLE_LEVEL) 

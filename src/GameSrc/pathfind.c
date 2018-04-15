@@ -466,7 +466,7 @@ uchar pf_obj_doors(MapElem *pme1, MapElem *pme2, char dir, ObjID *open_door)
 // maybe that is worth a specific hack...
 
 // old_z is almost certainly in PFEZ units, as is the return value
-uchar pf_obj_height(MapElem *pme, uchar )
+uchar pf_obj_height(MapElem *pme, uchar old_z)
 {
    ObjRefID curr;
    ObjID id;
@@ -517,7 +517,7 @@ uchar pf_obj_height(MapElem *pme, uchar )
 #define PF_CLIMB  1
 
 // flr1, new_z, and dest are all in PFE Z units
-uchar map_connectivity(spt sq1, spt sq2, char dir, uchar flr1, uchar *new_z, uchar )
+uchar map_connectivity(spt sq1, spt sq2, char dir, uchar flr1, uchar *new_z, uchar dest_z)
 {
    MapElem *pme1, *pme2;
    ObjID temp;

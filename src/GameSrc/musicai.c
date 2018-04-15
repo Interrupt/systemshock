@@ -402,7 +402,7 @@ int gen_monster(int monster_num)
 
 int ext_rp = -1;
 
-extern struct mlimbs_request_info default_request;
+extern mlimbs_request_info default_request;
 
 errtype make_request(int chunk_num, int piece_ID)
 {

@@ -38,6 +38,8 @@ byte cyc_id0, cyc_id1, cyc_id2, cyc_id3, cyc_id4, cyc_id5;
 #define FADE_UP_DELAY   0
 #define FADE_UP_STEPS   30
 
+extern uchar ppall[]; // pointer to main shadow palette
+
 // Internal Prototypes
 void finish_pal_effect(byte id);
 byte palfx_start_fade_up(uchar *new_pal);

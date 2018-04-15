@@ -349,7 +349,7 @@ void plotware_showpage(uchar page)
 // --------------
 // BUTTON HANDLER
 // --------------
-uchar plotware_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
+uchar plotware_button_handler(MFD* n, LGPoint bttn, uiEvent* ev, void* data)
 {
    if (!(ev->subtype & MOUSE_LDOWN)) return TRUE;
    if (bttn.x == 0)
@@ -386,7 +386,7 @@ errtype mfd_plotware_init(MFD_Func* f)
 }
 
 
-void plotware_turnon(uchar visible, bool)
+void plotware_turnon(uchar visible, uchar realstart)
 {
    if (visible)
    {

@@ -406,7 +406,7 @@ int wirepos_rescore_n_check(wirePosPuzzle *wppz)
    return score;
 }
 
-uchar mfd_accesspanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_accesspanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
 {
    wirePosPuzzle *wppz=(wirePosPuzzle *)&player_struct.mfd_access_puzzles[0];
    int wim_code;
@@ -622,7 +622,7 @@ errtype mfd_accesspanel_init(MFD_Func* f)
    return OK;
 }
 
-uchar mfd_accesspanel_handler(MFD*, uiEvent*)
+uchar mfd_accesspanel_handler(MFD *m, uiEvent *e)
 {
    extern uchar mfd_gridpanel_handler(MFD*,uiEvent*);
 #ifdef EPICK_ON_CURSOR_TRY
@@ -1380,7 +1380,7 @@ void gpz_setup_buttons(gridFlowPuzzle *gfpz)
       &rct,bdims,bsize);
 }
 
-void gpz_4int_init(gridFlowPuzzle *gfpz,uint,uint p2,uint p3,uint)
+void gpz_4int_init(gridFlowPuzzle *gfpz,uint p1,uint p2,uint p3,uint p4)
 {
    uint state_init[4];
    int r,c,rr,cc,soff,easified=0;
@@ -1561,7 +1561,7 @@ void mfd_gridpanel_set_winmove(uchar check)
    }
 }
 
-uchar mfd_gridpanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_gridpanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
 {
    gridFlowPuzzle *gfpz=(gridFlowPuzzle *)&player_struct.mfd_access_puzzles[0];
    gpz_state s;

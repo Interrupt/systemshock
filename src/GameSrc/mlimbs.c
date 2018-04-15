@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <timer.h>
+//#include <timer.h>
 
 //Â¥Â¥Â¥#include <ail.h>
 #include "mlimbs.h"
@@ -38,8 +38,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 uchar   mlimbs_on=FALSE;
-static   char   mlimbs_status=0;    // could make this one bitfield of status, on/off, enable/not, so on
-static   int    mlimbs_timer_id;    // what our timer handle is
+char   mlimbs_status=0;    // could make this one bitfield of status, on/off, enable/not, so on
+int    mlimbs_timer_id;    // what our timer handle is
 
 static   uchar *mlimbs_theme=NULL;  // data about the current theme
 volatile int    mlimbs_master_slot = -1;

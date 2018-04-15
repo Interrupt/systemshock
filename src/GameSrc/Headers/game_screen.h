@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
-#ifndef __SCREEN_H
-#define __SCREEN_H
+#ifndef __GAMESCREEN_H
+#define __GAMESCREEN_H
 
 /*
  * $Source: n:/project/cit/src/inc/RCS/screen.h $
@@ -87,5 +87,5 @@ extern LGCursor globcursor, wait_cursor, fire_cursor;
 extern frc  *normal_game_fr_context;
 #endif
 
-#endif // __SCREEN_H
+#endif // __GAMESCREEN_H
 

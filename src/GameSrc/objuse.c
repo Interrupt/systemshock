@@ -211,7 +211,7 @@ uchar really_really_locked(int qvar)
 //      and should be used by anyone other than the player trying
 //      to use the door.
 //
-uchar use_door(ObjID id, uchar in_inv, ObjID)
+uchar use_door(ObjID id, uchar in_inv, ObjID cursorObj)
 {
    uchar retval = FALSE;
    uchar play_fx = FALSE;
@@ -1653,7 +1653,7 @@ void unmulti_anim_callback(ObjID id, void *user_data)
    in_anim_callback = FALSE;
 }
 
-void multi_anim_callback(ObjID id, void *)
+void multi_anim_callback(ObjID id, void *data)
 {
    int *pp2, *pp1;
    uchar do_swap = FALSE;
