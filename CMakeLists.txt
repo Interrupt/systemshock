@@ -52,7 +52,6 @@ set(GAME_SRC
 	src/GameSrc/fullscrn.c
 	src/GameSrc/gameloop.c
 	src/GameSrc/gameobj.c
-	src/GameSrc/gamerend.c
 	src/GameSrc/gamesort.c
 	src/GameSrc/gamestrn.c
 	src/GameSrc/gamesys.c
@@ -122,6 +121,7 @@ set(GAME_SRC
 	src/GameSrc/wares.c
 	src/GameSrc/weapons.c
 	src/GameSrc/wrapper.c
+	src/GameSrc/gamerend.c
 )
 
 include_directories(
@@ -151,7 +151,7 @@ target_link_libraries(TestSimpleMain
 	2D_LIB
 	GR_LIB
 	3D_LIB
-	# RES_LIB
+	RES_LIB
 	FIX_LIB
 	LG_LIB
 )
