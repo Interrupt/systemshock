@@ -90,7 +90,7 @@ extern void text_button(char *text, int xc, int yc, int col, int shad, int w, in
 LGCursor option_cursor;
 grs_bitmap option_cursor_bmap;
 
-extern Region *inventory_region;
+extern LGRegion *inventory_region;
 int wrap_id = -1, wrapper_wid, wrap_key_id;
 uchar clear_panel = TRUE, wrapper_panel_on = FALSE;
 grs_font* opt_font;
@@ -126,7 +126,7 @@ void free_options_cursor(void);
 uint multi_get_curval(uchar type, void* p);
 void multi_set_curval(uchar type, void* p, uint val, void* deal);
 
-extern Cursor slider_cursor;
+extern LGCursor slider_cursor;
 extern grs_bitmap slider_cursor_bmap;
 extern char which_lang;
 
@@ -153,7 +153,7 @@ uchar really_quit_key_func(short keycode, ulong context, void* data);
 
 // separate mouse region for regular-screen and fullscreen.
 #define NUM_MOUSEREGION_SCREENS 2
-Region options_mouseregion[NUM_MOUSEREGION_SCREENS];
+LGRegion options_mouseregion[NUM_MOUSEREGION_SCREENS];
 uchar free_mouseregion=0;
 
 uchar popup_cursors = TRUE;

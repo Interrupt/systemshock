@@ -219,7 +219,7 @@ void mfd_viewhelp_expose(MFD* mfd, ubyte control)
 // HANDLERS 
 // --------
 
-uchar mfd_viewhelp_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_viewhelp_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data)
 {
    int track = -1;
    int i = bttn.y;
@@ -232,7 +232,7 @@ uchar mfd_viewhelp_button_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
    return TRUE;
 }
 
-uchar mfd_viewhelp_color_handler(MFD*, LGPoint bttn, uiEvent* ev, void*)
+uchar mfd_viewhelp_color_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data)
 {
    if (!(ev->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE)))
       return FALSE;

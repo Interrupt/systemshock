@@ -343,7 +343,7 @@ errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags
    return(OK);
 }
 
-errtype save_current_map(FSSpec* fSpec, Id id_num, uchar /*flush_mem*/, uchar )
+errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
 {
    int i,goof;
    int idx = 0;
@@ -487,7 +487,7 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar /*flush_mem*/, uchar )
    REF_WRITE(SAVELOAD_VERIFICATION_ID,0,verify_cookie);
    ResCloseFile(fd);
    
-   FlushVol(nil, fSpec->vRefNum);			// Make sure everything is saved.
+   //FlushVol(nil, fSpec->vRefNum);			// Make sure everything is saved.
    
    if (make_player)
       obj_create_player(&plr_loc);

@@ -164,8 +164,13 @@ static uchar systems_line_colors[]=
 #define SYSTEM_BASE     REF_STR_ResurrectBase
 #define LINE_BUF_SIZE   40
 
+#define STATUS_CHI_AMP 8
+
 #define CURRENT_VIEW_W (_current_view->r->lr.x-_current_view->r->ul.x)
 #define CURRENT_VIEW_H (_current_view->r->lr.y-_current_view->r->ul.y)
+
+extern uchar flatline_heart;
+extern uchar chi_amp;
 
 extern  void  regenerate_player(void);
 ulong secret_sfx_time;

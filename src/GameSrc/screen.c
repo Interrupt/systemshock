@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __SCREEN_SRC
 
 #include "criterr.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "tools.h"
 #include "gamescr.h"
 #include "mfdext.h"
@@ -59,6 +59,12 @@ KLC - stereo
 #include "inp6d.h"
 #include "i6dvideo.h"
 */
+
+#define STATUS_X           4
+#define STATUS_Y           1
+#define STATUS_HEIGHT      20
+#define STATUS_WIDTH       312
+#define GAMESCR_BIO        0
 
 #ifdef CURSOR_BACKUPS
 #include "loopdbg.h"

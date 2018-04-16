@@ -70,6 +70,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "star.h"
 
+#include "curdat.h"
+
 //#include <mprintf.h>
 
 LGRect *rendrect;
@@ -476,7 +478,7 @@ void game_fr_shutdown(void)
 }
 
 //#pragma disable_message(202)
-void game_fr_reparam(int is_128s, int , int )
+void game_fr_reparam(int is_128s, int full_scrn, int show_all)
 {
    if (is_128s!=-1)
 	   fr_get_tmap=is_128s?game_fr_tmap_128:game_fr_tmap_64;

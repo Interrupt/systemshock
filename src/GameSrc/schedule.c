@@ -187,11 +187,11 @@ void unregister_h_event(char sem)
 // EVENT HANDLERS
 // --------------
 
-void null_event_handler(Schedule*, SchedEvent*)
+void null_event_handler(Schedule* s, SchedEvent* ev)
 {
 }
 
-void trap_event_handler(Schedule*, SchedEvent *ev)
+void trap_event_handler(Schedule* s, SchedEvent *ev)
 {
    ObjID    id1,id2;
    uchar dummy;
@@ -205,7 +205,7 @@ void trap_event_handler(Schedule*, SchedEvent *ev)
 }
 
 #define FLOOR_HEIGHT_DELTA    0x4
-void height_event_handler(Schedule*, SchedEvent *ev)
+void height_event_handler(Schedule* s, SchedEvent *ev)
 {
    MapElem *pme;
    HeightSchedEvent hse = *(HeightSchedEvent *)ev;
@@ -284,7 +284,7 @@ void height_event_handler(Schedule*, SchedEvent *ev)
 #define PLOTWARE_QVAR            0x9
 #define NUM_ANTENNAE_TO_DESTROY  4
 
-void door_event_handler(Schedule*,SchedEvent *ev)
+void door_event_handler(Schedule* s,SchedEvent *ev)
 {
    ObjID    id;
    short old_dest;
@@ -354,7 +354,7 @@ void door_event_handler(Schedule*,SchedEvent *ev)
    }
 }
 
-void grenade_event_handler(Schedule*,SchedEvent *ev)
+void grenade_event_handler(Schedule* s,SchedEvent *ev)
 {
    ObjID    id;
    ubyte    unique_id;
@@ -376,7 +376,7 @@ void grenade_event_handler(Schedule*,SchedEvent *ev)
    }
 }
 
-void explosion_event_handler(Schedule*, SchedEvent *)
+void explosion_event_handler(Schedule* s, SchedEvent * ev)
 {
 }
 
@@ -407,7 +407,7 @@ extern uchar muzzle_fire_light;
 extern void lamp_turnon(uchar visible, uchar real);
 extern void lamp_turnoff(uchar visible, uchar real);
 
-void light_event_handler(Schedule*, SchedEvent *)
+void light_event_handler(Schedule* s, SchedEvent * ev)
 {
    muzzle_fire_light = FALSE;
 
@@ -419,7 +419,7 @@ void light_event_handler(Schedule*, SchedEvent *)
       lamp_turnon(TRUE,FALSE);
 }
 
-void bark_event_handler(Schedule*, SchedEvent *)
+void bark_event_handler(Schedule* s, SchedEvent * ev)
 {
    ubyte mfd_id;
    void check_panel_ref(uchar puntme);
@@ -434,7 +434,7 @@ void bark_event_handler(Schedule*, SchedEvent *)
    }
 }
 
-void email_event_handler(Schedule*, SchedEvent* ev)
+void email_event_handler(Schedule* s, SchedEvent* ev)
 {
    extern void add_email_datamunge(short mung, uchar select);
    EmailSchedEvent *e = (EmailSchedEvent*)ev;

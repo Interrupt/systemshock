@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "render.h"
 #include "frprotox.h"
 #include "faketime.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "fullscrn.h"
 #include "mainloop.h"
 #include "hudobj.h"
@@ -82,12 +82,12 @@ uchar screen_static_drawn = FALSE;
 // -----------
 // PROTOTYPES
 //------------
-int hack_camera_draw_callback(grs_canvas*, grs_bitmap*, int, int, int );
+int hack_camera_draw_callback(grs_canvas* cvs, grs_bitmap* bm, int u1, int u2, int u3);
 void update_cspace_tiles(void);
 void tile_hit(int mx, int my);
 
 
-int hack_camera_draw_callback(grs_canvas*, grs_bitmap*, int, int, int )
+int hack_camera_draw_callback(grs_canvas* cvs, grs_bitmap* bm, int u1, int u2, int u3)
 {
 //   gr_push_canvas(&hack_cam_canvases[curr_hack_cam]);
 //   gr_bitmap(bm,0,0);

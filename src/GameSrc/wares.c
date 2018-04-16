@@ -268,9 +268,9 @@ void use_ware(int waretype, int num)
    {
       extern char secret_global_pan;
       int ci_idx=wares[num].sideicon;
-      secret_global_pan=(ci_idx==SI_NONE)?SND_DEF_PAN:(ci_idx<5)?5:122;
+      //secret_global_pan=(ci_idx==SI_NONE)?SND_DEF_PAN:(ci_idx<5)?5:122;
       hnd = play_digi_fx(ware_sfx,1);
-	 secret_global_pan=SND_DEF_PAN;
+	   //secret_global_pan=SND_DEF_PAN;
    }
    if (waretype == WARE_HARD) 
    {
@@ -477,7 +477,7 @@ void bioware_effect(void);
 // Let the MFD system know that the bioware is active, and take over
 // the appropriate info MFD
 
-void bioware_turnon(uchar visible, bool)
+void bioware_turnon(uchar visible, uchar real_s)
 {
    int i;
    if (visible)
@@ -496,7 +496,7 @@ void bioware_turnon(uchar visible, bool)
 // Let the MFD system know that the bioware is deactivated, and toss it off
 // the info slot, replacing it with a blank.
 
-void bioware_turnoff(bool, uchar real_stop)
+void bioware_turnoff(uchar visible, uchar real_stop)
 {
    if (real_stop && player_struct.mfd_all_slots[MFD_INFO_SLOT] == MFD_BIOWARE_FUNC)
       mfd_notify_func(MFD_EMPTY_FUNC, MFD_INFO_SLOT, TRUE, MFD_EMPTY, TRUE);
@@ -526,7 +526,7 @@ extern char curr_clut_table;
 // infrared_turnon()
 //
 // Turns on the infrared ware
-void infrared_turnon(uchar visible, bool)
+void infrared_turnon(uchar visible, uchar real_s)
 {
    if (visible)
    {
@@ -543,7 +543,7 @@ void infrared_turnon(uchar visible, bool)
 //
 // Turns off the infrared ware
 
-void infrared_turnoff(uchar visible, bool)
+void infrared_turnoff(uchar visible, uchar real_s)
 {
    if (visible)
    {
@@ -588,7 +588,7 @@ void targeting_turnon(uchar visible, uchar real_start)
 //
 // Turn off the targeting ware
 
-void targeting_turnoff(bool, bool)
+void targeting_turnoff(uchar visible, uchar real_s)
 {
    return;
 }
@@ -666,7 +666,7 @@ void lamp_set_vals_with_offset(byte offset)
 //      _frp.lighting.yint,   _frp.lighting.slope,offset,s));
 }
 
-void lamp_turnon(uchar visible, bool)
+void lamp_turnon(uchar visible, uchar real_s)
 {
    lamp_set_vals();
    if (visible)
@@ -693,7 +693,7 @@ void lamp_turnoff(uchar visible, uchar real_stop)
    }
 }
 
-uchar lantern_change_setting_hkey(short, ulong, void*)
+uchar lantern_change_setting_hkey(short key, ulong context, void* data)
 {
    int n=CPTRIP(LANTERN_HARD_TRIPLE);
    int v=player_struct.hardwarez[n];
@@ -747,7 +747,7 @@ void shield_set_absorb(void)
    }
 }
 
-void shield_toggle(bool, uchar real)
+void shield_toggle(uchar visible, uchar real)
 {
    ubyte s = player_struct.hardwarez_status[SHIELD_IDX];
    if (real)
@@ -767,7 +767,7 @@ void shield_toggle(bool, uchar real)
    shield_set_absorb();
 }
 
-uchar shield_change_setting_hkey(short, ulong, void*)
+uchar shield_change_setting_hkey(short key, ulong context, void* data)
 {
    int n=CPTRIP(SHIELD_HARD_TRIPLE);
    int v=player_struct.hardwarez[n];
@@ -803,13 +803,13 @@ void nav_turnon(uchar visible, uchar real_start);
 void nav_turnoff(uchar visible, uchar real_start);
 
 
-void nav_turnon(uchar visible, bool)
+void nav_turnon(uchar visible, uchar real_s)
 {
    if (visible)
       hud_set(HUD_COMPASS);
 }
 
-void nav_turnoff(uchar visible, bool)
+void nav_turnoff(uchar visible, uchar real_s)
 {
    if (visible)
    {
@@ -829,7 +829,7 @@ ubyte motionware_mode = MOTION_INACTIVE;
 
 #define MOTION_SETTING LAMP_SETTING
 
-void motionware_update(uchar visible,  bool, uchar on)
+void motionware_update(uchar visible, uchar real, uchar on)
 {
    ubyte s = player_struct.hardwarez_status[CPTRIP(MOTION_HARD_TRIPLE)];
    if (on)
@@ -914,7 +914,7 @@ void fullscreen_turnon(uchar visible, uchar real_start);
 void fullscreen_turnoff(uchar visible, uchar real_start);
 extern Boolean	DoubleSize;
 
-void fullscreen_turnon(uchar visible, bool)
+void fullscreen_turnon(uchar visible, uchar real_s)
 {
 	if (visible)
 	{
@@ -923,7 +923,7 @@ void fullscreen_turnon(uchar visible, bool)
 	}
 }
 
-void fullscreen_turnoff(uchar visible, bool)
+void fullscreen_turnoff(uchar visible, uchar real_s)
 {
 	if (visible)
 	{
@@ -967,7 +967,7 @@ void turbo_turnon(uchar visible, uchar real_start)
    }
 }   
 
-void turbo_turnoff(uchar visible, bool)
+void turbo_turnoff(uchar visible, uchar real_s)
 {
    if (visible)
    {
@@ -990,7 +990,7 @@ void fakeid_turnon(uchar visible, uchar real_start)
    }
 }   
 
-void decoy_turnon(bool, uchar real_start)
+void decoy_turnon(uchar visible, uchar real_start)
 {
    if (real_start)
    {
@@ -1127,7 +1127,7 @@ uchar check_game(void)
 {
    return (!global_fullmap->cyber);
 }
-extern void mfd_games_turnon(bool,bool), mfd_games_turnoff(bool,bool);
+extern void mfd_games_turnon(bool,uchar real_s), mfd_games_turnoff(bool,uchar real_s);
 
 
 WARE Combat_SoftWare[NUM_COMBAT_SOFTS];

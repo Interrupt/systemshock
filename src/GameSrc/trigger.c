@@ -329,14 +329,14 @@ errtype location_trigger_activate(ObjID id)
 }
 
 
-errtype trap_null_func(int, int, int, int)
+errtype trap_null_func(int p1, int p2, int p3, int p4)
 {
    return(OK);
 }
 
 #define MAX_BRIDGE_FRAME   32
 
-errtype trap_transmogrify_func(int p1, int p2, int, int)
+errtype trap_transmogrify_func(int p1, int p2, int p3, int p4)
 {
    extern void slam_posture_meter_state(void);
    int source,dest,t1,t2;
@@ -1261,7 +1261,7 @@ extern Boolean	gPlayingGame;
 extern Boolean	gDeadPlayerQuit;
 extern Boolean	gGameCompletedQuit;
 
-errtype trap_cutscene_func(int p1, int p2, int, int)
+errtype trap_cutscene_func(int p1, int p2, int p3, int p4)
 {
 	short		cs = qdata_get(p1);
 //	if (qdata_get(p1) == 0)							// KLC - if we are to play the endgame cutscene
@@ -1473,7 +1473,7 @@ uchar *shodan_bitmask = NULL;
 grs_bitmap shodan_draw_fs;
 grs_bitmap shodan_draw_normal;
 
-void hack_shodan_conquer_func(char)
+void hack_shodan_conquer_func(char c)
 {
    extern void begin_shodan_conquer_fx(uchar begin);
    extern ulong time_until_shodan_avatar;
@@ -1922,12 +1922,12 @@ errtype trap_destroy_object_func(int p1, int p2, int p3, int p4)
    return(OK);
 }
 
-errtype trap_plot_clock_func(int, int, int, int)
+errtype trap_plot_clock_func(int p1, int p2, int p3, int p4)
 {
    return(OK);
 }
 
-errtype trap_email_func(int mung, int time, int, int)
+errtype trap_email_func(int mung, int time, int p3, int p4)
 {
    void add_email_datamunge(short mung,uchar select);
 
@@ -2052,7 +2052,7 @@ errtype trap_teleport_func(int targ_x, int targ_y, int targ_z, int targlevel)
 }
 
 
-errtype trap_expose_func(int dmg, int dtype, int tsecs, int)
+errtype trap_expose_func(int dmg, int dtype, int tsecs, int p4)
 {
    extern void expose_player(byte damage, ubyte type, ushort tsecs);
    short damage = qdata_get(dmg & 0xFFFF);

@@ -49,15 +49,15 @@ void cdecl simple_xmi_stop(snd_midi_parms *seq)
 
 void digifx_EOS_callback(snd_digi_parms *sdp)
 {
-   if (sdp->snd_ref>0x10)
+   /*if (sdp->snd_ref>0x10)
 	   if (rulock_ptr<MAX_UNLOCK-1)
-		   rulock_list[rulock_ptr++]=sdp->snd_ref;
+		   rulock_list[rulock_ptr++]=sdp->snd_ref;*/
 }
 
 
 void sound_frame_update(void)
 {
-	int			i;
+	/*int			i;
 	SCStatus	stat;
 	snd_digi_parms *sdp;
 	extern uchar set_sample_pan_gain(snd_digi_parms *sdp);
@@ -74,6 +74,6 @@ void sound_frame_update(void)
 			if (set_sample_pan_gain(sdp))
 				snd_end_sample(i);
 		}
-	}
+	}*/
 }
 

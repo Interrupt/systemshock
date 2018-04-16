@@ -372,7 +372,7 @@ uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata)
 }
 
 
-uchar side_icon_hotkey_func(ushort, ulong, int i)
+uchar side_icon_hotkey_func(ushort keycode, ulong context, int i)
 {
    int type = icon_data[i].waretype;
    int num  = IDX_OF_TYPE(type,icon_data[i].waretrip);

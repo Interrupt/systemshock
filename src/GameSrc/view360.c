@@ -147,7 +147,7 @@ static uchar rendered_inv_fullscrn = FALSE;
 
 extern void shock_hflip_in_place(grs_bitmap* bm);
 
-int view360_fullscrn_draw_callback(void*, void* vbm, int, int, int)
+int view360_fullscrn_draw_callback(void* v, void* vbm, int x, int y, int flg)
 {
 //KLC   shock_hflip_in_place((grs_bitmap *)vbm);
    return FALSE;
@@ -338,7 +338,7 @@ void mfd_view360_expose(MFD* mfd, ubyte control)
 #define VIEW_MODE(s) (((s) & MODE_MASK) >> MODE_SHF)
 #define VIEW_MODE_SET(s,v) ((s) = ((s) & ~MODE_MASK) | ((v) << MODE_SHF))
 
-void view360_turnon(uchar visible, bool)
+void view360_turnon(uchar visible, uchar real_stop)
 {
    int s = player_struct.hardwarez_status[HARDWARE_360];
 

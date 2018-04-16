@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "render.h"
 #include "otrip.h"
 #include "mainloop.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "fullscrn.h"
 #include "physics.h"
 #include "physunit.h"
@@ -108,7 +108,7 @@ uchar ready_to_draw_handart(void);
 // -------------------------------------------------
 // does_weapon_overload()
 //
-uchar does_weapon_overload(int type, int )
+uchar does_weapon_overload(int type, int subtype)
 {
    switch(type)
    {
@@ -222,7 +222,7 @@ return OBJ_NULL;
 // do_wall_hit()
 //
 
-ObjID do_wall_hit(Combat_Pt *hit_point, Combat_Pt, int triple, short mouse_x, short mouse_y, uchar do_effect)
+ObjID do_wall_hit(Combat_Pt *hit_point, Combat_Pt pt, int triple, short mouse_x, short mouse_y, uchar do_effect)
 {
    ubyte effect = 0;
    ObjID id = OBJ_NULL;
@@ -317,7 +317,7 @@ ObjID do_wall_hit(Combat_Pt *hit_point, Combat_Pt, int triple, short mouse_x, sh
 
 extern void get_phys_state(int ph, State *new_state, ObjID id);
 
-uchar player_fire_handtohand(LGPoint *, ubyte, ObjID *what_hit,int gun_triple)
+uchar player_fire_handtohand(LGPoint *p, ubyte slot, ObjID *what_hit,int gun_triple)
 {
    fix            attack_mass;
    fix            range;
@@ -877,7 +877,7 @@ ulong software_fire_remainder = 0;
 char cspace_digi_fxs[] = { SFX_DRILL, SFX_DATASTORM, SFX_NONE, SFX_DISC, SFX_PULSER, SFX_NONE, SFX_NONE};
 int cspace_slow_projs[] = { DRILLSLOW_TRIPLE, SPEWSLOW_TRIPLE, 0, DISCSLOW_TRIPLE, CYBERSLOW_TRIPLE, 0, 0};
 
-uchar fire_player_software(LGPoint *pos, LGRegion *, uchar pull)
+uchar fire_player_software(LGPoint *pos, LGRegion *reg, uchar pull)
 {
    int soft = player_struct.actives[ACTIVE_COMBAT_SOFT];
    uchar retval;
@@ -1536,7 +1536,7 @@ uchar reload_current_weapon(void)
 }
 
 
-uchar reload_weapon_hotkey(short, ulong, void* data)
+uchar reload_weapon_hotkey(short key, ulong context, void* data)
 {
    int differ=(int)data;
    weapon_slot* ws = &player_struct.weapons[player_struct.actives[ACTIVE_WEAPON]];

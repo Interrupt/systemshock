@@ -42,6 +42,82 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gamesys.h"
 #include "gr2ss.h"
 
+// Defines
+#define NUM_BIO_TRACKS     8
+
+#define GAMESCR_BIO         0
+#define GAMESCR_BIO_X       5
+#define GAMESCR_BIO_Y       1
+//#define GAMESCR_BIO_WIDTH   149
+#define GAMESCR_BIO_WIDTH   131
+#define GAMESCR_BIO_HEIGHT  17
+
+#define DIFF_BIO         1
+#define DIFF_BIO_X       6
+#define DIFF_BIO_Y       181
+#define DIFF_BIO_WIDTH   307
+#define DIFF_BIO_HEIGHT  17
+
+#define STATUS_CHI_AMP 8
+
+#define STATUS_BIO_X       curr_bio_x
+#define STATUS_BIO_Y       curr_bio_y
+#define STATUS_BIO_WIDTH   curr_bio_w
+#define STATUS_BIO_HEIGHT  curr_bio_h
+
+#define STATUS_START_OFFSET 0
+#define STATUS_BIO_Y_DELTA  1
+#define MAX_BIO_LENGTH      307
+#define STATUS_BIO_LENGTH   (STATUS_BIO_WIDTH - STATUS_START_OFFSET)
+#define STATUS_BIO_TAIL     30
+#define STATUS_BIO_PEAK     (STATUS_BIO_HEIGHT - 3)    // 3 because of zany art size
+#define STATUS_BIO_X_BASE   (STATUS_BIO_X + STATUS_START_OFFSET)
+#define STATUS_BIO_Y_BASE   (STATUS_BIO_Y + STATUS_BIO_HEIGHT - STATUS_BIO_Y_DELTA - 2)
+  
+#define SPIKE_THRESHOLD    4
+#define COLOR_CHANGES      6
+#define COLOR_LENGTH       (STATUS_BIO_TAIL/COLOR_CHANGES)
+
+#define MAX_TAIL_LENGTH    5
+#define NO_HEIGHT          0x1f
+#define INVALID_HEIGHT     0xE0
+
+#define COLOR_BIO_MASK     0xE0     // Top Three bits signify depth of color
+#define HEIGHT_BIO_MASK    0x1f     // Bottom Five bits signify height
+#define BIT6               0x20     // First bit of the color field.
+
+#define COLOR_BIT_SHIFT(x) ((x) << 5)
+
+//#define FIND_OVERLAP(x,y) (((x) - y + STATUS_BIO_LENGTH) % STATUS_BIO_LENGTH)
+
+#define STATUS_VITALS_X          184
+#define STATUS_VITALS_Y          0
+#define STATUS_VITALS_WIDTH      130
+#define STATUS_VITALS_HEIGHT     17
+
+#define STATUS_VITALS_X_BASE     (STATUS_VITALS_X+4)
+#define STATUS_VITALS_Y_TOP      (STATUS_VITALS_Y+1)
+#define STATUS_VITALS_Y_BOTTOM   (STATUS_VITALS_Y+11)
+#define STATUS_VITALS_H          8
+#define STATUS_VITALS_W          (STATUS_VITALS_WIDTH-9)
+
+#define STATUS_X                 4
+#define STATUS_Y                 1
+#define STATUS_HEIGHT            20
+#define STATUS_WIDTH             312
+
+#define GAMESCR_BIO_REF          REF_IMG_bmBiorhythm
+#define DIFF_BIO_REF             REF_IMG_bmDiffBio
+#define STATUS_RESID             curr_bio_ref
+#define STATUS_RES_VITALSID      REF_IMG_bmVitals
+#define STATUS_RES_HEALTH_ID     REF_IMG_bmVitalInnardsTop
+#define STATUS_RES_ENERGY_ID     REF_IMG_bmVitalInnardsBottom
+
+// Special Status Biorhythm variables
+
+#define NO_SPIKE                 0x01
+#define SPIKE_NOISE              0x02
+
 
 void status_vitals_start();
 void status_vitals_end();
