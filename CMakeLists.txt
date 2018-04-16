@@ -196,7 +196,7 @@ target_link_libraries(systemshock
 	DSTRUCT_LIB
 	FIX_LIB
 	INPUT_LIB
-#	PALETTE_LIB
+	PALETTE_LIB
 	RES_LIB
 #	SND_LIB
 	UI_LIB
