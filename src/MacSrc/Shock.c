@@ -771,6 +771,51 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 void ShockGameLoop(void)
 {
+	while (gPlayingGame)
+	{
+		if (!(_change_flag&(ML_CHG_BASE<<1)))
+			input_chk();
+		if (globalChanges)
+		{
+			if (_change_flag&(ML_CHG_BASE<<3))
+				loopmode_switch(&_current_loop);
+			chg_unset_flg(ML_CHG_BASE<<3);
+		}
+		
+		if (_current_loop == AUTOMAP_LOOP)
+			automap_loop();									// Do the fullscreen map loop.
+		else
+			game_loop();										// Run the game!
+		
+		if (game_paused)									// If the game is paused, go to the "paused" Mac
+		{															// event handling loop.
+			if (music_on)
+				MacTuneKillCurrentTheme();
+			status_bio_end();
+			uiHideMouse(NULL);							// Setup the environment for the Mac loop.
+			//CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
+			SetupPauseMenus();
+			ShowMenuBar();
+			ShowCursor();
+			
+			//MaxMem(&dummy);							// Compact heap during a pause.
+
+		 	do														// The loop itself.
+				HandlePausedEvents();
+			while (game_paused);
+			
+			HideCursor();
+			HideMenuBar();
+			FlushEvents(everyEvent, 0);
+			status_bio_start();
+			uiShowMouse(NULL);
+			if (music_on)
+				MacTuneStartCurrentTheme();
+		}
+		
+		chg_set_flg(_static_change);
+	}
+
 	/*Size		dummy;
 	FSSpec	fSpec;
 

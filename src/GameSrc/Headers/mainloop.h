@@ -65,7 +65,7 @@ void loopmode_switch(short *cmode);
 errtype static_change_copy();
 void loopmode_exit(short loopmode);
 
-#ifdef __MAINLOOP_SRC
+//#ifdef __MAINLOOP_SRC
 frc *_current_fr_context;
 short _current_loop  = SETUP_LOOP;          /* which loop we currently are */
 short _current_3d_flag = DEMOVIEW_UPDATE;
@@ -84,18 +84,19 @@ uchar player_immortal = FALSE;
 uchar always_render = FALSE;
 uchar pal_fx_on = TRUE;
 
+/*
 #else     // NOT _MAINLOOP_SRC
 
-extern short _current_loop;   	  /* which loop we currently are */
+extern short _current_loop;   	  // which loop we currently are
 extern short _current_3d_flag;
 extern frc *_current_fr_context;
 #ifdef GADGET
 extern Gadget *_current_root;
 #endif
-extern uint  _change_flag;         /* change flags for loop */
-extern uint  _static_change;       /* current static changes */
-extern short _new_mode;            /* mode to change to, if any */
-extern short _last_mode;           /* last mode we were in, to switch back to */
+extern uint  _change_flag;         // change flags for loop
+extern uint  _static_change;       // current static changes
+extern short _new_mode;            // mode to change to, if any
+extern short _last_mode;           // last mode we were in, to switch back to
 extern uchar player_invulnerable;
 extern uchar player_immortal;
 extern uchar physics_running;
@@ -107,6 +108,7 @@ extern uchar time_passes;
 extern uchar pal_fx_on;
 extern LGRegion *_current_view;
 #endif
+*/
 
 #define loopLine(num,code_line) code_line
 

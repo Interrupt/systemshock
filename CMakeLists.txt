@@ -183,15 +183,17 @@ find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 target_link_libraries(TestSimpleMain ${SDL2_LIBRARIES})
 
+find_library(CARBON NAMES Carbon)
+
 add_definitions(
 	-include precompiled.h
 )
 
 add_executable(systemshock
-	${GAME_SRC}
+	${MAC_SRC}
 )
 
-add_library(MAC_LIB ${MAC_SRC})
+add_library(GAME_LIB ${GAME_SRC})
 
 target_link_libraries(systemshock
 	2D_LIB
@@ -210,5 +212,6 @@ target_link_libraries(systemshock
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
-	MAC_LIB
+	GAME_LIB
+	${CARBON}
 )

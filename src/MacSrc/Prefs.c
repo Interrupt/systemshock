@@ -42,12 +42,13 @@ void SetShockGlobals(void);
 //  Globals
 //--------------------
 ShockPrefs		gShockPrefs;
+char		which_lang;
+uchar sfx_on = TRUE;
 
 //--------------------
 //  Externs
 //--------------------
-extern char		which_lang;
-extern uchar 	sfx_on;
+//extern uchar 	sfx_on;
 extern int 		_fr_global_detail;
 extern Boolean	DoubleSize;
 extern Boolean	SkipLines;
