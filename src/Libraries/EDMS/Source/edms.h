@@ -61,9 +61,9 @@ extern physics_handle	on2ph[MAX_OBJ];
 //	Just in case...
 //	---------------
 #ifdef __cplusplus
-
 extern "C" {
 #endif
+	
 void           EDMS_init_handles( void );
 physics_handle EDMS_bind_object_number( object_number on );
 void           EDMS_remap_object_number( object_number old, object_number nu );

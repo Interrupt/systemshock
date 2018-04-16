@@ -153,7 +153,7 @@ uchar ff_raycast (Q x, Q y, Q z, Q vec[3], Q range, Q where_hit[3], terrain_ff* 
 
 //	We need to link to c...
 //	=======================
-//extern "C" {
+extern "C" {
 
 
 
@@ -891,5 +891,5 @@ physics_handle EDMS_get_free_ph( void )
 
 
 
-//}	//End of extern "C" for the &^%$@% compiler...
+}	//End of extern "C" for the &^%$@% compiler...
 

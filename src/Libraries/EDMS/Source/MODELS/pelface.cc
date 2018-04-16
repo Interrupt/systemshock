@@ -76,7 +76,7 @@ Q       old_state[6],
 
 //	We need to link to c...
 //	=======================
-//extern "C" {
+extern "C" {
 
 
 
@@ -398,5 +398,5 @@ Q	worker_bee_buzz_buzz = 0;
 
 
 
-//}	//End of extern "C" for the &^%$@% compiler...
+}	//End of extern "C" for the &^%$@% compiler...
 
