@@ -85,6 +85,7 @@ static char *tableNames[] = {
 // Open the output resource file for saving the palette resources into.
 	
 	{
+		/*
 		StandardFileReply	reply;
 		OSErr				err;
 	
@@ -107,7 +108,8 @@ static char *tableNames[] = {
 		{
 			printf("Can't open file.\n");
 			return;
-		}	
+		}
+		*/
 	}
 
 //	Get movie header, check for valid movie file

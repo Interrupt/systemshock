@@ -151,7 +151,7 @@ typedef struct {
 	fix vRes;
 	long dataSize;
 	short frameCount;
-	Str31 name;
+	//Str31 name;
 	short depth;
 	short clutId;
 } QT_ImageDesc;

@@ -196,24 +196,24 @@ set(3D_SRC
 )
 
 set(AFILE_SRC
-	AFILE/Source/AddSoundToMovie.c
+#	AFILE/Source/AddSoundToMovie.c
 	AFILE/Source/afile.c
 	AFILE/Source/amov.c
 	AFILE/Source/animconv.c
 	AFILE/Source/aqtm.c
 	AFILE/Source/compose.c
 	AFILE/Source/DumpHex.c
-	AFILE/Source/MovConv.c
-	AFILE/Source/MovConvDiv.c
+#	AFILE/Source/MovConv.c
+#	AFILE/Source/MovConvDiv.c
 	AFILE/Source/movinfo.c
-	AFILE/Source/OldAnimConv.c
-	AFILE/Source/PalExtract.c
-	AFILE/Source/QTConv.c
-	AFILE/Source/quikconv.c
-	AFILE/Source/quikdump.c
-	AFILE/Source/quiktime.c
-	AFILE/Source/quikwrit.c
-	AFILE/Source/SubTitles.c
+#	AFILE/Source/OldAnimConv.c
+#	AFILE/Source/PalExtract.c
+#	AFILE/Source/QTConv.c
+#	AFILE/Source/quikconv.c
+#	AFILE/Source/quikdump.c
+#	AFILE/Source/quiktime.c
+#	AFILE/Source/quikwrit.c
+#	AFILE/Source/SubTitles.c
 )
 
 set(DSTRUCT_SRC
@@ -341,7 +341,7 @@ add_library(MAC_LIB ${MAC_SRC})
 add_library(2D_LIB ${2D_SRC})
 add_library(GR_LIB ${GR_SRC})
 add_library(3D_LIB ${3D_SRC})
-#add_library(AFILE_LIB ${AFILE_SRC})
+add_library(AFILE_LIB ${AFILE_SRC})
 add_library(PALLETE_LIB ${PALETTE_SRC})
 add_library(DSTRUCT_LIB ${DSTRUCT_SRC})
 add_library(FIX_LIB ${FIX_SRC})
