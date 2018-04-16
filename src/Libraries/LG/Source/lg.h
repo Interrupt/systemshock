@@ -57,7 +57,7 @@ extern asm void *LG_memmove(void *dest, const void *src, unsigned int count);
 #define LG_memset memset
 #define LG_memcpy memcpy
 #define LG_memmove memmove
-#define BlockMove(src, dest, num) LG_memmove(src, dest, num);
+//#define BlockMove(src, dest, num) LG_memmove(src, dest, num);
 
 #define GAMEONLY			1
 #define SVGA_SUPPORT		1

@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 3.1)
 
 # Required for stdbool.h
 set(CMAKE_C_STANDARD 99)
+
+set(CMAKE_C_FLAGS -m32)
+set(CMAKE_CXX_FLAGS -m32)
+
 # HAAAAX!!
 add_definitions(-Dpowerc)
 
