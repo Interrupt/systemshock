@@ -77,8 +77,7 @@ static Q       old_state[7],
 
 //	We need to link to c...
 //	=======================
-//extern "C" {
-// KLC no we don't
+extern "C" {
 
 
 
@@ -406,4 +405,4 @@ Q	x = X,
  
 
 
-//}       //End of Extern "C"...
+}       //End of Extern "C"...

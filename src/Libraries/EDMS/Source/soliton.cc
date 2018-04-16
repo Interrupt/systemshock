@@ -50,7 +50,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Q     S[MAX_OBJ][7][4];    //State stream... Accessable to all...
 
+extern "C" {
 extern void EDMS_kill_object( physics_handle ph );
+}
 
 
 
@@ -61,9 +63,9 @@ extern void EDMS_kill_object( physics_handle ph );
 // Why does this get set to 100 and then immediately reset to .02
 // in soliton_lite? - DS
 
-//extern "C" {
+extern "C" {
 Q       snooz_threshold = 100;
-//}
+}
 
 int     EDMS_integrating = 0;
 

@@ -38,7 +38,7 @@ typedef struct
 } Marble;
 
 
-//extern "C" {
+extern "C" {
 
 //	Marble routines...
 //	==================
@@ -136,4 +136,4 @@ void EDMS_set_marble_parameters( physics_handle ph, Marble *m )
 	I[on][IDOF_MARBLE_29]         = 0;
 }
 
-//} // extern "C"
+} // extern "C"

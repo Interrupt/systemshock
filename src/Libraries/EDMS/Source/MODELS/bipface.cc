@@ -94,7 +94,7 @@ fix     shoulders,                                        //Arms have 1/2 length
 
 //	We need to link to c...
 //	=======================
-//extern "C" {
+extern "C" {
 
 
 
@@ -268,5 +268,5 @@ int	on = physics_handle_to_object_number( ph );
 
 
 
-//}	//End of extern "C" for the &^%$@% compiler...
+}	//End of extern "C" for the &^%$@% compiler...
 

@@ -156,7 +156,7 @@ void           EDMS_release_object( physics_handle ph );
 Q	terrain( Q X, Q Y, int deriv );			               	//This calls Terrain()
 void	indoor_terrain( Q X, Q Y, Q Z, Q R, physics_handle ph );     //Indoor for Citadel, FBO, etc...
 
-//extern "C" {
+extern "C" {
 
 fix	Terrain( fix X, fix Y, int deriv );			        						//This is provided by the user...
 void	Indoor_Terrain( fix X, fix Y, fix Z, fix R, physics_handle ph ); 	//As is this...
@@ -266,6 +266,8 @@ void		field_point_X( int ),
 // I had to change the name because Seamus had some files locked out.
 #define check_for_hit(other_object) (test_bitmask & object_bit(other_object))
 
+
+}
 
 
 //	Ta Daa.

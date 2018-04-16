@@ -57,7 +57,7 @@ extern Q	S[MAX_OBJ][7][4],
 
 //	We need to link to c...
 //	=======================
-//extern "C" {
+extern "C" {
 
 
 
@@ -121,5 +121,5 @@ Q	*XX = (Q*)&X[0];
 
 
 
-//}	//End of extern "C" for the &^%$@% compiler...
+}	//End of extern "C" for the &^%$@% compiler...
 

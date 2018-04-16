@@ -386,8 +386,8 @@ void	EDMS_get_Euler_angles( Q &alpha, Q &beta, Q &gamma, int object )
 
 
 
-//extern "C"
-//{
+extern "C"
+{
 
 #pragma require_prototypes off
 
@@ -424,4 +424,4 @@ void    EDMS_crystal_meth( physics_handle ph )
 
 #pragma require_prototypes on
 
-//}       //End of "Extern "C""...
+}       //End of "Extern "C""...

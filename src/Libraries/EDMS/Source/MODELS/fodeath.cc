@@ -61,7 +61,7 @@ fix	mass,
 
 //	We need to link to c...
 //	=======================
-//extern "C" {
+extern "C" {
 
 
 
@@ -170,5 +170,5 @@ void EDMS_get_death_parameters( physics_handle ph, Death *d )
 
 
 
-//}	//End of extern "C" for the &^%$@% compiler...
+}	//End of extern "C" for the &^%$@% compiler...
 
