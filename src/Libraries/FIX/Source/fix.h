@@ -278,39 +278,15 @@ typedef ushort fixang;
 //
 //========================================
 
-// For Mac version: The PowerPC version uses two assembly language routines
-// to do the multiply and divide.
-#if 0 && defined(powerc) || defined(__powerc)
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-fix fix_mul_asm(fix a, fix b);
-fix fast_fix_mul_int_asm(fix a, fix b);
-fix fix_div_asm(fix a, fix b);
-fix fix_mul_div_asm (fix m0, fix m1, fix d);
-#ifdef __cplusplus
-}
-#endif // __cplusplus
-
-#define fix_mul fix_mul_asm
-#define fast_fix_mul fix_mul_asm
-#define fast_fix_mul_int fast_fix_mul_int_asm
-#define fix_div fix_div_asm
-#define fix_mul_div fix_mul_div_asm
-
-
-#else
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 fix fix_mul(fix a, fix b);
 fix fix_div(fix a, fix b);
 fix fix_mul_div (fix m0, fix m1, fix d);
 fix fast_fix_mul_int(fix a, fix b);
 #define fast_fix_mul fix_mul
-
-#endif
-
 
 //========================================
 //
@@ -376,6 +352,10 @@ fixang fix_acos (fix x);
 // Computes the atan of y/x, in the correct quadrant and everything
 fixang fix_atan2 (fix y, fix x);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 //========================================
 //
