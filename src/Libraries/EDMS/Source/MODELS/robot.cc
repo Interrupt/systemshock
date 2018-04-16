@@ -24,13 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	========================
 
 
-#include <iostream.h>
+#include <iostream>
 //#include <conio.h>
 #include "EDMS_Int.h"				//This is the object type library. It is universal.
 #include "EDMS_vt.h"
 
 //#ifdef EDMS_SHIPPABLE
-//#include <mout.h>
+////#include <mout.h>
 //#endif
 
 

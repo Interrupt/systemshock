@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	Things like Getch()
 //	-------------------
-//#include <conio.h>
+////#include <conio.h>
 
 //#pragma INLINE_DEPTH 255
 //#pragma INLINE_RECURSION ON

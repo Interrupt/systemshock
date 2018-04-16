@@ -80,7 +80,7 @@ Fixpoint Fixpoint_two_pi          = f2Fixpoint(6.283185306);
 
 #ifdef FIXDEBUG
 
-uchar  Fixpoint::click_uchar = 1;
+uchar  Fixpoint::click_bool = 1;
 
 ulong Fixpoint::constructor_void     = 0,
       Fixpoint::constructor_Fixpoint = 0,
@@ -117,9 +117,9 @@ ulong Fixpoint::cond_l   = 0,
       Fixpoint::cond_eq  = 0,
       Fixpoint::cond_neq = 0;
 
-void Fixpoint::report( void ) { report( cout ); }
+void Fixpoint::report( void ) { report( std::cout ); }
 
-void Fixpoint::report( ostream& os )
+void Fixpoint::report( std::ostream& os )
 {
    os << "Constructor     void: " << constructor_void     << '\n' ;
    os << "Constructor Fixpoint: " << constructor_Fixpoint << '\n' ;

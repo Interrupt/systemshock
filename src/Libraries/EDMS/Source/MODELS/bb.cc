@@ -28,11 +28,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	===========================
 
 
-#include <iostream.h>
-#include <conio.h>
+#include <iostream>
+//#include <conio.h>
 
 #ifdef EDMS_SHIPPABLE
-#include <mout.h>
+//#include <mout.h>
 #endif
 
 #include <EDMS_int.h>

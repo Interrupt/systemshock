@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ** 
 */
 
-#include <iostream.h>
+#include <iostream>
 //#include <iomanip.h>
 #include <math.h>
 #include <stdlib.h>

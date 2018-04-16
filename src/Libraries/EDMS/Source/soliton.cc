@@ -37,13 +37,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	Jon Blackley, Oct. 25, 1991
 
 
-//#include <iostream.h>
+//#include <iostream>
 #include "EDMS_int.h"				//Object types, END conventions, etc.
 
 #include "physhand.h"
 #include "lg.h"
 
-//#include <mout.h>
+////#include <mout.h>
 
 // For convenience
 #define HashSpew(a) Spewpp( DSRC_EDMS_Hash, a )

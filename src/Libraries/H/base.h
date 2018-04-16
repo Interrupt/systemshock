@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <string.h>
 #include <dos.h>
-#include <conio.h>
+//#include <conio.h>
 #include <assert.h>
 
 #include <types.h>

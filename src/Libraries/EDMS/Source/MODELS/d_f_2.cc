@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	=============================
 
 
-#include <iostream.h>
+#include <iostream>
 #include "EDMS_int.h"
 #include "EDMS_mod.h"					//State and such...
 

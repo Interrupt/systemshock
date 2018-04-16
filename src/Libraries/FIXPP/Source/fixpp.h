@@ -29,7 +29,7 @@ bravery, and to C++ for being such a complex and neurotic language.
 #ifndef __FIXPP_H
 #define __FIXPP_H
 
-#include <iostream.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -290,10 +290,10 @@ public:
                 cond_eq,
                 cond_neq;
 
-   static void  report_on( void ) { click_uchar = 1; }
-   static void report_off( void ) { click_uchar = 0; }
+   static void report_on( void ) { click_bool = 1; }
+   static void report_off( void ) { click_bool = 0; }
 
-   static void report( ostream& );
+   static void report( std::ostream& );
    static void report( void );
    static void reset_report( void );
 
@@ -799,7 +799,7 @@ inline Fixpoint operator*= ( double d, Fixpoint fp ) { return Fixpoint(d) *= fp 
 // ======================================
 
 
-inline ostream& operator << ( ostream & os, const Fixpoint &fp )
+inline std::ostream& operator << ( std::ostream & os, const Fixpoint &fp )
 {
    os << fp.to_double();
 
@@ -807,7 +807,7 @@ inline ostream& operator << ( ostream & os, const Fixpoint &fp )
 }
 
 
-inline istream& operator >> ( istream & is, Fixpoint &fp )
+inline std::istream& operator >> ( std::istream & is, Fixpoint &fp )
 {
    double temp;
 

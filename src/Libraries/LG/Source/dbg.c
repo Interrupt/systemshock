@@ -416,7 +416,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <stdlib.h>
 //#include <stdarg.h>
 #include <string.h>
-//#include <conio.h>
+////#include <conio.h>
 
 #include "dbg.h"
 //#include <lgsprntf.h>

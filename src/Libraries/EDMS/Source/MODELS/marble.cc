@@ -32,13 +32,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	===========================
 
 
-#include <iostream.h>
+#include <iostream>
 #include "EDMS_Int.h"				//This is the object type library. It is universal.
 #include "physhand.h"
 #include "idof.h"
 
 #ifdef EDMS_SHIPPABLE
-//#include <mout.h>
+////#include <mout.h>
 #endif
 
 extern void	( *idof_functions[MAX_OBJ] )( int ),

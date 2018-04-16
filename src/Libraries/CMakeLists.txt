@@ -309,6 +309,42 @@ set(UI_SRC
 	UI/Source/vmouse.c
 )
 
+set(FIXPP_SRC
+	FIXPP/Source/fixpp.cpp
+)
+
+set(EDMS_SRC
+	EDMS/Source/interfac.cc
+	EDMS/Source/collide.cc
+	EDMS/Source/intrsect.cc
+	EDMS/Source/globals.cc
+	EDMS/Source/phy_tool.cc
+#	EDMS/Source/terrain.cc
+	EDMS/Source/soliton.cc
+	EDMS/Source/MODELS/robot.cc
+#	EDMS/Source/MODELS/pelgud.cc
+	EDMS/Source/MODELS/pelface.cc
+	EDMS/Source/MODELS/marbface.cc
+	EDMS/Source/MODELS/ftl.cc
+	EDMS/Source/MODELS/pelvis.cc
+	EDMS/Source/MODELS/marble.cc
+	EDMS/Source/MODELS/d_frame.cc
+	EDMS/Source/MODELS/d_f_face.cc
+	EDMS/Source/MODELS/ff_face.cc
+	EDMS/Source/MODELS/fodeath.cc
+	EDMS/Source/MODELS/ftlface.cc
+	EDMS/Source/MODELS/biped.cc
+#	EDMS/Source/MODELS/b.cc
+#	EDMS/Source/MODELS/ff_ftl.cc
+#	EDMS/Source/MODELS/cr_biped.cc
+#	EDMS/Source/MODELS/old_ftl.cc
+#	EDMS/Source/MODELS/bip_skel.cc
+#	EDMS/Source/MODELS/bipface.cc
+#	EDMS/Source/MODELS/bb.cc
+#	EDMS/Source/MODELS/death.cc
+#	EDMS/Source/MODELS/d_f_2.cc
+)
+
 
 set(VOX_SRC
 	VOX/Source/vox2d.c
@@ -331,6 +367,9 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/src/Libraries/FIX/Source
     ${CMAKE_SOURCE_DIR}/src/Libraries/LG/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/RES/Source
+	${CMAKE_SOURCE_DIR}/src/Libraries/FIXPP/Source
+	${CMAKE_SOURCE_DIR}/src/Libraries/EDMS/Source
+	${CMAKE_SOURCE_DIR}/src/Libraries/EDMS/Source/MODELS
 )
 
 add_library(2D_LIB ${2D_SRC})
@@ -347,4 +386,6 @@ add_library(RND_LIB ${RND_SRC})
 #add_library(SND_LIB ${SND_SRC})
 add_library(UI_LIB ${UI_SRC})
 add_library(VOX_LIB ${VOX_SRC})
+add_library(FIXPP_LIB ${FIXPP_SRC})
+add_library(EDMS_LIB ${EDMS_SRC})
 

@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	Here is the test of the EDMS interface...
 //	=========================================
 
-//#include <conio.h>
+////#include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
 

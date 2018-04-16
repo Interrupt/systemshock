@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <fcntl.h>
 //#include <sys\stat.h>
 //#include <io.h>
-//#include <conio.h>
+////#include <conio.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
