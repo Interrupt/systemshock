@@ -1212,16 +1212,16 @@ uchar MacQuitFunc(short keycode, ulong context, void* data)
 
 		ShowMenuBar();
 		stdFilterProcPtr = NewModalFilterProc(ShockAlertFilterProc);
- 		btn = Alert((global_fullmap->cyber) ? 1010 :1009, stdFilterProcPtr);		// Want to save it first?
+ 		//btn = Alert((global_fullmap->cyber) ? 1010 :1009, stdFilterProcPtr);		// Want to save it first?
 		DisposeRoutineDescriptor(stdFilterProcPtr);
 		HideMenuBar();
  		
 		SetPort(gMainWindow);							// Update area behind the alert
-		BeginUpdate(gMainWindow);
+		//BeginUpdate(gMainWindow);
 
   		//CopyBits(&gMainOffScreen.bits->portBits, &gMainWindow->portBits, &gOffActiveArea, &gActiveArea, srcCopy, 0L);
 
-		EndUpdate(gMainWindow);
+		//EndUpdate(gMainWindow);
 
 		if (global_fullmap->cyber)						// In cyberspace, all you can do is end the game
 		{															// or just keep playing.
@@ -1353,14 +1353,14 @@ uchar MacHelpFunc(short keycode, ulong context, void* data)
 	ShowMenuBar();
 	ShowCursor();
 
-	ShowShockHelp();
+	//ShowShockHelp();
  		
 	SetPort(gMainWindow);							// Update area behind the alert
-	BeginUpdate(gMainWindow);
+	//BeginUpdate(gMainWindow);
 
 	//CopyBits(&gMainOffScreen.bits->portBits, &gMainWindow->portBits, &gOffActiveArea, &gActiveArea, srcCopy, 0L);
 
-	EndUpdate(gMainWindow);
+	//EndUpdate(gMainWindow);
 
 	HideCursor();										// go back to Shock.
 	HideMenuBar();

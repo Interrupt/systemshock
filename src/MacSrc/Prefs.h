@@ -32,17 +32,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 typedef struct 
 {
 	short		prefVer;				// Version - set to 0 for now.
-	short		prefPlayIntro;		// Play intro at startup if non-zero.
+	short		prefPlayIntro;			// Play intro at startup if non-zero.
 	
 	// Game Options
 	short		goMsgLength;			// 0 - normal, 1 - brief
-	Boolean	goPopupLabels;
-	Boolean	goOnScreenHelp;
-	short		goLanguage;			// 0 - English
+	Boolean		goPopupLabels;
+	Boolean		goOnScreenHelp;
+	short		goLanguage;				// 0 - English
 	
 	// Sound Options
-	Boolean	soBackMusic;
-	Boolean	soSoundFX;
+	Boolean		soBackMusic;
+	Boolean		soSoundFX;
 	short		soMusicVolume;
 	
 	// Display Options
@@ -54,7 +54,7 @@ typedef struct
 } ShockPrefs;
 
 #define kPrefsFileType 		'Sprf'
-#define	kPrefsFileName		"\pSystem Shock Prefs"
+#define	kPrefsFileName		"System Shock Prefs"
 #define kPrefsResID			'Pref'
 
 //--------------------

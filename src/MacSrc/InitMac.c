@@ -471,8 +471,8 @@ void StartShockTimer(void)
 {
 	pShockTicksTask.task.tmWakeUp = 0;
 	pShockTicksTask.task.tmReserved = 0;
-	InsXTime((QElemPtr)&pShockTicksTask);
-	PrimeTime((QElemPtr)&pShockTicksTask, kShockTicksFreq);	// Increment 280 times a second
+	//InsXTime((QElemPtr)&pShockTicksTask);
+	//PrimeTime((QElemPtr)&pShockTicksTask, kShockTicksFreq);	// Increment 280 times a second
 }
 
 //------------------------------------------------------------------------------------
@@ -507,7 +507,7 @@ void HideMenuBar(void)
 	 		PaintRect(&r);
 	 	}
 	 	gMenusHid = TRUE;
-	 }*;
+	 }*/;
  }
  
 //------------------------------------------------------------------------------------

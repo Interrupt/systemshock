@@ -32,33 +32,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //-----------------
 //  GLOBALS
 //-----------------
-bool		mlimbs_on = FALSE;
+uchar		mlimbs_on = FALSE;
 char		mlimbs_status = 0;
 
-struct	mlimbs_request_info current_request[MLIMBS_MAX_SEQUENCES - 1]; // Request information
+//struct		mlimbs_request_info current_request[MLIMBS_MAX_SEQUENCES - 1]; // Request information
 
 ulong		mlimbs_counter = 0;
 long		mlimbs_error;
-bool		mlimbs_semaphore = FALSE;
+uchar		mlimbs_semaphore = FALSE;
 
 Handle			gHeaderHdl, gTuneHdl, gOfsHdl;			// Holds the tune-related data for the current theme file.
-long				*gOffsets;										// Array of offsets for the beginning of each tune.
-TunePlayer	gPlayer;										// The Tune Player.
+long			*gOffsets;										// Array of offsets for the beginning of each tune.
+//TunePlayer	gPlayer;										// The Tune Player.
 Boolean			gTuneDone;										// True when a sequence has finished playing (set by CB proc).
 Boolean			gReadyToQueue;								// True when it's time to queue up a new sequence.
 int				gOverlayTime;								// Amount of time (in millisecs) to wait for overlays.
 int				gQueueTime;									// Amount of time (in millisecs) to wait to queue next tune.
 
-TuneCallBackUPP	gTuneCBProc;							// Pointer to tune-finished callback proc.
+//TuneCallBackUPP	gTuneCBProc;							// Pointer to tune-finished callback proc.
 
-CalcTuneTask	gCalcTuneTask;								// Global to hold task info.
-TimerUPP		gCalcTuneProcPtr;							// UPP for the 6-second time manager tune determiner task.
+//CalcTuneTask	gCalcTuneTask;								// Global to hold task info.
+//TimerUPP		gCalcTuneProcPtr;							// UPP for the 6-second time manager tune determiner task.
 
 
 //-------------------
 //  INTERNAL PROTOTYPES
 //-------------------
-pascal void TuneEndCB(const TuneStatus *status, long refCon);
+//pascal void TuneEndCB(const TuneStatus *status, long refCon);
 
 
 //---------------------------------------------------------------
@@ -67,7 +67,8 @@ pascal void TuneEndCB(const TuneStatus *status, long refCon);
 #pragma require_prototypes off
 
 #ifndef __powerc
-CalcTuneTaskPtr GetCalcTuneTask(void) = 0x2049;				// MOVE.L A1,A0
+//CalcTuneTaskPtr GetCalcTuneTask(void) = 0x2049;				// MOVE.L A1,A0
+//CalcTuneTaskPtr	tmTaskPtr = GetCalcTuneTask();
 #endif
 
 //---------------------------------------------------------------
@@ -78,14 +79,14 @@ pascal void CalcTuneProc(void)
 #endif
 {
 #ifndef __powerc
-	CalcTuneTaskPtr	tmTaskPtr = GetCalcTuneTask();			// get address of task record
-	long					curA5 = SetA5(tmTaskPtr->appA5);		// save and set value of A5
+	//CalcTuneTaskPtr	tmTaskPtr = GetCalcTuneTask();			// get address of task record
+	//long					curA5 = SetA5(tmTaskPtr->appA5);		// save and set value of A5
 #endif
 	
 	gReadyToQueue = TRUE;								// It's time to queue up another tune.
 	
 #ifndef __powerc
-	SetA5(curA5);											// restore A5
+	//SetA5(curA5);											// restore A5
 #endif
 }
 #pragma require_prototypes on
@@ -96,7 +97,7 @@ pascal void CalcTuneProc(void)
 //------------------------------------------------------------------------------
 int MacTuneInit(void)
 {
-	if (mlimbs_status != 0)								// If already inited, return
+	/*if (mlimbs_status != 0)								// If already inited, return
 		return 0;
 
 //¥¥¥   if (!music_card) return -1;
@@ -135,7 +136,7 @@ int MacTuneInit(void)
  	gHeaderHdl = NULL;
  	gTuneHdl = NULL;
  	gOfsHdl = NULL;
-	mlimbs_status = 1;
+	mlimbs_status = 1;*/
 
 	return 0;
 }
@@ -145,7 +146,7 @@ int MacTuneInit(void)
 //------------------------------------------------------------------------------
 void MacTuneShutdown(void)
 {
-	if (mlimbs_status == 0)									// If already shut down, do nothing
+	/*if (mlimbs_status == 0)									// If already shut down, do nothing
    		return;
 
 	MacTunePurgeCurrentTheme();						// Kill the current theme (unloading theme data)
@@ -156,16 +157,16 @@ void MacTuneShutdown(void)
 	DisposeRoutineDescriptor(gTuneCBProc);			// Cleanup callback and player
 	CloseComponent(gPlayer);
 
-	mlimbs_status = 0;
+	mlimbs_status = 0;*/
 }
 
 //--------------------------------------------------------------------------
 //	Call-back routine.  Get's called when tune is finished.
 //--------------------------------------------------------------------------
-pascal void TuneEndCB(const TuneStatus *, long)
+/*pascal void TuneEndCB(const TuneStatus *s, long refCon)
 {
 	gTuneDone = TRUE;
-}
+}*/
 
 //------------------------------------------------------------------------------
 //  Loads all resources associated with a theme file.  Stops and purges and currently loaded theme.  Returns
@@ -173,7 +174,7 @@ pascal void TuneEndCB(const TuneStatus *, long)
 //------------------------------------------------------------------------------
 int MacTuneLoadTheme(FSSpec *themeSpec, int themeID)
 {
-	short  	filenum;
+	/*short  	filenum;
 	Handle	binHdl;
 	Ptr		p;
 	
@@ -259,7 +260,7 @@ Debugger();	//¥¥¥
 	// Here's a big hack.  If we're loading theme 0 (machine sounds only), then don't do an
 	// intro transition.
 	if (themeID == 0)
-	   current_mode = NORMAL_MODE;
+	   current_mode = NORMAL_MODE;*/
 
 	return(1);
 }
@@ -269,7 +270,7 @@ Debugger();	//¥¥¥
 //------------------------------------------------------------------------------
 void MacTuneStartCurrentTheme(void)
 {	
-	if (mlimbs_status && gTuneHdl)					// If MacTune is inited and there is a theme loaded,
+	/*if (mlimbs_status && gTuneHdl)					// If MacTune is inited and there is a theme loaded,
 	{
 		int	pid = current_request[0].pieceID;
 		if (pid != 255)										// If there is a tune requested,
@@ -279,7 +280,7 @@ void MacTuneStartCurrentTheme(void)
 		else
 			gTuneDone = TRUE;								// else make sure we check again soon.
 
-	}
+	}*/
 }
 
 //------------------------------------------------------------------------------
@@ -287,7 +288,7 @@ void MacTuneStartCurrentTheme(void)
 //------------------------------------------------------------------------------
 void MacTuneKillCurrentTheme(void)
 {
-	if (mlimbs_status && gTuneHdl)						// Only do this if MacTune is inited and there is a 
+	/*if (mlimbs_status && gTuneHdl)						// Only do this if MacTune is inited and there is a 
 	{																	// current theme.
 		RmvTime((QElemPtr)&gCalcTuneTask);		// Remove the TimeManager task that queues up
 		InsTime((QElemPtr)&gCalcTuneTask);			// next tune, and re-insert to prevent any tasks from 
@@ -296,7 +297,7 @@ void MacTuneKillCurrentTheme(void)
 		TuneFlush(gPlayer);									// Flush the queue.
 		
 		gReadyToQueue = FALSE;
-	}
+	}*/
 }
 
 //------------------------------------------------------------------------------
@@ -304,7 +305,7 @@ void MacTuneKillCurrentTheme(void)
 //------------------------------------------------------------------------------
 void MacTunePurgeCurrentTheme()
 {
-	MacTuneKillCurrentTheme();							// Kill the current theme.
+	/*MacTuneKillCurrentTheme();							// Kill the current theme.
 	
 	// Dispose of all the theme's data.
 	if (gHeaderHdl)
@@ -337,7 +338,7 @@ void MacTunePurgeCurrentTheme()
 	for (int i = 0; i < MLIMBS_MAX_SEQUENCES -1; i++)
 	{
 		current_request[i].pieceID = 255;
-	}
+	}*/
 	mlimbs_counter = 0;
 }
 
@@ -346,7 +347,7 @@ void MacTunePurgeCurrentTheme()
 //------------------------------------------------------------------------------
 void MacTunePlayTune(int tune)
 {
-if (tune == 255 || tune == -1)
+/*if (tune == 255 || tune == -1)
 	DebugString("\pEep Eep Invalid tune!");  //¥¥¥
 	
 	if (gOffsets[tune] != -1)							// If there really is a tune there, play it now.
@@ -361,7 +362,7 @@ if (tune == 255 || tune == -1)
 	
 	// If there was no tune to play this time, set a flag so it will prime the timer again.
 	else
-		gTuneDone = TRUE;
+		gTuneDone = TRUE;*/
 }
 
 //------------------------------------------------------------------------------
@@ -369,7 +370,7 @@ if (tune == 255 || tune == -1)
 //------------------------------------------------------------------------------
 void MacTuneQueueTune(int tune)
 {
-if (tune == 255 || tune == -1)
+/*if (tune == 255 || tune == -1)
 	DebugString("\pEep Eep Invalid tune!");  //¥¥¥
 	
 	if (gOffsets[tune] != -1)							// If there really is a tune there, queue it up.
@@ -388,7 +389,7 @@ if (tune == 255 || tune == -1)
 	
 	// If there was no tune to queue this time, set a flag so it will prime the timer again.
 	else
-		gTuneDone = TRUE;
+		gTuneDone = TRUE;*/
 }
 
 //------------------------------------------------------------------------------
@@ -396,7 +397,7 @@ if (tune == 255 || tune == -1)
 //------------------------------------------------------------------------------
 void MacTunePrimeTimer(void)
 {
-	PrimeTime((QElemPtr)&gCalcTuneTask, gOverlayTime + gQueueTime);
+	//PrimeTime((QElemPtr)&gCalcTuneTask, gOverlayTime + gQueueTime);
 //¥¥¥ temp
 // the above amount for PrimeTime is temporary because we're not doing overlays yet.
 //  so just queue up the next tune at queue time.

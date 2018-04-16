@@ -25,23 +25,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //====================================================================================
 
 
-#ifdef IS_REALLY_OSX
-
 //--------------------
 //  Includes
 //--------------------
-#include <Balloons.h>
+//#include <Balloons.h>
+
+#include <Carbon/Carbon.h>
 
 #include "Shock.h"
 #include "InitMac.h"
 #include "Prefs.h"
-#include "AEHandlers.h"
+//#include "AEHandlers.h"
 #include "ShockBitmap.h"
-#include "ShockDialogs.h"
-#include "DialogHelpers.h"
+//#include "ShockDialogs.h"
+//#include "DialogHelpers.h"
 #include "ShockHelp.h"
-#include "MoviePlay.h"
-#include "MacTune.h"
+//#include "MoviePlay.h"
+//#include "MacTune.h"
 #ifdef TESTING
 #include "Tests.h"
 #endif
@@ -69,11 +69,11 @@ extern uchar startup_music;
 WindowPtr			gMainWindow;
 MenuHandle		gMainMenus[kNumMenus];
 RgnHandle			gCursorRgn;
-short					gCursorSet;
-Boolean				gDone = false;
-Boolean				gInForeground = true;
+short				gCursorSet;
+bool				gDone = false;
+bool				gInForeground = true;
 Boolean				gPlayingGame;		//¥¥¥ Temp
-Boolean				gIsNewGame;
+bool				gIsNewGame;
 FSSpec				gSavedGameFile;
 long					gGameSavedTime;
 Boolean				gDeadPlayerQuit;
@@ -118,7 +118,7 @@ void main(void)
 	SetupWindows(&gMainWindow);								// setup everything
 	SetupOffscreenBitmaps();			
  	SetUpMenus(gMainMenus, kNumMenus);
-	AddHelpMenu();
+	//AddHelpMenu();
 	
 #ifdef TESTING
 	SetupTests();
@@ -160,8 +160,8 @@ void main(void)
 	while (!gDone);
 	 
 	// black screen so it doesn't flash when we quit
-	SetPort(gMainWindow);
-	PaintRect(&gMainWindow->portRect);
+	//SetPort(gMainWindow);
+	//PaintRect(&gMainWindow->portRect);
 	
 //	CleanupAndExit();			ETS patch does this now.
 }
@@ -171,7 +171,7 @@ void main(void)
 //------------------------------------------------------------------------------------
 void HandleEvents(void)
 {
-	WindowPtr 	whichWindow;
+	/*WindowPtr 	whichWindow;
 	EventRecord 	theEvent; 
 	char				theKey;
 	GrafPtr			savePort;
@@ -280,10 +280,10 @@ DoTestClick(theEvent.where);
 				break;
 				
 			default: ;
-		} /* end of case theEvent.what */		
-	} /* if */
+		} // end of case theEvent.what
+	}
 
-	CheckBitDepth();
+	CheckBitDepth();*/
 }
  
 //------------------------------------------------------------------------------------
@@ -291,7 +291,7 @@ DoTestClick(theEvent.where);
 //------------------------------------------------------------------------------------
 void UpdateWindow(WindowPtr wind)
  {
-	RGBColor	black = {0, 0, 0};
+	/*RGBColor	black = {0, 0, 0};
 
 	if (wind != gMainWindow)
 	 	return;
@@ -327,7 +327,7 @@ void UpdateWindow(WindowPtr wind)
 
 #ifdef TESTING
 	DoTestUpdate(wind);	
-#endif
+#endif*/
 
  }
 
@@ -336,7 +336,7 @@ void UpdateWindow(WindowPtr wind)
 //------------------------------------------------------------------------------------
 void DoCommand(unsigned long mResult)
 {
-	short					theItem;
+	/*short					theItem;
 	Str255				name;
 	Boolean				savedOK;
 	ModalFilterUPP	stdFilterProcPtr;
@@ -586,7 +586,7 @@ void DoCommand(unsigned long mResult)
 
 	}
 	
-	HiliteMenu(0);
+	HiliteMenu(0);*/
 }
 
 //------------------------------------------------------------------------------------
@@ -627,7 +627,7 @@ void SetupTitleMenus(void)
 //------------------------------------------------------------------------------------
 void HandleNewGame()
 {
-	if (DoNewGameDlg())										// Put up New Game dialog
+	/*if (DoNewGameDlg())										// Put up New Game dialog
 	{
 		Str255		titleStr;
 		
@@ -661,7 +661,7 @@ void HandleNewGame()
 		ShowMenuBar();
 		ShowCursor();
 		InvalRect(&gMainWindow->portRect); 
-	}
+	}*/
 }
 
 
@@ -670,7 +670,7 @@ void HandleNewGame()
 //------------------------------------------------------------------------------------
 void HandleOpenGame(void)
 {
-	StandardFileReply	reply;
+	/*StandardFileReply	reply;
 	SFTypeList				typeList;
 	Str255					titleStr, temp;
 	
@@ -721,7 +721,7 @@ void HandleOpenGame(void)
 		ShowMenuBar();
 		ShowCursor();
 		InvalRect(&gMainWindow->portRect); 
-	}
+	}*/
 }
 
 
@@ -730,7 +730,7 @@ void HandleOpenGame(void)
 //------------------------------------------------------------------------------------
 void HandleAEOpenGame(FSSpec *openSpec)
 {
-	Str255					titleStr, temp;
+	/*Str255					titleStr, temp;
 
 	GetIndString(titleStr, kProgressTitles, 2);	// Get string that says "Opening "
 	Pstrcat(titleStr, openSpec->name);				// and append the file name.
@@ -762,7 +762,7 @@ void HandleAEOpenGame(FSSpec *openSpec)
 	SetupTitleMenus();
 	ShowMenuBar();
 	ShowCursor();
-	InvalRect(&gMainWindow->portRect); 
+	InvalRect(&gMainWindow->portRect); */
 }
 
 
@@ -771,7 +771,7 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 void ShockGameLoop(void)
 {
-	Size		dummy;
+	/*Size		dummy;
 	FSSpec	fSpec;
 
 	gPlayingGame = TRUE;
@@ -870,6 +870,7 @@ void ShockGameLoop(void)
 	MaxMem(&dummy);									// Compact heap after quitting the game.
 
 	StopShockTimer();										// Startup the game timer.
+	*/
 }
 
 //--------------------------------------------------------------------
@@ -877,7 +878,7 @@ void ShockGameLoop(void)
 //--------------------------------------------------------------------
 void HandlePausedEvents(void)
 {
-	WindowPtr 	whichWindow;
+	/*WindowPtr 	whichWindow;
 	EventRecord 	theEvent; 
 	char				theKey;
 	GrafPtr			savePort;
@@ -967,7 +968,7 @@ void HandlePausedEvents(void)
 		} // end of case theEvent.what	
 	} // if
 
-	CheckBitDepth();
+	CheckBitDepth();*/
 }
 
 //------------------------------------------------------------------------------------
@@ -975,7 +976,7 @@ void HandlePausedEvents(void)
 //------------------------------------------------------------------------------------
 void SetupPauseMenus(void)
 {
-	DisableItem(gMainMenus[mFile-128], fileNewGame);
+	/*DisableItem(gMainMenus[mFile-128], fileNewGame);
 	DisableItem(gMainMenus[mFile-128], filePlayIntro);
 	EnableItem(gMainMenus[mFile-128], fileOpenGame);
 	if (global_fullmap->cyber)														// Can't save the game while in cyberspace.
@@ -994,7 +995,7 @@ void SetupPauseMenus(void)
 
 	EnableItem(gMainMenus[mOptions-128], optGameOptions);
 	EnableItem(gMainMenus[mOptions-128], optGraphicsOptions);
-	EnableItem(gMainMenus[mOptions-128], optSoundOptions);
+	EnableItem(gMainMenus[mOptions-128], optSoundOptions);*/
 }
 
 
@@ -1003,7 +1004,7 @@ void SetupPauseMenus(void)
 //------------------------------------------------------------------------------------
 void RestoreTitleScreen(void)
 {
-	CTabHandle		ctab;
+	/*CTabHandle		ctab;
 	gr_clear(0xff);
 	ctab = GetCTable(9003);							// Get the title screen CLUT
 	if (ctab)	
@@ -1015,7 +1016,7 @@ void RestoreTitleScreen(void)
 	}
 	
 	LoadPictShockBitmap(&gMainOffScreen, 9003);	// Load the title screen back into offscreen space.
-	SetupTitleScreen();
+	SetupTitleScreen();*/
 }
 
 //------------------------------------------------------------------------------------
@@ -1023,7 +1024,7 @@ void RestoreTitleScreen(void)
 //------------------------------------------------------------------------------------
 Boolean DoSaveGameAs(void)
 {
-	StandardFileReply	reply;
+	/*StandardFileReply	reply;
 	Str255					titleStr, temp;
 	
 	if (gIsNewGame)															// If it's a new game
@@ -1060,7 +1061,7 @@ Boolean DoSaveGameAs(void)
 	
 	gIsNewGame = FALSE;									// It's no longer a new game.
 	gSavedGameFile = reply.sfFile;
-	gGameSavedTime = *tmd_ticks;		
+	gGameSavedTime = *tmd_ticks;*/	
 
 	return (TRUE);
 }
@@ -1071,7 +1072,7 @@ Boolean DoSaveGameAs(void)
 //------------------------------------------------------------------------------------
 Boolean DoSaveGame(void)
 {
-	Str255					titleStr, temp;
+	/*Str255					titleStr, temp;
 	
 	if (CheckFreeSpace(gSavedGameFile.vRefNum) == ERR_NOMEM)
 	{
@@ -1090,7 +1091,7 @@ Boolean DoSaveGame(void)
 	EndProgressDlg();
 	// Show arrow cursor.
 	
-	gGameSavedTime = *tmd_ticks;		
+	gGameSavedTime = *tmd_ticks;*/		
 
 	return (TRUE);
 }
@@ -1102,7 +1103,7 @@ Boolean DoSaveGame(void)
 //------------------------------------------------------------------------------------
 errtype CheckFreeSpace(short	checkRefNum)
 {
-	HParamBlockRec	pbRec;
+	/*HParamBlockRec	pbRec;
 	OSErr				err;
 
 	pbRec.volumeParam.ioCompletion = NULL;	
@@ -1115,8 +1116,6 @@ errtype CheckFreeSpace(short	checkRefNum)
 	{
 		if ((ulong)(pbRec.volumeParam.ioVAlBlkSiz * pbRec.volumeParam.ioVFrBlk) < NEEDED_DISKSPACE)
 			return (ERR_NOMEM);
-	}
+	}*/
 	return (OK);
 }
-
-#endif

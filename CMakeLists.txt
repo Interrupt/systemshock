@@ -15,6 +15,8 @@ set(MAC_SRC
 	src/MacSrc/MoviePlay.c
 	src/MacSrc/InitMac.c
 	src/MacSrc/Shock.c
+	src/MacSrc/Prefs.c
+	src/MacSrc/MacTune.c
 )
 
 set(GAME_SRC
@@ -196,6 +198,7 @@ target_link_libraries(systemshock
 	LG_LIB
 	GR_LIB
 	3D_LIB
+	RND_LIB
 	AFILE_LIB
 	DSTRUCT_LIB
 	FIX_LIB

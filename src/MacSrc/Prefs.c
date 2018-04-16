@@ -28,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
-#include <GestaltEqu.h>
-#include <Folders.h>
+//#include <GestaltEqu.h>
+//#include <Folders.h>
 #include "Shock.h"
 #include "Prefs.h"
 
@@ -47,8 +47,8 @@ ShockPrefs		gShockPrefs;
 //  Externs
 //--------------------
 extern char		which_lang;
-extern uchar 		sfx_on;
-extern int 			_fr_global_detail;
+extern uchar 	sfx_on;
+extern int 		_fr_global_detail;
 extern Boolean	DoubleSize;
 extern Boolean	SkipLines;
 
@@ -61,18 +61,18 @@ void SetDefaultPrefs(void)
 	gShockPrefs.prefVer = 0;
 	gShockPrefs.prefPlayIntro = 1;				// First time through, play the intro
 	
-	gShockPrefs.goMsgLength = 0;					// Normal
+	gShockPrefs.goMsgLength = 0;				// Normal
 	gShockPrefs.goPopupLabels = true;
 	gShockPrefs.goOnScreenHelp = true;
 	gShockPrefs.goLanguage = 0;					// English
 
 	gShockPrefs.soBackMusic = true;
 	gShockPrefs.soSoundFX = true;
-	gShockPrefs.soMusicVolume = 33;			// ¥¥¥ Figure out when sound is put in.
+	gShockPrefs.soMusicVolume = 33;				// Figure out when sound is put in.
 
-	gShockPrefs.doResolution = 0;					// High-res.
-	gShockPrefs.doDetail = 2;						// High detail.
-	gShockPrefs.doGamma = 29;						// Default gamma (29 out of 100).
+	gShockPrefs.doResolution = 0;				// High-res.
+	gShockPrefs.doDetail = 2;					// High detail.
+	gShockPrefs.doGamma = 29;					// Default gamma (29 out of 100).
 	gShockPrefs.doUseQD = false;
 
 	SetShockGlobals();
@@ -84,7 +84,7 @@ void SetDefaultPrefs(void)
 OSErr LoadPrefs(ResType resID)
 {
 	OSErr					err;
-	Handle					prefHdl;
+	/*Handle					prefHdl;
 	short						prefVRef;
 	long						prefParID;
 	short						fRef;
@@ -128,7 +128,7 @@ OSErr LoadPrefs(ResType resID)
 			}
 			CloseResFile(fRef);
 		}
-	}
+	}*/
 	return(err);
 }
 
@@ -138,7 +138,7 @@ OSErr LoadPrefs(ResType resID)
 OSErr SavePrefs(ResType resID)
 {
 	OSErr		err;
-	Handle		prefHdl;
+	/*Handle		prefHdl;
 	short			prefVRef;
 	long			prefParID;
 	short			fRef;
@@ -165,7 +165,7 @@ OSErr SavePrefs(ResType resID)
 			UpdateResFile(fRef);
 			CloseResFile(fRef);
 		}
-	}
+	}*/
 	return (err);
 }
 
@@ -175,7 +175,7 @@ OSErr SavePrefs(ResType resID)
 OSErr GetPrefsDir(short *vRef, long *parID)
 {
 	OSErr	err;
-	long		fm;
+	/*long		fm;
 	
 	err = Gestalt(gestaltFindFolderAttr, &fm);
 	err |= (fm & (1 << gestaltFindFolderPresent)) == 0;
@@ -184,6 +184,7 @@ OSErr GetPrefsDir(short *vRef, long *parID)
 	{																		// the 'Preferences' folder
 		err = FindFolder(kOnSystemDisk, kPreferencesFolderType, kCreateFolder, vRef, parID);
 	}
+	*/
 	return (err);
 }
 
