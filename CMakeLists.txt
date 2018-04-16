@@ -10,9 +10,11 @@ add_definitions(-Dpowerc)
 add_subdirectory(src/Libraries/)
 
 set(MAC_SRC
+	src/MacSrc/Stub.c
 	src/MacSrc/ShockBitmap.c
 	src/MacSrc/MoviePlay.c
-	src/MacSrc/Stub.c
+	src/MacSrc/InitMac.c
+	src/MacSrc/Shock.c
 )
 
 set(GAME_SRC

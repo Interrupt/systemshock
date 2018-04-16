@@ -35,19 +35,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Shock.h"
 #include "InitMac.h"
 #include "ShockBitmap.h"
-#include "MacTune.h"
+//#include "MacTune.h"
+
+#include <Carbon/Carbon.h>
 
 //--------------------
 //  Globals
 //--------------------
 #ifndef __MWERKS__
-QDGlobals	qd;
+//QDGlobals	qd;
 #endif
 Handle			gExtraMemory = nil;
 ColorSpec 		*gOriginalColors;
 unsigned long	gRandSeed;
 short				gMainVRef;
-CursHandle		gWatchCurs;
+//CursHandle		gWatchCurs;
 short				gOriginalDepth = -1;
 short				gLastAlertDepth = -1;
 short				gStartupDepth;
@@ -101,7 +103,7 @@ long 				*tmd_ticks;
 #pragma require_prototypes off
 
 #ifndef __powerc
-ShockTaskPtr GetShockTask(void) = 0x2049;							// MOVE.L A1,A0
+//ShockTaskPtr GetShockTask(void) = 0x2049;							// MOVE.L A1,A0
 #endif
 
 //---------------------------------------------------------------
@@ -134,7 +136,7 @@ pascal void ShockTicksProc(void)
 //------------------------------------------------------------------------------------
 void InitMac(void)
 {
-	OSErr	err;
+	/*OSErr	err;
 	long		resp;
 	
 	InitGraf(&qd.thePort);
@@ -173,7 +175,7 @@ void InitMac(void)
 	EnterMovies();
 	InstallShockTimers();
 	
-	gMenusHid = FALSE;
+	gMenusHid = FALSE;*/
  }
 
 //------------------------------------------------------------------------------------
@@ -181,7 +183,7 @@ void InitMac(void)
 //------------------------------------------------------------------------------------
 void CheckConfig(void)
 {
-	OSErr				err;
+	/*OSErr				err;
 	long					resp;
 	int					depth;
 	GDHandle     		devhandle;
@@ -268,7 +270,7 @@ void CheckConfig(void)
 	// Check to see if we're running on a PowerPC
 	err = Gestalt(gestaltSysArchitecture, &resp);
 	if (!err && (resp & (1 << gestaltPowerPC)))
-		gIsPowerPC = true;
+		gIsPowerPC = true;*/
 }
 
 //------------------------------------------------------------------------------------
@@ -276,7 +278,7 @@ void CheckConfig(void)
 //------------------------------------------------------------------------------------
 void SetupWindows(WindowPtr *mainWind)
 {	
-	FailNIL(*mainWind = GetNewCWindow(1000, 0L, (WindowPtr)-1L));
+	/*FailNIL(*mainWind = GetNewCWindow(1000, 0L, (WindowPtr)-1L));
 	
 	SizeWindow(*mainWind, gScreenWide, gScreenHigh, false);
 	MoveWindow(*mainWind, 0, 0, true);
@@ -286,7 +288,7 @@ void SetupWindows(WindowPtr *mainWind)
 	OffsetRect(&gActiveArea, -gActiveLeft, -gActiveTop);
 	
 	ShowWindow(*mainWind);
-	PaintRect(&(*mainWind)->portRect);		// black it out
+	PaintRect(&(*mainWind)->portRect);		// black it out*/
  }
 
 //------------------------------------------------------------------------------------
@@ -294,7 +296,7 @@ void SetupWindows(WindowPtr *mainWind)
 //------------------------------------------------------------------------------------
 void SetUpMenus(MenuHandle *theMenus, short numMenus)
 {
-	short		i;
+	/*short		i;
 	
 	for (i=0; i<numMenus; i++)
 		FailNIL(theMenus[i] = GetMenu(128+i));		// get menu resources
@@ -304,7 +306,7 @@ void SetUpMenus(MenuHandle *theMenus, short numMenus)
 	for (i=0; i<numMenus; i++)
 		InsertMenu(theMenus[i], 0);							// Insert apple, file, edit, etc.
 	
-	DrawMenuBar();
+	DrawMenuBar();*/
 }
 
 //------------------------------------------------------------------------------------
@@ -313,6 +315,7 @@ void SetUpMenus(MenuHandle *theMenus, short numMenus)
 //#define PLAY_FROM_CD				//¥¥¥ Make sure this is defined for shipping version.
 void GetFolders(void)
 {
+	/*
 	long						temp;
 	HParamBlockRec 	hpb;
 	OSErr					err, verr;
@@ -389,7 +392,8 @@ void GetFolders(void)
 		gBarkDirID = hpb.fileParam.ioDirID;
 	}
 	else
-		ErrorDie(14);		// No "Barks" folder.		
+		ErrorDie(14);		// No "Barks" folder.
+	*/	
 }
 
 //------------------------------------------------------------------------------------
@@ -398,13 +402,13 @@ void GetFolders(void)
 //------------------------------------------------------------------------------------
 void FailNIL(void *memory)
 {	
-	if (!memory)
+	/*if (!memory)
 	{
 		if (gExtraMemory)
 			DisposHandle(gExtraMemory);
 		
 		ErrorDie(1);
-	} 
+	}*/
 }
 
 //------------------------------------------------------------------------------------
@@ -476,7 +480,7 @@ void StartShockTimer(void)
 //------------------------------------------------------------------------------------
 void StopShockTimer(void)
 {
-	RmvTime((QElemPtr)&pShockTicksTask);								// Stop the Shock ticks task
+	//RmvTime((QElemPtr)&pShockTicksTask);								// Stop the Shock ticks task
 }
 
 //------------------------------------------------------------------------------------
@@ -484,7 +488,7 @@ void StopShockTimer(void)
 //------------------------------------------------------------------------------------
 void HideMenuBar(void)
  {
- 	Rect		r;
+ 	/*Rect		r;
  	
  	if (!gMenusHid)
  	{
@@ -496,14 +500,14 @@ void HideMenuBar(void)
  		// If running on a 640 x 480 monitor and the game is playing, restore from the off-screen bitmap.
  		if (gMainWindow->portRect.top == 0)
  		{
-			CopyBits(&gMainOffScreen.bits->portBits, &gMainWindow->portBits, &r, &r, srcCopy, 0L);
+			//CopyBits(&gMainOffScreen.bits->portBits, &gMainWindow->portBits, &r, &r, srcCopy, 0L);
  		}
  		else 		// Blank the menu bar area
  		{
 	 		PaintRect(&r);
 	 	}
 	 	gMenusHid = TRUE;
-	 }
+	 }*;
  }
  
 //------------------------------------------------------------------------------------
@@ -511,7 +515,7 @@ void HideMenuBar(void)
 //------------------------------------------------------------------------------------
 void ShowMenuBar(void)
  {
- 	Rect		r;
+ 	/*Rect		r;
 
 	if (gMenusHid)
 	 {
@@ -523,7 +527,7 @@ void ShowMenuBar(void)
 		// Show the menu bar.
 	 	gMenusHid = FALSE;
 	 	DrawMenuBar();
-	 }
+	 }*/
  }
  
 //------------------------------------------------------------------------------------
@@ -531,11 +535,11 @@ void ShowMenuBar(void)
 //------------------------------------------------------------------------------------
 void ErrorDie(short stringnum)
 {
-	if (gExtraMemory)
+	/*if (gExtraMemory)
 		DisposHandle(gExtraMemory);	// free our extra space
  
  	StringAlert(stringnum);
-	CleanupAndExit();
+	CleanupAndExit();*/
 }
 
 //------------------------------------------------------------------------------------
@@ -543,7 +547,7 @@ void ErrorDie(short stringnum)
 //------------------------------------------------------------------------------------
 void StringAlert(short stringnum)
 {
-	Str255		message, explain;
+	/*Str255		message, explain;
 	
 	InitCursor();
 	GetIndString(message, 1000, stringnum);
@@ -553,7 +557,7 @@ void StringAlert(short stringnum)
 	if (*explain)
 		StopAlert(1001, nil);
 	else
-		StopAlert(1000, nil);
+		StopAlert(1000, nil);*/
 }
 
 #pragma mark -
@@ -562,7 +566,7 @@ void StringAlert(short stringnum)
 //------------------------------------------------------------------------------------
 void Cleanup(void)
 {
-	GDHandle	devhandle;
+	/*GDHandle	devhandle;
 
 	MacTuneShutdown();
 	RemoveShockTimers();
@@ -583,7 +587,7 @@ void Cleanup(void)
 	gr_close();
 	mouse_shutdown();
 	kb_shutdown();
-	ResTerm();
+	ResTerm();*/
 }
 
 //------------------------------------------------------------------------------------
@@ -591,8 +595,8 @@ void Cleanup(void)
 //------------------------------------------------------------------------------------
 void CleanupAndExit(void)
 {
-	Cleanup();
-	ExitToShell();
+	/*Cleanup();
+	ExitToShell();*/
 }
 
 
@@ -611,9 +615,9 @@ enum { kExitToShellProcInfo = kPascalStackBased };
 
 pascal void ETSPatch ()
 {
-	Cleanup();
+	/*Cleanup();
 
-	CallUniversalProc(sOldETSRoutine, kExitToShellProcInfo);
+	CallUniversalProc(sOldETSRoutine, kExitToShellProcInfo);*/
 }
 
 //------------------------------------------------------------------------------------
@@ -621,8 +625,8 @@ pascal void ETSPatch ()
 //------------------------------------------------------------------------------------
 void InstallETSPatch ()
 {
-	sOldETSRoutine = ::NGetTrapAddress(_ExitToShell, ToolTrap);
+	/*sOldETSRoutine = ::NGetTrapAddress(_ExitToShell, ToolTrap);
 	sNewETSRoutine = NewRoutineDescriptor((ProcPtr) &ETSPatch,
 					kExitToShellProcInfo, GetCurrentArchitecture());
-	::NSetTrapAddress(sNewETSRoutine, _ExitToShell, ToolTrap);
+	::NSetTrapAddress(sNewETSRoutine, _ExitToShell, ToolTrap);*/
 }
