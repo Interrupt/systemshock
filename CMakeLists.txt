@@ -9,6 +9,12 @@ add_definitions(-Dpowerc)
 
 add_subdirectory(src/Libraries/)
 
+set(MAC_SRC
+	src/MacSrc/ShockBitmap.c
+	src/MacSrc/MoviePlay.c
+	src/MacSrc/Stub.c
+)
+
 set(GAME_SRC
 	src/GameSrc/ai.c
 	src/GameSrc/airupt.c
@@ -188,8 +194,11 @@ add_executable(systemshock
 	${GAME_SRC}
 )
 
+add_library(MAC_LIB ${MAC_SRC})
+
 target_link_libraries(systemshock
 	2D_LIB
+	LG_LIB
 	GR_LIB
 	3D_LIB
 	AFILE_LIB
@@ -201,4 +210,6 @@ target_link_libraries(systemshock
 #	SND_LIB
 	UI_LIB
 	VOX_LIB
+	EDMS_LIB
+	MAC_LIB
 )

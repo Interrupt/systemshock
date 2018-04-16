@@ -1,10 +1,6 @@
 enable_language(ASM)
 set(can_use_assembler TRUE)
 
-set(MAC_SRC
-	../MacSrc/ShockBitmap.c
-)
-
 set(2D_SRC
 	2D/Source/bit.c
 	2D/Source/bitmap.c
@@ -337,7 +333,6 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/src/Libraries/RES/Source
 )
 
-add_library(MAC_LIB ${MAC_SRC})
 add_library(2D_LIB ${2D_SRC})
 add_library(GR_LIB ${GR_SRC})
 add_library(3D_LIB ${3D_SRC})

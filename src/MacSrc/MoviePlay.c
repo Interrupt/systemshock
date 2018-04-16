@@ -73,7 +73,7 @@ void GetNextSubtitle(void);
 //------------------------------------------------------------------------------------
 void PlayCutScene(FSSpec *movieSpec, Boolean showSubs, Boolean allowHalt)
 {
-	RGBColor			black = {0, 0, 0};
+	/*RGBColor			black = {0, 0, 0};
 	RGBColor			white = {0xffff, 0xffff, 0xffff};
 	OSErr				err;
 	short 				movieResFile;
@@ -245,15 +245,15 @@ void PlayCutScene(FSSpec *movieSpec, Boolean showSubs, Boolean allowHalt)
 
 	ShowCursor();
 	RGBForeColor(&black);
-	RGBBackColor(&white);
+	RGBBackColor(&white);*/
 }
 
 //------------------------------------------------------------------------
 //  Callback routine to change the palette.
 //------------------------------------------------------------------------
-pascal OSErr DrawDoneProc(Movie theMovie, long )
+pascal OSErr DrawDoneProc(Movie theMovie, long refCon)
 {
-	RGBColor	black = {0, 0, 0};
+	/*RGBColor	black = {0, 0, 0};
 	TimeValue	tv;
 	long			chkTime;
 
@@ -278,7 +278,7 @@ pascal OSErr DrawDoneProc(Movie theMovie, long )
 			gChgTime[gPalIndex] = -1;						// Get ready for the next change.
 			gPalIndex++;
   		}
-	}
+	}*/
 	return (0);
 }
 
@@ -287,13 +287,13 @@ pascal OSErr DrawDoneProc(Movie theMovie, long )
 //------------------------------------------------------------------------
 void DoSubtitle(TimeValue time)
 {
-	if (gCurrSub->startingTime != -1 &&					// If it's a valid time
+	/*if (gCurrSub->startingTime != -1 &&					// If it's a valid time
 		 time >= gCurrSub->startingTime)					// and it's time to show it
 	{
 		DrawSubtitle((char *)gCurrSub->subtitle);		// Draw the thang.
 		gCurrSub++;
 		GetNextSubtitle();
-	}
+	}*/
 }
 
 //------------------------------------------------------------------------
@@ -301,12 +301,12 @@ void DoSubtitle(TimeValue time)
 //------------------------------------------------------------------------
 void DrawSubtitle(char *title)
 {
-	short		tl;
+	/*short		tl;
 	
 	EraseRect(&gSubRect);									// Blank out before drawing.
 	
 	tl = strlen(title);											// Center the text (look for new-lines).
-	TextBox(title, tl, &gSubRect, teCenter);
+	TextBox(title, tl, &gSubRect, teCenter);*/
 }
 
 
@@ -315,8 +315,8 @@ void DrawSubtitle(char *title)
 //------------------------------------------------------------------------
 void GetNextSubtitle(void)
 {
-	while (gCurrSub->language != 0 && gCurrSub->language != -1)	//¥¥¥ Fix this!
-		gCurrSub++;
+	/*while (gCurrSub->language != 0 && gCurrSub->language != -1)	//¥¥¥ Fix this!
+		gCurrSub++;*/
 }
 
 
@@ -326,7 +326,7 @@ void GetNextSubtitle(void)
 //------------------------------------------------------------------------------------
 void PlayVMail(FSSpec *movieSpec, short orgx, short orgy)
 {
-	Size					dummy;
+	/*Size					dummy;
 	RGBColor			black = {0, 0, 0};
 	RGBColor			white = {0xffff, 0xffff, 0xffff};
 	OSErr				err;
@@ -395,7 +395,7 @@ void PlayVMail(FSSpec *movieSpec, short orgx, short orgy)
 	}
 	
 	for (i=0; i<2; i++)
-		DisposeMovie(theMovie[i]);
+		DisposeMovie(theMovie[i]);*/
 
 	ShowCursor();
 }
@@ -409,7 +409,7 @@ void PlayVMail(FSSpec *movieSpec, short orgx, short orgy)
 //------------------------------------------------------------------------------------
 void PlayIntroCutScene()
 {
-	FSSpec	fSpec;
+	/*FSSpec	fSpec;
 	Rect		r;
 	
 	HideMenuBar();
@@ -422,7 +422,7 @@ void PlayIntroCutScene()
 	
 	ShowMenuBar();
 	SetRect(&r, 0, 0, 640, 480);
-	InvalRect(&r);
+	InvalRect(&r);*/
 }
 
 
@@ -431,7 +431,7 @@ void PlayIntroCutScene()
 //------------------------------------------------------------------------------------
 void PlayStartupMovie(FSSpec *movieSpec, short orgx, short orgy)
 {
-	RGBColor			black = {0, 0, 0};
+	/*RGBColor			black = {0, 0, 0};
 	RGBColor			white = {0xffff, 0xffff, 0xffff};
 	OSErr				err;
 	short 				movieResFile;
@@ -499,5 +499,5 @@ void PlayStartupMovie(FSSpec *movieSpec, short orgx, short orgy)
 		}
 		MoviesTask(theMovie, 0);			// Process the movie (quickly now!)
 	}
-	DisposeMovie(theMovie);
+	DisposeMovie(theMovie);*/
 }
