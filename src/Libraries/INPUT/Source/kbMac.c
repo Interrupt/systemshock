@@ -106,7 +106,7 @@ kbs_event kb_look_next(void)
 
 	while(!gotKey)
 	{
-		gotKey = OSEventAvail(keyDownMask | autoKeyMask, &theEvent);		// Get a key
+		/*gotKey = OSEventAvail(keyDownMask | autoKeyMask, &theEvent);		// Get a key
 		if (gotKey)
 		{
 			retEvent.code = (uchar)(theEvent.message >> 8);
@@ -114,7 +114,7 @@ kbs_event kb_look_next(void)
 			retEvent.ascii = (uchar)(theEvent.message & charCodeMask);
 			retEvent.modifiers = (uchar)(theEvent.modifiers >> 8);
 		}
-		else if (flags & KBF_BLOCK == 0)					// If there was no key and we're
+		else if (flags & KBF_BLOCK == 0)					// If there was no key and we're*/
 			return (retEvent);										// not blocking, then return.
 	}
 	return (retEvent);

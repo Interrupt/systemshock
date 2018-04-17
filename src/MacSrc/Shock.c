@@ -114,7 +114,7 @@ void main(void)
 	SetDefaultPrefs();													// Initialize the preferences file.
 	LoadPrefs(kPrefsResID);
 		
-	DoAEInstallation();
+	//DoAEInstallation();
 	SetupWindows(&gMainWindow);								// setup everything
 	SetupOffscreenBitmaps();			
  	SetUpMenus(gMainMenus, kNumMenus);
@@ -607,7 +607,7 @@ void DoQuit(void)
 //------------------------------------------------------------------------------------
 void SetupTitleMenus(void)
 {
-	EnableItem(gMainMenus[mFile-128], fileNewGame);
+	/*EnableItem(gMainMenus[mFile-128], fileNewGame);
 	EnableItem(gMainMenus[mFile-128], fileOpenGame);
 	EnableItem(gMainMenus[mFile-128], filePlayIntro);
 	EnableItem(gMainMenus[mFile-128], fileQuit);
@@ -618,7 +618,7 @@ void SetupTitleMenus(void)
 
 	EnableItem(gMainMenus[mOptions-128], optGameOptions);
 	EnableItem(gMainMenus[mOptions-128], optGraphicsOptions);
-	EnableItem(gMainMenus[mOptions-128], optSoundOptions);
+	EnableItem(gMainMenus[mOptions-128], optSoundOptions);*/
 }
 
 

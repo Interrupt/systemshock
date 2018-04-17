@@ -186,11 +186,11 @@ errtype audiolog_play(int email_id)
 	// rock and roll
 //   MovieReadAhead(palog, 2);
 //  MoviePlay(palog, NULL);
-	SetMovieGWorld (alog, nil, nil);
-	GoToBeginningOfMovie(alog);
-	mr = GetMoviePreferredRate(alog);
-	PrerollMovie(alog, 0, mr);		
-	StartMovie(alog);
+//	SetMovieGWorld (alog, nil, nil);
+//	GoToBeginningOfMovie(alog);
+//	mr = GetMoviePreferredRate(alog);
+//	PrerollMovie(alog, 0, mr);		
+//	StartMovie(alog);
 
 	end_wait();
 

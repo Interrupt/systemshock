@@ -107,14 +107,14 @@ long 				*tmd_ticks;
 #endif
 
 //---------------------------------------------------------------
-#ifdef __powerc
+/*#ifdef __powerc
 pascal void ShockTicksProc(TMTaskPtr tmTaskPtr)
 #else
 pascal void ShockTicksProc(void)
 #endif
 {
 #ifndef __powerc
-	 ShockTaskPtr	tmTaskPtr = GetShockTask();				// get address of task record
+//	 ShockTaskPtr	tmTaskPtr = GetShockTask();				// get address of task record
 #endif
 	
 	(*(((ShockTaskPtr)tmTaskPtr)->ticksPtr)) += 4;		// increment by 4 to fake 280 ticks/sec counter.
@@ -129,7 +129,7 @@ pascal void ShockTicksProc(void)
 
 #if __profile__
 #pragma profile on
-#endif
+#endif*/
 
 //------------------------------------------------------------------------------------
 //		Initialize the Macintosh managers.
@@ -446,11 +446,11 @@ void InstallShockTimers(void)
 	gShockTicks = 0;
 	tmd_ticks = &gShockTicks;
 
-	pShockTicksPtr = NewTimerProc(ShockTicksProc);		// Make a UPP for the TM task
+	/*pShockTicksPtr = NewTimerProc(ShockTicksProc);		// Make a UPP for the TM task
 	pShockTicksTask.task.tmAddr = pShockTicksPtr;				// Insert the Shock ticks TM task
 	pShockTicksTask.task.tmWakeUp = 0;
 	pShockTicksTask.task.tmReserved = 0;
-	pShockTicksTask.ticksPtr = &gShockTicks;
+	pShockTicksTask.ticksPtr = &gShockTicks;*/
 	
 	// Start it when starting the game up.
 }

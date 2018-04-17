@@ -510,7 +510,7 @@ errtype mouse_look_next(mouse_event *res)
 	if (mouseMask & (MOUSE_LUP | MOUSE_RUP | MOUSE_CUP))
 		eventMask |= mUpMask;
 
-	if (OSEventAvail(eventMask, &theEvent))				// If there is an event,
+	/*if (OSEventAvail(eventMask, &theEvent))				// If there is an event,
 	{
 		GlobalToLocal(&theEvent.where);
 		res->x = theEvent.where.h;								// fill in the mouse_event record.
@@ -534,7 +534,7 @@ errtype mouse_look_next(mouse_event *res)
 			res->buttons = 1;
 			res->modifiers = (uchar)(theEvent.modifiers >> 8);
 		}
-	}
+	}*/
 	
 	// If there's not a mouse click event, check the internal queue for mouse
 	// movement events.

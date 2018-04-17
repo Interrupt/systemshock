@@ -98,7 +98,7 @@ Q terrain( Q X, Q Y, int deriv )
 {
 	Q	ans;
 
-	ans.fix_to( Terrain( X.to_fix(), Y.to_fix(), deriv ) );
+	//ans.fix_to( Terrain( X.to_fix(), Y.to_fix(), deriv ) );
 	return ans;
 }
 

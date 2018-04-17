@@ -44,8 +44,8 @@ typedef struct
 	int priority;						// Priority of this request.
 	int loops;							// Number of loops. -1 => until deliberately stopped.
 	uint rel_vol;						// Specifies at what relative volume to play it at. (percent)
-	uint ramp_time;					// Specifies the time to ramp in to the specified rel_vol, or ramp out to 0.
-	int pan;								// Note that this pan value affects all channels.
+	uint ramp_time;						// Specifies the time to ramp in to the specified rel_vol, or ramp out to 0.
+	int pan;							// Note that this pan value affects all channels.
 	uchar channel_prioritize;
 	char	crossfade;					// 0 - don't crossfade,  <0 - crossfade out, >0 - crossfade in.
 	char ramp;							// 0 - don't ramp,       <0 - ramp out       >0 - ramp in

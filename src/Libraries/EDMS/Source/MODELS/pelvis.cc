@@ -918,7 +918,7 @@ extern void	null_function( int );
 
 //      For mark...
 //      -----------
-//extern "C" {
+extern "C" {
 
 void    EDMS_lean_o_meter( physics_handle ph, fix& lean, fix& crouch ) {
 
@@ -947,4 +947,4 @@ int             on = ph2on[ph];
 #pragma require_prototypes on
 
 
-//}
+}

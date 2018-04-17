@@ -41,9 +41,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern int EDMS_pfrm;    // for debugging stupidity
 //#endif
 #else
-//extern "C" {
+extern "C" {
 int EDMS_pfrm=0;
-//}
+}
 #endif
 #endif
 

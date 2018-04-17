@@ -1203,7 +1203,7 @@ uchar MacQuitFunc(short keycode, ulong context, void* data)
 	{
 		short					btn;
 		Boolean				savedOK;
-		ModalFilterUPP	stdFilterProcPtr;
+		//ModalFilterUPP	stdFilterProcPtr;
 		
 		uiHideMouse(NULL);								// Setup the environment for doing Mac stuff.
 		ShowCursor();
@@ -1211,9 +1211,9 @@ uchar MacQuitFunc(short keycode, ulong context, void* data)
 		//CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
 
 		ShowMenuBar();
-		stdFilterProcPtr = NewModalFilterProc(ShockAlertFilterProc);
+		//stdFilterProcPtr = NewModalFilterProc(ShockAlertFilterProc);
  		//btn = Alert((global_fullmap->cyber) ? 1010 :1009, stdFilterProcPtr);		// Want to save it first?
-		DisposeRoutineDescriptor(stdFilterProcPtr);
+		//DisposeRoutineDescriptor(stdFilterProcPtr);
 		HideMenuBar();
  		
 		SetPort(gMainWindow);							// Update area behind the alert

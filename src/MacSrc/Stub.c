@@ -31,6 +31,19 @@ Boolean IsMovieDone(void) { return true; }
 
 void HideCursor(void) { }
 void ShowCursor(void) { }
+ushort GetOSEvent(short eventMask,EventRecord *theEvent) { return false; }
 
 void AdvanceProgress(void) { }
 void EndProgressDlg(void) { }
+
+Boolean ShockAlertFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit) { return false; }
+
+
+MoviesTask(void *m, int n) { }
+
+DisposHandle(void *h) { }
+DisposeMovie(void *m) { }
+DisposCTable(void *c) { }
+
+void BlitLargeAlign(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus) { }
+void BlitLargeAlignSkip(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus) { }

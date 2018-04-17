@@ -150,6 +150,11 @@ ulong asm high_umpy(ulong a, ulong b)
  }
 #endif
 
+ ulong high_umpy(ulong a, ulong b)
+ {
+ 	return a * b;
+ }
+
 //	---------------------------------------------------------------
 //		ROUTINES WHICH SCALE RNUMS INTO RANGE
 //	---------------------------------------------------------------

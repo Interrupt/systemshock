@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	===================================
 #define EDMS_DIV_ZERO_TOLERANCE .0005
 
+#include "fix.h"
+
 
 
 //	State and args...

@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void EDMS_universal_terrain( Q X, Q Y, Q Z,
 			     Q radius,
 			     int object,
-			     return[3] ) {
+			     return[3] r) {
 
 
 

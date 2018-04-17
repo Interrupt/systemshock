@@ -342,7 +342,7 @@ set(EDMS_SRC
 #	EDMS/Source/MODELS/bipface.cc
 #	EDMS/Source/MODELS/bb.cc
 #	EDMS/Source/MODELS/death.cc
-#	EDMS/Source/MODELS/d_f_2.cc
+	EDMS/Source/MODELS/d_f_2.cc
 )
 
 
