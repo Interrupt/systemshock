@@ -193,7 +193,8 @@ typedef struct
 uchar FF_terrain( fix X, fix Y, fix Z, uchar fast, terrain_ff* TFF );   //From Freefall...
 uchar FF_raycast (fix x, fix y, fix z, fix vec[3], fix range, fix where_hit[3], terrain_ff *tff);
 
-//}
+}
+
 uchar ff_terrain( Q X, Q Y, Q Z, uchar fast, terrain_ff* TFF );         //For the refined...
 uchar ff_raycast (Q x, Q y, Q z, Q vec[3], Q range, Q where_hit[3], terrain_ff* FFT);
 
@@ -263,7 +264,7 @@ void		field_point_X( int ),
 #define check_for_hit(other_object) (test_bitmask & object_bit(other_object))
 
 
-}
+
 
 
 //	Ta Daa.
