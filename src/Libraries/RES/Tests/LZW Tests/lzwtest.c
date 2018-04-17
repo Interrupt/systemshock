@@ -96,7 +96,7 @@ void main(void)
 		}
 		HUnlock(exHdl);
 		SetHandleSize(exHdl, exlen);
-		AddResource(exHdl, 'TEXT', 1000, "\pExpanded");
+		AddResource(exHdl, 'TEXT', 1000, "Expanded");
 		ChangedResource(exHdl);
 		WriteResource(exHdl);
 		

@@ -169,7 +169,7 @@ void main(void)
 	thePlayer = snd_get_sequence(seq);
 
 	// Start by playing the title screen theme.
-	FSMakeFSSpec(gVRef, gDirID, "\pTheme0", &themeSpec);	
+	FSMakeFSSpec(gVRef, gDirID, "Theme0", &themeSpec);	
 	if (snd_load_theme(&themeSpec, thePlayer) != noErr)
 	{
 		printf("Error:  Could not open the file Theme0.\n");
@@ -235,7 +235,7 @@ void main(void)
 				case 'e':
 					printf("Switching to elevator theme.\n");
 					KillCurrentTheme();
-					FSMakeFSSpec(gVRef, gDirID, "\pTheme7", &themeSpec);	
+					FSMakeFSSpec(gVRef, gDirID, "Theme7", &themeSpec);	
 					if (snd_load_theme(&themeSpec, thePlayer) != noErr)
 					{
 						printf("Error:  Could not open the elevator theme.\n");
@@ -253,7 +253,7 @@ void main(void)
 				case 'm':
 					printf("Switching to menu screen theme.\n");
 					KillCurrentTheme();
-					FSMakeFSSpec(gVRef, gDirID, "\pTheme0", &themeSpec);	
+					FSMakeFSSpec(gVRef, gDirID, "Theme0", &themeSpec);	
 					if (snd_load_theme(&themeSpec, thePlayer) != noErr)
 					{
 						printf("Error:  Could not open the menu theme.\n");
@@ -271,7 +271,7 @@ void main(void)
 				case '1':
 					printf("Switching to level1 theme.\n");
 					KillCurrentTheme();
-					FSMakeFSSpec(gVRef, gDirID, "\pTheme1", &themeSpec);	
+					FSMakeFSSpec(gVRef, gDirID, "Theme1", &themeSpec);	
 					if (snd_load_theme(&themeSpec, thePlayer) != noErr)
 					{
 						printf("Error:  Could not open the level1 theme.\n");
@@ -292,7 +292,7 @@ void main(void)
 				case '2':
 					printf("Switching to level2 theme.\n");
 					KillCurrentTheme();
-					FSMakeFSSpec(gVRef, gDirID, "\pTheme2", &themeSpec);	
+					FSMakeFSSpec(gVRef, gDirID, "Theme2", &themeSpec);	
 					if (snd_load_theme(&themeSpec, thePlayer) != noErr)
 					{
 						printf("Error:  Could not open the level1 theme.\n");

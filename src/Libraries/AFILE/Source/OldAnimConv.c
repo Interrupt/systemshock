@@ -126,7 +126,7 @@ void main(void)
 	Point			dlgPos = {150,120};
 	SFReply			sfr;
 	FSSpec			mySpec;
-	Str255			name = "\pQT Movie";
+	Str255			name = "QT Movie";
 	Rect			movieRect;
 	ImageDescriptionHandle	imageDescriptionH = 0L;		/* Contains info about the sample	*/
 	ImageSequence	seq;
@@ -163,13 +163,13 @@ void main(void)
 	//---------------------
 	if (EnterMovies() != noErr)	// Start up the movie tools
 	{
-		ParamText("\pCan't startup QuickTime.", "\p", "\p", "\p");
+		ParamText("Can't startup QuickTime.", "", "", "");
 		StopAlert(1000, nil);
 		CleanupAndExit();
 	}
 
 	// get name & location for movie file
-	SFPutFile(dlgPos, "\pSave Movie as:",name,0L,&sfr);
+	SFPutFile(dlgPos, "Save Movie as:",name,0L,&sfr);
 	if (!sfr.good)
 	 {
 	 	ExitMovies();
@@ -181,7 +181,7 @@ void main(void)
 	imageDescriptionH = (ImageDescriptionHandle)NewHandle(4);
 	if (imageDescriptionH == nil)
 	 {
-		ParamText("\pCan't alloc image description.", "\p", "\p", "\p");
+		ParamText("Can't alloc image description.", "", "", "");
 		StopAlert(1000, nil);
 	 	ExitMovies();
 		CleanupAndExit();
@@ -192,7 +192,7 @@ void main(void)
 	err = CreateMovieFile(&mySpec, 'TVOD', 0, createMovieFileDeleteCurFile, &resRefNum, &gMovie);
  	if (err!=noErr)
  	 {
-		ParamText("\pCan't create movie file.", "\p", "\p", "\p");
+		ParamText("Can't create movie file.", "", "", "");
 		StopAlert(1000, nil);
  	 	ExitMovies();
 		CleanupAndExit();
@@ -209,7 +209,7 @@ void main(void)
 	ci = OpenDefaultComponent(StandardCompressionType, StandardCompressionSubType);
 	if (!ci)
  	 {
-		ParamText("\pCan't open the Standard Compression component.", "\p", "\p", "\p");
+		ParamText("Can't open the Standard Compression component.", "", "", "");
 		StopAlert(1000, nil);
  	 	ExitMovies();
 		CleanupAndExit();
@@ -223,7 +223,7 @@ void main(void)
 	compressedFrameBitsH = NewHandle(maxCompressedFrameSize);	
 	if (compressedFrameBitsH == nil)
 	 {
-		ParamText("\pCan't allocate frame buffer.", "\p", "\p", "\p");
+		ParamText("Can't allocate frame buffer.", "", "", "");
 		StopAlert(1000, nil);
  	 	ExitMovies();
 		CleanupAndExit();
@@ -236,7 +236,7 @@ void main(void)
 			codecHighQuality, codecHighQuality, 10,
 			0L, codecFlagUpdatePreviousComp, imageDescriptionH)) != 0 )
 	 {
-		ParamText("\pCan't start sequence.", "\p", "\p", "\p");
+		ParamText("Can't start sequence.", "", "", "");
 		StopAlert(1000, nil);
  	 	ExitMovies();
 		CleanupAndExit();
@@ -291,7 +291,7 @@ void main(void)
 			 	}
 				if (result < 0)
 			 	{
-					ParamText("\pError in sequence settings.", "\p", "\p", "\p");
+					ParamText("Error in sequence settings.", "", "", "");
 					StopAlert(1000, nil);
 					CloseComponent(ci);
 			 	 	ExitMovies();
@@ -307,7 +307,7 @@ void main(void)
 												  	&movieRect, &imageDescriptionH);
 				if (result)
 				 {
-					ParamText("\pCan't start a sequence.", "\p", "\p", "\p");
+					ParamText("Can't start a sequence.", "", "", "");
 					StopAlert(1000, nil);
 					CloseComponent(ci);
 			 	 	ExitMovies();
@@ -320,7 +320,7 @@ void main(void)
 								 				&movieRect, &compHdl, &compSize, &notSyncFlag);
 			if (result)
 			 {
-				ParamText("\pCan't compress a frame.", "\p", "\p", "\p");
+				ParamText("Can't compress a frame.", "", "", "");
 				StopAlert(1000, nil);
 				CloseComponent(ci);
 		 	 	ExitMovies();
@@ -335,7 +335,7 @@ void main(void)
 				codecFlagUpdatePreviousComp, *compressedFrameBitsH, &compressedFrameSize, 0L, 0L);
 			if (result)
 			 {
-				ParamText("\pCan't compress a frame.", "\p", "\p", "\p");
+				ParamText("Can't compress a frame.", "", "", "");
 				StopAlert(1000, nil);
 		 	 	ExitMovies();
 				CleanupAndExit();
@@ -346,7 +346,7 @@ void main(void)
 									notSyncFlag, 0L);
 			if (result)
 			 {
-				ParamText("\pCan't add the frame sample.", "\p", "\p", "\p");
+				ParamText("Can't add the frame sample.", "", "", "");
 				StopAlert(1000, nil);
 				CloseComponent(ci);
 		 	 	ExitMovies();
@@ -364,7 +364,7 @@ void main(void)
 	result = InsertMediaIntoTrack(gTrack,0L,0L,GetMediaDuration(gMedia),1L<<16);
 	if ( result )
 	 {
-		ParamText("\pCan't insert media into track.", "\p", "\p", "\p");
+		ParamText("Can't insert media into track.", "", "", "");
 		StopAlert(1000, nil);
  	 	ExitMovies();
 		CleanupAndExit();
@@ -373,7 +373,7 @@ void main(void)
 	result = AddMovieResource(gMovie, resRefNum, 0L,0L);
 	if ( result )
 	 {
-		ParamText("\pCan't add the movie resource.", "\p", "\p", "\p");
+		ParamText("Can't add the movie resource.", "", "", "");
 		StopAlert(1000, nil);
  	 	ExitMovies();
 		CleanupAndExit();
@@ -419,7 +419,7 @@ void LoadShockPalette(void)
 	resNum = ResOpenFile(&reply.sfFile);
 	if (resNum < 0)
 	{
-		ParamText("\pCan't open res file.", "\p", "\p", "\p");
+		ParamText("Can't open res file.", "", "", "");
 		StopAlert(1000, nil);
 		return;
 	}
@@ -435,7 +435,7 @@ void LoadShockPalette(void)
 	}
 	if (p == NULL)
 	{
-		ParamText("\pCouldn't get a palette resource.", "\p", "\p", "\p");
+		ParamText("Couldn't get a palette resource.", "", "", "");
 		StopAlert(1000, nil);
 		return;
 	}
@@ -465,7 +465,7 @@ void LoadAnimRes(void)
 	gResNum = ResOpenFile(&reply.sfFile);
 	if (gResNum < 0)
 	{
-		ParamText("\pCan't open res file.", "\p", "\p", "\p");
+		ParamText("Can't open res file.", "", "", "");
 		StopAlert(1000, nil);
 		return;
 	}

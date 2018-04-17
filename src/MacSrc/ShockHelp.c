@@ -50,7 +50,7 @@ void AddHelpMenu(void)
  	MenuHandle	mh;
 	Str255			str;
 	
-	BlockMove("\pSystem Shock HelpÉ",str,32L);
+	BlockMove("System Shock HelpÉ",str,32L);
 		
 	if (GetHelpMgr())													// If Help Mgr is available, stick Help
 	{																			// menu item in the Help menu
@@ -87,7 +87,7 @@ pascal void DrawHelp(WindowPtr dlog, int itemN)
 	if (gHelpPictHdl == NULL)
 	{
 		MoveTo(r.left+15, r.top+30);
-		DrawString("\pHelp topic not available");
+		DrawString("Help topic not available");
 	}
 	else
 	{

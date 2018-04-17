@@ -112,7 +112,7 @@ errtype load_dynamic_memory(int mask)
    FSSpec	fSpec;
    extern short _new_mode;
 	
-  FSMakeFSSpec(gDataVref, gDataDirID, "\ptexture.rsrc", &fSpec);
+  FSMakeFSSpec(gDataVref, gDataDirID, "texture.rsrc", &fSpec);
    if (_new_mode != -1)
    {
       if ((~loadcount) & mask & DYNMEM_TEXTURES)
@@ -131,7 +131,7 @@ errtype load_dynamic_memory(int mask)
       
       if ((~loadcount) & mask & DYNMEM_FHANDLE_1)
       {
-  		FSMakeFSSpec(gDataVref, gDataDirID, "\phandart.rsrc", &fSpec);
+  		FSMakeFSSpec(gDataVref, gDataDirID, "handart.rsrc", &fSpec);
 		hand_fnum = ResOpenFile(&fSpec);
 		if (hand_fnum < 0)
 			critical_error(CRITERR_RES|3);
@@ -141,7 +141,7 @@ errtype load_dynamic_memory(int mask)
       // digifx used to be FHANDLE_2
       if ((~loadcount) & mask & DYNMEM_FHANDLE_3)
       {
-  		FSMakeFSSpec(gDataVref, gDataDirID, "\pobjart2.rsrc", &fSpec);
+  		FSMakeFSSpec(gDataVref, gDataDirID, "objart2.rsrc", &fSpec);
 		critter_fnum = ResOpenFile(&fSpec);
 		if (critter_fnum < 0)
 			critical_error(CRITERR_RES|8);
@@ -150,7 +150,7 @@ errtype load_dynamic_memory(int mask)
       
       if ((~loadcount) & mask & DYNMEM_FHANDLE_4)
       {
-  		FSMakeFSSpec(gDataVref, gDataDirID, "\pobjart3.rsrc", &fSpec);
+  		FSMakeFSSpec(gDataVref, gDataDirID, "objart3.rsrc", &fSpec);
 		critter_fnum2 = ResOpenFile(&fSpec);
 		if (critter_fnum2 < 0)
 			critical_error(CRITERR_RES|8);

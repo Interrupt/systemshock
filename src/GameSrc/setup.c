@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "version.h"
 
-/*Â¥Â¥Â¥
+/*
 #include <mainloop.h>
 #include <tools.h>
 #include <input.h>
@@ -104,7 +104,7 @@ uchar setup_bio_started = FALSE;
 errtype journey_newgame_func();
 
 
-#ifdef NOT_YET //Â¥Â¥Â¥
+#ifdef NOT_YET //
 
 #define ALT(x) ((x)|KB_FLAG_ALT)
 
@@ -538,7 +538,7 @@ errtype journey_intro_func(uchar draw_stuff)
 }
 #pragma enable_message(202)
 
-#endif //NOT_YETÂ¥Â¥Â¥
+#endif //NOT_YET
 
 
 // -------------------------------------------------------------
@@ -556,7 +556,7 @@ errtype journey_newgame_func()
    player_struct.level = 0xFF;
 
    create_initial_game_func(0,0,0);
-/*Â¥Â¥Â¥ not yet
+/* not yet
    change_mode_func(0,0,(void *)GAME_LOOP);
 */
    startup_music = TRUE;
@@ -564,7 +564,7 @@ errtype journey_newgame_func()
 }
 
 
-#ifdef NOT_YET  //Â¥Â¥Â¥
+#ifdef NOT_YET  //
 
 // -------------------------------------------------------------
 // journey_difficulty_func
@@ -687,7 +687,7 @@ errtype draw_savegame_names()
    return(OK);
 }
 
-#endif //NOT_YETÂ¥Â¥Â¥
+#endif //NOT_YET
 
 extern void check_and_update_initial(void);
 
@@ -701,7 +701,7 @@ errtype load_that_thar_game(FSSpec *loadSpec)
 
 //KLC - not in Mac version      draw_sg_slot(-1);             // highlight the current save game slot with SELECTED_COLOR
 //KLC - have Mac version up at this point      begin_wait();
-//Â¥Â¥Â¥ is this needed?      check_and_update_initial();
+// is this needed?      check_and_update_initial();
       clear_player_data=TRUE;   // initializes the player struct in object_data_load
       object_data_load();
       player_create_initial();
@@ -725,7 +725,7 @@ errtype load_that_thar_game(FSSpec *loadSpec)
    return(OK);
 }
 
-#ifdef NOT_YET //Â¥Â¥Â¥
+#ifdef NOT_YET //
 
 // -------------------------------------------------------------
 // journey_continue_func
@@ -748,7 +748,7 @@ errtype journey_continue_func(uchar draw_stuff)
 }
 #pragma enable_message(202)
 
-#endif //NOT_YETÂ¥Â¥Â¥
+#endif //NOT_YET
 
 
 #define SECRET_MISSION_DIFFICULTY_QB      0xB0
@@ -821,7 +821,7 @@ void go_and_start_the_game_already()
 }
 
 
-#ifdef NOT_YET //Â¥Â¥Â¥
+#ifdef NOT_YET //
 
 // ------------------------------------
 // journey functions
@@ -1313,4 +1313,4 @@ void setup_exit()
    direct_into_cutscene = FALSE;
 }
 
-#endif //NOT_YETÂ¥Â¥Â¥
+#endif //NOT_YET

@@ -534,7 +534,7 @@ void run_schedules(void)
    schedule_run(&game_seconds_schedule,TICKS2TSTAMP(player_struct.game_time));
 }
 
-/*Â¥Â¥Â¥
+/*
 uchar schedule_test_hotkey(short keycode, ulong context, void* data)
 {
    SchedEvent e;

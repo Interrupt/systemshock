@@ -53,7 +53,7 @@ int string_res_file; 							// string res filenum
 // EXTERNALS
 // ---------
 
-//uchar *language_files[] = { "\pcybstrng.rsrc", "\pfrnstrng.rsrc", "\pgerstrng.rsrc" } ;
+//uchar *language_files[] = { "cybstrng.rsrc", "frnstrng.rsrc", "gerstrng.rsrc" } ;
 char which_lang;
 
 void init_strings(void)
@@ -61,7 +61,7 @@ void init_strings(void)
 	FSSpec	fSpec;
 
 	// Open the string resource file, Mac style.
-	FSMakeFSSpec(gDataVref, gDataDirID, "\pcybstrng.rsrc", &fSpec);
+	FSMakeFSSpec(gDataVref, gDataDirID, "cybstrng.rsrc", &fSpec);
 	string_res_file = ResOpenFile(&fSpec);
 	
 	if (string_res_file < 0)

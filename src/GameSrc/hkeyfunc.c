@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 int select_object_by_class(int obclass, int num, ubyte* quantlist);
 
 
-#ifdef NOT_YET //Â¥Â¥Â¥
+#ifdef NOT_YET //
 
 #include <frprotox.h>
 #include <wrapper.h>
@@ -237,7 +237,7 @@ uchar toggle_bool_func(short keycode, ulong context, bool* tgl)
    return TRUE;
 }
 
-#endif //Â¥Â¥Â¥ NOT_YET
+#endif // NOT_YET
 
 extern Boolean	DoubleSize;
 
@@ -252,7 +252,7 @@ uchar change_mode_func(short keycode, ulong context, void* data)
    return TRUE;
 }
 
-#ifdef NOT_YET //Â¥Â¥Â¥
+#ifdef NOT_YET //
 
 #ifdef HANDART_ADJUST
 
@@ -299,14 +299,14 @@ uchar toggle_view_func(short keycode, ulong context, void* data)
 }
 
 
-#endif //Â¥Â¥Â¥ NOT_YET
+#endif // NOT_YET
 
 void start_music(void)
 {
 	extern errtype mlimbs_AI_init(void);
 
-//Â¥Â¥Â¥   if (music_card)
-//Â¥Â¥Â¥   {
+//   if (music_card)
+//   {
 	if (MacTuneInit() == 0)
 	{
 	    	music_on = TRUE;
@@ -320,7 +320,7 @@ void start_music(void)
 		gShockPrefs.soBackMusic = FALSE;
 		SavePrefs(kPrefsResID);
 	}
-//Â¥Â¥Â¥   }
+//   }
 }
 
 void stop_music(void)
@@ -995,7 +995,7 @@ uchar version_spew_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
-#endif //Â¥Â¥Â¥ NOT_YET
+#endif // NOT_YET
 
 char conv_hex(char val);
 uchar location_spew_func(short , ulong , void* );
@@ -1048,7 +1048,7 @@ uchar location_spew_func(short , ulong , void* )
 }
 */
 
-#ifdef NOT_YET	//Â¥Â¥Â¥
+#ifdef NOT_YET	//
 
 #ifdef PLAYTEST
 uchar toggle_physics_func(short keycode, ulong context, void* data)
@@ -1290,7 +1290,7 @@ uchar unpause_callback(uiEvent *, LGRegion *, void *)
    return(TRUE);
 }
 
-#endif //Â¥Â¥Â¥ NOT_YET
+#endif // NOT_YET
 
 uchar pause_game_func(short keycode, ulong context, void* data)
 {
@@ -1374,7 +1374,7 @@ uchar save_hotkey_func(short keycode, ulong context, void* data)
 }
 
 
-#ifdef NOT_YET  //Â¥Â¥Â¥
+#ifdef NOT_YET  //
 
 
 //#define CHECK_STATE_N_HOTKEY
@@ -1450,4 +1450,4 @@ uchar res_cache_usage_func(short keycode, ulong context, void* data)
 
 #pragma enable_message(202)
 
-#endif //Â¥Â¥Â¥ NOT_YET
+#endif // NOT_YET

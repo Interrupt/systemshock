@@ -89,22 +89,22 @@ errtype play_vmail(byte vmail_no)
 		switch (vmail_no)
 		{
 			case 0:		// shield
-				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pShields On", &fSpec);
+				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Shields On", &fSpec);
 				break;
 			case 1:		// grove
-				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pJettison Pod", &fSpec);
+				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Jettison Pod", &fSpec);
 				break;
 			case 2:		// bridge
-				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pDetach", &fSpec);
+				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Detach", &fSpec);
 				break;
 			case 3:		// laser1
-				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pLaser Malfunction", &fSpec);
+				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Laser Malfunction", &fSpec);
 				break;
 			case 4:		// status
-				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pCitadel Status", &fSpec);
+				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Citadel Status", &fSpec);
 				break;
 			case 5:		// explode1
-				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pAuto-destruct", &fSpec);
+				FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Auto-destruct", &fSpec);
 				break;
 		}
 		PlayVMail(&fSpec, 120, 90);
@@ -113,7 +113,7 @@ errtype play_vmail(byte vmail_no)
 	
 	uiFlush();
 	
-	//Â¥Â¥Â¥ Need to pause here for click if not clicked to stop vmail already.
+	// Need to pause here for click if not clicked to stop vmail already.
 	
 	email_page_exit();
 	inventory_draw_new_page(old_invent_page);

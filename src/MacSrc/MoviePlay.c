@@ -342,7 +342,7 @@ void PlayVMail(FSSpec *movieSpec, short orgx, short orgy)
 	for (i=0; i<2; i++)
 	{
 		if (i == 1)
-			BlockMove("\pV-Mail Intro", movieSpec->name, 63);
+			BlockMove("V-Mail Intro", movieSpec->name, 63);
 		err = OpenMovieFile(movieSpec, &movieResFile, fsRdPerm);
 		if (err == noErr) 
 		{
@@ -401,7 +401,7 @@ void PlayVMail(FSSpec *movieSpec, short orgx, short orgy)
 }
 
 
-//uchar *intro_files[] = { "\pIntro", "\pIntro (French)", "\pIntro (German)" } ;
+//uchar *intro_files[] = { "Intro", "Intro (French)", "Intro (German)" } ;
 //extern char which_lang;
 
 //------------------------------------------------------------------------------------
@@ -414,7 +414,7 @@ void PlayIntroCutScene()
 	
 	HideMenuBar();
 	
-	FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pIntro", &fSpec);
+	FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Intro", &fSpec);
 	PlayCutScene(&fSpec, FALSE, TRUE);
 	PaintRect(&gMainWindow->portRect);
 

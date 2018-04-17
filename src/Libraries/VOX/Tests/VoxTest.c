@@ -117,7 +117,7 @@ void main (void)
 		
 		memset(&wdpb, 0x00, sizeof(wdpb));					// Find out about the current directory
 		PBHGetVol(&wdpb, false);
-		err = FSMakeFSSpec(wdpb.ioWDVRefNum, wdpb.ioWDDirID, "\pobjart.rsrc", &spec);	
+		err = FSMakeFSSpec(wdpb.ioWDVRefNum, wdpb.ioWDDirID, "objart.rsrc", &spec);	
 		resNum = ResOpenFile(&spec);
 		if (resNum != -1)
 		{	

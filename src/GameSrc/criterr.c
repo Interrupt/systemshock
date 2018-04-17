@@ -200,7 +200,7 @@ void critical_error(short code)
 	BlockMove(explain, explain+1, 255);
 	explain[0] = len;
 	
-	ParamText((uchar *)buf, (uchar *)explain, "\p", "\p");			// Show the error.
+	ParamText((uchar *)buf, (uchar *)explain, "", "");			// Show the error.
 	if (len > 0)
 		StopAlert(1001, nil);
 	else

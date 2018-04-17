@@ -445,7 +445,7 @@ int draw_line_common(g3s_phandle p0,g3s_phandle p1)
 								(gr_get_fcolor(),gr_get_fill_parm(),&v0,&v1);
 			
 			result = CLIP_NONE;
-//	  	DebugString("\pimplement me?");	
+//	  	DebugString("implement me?");	
 /*
 //        mov     edx,ebx                 // dl=clip codes
 
@@ -469,7 +469,7 @@ int draw_line_common(g3s_phandle p0,g3s_phandle p1)
 	  }
 	 else	// sline
 	  {
-	  	DebugString("\pimplement me?");	
+	  	DebugString("implement me?");	
 // we have to do this annoyingly because i is an sfix,
 // and 2d takes a fix, so we dump things in eax and munge
 /*

@@ -72,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "dynmem.h"
 
-/*Â¥Â¥Â¥
+/*
 #define AIL_SOUND
 #include "tminit.h"
 #include "mlimbs.h"
@@ -137,7 +137,7 @@ extern void rendedit_process_tilemap(FullMap* fmap, LGRect* r, uchar newMap);
 extern void mac_get_pal (int start, int n, uchar *pal_data);
 
 errtype init_pal_fx();
-/*Â¥Â¥Â¥
+/*
 errtype init_kb();
 errtype init_debug();
 void byebyemessage(void);
@@ -149,7 +149,7 @@ extern uchar toggle_heap_check(short keycode, ulong context, void *data);
 
 extern errtype sanity_check_obj_props();
 errtype amap_init(void);
-//Â¥Â¥Â¥extern long old_ticks;
+//extern long old_ticks;
 
 errtype object_data_load(void);
 /*Â¥Â¥
@@ -176,7 +176,7 @@ extern void status_vitals_end(void);
 
 uchar real_archive_fn[64];
 /*
-#define SPLASH_RES_FILE "\psplash.rsrc"
+#define SPLASH_RES_FILE "splash.rsrc"
 #ifndef EDITOR
 #define MIN_SPLASH_TIME  1000
 #else
@@ -212,9 +212,9 @@ uchar pause_for_input(ulong wait_time)
 extern char which_lang;
 int mfdart_res_file;
 //#ifdef DEMO
-//uchar *mfdart_files[] = { "\pmfdart.rsrc", "\pmfdart.rsrc", "\pmfdart.rsrc" };
+//uchar *mfdart_files[] = { "mfdart.rsrc", "mfdart.rsrc", "mfdart.rsrc" };
 //#else
-//uchar *mfdart_files[] = { "\pmfdart.rsrc", "\pmfdfrn.rsrc", "\pmfdger.rsrc" };
+//uchar *mfdart_files[] = { "mfdart.rsrc", "mfdfrn.rsrc", "mfdger.rsrc" };
 //#endif
 
 /* MLA - don't need these
@@ -225,9 +225,9 @@ extern void CitFree(void *p);
 #define PALETTE_SIZE 768
 uchar ppall[PALETTE_SIZE];
 
-//Â¥Â¥Â¥
+//
 #define DO_FADES
-//Â¥Â¥Â¥
+//
 
 //-------------------------------------------------
 //  Initialize everything!
@@ -261,7 +261,7 @@ void init_all(void)
       critical_error(CRITERR_MEM|1);
 
    ResInit();
-//Â¥Â¥Â¥Where are these defined?
+//Where are these defined?
 //   restemp_buffer = ALTERNATE_BUFFER;
 //   restemp_buffer_size = ALTERNATE_BUFFER_SIZE;
 
@@ -356,7 +356,7 @@ void init_all(void)
 	{
 		FSSpec	fSpec;
 
-		FSMakeFSSpec(gDataVref, gDataDirID, "\pOrigin", &fSpec);
+		FSMakeFSSpec(gDataVref, gDataDirID, "Origin", &fSpec);
 		PlayStartupMovie(&fSpec, 0, 0);
 	}
 
@@ -448,10 +448,10 @@ void init_all(void)
    if ((_current_loop != SETUP_LOOP) && (_current_loop != CUTSCENE_LOOP))
    {
 
-//Â¥Â¥Â¥Â¥Â¥ for now      object_data_load();
+//Â¥Â¥ for now      object_data_load();
       
-//Â¥Â¥Â¥      gr_clear(0xFF);
-//Â¥Â¥Â¥      gr_set_pal(0, 256, ppall);
+//      gr_clear(0xFF);
+//      gr_set_pal(0, 256, ppall);
    }
 
    // perhaps shouldnt do this if we are going to go into editor...
@@ -459,8 +459,8 @@ void init_all(void)
    if (_current_loop != EDIT_LOOP)
    {
 	   pause_for_input(pause_time);
-//Â¥Â¥Â¥	   if (pal_fx_on)
-//Â¥Â¥Â¥	      palfx_fade_down();
+//	   if (pal_fx_on)
+//	      palfx_fade_down();
    }
 
 	uiFlush();
@@ -589,7 +589,7 @@ errtype object_data_load(void)
    // Start up some subsystems
    init_newmfd();
 
-/*Â¥Â¥Â¥
+/*
 //   strcpy(buf,"DATA\\");
    strcpy(buf,"");
    // NOTE: is there any other loop we start in which doesnt overwrite the map
@@ -613,7 +613,7 @@ errtype object_data_load(void)
    return(OK);
 }
 
-#ifdef DUMMY	///Â¥Â¥Â¥Â¥ 
+#ifdef DUMMY	///Â¥ 
 
 errtype init_kb()
 {
@@ -635,7 +635,7 @@ errtype init_kb()
    return(OK);
 }
 
-#endif 	// Â¥Â¥Â¥Â¥ DUMMY
+#endif 	// Â¥ DUMMY
 
 errtype load_da_palette();
 errtype load_da_palette()
@@ -643,7 +643,7 @@ errtype load_da_palette()
 	int 		pal_file;
 	FSSpec	fSpec;
 	
-	FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pgamepal.rsrc", &fSpec);
+	FSMakeFSSpec(gCDDataVref, gCDDataDirID, "gamepal.rsrc", &fSpec);
 	pal_file = ResOpenFile(&fSpec);
 	if (pal_file < 0)
 		critical_error(CRITERR_RES|4);
@@ -790,34 +790,34 @@ errtype init_load_resources()
 	FSSpec	fSpec;
 	
 	// Open the screen resource stuff  
-	FSMakeFSSpec(gDataVref, gDataDirID, "\pgamescr.rsrc", &fSpec);
+	FSMakeFSSpec(gDataVref, gDataDirID, "gamescr.rsrc", &fSpec);
 	if (ResOpenFile(&fSpec) < 0)
 		critical_error(CRITERR_RES|1);
 	
 	// Open the appropriate mfd art file
-	FSMakeFSSpec(gDataVref, gDataDirID, "\pmfdart.rsrc", &fSpec);
+	FSMakeFSSpec(gDataVref, gDataDirID, "mfdart.rsrc", &fSpec);
 	if ((mfdart_res_file=ResOpenFile(&fSpec)) < 0) 
 		critical_error(CRITERR_RES|2);
 	
 	// Open the 3d objects
-	FSMakeFSSpec(gDataVref, gDataDirID, "\pobj3d.rsrc", &fSpec);
+	FSMakeFSSpec(gDataVref, gDataDirID, "obj3d.rsrc", &fSpec);
 	if (ResOpenFile(&fSpec) < 0)
 		critical_error(CRITERR_RES|9);
 	
 	// Open the Citadel materials file
-	FSMakeFSSpec(gDataVref, gDataDirID, "\pcitmat.rsrc", &fSpec);
+	FSMakeFSSpec(gDataVref, gDataDirID, "citmat.rsrc", &fSpec);
 	if (ResOpenFile(&fSpec) < 0)
 		critical_error(CRITERR_RES|9);
 	
 	// Open the Digital sound FX file
-	FSMakeFSSpec(gDataVref, gDataDirID, "\pdigifx.rsrc", &fSpec);
+	FSMakeFSSpec(gDataVref, gDataDirID, "digifx.rsrc", &fSpec);
 	if (ResOpenFile(&fSpec) < 0)
 		critical_error(CRITERR_RES|9);
 	
 	return(OK);
 }
 
-#ifdef DUMMY //Â¥Â¥Â¥ later
+#ifdef DUMMY // later
 
 errtype init_debug()
 {
@@ -896,4 +896,4 @@ void byebyemessage(void)
    else
       lg_printf("Our system has been shocked!!!\b But rememeber to Salt The Fries\n");
 }
-#endif //Â¥Â¥Â¥ DUMMY
+#endif // DUMMY

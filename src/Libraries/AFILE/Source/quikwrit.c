@@ -207,7 +207,7 @@ void QuikAddVideoSample(QTM *pqtm, FILE *fp, grs_bitmap *pbm, fix time)
 		ptrack->qt_stsd.idesc.hRes = fix_make(72,0);
 		ptrack->qt_stsd.idesc.vRes = fix_make(72,0);
 		ptrack->qt_stsd.idesc.frameCount = 1;
-		strcpy((char *)ptrack->qt_stsd.idesc.name, (char *)"\pNone");
+		strcpy((char *)ptrack->qt_stsd.idesc.name, (char *)"None");
 		if (pqtm->depth16)
 		{
 			ptrack->qt_stsd.idesc.depth = 16;

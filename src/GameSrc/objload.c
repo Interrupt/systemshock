@@ -210,7 +210,7 @@ errtype obj_load_art(uchar flush_all)
 	{
 		FSSpec	fSpec;
 		
-		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pobjart.rsrc", &fSpec);
+		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "objart.rsrc", &fSpec);
 		objfnum = ResOpenFile(&fSpec);
 		if (objfnum < 0)
 			critical_error(CRITERR_RES|5);

@@ -331,7 +331,7 @@ fix fix_safe_pyth_dist (fix a, fix b)
 		if (a > 0x2fffffff)
 		{
 //			Warning (("Overflow in fix_safe_pyth_dist\n"));
-			DebugString("\pOverflow in fix_safe_pyth_dist");
+			DebugString("Overflow in fix_safe_pyth_dist");
 			return 0;
 		}
 		for (;;)

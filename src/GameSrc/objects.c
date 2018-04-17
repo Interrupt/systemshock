@@ -181,9 +181,9 @@ void ObjsInit (void)
 	objHashTable[OBJ_HASH_HEAD_ENTRIES_START - 1].next = 0;
 #endif
 
-//Â¥Â¥Â¥ temp
+// temp
 //	if (!ObjSysOkay())
-//		DebugString("\pObj Sys bad after ObjsInit");
+//		DebugString("Obj Sys bad after ObjsInit");
 }
 
 //////////////////////////////
@@ -209,9 +209,9 @@ uchar ObjAndSpecGrab (ObjClass obclass, ObjID *id, ObjSpecID *specid)
 	head = &objSpecHeaders[obclass];
 	((ObjSpec *) (head->data + *specid * head->struct_size))->bits.id = *id;
 
-//Â¥Â¥Â¥ temp
+// temp
 //	if (!ObjSysOkay())
-//		DebugString("\pObj Sys bad after ObjAndSpecGrab");
+//		DebugString("Obj Sys bad after ObjAndSpecGrab");
 
 	return TRUE;
 }
@@ -230,9 +230,9 @@ uchar ObjPlace (ObjID id, ObjLoc *loc)
 //})
 	ObjLocCopy (*loc, objs[id].loc);
 
-//Â¥Â¥Â¥ temp
+// temp
 //	if (!ObjSysOkay())
-//		DebugString("\pObj Sys bad after ObjPlace");
+//		DebugString("Obj Sys bad after ObjPlace");
 
 	return TRUE;
 }
@@ -254,9 +254,9 @@ ObjID ObjRefDel (ObjRefID ref)
 	ObjRefRem (ref);
 	tmp = ObjRefFree (ref, TRUE);
 
-//Â¥Â¥Â¥ temp
+// temp
 //	if (!ObjSysOkay())
-//		DebugString("\pObj Sys bad after ObjRefDel");
+//		DebugString("Obj Sys bad after ObjRefDel");
 
 	return tmp;
 }
@@ -306,9 +306,9 @@ ObjRefID ObjRefMake (ObjID obj, ObjRefState refstate)
 //	}
 //})
 
-//Â¥Â¥Â¥ temp
+// temp
 //	if (!ObjSysOkay())
-//		DebugString("\pObj Sys bad after ObjRefMake");
+//		DebugString("Obj Sys bad after ObjRefMake");
 
 	return ref;
 }
@@ -344,9 +344,9 @@ uchar ObjDel (ObjID obj)
 //	}
 //})
 
-//Â¥Â¥Â¥ temp
+// temp
 //	if (!ObjSysOkay())
-//		DebugString("\pObj Sys bad after ObjDel");
+//		DebugString("Obj Sys bad after ObjDel");
 
 	return TRUE;
 }
@@ -458,9 +458,9 @@ found_bin_in_out: ;
 		if (!ObjRefMake (obj, in[i]))
 			return FALSE;
 
-//Â¥Â¥Â¥ temp
+// temp
 //	if (!ObjSysOkay())
-//		DebugString("\pObj Sys bad after ObjUpdateLocs");
+//		DebugString("Obj Sys bad after ObjUpdateLocs");
 
 	return TRUE;
 }
@@ -718,19 +718,19 @@ uchar ObjSysOkay (void)
 		if (cur < 0 || cur >= NUM_OBJECTS)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-			DebugString("\pInvalid ID in free chain");		//Â¥Â¥Â¥ cur
+			DebugString("Invalid ID in free chain");		// cur
 			return FALSE;
 		}
 		if (objs[cur].active)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-			DebugString("\pActive Obj in free chain");		//Â¥Â¥Â¥ objs[cur]
+			DebugString("Active Obj in free chain");		// objs[cur]
 			return FALSE;
 		}
 		if (usedObj[cur] == OBJ_FREE)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-			DebugString("\pObj is free more than once");	//Â¥Â¥Â¥ usedObj[cur]
+			DebugString("Obj is free more than once");	// usedObj[cur]
 			return FALSE;
 		}
 		usedObj[cur] = OBJ_FREE;
@@ -748,19 +748,19 @@ uchar ObjSysOkay (void)
 		if (cur < 0 || cur >= NUM_OBJECTS)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-			DebugString("\pInvalid ID in Obj used chain");		//Â¥Â¥Â¥ cur
+			DebugString("Invalid ID in Obj used chain");		// cur
 			return FALSE;
 		}
 		if (usedObj[cur] == OBJ_FREE)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-			DebugString("\pObj is free and used chain");		//Â¥Â¥Â¥ cur
+			DebugString("Obj is free and used chain");		// cur
 			return FALSE;
 		}
 		if (usedObj[cur] == OBJ_USED)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-			DebugString("\pObj is used twice");		//Â¥Â¥Â¥ cur
+			DebugString("Obj is used twice");		// cur
 			return FALSE;
 		}
 		usedObj[cur] = OBJ_USED;
@@ -772,7 +772,7 @@ uchar ObjSysOkay (void)
 	{
 		if (usedObj[cur] == 0)
 		{
-			DebugString("\pObj is neither free nor used");		//Â¥Â¥Â¥ cur
+			DebugString("Obj is neither free nor used");		// cur
 			return FALSE;
 		}
 	}
@@ -792,13 +792,13 @@ uchar ObjSysOkay (void)
 		if (cur < 0 || cur >= NUM_REF_OBJECTS)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-			DebugString("\pInvalid ID in ObjRef free chain");		//Â¥Â¥Â¥ cur
+			DebugString("Invalid ID in ObjRef free chain");		// cur
 			return FALSE;
 		}
 		if (usedRef[cur] == OBJ_FREE)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-			DebugString("\pObjRef is free more than once");		//Â¥Â¥Â¥ cur
+			DebugString("ObjRef is free more than once");		// cur
 			return FALSE;
 		}
 		usedRef[cur] = OBJ_FREE;
@@ -818,12 +818,12 @@ uchar ObjSysOkay (void)
 		{
 			if (cur < 0 || cur >= head->size)
 			{
-				DebugString("\pInvalid ID (cur) in Class (i) free chain");		//Â¥Â¥Â¥
+				DebugString("Invalid ID (cur) in Class (i) free chain");		//
 				return FALSE;
 			}
 			if (usedObj[cur] == OBJ_FREE)
 			{
-				DebugString("\pClass (i) ObjSpec (cur) is free more than once");		//Â¥Â¥Â¥
+				DebugString("Class (i) ObjSpec (cur) is free more than once");		//
 				return FALSE;
 			}
 			usedObj[cur] = OBJ_FREE;
@@ -834,17 +834,17 @@ uchar ObjSysOkay (void)
 		{
 			if (cur < 0 || cur >= head->size)
 			{
-				DebugString("\pInvalid ID (cur) in Class (i) used chain");		//Â¥Â¥Â¥
+				DebugString("Invalid ID (cur) in Class (i) used chain");		//
 				return FALSE;
 			}
 			if (usedObj[cur] == OBJ_FREE)
 			{
-				DebugString("\pClass (i) ObjSpec (cur) is free and used");		//Â¥Â¥Â¥
+				DebugString("Class (i) ObjSpec (cur) is free and used");		//
 				return FALSE;
 			}
 			if (usedObj[cur] == OBJ_USED)
 			{
-				DebugString("\pClass (i) ObjSpec (cur) is used twice");		//Â¥Â¥Â¥
+				DebugString("Class (i) ObjSpec (cur) is used twice");		//
 				return FALSE;
 			}
 			usedObj[cur] = OBJ_USED;
@@ -854,7 +854,7 @@ uchar ObjSysOkay (void)
 		{
 			if (usedObj[cur] == 0)
 			{
-				DebugString("\pClass (i) ObjSpec (cur) is neither free nor used");		//Â¥Â¥Â¥
+				DebugString("Class (i) ObjSpec (cur) is neither free nor used");		//
 				return FALSE;
 			}
 		}
@@ -906,14 +906,14 @@ uchar ObjSysOkay (void)
 			if (usedRef[ref] & OBJ_FREE)
 			{
 				ObjRefStateBinSprint (str, refbin);
-				DebugString("\pObjRef (ref) is free and in map bin (str)");		//Â¥Â¥Â¥
+				DebugString("ObjRef (ref) is free and in map bin (str)");		//
 				return FALSE;
 			}
 
 			if (usedRef[ref] & OBJ_IN_MAP)
 			{
 				ObjRefStateBinSprint (str, refbin);
-				DebugString("\pObjRef (ref) exists in two bins (one is str)");		//Â¥Â¥Â¥
+				DebugString("ObjRef (ref) exists in two bins (one is str)");		//
 				return FALSE;
 			}
 
@@ -921,14 +921,14 @@ uchar ObjSysOkay (void)
 			{
 				ObjRefStateBinSprint (str, refbin);
 				ObjRefStateBinSprint (str2, objRefs[ref].state.bin);
-				DebugString("\pObjRef (ref) thinks it is in (str2) but is in (str)");		//Â¥Â¥Â¥
+				DebugString("ObjRef (ref) thinks it is in (str2) but is in (str)");		//
 				return FALSE;
 			}
 
 			if (objRefs[ref].obj == OBJ_NULL)
 			{
 				ObjRefStateBinSprint (str, refbin);
-				DebugString("\pObjRef (ref) in (str) points to null Obj");		//Â¥Â¥Â¥
+				DebugString("ObjRef (ref) in (str) points to null Obj");		//
 				return FALSE;
 			}
 
@@ -959,13 +959,13 @@ uchar ObjSysOkay (void)
 		{
 			if (i == MAX_REFS_PER_OBJ)
 			{
-				DebugString("\pToo many ObjRefs refer to Obj (cur)");		//Â¥Â¥Â¥
+				DebugString("Too many ObjRefs refer to Obj (cur)");		//
 				return FALSE;
 			}
 
 			if (objRefs[ref].obj != cur)
 			{
-				DebugString("\pObj (cur) points to ObjRef (ref) but not vice versa");		//Â¥Â¥Â¥
+				DebugString("Obj (cur) points to ObjRef (ref) but not vice versa");		//
 				return FALSE;
 			}
 
@@ -987,7 +987,7 @@ done_checking_refs:
 
 			if (objs[cur].obclass < 0 || objs[cur].obclass >= NUM_CLASSES)
 			{
-				DebugString("\pObj (cur) has invalid obclass (objs[cur].obclass)");		//Â¥Â¥Â¥
+				DebugString("Obj (cur) has invalid obclass (objs[cur].obclass)");		//
 				return FALSE;
 			}
 
@@ -997,7 +997,7 @@ done_checking_refs:
 			if (((ObjSpec *) (data + head->struct_size * objs[cur].specID))->bits.id != cur ||
 				 ((ObjSpec *) (data + head->struct_size * objs[cur].specID))->bits.tile == TRUE)
 			{
-				DebugString("\pObj (cur) obclass-specific data does not point back to it");		//Â¥Â¥Â¥
+				DebugString("Obj (cur) obclass-specific data does not point back to it");		//
 				return FALSE;
 			}
 		}

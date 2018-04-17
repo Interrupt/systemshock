@@ -106,7 +106,7 @@ int ResWrite(Id id)
 			compHdl = NewHandle(size + EXTRA);			// Make a new handle to compress to.
 			if (compHdl == NULL)
 			{
-				DebugString("\pResWrite: Can't allocate LZW buffer for resource.\n");
+				DebugString("ResWrite: Can't allocate LZW buffer for resource.\n");
 			}
 			else
 			{
@@ -138,7 +138,7 @@ int ResWrite(Id id)
 				}
 				else
 				{
-					DebugString("\pResWrite: LZW compression did not work.\n");
+					DebugString("ResWrite: LZW compression did not work.\n");
 				}
 			}
 		}

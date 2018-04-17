@@ -69,7 +69,7 @@ LOOP:
 	switch (c)
 	{
 		case 'C':
-			StandardPutFile("\pCreate a resource file:", "\pTest Res File", &reply);
+			StandardPutFile("Create a resource file:", "Test Res File", &reply);
 			if (reply.sfGood)
 				TestCreateFile(&reply.sfFile);
 			break;

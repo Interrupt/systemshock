@@ -100,7 +100,7 @@ static char *tableNames[] = {
 		StandardFileReply	reply;
 		OSErr				err;
 	
-		StandardPutFile("\pText output file:", "\pMovie.Txt", &reply);
+		StandardPutFile("Text output file:", "Movie.Txt", &reply);
 		if (!reply.sfGood)
 			return;
 	
@@ -255,7 +255,7 @@ static char *tableNames[] = {
 	HUnlock(subHdl);
 	SetHandleSize(subHdl, sizeof(SubtitleEntry) * numSubs);
 
-	AddResource(subHdl, 'subt', 128, "\psubtitles");
+	AddResource(subHdl, 'subt', 128, "subtitles");
 	WriteResource(subHdl);
 	ReleaseResource(subHdl);
 

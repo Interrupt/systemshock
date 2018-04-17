@@ -787,7 +787,7 @@ errtype physics_run(void)
    return(OK);
 }
 
-#ifdef NOT_YET //Â¥Â¥Â¥ later, dude
+#ifdef NOT_YET // later, dude
 
 
 #ifdef WACKY_OLD_TERR_FUNC
@@ -1302,7 +1302,7 @@ void full_3d_facelet_action(fix (*fleto)[3], int which) // fix (*norm)[3], int *
 #endif
 
 ubyte param_matters[MAP_TYPES] = { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, } ;
-#endif  // NOT_YETÂ¥Â¥Â¥
+#endif  // NOT_YET
 
 errtype physics_init()
 {

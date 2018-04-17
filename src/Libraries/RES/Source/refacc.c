@@ -189,13 +189,13 @@ RefTable *ResReadRefTable(Id id)
 		err = ResError();
 		if (err != 0)
 		{
-			DebugString("\pResReadRefTable: Can't partial read the RefTable\n");
+			DebugString("ResReadRefTable: Can't partial read the RefTable\n");
 			return (NULL);
 		}
 	}
 	else
 	{
-		DebugString("\pResReadRefTable: Can't allocate pointer for RefTable\n");
+		DebugString("ResReadRefTable: Can't allocate pointer for RefTable\n");
 	}
 	
 	return (prt);
@@ -355,7 +355,7 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
 			prt->offset[index] - REFTABLESIZE(prt->numRefs),	// skip amt
 			RefSize(prt, index));												// data amt
 */
-		/*DebugString("\pRefExtract: Not implemented for compressed compound resources.\n");
+		/*DebugString("RefExtract: Not implemented for compressed compound resources.\n");
 		return (NULL);
 	}
 	else
@@ -364,7 +364,7 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
 		err = ResError();
 		if (err != 0)
 		{
-			DebugString("\pRefExtract: Can't partial read the normal resource.\n");
+			DebugString("RefExtract: Can't partial read the normal resource.\n");
 			return (NULL);
 		}
 	}

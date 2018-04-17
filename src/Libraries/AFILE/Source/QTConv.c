@@ -122,7 +122,7 @@ void main(void)
 	Point			dlgPos = {120,120};
 	SFReply			sfr;
 	FSSpec			mySpec;
-	Str255			name = "\pQT Movie";
+	Str255			name = "QT Movie";
 	Rect			movieRect, r;
 	ImageDescription	**imageDescriptionH = 0L;		// Contains info about the sample
 	short			resRefNum;
@@ -152,7 +152,7 @@ void main(void)
 	//---------------------
 	if (EnterMovies() != noErr)	// Start up the movie tools
 	{
-		ParamText("\pCan't startup QuickTime.", "\p", "\p", "\p");
+		ParamText("Can't startup QuickTime.", "", "", "");
 		StopAlert(1000, nil);
 		CleanupAndExit();
 	}
@@ -172,7 +172,7 @@ void main(void)
 	{
 		movieRsrc = GetIndResource('moov', 1);
 		if (!movieRsrc)
-			CheckError(1, "\pCan't get movie resource!");
+			CheckError(1, "Can't get movie resource!");
 		DetachResource(movieRsrc);
 		
 		short 		movieResID = 0;		// get first movie
@@ -184,7 +184,7 @@ void main(void)
 		CloseMovieFile( resRefNum );
 	}
 	else
-		CheckError(1, "\pCan't open the movie file!!");
+		CheckError(1, "Can't open the movie file!!");
 	
 	// Get movie rectangle
 	GetMovieBox (gMovie, &movieRect);		
@@ -201,7 +201,7 @@ void main(void)
 	//------------------------------------------------
 	fp = fopen(p2cstr(reply.sfFile.name), "rb");
 	if (fp == NULL)
-		CheckError(1, "\pCan't open the input movie!!");
+		CheckError(1, "Can't open the input movie!!");
 
 	dbuffLen = 64000;
 	dbuff = (uchar *)malloc(dbuffLen);
@@ -209,7 +209,7 @@ void main(void)
 	//----------------------
 	//	Setup output file.
 	//----------------------
-	SFPutFile(dlgPos, "\pSave Movie as:",name,0L,&sfr);
+	SFPutFile(dlgPos, "Save Movie as:",name,0L,&sfr);
 	if (!sfr.good)
 	 {
 	 	ExitMovies();
@@ -219,15 +219,15 @@ void main(void)
 	ClearMoviesStickyError();
 	FSMakeFSSpec(sfr.vRefNum, 0, sfr.fName, &mySpec);
 	err = CreateMovieFile(&mySpec, 'TVOD', 0, createMovieFileDeleteCurFile, &resRefNum, &gMovie);
-	CheckError(err, "\pCan't create output movie file.");
+	CheckError(err, "Can't create output movie file.");
 
 	SetMovieColorTable(gMovie, ctab);
 
 	gTrack = NewMovieTrack(gMovie, movieRect.right<<16, movieRect.bottom<<16, 0);
-	CheckError (GetMoviesError(), "\pNew video track." );
+	CheckError (GetMoviesError(), "New video track." );
 
 	gMedia = NewTrackMedia(gTrack, VideoMediaType, 600, 0L, 0L);
-	CheckError (GetMoviesError(), "\pNew Media for video track." );
+	CheckError (GetMoviesError(), "New Media for video track." );
 
 	BeginMediaEdits(gMedia);		// We do this since we are adding samples to the media
 
@@ -236,7 +236,7 @@ void main(void)
 	//-----------------------------------
 	ci = OpenDefaultComponent(StandardCompressionType, StandardCompressionSubType);
 	if (!ci)
-		CheckError (-1, "\pCan't open the Standard Compression component." );
+		CheckError (-1, "Can't open the Standard Compression component." );
 
 	//-----------------------------------
 	//	Get the Chunk Offset and Sample-to-Time tables.
@@ -315,7 +315,7 @@ void main(void)
  		uchar		*pp;
 		
 		frameBuff = malloc(movieRect.right * movieRect.bottom);
-		CheckError(MemError(), "\pCan't allocate a frame buffer for input movie.");
+		CheckError(MemError(), "Can't allocate a frame buffer for input movie.");
 		
 		SetRect(&r, 0, -17, 300, 0);
 		for (f = 0; f < gNumFrames; f++)
@@ -361,7 +361,7 @@ void main(void)
 			 	 	ExitMovies();
 					CleanupAndExit();
 			 	}
-				CheckError(result, "\pError in sequence settings.");
+				CheckError(result, "Error in sequence settings.");
 				
 				// Redraw the first frame on the screen.
 				gr_clear(0xFF);
@@ -377,7 +377,7 @@ void main(void)
 				// Begin a compression sequence.
 				result = SCCompressSequenceBegin(ci, ((CGrafPort *)(gMainWindow))->portPixMap,
 												  	&movieRect, &imageDescriptionH);
-				CheckError(result, "\pCan't start a sequence.");
+				CheckError(result, "Can't start a sequence.");
 			}
 			
 			// Display the frame number.
@@ -391,20 +391,20 @@ void main(void)
 			if (subColor)
 			{
 				MoveTo(250, -6);
-				DrawString("\pSubstitued color 0x00");
+				DrawString("Substitued color 0x00");
 			}
 
 			// Add the frame to the QuickTime movie.
 
 			result = SCCompressSequenceFrame(ci, ((CGrafPort *)(gMainWindow))->portPixMap, 
 								 				&movieRect, &compHdl, &compSize, &notSyncFlag);
-			CheckError(result, "\pCan't compress a frame.");
+			CheckError(result, "Can't compress a frame.");
 
 //			sampTime = gSampleTimes[f];
 			sampTime = gSampleTimes[f] * 1.3333;
 			result = AddMediaSample(gMedia, compHdl, 0L, compSize, sampTime, 
 									(SampleDescriptionHandle)imageDescriptionH, 1L, notSyncFlag, 0L);
-			CheckError(result, "\pCan't add the frame sample.");
+			CheckError(result, "Can't add the frame sample.");
 
 		}
 	}
@@ -415,11 +415,11 @@ void main(void)
 	EndMediaEdits( gMedia );				
 
 	result = InsertMediaIntoTrack(gTrack,0L,0L,GetMediaDuration(gMedia),1L<<16);
-	CheckError(result, "\pCan't insert media into track.");
+	CheckError(result, "Can't insert media into track.");
 	
 	// Finally, we're done with the movie.
 	result = AddMovieResource(gMovie, resRefNum, 0L,0L);
-	CheckError(result, "\pCan't add the movie resource.");
+	CheckError(result, "Can't add the movie resource.");
 	
 	// Close the movie file.
 	CloseMovieFile( resRefNum );
@@ -442,7 +442,7 @@ void	 CheckError(OSErr error, Str255 displayString)
 {
 	if (error == noErr)
 		return;
-	ParamText(displayString, "\p", "\p", "\p");
+	ParamText(displayString, "", "", "");
 	StopAlert(1000, nil);
 	if (ci) CloseComponent(ci);
  	ExitMovies();

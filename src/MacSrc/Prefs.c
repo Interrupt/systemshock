@@ -155,7 +155,7 @@ OSErr SavePrefs(ResType resID)
 			{																						// add one.
 				prefHdl = NewHandle(sizeof(ShockPrefs));
 				if (prefHdl)
-					AddResource(prefHdl, resID, 128, "\p");
+					AddResource(prefHdl, resID, 128, "");
 			}
 			
 			BlockMove(&gShockPrefs, *prefHdl, sizeof(ShockPrefs));		// Set prefs handle from our global.

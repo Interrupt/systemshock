@@ -59,7 +59,7 @@ void main (void)
 	test_3d();
 	
 #if __profile__
-		ProfilerDump("\p3dtest.prof");
+		ProfilerDump("3dtest.prof");
 		ProfilerTerm();
 	}
 #endif

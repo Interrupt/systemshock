@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sfxlist.h"
 #include "criterr.h"
 #include "gr2ss.h"
-/*Â¥Â¥Â¥
+/*
 #include <olhext.h>
 #include <inp6d.h>
 #include <i6dvideo.h>
@@ -333,7 +333,7 @@ uchar fv;
 #endif
 
 
-#ifdef NOT_YET //Â¥Â¥Â¥
+#ifdef NOT_YET //
 
 void draw_button(uchar butid)
 {
@@ -2260,7 +2260,7 @@ uchar wrapper_region_mouse_handler(uiMouseEvent* ev, Region* r, void* data)
 #pragma enable_message(202)
 
 
-#endif // NOT_YETÂ¥Â¥Â¥
+#endif // NOT_YET
 
 errtype make_options_cursor(void)
 {
@@ -2298,7 +2298,7 @@ errtype make_options_cursor(void)
    return OK;
 }
 
-#ifdef NOT_YET //Â¥Â¥Â¥
+#ifdef NOT_YET //
 
 void free_options_cursor(void)
 {
@@ -2350,4 +2350,4 @@ uchar demo_quit_func(short keycode, ulong context, void* data)
 }
 #pragma enable_message(202)
 
-#endif // NOT_YETÂ¥Â¥Â¥
+#endif // NOT_YET

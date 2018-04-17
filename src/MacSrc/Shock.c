@@ -894,14 +894,14 @@ void ShockGameLoop(void)
 	
 	if (gDeadPlayerQuit)									// If we quit because the player was killed, show
 	{																// the death movie.
-		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pDeath", &fSpec);
+		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Death", &fSpec);
 		PlayCutScene(&fSpec, TRUE, TRUE);		
 		gDeadPlayerQuit = FALSE;
 	}
 
 	if (gGameCompletedQuit)								// If we quit because the game was completed, show
 	{																// the endgame movie.
-		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "\pEndgame", &fSpec);		
+		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Endgame", &fSpec);		
 		PlayCutScene(&fSpec, TRUE, TRUE);
 		gGameCompletedQuit = FALSE;
 

@@ -115,7 +115,7 @@ int MacTuneInit(void)
 	gPlayer = OpenDefaultComponent(kTunePlayerType, 0);
 	if (!gPlayer)
 	{
-		DebugString("\pError:  Could not open a tune player.");		//¥¥¥ Handle this!
+		DebugString("Error:  Could not open a tune player.");		//¥¥¥ Handle this!
 		return 2;
 	}
 	
@@ -332,7 +332,7 @@ void MacTunePurgeCurrentTheme()
 	CloseComponent(gPlayer);
 	gPlayer = OpenDefaultComponent(kTunePlayerType, 0);
 	if (!gPlayer)
-		DebugString("\pError:  Could not open a tune player.");		//¥¥¥ Handle this!
+		DebugString("Error:  Could not open a tune player.");		//¥¥¥ Handle this!
 
 	// Clear our the current request array.
 	for (int i = 0; i < MLIMBS_MAX_SEQUENCES -1; i++)
@@ -348,7 +348,7 @@ void MacTunePurgeCurrentTheme()
 void MacTunePlayTune(int tune)
 {
 /*if (tune == 255 || tune == -1)
-	DebugString("\pEep Eep Invalid tune!");  //¥¥¥
+	DebugString("Eep Eep Invalid tune!");  //¥¥¥
 	
 	if (gOffsets[tune] != -1)							// If there really is a tune there, play it now.
 	{
@@ -371,7 +371,7 @@ void MacTunePlayTune(int tune)
 void MacTuneQueueTune(int tune)
 {
 /*if (tune == 255 || tune == -1)
-	DebugString("\pEep Eep Invalid tune!");  //¥¥¥
+	DebugString("Eep Eep Invalid tune!");  //¥¥¥
 	
 	if (gOffsets[tune] != -1)							// If there really is a tune there, queue it up.
 	{

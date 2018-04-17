@@ -63,7 +63,7 @@ void main(void)
 	StandardFileReply	reply;
 	SFTypeList			typeList;
 	FSSpec			outSpec;
-	Str255			name = "\pQT Movie";
+	Str255			name = "QT Movie";
 	Rect			r;
 	short			resRefNum;
 	Movie			gMovie = 0;			// Our movie, track and media
@@ -75,7 +75,7 @@ void main(void)
 	//---------------------
 	if (EnterMovies() != noErr)	// Start up the movie tools
 	{
-		ParamText("\pCan't startup QuickTime.", "\p", "\p", "\p");
+		ParamText("Can't startup QuickTime.", "", "", "");
 		StopAlert(1000, nil);
 		return;
 	}
@@ -103,11 +103,11 @@ void main(void)
 		CloseMovieFile( resRefNum );
 	}
 	else
-		CheckError(1, "\pCan't open the movie file!!");
+		CheckError(1, "Can't open the movie file!!");
 	
 	// Setup an FSSpec for the output file.
 	outSpec = reply.sfFile;
-	BlockMove("\pOutput Movie", outSpec.name, 20);
+	BlockMove("Output Movie", outSpec.name, 20);
 	
 	//----------------------
 	//	Open the input Sound file.
@@ -122,7 +122,7 @@ void main(void)
  	}
 	sndResNum = FSpOpenResFile(&reply.sfFile, fsRdPerm);
 	if (sndResNum == -1)
-		CheckError(1, "\pCan't open the sound file!!");
+		CheckError(1, "Can't open the sound file!!");
 	
 	ClearMoviesStickyError();
 	
@@ -131,7 +131,7 @@ void main(void)
 	
 	// Save the new movie.
 	FlattenMovie(gMovie, 0, &outSpec, 'TVOD', smCurrentScript, createMovieFileDeleteCurFile, NULL, NULL);
-	CheckError (GetMoviesError(), "\pCouldn't save output movie." );
+	CheckError (GetMoviesError(), "Couldn't save output movie." );
 
 	// Cleanup.
 	if ( gMovie ) 
@@ -147,7 +147,7 @@ void	 CheckError(OSErr error, Str255 displayString)
 {
 	if (error == noErr)
 		return;
-	ParamText(displayString, "\p", "\p", "\p");
+	ParamText(displayString, "", "", "");
 	StopAlert(1000, nil);
  	ExitMovies();
 	ExitToShell();
@@ -178,32 +178,32 @@ void CreateMySoundTrack(Movie theMovie)
 	OSErr					err = noErr;
 
 	sndHandle = GetIndResource ('snd ', 1);
-	CheckError (ResError(), "\pGetResource 'snd '" );
+	CheckError (ResError(), "GetResource 'snd '" );
 	if (sndHandle == nil) return;
 
 	sndDesc = (SoundDescriptionHandle)NewHandle(4);
-	CheckError (MemError(), "\pNewHandle for SoundDesc" );
+	CheckError (MemError(), "NewHandle for SoundDesc" );
 	
 	CreateSoundDescription (sndHandle, sndDesc, &sndDataOffset, &numSamples, &sndDataSize );
 	
 	theTrack = NewMovieTrack (theMovie, 0, 0, kFullVolume);
-	CheckError (GetMoviesError(), "\pNew Sound Track" );
+	CheckError (GetMoviesError(), "New Sound Track" );
 	
 	theMedia = NewTrackMedia (theTrack, SoundMediaType, FixRound ((**sndDesc).sampleRate), nil, 0);
-	CheckError (GetMoviesError(), "\pNew Media snd." );
+	CheckError (GetMoviesError(), "New Media snd." );
 
 	err = BeginMediaEdits (theMedia);
-	CheckError( err, "\pBeginMediaEdits snd." );
+	CheckError( err, "BeginMediaEdits snd." );
 
 	err = AddMediaSample(theMedia, sndHandle, sndDataOffset, sndDataSize,	1,
 						   (SampleDescriptionHandle) sndDesc, numSamples, 0, nil);
-	CheckError( err, "\pAddMediaSample snd." );
+	CheckError( err, "AddMediaSample snd." );
 					
 	err = EndMediaEdits (theMedia);
-	CheckError( err, "\pEndMediaEdits snd." );
+	CheckError( err, "EndMediaEdits snd." );
 
 	err = InsertMediaIntoTrack (theTrack, 0, 0, GetMediaDuration (theMedia), kFix1);	
-	CheckError( err, "\pInsertMediaIntoTrack snd." );
+	CheckError( err, "InsertMediaIntoTrack snd." );
 
 	if (sndDesc != nil) DisposeHandle( (Handle)sndDesc);
 }
@@ -226,10 +226,10 @@ void CreateSoundDescription(Handle sndHandle, SoundDescriptionHandle	sndDesc,
 	*sndDataSize = 0;
 	
 	SetHandleSize( (Handle)sndDesc, sizeof(SoundDescription) );
-	CheckError(MemError(),"\pSetHandleSize for sndDesc.");
+	CheckError(MemError(),"SetHandleSize for sndDesc.");
 	
 	sndHdrOffset = GetSndHdrOffset (sndHandle);
-	if (sndHdrOffset == 0) CheckError(-1,  "\pGetSndHdrOffset ");
+	if (sndHdrOffset == 0) CheckError(-1,  "GetSndHdrOffset ");
 	
 	// we can use pointers since we don't move memory
 	sndHdrPtr = (SoundHeaderPtr)(*sndHandle + sndHdrOffset);
@@ -276,7 +276,7 @@ void CreateSoundDescription(Handle sndHandle, SoundDescriptionHandle	sndDesc,
 			break;
 					
 		default:
-			CheckError(-1, "\pCorrupt sound data or unsupported format." );
+			CheckError(-1, "Corrupt sound data or unsupported format." );
 			break;
 			
 	}

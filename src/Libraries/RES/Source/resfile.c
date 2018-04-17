@@ -128,7 +128,7 @@ short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, uchar auxinfo)
 				mode = ROM_CREATE;							// to create the file.
 			else
 			{
-				DebugString("\pResOpenResFile: can't open file.\n");
+				DebugString("ResOpenResFile: can't open file.\n");
 				return(-2);
 			}
 		}
@@ -148,7 +148,7 @@ short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, uchar auxinfo)
 		fd = ResError();
 		if (fd != 0)
 		{
-			DebugString("\pResOpenResFile: Can't create file.\n");
+			DebugString("ResOpenResFile: Can't create file.\n");
 			return(-2);
 		}
 	}
@@ -162,7 +162,7 @@ short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, uchar auxinfo)
 	filenum = FSpOpenResFile(specPtr, perm);
 	if (filenum == -1)
 	{
-		DebugString("\pResOpenResFile: Can't open file.\n");
+		DebugString("ResOpenResFile: Can't open file.\n");
 		return(-2);
 	}
 	
@@ -208,7 +208,7 @@ void AddResDesc(Handle resHdl, short resID, ResType macResType, short filenum, c
 	prd = RESDESC(id);
 	if (prd->hdl)
 	{
-		DebugString("\pAddResDesc: RESOURCE ID COLLISION AT ID ?!!\n");
+		DebugString("AddResDesc: RESOURCE ID COLLISION AT ID ?!!\n");
 //		CUMSTATS(pDirEntry->id,numOverwrites);
 		ResDelete(id);
 	}
@@ -356,7 +356,7 @@ void ResWriteDir(short filenum)
 		}
 	}
 	HUnlock(tableHdl);
-	AddResource(tableHdl, 'hTbl', 128, "\pRes Table");
+	AddResource(tableHdl, 'hTbl', 128, "Res Table");
 	WriteResource(tableHdl);
 	ReleaseResource(tableHdl);
 }

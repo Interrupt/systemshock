@@ -93,7 +93,7 @@ void ResMake(Id id, void *ptr, long size, uchar type, short filenum, uchar flags
 		}
 		AddResource(resHdl, resMacTypes[type], id, resName);
 		if (ResError())
-			DebugString("\pResMake: Can't add a resource.\n");
+			DebugString("ResMake: Can't add a resource.\n");
 	
 		ResExtendDesc(id);								//	Extend res desc table if need to
 	
@@ -170,7 +170,7 @@ void ResAddRef(Ref ref, void *pitem, long itemSize)
 		prt = (RefTable *)RefGet(ref);
 		if (prt == nil)
 		{
-			DebugString("\pResAddRef: Can't get the compound resource handle.\n");
+			DebugString("ResAddRef: Can't get the compound resource handle.\n");
 		}
 	}
 	else																// If there is, then make a RefTable ptr to it.

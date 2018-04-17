@@ -197,7 +197,7 @@ void DoTestBrowseImages(void)
 	pResNum = ResOpenFile(&reply.sfFile);
 	if (pResNum < 0)
 	{
-		ParamText("\pCan't open res file.", "\p", "\p", "\p");
+		ParamText("Can't open res file.", "", "", "");
 		StopAlert(1000, nil);
 		return;
 	}
@@ -224,7 +224,7 @@ void DoTestBrowseImages(void)
 	}
 	if (p == NULL)
 	{
-		ParamText("\pCouldn't get a ref to an image.", "\p", "\p", "\p");
+		ParamText("Couldn't get a ref to an image.", "", "", "");
 		StopAlert(1000, nil);
 		return;
 	}
@@ -265,10 +265,10 @@ void DoUpdateBrowseImages(WindowPtr)
  	TextFace(0);
  	
  	MoveTo(x, y);
- 	DrawString("\pResource");
+ 	DrawString("Resource");
 
  	MoveTo(x+117, y);
- 	DrawString("\pItem");
+ 	DrawString("Item");
 
 	pic = (PicHandle)GetResourceFail('PICT', 19000);		// Draw up/down buttons
 	if (pic!=0L)
@@ -469,7 +469,7 @@ void DoTestBrowseFonts(void)
 	pResNum = ResOpenFile(&reply.sfFile);
 	if (pResNum < 0)
 	{
-		ParamText("\pCan't open res file.", "\p", "\p", "\p");
+		ParamText("Can't open res file.", "", "", "");
 		StopAlert(1000, nil);
 		return;
 	}
@@ -496,7 +496,7 @@ void DoTestBrowseFonts(void)
 	}
 	if (p == NULL)
 	{
-		ParamText("\pCouldn't get a ref to an image.", "\p", "\p", "\p");
+		ParamText("Couldn't get a ref to an image.", "", "", "");
 		StopAlert(1000, nil);
 		return;
 	}
@@ -531,7 +531,7 @@ void DoUpdateBrowseFonts(WindowPtr)
  	TextFace(0);
  	
  	MoveTo(x, y);
- 	DrawString("\pResource");
+ 	DrawString("Resource");
 
 	pic = (PicHandle)GetResourceFail('PICT', 19000);		// Draw up/down buttons
 	if (pic!=0L)
@@ -711,7 +711,7 @@ void DoTestLoadPalette(void)
 	pResNum = ResOpenFile(&reply.sfFile);
 	if (pResNum < 0)
 	{
-		ParamText("\pCan't open res file.", "\p", "\p", "\p");
+		ParamText("Can't open res file.", "", "", "");
 		StopAlert(1000, nil);
 		return;
 	}
@@ -738,7 +738,7 @@ void DoTestLoadPalette(void)
 	}
 	if (p == NULL)
 	{
-		ParamText("\pCouldn't get a palette resource.", "\p", "\p", "\p");
+		ParamText("Couldn't get a palette resource.", "", "", "");
 		StopAlert(1000, nil);
 		return;
 	}
@@ -858,7 +858,7 @@ void DoTestMoveKeys(void)
 
 	MoveTo(10, -20);
 	RGBForeColor(&white);
-	DrawString("\pPress arrow keys to move, <space> to change colors, 'Q' to quit the test.");
+	DrawString("Press arrow keys to move, <space> to change colors, 'Q' to quit the test.");
 	RGBForeColor(&black);
 
 	RndSeed(&rs, 22);										// Start off the random number generator.
@@ -943,7 +943,7 @@ void DoTestMouse(void)
 
 	MoveTo(1, -20);
 	RGBForeColor(&white);
-	DrawString("\pMove mouse and click button.  Option-click to quit the test.");
+	DrawString("Move mouse and click button.  Option-click to quit the test.");
 	RGBForeColor(&black);
 
 	mouse_init(16,16);
@@ -1307,51 +1307,51 @@ void DoPlayCutScene(short cmd)
 	switch (cmd)
 	{
 		case testPlayIntro:
-			FSMakeFSSpec(gDataVref, gDataDirID, "\pIntro", &fSpec);
+			FSMakeFSSpec(gDataVref, gDataDirID, "Intro", &fSpec);
 			PlayCutScene(&fSpec, FALSE, TRUE);
 			break;
 		case testPlayDeath:
-			FSMakeFSSpec(gDataVref, gDataDirID, "\pDeath", &fSpec);
+			FSMakeFSSpec(gDataVref, gDataDirID, "Death", &fSpec);
 			PlayCutScene(&fSpec, TRUE, TRUE);
 			break;
 		case testPlayEndGame:
-			FSMakeFSSpec(gDataVref, gDataDirID, "\pEndgame", &fSpec);
+			FSMakeFSSpec(gDataVref, gDataDirID, "Endgame", &fSpec);
 			PlayCutScene(&fSpec, TRUE, FALSE);
 			break;
 		
 		//------ VMAIL ------
 		case testPlayCitadelVM:
-			FSMakeFSSpec(gDataVref, gDataDirID, "\pCitadel Status", &fSpec);
+			FSMakeFSSpec(gDataVref, gDataDirID, "Citadel Status", &fSpec);
 			PaintRect(&gMainWindow->portRect);
 			PlayVMail(&fSpec, 100, 100);
 			break;
 
 		case testPlayDetachVM	:
-			FSMakeFSSpec(gDataVref, gDataDirID, "\pDetach", &fSpec);
+			FSMakeFSSpec(gDataVref, gDataDirID, "Detach", &fSpec);
 			PaintRect(&gMainWindow->portRect);
 			PlayVMail(&fSpec, 100, 100);
 			break;
 		
 		case testPlayJettisonVM:
-			FSMakeFSSpec(gDataVref, gDataDirID, "\pJettison Pod", &fSpec);
+			FSMakeFSSpec(gDataVref, gDataDirID, "Jettison Pod", &fSpec);
 			PaintRect(&gMainWindow->portRect);
 			PlayVMail(&fSpec, 100, 100);
 			break;
 		
 		case testPlayLaserMalVM:
-			FSMakeFSSpec(gDataVref, gDataDirID, "\pLaser Malfunction", &fSpec);
+			FSMakeFSSpec(gDataVref, gDataDirID, "Laser Malfunction", &fSpec);
 			PaintRect(&gMainWindow->portRect);
 			PlayVMail(&fSpec, 100, 100);
 			break;
 		
 		case testPlayShieldsVM:
-			FSMakeFSSpec(gDataVref, gDataDirID, "\pShields On", &fSpec);
+			FSMakeFSSpec(gDataVref, gDataDirID, "Shields On", &fSpec);
 			PaintRect(&gMainWindow->portRect);
 			PlayVMail(&fSpec, 100, 100);
 			break;
 		
 		case testPlayAutoDesVM:
-			FSMakeFSSpec(gDataVref, gDataDirID, "\pAuto-destruct", &fSpec);
+			FSMakeFSSpec(gDataVref, gDataDirID, "Auto-destruct", &fSpec);
 			PaintRect(&gMainWindow->portRect);
 			PlayVMail(&fSpec, 100, 100);
 			break;		
@@ -1393,7 +1393,7 @@ void DoLoadLevelMap(short cmd)
 {
 	FSSpec	fSpec;
 
-	FSMakeFSSpec(gDataVref, gDataDirID, "\parchive.data", &fSpec);
+	FSMakeFSSpec(gDataVref, gDataDirID, "archive.data", &fSpec);
 //	object_data_load();
 	
 	switch (cmd)
@@ -1480,7 +1480,7 @@ void RenderTest(void)
 	_frc = (fauxrend_context *) fr_place_view((frc *) FR_NEWVIEW, (void *) FR_DEFCAM,0L, 0|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0, size_left, size_top, size_wide, size_high);
 	_frc->detail = 2;
 	
-	FSMakeFSSpec(gDataVref, gDataDirID, "\parchive.data", &fSpec);
+	FSMakeFSSpec(gDataVref, gDataDirID, "archive.data", &fSpec);
 	load_current_map(4102, &fSpec);
 	load_da_palette();
 	gr_clear(0xff);
@@ -1507,7 +1507,7 @@ void RenderTest(void)
  	  	 	{ProfilerInit(collectDetailed, bestTimeBase, 300, 30); profileOn = true;}
  	  	if (kb_state(0x1f) && profileOn) // O
  	  	  {
-			ProfilerDump("\pShock prof");
+			ProfilerDump("Shock prof");
 			ProfilerTerm();
 			profileOn = false;
  	  	  }

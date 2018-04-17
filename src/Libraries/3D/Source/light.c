@@ -172,7 +172,7 @@ void g3_eval_ldotv(void)
 // this should do eval vec as well, basically everything
 void g3_eval_light_obj_cen(void)
  {
- 	DebugString("\pCall Mark if you see this");
+ 	DebugString("Call Mark if you see this");
  	
  	// MLA - this routine is buggy as far as I can tell, it doesn't work at all
  	// edi is never set or just happens to be set right, or it always falls

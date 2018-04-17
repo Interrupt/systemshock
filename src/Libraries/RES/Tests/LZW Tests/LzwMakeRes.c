@@ -102,7 +102,7 @@ void main()
 
 	printf("Create some compressed resources...\n");
 	
-	StandardPutFile("\pCreate a resource file:", "\pLZW Create Test", &reply);
+	StandardPutFile("Create a resource file:", "LZW Create Test", &reply);
 	if (reply.sfGood)
 	{
 		filenum = ResCreateFile(&reply.sfFile);

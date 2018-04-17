@@ -329,7 +329,7 @@ void GetFolders(void)
  	
  	// Now get info on the "Data" directory.
  	
-	hpb.fileParam.ioNamePtr = "\pData";
+	hpb.fileParam.ioNamePtr = "Data";
 	err = PBGetCatInfo((CInfoPBPtr)&hpb, false);
 	if (err == noErr)
 	{
@@ -354,7 +354,7 @@ void GetFolders(void)
 		{
 			hpb.fileParam.ioDirID = 2;						// Root is always 2
 			hpb.fileParam.ioFDirIndex = 0;
-			hpb.fileParam.ioNamePtr = "\pSystem Shock Data";
+			hpb.fileParam.ioNamePtr = "System Shock Data";
 			err = PBGetCatInfo((CInfoPBPtr)&hpb, false);
 			if (err == noErr)												// If no error, this is our drive!
 			{
@@ -372,7 +372,7 @@ void GetFolders(void)
 	
 	// Now go into the CD data folder and find the "Alogs" and "Barks" folders.
 	
-	hpb.fileParam.ioNamePtr = "\pAlogs";
+	hpb.fileParam.ioNamePtr = "Alogs";
 	err = PBGetCatInfo((CInfoPBPtr)&hpb, false);
 	if (err == noErr)
 	{
@@ -384,7 +384,7 @@ void GetFolders(void)
 
 	hpb.fileParam.ioVRefNum = gCDDataVref;
 	hpb.fileParam.ioDirID = gCDDataDirID;
-	hpb.fileParam.ioNamePtr = "\pBarks";
+	hpb.fileParam.ioNamePtr = "Barks";
 	err = PBGetCatInfo((CInfoPBPtr)&hpb, false);
 	if (err == noErr)
 	{
@@ -552,7 +552,7 @@ void StringAlert(short stringnum)
 	InitCursor();
 	GetIndString(message, 1000, stringnum);
 	GetIndString(explain, 1001, stringnum);
-	ParamText(message, explain, "\p", "\p");
+	ParamText(message, explain, "", "");
 	
 	if (*explain)
 		StopAlert(1001, nil);

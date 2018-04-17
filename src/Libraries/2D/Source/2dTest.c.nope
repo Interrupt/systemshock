@@ -148,7 +148,7 @@ void main (void)
   
   SetRect(&r,0,0,420,16);
   EraseRect(&r);
-  MoveTo(10,12);  DrawString("\pCreating Inverse palette(normally preloaded in the real game)");
+  MoveTo(10,12);  DrawString("Creating Inverse palette(normally preloaded in the real game)");
   
  	gr_alloc_ipal();
 	gr_init_blend(1);

@@ -141,7 +141,7 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 	prd->hdl = GetResource(resMacTypes[prd->type], id);
 	if (prd->hdl == NULL)
 	{
-		DebugString("\pLoadCompressedResource: Can't get compressed resource.\n");
+		DebugString("LoadCompressedResource: Can't get compressed resource.\n");
 		return;
 	}
 	
@@ -150,7 +150,7 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 	mirrorHdl = NewHandle(exlen);
 	if (mirrorHdl == NULL)
 	{
-		DebugString("\pLoadCompressedResource: Can't allocate mirror handle.\n");
+		DebugString("LoadCompressedResource: Can't allocate mirror handle.\n");
 		return;
 	}
 	BlockMoveData(*prd->hdl, *mirrorHdl, exlen);
@@ -172,7 +172,7 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 	SetHandleSize(prd->hdl, exlen + tableSize);
 	if (MemError())
 	{
-		DebugString("\pLoadCompressedResource: Can't resize resource handle for expansion.\n");
+		DebugString("LoadCompressedResource: Can't resize resource handle for expansion.\n");
 		return;
 	}
 	
@@ -190,7 +190,7 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 	exlen = LzwExpandBuff2Buff(resPtr, expPtr, 0, 0);
 	if (exlen < 0)
 	{
-		DebugString("\pLoadCompressedResource: Can't expand resource.\n");
+		DebugString("LoadCompressedResource: Can't expand resource.\n");
 		return;
 	}
 	

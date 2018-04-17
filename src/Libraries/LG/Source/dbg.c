@@ -440,7 +440,7 @@ void DoWarningMsg(char *msg)
 	InitCursor();
 	BlockMove(msg, message+1, 255);
 	message[0] = strlen(msg);
-	ParamText(message, "\p", "\p", "\p");
+	ParamText(message, "", "", "");
 	
 	StopAlert(1000, nil);
 

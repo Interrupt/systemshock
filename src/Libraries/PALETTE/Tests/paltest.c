@@ -95,7 +95,7 @@ void main ()
 	
 	// Fade to black.
 	
-	DrawMsg("\pClick to fade to black.");
+	DrawMsg("Click to fade to black.");
 	id = palette_install_effect(SHIFT, REAL_TIME, 0, 255, 1, 200, Save_Palette, Black_Palette);
 	
 	while (!Button()) ;
@@ -105,7 +105,7 @@ void main ()
 	
 	// Fade back.
 	
-	DrawMsg("\pClick to fade back.");
+	DrawMsg("Click to fade back.");
 	id = palette_install_effect(SHIFT, REAL_TIME, 0, 255, 0, 100, Black_Palette, Save_Palette);
 	
 	while (!Button()) ;
@@ -115,7 +115,7 @@ void main ()
 	
 	// Do a CBANK test.
 	
-	DrawMsg("\pClick to CBANK.");
+	DrawMsg("Click to CBANK.");
 	palette_install_cbank(REAL_TIME, 0x03, 0x07, 17);	// 80
 	palette_install_cbank(REAL_TIME, 0x0b, 0x0f, 10);	// 50
 	palette_install_cbank(REAL_TIME, 0x10, 0x14, 5);	// 25
@@ -125,13 +125,13 @@ void main ()
 	while (!Button()) ;
 	Delay(30, &dl);
 	
-	DrawMsg("\pClick to stop CBANK.");
+	DrawMsg("Click to stop CBANK.");
 	while (!Button())
 		palette_advance_all_fx(TickCount());
 	
 	// Click and we're done.
 	
-//	DrawMsg("\pClick to quit.");
+//	DrawMsg("Click to quit.");
 //	Delay(30, &dl);
 //	while (!Button()) ;
 	

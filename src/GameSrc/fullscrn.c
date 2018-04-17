@@ -203,7 +203,7 @@ void change_svga_cursors()
    ss_set_hack_mode(2,&temp);
 
 // KLC - not needed   free_options_cursor();
-//Â¥Â¥Â¥   make_options_cursor();
+//   make_options_cursor();
    old_obj = object_on_cursor;
    if (old_obj != OBJ_NULL)
    {
@@ -288,7 +288,7 @@ void change_svga_screen_mode()
 	 	if (DoubleSize)
 	 	{
 			if (!AllocDoubleBuffer(640, 480))
-				DebugString("\pCan't allocate low-res double buffer!"); 		//Â¥Â¥Â¥Handle memory error!!
+				DebugString("Can't allocate low-res double buffer!"); 		//Handle memory error!!
 			svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address,
 																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK,0,0,
 	 																0,0,cur_w>>1,cur_h>>1);
@@ -306,7 +306,7 @@ void change_svga_screen_mode()
 	 	if (DoubleSize)
 	 	{
 			if (!AllocDoubleBuffer(536, 259))
-				DebugString("\pCan't allocate low-res double buffer!"); 		//Â¥Â¥Â¥Handle memory error!!
+				DebugString("Can't allocate low-res double buffer!"); 		//Handle memory error!!
 			svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address, 
 																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0, 
 																	SCONV_X(SCREEN_VIEW_X)>>1, SCONV_Y(SCREEN_VIEW_Y)>>1, 
@@ -413,7 +413,7 @@ void fullscreen_start()
    change_svga_screen_mode();
 
    inv_change_fullscreen(TRUE);
-//Â¥Â¥Â¥   mouse_unconstrain();
+//   mouse_unconstrain();
    player_struct.hardwarez_status[CPTRIP(FULLSCR_HARD_TRIPLE)] |= WARE_ON;
    string_message_info(REF_STR_FSMode);
    mfd_force_update();
@@ -442,7 +442,7 @@ void fullscreen_start()
    }
 #endif
 #ifdef PALFX_FADES
-//Â¥Â¥Â¥   if (pal_fx_on) palfx_fade_up(FALSE);
+//   if (pal_fx_on) palfx_fade_up(FALSE);
 #endif
 //KLC   uiShowMouse(NULL);
 }

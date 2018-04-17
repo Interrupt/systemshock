@@ -53,8 +53,8 @@ typedef struct
 //#define INSERT_BLANK_PALCHG_FRAME	1
 
 char		gInputMov[] = "INTRO.QTM";
-FSSpec		gInputPal = { 0, 0, "\pIntro Palettes" };
-FSSpec		gInputSnd = { 0, 0, "\pINTRO/GERMAN" };
+FSSpec		gInputPal = { 0, 0, "Intro Palettes" };
+FSSpec		gInputSnd = { 0, 0, "INTRO/GERMAN" };
 ComponentInstance	ci = nil;
 
 #define codec		'smc '
@@ -154,7 +154,7 @@ void main(void)
 	Point			dlgPos = {120,120};
 	SFReply			sfr;
 	FSSpec			mySpec;
-	Str255			name = "\pQT Movie";
+	Str255			name = "QT Movie";
 	Rect			movieRect, r;
 	ImageDescription	**imageDescriptionH = 0L;		/* Contains info about the sample	*/
 	ImageSequence	seq;
@@ -194,7 +194,7 @@ void main(void)
 	//---------------------
 	if (EnterMovies() != noErr)	// Start up the movie tools
 	{
-		ParamText("\pCan't startup QuickTime.", "\p", "\p", "\p");
+		ParamText("Can't startup QuickTime.", "", "", "");
 		StopAlert(1000, nil);
 		CleanupAndExit();
 	}
@@ -204,7 +204,7 @@ void main(void)
 	//----------------------
 	fp = fopen(gInputMov, "rb");
 	if (fp == NULL)
-		CheckError(1, "\pCan't open the input movie!!");
+		CheckError(1, "Can't open the input movie!!");
 
 	dbuffLen = 64000;
 	dbuff = (uchar *)malloc(dbuffLen);
@@ -214,17 +214,17 @@ void main(void)
 	//----------------------
 	sndResNum = FSpOpenResFile(&gInputSnd, fsRdPerm);
 	if (sndResNum == -1)
-		CheckError(1, "\pCan't open the sound file!!");
+		CheckError(1, "Can't open the sound file!!");
 
 	//----------------------
 	//	Open the input Palettes file, read the palette changes, and set the first palette.
 	//----------------------
 	palResNum = FSpOpenResFile(&gInputPal, fsRdPerm);
 	if (palResNum == -1)
-		CheckError(1, "\pCan't open the palette file!!");
+		CheckError(1, "Can't open the palette file!!");
 	palChgHdl = GetResource('pchg', 128);
 	if (!palChgHdl)
-		CheckError(1, "\pCan't load the palette changes resource!!");
+		CheckError(1, "Can't load the palette changes resource!!");
 	SetPalette(128);
 
 	//----------------------
@@ -232,7 +232,7 @@ void main(void)
 	//----------------------
 	qpalHdl = NewHandle(4 * 16);
 	if (!qpalHdl)
-		CheckError(1, "\pCan't allocate palette change times handle!!");
+		CheckError(1, "Can't allocate palette change times handle!!");
 	HLock(qpalHdl);
 	qpalEntry = (long *)*qpalHdl;
 	
@@ -243,7 +243,7 @@ void main(void)
 	//----------------------
 	//	Setup output file.
 	//----------------------
-	SFPutFile(dlgPos, "\pSave Movie as:",name,0L,&sfr);
+	SFPutFile(dlgPos, "Save Movie as:",name,0L,&sfr);
 	if (!sfr.good)
 	 {
 	 	ExitMovies();
@@ -251,12 +251,12 @@ void main(void)
  	 }
  	 
 //	imageDescriptionH = (ImageDescription **)NewHandle(sizeof(ImageDescription));
-//	CheckError(MemError(), "\pCan't alloc description for video.");
+//	CheckError(MemError(), "Can't alloc description for video.");
 
 	ClearMoviesStickyError();
 	FSMakeFSSpec(sfr.vRefNum, 0, sfr.fName, &mySpec);
 	err = CreateMovieFile(&mySpec, 'TVOD', 0, createMovieFileDeleteCurFile, &resRefNum, &gMovie);
-	CheckError(err, "\pCan't create output movie file.");
+	CheckError(err, "Can't create output movie file.");
 
 	SetMovieColorTable(gMovie, gMainColorHand);
 
@@ -266,10 +266,10 @@ void main(void)
 #endif
 
 	gTrack = NewMovieTrack(gMovie, 600L<<16, 300L<<16, 0);
-	CheckError (GetMoviesError(), "\pNew video track." );
+	CheckError (GetMoviesError(), "New video track." );
 
 	gMedia = NewTrackMedia(gTrack, VideoMediaType, 30, 0L, 0L);
-	CheckError (GetMoviesError(), "\pNew Media for video track." );
+	CheckError (GetMoviesError(), "New Media for video track." );
 
 	BeginMediaEdits(gMedia);		// We do this since we are adding samples to the media
 
@@ -278,7 +278,7 @@ void main(void)
 	//-----------------------------------
 	ci = OpenDefaultComponent(StandardCompressionType, StandardCompressionSubType);
 	if (!ci)
-		CheckError (-1, "\pCan't open the Standard Compression component." );
+		CheckError (-1, "Can't open the Standard Compression component." );
 /*
 	GetMaxCompressionSize(((CGrafPort *)(gMainWindow))->portPixMap,
 							&movieRect,
@@ -286,15 +286,15 @@ void main(void)
 							&maxCompressedFrameSize);	
 
 	compressedFrameBitsH = NewHandle(maxCompressedFrameSize);	
-	CheckError(MemError(), "\pCan't allocate output frame buffer.");
+	CheckError(MemError(), "Can't allocate output frame buffer.");
 
 	result = CompressSequenceBegin(&seq, ((CGrafPort *)(gMainWindow))->portPixMap, 0L,
 			&movieRect, 0L, 8, codec, codecType,
 			spatialQ, temporalQ, 15,
 			0L, kPrevious, imageDescriptionH);
-	CheckError(result, "\pCan't begin sequence.");
+	CheckError(result, "Can't begin sequence.");
 	result = SetImageDescriptionCTable(imageDescriptionH, gMainColorHand);
-	CheckError(result, "\pCan't set the sequence's color table.");
+	CheckError(result, "Can't set the sequence's color table.");
 */	
 	//-----------------------------------
 	//	Get the Chunk Offset and Sample-to-Time tables.
@@ -367,7 +367,7 @@ void main(void)
  		short		notSyncFlag;
 		
 		frameBuff = malloc(600 * 300);
-		CheckError(MemError(), "\pCan't allocate a frame buffer for input movie.");
+		CheckError(MemError(), "Can't allocate a frame buffer for input movie.");
 		
 		SetRect(&r, 0, -17, 300, 0);
 		for (f = 0; f < gNumFrames; f++)
@@ -419,12 +419,12 @@ void main(void)
 							&movieRect, 0L, 8, codec, codecType,
 							spatialQ, temporalQ, 15,
 							0L, kPrevious, imageDescriptionH);
-					CheckError(result, "\pCan't begin sequence.");   */
+					CheckError(result, "Can't begin sequence.");   */
 					result = SCCompressSequenceBegin(ci, ((CGrafPort *)(gMainWindow))->portPixMap,
 													  	&movieRect, &imageDescriptionH);
-					CheckError(result, "\pCan't start a sequence.");
+					CheckError(result, "Can't start a sequence.");
 					result = SetImageDescriptionCTable(imageDescriptionH, gMainColorHand);
-					CheckError(result, "\pCan't set the sequence's color table.");
+					CheckError(result, "Can't set the sequence's color table.");
 					break;
 				}
 				pc++;
@@ -452,7 +452,7 @@ void main(void)
 			 	 	ExitMovies();
 					CleanupAndExit();
 			 	}
-				CheckError(result, "\pError in sequence settings.");
+				CheckError(result, "Error in sequence settings.");
 				
 				// Redraw the first frame on the screen.
 				gr_clear(0xFF);
@@ -468,7 +468,7 @@ void main(void)
 				// Begin a compression sequence.
 				result = SCCompressSequenceBegin(ci, ((CGrafPort *)(gMainWindow))->portPixMap,
 												  	&movieRect, &imageDescriptionH);
-				CheckError(result, "\pCan't start a sequence.");
+				CheckError(result, "Can't start a sequence.");
 			}
 			
 			// Display the frame number.
@@ -482,7 +482,7 @@ void main(void)
 			if (subColor)
 			{
 				MoveTo(250, -6);
-				DrawString("\pSubstitued color 0xFF");
+				DrawString("Substitued color 0xFF");
 			}
 
 			// Add the frame to the QuickTime movie.
@@ -492,12 +492,12 @@ void main(void)
 				((CGrafPort *)(gMainWindow))->portPixMap, 
 				&movieRect,
 				kPrevious, *compressedFrameBitsH, &compressedFrameSize, 0L, 0L);
-			CheckError(result, "\pCan't compress a frame.");
+			CheckError(result, "Can't compress a frame.");
 			HUnlock(compressedFrameBitsH);
 */	
 			result = SCCompressSequenceFrame(ci, ((CGrafPort *)(gMainWindow))->portPixMap, 
 								 				&movieRect, &compHdl, &compSize, &notSyncFlag);
-			CheckError(result, "\pCan't compress a frame.");
+			CheckError(result, "Can't compress a frame.");
 
 			sampTime = gSampleTimes[f];
 			if (f == gNumFrames-1)
@@ -506,7 +506,7 @@ void main(void)
 //				sampTime = 200;	// for Intro
 			result = AddMediaSample(gMedia, compHdl, 0L, compSize, sampTime, 
 									(SampleDescriptionHandle)imageDescriptionH, 1L, notSyncFlag, 0L);
-			CheckError(result, "\pCan't add the frame sample.");
+			CheckError(result, "Can't add the frame sample.");
 
 			qpalCurrTime += gSampleTimes[f];			// Adjust cumulate time for frame just added.
 
@@ -520,18 +520,18 @@ void main(void)
 					((CGrafPort *)(gMainWindow))->portPixMap, 
 					&movieRect,
 					kPrevious, *compressedFrameBitsH, &compressedFrameSize, 0L, 0L);
-				CheckError(result, "\pCan't compress a frame.");
+				CheckError(result, "Can't compress a frame.");
 				HUnlock(compressedFrameBitsH);   */
 				result = SCCompressSequenceFrame(ci, ((CGrafPort *)(gMainWindow))->portPixMap, 
 									 				&movieRect, &compHdl, &compSize, &notSyncFlag);
-				CheckError(result, "\pCan't compress the blank frame.");
+				CheckError(result, "Can't compress the blank frame.");
 		
 /*				result = AddMediaSample(gMedia, compressedFrameBitsH, 0L, compressedFrameSize,
 										1, (SampleDescriptionHandle)imageDescriptionH,1L,0, 0L);
-				CheckError(result, "\pCan't add the frame sample.");    */
+				CheckError(result, "Can't add the frame sample.");    */
 				result = AddMediaSample(gMedia, compHdl, 0L, compSize, 1, 
 										(SampleDescriptionHandle)imageDescriptionH, 1L, notSyncFlag, 0L);
-				CheckError(result, "\pCan't add the blank frame sample.");
+				CheckError(result, "Can't add the blank frame sample.");
 				
 				qpalCurrTime++;					// Adjust the cumulative time.
 				
@@ -547,21 +547,21 @@ void main(void)
 	EndMediaEdits( gMedia );				
 
 	result = InsertMediaIntoTrack(gTrack,0L,0L,GetMediaDuration(gMedia),1L<<16);
-	CheckError(result, "\pCan't insert media into track.");
+	CheckError(result, "Can't insert media into track.");
 	
 	// Add the sound track here.	
 	CreateMySoundTrack(gMovie);
 	
 	// Finally, we're done with the movie.
 	result = AddMovieResource(gMovie, resRefNum, 0L,0L);
-	CheckError(result, "\pCan't add the movie resource.");
+	CheckError(result, "Can't add the movie resource.");
 
 	// Add the palette change times resource to the movie file.
 	HUnlock(qpalHdl);
 	SetHandleSize(qpalHdl, 4 * numQpalEntries);
 
 	UseResFile(resRefNum);
-	AddResource(qpalHdl, 'qpal', 128, "\ppal chg times");
+	AddResource(qpalHdl, 'qpal', 128, "pal chg times");
 	WriteResource(qpalHdl);
 	ReleaseResource(qpalHdl);
 	
@@ -594,7 +594,7 @@ void	 CheckError(OSErr error, Str255 displayString)
 {
 	if (error == noErr)
 		return;
-	ParamText(displayString, "\p", "\p", "\p");
+	ParamText(displayString, "", "", "");
 	StopAlert(1000, nil);
 	if (ci) CloseComponent(ci);
  	ExitMovies();
@@ -628,7 +628,7 @@ void SetPalette(short palID)
 	gPalHdl = GetResource('mpal', palID);
 	if (!gPalHdl)
 	{
-		ParamText("\pCan't load a palette resource!!", "\p", "\p", "\p");
+		ParamText("Can't load a palette resource!!", "", "", "");
 		StopAlert(1000, nil);
 	 	ExitMovies();
 		CleanupAndExit();
@@ -739,32 +739,32 @@ void CreateMySoundTrack(Movie theMovie)
 	OSErr					err = noErr;
 
 	sndHandle = GetIndResource ('snd ', 1);
-	CheckError (ResError(), "\pGetResource 'snd '" );
+	CheckError (ResError(), "GetResource 'snd '" );
 	if (sndHandle == nil) return;
 
 	sndDesc = (SoundDescriptionHandle)NewHandle(4);
-	CheckError (MemError(), "\pNewHandle for SoundDesc" );
+	CheckError (MemError(), "NewHandle for SoundDesc" );
 	
 	CreateSoundDescription (sndHandle, sndDesc, &sndDataOffset, &numSamples, &sndDataSize );
 	
 	theTrack = NewMovieTrack (theMovie, 0, 0, kFullVolume);
-	CheckError (GetMoviesError(), "\pNew Sound Track" );
+	CheckError (GetMoviesError(), "New Sound Track" );
 	
 	theMedia = NewTrackMedia (theTrack, SoundMediaType, FixRound ((**sndDesc).sampleRate), nil, 0);
-	CheckError (GetMoviesError(), "\pNew Media snd." );
+	CheckError (GetMoviesError(), "New Media snd." );
 
 	err = BeginMediaEdits (theMedia);
-	CheckError( err, "\pBeginMediaEdits snd." );
+	CheckError( err, "BeginMediaEdits snd." );
 
 	err = AddMediaSample(theMedia, sndHandle, sndDataOffset, sndDataSize,	1,
 						   (SampleDescriptionHandle) sndDesc, numSamples, 0, nil);
-	CheckError( err, "\pAddMediaSample snd." );
+	CheckError( err, "AddMediaSample snd." );
 					
 	err = EndMediaEdits (theMedia);
-	CheckError( err, "\pEndMediaEdits snd." );
+	CheckError( err, "EndMediaEdits snd." );
 
 	err = InsertMediaIntoTrack (theTrack, 0, 0, GetMediaDuration (theMedia), kFix1);	
-	CheckError( err, "\pInsertMediaIntoTrack snd." );
+	CheckError( err, "InsertMediaIntoTrack snd." );
 
 	if (sndDesc != nil) DisposeHandle( (Handle)sndDesc);
 }
@@ -787,10 +787,10 @@ void CreateSoundDescription(Handle sndHandle, SoundDescriptionHandle	sndDesc,
 	*sndDataSize = 0;
 	
 	SetHandleSize( (Handle)sndDesc, sizeof(SoundDescription) );
-	CheckError(MemError(),"\pSetHandleSize for sndDesc.");
+	CheckError(MemError(),"SetHandleSize for sndDesc.");
 	
 	sndHdrOffset = GetSndHdrOffset (sndHandle);
-	if (sndHdrOffset == 0) CheckError(-1,  "\pGetSndHdrOffset ");
+	if (sndHdrOffset == 0) CheckError(-1,  "GetSndHdrOffset ");
 	
 	// we can use pointers since we don't move memory
 	sndHdrPtr = (SoundHeaderPtr)(*sndHandle + sndHdrOffset);
@@ -837,7 +837,7 @@ void CreateSoundDescription(Handle sndHandle, SoundDescriptionHandle	sndDesc,
 			break;
 					
 		default:
-			CheckError(-1, "\pCorrupt sound data or unsupported format." );
+			CheckError(-1, "Corrupt sound data or unsupported format." );
 			break;
 			
 	}
@@ -970,31 +970,31 @@ void MyCreateTextTrack(Movie theMovie)
 
 	SetRect(&textBox, 0, 320, 600, 350);
 	theTrack = NewMovieTrack(theMovie, 600L<<16, 350L<<16, 0);
-	CheckError (GetMoviesError(), "\pNew text track." );
+	CheckError (GetMoviesError(), "New text track." );
 
 	theMedia = NewTrackMedia(theTrack, TextMediaType, 30, 0L, 0L);
-	CheckError (GetMoviesError(), "\pNew Media for text track." );
+	CheckError (GetMoviesError(), "New Media for text track." );
 
 	err = BeginMediaEdits (theMedia);
-	CheckError( err, "\pBeginMediaEdits: text." );
+	CheckError( err, "BeginMediaEdits: text." );
 	
 	err = AddTextSample(GetMediaHandler(theMedia), (Ptr)blankText, strlen(blankText), geneva, 14, bold, 
 						 &white, &black, teCenter, &textBox, 0, 0, 0, 0, nil, 9, &retTime);
-	CheckError( err, "\pAddTextSample 1." );
+	CheckError( err, "AddTextSample 1." );
 	err = AddTextSample(GetMediaHandler(theMedia), (Ptr)theText1, strlen(theText1), geneva, 14, bold, 
 						 &white, &black, teCenter, &textBox, 0, 0, 0, 0, nil, 150, &retTime);
-	CheckError( err, "\pAddTextSample 2." );
+	CheckError( err, "AddTextSample 2." );
 	err = AddTextSample(GetMediaHandler(theMedia), (Ptr)blankText, strlen(blankText), geneva, 14, bold, 
 						 &white, &black, teCenter, &textBox, 0, 0, 0, 0, nil, 17, &retTime);
-	CheckError( err, "\pAddTextSample 3." );
+	CheckError( err, "AddTextSample 3." );
 	err = AddTextSample(GetMediaHandler(theMedia), (Ptr)theText2, strlen(theText2), geneva, 14, bold, 
 						 &white, &black, teCenter, &textBox, 0, 0, 0, 0, nil, 331, &retTime);
-	CheckError( err, "\pAddTextSample 4." );
+	CheckError( err, "AddTextSample 4." );
 	
 	err = EndMediaEdits(theMedia);
-	CheckError( err, "\pEndMediaEdits: text." );
+	CheckError( err, "EndMediaEdits: text." );
 
 	err = InsertMediaIntoTrack(theTrack, 0, 0, GetMediaDuration(theMedia), kFix1);	
-	CheckError( err, "\pInsertMediaIntoTrack: text." );
+	CheckError( err, "InsertMediaIntoTrack: text." );
 }
 #endif

@@ -2707,7 +2707,7 @@ got_soft:
 
 void init_invent_hotkeys(void)
 {
-/* Â¥Â¥Â¥ later
+/*  later
 //   hotkey_add(PAGEUP_KEY,DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)0);
    hotkey_add(PAGEUP_KEY|KB_FLAG_2ND,DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)0);
    hotkey_add(KB_FLAG_DOWN|KB_FLAG_ALT|'[',DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)0);

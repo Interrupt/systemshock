@@ -320,7 +320,7 @@ void lean_icon(LGPoint* pos, grs_bitmap** icon, int* inum)
 		*icon = &(f->bm);
 	}
 	else
-		DebugString("\pNo lean resource bitmap!");
+		DebugString("No lean resource bitmap!");
 
 	// Determine where to draw the bitmap.
 	pos->y = 53 - (*icon)->h;
@@ -410,13 +410,13 @@ uchar eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void * data)
             return FALSE;
       if (eye_fine_mode) theta = -2*MAX_EYE_ANGLE*(y)/(EYEMETER_H-1) + MAX_EYE_ANGLE;
       else theta = -FIXANG_PI/6*(y*DISCRETE_EYE_POSITIONS/EYEMETER_H-1);
-//Â¥Â¥Â¥      ui_mouse_constrain_xy(ev->pos.x,r->abs_y,ev->pos.x,r->abs_y+EYEMETER_H-1);
+//      ui_mouse_constrain_xy(ev->pos.x,r->abs_y,ev->pos.x,r->abs_y+EYEMETER_H-1);
       player_set_eye_fixang(theta);
       physics_set_relax(CONTROL_YZROT,FALSE);
    }
    if (ev->buttons == 0)
    {
-//Â¥Â¥Â¥      mouse_constrain_xy(0,0,grd_cap->w-1,grd_cap->h-1);                           
+//      mouse_constrain_xy(0,0,grd_cap->w-1,grd_cap->h-1);                           
    }
    return TRUE;
 }
@@ -439,12 +439,12 @@ uchar lean_mouse_handler(uiMouseEvent* ev, LGRegion* r, void * data)
          player_set_posture(posture);
       player_set_lean(xlean,player_struct.leany);
       physics_set_relax(CONTROL_XZROT,FALSE);
-//Â¥Â¥Â¥     ui_mouse_constrain_xy(LEANOMETER_X(),LEANOMETER_Y()+posture*LEANOMETER_H/3+1,LEANOMETER_X()+LEANOMETER_W-1,LEANOMETER_Y()+(posture+1)*LEANOMETER_H/3-1);
+//     ui_mouse_constrain_xy(LEANOMETER_X(),LEANOMETER_Y()+posture*LEANOMETER_H/3+1,LEANOMETER_X()+LEANOMETER_W-1,LEANOMETER_Y()+(posture+1)*LEANOMETER_H/3-1);
    }
    if (ev->buttons == 0)
    {
       extern void mouse_unconstrain(void);
-//Â¥Â¥Â¥      mouse_unconstrain();
+//      mouse_unconstrain();
    }
    return TRUE;
 }
@@ -554,7 +554,7 @@ void update_lean_meter(uchar force)
 			sbm = &(f->bm);
 		}
 		else
-			DebugString("\pNo shield resource bitmap!");
+			DebugString("No shield resource bitmap!");
 		
 		offset = shield_offsets[inum];
 		gr_bitmap(sbm, r.ul.x - offset.x, r.ul.y - offset.y);

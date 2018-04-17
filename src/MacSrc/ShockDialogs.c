@@ -175,7 +175,7 @@ void DoSoundOptionsDlg(void)
 	SetDItem(dlog, kUsrOKOutline, itype, (Handle)btnOutlineProcPtr, &r);
 	
 /*	gSliderDimmed = gDimmed = !localPrefs.soBackMusic;
-	BlockMove("\pVolume:", gDimTitle, 8);
+	BlockMove("Volume:", gDimTitle, 8);
 	statDimProcPtr = NewUserItemProc(DimStaticUser);					// Setup the dimmable static "Volume"
 	GetDItem(dlog, kStatVolume, &itype, &hand, &r);
 	SetDItem(dlog, kStatVolume, itype, (Handle)statDimProcPtr, &r);

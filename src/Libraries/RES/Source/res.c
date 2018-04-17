@@ -85,7 +85,7 @@ void ResInit()
 	/*resDescMax = DEFAULT_RESMAX;
 	gResDesc = (ResDesc *)malloc( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
 	if (MemError())
-		DebugString("\pResInit: Can't allocate the global resource descriptor table.\n");*/
+		DebugString("ResInit: Can't allocate the global resource descriptor table.\n");*/
 	
 //	gResDesc[ID_HEAD].prev = 0;
 //	gResDesc[ID_HEAD].next = ID_TAIL;
@@ -206,7 +206,7 @@ void ResGrowResDescTable(Id id)
 		growPtr = malloc(newAmt * sizeof(ResDesc));
 		if (MemError() != noErr)
 		{
-			DebugString("\pResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
+			DebugString("ResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
 			return;
 		}
 		BlockMove(gResDesc, growPtr, currAmt * sizeof(ResDesc));

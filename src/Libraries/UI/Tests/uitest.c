@@ -276,17 +276,17 @@ uchar goofy_key_callback(uiEvent* h, LGRegion* r, void* state)
 //   if (h->type != UI_EVENT_KBD_COOKED || (inkey & KB_FLAG_SPECIAL) || !(inkey & KB_FLAG_DOWN)) return FALSE;
    if (h->type != UI_EVENT_KBD_COOKED)
    {
-     DebugString("\pKey's not cooked!");
+     DebugString("Key's not cooked!");
      return FALSE;
    }
    if (inkey & KB_FLAG_SPECIAL)
    {
-     DebugString("\pIsn't that special!");
+     DebugString("Isn't that special!");
      return FALSE;
    }
    if (!(inkey & KB_FLAG_DOWN))
    {
-     DebugString("\pKey's not down!");
+     DebugString("Key's not down!");
      return FALSE;
    }
 
@@ -375,15 +375,15 @@ extern short gMainVRef;
    // files we want to use -- pretty straightforward.
 	ResInit();
 
-	strcpy(macfname, (char *)"\pMac resgadg.RES");
+	strcpy(macfname, (char *)"Mac resgadg.RES");
 	FSMakeFSSpec(vref, dirID, (ConstStr255Param)macfname, &fSpec); // Make the file's spec.
 	ResOpenFile(&fSpec);
 	
-	strcpy(macfname, (char *)"\pMac gamescr.RES");
+	strcpy(macfname, (char *)"Mac gamescr.RES");
 	FSMakeFSSpec(vref, dirID, (ConstStr255Param)macfname, &fSpec); // Make the file's spec.
 	ResOpenFile(&fSpec);
 	
-	strcpy(macfname, (char *)"\pMac resgui.RES");
+	strcpy(macfname, (char *)"Mac resgui.RES");
 	FSMakeFSSpec(vref, dirID, (ConstStr255Param)macfname, &fSpec); // Make the file's spec.
 	ResOpenFile(&fSpec);
 
