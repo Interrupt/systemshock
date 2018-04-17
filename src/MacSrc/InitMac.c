@@ -32,6 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <GestaltEqu.h>
 //#include <Movies.h>
 
+#include "precompiled.h"
 #include "Shock.h"
 #include "InitMac.h"
 #include "ShockBitmap.h"

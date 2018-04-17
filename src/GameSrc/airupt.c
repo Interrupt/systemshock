@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // The interrupt-crunchy part of the music ai.
 
+#include "precompiled.h"
 #include <stdlib.h>
 
 //#include "MacTune.h"

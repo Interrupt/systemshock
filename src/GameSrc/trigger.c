@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __TRIGGER_SRC
 
+#include "precompiled.h"
 #include <stdlib.h>
 #include <string.h>
 

@@ -1,3 +1,4 @@
+#include "precompiled.h"
 /*
 
 Copyright (C) 2015-2018 Night Dive Studios, LLC.
@@ -57,6 +58,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define FULL_L_MFD_MASK    0x02
 #define FULL_INVENT_MASK   0x04
 #define FULL_MFD_MASK(id) (((id)==0)?FULL_L_MFD_MASK:FULL_R_MFD_MASK)
+
+// Defines
+#define SCREEN_VIEW_X   28
+#define SCREEN_VIEW_Y   24
+#define SCREEN_VIEW_HEIGHT 108
+#define SCREEN_VIEW_WIDTH  268  
 
 // Typedefs
 

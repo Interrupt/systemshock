@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __CYBMEM_SRC
 //#include "ShockDialogs.h"
 
+#include "precompiled.h"
 #include "cybmem.h"
 #include "tools.h"
 #include "objsim.h"

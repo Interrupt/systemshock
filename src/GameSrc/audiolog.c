@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  //	Mac version by Ken Cobb,  2/9/95
  
-
+#include "precompiled.h"
 #include <stdio.h>
 //#include <Movies.h>		// QuickTime header
 

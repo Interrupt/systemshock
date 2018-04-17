@@ -60,6 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __FRPIPE_SRC
 
+#include "precompiled.h"
 #include "map.h"
 #include "mapflags.h"
 #include "frsubclp.h"

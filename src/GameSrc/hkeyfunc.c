@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __HKEYFUNC_SRC
 
+#include "precompiled.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -42,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdext.h"
 #include "MacTune.h"
 #include "musicai.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "status.h"
 #include "tools.h"
 #include "wares.h"

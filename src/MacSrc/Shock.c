@@ -51,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "input.h"
 #include "mainloop.h"
 #include "setup.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "fullscrn.h"
 #include "status.h"
 #include "gamewrap.h"

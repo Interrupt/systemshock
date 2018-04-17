@@ -39,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __MAINLOOP_SRC
 
+#include "precompiled.h"
 #include <stdio.h>
 
 #include "criterr.h"

@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // All MFD infrastructure belongs here, all expose/handler callbacks
 // belong in mfdfunc.c
 
+#include "precompiled.h"
 #include <stdlib.h>
 #include <string.h>
 

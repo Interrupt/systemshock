@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Game system object sorting
  */
 
+#include "precompiled.h"
 #include <stdlib.h>
 
 #include "map.h"

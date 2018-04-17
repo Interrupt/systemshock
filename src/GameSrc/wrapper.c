@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __WRAPPER_SRC
 
+#include "precompiled.h"
 #include <limits.h>
 
 #include "wrapper.h"
@@ -156,7 +157,7 @@ uchar really_quit_key_func(short keycode, ulong context, void* data);
 LGRegion options_mouseregion[NUM_MOUSEREGION_SCREENS];
 uchar free_mouseregion=0;
 
-uchar popup_cursors = TRUE;
+//uchar popup_cursors = TRUE;
 
 char save_game_name[]="savgam00.dat";
 

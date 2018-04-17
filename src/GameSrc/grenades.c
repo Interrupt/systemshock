@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __GRENADES_C
 
+#include "precompiled.h"
 #include "grenades.h"
 #include "effect.h"
 #include "objwpn.h"
@@ -48,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "input.h"
 #include "tools.h"
 #include "otrip.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "cybstrng.h"
 #include "frprotox.h"
 #include "frflags.h"

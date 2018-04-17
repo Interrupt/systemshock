@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/09/08 06:30:25 $
  */
 
+#include "precompiled.h"
 #include <string.h>
 
 #include "frcamera.h"

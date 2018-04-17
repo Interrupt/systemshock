@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __FULLSCRN_SRC
 
+#include "precompiled.h"
 #include "ShockBitmap.h"
 #include "Prefs.h"
 

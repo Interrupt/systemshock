@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __COMBAT_C
 
+#include "precompiled.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -33,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objsim.h"
 #include "objprop.h"
 #include "damage.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "tools.h"
 #include "effect.h"
 #include "otrip.h"

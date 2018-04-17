@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #define __PLAYER_SRC
+#include "precompiled.h"
 #include <string.h>
 
 #include "objprop.h"

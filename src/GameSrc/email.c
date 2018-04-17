@@ -22,7 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Author: xemu $
  * $Date: 1994/11/25 08:14:55 $
  */
- 
+
+#include "precompiled.h" 
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>

@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __SCREEN_SRC
 
+#include "precompiled.h"
 #include "criterr.h"
 #include "game_screen.h"
 #include "tools.h"

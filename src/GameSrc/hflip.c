@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/10/31 22:08:14 $
  */
 
+#include "precompiled.h"
 #include "gr2ss.h"
 #include "cybmem.h"
 

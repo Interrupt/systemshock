@@ -162,7 +162,8 @@ short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, uchar auxinfo)
 	filenum = FSpOpenResFile(specPtr, perm);
 	if (filenum == -1)
 	{
-		DebugString("\pResOpenResFile: Can't open file.\n");
+		printf("ResOpenResFile: Can't open file. %s", specPtr->name);
+		//DebugString("\pResOpenResFile: Can't open file.\n");
 		return(-2);
 	}
 	

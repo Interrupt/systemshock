@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
  
+ #include "precompiled.h"
  #include "FrUtils.h"
  #include "Shock.h"
 

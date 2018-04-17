@@ -3,7 +3,7 @@ project(SystemShock)
 cmake_minimum_required(VERSION 3.1)
 
 # Required for stdbool.h
-set(CMAKE_C_STANDARD 99)
+#set(CMAKE_C_STANDARD gnu89)
 
 set(CMAKE_C_FLAGS -m32)
 set(CMAKE_CXX_FLAGS -m32)
@@ -11,17 +11,9 @@ set(CMAKE_CXX_FLAGS -m32)
 # HAAAAX!!
 add_definitions(-Dpowerc)
 
-add_subdirectory(src/Libraries/)
+add_definitions(-DLOST_TREASURES_OF_MFD_GAMES)
 
-set(MAC_SRC
-	src/MacSrc/Stub.c
-	src/MacSrc/ShockBitmap.c
-	src/MacSrc/MoviePlay.c
-	src/MacSrc/InitMac.c
-	src/MacSrc/Shock.c
-	src/MacSrc/Prefs.c
-	src/MacSrc/MacTune.c
-)
+add_subdirectory(src/Libraries/)
 
 set(GAME_SRC
 	src/GameSrc/ai.c
@@ -136,6 +128,13 @@ set(GAME_SRC
 	src/GameSrc/weapons.c
 	src/GameSrc/wrapper.c
 	src/GameSrc/gamerend.c
+	src/MacSrc/Stub.c
+	src/MacSrc/ShockBitmap.c
+	src/MacSrc/MoviePlay.c
+	src/MacSrc/InitMac.c
+	src/MacSrc/Shock.c
+	src/MacSrc/Prefs.c
+	src/MacSrc/MacTune.c
 )
 
 include_directories(
@@ -189,15 +188,13 @@ target_link_libraries(TestSimpleMain ${SDL2_LIBRARIES})
 
 find_library(CARBON NAMES Carbon)
 
-add_definitions(
-	-include precompiled.h
-)
-
 add_executable(systemshock
-	${MAC_SRC}
+	${GAME_SRC}
 )
 
-add_library(GAME_LIB ${GAME_SRC})
+#add_definitions(
+#	-include precompiled.h
+#)
 
 target_link_libraries(systemshock
 	2D_LIB
@@ -216,6 +213,5 @@ target_link_libraries(systemshock
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
-	GAME_LIB
 	${CARBON}
 )

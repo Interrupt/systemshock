@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //#include <mprintf.h>
 
+#include "precompiled.h"
 #include "faketime.h"
 
 #include "frtypes.h"

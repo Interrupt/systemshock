@@ -31,6 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //#ifdef IS_REALLY_OSX
 
+#include "precompiled.h"
+
 //--------------------
 // Menus
 //--------------------

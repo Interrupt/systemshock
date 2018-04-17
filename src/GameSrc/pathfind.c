@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __PATHFIND_SRC
 
+#include "precompiled.h"
 #include <string.h>
 
 #include "pathfind.h"

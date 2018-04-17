@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Includes for example mfd.
+#include "precompiled.h"
 #include <stdlib.h>
 
 #include "bark.h"

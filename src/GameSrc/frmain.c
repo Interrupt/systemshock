@@ -49,6 +49,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #define __FRMAIN_SRC
+
+#include "precompiled.h"
 #include "frtypes.h"
 #include "frintern.h"
 #include "frparams.h"

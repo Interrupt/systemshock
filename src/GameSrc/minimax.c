@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifdef LOST_TREASURES_OF_MFD_GAMES
+
+#include "precompiled.h"
 #include <limits.h>
 #include <string.h>
 #include "minimax.h"

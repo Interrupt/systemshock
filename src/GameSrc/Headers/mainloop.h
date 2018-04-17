@@ -1,3 +1,4 @@
+#include "precompiled.h"
 /*
 
 Copyright (C) 2015-2018 Night Dive Studios, LLC.
@@ -65,7 +66,7 @@ void loopmode_switch(short *cmode);
 errtype static_change_copy();
 void loopmode_exit(short loopmode);
 
-//#ifdef __MAINLOOP_SRC
+#ifdef __MAINLOOP_SRC
 frc *_current_fr_context;
 short _current_loop  = SETUP_LOOP;          /* which loop we currently are */
 short _current_3d_flag = DEMOVIEW_UPDATE;
@@ -84,7 +85,7 @@ uchar player_immortal = FALSE;
 uchar always_render = FALSE;
 uchar pal_fx_on = TRUE;
 
-/*
+
 #else     // NOT _MAINLOOP_SRC
 
 extern short _current_loop;   	  // which loop we currently are
@@ -108,7 +109,7 @@ extern uchar time_passes;
 extern uchar pal_fx_on;
 extern LGRegion *_current_view;
 #endif
-*/
+
 
 #define loopLine(num,code_line) code_line
 

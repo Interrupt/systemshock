@@ -1,5 +1,6 @@
 
 #include <Carbon/Carbon.h>
+#include "precompiled.h"
 
 // Stub out all of the functions that we haven't implemented yet!
 

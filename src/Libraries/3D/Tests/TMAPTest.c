@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 //#define __FAUXREND_SRC
 #include "2d.h"
@@ -204,7 +205,7 @@ void test_3d(uchar *tmap, uchar* pal)
    main_view=fauxrend_place_3d(NULL,FALSE,0,0,0,0,640,480);
    fauxrend_set_context(main_view);
 
-   while (true) {
+   while (1) {
       _fr_top(NULL);
       fauxrend_start_frame();
       setup_quad(-32768,-32768,4<<16,1,trans);

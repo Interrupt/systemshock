@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // This file is for callbacks only, actual infrastructure belongs
 // in newmfd.c
 
+#include "precompiled.h"
 #include <string.h>
 
 #include "objprop.h" // temp

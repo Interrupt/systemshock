@@ -55,6 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #define __FROSLEW_SRC
+#include "precompiled.h"
 #include "fauxrint.h"
 #include "froslew.h"
 #ifndef __RENDTEST__

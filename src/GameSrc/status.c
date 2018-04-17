@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // and second, the upper right hand healthy/suit-energy measuring
 // bar graphs
 
+#include "precompiled.h"
 #include <math.h>
  
 #include "status.h"

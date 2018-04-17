@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/28 06:38:32 $
  */
 
+#include "precompiled.h"
 #include <stdio.h>
 #include <string.h>
 

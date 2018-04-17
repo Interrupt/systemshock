@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __MUSICAI_SRC
 
+#include "precompiled.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -157,7 +158,7 @@ void musicai_clear()
 
 void mlimbs_do_ai()
 {
-//   extern uchar mlimbs_semaphore;
+   extern uchar mlimbs_semaphore;
    extern errtype check_asynch_ai(uchar new_score_ok);
    extern ObjID damage_sound_id;
    extern char damage_sound_fx;

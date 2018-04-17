@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/19 20:35:51 $
  */
 
+#include "precompiled.h"
 #include <string.h>
 
 #include "mainloop.h"
@@ -51,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybstrng.h"
 #include "colors.h"
 #include "gr2ss.h"
-#include "screen.h"
+#include "game_screen.h"
 
 // Defines
 #define SCREEN_VIEW_X   28

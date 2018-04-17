@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Source code for inventory manipulation / display
 
+#include "precompiled.h"
 #include <string.h>
 
 #include "invent.h"

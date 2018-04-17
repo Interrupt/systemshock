@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/20 05:36:11 $
  *
  */
+
+#include "precompiled.h"
 #include "mfdint.h"
 #include "mfdext.h"
 #include "mfddims.h"

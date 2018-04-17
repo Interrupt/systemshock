@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <Carbon/Carbon.h>
+#include "precompiled.h"
 //#include <Timer.h>
 
 //-----------------
@@ -66,7 +67,7 @@ extern mlimbs_request_info	current_request[MLIMBS_MAX_SEQUENCES - 1]; // Request
 
 extern ulong	mlimbs_counter;
 extern long		mlimbs_error;
-extern uchar	mlimbs_semaphore;
+//extern uchar	mlimbs_semaphore;
 
 extern Handle			gHeaderHdl, gTuneHdl, gOfsHdl;		// Holds the tune-related data for the current theme file.
 extern long				*gOffsets;									// Array of offsets for the beginning of each tune.

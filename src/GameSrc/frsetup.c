@@ -127,6 +127,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #define __FRSETUP_SRC
+#include "precompiled.h"
 #include "frcamera.h"
 #include "fr3d.h"
 #include "frtypes.h"

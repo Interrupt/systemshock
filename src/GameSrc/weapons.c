@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __WEAPONS_SRC
 
+#include "precompiled.h"
 #include <string.h>
 
 #include "weapons.h"

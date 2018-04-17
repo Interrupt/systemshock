@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/28 08:31:43 $
  */
 
+#include "precompiled.h"
 #include "musicai.h"
 //Â¥Â¥Â¥#include "citmusic.h"
 #include "faketime.h"

@@ -48,6 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __CYBRND_SRC
 
+#include "precompiled.h"
 #include "cybrnd.h"
 
 RNDSTREAM_STD(start_rnd);
