@@ -170,25 +170,15 @@ target_link_libraries(TestSimpleMain
 	LG_LIB
 )
 
-add_executable(TestTMAP
-	src/Libraries/3D/Tests/TMAPTest.c
-)
-
-target_link_libraries(TestTMAP
-	2D_LIB
-	GR_LIB
-	3D_LIB
-	# RES_LIB
-	FIX_LIB
-	LG_LIB
-)
-
+# Find SDL
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 target_link_libraries(TestSimpleMain ${SDL2_LIBRARIES})
 
+# Find Carbon
 find_library(CARBON NAMES Carbon)
 
+# Include magic header file
 add_definitions(
 	-include precompiled.h
 )
