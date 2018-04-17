@@ -44,10 +44,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Globals
 //--------------------
-/*PixMapHandle 	gScreenPixMap;
+PixMapHandle 	gScreenPixMap;
 CTabHandle			gMainColorHand;
 Boolean				gChangedColors = false;
-ShockBitmap		gMainOffScreen;*/
+ShockBitmap		gMainOffScreen;
 
 /*SDL_Window* 		window;
 SDL_Surface* 		screenSurface;

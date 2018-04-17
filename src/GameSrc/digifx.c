@@ -34,8 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "audiolog.h"
 #endif
 
-uchar sfx_on = TRUE;
-
 #define NUM_DIGI_FX  114
 
 char volumes[NUM_DIGI_FX];

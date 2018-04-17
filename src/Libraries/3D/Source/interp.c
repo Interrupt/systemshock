@@ -124,7 +124,7 @@ uchar *do_vpnt_p(uchar *);
 uchar *do_vpnt_v(uchar *);
 uchar *do_setuv(uchar *);
 uchar *do_uvlist(uchar *);
-uchar *do_tmap(uchar *);
+uchar *do_tmap_op(uchar *);
 uchar *do_dbg(uchar *);
 
 extern int check_and_draw_common(long c,int n_verts,g3s_phandle *p);
@@ -155,7 +155,7 @@ void *opcode_table[n_ops] = {do_eof,do_jnorm,do_lnres,do_multires,do_polyres,do_
 														do_icall_h,0,do_sfcal,do_defres,do_defres_i,do_getparms,do_getparms_i,
 														do_gour_p,do_gour_vc,do_getvcolor,do_getvscolor,do_rgbshades,
 		        								do_draw_mode,do_getpcolor,do_getpscolor,do_scaleres,do_vpnt_p,
-		        								do_vpnt_v,do_setuv,do_uvlist,do_tmap,do_dbg};
+		        								do_vpnt_v,do_setuv,do_uvlist,do_tmap_op,do_dbg};
         								
 
 #define N_RES_POINTS  1000
@@ -979,7 +979,7 @@ dbg_nxt1:
 extern void (*g3_tmap_func)();
 extern int temp_poly (long c, int n, grs_vertex **vpl);
 
-uchar *do_tmap(uchar *opcode)
+uchar *do_tmap_op(uchar *opcode)
  {
  	int		count,count2;
  	short	temp;
