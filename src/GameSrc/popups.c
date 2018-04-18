@@ -63,6 +63,8 @@ void init_popups(void)
 {
 	for (int i = 0; i < NUM_POPUPS; i++)
 	{
+      printf("Making popup\n");
+      
 		Ref id = MKREF(RES_popups,i);
 		FrameDesc* f = (FrameDesc *)RefGet(id);
 		popup_rects[i] = f->anchorArea;

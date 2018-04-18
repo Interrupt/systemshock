@@ -326,12 +326,20 @@ void init_all(void)
 //	 KLC - done in InitMac.c.
 //   atexit(free_all);
 
+	printf("Load Resources\n");
 	init_load_resources();
+
+	printf("Load 3d Objects\n");
 	init_3d_objects();
+
+	printf("Load Popups\n");
 	init_popups();
+
+	printf("Init gamesys\n");
 	init_gamesys();
 
 	// Start up the 3d...
+	printf("Renderer Startup\n");
 	fr_startup();
 	game_fr_startup();
 
@@ -642,9 +650,10 @@ errtype load_da_palette()
 {
 	int 		pal_file;
 	FSSpec	fSpec;
+	FSRef   fsRef;
 	
-	FSMakeFSSpec(gCDDataVref, gCDDataDirID, "gamepal.rsrc", &fSpec);
-	pal_file = ResOpenFile(&fSpec);
+	printf("Loading gamepal.res");
+	pal_file = ResOpenFile("res/data/gamepal.res");
 	if (pal_file < 0)
 		critical_error(CRITERR_RES|4);
 	ResExtract(RES_gamePalette, ppall);
@@ -788,30 +797,31 @@ errtype obj_3d_shutdown()
 errtype init_load_resources()
 {
 	FSSpec	fSpec;
+	FSRef 	fsRef;
 	
-	// Open the screen resource stuff  
-	FSMakeFSSpec(gDataVref, gDataDirID, "gamescr.rsrc", &fSpec);
-	if (ResOpenFile(&fSpec) < 0)
+	// Open the screen resource stuff 
+	printf("Loading gamescr.res\n");
+	if (ResOpenFile("res/data/gamescr.res") < 0)
 		critical_error(CRITERR_RES|1);
 	
 	// Open the appropriate mfd art file
-	FSMakeFSSpec(gDataVref, gDataDirID, "mfdart.rsrc", &fSpec);
-	if ((mfdart_res_file=ResOpenFile(&fSpec)) < 0) 
+	printf("Loading mfdart.res\n");
+	if ((mfdart_res_file=ResOpenFile("res/data/mfdart.res")) < 0) 
 		critical_error(CRITERR_RES|2);
 	
 	// Open the 3d objects
-	FSMakeFSSpec(gDataVref, gDataDirID, "obj3d.rsrc", &fSpec);
-	if (ResOpenFile(&fSpec) < 0)
+	printf("Loading obj3d.res\n");
+	if (ResOpenFile("res/data/obj3d.res") < 0)
 		critical_error(CRITERR_RES|9);
 	
 	// Open the Citadel materials file
-	FSMakeFSSpec(gDataVref, gDataDirID, "citmat.rsrc", &fSpec);
-	if (ResOpenFile(&fSpec) < 0)
+	printf("Loading citmat.rsrc\n");
+	if (ResOpenFile("res/data/citmat.res") < 0)
 		critical_error(CRITERR_RES|9);
 	
 	// Open the Digital sound FX file
-	FSMakeFSSpec(gDataVref, gDataDirID, "digifx.rsrc", &fSpec);
-	if (ResOpenFile(&fSpec) < 0)
+	printf("Loading digifx.rsrc\n");
+	if (ResOpenFile("res/data/digifx.res") < 0)
 		critical_error(CRITERR_RES|9);
 	
 	return(OK);

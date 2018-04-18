@@ -1938,10 +1938,8 @@ errtype obj_set_secondary_properties()
 	RefTable 	*prt;
 	int 			fn, fn2;
 	
-	FSMakeFSSpec(gDataVref, gDataDirID, "objart2.rsrc", &fSpec);
-	fn = ResOpenFile(&fSpec);
-	FSMakeFSSpec(gDataVref, gDataDirID, "objart3.rsrc", &fSpec);
-	fn2 = ResOpenFile(&fSpec);
+	fn = ResOpenFile("res/data/objart2.res");
+	fn2 = ResOpenFile("res/data/objart3.res");
 	if ((fn < 0) || (fn2 < 0))
 	{
 //		Warning(("Problem opening object art cache!\n"));

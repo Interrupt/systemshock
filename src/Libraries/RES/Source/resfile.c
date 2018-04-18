@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res_.h"
 
 //#include <_res.h>
-/*
+
 //	Resource files start with this signature
 
 char resFileSignature[16] = {
@@ -53,15 +53,17 @@ ResFile resFile[MAX_RESFILENUM+1];
 
 //	Global datapath for res files, other data modules may piggyback
 
-Datapath gDatapath;
-*/
+// Datapath gDatapath;
+
 //	Internal prototypes
 
 void AddResDesc(Handle resHdl, short resID, ResType macResType, short filenum, char cFlag);
-/*
 int ResFindFreeFilenum();
+
 void ResReadDirEntries(int filenum, ResDirHeader *pDirHead);
 void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset);
+
+/*
 void ResReadEditInfo(ResFile *prf);
 void ResReadDir(ResFile *prf, int filenum);
 void ResCreateEditInfo(ResFile *prf, int filenum);
@@ -103,89 +105,191 @@ void ResAddPath(char *path)
 //  For Mac version:  Use the ResourceMgr routines to open and create Res files.
 //  Skip all the EditInfo and Dir stuff.
 
-short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, uchar auxinfo)
+short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 {
-	short  		filenum, fd;
-	FInfo			fi;
-	short			perm;
-	short			numTypes, numRes;
-	short			ti, ri;
-	ResType		aResType;
-	Handle		resHdl;
-	short			resID;
-	Str255		resName;
+//static int openMode[] = {
+//	O_RDONLY | O_BINARY,
+//	O_RDWR | O_BINARY,
+//	O_RDWR | O_BINARY};
 
-	//	If any mode but create, open along datapath.  If can't open,
-	//	return error except if mode 2 (edit/create), in which case
-	//	drop thru to create case by faking mode 3.
+	int filenum;
+	FILE*	fd;
+	ResFile *prf;
+	ResFileHeader fileHead;
+	ResDirHeader dirHead;
+   uchar cd_spoof = FALSE;
+
+   printf("ResOpenResFile: %s\n\n", fname);
+
+//	Find free file number, else return -1
+
+	filenum = ResFindFreeFilenum();
+	if (filenum < 0)
+		{
+			printf("ResOpenResFile: no free filenum for: %s\n", fname);
+			return(-1);
+		}
+
+//	If any mode but create, open along datapath.  If can't open,
+//	return error except if mode 2 (edit/create), in which case
+//	drop thru to create case by faking mode 3.
 
 	if (mode != ROM_CREATE)
-	{
-		fd = FSpGetFInfo(specPtr, &fi);					// See if file exists
-		if (fd != noErr)											// If not,
 		{
-			if (mode == ROM_EDITCREATE)				// If this mode, drop through
-				mode = ROM_CREATE;							// to create the file.
-			else
+//		fd = DatapathFDOpen(&gDatapath, fname, openMode[mode]);
+		fd = fopen(fname, "rb");
+		if (fd != NULL)
 			{
-				DebugString("ResOpenResFile: can't open file.\n");
+//			read(fd, &fileHead, sizeof(ResFileHeader));
+			fread(&fileHead, sizeof(ResFileHeader), 1, fd);
+
+			if (strncmp(fileHead.signature, resFileSignature,
+				sizeof(resFileSignature)) != 0)
+				{
+				fclose(fd);
+				printf("ResOpenResFile: %s is not valid resource file\n", fname);
+				return(-3);
+				}
+			}
+		else
+			{
+			if (mode == ROM_EDITCREATE)
+				mode = ROM_CREATE;
+			else
+				{
+				printf("ResOpenResFile: can't open file: %s\n", fname);
 				return(-2);
+				}
 			}
 		}
-	}
-		
-	//	If create mode, or edit/create failed, try to create the file.
+
+//	If create mode, or edit/create failed, try to open file for creation.
 
 	if (mode == ROM_CREATE)
-	{
-		// If the file already exists, delete it.
-		fd = FSpGetFInfo(specPtr, &fi);
-		if (fd == noErr)
-			FSpDelete(specPtr);
-		
-		// Create the file.
-		FSpCreateResFile(specPtr, 'Shok', 'Sgam', nil);
-		fd = ResError();
-		if (fd != 0)
 		{
-			DebugString("ResOpenResFile: Can't create file.\n");
+//		fd = open(fname, O_CREAT | O_TRUNC | O_RDWR | O_BINARY,
+//			S_IREAD | S_IWRITE);
+		fd = fopen(fname, "wb");
+		if (fd == NULL)
+			{
+//			Warning(("ResOpenResFile: Can't create file: %s\n", fname));
 			return(-2);
+			}
 		}
-	}
 
-	// Finally, open the thang.
-	
-	if (mode == ROM_READ)
-		perm = fsRdPerm;
-	else
-		perm = fsRdWrPerm;
-	filenum = FSpOpenResFile(specPtr, perm);
-	if (filenum == -1)
-	{
-		DebugString("ResOpenResFile: Can't open file.\n");
-		return(-2);
-	}
-	
-	// Read in resource map info into the array of resource descriptions
+//	If aux info, allocate space for it
 
-	numTypes =  Count1Types();
-	for (ti = 1; ti <= numTypes; ti++)
-	{
-		Get1IndType(&aResType, ti);
-		
-		numRes = Count1Resources(aResType);
-		SetResLoad(false);
-		for (ri = 1; ri <= numRes; ri++)
+	prf = &resFile[filenum];
+	prf->pedit = NULL;
+	if (mode || auxinfo)
 		{
-			resHdl = Get1IndResource(aResType, ri);
-			GetResInfo(resHdl, &resID, &aResType, resName);
-			
-			AddResDesc(resHdl, resID, aResType, filenum, resName[1]);
+		prf->pedit = (ResEditInfo *)malloc(sizeof(ResEditInfo));
+		if (prf->pedit == NULL)
+			{
+//			Warning(("ResOpenResFile: unable to allocate ResEditInfo\n"));
+//			close(fd);
+			fclose(fd);
+			return(-4);
+			}
 		}
-		SetResLoad(true);
-	}
-	
+
+//	Record resFile[] file descriptor
+
+	prf->fd = fd;
+//	Spew(DSRC_RES_General, ("ResOpenResFile: opening: %s at filenum %d\n",
+//		fname, filenum));
+
+//	Switch based on mode
+
+	switch (mode)
+		{
+
+//	If open existing file, read directory into edit info & process, or
+//	if no edit info then process piecemeal.
+
+		case ROM_READ:
+		case ROM_EDIT:
+		case ROM_EDITCREATE:
+			if (prf->pedit)
+				{
+//				ResReadEditInfo(prf);
+//				ResReadDir(prf, filenum);
+				}
+			else
+				{
+//				lseek(fd, fileHead.dirOffset, SEEK_SET);
+				fseek(fd, fileHead.dirOffset, SEEK_SET);
+//				read(fd, &dirHead, sizeof(ResDirHeader));
+				fread(&dirHead, 1, sizeof(ResDirHeader), fd);
+				dirHead.numEntries = dirHead.numEntries;
+				dirHead.dataOffset = dirHead.dataOffset;
+				ResReadDirEntries(filenum, &dirHead);
+				}
+			break;
+
+//	If open for create, initialize header & dir
+
+//		case ROM_CREATE:
+//			ResCreateEditInfo(prf, filenum);
+//			ResCreateDir(prf);
+//			break;
+		}
+
+//	Return filenum
+
 	return(filenum);
+}
+
+//	---------------------------------------------------------
+//
+//	ResCloseFile() closes an open resource file.
+//
+//		filenum = file number used when opening file
+
+void ResCloseFile(int filenum)
+{
+	Id id;
+
+//	Make sure file is open
+
+	if (resFile[filenum].fd == NULL)
+		{
+//		Warning(("ResCloseFile: filenum %d not in use\n"));
+		return;
+		}
+
+//	If file being created, flush it
+/*
+	Spew(DSRC_RES_General, ("ResCloseFile: closing %d\n", filenum));
+
+	if (resFile[filenum].pedit)
+		{
+		ResWriteDir(filenum);
+		ResWriteHeader(filenum);
+		}
+
+//	Scan object list, delete any blocks associated with this file
+
+	for (id = ID_MIN; id <= resDescMax; id++)
+		{
+		if (ResInUse(id) && (ResFilenum(id) == filenum))
+			ResDelete(id);
+		}
+*/
+//	Free up memory
+
+	if (resFile[filenum].pedit)
+		{
+		if (resFile[filenum].pedit->pdir)
+			free(resFile[filenum].pedit->pdir);
+		free(resFile[filenum].pedit);
+		}
+
+//	Close file
+
+//	close(resFile[filenum].fd);
+	fclose(resFile[filenum].fd);
+	resFile[filenum].fd = NULL;
 }
 
 //	---------------------------------------------------------
@@ -229,8 +333,9 @@ void AddResDesc(Handle resHdl, short resID, ResType macResType, short filenum, c
 	}	
 
 	for (ind = 0; ind < NUM_RESTYPENAMES; ind++)	// Find associated Shock type.
-		if (resMacTypes[ind] == macResType)
+		if (resMacTypes[ind] == macResType) {
 			break;
+		}
 	
 	prd->hdl = resHdl;								// Fill in resource descriptor
 	prd->filenum = filenum;
@@ -258,7 +363,7 @@ void AddResDesc(Handle resHdl, short resID, ResType macResType, short filenum, c
 //	---------------------------------------------------------
 //  For Mac version:  Real simple.  See notes in code.
 
-void ResCloseFile(short filenum)
+/*void ResCloseFile(short filenum)
 {
 	Id 			id;
 	ResDesc	*prd;
@@ -316,7 +421,7 @@ void ResCloseFile(short filenum)
 	close(resFile[filenum].fd);
 	resFile[filenum].fd = -1;
 */
-}
+//}
 
 /*
 //	---------------------------------------------------------
@@ -361,6 +466,8 @@ void ResWriteDir(short filenum)
 	ReleaseResource(tableHdl);
 }
 
+*/
+
 //	--------------------------------------------------------------
 //		INTERNAL ROUTINES
 //	---------------------------------------------------------
@@ -378,6 +485,7 @@ int ResFindFreeFilenum()
 		}
 	return(-1);
 }
+
 
 //	----------------------------------------------------------
 //
@@ -397,8 +505,7 @@ void ResReadDirEntries(int filenum, ResDirHeader *pDirHead)
 
 //	Set up
 
-	Spew(DSRC_RES_Read,
-		("ResReadDirEntries: scanning directory, filenum %d\n", filenum));
+	printf("ResReadDirEntries: scanning directory, filenum %d\n", filenum);
 
 	pDirEntry = &dirEntries[NUM_DIRENTRY_BLOCK];		// no dir entries read
 	dataOffset = pDirHead->dataOffset;					// mark starting offset
@@ -447,14 +554,13 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset)
 
 //	If already a resource at this id, warning
 
-	Spew(DSRC_RES_Read, ("ResProcDirEntry: reading entry for id $%x\n",
-		pDirEntry->id));
+	//printf("ResProcDirEntry: reading entry for id $%x\n", pDirEntry->id);
 
 	prd = RESDESC(pDirEntry->id);
 	if (prd->ptr)
 		{
-      Warning(("RESOURCE ID COLLISION AT ID %x!!\n",pDirEntry->id));
-		CUMSTATS(pDirEntry->id,numOverwrites);
+      /*Warning(("RESOURCE ID COLLISION AT ID %x!!\n",pDirEntry->id));
+		CUMSTATS(pDirEntry->id,numOverwrites);*/
 		ResDelete(pDirEntry->id);
 		}
 
@@ -472,14 +578,16 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset)
 
 //	If loadonopen flag set, load resource
 
-	if (pDirEntry->flags & RDF_LOADONOPEN)
+	/*if (pDirEntry->flags & RDF_LOADONOPEN)
 		{
-		currOffset = tell(resFile[filenum].fd);
+		currOffset = ftell(resFile[filenum].fd);
 		ResLoadResource(pDirEntry->id);
 		ResAddToTail(prd);
 		lseek(resFile[filenum].fd, currOffset, SEEK_SET);
-		}
+		}*/
 }
+
+/*
 
 //	--------------------------------------------------------------
 //

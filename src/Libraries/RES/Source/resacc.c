@@ -155,6 +155,7 @@ void ResUnlock(Id id)
 
 void *ResGet(Id id)
 {
+	printf("ResGet\n");
 	/*ResDesc *prd = RESDESC(id);
 
 //	Check if valid id
@@ -194,6 +195,7 @@ void *ResGet(Id id)
 
 void *ResExtract(Id id, void *buffer)
 {
+	printf("ResExtract\n");
 	/*ResDesc *prd = RESDESC(id);
 
 	if (ResLoadResource(id) == NULL)

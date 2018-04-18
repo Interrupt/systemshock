@@ -64,6 +64,7 @@ void LoadCompressedResource(ResDesc *prd, Id id);
 
 void *ResLoadResource(Id id)
 {
+	printf("ResLoadResource\n");
 	ResDesc *prd = RESDESC(id);
 
 	//	If doesn't exit, forget it
@@ -75,11 +76,9 @@ void *ResLoadResource(Id id)
 
 	//	Allocate memory, setting magic id so pager can tell who it is if need be.
 
-//	idBeingLoaded = id;
-//	prd->ptr = Malloc(prd->size);
-//	idBeingLoaded = ID_NULL;
-//	if (prd->ptr == NULL)
-//		return(NULL);
+	prd->ptr = malloc(prd->size);
+	if (prd->ptr == NULL)
+		return(NULL);
 
 	//	Tally memory allocated to resources
 
@@ -95,10 +94,12 @@ void *ResLoadResource(Id id)
 
 	if (prd->flags & RDF_LZW)
 	{
+		printf("Loading compressed resource.\n");
 		LoadCompressedResource(prd, id);
 	}
 	else
 	{
+		printf("Load uncompressed resource.\n");
 		if (prd->hdl == nil)
 			prd->hdl = GetResource(resMacTypes[prd->type], id);
 		else if (*prd->hdl == nil)

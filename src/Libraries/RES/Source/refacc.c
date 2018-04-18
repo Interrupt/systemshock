@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void *RefLock(Ref ref)
 {
-	/*ResDesc *prd;
+	ResDesc *prd;
 	RefTable *prt;
 	RefIndex index;
 
@@ -98,7 +98,7 @@ void *RefLock(Ref ref)
 	if (!RefIndexValid(prt, index))
 		return (NULL);
 	else
-		return (((uchar *)prt) + (prt->offset[index]));*/
+		return (((uchar *)prt) + (prt->offset[index]));
 }
 
 
@@ -116,7 +116,7 @@ void *RefLock(Ref ref)
 
 void *RefGet(Ref ref)
 {
-	/*ResDesc *prd;
+	ResDesc *prd;
 	RefTable *prt;
 	RefIndex index;
 
@@ -129,6 +129,8 @@ void *RefGet(Ref ref)
 //	CUMSTATS(REFID(ref),numGets);
 
 	//	Get hold of ref
+
+	printf("Getting ref.\n");
 
 	prd = RESDESC(REFID(ref));
 	if (ResLoadResource(REFID(ref)) == NULL)
@@ -150,7 +152,7 @@ void *RefGet(Ref ref)
 	if (!RefIndexValid(prt, index))
 		return (NULL);
 	else
-		return (((uchar *)prt) + (prt->offset[index]));*/
+		return (((uchar *)prt) + (prt->offset[index]));
 }
 
 
@@ -166,52 +168,28 @@ void *RefGet(Ref ref)
 
 RefTable *ResReadRefTable(Id id)
 {
-	/*ResDesc 	*prd;
+	ResDesc 	*prd;
 	Handle		resHdl;
 	RefIndex	numRefs;
-	short			tableSize;
+	short		tableSize;
 	RefTable 	*prt;
-	short			err;
+	short		err;
+	int 		fd;
 
 	prd = RESDESC(id);
 	
-	SetResLoad(FALSE);													// Get resource handle without
-	resHdl = GetResource(resMacTypes[prd->type], id);		// actually loading res into mem
-	SetResLoad(TRUE);
-	
-	ReadPartialResource(resHdl, 0, &numRefs, sizeof(RefIndex));	// Get number of refs
-	tableSize = REFTABLESIZE(numRefs);										// to determine table size
-	
-	prt = (RefTable *)malloc(tableSize);							// Now allocate a buffer for the
-	if (prt)																		// table and read it in.
-	{
-		ReadPartialResource(resHdl, 0, (Ptr)prt, tableSize);
-		err = ResError();
-		if (err != 0)
-		{
-			DebugString("ResReadRefTable: Can't partial read the RefTable\n");
-			return (NULL);
-		}
-	}
-	else
-	{
-		DebugString("ResReadRefTable: Can't allocate pointer for RefTable\n");
-	}
-	
-	return (prt);
-/*
 	//	Check id and file number and make sure compound
 
-	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return(NULL);});
+	//DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return(NULL);});
 	prd = RESDESC(id);
 	fd = resFile[prd->filenum].fd;
-	DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
+	//DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
 		Warning(("ResReadRefTable: id $%x doesn't exist\n", id)); \
 		return(NULL); \
 		}});
 	if ((ResFlags(id) & RDF_COMPOUND) == 0)
 		{
-		DBG(DSRC_RES_ChkIdRef, { \
+		//DBG(DSRC_RES_ChkIdRef, { \
 			Warning(("ResReadRefTable: id $%x is not compound\n", id)); \
 			});
 		return(NULL);
@@ -221,12 +199,11 @@ RefTable *ResReadRefTable(Id id)
 
 	lseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
 	read(fd, &numRefs, sizeof(RefIndex));
-	prt = Malloc(REFTABLESIZE(numRefs));
+	prt = malloc(REFTABLESIZE(numRefs));
 	prt->numRefs = numRefs;
 	read(fd, &prt->offset[0], sizeof(long) * (numRefs + 1));
 
 	return(prt);
-*/
 }
 
 /*
@@ -326,24 +303,26 @@ int ResNumRefs(Id id)
 //	Returns: ptr to supplied buffer, or NULL if problem
 //	---------------------------------------------------------
 //  For Mac version:  Use "ReadPartialResource" to get just the reference specified.
-//  ¥¥¥ For now, ignore LZW.
+//  ��� For now, ignore LZW.
 
 void *RefExtract(RefTable *prt, Ref ref, void *buff)
 {
-	/*RefIndex	index = REFINDEX(ref);
+	RefIndex	index = REFINDEX(ref);
 	ResDesc		*prd = RESDESC(REFID(ref));
 	Handle		resHdl;
 	short			err;
+
+	printf("Extracting resource.\n");
 	
-	SetResLoad(FALSE);													// Get resource handle without
+	SetResLoad(FALSE);												// Get resource handle without
 	resHdl = GetResource(resMacTypes[prd->type], REFID(ref));
 	SetResLoad(TRUE);														// actually loading res into mem
 	
 	if (prd->flags & RDF_LZW)
-	{*/
+	{
 /*
 		rs = RefSize(prt, index);
-		compPtr = malloc(rs + 100);								// Just to be safe.
+		compPtr = NewPtr(rs + 100);								// Just to be safe.
 		if (compPtr == NULL)
 		{
 			Warning(("RefExtract: Can't allocate ptr for compressed ref.\n"));
@@ -355,20 +334,26 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
 			prt->offset[index] - REFTABLESIZE(prt->numRefs),	// skip amt
 			RefSize(prt, index));												// data amt
 */
-		/*DebugString("RefExtract: Not implemented for compressed compound resources.\n");
+		DebugStr("\pRefExtract: Not implemented for compressed compound resources.\n");
 		return (NULL);
 	}
 	else
 	{
-		ReadPartialResource(resHdl, prt->offset[index], buff, RefSize(prt, index));
+
+		long refSize = RefSize(prt, index);
+
+		printf("ReadPartialResource\n");
+		printf("RefSize %ld\n", refSize);
+		ReadPartialResource(resHdl, prt->offset[index], buff, refSize);
 		err = ResError();
 		if (err != 0)
 		{
-			DebugString("RefExtract: Can't partial read the normal resource.\n");
+			printf("Err: %i\n", err);
+			DebugStr("\pRefExtract: Can't partial read the normal resource.\n");
 			return (NULL);
 		}
 	}
-	return (buff);*/
+	return (buff);
 
 /*
 	int fd;
@@ -508,7 +493,7 @@ int RefInject(RefTable *prt, Ref ref, void *buff)
 //
 //	Returns: TRUE if ref ok, FALSE if invalid & prints warning
 
-uchar RefCheckRef(Ref ref)
+bool RefCheckRef(Ref ref)
 {
 	Id id;
 

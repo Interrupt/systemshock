@@ -55,7 +55,7 @@ Id resDescMax;									// max id in res desc
 //	Some variables
 /*
 ResStat resStat;						// stats held here
-static uchar resPushedAllocators;	// did we push our allocators?
+static bool resPushedAllocators;	// did we push our allocators?
 */
 
 //	---------------------------------------------------------
@@ -66,8 +66,8 @@ static uchar resPushedAllocators;	// did we push our allocators?
 
 void ResInit()
 {
-//	char *p;
-//	int i;
+	char *p;
+	int i;
 /*
 //	We must exit cleanly
 
@@ -82,17 +82,17 @@ void ResInit()
 
 //	Allocate initial resource descriptor table, default size (can't fail)
 
-	/*resDescMax = DEFAULT_RESMAX;
-	gResDesc = (ResDesc *)malloc( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
+	resDescMax = DEFAULT_RESMAX;
+	gResDesc = (ResDesc *)NewPtrClear( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
 	if (MemError())
-		DebugString("ResInit: Can't allocate the global resource descriptor table.\n");*/
+		DebugStr("\pResInit: Can't allocate the global resource descriptor table.\n");
 	
 //	gResDesc[ID_HEAD].prev = 0;
 //	gResDesc[ID_HEAD].next = ID_TAIL;
 //	gResDesc[ID_TAIL].prev = ID_HEAD;
 //	gResDesc[ID_TAIL].next = 0;
 
-/*
+
 //	Clear file descriptor array
 
 	for (i = 0; i <= MAX_RESFILENUM; i++)
@@ -100,16 +100,14 @@ void ResInit()
 
 //	Add directory pointed to by RES env var to search path
 
-	p = getenv("RES");
+	/*p = getenv("RES");
 	if (p)
 		ResAddPath(p);
 
-	Spew(DSRC_RES_General, ("ResInit: res system initialized\n"));
+	Spew(DSRC_RES_General, ("ResInit: res system initialized\n"));*/
 
 //	Install default pager
-
-	ResInstallPager(ResDefaultPager);
-*/
+	//ResInstallPager(ResDefaultPager);
 }
 
 //	---------------------------------------------------------
@@ -135,12 +133,12 @@ void ResTerm()
 
 //	Free up resource descriptor table
 
-	/*if (gResDesc)
+	if (gResDesc)
 	{
-		free(gResDesc);
+		DisposePtr((Ptr)gResDesc);
 		gResDesc = NULL;
 		resDescMax = 0;
-	}*/
+	}
 /*
 //	Pop allocators
 
@@ -162,7 +160,7 @@ void ResTerm()
 //	---------------------------------------------------------
 long ResSize(Id id)
 {
-	/*ResDesc *prd = RESDESC(id);
+	ResDesc *prd = RESDESC(id);
 
 	if (prd->flags & RDF_LZW)							// If it's compressed...
 	{
@@ -172,7 +170,7 @@ long ResSize(Id id)
 			return (MaxSizeRsrc(prd->hdl));		// else return the res map size.
 	}
 	else
-		return (MaxSizeRsrc(prd->hdl));			// For normal resources, */
+		return (MaxSizeRsrc(prd->hdl));			// For normal resources, 
 }																	// return the res map size.
 
 //	---------------------------------------------------------
@@ -187,7 +185,7 @@ long ResSize(Id id)
 
 void ResGrowResDescTable(Id id)
 {
-	/*long	newAmt, currAmt;
+	long	newAmt, currAmt;
 	Ptr	growPtr;
 
 //	Calculate size of new table and size of current
@@ -203,17 +201,17 @@ void ResGrowResDescTable(Id id)
 //			("ResGrowResDescTable: extending to $%x entries\n", newAmt));
 
 //		SetPtrSize((Ptr)gResDesc, newAmt * sizeof(ResDesc));
-		growPtr = malloc(newAmt * sizeof(ResDesc));
+		growPtr = NewPtr(newAmt * sizeof(ResDesc));
 		if (MemError() != noErr)
 		{
-			DebugString("ResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
+			DebugStr("\pResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
 			return;
 		}
 		BlockMove(gResDesc, growPtr, currAmt * sizeof(ResDesc));
-		free(gResDesc);
+		DisposePtr((Ptr)gResDesc);
 		gResDesc = (ResDesc *)growPtr;
 		LG_memset(gResDesc + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc));
-		resDescMax = newAmt - 1;*/
+		resDescMax = newAmt - 1;
 
 //	Grow cumulative stats table too
 /*
@@ -233,7 +231,7 @@ void ResGrowResDescTable(Id id)
 				}
 			});
 */
-	//}
+	}
 }
 
 //	---------------------------------------------------------
@@ -270,7 +268,7 @@ void ResShrinkResDescTable()
 		SetPtrSize(gResDesc, newAmt * sizeof(ResDesc));
 		if (MemError() != noErr)
 		{
-//¥¥¥			Warning(("ResGrowDescTable: RES DESCRIPTOR TABLE BAD!!!\n"));
+//���			Warning(("ResGrowDescTable: RES DESCRIPTOR TABLE BAD!!!\n"));
 			return;
 		}
 		resDescMax = newAmt - 1;

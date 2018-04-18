@@ -58,11 +58,9 @@ char which_lang;
 
 void init_strings(void)
 {
-	FSSpec	fSpec;
-
-	// Open the string resource file, Mac style.
-	FSMakeFSSpec(gDataVref, gDataDirID, "cybstrng.rsrc", &fSpec);
-	string_res_file = ResOpenFile(&fSpec);
+	// Open the string resource file.
+   printf("Loading cybstrng.res\n");
+	string_res_file = ResOpenFile("res/data/cybstrng.res");
 	
 	if (string_res_file < 0)
 		critical_error(CRITERR_RES|0);

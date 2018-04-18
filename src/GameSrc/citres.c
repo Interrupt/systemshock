@@ -76,6 +76,8 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
    uchar alloced_fdesc = FALSE;
    extern int memcount;
 
+   printf("master_load_bitmap_from_res\n");
+
    if(!RefIndexValid(rt,i))
    {
 //      Warning(("Bitmap index %i invalid!\n",i));
@@ -91,6 +93,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
    }
    else
    {
+      printf("REFSIZE %i\n", RefSize(rt,i));
 //      mprintf("look, Refsize is only %d!\n",RefSize(rt,i));
       f = (FrameDesc *)frameBuffer;
    }
@@ -136,10 +139,16 @@ errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uc
 
 errtype load_res_bitmap(grs_bitmap* bmp, Ref rid,uchar alloc)
 {
+   printf("Loading bitmap.\n");
+
    errtype retval;
    RefTable *rt = ResReadRefTable(REFID(rid));
    retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, FALSE, NULL,(alloc) ? NULL : bmp->bits);
+
+   printf("Loaded bitmap %i.\n", retval);
    ResFreeRefTable(rt);
+
+   printf("Returning bitmap.\n");
    return(retval);
 }
 
