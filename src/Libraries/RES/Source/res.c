@@ -49,8 +49,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ResDesc *gResDesc;								// ptr to array of resource descriptors
 Id resDescMax;									// max id in res desc
-#define DEFAULT_RESMAX 1023			// default max resource id
-#define DEFAULT_RESGROW 1024		// grow by blocks of 1024 resources
+#define DEFAULT_RESMAX 16383			// default max resource id
+#define DEFAULT_RESGROW 16384		// grow by blocks of 1024 resources
 														// must be power of 2!
 //	Some variables
 /*
@@ -90,12 +90,6 @@ void ResInit()
 	gResDesc = (ResDesc *)NewPtrClear( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
 	if (MemError())
 		DebugStr("\pResInit: Can't allocate the global resource descriptor table.\n");
-	
-	gResDesc[ID_HEAD].prev = 0;
-	gResDesc[ID_HEAD].next = ID_TAIL;
-	gResDesc[ID_TAIL].prev = ID_HEAD;
-	gResDesc[ID_TAIL].next = 0;
-
 
 //	Clear file descriptor array
 

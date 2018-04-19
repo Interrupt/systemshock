@@ -243,6 +243,8 @@ void ResDrop(Id id)
 {
 	ResDesc *prd;
 
+	printf("ResDrop\n");
+
 	//	Check for locked
 
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
@@ -300,6 +302,8 @@ void ResDrop(Id id)
 void ResDelete(Id id)
 {
 	ResDesc *prd;
+
+	printf("ResDelete\n");
 
 	//	If locked, issue warning
 

@@ -65,19 +65,15 @@ void init_strings(void)
 	if (string_res_file < 0)
 		critical_error(CRITERR_RES|0);
 
-   char buf[100];
-   printf("TESTING: %s\n", get_string(MKREF(RES_texnames,8),buf,100));
+   char buf[2000];
 
 	lg_sprintf_install_stringfunc((char*(*)(ulong))RefGet);
 }
 
 char* get_string(int num, char* buf, int bufsize)
 {
-   printf("get_string: %x\n",num);
-
+   printf("REFID: %x\n", REFID(num));
    RefTable* table = ResGet(REFID(num));
-   //printf("Numrefs in table: %i\n", table->numRefs);
-
    if (!ResInUse(REFID(num)) ||
        !RefIndexValid((RefTable*)ResGet(REFID(num)),REFINDEX(num)))
    {

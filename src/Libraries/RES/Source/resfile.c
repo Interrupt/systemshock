@@ -139,9 +139,7 @@ short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 		fd = fopen(fname, "rb");
 		if (fd != NULL)
 			{
-//			read(fd, &fileHead, sizeof(ResFileHeader));
 			fread(&fileHead, sizeof(ResFileHeader), 1, fd);
-			//read(fd, &fileHead, sizeof(ResFileHeader));
 
 			if (strncmp(fileHead.signature, resFileSignature,
 				sizeof(resFileSignature)) != 0)
@@ -150,6 +148,7 @@ short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 				printf("ResOpenResFile: %s is not valid resource file\n", fname);
 				return(-3);
 				}
+				printf("Found header: %s\n", resFileSignature);
 			}
 		else
 			{
@@ -220,7 +219,9 @@ short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 			else
 				{
 				fseek(fd, fileHead.dirOffset, SEEK_SET);
-				fread(&dirHead, sizeof(ResDirHeader), 1, fd);
+				printf("Seeking to dirOffset: %i\n", fileHead.dirOffset);
+
+				fread(&dirHead, sizeof(ResDirHeader) - 2, 1, fd);
 				ResReadDirEntries(filenum, &dirHead);
 				}
 			break;
@@ -509,6 +510,8 @@ void ResReadDirEntries(int filenum, ResDirHeader *pDirHead)
 	dataOffset = pDirHead->dataOffset;					// mark starting offset
 	fd = resFile[filenum].fd;
 
+	printf("pDirHead->dataOffset: %i\n", pDirHead->dataOffset);
+
 //	Scan directory:
 
 	for (entry = 0; entry < pDirHead->numEntries; entry++)
@@ -518,7 +521,13 @@ void ResReadDirEntries(int filenum, ResDirHeader *pDirHead)
 
 		if (pDirEntry >= &dirEntries[NUM_DIRENTRY_BLOCK])
 			{
-			fread(dirEntries, sizeof(ResDirEntry) * NUM_DIRENTRY_BLOCK, 1, fd);
+				for(int i = 0; i < NUM_DIRENTRY_BLOCK; i++) {
+					fread(&dirEntries[i].id, 2, 1, fd);
+					fread(&dirEntries[i].size, 3, 1, fd);
+					fread(&dirEntries[i].flags, 1, 1, fd);
+					fread(&dirEntries[i].csize, 3, 1, fd);
+					fread(&dirEntries[i].type, 1, 1, fd);
+				}
 			pDirEntry = &dirEntries[0];
 			}
 
@@ -573,7 +582,10 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset)
 	prd->prev = 0;
 
 	if(pDirEntry->id == 0x872)
-		printf("Found RES_intro: id: %x, flags: %x, type: %x\n", pDirEntry->id, prd->flags, prd->type);
+		printf("Found RES_intro!: id: %x, flags: %x, type: %x offset: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset);
+
+	//if(pDirEntry->id == 0x86a || pDirEntry->id == 0x86b || pDirEntry->id == 0x86c)
+	printf("resource: id: %x, flags: %x, type: %x offset: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset);
 
 
 //	If loadonopen flag set, load resource

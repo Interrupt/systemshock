@@ -306,23 +306,23 @@ typedef struct {
 	char signature[16];		// "LG ResFile v2.0\n",
 	char comment[96];			// user comment, terminated with '\z'
 	uchar reserved[12];		// reserved for future use, must be 0
-	long dirOffset;			// file offset of directory
+	int dirOffset: 32;			// file offset of directory
 } ResFileHeader;				// total 128 bytes (why not?)
 
 typedef struct {
 	ushort numEntries: 16;		// # items referred to by directory
-	long dataOffset: 32;			// file offset at which data resides
+	int dataOffset: 32;			// file offset at which data resides
 									// directory entries follow immediately
 									// (numEntries of them)
 } ResDirHeader;
 
 typedef struct {
-	Id id : 16;						// resource id (if 0, entry is deleted)
-	ulong size: 24;				// uncompressed size (size in ram)
-	ulong flags: 8;				// resource flags (RDF_XXX)
-	ulong csize: 24;			// compressed size (size on disk)
+	Id id;						// resource id (if 0, entry is deleted)
+	ulong size;				// uncompressed size (size in ram)
+	ushort flags;				// resource flags (RDF_XXX)
+	ulong csize;			// compressed size (size on disk)
 									// (this size is valid disk size even if not comp.)
-	long type: 8;				// resource type
+	ushort type;				// resource type
 } ResDirEntry;
 
 //	Active resource file table
