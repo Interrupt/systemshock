@@ -202,6 +202,7 @@ void ResGrowResDescTable(Id id)
 //		Spew(DSRC_RES_General,
 //			("ResGrowResDescTable: extending to $%x entries\n", newAmt));
 
+		printf("ResGrowResDescTable\n");
 //		SetPtrSize((Ptr)gResDesc, newAmt * sizeof(ResDesc));
 		growPtr = NewPtr(newAmt * sizeof(ResDesc));
 		if (MemError() != noErr)

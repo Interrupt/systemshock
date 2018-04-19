@@ -195,6 +195,7 @@ short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 //	Record resFile[] file descriptor
 
 	prf->fd = fd;
+	printf("Saving fd: %x\n", fd);
 
 //	printf("ResOpenResFile: opening: %s at filenum %d\n", fname, filenum);
 //	Spew(DSRC_RES_General, ("ResOpenResFile: opening: %s at filenum %d\n",
@@ -221,7 +222,7 @@ short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 				fseek(fd, fileHead.dirOffset, SEEK_SET);
 				printf("Seeking to dirOffset: %i\n", fileHead.dirOffset);
 
-				fread(&dirHead, sizeof(ResDirHeader) - 2, 1, fd);
+				fread(&dirHead, sizeof(ResDirHeader), 1, fd);
 				ResReadDirEntries(filenum, &dirHead);
 				}
 			break;
@@ -512,8 +513,11 @@ void ResReadDirEntries(int filenum, ResDirHeader *pDirHead)
 
 	printf("pDirHead->dataOffset: %i\n", pDirHead->dataOffset);
 
+	printf("sizeof(ResDirEntry): %i\n", sizeof(ResDirEntry));
+
 //	Scan directory:
 
+	int idx = 0;
 	for (entry = 0; entry < pDirHead->numEntries; entry++)
 		{
 
@@ -522,11 +526,7 @@ void ResReadDirEntries(int filenum, ResDirHeader *pDirHead)
 		if (pDirEntry >= &dirEntries[NUM_DIRENTRY_BLOCK])
 			{
 				for(int i = 0; i < NUM_DIRENTRY_BLOCK; i++) {
-					fread(&dirEntries[i].id, 2, 1, fd);
-					fread(&dirEntries[i].size, 3, 1, fd);
-					fread(&dirEntries[i].flags, 1, 1, fd);
-					fread(&dirEntries[i].csize, 3, 1, fd);
-					fread(&dirEntries[i].type, 1, 1, fd);
+					fread(&dirEntries[i], sizeof(ResDirEntry), 1, fd);
 				}
 			pDirEntry = &dirEntries[0];
 			}
@@ -564,7 +564,7 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset)
 	prd = RESDESC(pDirEntry->id);
 	if (prd->ptr)
 		{
-			//printf("Warning! Deleted entry %x.\n", pDirEntry->id);
+			printf("Warning! Deleted entry %x.\n", pDirEntry->id);
       /*Warning(("RESOURCE ID COLLISION AT ID %x!!\n",pDirEntry->id));
 		CUMSTATS(pDirEntry->id,numOverwrites);*/
 		ResDelete(pDirEntry->id);
@@ -581,23 +581,23 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset)
 	prd->next = 0;
 	prd->prev = 0;
 
-	if(pDirEntry->id == 0x872)
-		printf("Found RES_intro!: id: %x, flags: %x, type: %x offset: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset);
+	//if(pDirEntry->id == 0x86c)
+	printf("res: id: %x, flags: %x, type: %x offset: %i size: %i csize: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset, prd->size, pDirEntry->csize);
 
 	//if(pDirEntry->id == 0x86a || pDirEntry->id == 0x86b || pDirEntry->id == 0x86c)
-	printf("resource: id: %x, flags: %x, type: %x offset: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset);
+	//printf("resource: id: %x, flags: %x, type: %x offset: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset);
 
 
 //	If loadonopen flag set, load resource
 
 	// Does this need to be uncommented?
-	/*if (pDirEntry->flags & RDF_LOADONOPEN)
+	if (pDirEntry->flags & RDF_LOADONOPEN)
 		{
 		currOffset = ftell(resFile[filenum].fd);
 		ResLoadResource(pDirEntry->id);
 		ResAddToTail(prd);
 		fseek(resFile[filenum].fd, currOffset, SEEK_SET);
-		}*/
+		}
 }
 
 /*

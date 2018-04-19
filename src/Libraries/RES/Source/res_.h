@@ -77,8 +77,9 @@ void ResGrowResDescTable(Id id);
 
 #define RES_OFFSET_ALIGN(offset) (((offset)+3)&0xFFFFFFFCL)
 #define RES_OFFSET_PADBYTES(size) ((4-(size))&3)
-#define RES_OFFSET_REAL2DESC(offset) ((offset)>>2)
-#define RES_OFFSET_DESC2REAL(offset) ((offset)<<2)
+
+#define RES_OFFSET_REAL2DESC(offset) (offset)
+#define RES_OFFSET_DESC2REAL(offset) (offset)
 
 #define RES_OFFSET_PENDING 1	// offset of resource not yet written
 
