@@ -640,7 +640,7 @@ uchar LzwFdSrcGet()
 {
 	if (lzwReadBuffIndex == LZW_FD_READ_BUFF_SIZE)
 		{
-		read(lzwFdSrc, lzwFdReadBuff, LZW_FD_READ_BUFF_SIZE);
+		fread(lzwFdReadBuff, LZW_FD_READ_BUFF_SIZE, 1, lzwFdSrc);
 		lzwReadBuffIndex = 0;
 		}
 	return(lzwFdReadBuff[lzwReadBuffIndex++]);

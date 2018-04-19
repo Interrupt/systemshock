@@ -555,7 +555,7 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset)
 	prd = RESDESC(pDirEntry->id);
 	if (prd->ptr)
 		{
-			//printf("Warning! Deleted entry.\n");
+			//printf("Warning! Deleted entry %x.\n", pDirEntry->id);
       /*Warning(("RESOURCE ID COLLISION AT ID %x!!\n",pDirEntry->id));
 		CUMSTATS(pDirEntry->id,numOverwrites);*/
 		ResDelete(pDirEntry->id);
@@ -572,10 +572,8 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset)
 	prd->next = 0;
 	prd->prev = 0;
 
-//	printf("res id: %x, flags: %x, type: %x\n", pDirEntry->id, prd->flags, prd->type);
-
-	if(pDirEntry->id == 0x86f)
-		printf("WARNING: FOUND RES_texnames!\n\n\n");
+	if(pDirEntry->id == 0x872)
+		printf("Found RES_intro: id: %x, flags: %x, type: %x\n", pDirEntry->id, prd->flags, prd->type);
 
 
 //	If loadonopen flag set, load resource

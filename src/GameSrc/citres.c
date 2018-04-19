@@ -85,8 +85,6 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
       return(ERR_FREAD);
    }
 
-   printf("REFSIZE %i\n", RefSize(rt,i));
-
    rid = MKREF(id_num,i);
    if (RefSize(rt,i) > FRAME_BUFFER_SIZE)
    {

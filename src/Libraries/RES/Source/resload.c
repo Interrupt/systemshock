@@ -66,6 +66,8 @@ void *ResLoadResource(Id id)
 {
 	ResDesc *prd = RESDESC(id);
 
+	printf("Loading %x\n", id);
+
 	//	If doesn't exit, forget it
 
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResInUse(id)) return NULL;});
@@ -205,7 +207,7 @@ uchar ResRetrieve(Id id, void *buffer)
 	long size;
 	RefIndex numRefs;
 
-	//printf("ResRetrieve\n");
+	//printf("ResRetrieve: for %x\n", id);
 
 	//	Check id and file number
 
@@ -213,7 +215,6 @@ uchar ResRetrieve(Id id, void *buffer)
 	prd = RESDESC(id);
 	fd = resFile[prd->filenum].fd;
 
-	printf("ResRetrieve: at fd %d filenum %d\n", fd, prd->filenum);
 //	DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
 //		Warning(("ResRetrieve: id $%x doesn't exist\n", id)); \
 //		return FALSE; \
@@ -231,24 +232,25 @@ uchar ResRetrieve(Id id, void *buffer)
 	//	If compound, read in ref table
 
 	if (prd->flags & RDF_COMPOUND)
-		{
-		read(fd, p, sizeof(short));
+	{
+		printf("Is compound %x!\n", id);
+		fread(p, sizeof(short), 1, fd);
 		numRefs = *(short *)p;
 		p += sizeof(short);
-		read(fd, p, sizeof(long) * (numRefs + 1));
+		fread(p, sizeof(long), (numRefs + 1), fd);
 		p += sizeof(long) * (numRefs + 1);
       	size -= REFTABLESIZE(numRefs);
-		}
+	}
 
 	//	Read in data
 
-	/*if (prd->flags & RDF_LZW) {
-		printf(" trying LzwExpandFd2Buff\n");
-		LzwExpandFd2Buff(fd, p, 0, 0);
+	if (prd->flags & RDF_LZW) {
+		//printf(" LzwExpandFd2Buff segfaults!\n");
+		//LzwExpandFd2Buff(fd, p, 0, 0);
 	}
-	else*/
-		
-	read(fd, p, size);
+	else {
+		fread(p, size, 1, fd);
+	}
 
 	return TRUE;
 }

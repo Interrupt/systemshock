@@ -154,35 +154,41 @@ void ResUnlock(Id id)
 //	Returns: ptr to resource (ptr only guaranteed until next Malloc(),
 //				Lock(), Get(), etc.
 //	---------------------------------------------------------
-//  For Mac version:  Change 'ptr' refs to 'hdl', lock resource handle and return ptr.
 
-void *ResGet(Id id)
-{
-	printf("ResGet Unimplemented\n");
-	/*ResDesc *prd = RESDESC(id);
-
-//	Check if valid id
-
-//	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
-
-//	Add to cumulative stats
-
-//	CUMSTATS(id,numGets);
-
-//	Load resource or move to tail
-
-	if (ResLoadResource(id) == NULL)
-		return(NULL);
-	
-//	ResAddToTail(prd);
-//	if (prd->lock == 0)
-//		ResMoveToTail(prd);
-
-	//	Return ptr
-	
-	HLock(prd->hdl);
-	return(*prd->hdl);*/
-}
+void *ResGet(Id id)  
+{  
+    ResDesc *prd;
+  
+//  Check if valid id  
+  
+    //ValidateRes(id);  
+  
+    /*DBG(DSRC_RES_ChkIdRef,  
+    {  
+        if (!ResCheckId(id))  
+            return NULL;  
+    });*/  
+  
+//  Add to cumulative stats  
+  
+    //CUMSTATS(id, numGets);  
+  
+//  Load resource or move to tail  
+  
+    prd = RESDESC(id);
+    if (prd->ptr == NULL)  
+    {  
+        if (ResLoadResource(id) == NULL)  
+        {  
+            return (NULL);  
+        }  
+    }
+  
+    //ValidateRes(id);
+  
+//  Return ptr  
+    return (prd->ptr);  
+}  
 
 
 //	---------------------------------------------------------

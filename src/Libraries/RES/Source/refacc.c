@@ -130,7 +130,7 @@ void *RefGet(Ref ref)
 	//	Check for valid ref
 
 	if (RefCheckRef(ref) != TRUE) {
-		printf("No valid ref!");
+		printf("No valid ref!\n");
 		return NULL;
 	}
 
@@ -193,6 +193,8 @@ RefTable *ResReadRefTable(Id id)
 	short		err;
 	int 		fd;
 
+	printf("ResReadRefTable!\n");
+
 	prd = RESDESC(id);
 	
 	//	Check id and file number and make sure compound
@@ -214,11 +216,11 @@ RefTable *ResReadRefTable(Id id)
 
 	//	Seek to data, read numrefs, allocate table, read in offsets
 
-	lseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
-	read(fd, &numRefs, sizeof(RefIndex));
+	fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
+	fread(&numRefs, sizeof(RefIndex), 1, fd);
 	prt = malloc(REFTABLESIZE(numRefs));
 	prt->numRefs = numRefs;
-	read(fd, &prt->offset[0], sizeof(long) * (numRefs + 1));
+	fread(&prt->offset[0], sizeof(long) * (numRefs + 1), 1, fd);
 
 	return(prt);
 }

@@ -221,6 +221,8 @@ void ResGrowResDescTable(Id id)
 		LG_memset(gResDesc + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc));
 		resDescMax = newAmt - 1;
 
+
+
 //	Grow cumulative stats table too
 /*
 		DBG(DSRC_RES_CumStat, {
