@@ -488,6 +488,8 @@ long LzwExpand(
 
 //	If not already initialized, do it
 
+	printf("LzwExpand\n");
+
 	if (lzwBuffer == NULL)
 		{
 		if (LzwMallocBuffer() < 0)
@@ -520,6 +522,8 @@ long LzwExpand(
 
 //	This is the expansion loop.  It reads in codes from the source until
 //	it sees the special end-of-data code.
+
+	printf("Expanding\n");
 
 	while ((lzwe.new_code = LzwInputCode(f_SrcGet)) != MAX_VALUE)
 		{
@@ -589,6 +593,8 @@ DONE_EXPAND:
 	(*f_SrcCtrl)(srcLoc, END);
 	(*f_DestCtrl)(destLoc, END);
 
+	printf("LzwExpand done\n");
+
 	return(lzwe.outputSize);
 }
 
@@ -612,7 +618,7 @@ uchar LzwBuffSrcGet()
 	return(*lzwBuffSrcPtr++);
 }
 
-/*
+
 //	---------------------------------------------------------------
 //
 //	LzwFdSrcCtrl() and LzwFdSrcGet() implement a file-descriptor
@@ -657,7 +663,7 @@ uchar LzwFpSrcGet()
 {
 	return(fgetc(lzwFpSrc));
 }
-*/
+
 
 //	---------------------------------------------------------------
 //		STANDARD OUTPUT SOURCES

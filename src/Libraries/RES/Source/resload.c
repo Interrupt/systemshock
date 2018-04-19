@@ -64,7 +64,6 @@ void LoadCompressedResource(ResDesc *prd, Id id);
 
 void *ResLoadResource(Id id)
 {
-	printf("ResLoadResource\n");
 	ResDesc *prd = RESDESC(id);
 
 	//	If doesn't exit, forget it
@@ -72,7 +71,7 @@ void *ResLoadResource(Id id)
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResInUse(id)) return NULL;});
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
 
-//	Spew(DSRC_RES_Read, ("ResLoadResource: loading $%x\n", id));
+	// printf("ResLoadResource: loading $%x\n", id);
 
 	//	Allocate memory, setting magic id so pager can tell who it is if need be.
 
@@ -90,22 +89,8 @@ void *ResLoadResource(Id id)
 
 //	CUMSTATS(id,numLoads);
 
-	//	Load from disk
-
-	if (prd->flags & RDF_LZW)
-	{
-		printf("Loading compressed resource.\n");
-		LoadCompressedResource(prd, id);
-	}
-	else
-	{
-		printf("Load uncompressed resource.\n");
-		if (prd->hdl == nil)
-			prd->hdl = GetResource(resMacTypes[prd->type], id);
-		else if (*prd->hdl == nil)
-			LoadResource(prd->hdl);
-	}
-//	ResRetrieve(id, nil);
+	//  Load from disk  
+      ResRetrieve(id, prd->ptr);
 
 	//	Tally stats
 
@@ -113,7 +98,7 @@ void *ResLoadResource(Id id)
 
 	//	Return handle
 
-	return(prd->hdl);
+	return(prd->ptr);
 }
 
 //	---------------------------------------------------------
@@ -134,8 +119,10 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 	long			exlen;
 	long			tableSize = 0;
 	ushort		numRefs;
+
+	printf("LoadCompressedResource\n");
 	
-	if (prd->hdl != NULL && *prd->hdl != NULL)	// If everything's still in
+	/*if (prd->hdl != NULL && *prd->hdl != NULL)	// If everything's still in
 		return;														// memory, there's no need to load.
 			
 	// Get the compressed resource from disk.
@@ -197,10 +184,10 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 	
 	HUnlock(prd->hdl);								// Unlock the buffers.
 	HUnlock(mirrorHdl);
-	DisposeHandle(mirrorHdl);						// Free the mirror buffer.
+	DisposeHandle(mirrorHdl);						// Free the mirror buffer.*/
 }
 
-/*
+
 //	---------------------------------------------------------
 //
 //	ResRetrieve() retrieves a resource from disk.
@@ -213,16 +200,20 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 uchar ResRetrieve(Id id, void *buffer)
 {
 	ResDesc *prd;
-//	int fd;
-//	uchar *p;
-//	long size;
-//	RefIndex numRefs;
+	int fd;
+	uchar *p;
+	long size;
+	RefIndex numRefs;
+
+	//printf("ResRetrieve\n");
 
 	//	Check id and file number
 
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return FALSE;});
 	prd = RESDESC(id);
-//	fd = resFile[prd->filenum].fd;
+	fd = resFile[prd->filenum].fd;
+
+	printf("ResRetrieve: at fd %d filenum %d\n", fd, prd->filenum);
 //	DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
 //		Warning(("ResRetrieve: id $%x doesn't exist\n", id)); \
 //		return FALSE; \
@@ -230,9 +221,12 @@ uchar ResRetrieve(Id id, void *buffer)
 	
 	//	Seek to data, set up
 
-	lseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
-	p = buffer;
-	size = prd->size;
+	//printf("  seeking to %i\n", prd->offset);
+	fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);  
+   	p = (uchar *) buffer;  
+   	size = prd->size;
+
+	//printf("  size %i\n", size);
 
 	//	If compound, read in ref table
 
@@ -243,16 +237,19 @@ uchar ResRetrieve(Id id, void *buffer)
 		p += sizeof(short);
 		read(fd, p, sizeof(long) * (numRefs + 1));
 		p += sizeof(long) * (numRefs + 1);
-      size -= REFTABLESIZE(numRefs);
+      	size -= REFTABLESIZE(numRefs);
 		}
 
 	//	Read in data
 
-	if (prd->flags & RDF_LZW)
+	/*if (prd->flags & RDF_LZW) {
+		printf(" trying LzwExpandFd2Buff\n");
 		LzwExpandFd2Buff(fd, p, 0, 0);
-	else
-		read(fd, p, size);
+	}
+	else*/
+		
+	read(fd, p, size);
 
 	return TRUE;
 }
-*/
+

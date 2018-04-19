@@ -63,6 +63,10 @@ void *RefLock(Ref ref)
 	
 //	DBG(DSRC_RES_ChkIdRef, {if (!RefCheckRef(ref)) return NULL;});
 
+	if (!RefCheckRef(ref)) {
+		printf("Bad ref ID!");
+	}
+
 	//	Add to cumulative stats
 
 //	CUMSTATS(REFID(ref),numLocks);
@@ -70,8 +74,9 @@ void *RefLock(Ref ref)
 	//	Load block if not in RAM
 
 	prd = RESDESC(REFID(ref));
-	if (ResLoadResource(REFID(ref)) == NULL)
+	if (ResLoadResource(REFID(ref)) == NULL) {
 		return(NULL);
+	}
 //	if (prd->lock == 0)
 //		ResRemoveFromLRU(prd);
 
@@ -85,18 +90,18 @@ void *RefLock(Ref ref)
 	prd->lock++;
 
 	//	Index into ref table
+	prt = (RefTable *) prd->ptr;  
+   	index = REFINDEX(ref);
 
-	if (prd->lock == 1)
-		HLock(prd->hdl);
-	prt = (RefTable *)*prd->hdl;
-	index = REFINDEX(ref);
 //	DBG(DSRC_RES_ChkIdRef, {if (!RefIndexValid(prt,index)) \
-//		Warning(("RefLock: reference: $%x bad, index out of range\n", ref));});
+//		Warning(("RefLock: reference: $%x bad, index out of range\n", ref));});*/
 
 	//	Return ptr
 	
-	if (!RefIndexValid(prt, index))
+	if (!RefIndexValid(prt, index)) {
+		printf("Invalid Index!\n");
 		return (NULL);
+	}
 	else
 		return (((uchar *)prt) + (prt->offset[index]));
 }
@@ -120,7 +125,14 @@ void *RefGet(Ref ref)
 	RefTable *prt;
 	RefIndex index;
 
+	printf("RefGet\n");
+
 	//	Check for valid ref
+
+	if (RefCheckRef(ref) != TRUE) {
+		printf("No valid ref!");
+		return NULL;
+	}
 
 //	DBG(DSRC_RES_ChkIdRef, {if (!RefCheckRef(ref)) return NULL;});
 
@@ -135,22 +147,27 @@ void *RefGet(Ref ref)
 	prd = RESDESC(REFID(ref));
 	if (ResLoadResource(REFID(ref)) == NULL)
 		return(NULL);
+
 //		ResAddToTail(prd);
 //	else if (prd->lock == 0)
 //		ResMoveToTail(prd);
 
 	//	Index into ref table
 
-	HLock(prd->hdl);
-	prt = (RefTable *)*prd->hdl;
-	index = REFINDEX(ref);
+	//HLock(prd->hdl);
+	//prt = (RefTable *)*prd->hdl;
+
+	prt = (RefTable *) prd->ptr;  
+   	index = REFINDEX(ref);  
 //	DBG(DSRC_RES_ChkIdRef, {if (!RefIndexValid(prt,index)) \
 //		Warning(("RefGet: reference: $%x bad, index out of range\n", ref));});
 
 //	Return ptr
 
-	if (!RefIndexValid(prt, index))
+	if (!RefIndexValid(prt, index)) {
+		printf("RefGet: reference: $%x bad, index out of range\n", ref);
 		return (NULL);
+	}
 	else
 		return (((uchar *)prt) + (prt->offset[index]));
 }
@@ -482,7 +499,7 @@ int RefInject(RefTable *prt, Ref ref, void *buff)
 }
 */
 
-/*
+
 //	---------------------------------------------------------
 //		INTERNAL ROUTINES
 //	---------------------------------------------------------
@@ -493,20 +510,21 @@ int RefInject(RefTable *prt, Ref ref, void *buff)
 //
 //	Returns: TRUE if ref ok, FALSE if invalid & prints warning
 
-bool RefCheckRef(Ref ref)
+uchar RefCheckRef(Ref ref)
 {
 	Id id;
 
 	id = REFID(ref);
-	if (!ResCheckId(id))
+	if (!ResCheckId(id)) {
+		printf("RefCheckRef: id $%x is bad\n");
 		return FALSE;
+	}
 
 	if ((ResFlags(id) & RDF_COMPOUND) == 0)
-		{
-		Warning(("RefCheckRef: id $%x is not a compound resource\n", id));
+	{
+		printf("RefCheckRef: id $%x is not a compound resource\n", id);
 		return FALSE;
-		}
+	}
 
 	return TRUE;
 }
-*/

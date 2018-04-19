@@ -379,6 +379,7 @@ void init_all(void)
 	}
 #endif
 
+	printf("Screen init\n");
 	screen_init();
 	fullscreen_init();
    amap_init();

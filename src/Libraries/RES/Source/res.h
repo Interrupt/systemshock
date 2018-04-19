@@ -159,18 +159,32 @@ void RefExtractInBlocks(RefTable *prt, Ref ref, void *buff, long blockSize,
 
 //	Each resource id gets one of these resource descriptors
 
-typedef struct 
+/*typedef struct 
 {
-	Handle	hdl;			// Mac resource handle.  NULL if not in memory (on disk)
-	short	filenum;		// Mac resource file number
+	//Handle	hdl;			// Mac resource handle.  NULL if not in memory (on disk)
+	int	filenum;		// Mac resource file number
 	uchar 	lock;			// lock count
 	uchar	flags;			// misc flags (RDF_XXX, see below)
 	uchar 	type;			// resource type (RTYPE_XXX, see restypes.h)
-	int 	offset;
-	int		size;
-	FILE* 	ptr;
+	uint 	offset;
+	uint	size;
+
+	void* 	ptr;
 	Id   	next;
 	Id   	prev;
+} ResDesc;*/
+
+typedef struct
+{
+   void *ptr;                                    // ptr to resource in memory, or NULL if on disk
+   ulong lock: 8;                                // lock count
+   ulong size: 24;                               // size of resource in bytes (1 Mb max)
+   ulong filenum: 5;                             // file number 0-31
+   ulong offset: 27;                             // offset in file
+   Id next;                                      // next resource in LRU order
+   Id prev;                                      // previous resource in LRU order
+   ulong flags;									 // misc flags (RDF_XXX, see below)
+   ushort type: 8;								 // resource type (RTYPE_XXX, see restypes.h)
 } ResDesc;
 
 #define RESDESC(id) (&gResDesc[id])					// convert id to resource desc ptr
@@ -188,17 +202,16 @@ extern Id resDescMax;						// max id in res desc
 
 
 //	Information about resources
-
-#define ResInUse(id) (gResDesc[id].hdl)
-#define ResPtr(id) (*(gResDesc[id].hdl))
-long ResSize(Id id);										// It's a function now, in res.c
-//#define ResSize(id) (MaxSizeRsrc(gResDesc[id].hdl))
+#define ResInUse(id) (gResDesc[id].offset)
+#define ResPtr(id) (gResDesc[id].ptr)
+#define ResSize(id) (gResDesc[id].size)
 #define ResLocked(id) (gResDesc[id].lock)
-//#define ResType(id) (gResDesc[id].type)
-//#define ResFilenum(id) (gResDesc[id].filenum)
+#define ResFilenum(id) (gResDesc[id].filenum)
+#define ResType(id) (gResDesc[id].type)
 #define ResFlags(id) (gResDesc[id].flags)
-#define ResCompressed(id) (gResDesc[id].flags & RDF_LZW)
-#define ResIsCompound(id) (gResDesc[id].flags & RDF_COMPOUND)
+#define ResCompressed(id) (gResDesc2[id].flags & RDF_LZW)
+#define ResZipped(id) (gResDesc2[id].flags & RDF_PKZIP)
+#define ResIsCompound(id) (gResDesc2[id].flags & RDF_COMPOUND)
 
 #define MaxSizeRsrc(theResource) GetMaxResourceSize(theResource)
 
@@ -297,17 +310,17 @@ typedef struct {
 } ResFileHeader;				// total 128 bytes (why not?)
 
 typedef struct {
-	ushort numEntries;		// # items referred to by directory
-	long dataOffset;			// file offset at which data resides
+	ushort numEntries: 16;		// # items referred to by directory
+	long dataOffset: 32;			// file offset at which data resides
 									// directory entries follow immediately
 									// (numEntries of them)
 } ResDirHeader;
 
 typedef struct {
-	Id id;						// resource id (if 0, entry is deleted)
-	long size: 24;				// uncompressed size (size in ram)
-	long flags: 8;				// resource flags (RDF_XXX)
-	long csize: 24;			// compressed size (size on disk)
+	Id id : 16;						// resource id (if 0, entry is deleted)
+	ulong size: 24;				// uncompressed size (size in ram)
+	ulong flags: 8;				// resource flags (RDF_XXX)
+	ulong csize: 24;			// compressed size (size on disk)
 									// (this size is valid disk size even if not comp.)
 	long type: 8;				// resource type
 } ResDirEntry;

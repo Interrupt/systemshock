@@ -375,6 +375,8 @@ errtype load_misc_cursors(void)
 //      if (_vmailbm.bits != NULL)  free(_vmailbm.bits);
       if (slider_cursor_bmap.bits != NULL)  free(slider_cursor_bmap.bits);
    }
+
+   printf("Loading bitmap cursor\n\n");
    load_hires_bitmap_cursor(&globcursor,   &_targbm,  REF_IMG_bmTargetCursor, TRUE);
    load_hires_bitmap_cursor(&wait_cursor,  &_waitbm,  REF_IMG_bmWaitCursor, TRUE);
    load_hires_bitmap_cursor(&fire_cursor,  &_firebm,  REF_IMG_bmFireCursor, TRUE);

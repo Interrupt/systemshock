@@ -52,6 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void *ResLock(Id id)
 {
+	printf("ResLock Unimplemented\n");
 	/*ResDesc *prd;
 
 	//	Check if valid id
@@ -94,6 +95,7 @@ void *ResLock(Id id)
 //	---------------------------------------------------------
 void *ResLockHi(Id id)
 {
+	printf("ResLockHi Unimplemented\n");
 	/*ResDesc *prd;
 
 	//	If resource not loaded, load it.
@@ -119,6 +121,7 @@ void *ResLockHi(Id id)
 
 void ResUnlock(Id id)
 {
+	printf("ResUnlock Unimplemented\n");
 	/*ResDesc *prd;
 
 	//	Check if valid id
@@ -155,7 +158,7 @@ void ResUnlock(Id id)
 
 void *ResGet(Id id)
 {
-	printf("ResGet\n");
+	printf("ResGet Unimplemented\n");
 	/*ResDesc *prd = RESDESC(id);
 
 //	Check if valid id
@@ -195,7 +198,7 @@ void *ResGet(Id id)
 
 void *ResExtract(Id id, void *buffer)
 {
-	printf("ResExtract\n");
+	printf("ResExtract Unimplemented\n");
 	/*ResDesc *prd = RESDESC(id);
 
 	if (ResLoadResource(id) == NULL)
@@ -232,7 +235,7 @@ void *ResExtract(Id id, void *buffer)
 
 void ResDrop(Id id)
 {
-	/*ResDesc *prd;
+	ResDesc *prd;
 
 	//	Check for locked
 
@@ -260,10 +263,23 @@ void ResDrop(Id id)
 
 	//	Free memory and set ptr to NULL
 
-	if (prd->hdl)
-	{
-		EmptyHandle(prd->hdl);
-	}*/
+	if (prd->ptr == NULL)  
+    {  
+        printf("DoResDrop: Block $%x not in memory, ignoring request\n", id);  
+        return;  
+    }  
+
+    if (prd->lock != 0)  
+    {  
+        printf("DoResDrop: Dropping resource 0x%x that's in use.\n",id);
+        prd->lock = 0;  
+    }
+
+    if (prd->ptr != NULL)  
+    {  
+        free(prd->ptr);  
+        prd->ptr = NULL;  
+    }
 }
 
 //	-------------------------------------------------------
@@ -277,7 +293,7 @@ void ResDrop(Id id)
 
 void ResDelete(Id id)
 {
-	/*ResDesc *prd;
+	ResDesc *prd;
 
 	//	If locked, issue warning
 
@@ -289,10 +305,10 @@ void ResDelete(Id id)
 
 	//	If in use: if in ram, free memory & LRU, then in any case zap entry
 
-//	if (prd->offset)
-//	{
+	if (prd->offset)
+	{
 //		Spew(DSRC_RES_DelDrop, ("ResDelete: deleting $%x\n", id));
-		if (prd->hdl)
+		if (prd->ptr)
 		{
 //			Spew(DSRC_RES_DelDrop, ("ResDelete: freeing memory for $%x\n", id));
 //			DBG(DSRC_RES_Stat, {resStat.totMemAlloc -= prd->size;
@@ -300,24 +316,25 @@ void ResDelete(Id id)
 //				Spew(DSRC_RES_Stat, ("ResDelete: free %d, total now %d bytes\n",
 //					prd->size, resStat.totMemAlloc));});
 
-			ReleaseResource(prd->hdl);				// release the resource.
-			prd->hdl = NULL;
+			//ReleaseResource(prd->hdl);				// release the resource.
 
-//			if (prd->lock == 0)
-//				ResRemoveFromLRU(prd);
+			//if (prd->lock == 0)
+				//ResRemoveFromLRU(prd);
+
+			ResDrop(id);
 		}
 		LG_memset(prd, 0, sizeof(ResDesc));
-//	}
+	}
 
 //	Else if not in use, spew to whoever's listening
 
 //	else
 //		{
 //		Spew(DSRC_RES_DelDrop, ("ResDelete: $%x not in use\n", id));
-//		}*/
+//		}
 }
 
-/*
+
 //	--------------------------------------------------------
 //		INTERNAL ROUTINES
 //	--------------------------------------------------------
@@ -332,14 +349,14 @@ uchar ResCheckId(Id id)
 {
 	if (id < ID_MIN)
 		{
-		Warning(("ResCheckId: id $%x invalid\n", id));
+		printf("ResCheckId: id $%x invalid\n", id);
 		return FALSE;
 		}
 	if (id > resDescMax)
 		{
-		Warning(("ResCheckId: id $%x exceeds table\n", id));
+		printf("ResCheckId: id $%x exceeds table\n", id);
 		return FALSE;
 		}
 	return TRUE;
 }
-*/
+

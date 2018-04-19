@@ -61,7 +61,7 @@ LGPoint			popup_hotspots[NUM_POPUPS] = 	// in 0-16 dimension-independent units
 
 void init_popups(void)
 {
-	for (int i = 0; i < NUM_POPUPS; i++)
+	/*for (int i = 0; i < NUM_POPUPS; i++)
 	{
       printf("Making popup\n");
       
@@ -72,7 +72,7 @@ void init_popups(void)
 			critical_error(CRITERR_RES|0xA);
 	}
 	ResUnlock(RES_popups);
-	ResDrop(RES_popups);
+	ResDrop(RES_popups);*/
 }
 
 

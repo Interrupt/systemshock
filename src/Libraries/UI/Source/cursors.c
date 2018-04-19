@@ -397,6 +397,7 @@ errtype ui_init_cursors(void)
 
    LastCursor = NULL;
    MouseLock = 0;
+
    gr_init_sub_canvas(grd_scr_canv,&DefaultCursorCanvas,0,0,grd_cap->w,grd_cap->h);
    gr_cset_cliprect(&DefaultCursorCanvas,
       0,0,grd_cap->w,grd_cap->h);

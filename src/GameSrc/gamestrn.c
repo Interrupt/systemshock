@@ -65,11 +65,18 @@ void init_strings(void)
 	if (string_res_file < 0)
 		critical_error(CRITERR_RES|0);
 
+   char test_string[100];
+   //printf("TESTING: %s\n", get_string(MKREF(RES_objlongnames,OPTRIP(0)), test_string, 100));
+
+   printf("TESTING: %s\n", get_string(MKREF(RES_objlongnames,0), test_string, 100));
+
 	lg_sprintf_install_stringfunc((char*(*)(ulong))RefGet);
 }
 
 char* get_string(int num, char* buf, int bufsize)
 {
+   printf("get_string: %x\n",num);
+
    if (!ResInUse(REFID(num)) ||
        !RefIndexValid((RefTable*)ResGet(REFID(num)),REFINDEX(num)))
    {

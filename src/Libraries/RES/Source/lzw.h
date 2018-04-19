@@ -70,14 +70,26 @@ void LzwFreeBuffer();								// free alloced buffer if any
   #define LZW_TABLE_SIZE 5021
 #endif
 
-#define LZW_FD_READ_BUFF_SIZE 512
+/*#define LZW_FD_READ_BUFF_SIZE 512
 #define LZW_FD_WRITE_BUFF_SIZE 512
-#define LZW_DECODE_STACK_SIZE 4000
+#define LZW_DECODE_STACK_SIZE 4000*/
+
+#define LZW_FD_READ_BUFF_SIZE   8192
+#define LZW_FD_WRITE_BUFF_SIZE  8192
+#define LZW_DECODE_STACK_SIZE   4096
+#define LZW_TABLE_BUFF_SIZE     18044
 
 //	LzwSetBuffer() requires a buffer of at least this size:
 
+/*#define LZW_BUFF_SIZE (LZW_DECODE_STACK_SIZE + LZW_FD_READ_BUFF_SIZE + LZW_FD_WRITE_BUFF_SIZE + \
+	(LZW_TABLE_SIZE * (sizeof(short) + sizeof(ushort) + sizeof(uchar))))*/
+
+typedef short  tLzwCodeValue;
+typedef uint   tLzwPrefixCode;
+typedef uchar  tLzwAppendChar;
+
 #define LZW_BUFF_SIZE (LZW_DECODE_STACK_SIZE + LZW_FD_READ_BUFF_SIZE + LZW_FD_WRITE_BUFF_SIZE + \
-	(LZW_TABLE_SIZE * (sizeof(short) + sizeof(ushort) + sizeof(uchar))))
+    (LZW_TABLE_BUFF_SIZE * (sizeof(tLzwCodeValue) + sizeof(tLzwPrefixCode) + sizeof(tLzwAppendChar))))
 
 //	Other constants
 

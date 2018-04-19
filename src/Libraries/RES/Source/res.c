@@ -80,17 +80,21 @@ void ResInit()
 	LzwInit();
 */
 
+	LzwInit();
+
 //	Allocate initial resource descriptor table, default size (can't fail)
+
+	printf("ResInit\n");
 
 	resDescMax = DEFAULT_RESMAX;
 	gResDesc = (ResDesc *)NewPtrClear( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
 	if (MemError())
 		DebugStr("\pResInit: Can't allocate the global resource descriptor table.\n");
 	
-//	gResDesc[ID_HEAD].prev = 0;
-//	gResDesc[ID_HEAD].next = ID_TAIL;
-//	gResDesc[ID_TAIL].prev = ID_HEAD;
-//	gResDesc[ID_TAIL].next = 0;
+	gResDesc[ID_HEAD].prev = 0;
+	gResDesc[ID_HEAD].next = ID_TAIL;
+	gResDesc[ID_TAIL].prev = ID_HEAD;
+	gResDesc[ID_TAIL].next = 0;
 
 
 //	Clear file descriptor array
@@ -158,8 +162,9 @@ void ResTerm()
 //  For Mac version:  This is now a function, because we have to check a few things
 //  before returning the size.
 //	---------------------------------------------------------
-long ResSize(Id id)
+/*long ResSize(Id id)
 {
+	printf("ResSize\n");
 	ResDesc *prd = RESDESC(id);
 
 	if (prd->flags & RDF_LZW)							// If it's compressed...
@@ -171,7 +176,10 @@ long ResSize(Id id)
 	}
 	else
 		return (MaxSizeRsrc(prd->hdl));			// For normal resources, 
-}																	// return the res map size.
+
+	return 0;
+}																// return the res map size.
+*/
 
 //	---------------------------------------------------------
 //

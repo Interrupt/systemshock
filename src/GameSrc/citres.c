@@ -76,13 +76,16 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
    uchar alloced_fdesc = FALSE;
    extern int memcount;
 
-   printf("master_load_bitmap_from_res\n");
+   printf("master_load_bitmap_from_res %i\n", i);
 
    if(!RefIndexValid(rt,i))
    {
 //      Warning(("Bitmap index %i invalid!\n",i));
+      printf("Bitmap index %i invalid!\n", i);
       return(ERR_FREAD);
    }
+
+   printf("REFSIZE %i\n", RefSize(rt,i));
 
    rid = MKREF(id_num,i);
    if (RefSize(rt,i) > FRAME_BUFFER_SIZE)
@@ -93,7 +96,6 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
    }
    else
    {
-      printf("REFSIZE %i\n", RefSize(rt,i));
 //      mprintf("look, Refsize is only %d!\n",RefSize(rt,i));
       f = (FrameDesc *)frameBuffer;
    }

@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <_res.h>
 //#endif
 
-/*
+
 //	----------------------------------------------------------
 //		FOR RESOURCE SYSTEM INTERNAL USE - DON'T BE BAD!
 //	----------------------------------------------------------
@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 uchar ResCheckId(Id id);				// returns TRUE if id ok, else FALSE + warns
 uchar RefCheckRef(Ref ref);			// returns TRUE if ref ok, else FALSE & warns
-*/
+
 
 //	Resource loading (resload.c)
 

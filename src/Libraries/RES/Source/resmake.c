@@ -54,11 +54,13 @@ void ResMake(Id id, void *ptr, long size, uchar type, short filenum, uchar flags
 	Handle		resHdl;
 	ResDesc 	*prd;
 	Str255		resName;
+
+	printf("ResMake\n");
 	
 	// Check for resource at that id.  If the handle exists, then just change the
 	// handle (adjusting for size if needed, of course).
 
-	prd = RESDESC(id);
+	/*prd = RESDESC(id);
 	if (prd->hdl)
 	{
 		ResLoadResource(id);
@@ -106,7 +108,7 @@ void ResMake(Id id, void *ptr, long size, uchar type, short filenum, uchar flags
 		prd->lock = 1;
 		prd->flags = flags;
 		prd->type = type;
-	}
+	}*/
 }
 
 
@@ -156,6 +158,8 @@ void ResAddRef(Ref ref, void *pitem, long itemSize)
 	RefIndex index,i;
 	long sizeItemOffsets,oldSize,sizeDiff, hdlSize;
 
+	printf("ResAddRef\n");
+
 	//	Error check
 
 //	DBG(DSRC_RES_ChkIdRef, {if (!RefCheckRef(ref)) return;});
@@ -164,7 +168,7 @@ void ResAddRef(Ref ref, void *pitem, long itemSize)
 
 //	Spew(DSRC_RES_Make, ("ResAddRef: adding ref $%x\n", ref));
 
-	prd = RESDESC(REFID(ref));
+	/*prd = RESDESC(REFID(ref));
 	if (prd->hdl == nil)										// If there is no compound resource handle,
 	{																	// try loading it.
 		prt = (RefTable *)RefGet(ref);
@@ -269,7 +273,7 @@ void ResAddRef(Ref ref, void *pitem, long itemSize)
 		prt->numRefs = index + 1;
 	}
 	
-	HUnlock(prd->hdl);
+	HUnlock(prd->hdl);*/
 }
 
 
@@ -288,7 +292,8 @@ void ResAddRef(Ref ref, void *pitem, long itemSize)
 
 void ResUnmake(Id id)
 {
-	ResDesc *prd;
+	printf("ResUnmake\n");
+	/*ResDesc *prd;
 
 	prd = RESDESC(id);
 	if (prd->hdl)
@@ -296,6 +301,6 @@ void ResUnmake(Id id)
 		ReleaseResource(prd->hdl);
 //		prd->hdl = NULL;
 //		LG_memset(prd, 0, sizeof(ResDesc));
-	}
+	}*/
 }
 
