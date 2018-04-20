@@ -496,8 +496,8 @@ void init_all(void)
    mlimbs_peril = 95;
 
 	// LG splash screen wait
-	if(pause_for_input(pause_time))
-		speed_splash = TRUE;
+	//if(pause_for_input(pause_time))
+	//	speed_splash = TRUE;
 
 #ifdef DO_FADES
 	if (pal_fx_on)
@@ -507,6 +507,7 @@ void init_all(void)
 	init_pal_fx();
 
 	// Put up title screen
+	printf("Showing title screen\n");
 	uiFlush();
 	DrawSplashScreen(9003, TRUE);
 
@@ -525,8 +526,8 @@ void init_all(void)
 
 //Â¥Â¥ for now      object_data_load();
       
-//      gr_clear(0xFF);
-//      gr_set_pal(0, 256, ppall);
+      //gr_clear(0xFF);
+      //gr_set_pal(0, 256, ppall);
    }
 
    // perhaps shouldnt do this if we are going to go into editor...
@@ -540,6 +541,8 @@ void init_all(void)
 
 	uiFlush();
 	init_done = TRUE;
+
+	printf("Finished Initializing!\n");
 }
 
 //-----------------------------------------------------------
@@ -718,7 +721,7 @@ errtype load_da_palette()
 	FSSpec	fSpec;
 	FSRef   fsRef;
 	
-	printf("Loading gamepal.res");
+	printf("Loading gamepal.res\n");
 	pal_file = ResOpenFile("res/data/gamepal.res");
 	if (pal_file < 0)
 		critical_error(CRITERR_RES|4);
