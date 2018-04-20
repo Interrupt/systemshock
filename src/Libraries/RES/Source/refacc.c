@@ -344,59 +344,12 @@ int ResNumRefs(Id id)
 
 void *RefExtract(RefTable *prt, Ref ref, void *buff)
 {
-	RefIndex	index = REFINDEX(ref);
-	ResDesc		*prd = RESDESC(REFID(ref));
-	Handle		resHdl;
-	short			err;
-
-	printf("Extracting resource.\n");
-	
-	SetResLoad(FALSE);												// Get resource handle without
-	resHdl = GetResource(resMacTypes[prd->type], REFID(ref));
-	SetResLoad(TRUE);														// actually loading res into mem
-	
-	if (prd->flags & RDF_LZW)
-	{
-/*
-		rs = RefSize(prt, index);
-		compPtr = NewPtr(rs + 100);								// Just to be safe.
-		if (compPtr == NULL)
-		{
-			Warning(("RefExtract: Can't allocate ptr for compressed ref.\n"));
-			return (NULL);
-		}
-		ReadPartialResource(resHdl, prt->offset[index], buff, RefSize(prt, index));
-
-		LzwExpandFd2Buff(fd, buff,
-			prt->offset[index] - REFTABLESIZE(prt->numRefs),	// skip amt
-			RefSize(prt, index));												// data amt
-*/
-		DebugStr("\pRefExtract: Not implemented for compressed compound resources.\n");
-		return (NULL);
-	}
-	else
-	{
-
-		long refSize = RefSize(prt, index);
-
-		printf("ReadPartialResource\n");
-		printf("RefSize %ld\n", refSize);
-		ReadPartialResource(resHdl, prt->offset[index], buff, refSize);
-		err = ResError();
-		if (err != 0)
-		{
-			printf("Err: %i\n", err);
-			DebugStr("\pRefExtract: Can't partial read the normal resource.\n");
-			return (NULL);
-		}
-	}
-	return (buff);
-
-/*
+	RefIndex index;  
+	ResDesc *prd; 
 	int fd;
-   long refsize;
-   RefIndex numrefs;
-   long offset;
+	long refsize;
+	RefIndex numrefs;
+	long offset;
 
 //	Check id, get file number
 
@@ -414,47 +367,47 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
    else
    {
       // seek into the file and find the stuff.
-   	lseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
-   	read(fd, &numrefs, sizeof(RefIndex));
-   	lseek(fd, index*sizeof(long), SEEK_CUR);
-      read(fd,&offset,sizeof(long));
-      read(fd,&refsize,sizeof(long));
+   	fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
+   	fread(&numrefs, sizeof(RefIndex), 1, fd);
+   	fseek(fd, index*sizeof(long), SEEK_CUR);
+      fread(&offset,sizeof(long), 1, fd);
+      fread(&refsize,sizeof(long), 1, fd);
       refsize -= offset;
-      Warning(("Null reftable size = %d offset = %d numrefs = %d\n",refsize,offset,numrefs));
+      //Warning(("Null reftable size = %d offset = %d numrefs = %d\n",refsize,offset,numrefs));
    }
-	DBG(DSRC_RES_ChkIdRef, {if (!RefCheckRef(ref)) return(NULL);});
+	/*DBG(DSRC_RES_ChkIdRef, {if (!RefCheckRef(ref)) return(NULL);});
 	DBG(DSRC_RES_ChkIdRef, {if (index >= prt->numRefs) { \
 		Warning(("RefExtract: ref $%x index too large\n", ref)); \
 		return(NULL); \
-		}});
+		}});*/
 	prd = RESDESC(REFID(ref));
 	fd = resFile[prd->filenum].fd;
 
 //	Add to cumulative stats
 
-	CUMSTATS(REFID(ref),numExtracts);
+	//CUMSTATS(REFID(ref),numExtracts);
 
 //	Seek to start of all data in compound resource
 
-	lseek(fd, RES_OFFSET_DESC2REAL(prd->offset) + REFTABLESIZE(numrefs),
+	fseek(fd, RES_OFFSET_DESC2REAL(prd->offset) + REFTABLESIZE(numrefs),
 		SEEK_SET);
 
 //	If LZW, extract with skipping, else seek & read
 
 	if (ResFlags(REFID(ref)) & RDF_LZW)
 		{
-		LzwExpandFd2Buff(fd, buff,
+			printf("Can't LzwExpandFd2Buff!\n");
+		/*LzwExpandFd2Buff(fd, buff,
 			offset - REFTABLESIZE(numrefs),	// skip amt
-			refsize);										// data amt
+			refsize);										// data amt*/
 		}
 	else
 		{
-		lseek(fd, offset - REFTABLESIZE(numrefs), SEEK_CUR);
-		read(fd, buff, refsize);
+		fseek(fd, offset - REFTABLESIZE(numrefs), SEEK_CUR);
+		fread(buff, refsize, 1, fd);
 		}
 
 	return(buff);
-*/
 }
 
 /*
