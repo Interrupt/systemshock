@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "res.h"
 #include "res_.h"
-//#include <lzw.h>
+#include "lzw.h"
 
 
 //	---------------------------------------------------------
@@ -166,9 +166,6 @@ void *RefGet(Ref ref)
 
 	prt = (RefTable *)prd->ptr;  
    	index = REFINDEX(ref);
-
-   	printf("Loading ref %x %x\n", REFID(ref), index);
-   	printf(" data offset: %i\n", prt->offset[index]);
 
 //	Return ptr
 
@@ -341,7 +338,7 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
 {
 	RefIndex index;  
 	ResDesc *prd; 
-	int fd;
+	FILE* fd;
 	long refsize;
 	RefIndex numrefs;
 	long offset;
@@ -391,10 +388,9 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
 
 	if (ResFlags(REFID(ref)) & RDF_LZW)
 		{
-			printf("Can't LzwExpandFd2Buff!\n");
-		/*LzwExpandFd2Buff(fd, buff,
-			offset - REFTABLESIZE(numrefs),	// skip amt
-			refsize);										// data amt*/
+			LzwExpandFp2Buff(fd, buff,
+				offset - REFTABLESIZE(numrefs),	// skip amt
+				refsize);										// data amt*/
 		}
 	else
 		{

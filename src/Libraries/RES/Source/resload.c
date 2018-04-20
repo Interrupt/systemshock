@@ -200,7 +200,7 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 uchar ResRetrieve(Id id, void *buffer)
 {
 	ResDesc *prd;
-	int fd;
+	FILE * fd;
 	uchar *p;
 	long size;
 	RefIndex numRefs;
@@ -239,7 +239,7 @@ uchar ResRetrieve(Id id, void *buffer)
 	//	Read in data
 
 	if (prd->flags & RDF_LZW) {
-		LzwExpandFd2Buff(fd, p, 0, 0);
+		LzwExpandFp2Buff(fd, p, 0, 0);
 	}
 	else {
 		fread(p, size, 1, fd);
