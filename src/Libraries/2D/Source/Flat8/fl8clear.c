@@ -63,6 +63,7 @@ void flat8_clear (long color)
    	h = grd_bm.h;
 	 w = grd_bm.w;
 	 row = grd_bm.row;
+
 	 if (w>=16)	// only do doubles if at least two of them (16 bytes)
 	  {
 	 	 	// get a 64 bit version of color in doub_vl

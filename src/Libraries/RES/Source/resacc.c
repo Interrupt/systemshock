@@ -52,8 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void *ResLock(Id id)
 {
-	printf("ResLock Unimplemented\n");
-	/*ResDesc *prd;
+	ResDesc *prd;
 
 	//	Check if valid id
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
@@ -64,8 +63,9 @@ void *ResLock(Id id)
 	//	If resource not loaded, load it
 
 	prd = RESDESC(id);
-	if (ResLoadResource(id) == nil)
-		return(nil);
+	if (ResLoadResource(id) == NULL)
+		return(NULL);
+
 //	else if (prd->lock == 0)
 //		ResRemoveFromLRU(prd);
 
@@ -80,9 +80,7 @@ void *ResLock(Id id)
 
 	//	Return ptr
 
-	if (prd->lock == 1)
-		HLock(prd->hdl);
-	return(*prd->hdl);*/
+	return(prd->ptr);
 }
 
 //	---------------------------------------------------------
@@ -95,20 +93,7 @@ void *ResLock(Id id)
 //	---------------------------------------------------------
 void *ResLockHi(Id id)
 {
-	printf("ResLockHi Unimplemented\n");
-	/*ResDesc *prd;
-
-	//	If resource not loaded, load it.
-	prd = RESDESC(id);
-	if (ResLoadResource(id) == nil)
-		return(nil);
-	
-	// Lock the handle.
-	prd->lock++;
-	if (prd->lock == 1)
-		HLockHi(prd->hdl);
-	
-	return(*prd->hdl);*/
+	return ResLock(id);
 }
 
 //	---------------------------------------------------------
@@ -248,8 +233,6 @@ void *ResExtract(Id id, void *buffer)
 void ResDrop(Id id)
 {
 	ResDesc *prd;
-
-	printf("ResDrop\n");
 
 	//	Check for locked
 

@@ -72,6 +72,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "dynmem.h"
 
+#include <sdl.h>
+
 /*
 #define AIL_SOUND
 #include "tminit.h"
@@ -229,6 +231,50 @@ uchar ppall[PALETTE_SIZE];
 #define DO_FADES
 //
 
+void init_sdl(grs_screen* cit_screen)
+{
+	/*
+	SDL_Window* window;
+	SDL_Surface* drawSurface;
+
+	window = SDL_CreateWindow(
+		"System Shock - SimpleMain Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		640, 480, SDL_WINDOW_SHOWN);
+
+	SDL_RaiseWindow(window);
+	
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
+	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+	if(!drawSurface) {
+		DebugString("SDL: Failed to create draw surface");
+		return;
+	}
+
+	gScreenRowbytes = drawSurface->w;
+	gScreenAddress = drawSurface->pixels;
+	*/
+
+	// Init fake renderer!
+	uchar* screenBytes = (int*)malloc(640*480*2);
+
+	// NEED TO BUILD SDL FOR 32 BIT FIRST
+	gScreenRowbytes = 640;
+	gScreenAddress = screenBytes;
+
+	gr_init();
+	gr_set_mode (GRM_640x480x8, TRUE);
+	gr_set_screen (gr_alloc_screen (640, 480));
+
+	// HAX: Why aren't the canvas rows set by default from gr_set_screen?
+	grd_bm.row = 640;
+
+	gr_alloc_ipal();
+	gr_init_blend(1);
+
+	gr_clear(0x0);
+}
+
 //-------------------------------------------------
 //  Initialize everything!
 //-------------------------------------------------
@@ -309,49 +355,60 @@ void init_all(void)
 //   gr_set_malloc(CitMalloc);		MLA - Don't need these
 //   gr_set_free(CitFree);
    gr_set_mode(GRM_640x480x8, TRUE);
+
+   printf("cit_screen %i %i\n", grd_cap->w,grd_cap->h);
+
    cit_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
    gr_set_screen(cit_screen);
    
    // set up low detail=clut lit always.
    gr_set_per_detail_level_param(3,4,16*FIX_UNIT,GR_LOW_PER_DETAIL);
 
+
+   init_sdl(cit_screen);
+
 	// Initialize low-level keyboard and mouse input.  KLC - taken out of uiInit.
 	mouse_init(grd_cap->w,grd_cap->h);
 	kb_init(NULL);
 
 	// Initialize map
+	printf("- Map Startup\n");
 	map_init();
 
+	printf("- Physics Startup\n");
 	physics_init();
 //	 KLC - done in InitMac.c.
 //   atexit(free_all);
 
-	printf("Load Resources\n");
+	printf("- Load Resources\n");
 	init_load_resources();
 
-	printf("Load 3d Objects\n");
+	printf("- 3d Objects Startup\n");
 	init_3d_objects();
 
-	printf("Load Popups\n");
+	printf("- Popups Startup\n");
 	init_popups();
 
-	printf("Init gamesys\n");
+	printf("- Gamesys Startup\n");
 	init_gamesys();
 
 	// Start up the 3d...
-	printf("Renderer Startup\n");
+	printf("- Renderer Startup\n");
 	fr_startup();
 	game_fr_startup();
 
 	// Initialize the main game screen
+	printf("- Main game screen Startup\n");
 	region_begin_sequence();
 
+	printf("- Sound startup\n");
 	snd_startup();
 	snd_start_digital();
 	music_init();
 	digifx_init();
 
 	// Initialize the palette effects (for fades and color cycling)
+	printf("- PAL startup\n");
 	palfx_init();
 	
 	// Initialize animation callbacks
@@ -362,10 +419,9 @@ void init_all(void)
 
 	// Play the Origin intro movie.
 	{
-		FSSpec	fSpec;
-
-		FSMakeFSSpec(gDataVref, gDataDirID, "Origin", &fSpec);
-		PlayStartupMovie(&fSpec, 0, 0);
+		//FSSpec	fSpec;
+		//FSMakeFSSpec(gDataVref, gDataDirID, "Origin", &fSpec);
+		//PlayStartupMovie(&fSpec, 0, 0);
 	}
 
 #ifdef DO_FADES
@@ -379,20 +435,23 @@ void init_all(void)
 	}
 #endif
 
-	printf("Screen init\n");
+	printf("-Screen init\n");
 	screen_init();
 	fullscreen_init();
    amap_init();
 	init_side_icon_popups();	// KLC - new call.
 	
+	printf("-Input init\n");
 	init_input();						// KLC - moved here, after uiInit (in screen_init)
 	
 	uiHideMouse(NULL);			// KLC - added to hide mouse cursor
 
+	printf("-VR init\n");
    view360_init();
 //KLC - no longer needed   olh_init();
 
 	// Put up splash screen for US!
+    printf("-Make splash\n");
 	uiFlush();
 	DrawSplashScreen(9002, TRUE);
 	
@@ -403,16 +462,23 @@ void init_all(void)
 	else
 		pause_time += MIN_WAIT_TIME;
 
+	printf("-Start vitals\n");
    status_vitals_start();
 
    for (i=0; i<NUM_LOADED_TEXTURES; i++)
       loved_textures[i] = i;
 
+   printf("-Gamerenderer startup\n");
    gamerend_init();
 
-   init_hack_cameras();
+   // Crashes?
+   //printf("-Cameras startup\n");
+   //init_hack_cameras();
 
+   printf("-End Sequence\n");
 	region_end_sequence(FALSE);
+
+	printf("-Lighting startup\n");
 	Init_Lighting();
 
    // set default difficulty levels for player
@@ -489,7 +555,6 @@ void DrawSplashScreen(short id, Boolean fadeIn)
 	extern byte palfx_start_fade_up(uchar *new_pal);
 
 	// First, clear the screen and load in the color table for this picture.
-	
 	gr_clear(0xFF);
 	ctab = GetCTable(id);														// Get the pict's CLUT
 	if (ctab)
