@@ -18,7 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "fix.h" 
 #ifndef __2D_H 
-#define __2D_H 
+#define __2D_H
+
 typedef struct {
    uchar id_maj;     
    uchar id_min;     
@@ -31,7 +32,7 @@ typedef struct {
    uchar b;          
 } grs_mode_info;
 typedef ulong grs_rgb;
-typedef struct __attribute__((packed, aligned(2))) {
+typedef struct {
    uchar *bits;      
    uchar type;       
    uchar align;      

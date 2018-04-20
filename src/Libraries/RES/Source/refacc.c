@@ -74,9 +74,16 @@ void *RefLock(Ref ref)
 	//	Load block if not in RAM
 
 	prd = RESDESC(REFID(ref));
-	if (ResLoadResource(REFID(ref)) == NULL) {
-		return(NULL);
+
+	if (prd->ptr == NULL)  
+   	{  
+		if (ResLoadResource(REFID(ref)) == NULL) {
+			return(NULL);
+		}
 	}
+
+	printf("Loading ref %x\n", index);
+
 //	if (prd->lock == 0)
 //		ResRemoveFromLRU(prd);
 
@@ -125,7 +132,7 @@ void *RefGet(Ref ref)
 	RefTable *prt;
 	RefIndex index;
 
-	printf("RefGet\n");
+	printf("RefGet %x\n", REFID(ref));
 
 	//	Check for valid ref
 
@@ -143,9 +150,11 @@ void *RefGet(Ref ref)
 	//	Get hold of ref
 
 	prd = RESDESC(REFID(ref));
-	if (ResLoadResource(REFID(ref)) == NULL) {
-		printf("ResLoadResource: NULL\n");
-		return(NULL);
+	if(prd->ptr == NULL) {
+		if (ResLoadResource(REFID(ref)) == NULL) {
+			printf("ResLoadResource: NULL\n");
+			return(NULL);
+		}
 	}
 
 //		ResAddToTail(prd);
@@ -157,12 +166,15 @@ void *RefGet(Ref ref)
 	//HLock(prd->hdl);
 	//prt = (RefTable *)*prd->hdl;
 
-	prt = (RefTable *) prd->ptr;  
-   	index = REFINDEX(ref); 
+	char[100] numRefs;
+	short* numRefs = (short*)prd->ptr;
+	printf("numRefs: %i\n", numRefs);
 
-   	printf("Getting REFINDEX\n"); 
-//	DBG(DSRC_RES_ChkIdRef, {if (!RefIndexValid(prt,index)) \
-//		Warning(("RefGet: reference: $%x bad, index out of range\n", ref));});
+	prt = (RefTable *)prd->ptr;  
+   	index = REFINDEX(ref);
+
+   	printf("REFINDEX: %x\n", index);
+   	printf("prt->numRefs %i\n", prt->numRefs);
 
 //	Return ptr
 
@@ -195,34 +207,42 @@ RefTable *ResReadRefTable(Id id)
 	short		err;
 	int 		fd;
 
-	printf("ResReadRefTable!\n");
-
-	prd = RESDESC(id);
+	printf("ResReadRefTable %x\n", id);
 	
 	//	Check id and file number and make sure compound
 
 	//DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return(NULL);});
+
 	prd = RESDESC(id);
 	fd = resFile[prd->filenum].fd;
+
 	//DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
 		Warning(("ResReadRefTable: id $%x doesn't exist\n", id)); \
 		return(NULL); \
 		}});
 	if ((ResFlags(id) & RDF_COMPOUND) == 0)
-		{
-		//DBG(DSRC_RES_ChkIdRef, { \
-			Warning(("ResReadRefTable: id $%x is not compound\n", id)); \
-			});
+	{
+		printf(("ResReadRefTable: id $%x is not compound\n", id)); \
 		return(NULL);
-		}
+	}
 
 	//	Seek to data, read numrefs, allocate table, read in offsets
 
 	fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
 	fread(&numRefs, sizeof(RefIndex), 1, fd);
+	printf("numRefs: %i", numRefs);
+
 	prt = malloc(REFTABLESIZE(numRefs));
 	prt->numRefs = numRefs;
-	fread(&prt->offset[0], sizeof(long) * (numRefs + 1), 1, fd);
+	fread(&prt->offset[0], sizeof(long), (numRefs + 1), fd);
+
+/*
+		lseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);  
+	   read(fd, &numRefs, sizeof(RefIndex));  
+	   prt = (RefTable *) Malloc(REFTABLESIZE(numRefs));  
+	   prt->numRefs = numRefs;  
+	   read(fd, &prt->offset[0], sizeof(long) * (numRefs + 1));  
+*/
 
 	return(prt);
 }

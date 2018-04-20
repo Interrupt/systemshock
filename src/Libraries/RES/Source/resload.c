@@ -79,8 +79,6 @@ void *ResLoadResource(Id id)
 	if (prd->ptr == NULL)
 		return(NULL);
 
-	memset(prd->ptr, 0, prd->size);
-
 	//	Tally memory allocated to resources
 
 //	DBG(DSRC_RES_Stat, {resStat.totMemAlloc += prd->size;});
@@ -246,11 +244,6 @@ uchar ResRetrieve(Id id, void *buffer)
 	}
 	else {
 		fread(p, size, 1, fd);
-
-		/*for(int i = 0; i < size; i++) {
-			printf("%c", p[i]);
-		}
-		printf("\n");*/
 	}
 
 	return TRUE;

@@ -576,7 +576,9 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset)
 	prd->next = 0;
 	prd->prev = 0;
 
-	//printf("res: id: %x, flags: %x, type: %x offset: %i size: %i csize: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset, prd->size, pDirEntry->csize);
+	if(pDirEntry->id == 0x268) {
+		printf("res: id: %x, flags: %x, type: %x offset: %i size: %i csize: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset, prd->size, pDirEntry->csize);
+	}
 
 
 //	If loadonopen flag set, load resource

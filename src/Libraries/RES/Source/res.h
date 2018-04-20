@@ -55,8 +55,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
 */
 
-#pragma pack(1)
-
 #ifndef __RES_H
 #define __RES_H
 
@@ -117,7 +115,7 @@ void ResDelete(Id id);								// delete resource forever
 
 //	Each compound resource starts with a Ref Table
 
-typedef struct __attribute__((packed, aligned(2))) {
+typedef struct {
 	RefIndex numRefs;									// # items in compound resource
 	long offset[1];										// offset to each item (numRefs + 1 of them)
 } RefTable;
@@ -176,7 +174,7 @@ void RefExtractInBlocks(RefTable *prt, Ref ref, void *buff, long blockSize,
 	Id   	prev;
 } ResDesc;*/
 
-typedef struct __attribute__((packed, aligned(2)))
+typedef struct
 {
    void *ptr;                                    // ptr to resource in memory, or NULL if on disk
    ulong lock: 8;                                // lock count
@@ -304,21 +302,21 @@ void ResWriteDir(short filenum);	// Mac version: Write out a resource table for 
 
 //	Resource-file disk format:  header, data, dir
 
-typedef struct __attribute__((packed, aligned(2))) {
+typedef struct {
 	char signature[16];		// "LG ResFile v2.0\n",
 	char comment[96];			// user comment, terminated with '\z'
 	uchar reserved[12];		// reserved for future use, must be 0
 	int dirOffset: 32;			// file offset of directory
 } ResFileHeader;				// total 128 bytes (why not?)
 
-typedef struct __attribute__((packed, aligned(2))) {
+typedef struct {
 	ushort numEntries: 16;		// # items referred to by directory
 	int dataOffset: 32;			// file offset at which data resides
 									// directory entries follow immediately
 									// (numEntries of them)
 } ResDirHeader;
 
-typedef struct __attribute__((packed, aligned(2))) {
+typedef struct {
 	Id id;						// resource id (if 0, entry is deleted)
 	ulong size: 24;				// uncompressed size (size in ram)
 	uint flags: 8;				// resource flags (RDF_XXX)

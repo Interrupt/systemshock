@@ -178,9 +178,10 @@ target_link_libraries(TestSimpleMain ${SDL2_LIBRARIES})
 # Find Carbon
 find_library(CARBON NAMES Carbon)
 
-# Include magic header file
+# Include magic header file, set struct packing size
 add_definitions(
 	-include precompiled.h
+	-fpack-struct=16
 )
 
 add_executable(systemshock
