@@ -148,7 +148,6 @@ short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 				printf("ResOpenResFile: %s is not valid resource file\n", fname);
 				return(-3);
 				}
-				printf("Found header: %s\n", resFileSignature);
 			}
 		else
 			{
@@ -195,7 +194,6 @@ short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 //	Record resFile[] file descriptor
 
 	prf->fd = fd;
-	printf("Saving fd: %x\n", fd);
 
 //	printf("ResOpenResFile: opening: %s at filenum %d\n", fname, filenum);
 //	Spew(DSRC_RES_General, ("ResOpenResFile: opening: %s at filenum %d\n",
@@ -220,8 +218,6 @@ short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 			else
 				{
 				fseek(fd, fileHead.dirOffset, SEEK_SET);
-				printf("Seeking to dirOffset: %i\n", fileHead.dirOffset);
-
 				fread(&dirHead, sizeof(ResDirHeader), 1, fd);
 				ResReadDirEntries(filenum, &dirHead);
 				}
@@ -511,9 +507,8 @@ void ResReadDirEntries(int filenum, ResDirHeader *pDirHead)
 	dataOffset = pDirHead->dataOffset;					// mark starting offset
 	fd = resFile[filenum].fd;
 
-	printf("pDirHead->dataOffset: %i\n", pDirHead->dataOffset);
-
-	printf("sizeof(ResDirEntry): %i\n", sizeof(ResDirEntry));
+	//printf("pDirHead->dataOffset: %i\n", pDirHead->dataOffset);
+	//printf("sizeof(ResDirEntry): %i\n", sizeof(ResDirEntry));
 
 //	Scan directory:
 
@@ -581,11 +576,7 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset)
 	prd->next = 0;
 	prd->prev = 0;
 
-	//if(pDirEntry->id == 0x86c)
-	printf("res: id: %x, flags: %x, type: %x offset: %i size: %i csize: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset, prd->size, pDirEntry->csize);
-
-	//if(pDirEntry->id == 0x86a || pDirEntry->id == 0x86b || pDirEntry->id == 0x86c)
-	//printf("resource: id: %x, flags: %x, type: %x offset: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset);
+	//printf("res: id: %x, flags: %x, type: %x offset: %i size: %i csize: %i\n", pDirEntry->id, prd->flags, prd->type, prd->offset, prd->size, pDirEntry->csize);
 
 
 //	If loadonopen flag set, load resource

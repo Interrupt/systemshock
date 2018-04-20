@@ -51,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // A Ref in a resource gets you a Frame Descriptor:
 
-typedef struct {
+typedef struct __attribute__((packed, aligned(2))) {
    grs_bitmap bm;       // embedded bitmap, bm.bits set to NULL
    union {
       LGRect updateArea;  // update area (for anims)

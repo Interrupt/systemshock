@@ -51,12 +51,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	Here are the Point and LGRect structs
 
-typedef struct {
+typedef struct __attribute__((packed, aligned(2))) {
 	short x;
 	short y;
 } LGPoint;
 
-typedef struct {
+typedef struct __attribute__((packed, aligned(2))) {
 	LGPoint ul;
 	LGPoint lr;
 } LGRect;

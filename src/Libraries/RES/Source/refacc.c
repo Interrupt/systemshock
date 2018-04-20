@@ -142,11 +142,11 @@ void *RefGet(Ref ref)
 
 	//	Get hold of ref
 
-	printf("Getting ref.\n");
-
 	prd = RESDESC(REFID(ref));
-	if (ResLoadResource(REFID(ref)) == NULL)
+	if (ResLoadResource(REFID(ref)) == NULL) {
+		printf("ResLoadResource: NULL\n");
 		return(NULL);
+	}
 
 //		ResAddToTail(prd);
 //	else if (prd->lock == 0)
@@ -158,7 +158,9 @@ void *RefGet(Ref ref)
 	//prt = (RefTable *)*prd->hdl;
 
 	prt = (RefTable *) prd->ptr;  
-   	index = REFINDEX(ref);  
+   	index = REFINDEX(ref); 
+
+   	printf("Getting REFINDEX\n"); 
 //	DBG(DSRC_RES_ChkIdRef, {if (!RefIndexValid(prt,index)) \
 //		Warning(("RefGet: reference: $%x bad, index out of range\n", ref));});
 

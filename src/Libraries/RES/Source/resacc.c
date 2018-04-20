@@ -158,8 +158,6 @@ void ResUnlock(Id id)
 void *ResGet(Id id)  
 {  
     ResDesc *prd;
-
-    printf("ResGet: %x\n", id);
   
 //  Check if valid id  
   

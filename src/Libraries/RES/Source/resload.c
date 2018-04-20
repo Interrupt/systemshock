@@ -66,8 +66,6 @@ void *ResLoadResource(Id id)
 {
 	ResDesc *prd = RESDESC(id);
 
-	printf("Loading %x\n", id);
-
 	//	If doesn't exit, forget it
 
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResInUse(id)) return NULL;});
@@ -81,7 +79,6 @@ void *ResLoadResource(Id id)
 	if (prd->ptr == NULL)
 		return(NULL);
 
-	printf("Size: %i\n", prd->size);
 	memset(prd->ptr, 0, prd->size);
 
 	//	Tally memory allocated to resources
@@ -218,8 +215,6 @@ uchar ResRetrieve(Id id, void *buffer)
 	prd = RESDESC(id);
 	fd = resFile[prd->filenum].fd;
 
-	printf("Reading from fd: %x\n", fd);
-
 //	DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
 //		Warning(("ResRetrieve: id $%x doesn't exist\n", id)); \
 //		return FALSE; \
@@ -227,13 +222,9 @@ uchar ResRetrieve(Id id, void *buffer)
 	
 	//	Seek to data, set up
 
-	printf(" filenum %i", prd->filenum);
-	printf("  seeking to %i\n", prd->offset);
 	fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);  
    	p = (uchar *) buffer;  
    	size = prd->size;
-
-	printf("  size %i\n", size);
 
 	//	If compound, read in ref table
 
@@ -245,8 +236,6 @@ uchar ResRetrieve(Id id, void *buffer)
 		fread(p, sizeof(long), (numRefs + 1), fd);
 		p += sizeof(long) * (numRefs + 1);
       	size -= REFTABLESIZE(numRefs);
-
-      	printf("numRefs: %i\n", numRefs);
 	}
 
 	//	Read in data

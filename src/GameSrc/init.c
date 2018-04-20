@@ -801,7 +801,7 @@ errtype init_load_resources()
 	FSRef 	fsRef;
 	
 	// Open the screen resource stuff 
-	/*printf("Loading gamescr.res\n");
+	printf("Loading gamescr.res\n");
 	if (ResOpenFile("res/data/gamescr.res") < 0)
 		critical_error(CRITERR_RES|1);
 	
@@ -823,7 +823,7 @@ errtype init_load_resources()
 	// Open the Digital sound FX file
 	printf("Loading digifx.res\n");
 	if (ResOpenFile("res/data/digifx.res") < 0)
-		critical_error(CRITERR_RES|9);*/
+		critical_error(CRITERR_RES|9);
 	
 	return(OK);
 }

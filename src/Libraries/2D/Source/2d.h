@@ -31,7 +31,7 @@ typedef struct {
    uchar b;          
 } grs_mode_info;
 typedef ulong grs_rgb;
-typedef struct {
+typedef struct __attribute__((packed, aligned(2))) {
    uchar *bits;      
    uchar type;       
    uchar align;      
