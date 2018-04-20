@@ -200,8 +200,6 @@ RefTable *ResReadRefTable(Id id)
 	RefTable 	*prt;
 	short		err;
 	int 		fd;
-
-	printf("ResReadRefTable %x\n", id);
 	
 	//	Check id and file number and make sure compound
 
@@ -224,7 +222,6 @@ RefTable *ResReadRefTable(Id id)
 
 	fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
 	fread(&numRefs, sizeof(RefIndex), 1, fd);
-	printf(" numRefs: %i\n\n", numRefs);
 
 	prt = malloc(REFTABLESIZE(numRefs));
 	prt->numRefs = numRefs;

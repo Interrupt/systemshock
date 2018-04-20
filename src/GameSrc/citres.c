@@ -105,8 +105,6 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
       return(ERR_FREAD);
    }
    RefExtract(rt,rid,f);
-
-   printf("f->bm.w %i, f->bm.h %i\n", f->bm.w, f->bm.h);
    
    if (anchor != NULL)
       *anchor = f->anchorArea;
