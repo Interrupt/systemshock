@@ -76,6 +76,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "restypes.h"
 #endif
 
+#pragma pack(2)
+
 //	---------------------------------------------------------
 //		ID AND REF DEFINITIONS AND MACROS
 //	---------------------------------------------------------

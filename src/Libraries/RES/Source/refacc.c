@@ -166,10 +166,6 @@ void *RefGet(Ref ref)
 	//HLock(prd->hdl);
 	//prt = (RefTable *)*prd->hdl;
 
-	char[100] numRefs;
-	short* numRefs = (short*)prd->ptr;
-	printf("numRefs: %i\n", numRefs);
-
 	prt = (RefTable *)prd->ptr;  
    	index = REFINDEX(ref);
 
