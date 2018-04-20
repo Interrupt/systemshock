@@ -89,12 +89,12 @@ void ResInit()
 	resDescMax = DEFAULT_RESMAX;
 	gResDesc = (ResDesc *)NewPtrClear( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
 	if (MemError())
-		DebugStr("\pResInit: Can't allocate the global resource descriptor table.\n");
+		DebugStr("ResInit: Can't allocate the global resource descriptor table.\n");
 
 //	Clear file descriptor array
 
 	for (i = 0; i <= MAX_RESFILENUM; i++)
-		resFile[i].fd = -1;
+		resFile[i].fd = NULL;
 
 //	Add directory pointed to by RES env var to search path
 

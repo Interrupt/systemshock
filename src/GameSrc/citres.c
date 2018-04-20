@@ -76,7 +76,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
    uchar alloced_fdesc = FALSE;
    extern int memcount;
 
-   printf("master_load_bitmap_from_res %i\n", i);
+   printf("master_load_bitmap_from_res %x:%i\n", id_num, i);
 
    if(!RefIndexValid(rt,i))
    {
@@ -97,6 +97,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
 //      mprintf("look, Refsize is only %d!\n",RefSize(rt,i));
       f = (FrameDesc *)frameBuffer;
    }
+
    memcount += RefSize(rt,i);
    if (f == NULL)
    {
@@ -104,6 +105,9 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
       return(ERR_FREAD);
    }
    RefExtract(rt,rid,f);
+
+   printf("f->bm.w %i, f->bm.h %i\n", f->bm.w, f->bm.h);
+   
    if (anchor != NULL)
       *anchor = f->anchorArea;
    if (!tmp_mem && p == NULL)

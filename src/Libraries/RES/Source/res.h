@@ -117,7 +117,7 @@ void ResDelete(Id id);								// delete resource forever
 
 //	Each compound resource starts with a Ref Table
 
-typedef struct {
+typedef struct __attribute__((packed)) {
 	RefIndex numRefs;									// # items in compound resource
 	long offset[1];										// offset to each item (numRefs + 1 of them)
 } RefTable;
@@ -347,7 +347,7 @@ typedef struct {
 } ResEditInfo;
 
 typedef struct {
-	int fd;						// file descriptor (from open())
+	FILE* fd;				// file descriptor (from open())
 	ResEditInfo *pedit;		// editing info, or NULL if read-only file
 } ResFile;
 

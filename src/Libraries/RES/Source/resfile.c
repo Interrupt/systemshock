@@ -112,7 +112,8 @@ short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 //	O_RDWR | O_BINARY,
 //	O_RDWR | O_BINARY};
 
-	int filenum, fd;
+	int filenum;
+	FILE * fd;
 	ResFile *prf;
 	ResFileHeader fileHead;
 	ResDirHeader dirHead;
@@ -478,7 +479,7 @@ int ResFindFreeFilenum()
 
 	for (filenum = 0; filenum <= MAX_RESFILENUM; filenum++)
 		{
-		if (resFile[filenum].fd < 0)
+		if (resFile[filenum].fd == NULL)
 			return(filenum);
 		}
 	return(-1);
@@ -514,16 +515,14 @@ void ResReadDirEntries(int filenum, ResDirHeader *pDirHead)
 
 	int idx = 0;
 	for (entry = 0; entry < pDirHead->numEntries; entry++)
-		{
+	{
 
 //	If reached end of local directory buffer, refill it
 
 		if (pDirEntry >= &dirEntries[NUM_DIRENTRY_BLOCK])
 			{
-				for(int i = 0; i < NUM_DIRENTRY_BLOCK; i++) {
-					fread(&dirEntries[i], sizeof(ResDirEntry), 1, fd);
-				}
-			pDirEntry = &dirEntries[0];
+				fread(&dirEntries[0], sizeof(ResDirEntry), NUM_DIRENTRY_BLOCK, fd);
+				pDirEntry = &dirEntries[0];
 			}
 
 //	Process entry
@@ -534,7 +533,7 @@ void ResReadDirEntries(int filenum, ResDirHeader *pDirHead)
 
 		dataOffset = RES_OFFSET_ALIGN(dataOffset + pDirEntry->csize);
 		pDirEntry++;
-		}
+	}
 }
 
 //	-----------------------------------------------------------

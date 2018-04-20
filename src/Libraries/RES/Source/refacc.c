@@ -82,8 +82,6 @@ void *RefLock(Ref ref)
 		}
 	}
 
-	printf("Loading ref %x\n", index);
-
 //	if (prd->lock == 0)
 //		ResRemoveFromLRU(prd);
 
@@ -99,6 +97,8 @@ void *RefLock(Ref ref)
 	//	Index into ref table
 	prt = (RefTable *) prd->ptr;  
    	index = REFINDEX(ref);
+
+   	//printf("Loading ref %x %x\n", REFID(ref), index);
 
 //	DBG(DSRC_RES_ChkIdRef, {if (!RefIndexValid(prt,index)) \
 //		Warning(("RefLock: reference: $%x bad, index out of range\n", ref));});*/
@@ -131,8 +131,6 @@ void *RefGet(Ref ref)
 	ResDesc *prd;
 	RefTable *prt;
 	RefIndex index;
-
-	printf("RefGet %x\n", REFID(ref));
 
 	//	Check for valid ref
 
@@ -169,8 +167,8 @@ void *RefGet(Ref ref)
 	prt = (RefTable *)prd->ptr;  
    	index = REFINDEX(ref);
 
-   	printf("REFINDEX: %x\n", index);
-   	printf("prt->numRefs %i\n", prt->numRefs);
+   	printf("Loading ref %x %x\n", REFID(ref), index);
+   	printf(" data offset: %i\n", prt->offset[index]);
 
 //	Return ptr
 
@@ -226,7 +224,7 @@ RefTable *ResReadRefTable(Id id)
 
 	fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
 	fread(&numRefs, sizeof(RefIndex), 1, fd);
-	printf("numRefs: %i", numRefs);
+	printf(" numRefs: %i\n\n", numRefs);
 
 	prt = malloc(REFTABLESIZE(numRefs));
 	prt->numRefs = numRefs;

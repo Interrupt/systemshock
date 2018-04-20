@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __2D_H 
 #define __2D_H
 
+#pragma pack(2)
+
 typedef struct {
    uchar id_maj;     
    uchar id_min;     

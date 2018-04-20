@@ -121,8 +121,7 @@ void *ResLockHi(Id id)
 
 void ResUnlock(Id id)
 {
-	printf("ResUnlock Unimplemented\n");
-	/*ResDesc *prd;
+	ResDesc *prd;
 
 	//	Check if valid id
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
@@ -130,6 +129,12 @@ void ResUnlock(Id id)
 	//	Check for under-lock
 
 	prd = RESDESC(id);
+
+	if(prd->lock == 0) {
+		printf("ResUnlock: id $%x already unlocked\n", id);
+		return;
+	}
+
 //	DBG(DSRC_RES_ChkLock, {if (prd->lock == 0) { \
 //		Warning(("ResUnlock: id $%x already unlocked\n", id)); return;} });
 
@@ -137,12 +142,13 @@ void ResUnlock(Id id)
 	
 	if (prd->lock > 0)
 		prd->lock--;
+
 	if (prd->lock == 0)
 	{
-		HUnlock(prd->hdl);
+//		HUnlock(prd->hdl);
 //		ResAddToTail(prd);
 //		DBG(DSRC_RES_Stat, {resStat.numLocked--;});
-	}*/
+	}
 }
 
 //	-------------------------------------------------------------

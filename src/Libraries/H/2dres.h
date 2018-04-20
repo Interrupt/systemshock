@@ -45,6 +45,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _2DRES_H
 #define _2DRES_H
 
+#pragma pack(2)
+
 #include "../2D/Source/2d.h"
 #include "../RES/Source/res.h"
 #include "../DSTRUCT/Source/rect.h"

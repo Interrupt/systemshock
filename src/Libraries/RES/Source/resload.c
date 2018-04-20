@@ -239,7 +239,6 @@ uchar ResRetrieve(Id id, void *buffer)
 	//	Read in data
 
 	if (prd->flags & RDF_LZW) {
-		printf("LzwExpandFd2Buff\n");
 		LzwExpandFd2Buff(fd, p, 0, 0);
 	}
 	else {

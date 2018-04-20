@@ -796,10 +796,7 @@ errtype obj_3d_shutdown()
 }
 
 errtype init_load_resources()
-{
-	FSSpec	fSpec;
-	FSRef 	fsRef;
-	
+{	
 	// Open the screen resource stuff 
 	printf("Loading gamescr.res\n");
 	if (ResOpenFile("res/data/gamescr.res") < 0)
