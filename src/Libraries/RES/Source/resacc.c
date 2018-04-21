@@ -195,30 +195,17 @@ void *ResGet(Id id)
 
 void *ResExtract(Id id, void *buffer)
 {
-	printf("ResExtract Unimplemented\n");
-	/*ResDesc *prd = RESDESC(id);
-
-	if (ResLoadResource(id) == NULL)
-		return(NULL);
-	
-	HLock(prd->hdl);
-	BlockMove(*prd->hdl, buffer, GetHandleSize(prd->hdl));
-	HUnlock(prd->hdl);
-	return(buffer);
-	
-/*
 	//	Retrieve the data into the buffer, please
 
 	if (ResRetrieve(id, buffer))
-		{
-		CUMSTATS(id,numExtracts);
+	{
 		return(buffer);
-		}
+	}
 
 	//	If ResRetreive failed, return NULL ptr
 
 	return(NULL);
-*/
+
 }
 
 

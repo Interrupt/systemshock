@@ -154,6 +154,7 @@ errtype amap_init(void);
 //extern long old_ticks;
 
 errtype object_data_load(void);
+void sdl_draw(void);
 /*Â¥Â¥
 int   global_timer_id;
 extern int mlimbs_peril;
@@ -161,7 +162,12 @@ extern int mlimbs_peril;
 uchar init_done = FALSE;
 uchar clear_player_data = TRUE;
 uchar objdata_loaded = FALSE;
-grs_screen  *cit_screen;
+
+// Drawing!
+extern grs_screen  *cit_screen;
+extern SDL_Surface* drawSurface;
+extern SDL_Window* window;
+
 /*
 extern void (*enter_modes[])(void);
 
@@ -205,6 +211,8 @@ uchar pause_for_input(ulong wait_time)
 		
 		if (Button())
 			gotInput = TRUE;
+
+		sdl_draw();
 	}
 	
 	// return if we got input
@@ -231,15 +239,25 @@ uchar ppall[PALETTE_SIZE];
 #define DO_FADES
 //
 
+void sdl_draw(void)
+{
+	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
+  	SDL_UpdateWindowSurface(window);
+	SDL_PumpEvents();
+}
+
 void init_sdl(grs_screen* cit_screen)
 {
-	/*
-	SDL_Window* window;
-	SDL_Surface* drawSurface;
+	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+		DebugString("SDL: Init failed");
+	}
 
 	window = SDL_CreateWindow(
-		"System Shock - SimpleMain Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		"System Shock", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		640, 480, SDL_WINDOW_SHOWN);
+
+	atexit(SDL_Quit);
 
 	SDL_RaiseWindow(window);
 	
@@ -253,14 +271,6 @@ void init_sdl(grs_screen* cit_screen)
 
 	gScreenRowbytes = drawSurface->w;
 	gScreenAddress = drawSurface->pixels;
-	*/
-
-	// Init fake renderer!
-	uchar* screenBytes = (int*)malloc(640*480*2);
-
-	// NEED TO BUILD SDL FOR 32 BIT FIRST
-	gScreenRowbytes = 640;
-	gScreenAddress = screenBytes;
 
 	gr_init();
 	gr_set_mode (GRM_640x480x8, TRUE);
@@ -273,6 +283,22 @@ void init_sdl(grs_screen* cit_screen)
 	gr_init_blend(1);
 
 	gr_clear(0x0);
+	sdl_draw();
+}
+
+void set_sdl_palette(int index, int count, uchar *pal)
+{
+	SDL_Color gamePalette[256];
+	for(int i = index; i < count; i++) {
+		gamePalette[index+i].r = *pal++;
+		gamePalette[index+i].g = *pal++;
+		gamePalette[index+i].b = *pal++;
+		gamePalette[index+i].a = 0xFF;
+	}
+
+	SDL_Palette* sdlPalette = SDL_AllocPalette(count);
+	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
+	SDL_SetSurfacePalette(drawSurface, sdlPalette);
 }
 
 //-------------------------------------------------
@@ -454,6 +480,7 @@ void init_all(void)
     printf("-Make splash\n");
 	uiFlush();
 	DrawSplashScreen(9002, TRUE);
+	sdl_draw();
 	
 	// Set the wait time for our screen
 	pause_time = TickCount();
@@ -496,7 +523,7 @@ void init_all(void)
    mlimbs_peril = 95;
 
 	// LG splash screen wait
-	//if(pause_for_input(pause_time))
+	pause_for_input(pause_time);
 	//	speed_splash = TRUE;
 
 #ifdef DO_FADES
@@ -507,14 +534,16 @@ void init_all(void)
 	init_pal_fx();
 
 	// Put up title screen
-	printf("Showing title screen\n");
 	uiFlush();
 	DrawSplashScreen(9003, TRUE);
+	sdl_draw();
 
 	// Preload and lock resources that are used often in the game.
 	PreloadGameResources();
 	
 	// set the wait time for system shock title screen
+	pause_for_input(100);
+
 	pause_time = TickCount();
 	if (!speed_splash)
 		pause_time += TITLE_DISPLAY_TIME;
@@ -523,7 +552,6 @@ void init_all(void)
 
    if ((_current_loop != SETUP_LOOP) && (_current_loop != CUTSCENE_LOOP))
    {
-
 //Â¥Â¥ for now      object_data_load();
       
       //gr_clear(0xFF);
@@ -652,11 +680,14 @@ errtype object_data_load(void)
 //KLC - Mac cursor showing at this time   begin_wait();
 
 	// Initialize DOS (Doofy Object System)
+	printf("ObjsInit\n");
 	ObjsInit();
 	AdvanceProgress();
+	printf("obj_init\n");
 	obj_init();
 
    // initialize player struct 
+	printf("Initialize player\n");
 	if (clear_player_data) 
 		init_player(&player_struct);
 	clear_player_data = TRUE;
@@ -664,6 +695,7 @@ errtype object_data_load(void)
 
 
    // Start up some subsystems
+	printf("init mfd\n");
    init_newmfd();
 
 /*
@@ -676,6 +708,7 @@ errtype object_data_load(void)
    bounds.lr.x = global_fullmap->x_size;
    bounds.lr.y = global_fullmap->y_size;
 
+   printf("process tilemap\n");
    rendedit_process_tilemap(global_fullmap,&bounds,TRUE);
    AdvanceProgress();
 
@@ -684,6 +717,7 @@ errtype object_data_load(void)
    AdvanceProgress();
 
    objdata_loaded = TRUE;
+   printf("load_dynamic_memory\n");
    load_dynamic_memory(DYNMEM_ALL);
 
 //KLC   end_wait();
@@ -728,6 +762,9 @@ errtype load_da_palette()
 	ResExtract(RES_gamePalette, ppall);
 	ResCloseFile(pal_file);
 	gr_set_pal(0, 256, ppall);
+
+	set_sdl_palette(0, 256, ppall);
+
 	return(OK);
 }
 

@@ -58,6 +58,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "map.h"
 
+#include <sdl.h>
+
 extern uchar game_paused;		// I've learned such bad lessons from LG.
 extern uchar objdata_loaded;
 extern uchar music_on;
@@ -78,6 +80,10 @@ FSSpec				gSavedGameFile;
 long					gGameSavedTime;
 Boolean				gDeadPlayerQuit;
 Boolean				gGameCompletedQuit;
+
+grs_screen  *cit_screen;
+SDL_Surface* drawSurface;
+SDL_Window* window;
 
 //--------------------
 //  Prototypes
@@ -137,6 +143,7 @@ void main(void)
 		SavePrefs(kPrefsResID);
 	}
 	
+	printf("Showing title screen\n");
 	SetupTitleScreen();
 	SetupTitleMenus();
 	ShowMenuBar();
@@ -151,13 +158,16 @@ void main(void)
 //		GetAppFiles(1, &theFile);
 //		OpenGame(&theFile, 0L);
 //	 }
-  	do
+
+	HandleNewGame();
+
+  	/*do
 	{
 		HandleEvents();
-//		HandleGolfStuff();
-//		HandleCursorStuff();
+		//HandleGolfStuff();
+		//HandleCursorStuff();
 	}
-	while (!gDone);
+	while (!gDone);*/
 	 
 	// black screen so it doesn't flash when we quit
 	//SetPort(gMainWindow);
@@ -662,6 +672,14 @@ void HandleNewGame()
 		ShowCursor();
 		InvalRect(&gMainWindow->portRect); 
 	}*/
+
+	printf("Starting Game\n");
+	gIsNewGame = TRUE;									// It's a whole new ballgame.
+	gGameSavedTime = 0;
+	go_and_start_the_game_already();				// Load up everything for a new game
+
+	printf("Starting Main Loop\n");
+	ShockGameLoop();
 }
 
 
@@ -814,6 +832,11 @@ void ShockGameLoop(void)
 		}
 		
 		chg_set_flg(_static_change);
+
+		SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+		SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
+	  	SDL_UpdateWindowSurface(window);
+		SDL_PumpEvents();
 	}
 
 	/*Size		dummy;
@@ -1164,3 +1187,4 @@ errtype CheckFreeSpace(short	checkRefNum)
 	}*/
 	return (OK);
 }
+

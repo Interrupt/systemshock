@@ -208,4 +208,5 @@ target_link_libraries(systemshock
 	FIXPP_LIB
 	GAME_LIB
 	${CARBON}
+	${SDL2_LIBRARIES}
 )

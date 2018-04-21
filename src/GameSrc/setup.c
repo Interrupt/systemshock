@@ -551,10 +551,12 @@ errtype journey_newgame_func()
 
    clear_player_data = TRUE;
 
+   printf("Load object data\n");
    object_data_load();
 
    player_struct.level = 0xFF;
 
+   printf("Create initial game\n");
    create_initial_game_func(0,0,0);
 /* not yet
    change_mode_func(0,0,(void *)GAME_LOOP);
@@ -756,6 +758,7 @@ char diff_qvars[4] = { COMBAT_DIFF_QVAR, MISSION_DIFF_QVAR, PUZZLE_DIFF_QVAR, CY
 
 void go_and_start_the_game_already()
 {
+   printf("New Journey\n");
    char i;
    extern char curr_vol_lev;
    extern char curr_sfx_vol;

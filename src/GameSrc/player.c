@@ -136,13 +136,16 @@ errtype init_player(Player *pplr)
 
    // QUESTBIT_ON(number);
 
+   printf(" 2\n");
+
    for (i=0; i < NUM_ON_QUESTBITS; i++)
       QUESTBIT_ON(turnon_questbits[i]);
 
    for (i=0; i < NUM_INIT_QV; i ++)
       QUESTVAR_SET(init_questvars[i][0], init_questvars[i][1]);
 
-   while(QUESTVAR_GET(REACTOR_COMBO_QVAR)==QUESTVAR_GET(REACTOR_COMBO_QVAR+1)) {
+   printf("Skipping randomizing reactor combo, loops forever!\n");
+   /*while(QUESTVAR_GET(REACTOR_COMBO_QVAR)==QUESTVAR_GET(REACTOR_COMBO_QVAR+1)) {
       // randomize reactor combination. use effect_rnd 'cause why not.
       j = (RndRange(&effect_rnd,0,9)<<8)|(RndRange(&effect_rnd,0,9)<<4)
          | RndRange(&effect_rnd,0,9);
@@ -150,7 +153,7 @@ errtype init_player(Player *pplr)
       j = (RndRange(&effect_rnd,0,9)<<8)|(RndRange(&effect_rnd,0,9)<<4)
          | RndRange(&effect_rnd,0,9);
       QUESTVAR_SET(REACTOR_COMBO_QVAR+1,j);
-   }
+   }*/
    QUESTVAR_SET(LANGUAGE_QVAR,which_lang);
 
    pplr->fatigue_regen = 0;
