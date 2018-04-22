@@ -38,6 +38,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ulong last_real_time = 0;
 char reflex_remainder=0;
 
+long gNewShockTicks; // whyyyyyy
+
 #define MAX_DELTAT  (CIT_CYCLE/MIN_FRAME_RATE)
 #define MIN_DELTAT  (CIT_CYCLE/MAX_FRAME_RATE)
 
@@ -47,6 +49,9 @@ void update_level_gametime(void);
 
 errtype update_state(uchar time_running)
 {
+   printf("update_state\n");
+   tmd_ticks = &gNewShockTicks; // weird!
+
    uchar update = TRUE;
    if (time_running)
    {
@@ -61,12 +66,14 @@ errtype update_state(uchar time_running)
       }
       else
          deltat = *tmd_ticks - last_real_time;
+
       if (deltat > MAX_DELTAT) deltat = MAX_DELTAT;
       if (deltat < MIN_DELTAT)
       {
          deltat = 0;
          update = FALSE;
       }
+
       // update game time.
       player_struct.deltat =  deltat;
       player_struct.game_time += deltat;

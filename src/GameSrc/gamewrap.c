@@ -442,9 +442,12 @@ errtype load_level_from_file(int level_num)
 	errtype	retval;
 	FSSpec	fSpec;
 
-	FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &fSpec);
+	//FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &fSpec);
 
-	retval = load_current_map(ResIdFromLevel(level_num), &fSpec);
+   printf("load_level_from_file %s\n", CURRENT_GAME_FNAME);
+
+	retval = load_current_map(ResIdFromLevel(level_num), NULL);
+
 	if (retval == OK)
 	{
 		player_struct.level = level_num;
@@ -498,7 +501,11 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
 	short plr_obj;
 	extern errtype do_level_entry_triggers();
 
-	free_dynamic_memory(DYNMEM_ALL);
+   printf("create_initial_game_func\n\n");
+
+   printf("Archive at %s\n", ARCHIVE_FNAME);
+
+	/*free_dynamic_memory(DYNMEM_ALL);
 	
 	// Copy archive into local current game file.
 
@@ -539,10 +546,14 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
 
    player_struct.rep = OBJ_NULL;
 
-   load_level_from_file(player_struct.level);
+   printf("Starting Load level\n");
+   //load_level_from_file(player_struct.level);
+
    obj_load_art(FALSE);							//KLC - added here (removed from load_level_data)
    amap_reset();
-   player_create_initial();
+
+   printf("player_create_initial\n");
+   //player_create_initial();
 
    LG_memcpy(player_struct.name,tmpname,sizeof(player_struct.name));
    for (i=0; i<4; i++)
@@ -551,10 +562,15 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    // KLC - not needed any longer ResCloseFile(filenum);
 
    // Reset MFDs to be consistent with starting setup  
+   printf("init_newmfd\n");
    init_newmfd();
 
+   printf("FIXME: set ticks\n");
+
    // No time elapsed, really, honest
-   old_ticks = *tmd_ticks;
+   //old_ticks = *tmd_ticks;
+
+   printf("init_music\n");
 
    // Setup some start-game stuff
    // Music
@@ -569,11 +585,14 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
 		load_score_for_location(PLAYER_BIN_X, PLAYER_BIN_Y);		//KLC - added here
 	}
 
+   printf("load_dynamic_memory\n");
    load_dynamic_memory(DYNMEM_ALL);
 
    // Do entry-level triggers for starting level
    // Hmm, do we actually want to call this any time we restore
    // a saved game or whatever?  No, probably not....hmmm.....
+
+   printf("do_level_entry_triggers\n");
    do_level_entry_triggers();
    
    // KLC - if not already on, turn on-line help on.

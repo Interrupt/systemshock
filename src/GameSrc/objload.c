@@ -180,6 +180,8 @@ errtype obj_load_art(uchar flush_all)
    extern uchar empty_bitmap(grs_bitmap *bmp);
    uchar ref_buffer_used = TRUE;
 
+   printf("obj_load_art!\n");
+
    if (flush_all)
       ObjLoadMeClearAll();
    else
@@ -210,8 +212,7 @@ errtype obj_load_art(uchar flush_all)
 	{
 		FSSpec	fSpec;
 		
-		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "objart.rsrc", &fSpec);
-		objfnum = ResOpenFile(&fSpec);
+		objfnum = ResOpenFile("res/data/objart.res");
 		if (objfnum < 0)
 			critical_error(CRITERR_RES|5);
 		

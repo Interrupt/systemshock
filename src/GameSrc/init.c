@@ -154,7 +154,6 @@ errtype amap_init(void);
 //extern long old_ticks;
 
 errtype object_data_load(void);
-void sdl_draw(void);
 /*Â¥Â¥
 int   global_timer_id;
 extern int mlimbs_peril;
@@ -199,7 +198,7 @@ uchar pause_for_input(ulong wait_time)
 	Boolean	gotInput = FALSE;
 	while (!gotInput && ((ulong)TickCount() < wait_time))
 	{
-		long		theKeys[4];
+		/*long		theKeys[4];
 #ifdef __MWERKS__
 		GetKeys((UInt32 *)theKeys);
 #else
@@ -209,10 +208,11 @@ uchar pause_for_input(ulong wait_time)
 			if (theKeys[i] != 0)
 				gotInput = TRUE;
 		
-		if (Button())
+		if (Button()) {
 			gotInput = TRUE;
+		}*/
 
-		sdl_draw();
+		SDLDraw();
 	}
 	
 	// return if we got input
@@ -238,68 +238,6 @@ uchar ppall[PALETTE_SIZE];
 //
 #define DO_FADES
 //
-
-void sdl_draw(void)
-{
-	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
-	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
-  	SDL_UpdateWindowSurface(window);
-	SDL_PumpEvents();
-}
-
-void init_sdl(grs_screen* cit_screen)
-{
-	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		DebugString("SDL: Init failed");
-	}
-
-	window = SDL_CreateWindow(
-		"System Shock", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		640, 480, SDL_WINDOW_SHOWN);
-
-	atexit(SDL_Quit);
-
-	SDL_RaiseWindow(window);
-	
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-
-	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
-	if(!drawSurface) {
-		DebugString("SDL: Failed to create draw surface");
-		return;
-	}
-
-	gScreenRowbytes = drawSurface->w;
-	gScreenAddress = drawSurface->pixels;
-
-	gr_init();
-	gr_set_mode (GRM_640x480x8, TRUE);
-	gr_set_screen (gr_alloc_screen (640, 480));
-
-	// HAX: Why aren't the canvas rows set by default from gr_set_screen?
-	grd_bm.row = 640;
-
-	gr_alloc_ipal();
-	gr_init_blend(1);
-
-	gr_clear(0x0);
-	sdl_draw();
-}
-
-void set_sdl_palette(int index, int count, uchar *pal)
-{
-	SDL_Color gamePalette[256];
-	for(int i = index; i < count; i++) {
-		gamePalette[index+i].r = *pal++;
-		gamePalette[index+i].g = *pal++;
-		gamePalette[index+i].b = *pal++;
-		gamePalette[index+i].a = 0xFF;
-	}
-
-	SDL_Palette* sdlPalette = SDL_AllocPalette(count);
-	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
-	SDL_SetSurfacePalette(drawSurface, sdlPalette);
-}
 
 //-------------------------------------------------
 //  Initialize everything!
@@ -377,21 +315,8 @@ void init_all(void)
 // Initialize the Animation system
 //   AnimInit();
 
-   gr_init();
-//   gr_set_malloc(CitMalloc);		MLA - Don't need these
-//   gr_set_free(CitFree);
-   gr_set_mode(GRM_640x480x8, TRUE);
-
-   printf("cit_screen %i %i\n", grd_cap->w,grd_cap->h);
-
-   cit_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
-   gr_set_screen(cit_screen);
-   
-   // set up low detail=clut lit always.
-   gr_set_per_detail_level_param(3,4,16*FIX_UNIT,GR_LOW_PER_DETAIL);
-
-
-   init_sdl(cit_screen);
+   // initialize renderer
+   InitSDL(cit_screen);
 
 	// Initialize low-level keyboard and mouse input.  KLC - taken out of uiInit.
 	mouse_init(grd_cap->w,grd_cap->h);
@@ -479,8 +404,8 @@ void init_all(void)
 	// Put up splash screen for US!
     printf("-Make splash\n");
 	uiFlush();
-	DrawSplashScreen(9002, TRUE);
-	sdl_draw();
+	//DrawSplashScreen(9002, TRUE);
+	SDLDraw();
 	
 	// Set the wait time for our screen
 	pause_time = TickCount();
@@ -523,7 +448,7 @@ void init_all(void)
    mlimbs_peril = 95;
 
 	// LG splash screen wait
-	pause_for_input(pause_time);
+	//pause_for_input(pause_time);
 	//	speed_splash = TRUE;
 
 #ifdef DO_FADES
@@ -535,14 +460,25 @@ void init_all(void)
 
 	// Put up title screen
 	uiFlush();
-	DrawSplashScreen(9003, TRUE);
-	sdl_draw();
+	//DrawSplashScreen(9003, TRUE);
+	SDLDraw();
 
 	// Preload and lock resources that are used often in the game.
 	PreloadGameResources();
 	
 	// set the wait time for system shock title screen
-	pause_for_input(100);
+
+	gr_clear(0x00);
+	printf("Drawing something!\n");
+	grs_bitmap test_bm;
+
+	int ret = simple_load_res_bitmap(&test_bm, 0x26a0001);
+	printf("Loaded test bitmap: %i %i\n", test_bm.w, test_bm.h);
+
+	gr_bitmap(&test_bm, 0, 20);
+	pause_for_input(TickCount() + 20);
+
+	//gr_clear(0xFF);
 
 	pause_time = TickCount();
 	if (!speed_splash)
@@ -562,7 +498,7 @@ void init_all(void)
    // fade down for last time
    if (_current_loop != EDIT_LOOP)
    {
-	   pause_for_input(pause_time);
+	   pause_for_input(TickCount() + 10);
 //	   if (pal_fx_on)
 //	      palfx_fade_down();
    }
@@ -586,8 +522,8 @@ void DrawSplashScreen(short id, Boolean fadeIn)
 	extern byte palfx_start_fade_up(uchar *new_pal);
 
 	// First, clear the screen and load in the color table for this picture.
-	gr_clear(0xFF);
-	ctab = GetCTable(id);														// Get the pict's CLUT
+	//gr_clear(0xFF);
+	/*ctab = GetCTable(id);														// Get the pict's CLUT
 	if (ctab)
 	{
 		BlockMove((**(ctab)).ctTable, (**(gMainColorHand)).ctTable, 256 * sizeof(ColorSpec));
@@ -615,7 +551,7 @@ void DrawSplashScreen(short id, Boolean fadeIn)
 		if (fadeIn)
 			finish_pal_effect(pal_id);
 #endif
-	}
+	}*/
 }
 
 void PreloadGameResources(void)
@@ -713,11 +649,12 @@ errtype object_data_load(void)
    AdvanceProgress();
 
    // Make the objmode camera....
+   printf("create camera\n");
    fr_camera_create(&objmode_cam, CAMTYPE_OBJ, (fix *)player_struct.rep, NULL);
    AdvanceProgress();
 
-   objdata_loaded = TRUE;
    printf("load_dynamic_memory\n");
+   objdata_loaded = TRUE;
    load_dynamic_memory(DYNMEM_ALL);
 
 //KLC   end_wait();
@@ -763,7 +700,7 @@ errtype load_da_palette()
 	ResCloseFile(pal_file);
 	gr_set_pal(0, 256, ppall);
 
-	set_sdl_palette(0, 256, ppall);
+	SetSDLPalette(0, 256, ppall);
 
 	return(OK);
 }
@@ -775,7 +712,7 @@ errtype init_pal_fx()
 	
 	i=1;
 	
-	gr_clear(0xFF);
+	//gr_clear(0xFF);
 	
 	// Initialize the palette
 	load_da_palette();
@@ -829,11 +766,13 @@ errtype init_pal_fx()
       LG_memcpy(tmppal_lower,ppall,32*3);
       LG_memset(ppall,0,32*3);
       gr_set_pal(0, 256, ppall);
+      SetSDLPalette(0, 256, ppall);
 
       gr_init_blend(1);                // we want 2 tables, really, basically, and all 
 
       LG_memcpy(ppall,tmppal_lower,32*3);
       gr_set_pal(0, 256, ppall);
+      SetSDLPalette(0, 256, ppall);
    }
 }
 

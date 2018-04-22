@@ -1,3 +1,5 @@
+#pragma pack(2)
+
 #include <stdbool.h>
 
 #include "2d.h"

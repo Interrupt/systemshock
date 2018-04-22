@@ -207,8 +207,9 @@ void ss_string(char *s, short x, short y)
 #endif
          ss_scale_string(s,SCONV_X(x),SCONV_Y(y));
    }
-   else
+   else {
       gr_string(s,x,y);
+   }
 }
 
 void ss_bitmap(grs_bitmap *bmp, short x, short y)

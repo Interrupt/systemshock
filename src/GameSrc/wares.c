@@ -431,8 +431,9 @@ void wares_update()
 
    }
    for (j = 0; j < NUM_HARDWAREZ; j++)
-      if (player_struct.hardwarez_status[j] & WARE_FLASH)
+      if (player_struct.hardwarez_status[j] & WARE_FLASH) {
          side_icon_expose(HardWare[j].sideicon);
+      }
 
    return;
 }

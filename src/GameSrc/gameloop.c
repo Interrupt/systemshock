@@ -51,13 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybstrng.h"
 #include "colors.h"
 #include "gr2ss.h"
-#include "screen.h"
-
-// Defines
-#define SCREEN_VIEW_X   28
-#define SCREEN_VIEW_Y   24
-#define SCREEN_VIEW_HEIGHT 108
-#define SCREEN_VIEW_WIDTH  268
+#include "game_screen.h"
 
 #undef RECT_FILL
 #define RECT_FILL(pr,x1,y1,x2,y2) \
@@ -71,7 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------
 // GLOBALS
 // ----------
-uchar redraw_paused=FALSE;
+uchar redraw_paused=TRUE;
 
 // ----------
 // PROTOTYPES
@@ -115,19 +109,22 @@ void game_loop(void)
 //	Debugger();
 		
 	// Handle paused game state
+
+	draw_pause_string();
 	
 	if (game_paused)
 	{
 		if (redraw_paused)
 		{
+			printf("Drawing pause!\n");
 			draw_pause_string();
 			redraw_paused=FALSE;
 		}
 //KLC - does nothing!			loopLine(GL|0x1D,synchronous_update());
-		if (music_on)
+		/*if (music_on)
 			loopLine(GL|0x1C,mlimbs_do_ai());
 		if (pal_fx_on)
-			loopLine(GL|0x1E,palette_advance_all_fx(* (long *) 0x16a));	// TickCount()
+			loopLine(GL|0x1E,palette_advance_all_fx(* (long *) 0x16a));	// TickCount()*/
 	}
 	
 	// If we're not paused...
@@ -137,15 +134,27 @@ void game_loop(void)
 		loopLine(GL|0x10,update_state(time_passes));     // move game time
 		if (time_passes)
 		{
+			printf("ai_run\n");
 			loopLine(GL|0x12,ai_run());
+			printf("gamesys_run\n");
 			loopLine(GL|0x13,gamesys_run());
+			printf("advance_animations\n");
 			loopLine(GL|0x14, advance_animations());
 		}
+		printf("wares\n");
 		loopLine(GL|0x16,wares_update());
+		printf("messages\n");
 		loopLine(GL|0x1D,message_clear_check());  // This could be done more cleverly with change flags...
+
+		loopLine(GL|0x1B, inventory_draw());
+		loopLine(GL|0x18,mfd_update());
+
+		return;
+
 		if (localChanges)
 		{
 			loopLine(GL|0x1A, render_run());
+			printf("rendered\n");
 			loopLine(GL|0x17,if (!full_game_3d) status_vitals_update(FALSE));
 /*KLC - no longer needed
 			if (_change_flag&ANIM_UPDATE)

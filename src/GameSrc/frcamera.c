@@ -105,13 +105,18 @@ cams   *fr_camera_getdef (void)
 
 uchar    fr_camera_create (cams *cam, int camtype, void *arg1, void *arg2)
 {
+   printf("fr_camera_create\n");
    _cam_top(cam) FALSE;
    _cam->type=camtype;
+
+   printf("Set cam type\n");
    if (camtype&CAMBIT_OBJ)
       _cam->obj_id=(ushort)arg1;
    else
       LG_memcpy(_cam->coor,arg1,sizeof(fix)*CAM_COOR_CNT);
-   LG_memcpy(_cam->args,arg2,sizeof(fix)*CAM_ARGS_CNT);
+
+   printf("Skipping LG_memcpy to set up camera!\n");
+   //LG_memcpy(_cam->args,arg2,sizeof(fix)*CAM_ARGS_CNT);
    return TRUE;
 }
 

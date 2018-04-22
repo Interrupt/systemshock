@@ -57,6 +57,8 @@ void flat8_mono_ubitmap (grs_bitmap *bm, short x, short y)
    uchar *p_src;              /* pointer to source byte */
    uchar *p_dst;
 
+   printf("flat8_mono_ubitmap %i %i %i %i\n", x, y, bm->h, bm->w);
+
    h = bm->h;
    p_row = bm->bits;
    p_dst = grd_bm.bits + y*grd_bm.row + x;

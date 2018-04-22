@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
+#include <sdl.h>
+
 //--------------------
 // Defines
 //--------------------
@@ -127,6 +129,10 @@ void DoQuit(void);
 void HandleAEOpenGame(FSSpec *openSpec);
 void ScrollCredits(void);
 
+void InitSDL(grs_screen* cit_screen);
+void SetSDLPalette(int index, int count, uchar *pal);
+void SDLDraw();
+
 //--------------------
 // Public Globals
 //--------------------
@@ -166,6 +172,11 @@ extern long					gAlogDirID;
 extern short				gAlogVref;
 extern long					gBarkDirID;
 extern short				gBarkVref;
+
+
+extern grs_screen  *cit_screen;
+extern SDL_Surface* drawSurface;
+extern SDL_Window* window;
 
 
 /*#else

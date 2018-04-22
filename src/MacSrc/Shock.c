@@ -101,6 +101,8 @@ void ShockGameLoop(void);
 void HandlePausedEvents(void);
 void SetupPauseMenus(void);
 void RestoreTitleScreen(void);
+void InitSDL(grs_screen* cit_screen);
+void SDLDraw(void);
 errtype CheckFreeSpace(short	checkRefNum);
 
 
@@ -673,10 +675,13 @@ void HandleNewGame()
 		InvalRect(&gMainWindow->portRect); 
 	}*/
 
+	gr_clear(0x0);
+
 	printf("Starting Game\n");
 	gIsNewGame = TRUE;									// It's a whole new ballgame.
 	gGameSavedTime = 0;
 	go_and_start_the_game_already();				// Load up everything for a new game
+	SDLDraw();
 
 	printf("Starting Main Loop\n");
 	ShockGameLoop();
@@ -789,23 +794,25 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 void ShockGameLoop(void)
 {
+	gPlayingGame = TRUE;
 	while (gPlayingGame)
 	{
-		if (!(_change_flag&(ML_CHG_BASE<<1)))
+		/*if (!(_change_flag&(ML_CHG_BASE<<1)))
 			input_chk();
 		if (globalChanges)
 		{
 			if (_change_flag&(ML_CHG_BASE<<3))
 				loopmode_switch(&_current_loop);
 			chg_unset_flg(ML_CHG_BASE<<3);
-		}
+		}*/
 		
 		if (_current_loop == AUTOMAP_LOOP)
 			automap_loop();									// Do the fullscreen map loop.
-		else
+		else {
 			game_loop();										// Run the game!
+		}
 		
-		if (game_paused)									// If the game is paused, go to the "paused" Mac
+		/*if (game_paused)									// If the game is paused, go to the "paused" Mac
 		{															// event handling loop.
 			if (music_on)
 				MacTuneKillCurrentTheme();
@@ -829,14 +836,11 @@ void ShockGameLoop(void)
 			uiShowMouse(NULL);
 			if (music_on)
 				MacTuneStartCurrentTheme();
-		}
+		}*/
 		
 		chg_set_flg(_static_change);
 
-		SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
-		SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
-	  	SDL_UpdateWindowSurface(window);
-		SDL_PumpEvents();
+		SDLDraw();
 	}
 
 	/*Size		dummy;
@@ -1188,3 +1192,72 @@ errtype CheckFreeSpace(short	checkRefNum)
 	return (OK);
 }
 
+void InitSDL(grs_screen* cit_screen)
+{
+	SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+		DebugString("SDL: Init failed");
+	}
+
+	window = SDL_CreateWindow(
+		"System Shock", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		640, 480, SDL_WINDOW_SHOWN);
+
+	atexit(SDL_Quit);
+
+	SDL_RaiseWindow(window);
+	
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
+	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+	if(!drawSurface) {
+		DebugString("SDL: Failed to create draw surface");
+		return;
+	}
+
+	gScreenRowbytes = drawSurface->w;
+	gScreenAddress = drawSurface->pixels;
+
+	gr_init();
+    gr_set_mode(GRM_640x480x8, TRUE);
+
+    printf("cit_screen %i %i\n", grd_cap->w,grd_cap->h);
+
+    cit_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
+    gr_set_screen(cit_screen);
+
+	gr_alloc_ipal();
+	gr_init_blend(1);
+
+	gr_set_per_detail_level_param(3,4,16*FIX_UNIT,GR_LOW_PER_DETAIL);
+
+	// HAX why are these not set already?
+	grd_clip.right = 320;
+   	grd_clip.bot = 240;
+
+	gr_clear(0xFF);
+	SDLDraw();
+}
+
+void SetSDLPalette(int index, int count, uchar *pal)
+{
+	SDL_Color gamePalette[256];
+	for(int i = index; i < count; i++) {
+		gamePalette[index+i].r = *pal++;
+		gamePalette[index+i].g = *pal++;
+		gamePalette[index+i].b = *pal++;
+		gamePalette[index+i].a = 0xFF;
+	}
+
+	SDL_Palette* sdlPalette = SDL_AllocPalette(count);
+	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
+	SDL_SetSurfacePalette(drawSurface, sdlPalette);
+}
+
+void SDLDraw(void)
+{
+	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
+  	SDL_UpdateWindowSurface(window);
+	SDL_PumpEvents();
+}

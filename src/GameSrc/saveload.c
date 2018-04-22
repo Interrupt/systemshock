@@ -815,10 +815,13 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 	}
 
 	// Open the saved-game (or archive) file.
-	fd = ResOpenFile(spec);
-	if (fd < 0)
+   printf("Opening default archive instead of save archive.\n");
+	//fd = ResOpenFile(spec);
+   fd = ResOpenFile("res/data/archive.dat");
+	if (fd == NULL)
 	{
 		//Warning(("Could not load map file %s (%s) , rv = %d!\n",dpath_fn,fn,retval));
+      printf("Could not load map file\n");
 		if (make_player)
 			obj_create_player(&plr_loc);
 		trigger_check=TRUE;
@@ -828,6 +831,8 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 		return ERR_FOPEN;
 	}
 	AdvanceProgress();
+
+   printf("Opened\n");
 
 	if (ResInUse(SAVELOAD_VERIFICATION_ID))
 	{
@@ -872,6 +877,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 	SwapLongBytes(&version);								// Mac
 */
 	// Clear out old physics data and object data
+   printf("ObjsInit\n");
 	ObjsInit();
 	physics_init();	
 
@@ -880,6 +886,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 	
 	// convert_from is the version we are coming from.
 	// for now, this is only defined for coming from version 9
+   printf("Reading Map\n");
 	{
 		REF_READ(id_num, idx++, *global_fullmap);
 				
@@ -889,11 +896,13 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 	}
 
 	// Load schedules, performing some voodoo.  
+   printf("Load schedules\n");
 	global_fullmap->sched[0].queue.vec = schedvec;			// KLC - Only one schedule, so restore it.
 	global_fullmap->sched[0].queue.comp = compare_events;
 	if (global_fullmap->sched[0].queue.fullness > 0)		// KLC - no need to read in vec if none there.
 	{
-		REF_READ(id_num, idx++, *global_fullmap->sched[0].queue.vec);
+      printf("Skipping schedule read!\n");
+		//REF_READ(id_num, idx++, *global_fullmap->sched[0].queue.vec);
 	}
 	else
 		idx++;
@@ -908,6 +917,7 @@ global_fullmap->sched[0].queue.grow = TRUE;
 		SwapShortBytes(&loved_textures[i]);
 	}
 */
+   printf("map_set_default\n");
 	map_set_default(global_fullmap);
 
 /*  Leave conversion from old objects out for now
@@ -1435,7 +1445,10 @@ global_fullmap->sched[0].queue.grow = TRUE;
 		idx++;
 	}*/
 
-#ifdef SAVE_AUTOMAP_STRINGS
+   printf("Read map object data.\n");
+
+   printf("Skipping reading automap strings!\n");
+/*#ifdef SAVE_AUTOMAP_STRINGS
 	{
 		int	amap_magic_num;
 		char	*cp = amap_str_reref(0);
@@ -1448,7 +1461,7 @@ global_fullmap->sched[0].queue.grow = TRUE;
 	}
 #endif
 
-	idx++;		// Doesn't appear that this does anything
+	idx++;		// Doesn't appear that this does anything*/
 /*
 	REF_READ(id_num, idx++, player_edms);
 	SwapLongBytes(&player_edms.X);
@@ -1502,6 +1515,7 @@ obj_out:
 	bounds.lr.x = global_fullmap->x_size;
 	bounds.lr.y = global_fullmap->y_size;
 
+   printf("rendedit_process_tilemap\n");
    rendedit_process_tilemap(global_fullmap, &bounds, TRUE);
 
    for (i=0;i<MAX_OBJ;i++)
@@ -1567,13 +1581,16 @@ obj_out:
    }
 
 out:
+
 	ResCloseFile(fd);
 
+   printf("reset_pathfinding\n");
 	reset_pathfinding();
 	old_bits = -1;
 
 	trigger_check = TRUE;
 
+   printf("load_level_data\n");
 	load_dynamic_memory(dynmem_mask);
 	load_level_data();
 	
@@ -1585,6 +1602,8 @@ out:
 			amap_settings_copy(&saveAMaps[i],oAMap(i));
 		}
 	}
+
+   printf("reload_motion_cursors\n");
    reload_motion_cursors(global_fullmap->cyber);
    
 //KLC   physics_warmup();
@@ -1596,6 +1615,8 @@ out:
    }
    _MARK_("load_current_map:End");
 */
+
+   printf("load_current_map: end: %i\n", retval);
 	return retval;
 }
 

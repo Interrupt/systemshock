@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __OBJGAME_H 
 #define __OBJGAME_H
 
+#pragma pack(2)
+
 /*
  * $Source: r:/prj/cit/src/inc/RCS/objgame.h $
  * $Revision: 1.52 $

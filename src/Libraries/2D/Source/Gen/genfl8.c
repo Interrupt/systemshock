@@ -84,6 +84,7 @@ void gen_flat8_ubitmap (grs_bitmap *bm, short x, short y)
       }
    }
    else {
+      printf("gen_flat8_ubitmap %i %i\n", bm->row, bm->w);
       for ( ; y<bot; y++, src+=bm->row-bm->w) {
          for (cur_x=x ; cur_x<right; cur_x++, src++)
             gr_set_upixel (*src, cur_x, y);
@@ -104,8 +105,9 @@ int gen_flat8_bitmap (grs_bitmap *bm, short x, short y)
 
    /* check for trivial reject. */
    if (x+bm->w<grd_clip.left || x>=grd_clip.right ||
-       y+bm->h<grd_clip.top  || y>=grd_clip.bot)
+       y+bm->h<grd_clip.top  || y>=grd_clip.bot) {
       return CLIP_ALL;
+   }
 
    /* clip & draw that sucker. */
    if (x < grd_clip.left) {            /* off left edge */

@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __OBJLOAD_H
 #define __OBJLOAD_H
 
+#pragma pack(2)
+
 /*
  * $Source: u:/inc/RCS/objload.h $
  * $Revision: 1.2 $

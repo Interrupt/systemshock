@@ -558,6 +558,8 @@ errtype journey_newgame_func()
 
    printf("Create initial game\n");
    create_initial_game_func(0,0,0);
+
+   printf("Started!\n");
 /* not yet
    change_mode_func(0,0,(void *)GAME_LOOP);
 */

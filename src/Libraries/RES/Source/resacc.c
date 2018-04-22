@@ -63,8 +63,10 @@ void *ResLock(Id id)
 	//	If resource not loaded, load it
 
 	prd = RESDESC(id);
-	if (ResLoadResource(id) == NULL)
+	if (ResLoadResource(id) == NULL) {
+		printf("ResLock: Could not load %x", id);
 		return(NULL);
+	}
 
 //	else if (prd->lock == 0)
 //		ResRemoveFromLRU(prd);
@@ -278,8 +280,6 @@ void ResDrop(Id id)
 void ResDelete(Id id)
 {
 	ResDesc *prd;
-
-	printf("ResDelete\n");
 
 	//	If locked, issue warning
 

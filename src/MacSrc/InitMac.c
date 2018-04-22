@@ -176,6 +176,12 @@ void InitMac(void)
 	InstallShockTimers();
 	
 	gMenusHid = FALSE;*/
+
+	GetDateTime(&gRandSeed);								// Start off with a random seed
+	gRandSeed += TickCount()<<8;
+
+	InstallShockTimers(); // needed for the tick pointer
+	printf("InstallShockTimers\n");
  }
 
 //------------------------------------------------------------------------------------

@@ -162,36 +162,58 @@ int main(void)
 	// linear
 	SetVertexLinear(points);
 	gr_poly(2, 4, points);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 	WaitKey();
 	gr_per_umap(&bm, 4, points);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 	WaitKey();
 	gr_clut_per_umap(&bm, 4, points, test_clut);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 	WaitKey();
 	gr_lit_per_umap(&bm, 4, points);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 
 	WaitKey();
 	gr_clear(clear_color);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 	WaitKey();
 	
 	// wall 
 	SetVertexWall(points);
 	gr_poly(2, 4, points);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 	WaitKey();
 	gr_per_umap(&bm, 4, points);
 	WaitKey();
 	gr_lit_per_umap(&bm, 4, points);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 
 	WaitKey();
 	gr_clear(clear_color);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 	WaitKey();
 
 	// floor
 	SetVertexFloor(points);
 	gr_poly(2, 4, points);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 	WaitKey();
 	gr_per_umap(&bm, 4, points);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 	WaitKey();
 	gr_lit_per_umap(&bm, 4, points);
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 
 	WaitKey();
 	WaitKey();
@@ -199,6 +221,9 @@ int main(void)
 	WaitKey();
 	gr_clear(clear_color);
 	WaitKey();
+
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 
 
 	// perspective(hscan)
@@ -223,6 +248,7 @@ int main(void)
 
 	WaitKey();
 	gr_clear(clear_color);
+
 	WaitKey();
 		
 
@@ -236,6 +262,9 @@ int main(void)
 	gr_per_umap(&bm, 4, points);
 	gr_clut_per_umap(&bm, 4, points, test_clut);
 	gr_lit_per_umap(&bm, 4, points);
+
+	gen_flat8_ubitmap(&bm, 0, 0);
+	flat8_set_upixel(40, 2, 2);
 
 	WaitKey();
 

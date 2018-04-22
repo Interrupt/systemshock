@@ -119,10 +119,10 @@ int fr_clip_resize(int x, int y)				// x, y
 {
    int i;
 #ifdef MAP_RESIZING
-   if (x_span_lists!=NULL) Free(x_span_lists);
-   if (cone_span_list!=NULL) Free(cone_span_list);
-   x_span_lists=(uchar *)Malloc(y*SPAN_MEM*sizeof(uchar));
-   cone_span_list=(uchar *)Malloc(y*2*sizeof(uchar));
+   if (x_span_lists!=NULL) free(x_span_lists);
+   if (cone_span_list!=NULL) free(cone_span_list);
+   x_span_lists=(uchar *)malloc(y*SPAN_MEM*sizeof(uchar));
+   cone_span_list=(uchar *)malloc(y*2*sizeof(uchar));
 #else
    x_span_lists=&real_x_spans[0];
    cone_span_list=&real_cone_spans[0];

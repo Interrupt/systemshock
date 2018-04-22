@@ -203,7 +203,13 @@ RefTable *ResReadRefTable(Id id)
 	//DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return(NULL);});
 
 	prd = RESDESC(id);
+
 	fd = resFile[prd->filenum].fd;
+
+	if(fd == NULL) {
+		printf("ResReadRefTable: id $%x doesn't exist\n", id);
+		return(NULL);
+	}
 
 	//DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
 		Warning(("ResReadRefTable: id $%x doesn't exist\n", id)); \

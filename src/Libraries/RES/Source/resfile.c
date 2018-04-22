@@ -264,7 +264,10 @@ void ResCloseFile(int filenum)
 		ResWriteDir(filenum);
 		ResWriteHeader(filenum);
 		}
+*/
 
+
+/*
 //	Scan object list, delete any blocks associated with this file
 
 	for (id = ID_MIN; id <= resDescMax; id++)
@@ -272,7 +275,7 @@ void ResCloseFile(int filenum)
 		if (ResInUse(id) && (ResFilenum(id) == filenum))
 			ResDelete(id);
 		}
-*/
+
 //	Free up memory
 
 	if (resFile[filenum].pedit)
@@ -281,7 +284,8 @@ void ResCloseFile(int filenum)
 			free(resFile[filenum].pedit->pdir);
 		free(resFile[filenum].pedit);
 		}
-
+*/
+		
 //	Close file
 
 //	close(resFile[filenum].fd);

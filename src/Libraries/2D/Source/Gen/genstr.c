@@ -69,8 +69,12 @@ int gen_font_string (grs_font *f, char *s, short x0, short y0)
 	uchar c;						  /* current character */
 	short yok;					  /* current line in t/b clip */
 
-	if (x0 > grd_clip.right || y0 > grd_clip.bot)
+	printf("gen_font_string %i %i %i %i %s\n", x0, y0, grd_clip.right, grd_clip.bot, s);
+
+	if (x0 > grd_clip.right || y0 > grd_clip.bot) {
+		printf("CLIP_NONE\n");
 	  return CLIP_NONE;
+	}
 
 	char_buf = (uchar *)f + f->buf;
 	offset_tab = f->off_tab;

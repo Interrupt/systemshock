@@ -32,6 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objsim.h"
 #include "objclass.h"
 
+#pragma pack(2)
+
 typedef struct {
 //   COMMON_OBJSPEC_FIELDS;
    union {

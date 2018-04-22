@@ -112,27 +112,25 @@ errtype load_dynamic_memory(int mask)
    FSSpec	fSpec;
    extern short _new_mode;
 	
-  FSMakeFSSpec(gDataVref, gDataDirID, "texture.rsrc", &fSpec);
    if (_new_mode != -1)
    {
       if ((~loadcount) & mask & DYNMEM_TEXTURES)
       {
-         texture_fnum = ResOpenFile(&fSpec);
+         texture_fnum = ResOpenFile("res/data/texture.res");
          load_textures();
 
          if (texture_fnum < 0)
             critical_error(CRITERR_RES|7);
       }
       if ((~loadcount) & mask & DYNMEM_SIDEICONS)
-      {
+      {    
          side_icon_load_bitmaps();
       }
 	 AdvanceProgress();
       
       if ((~loadcount) & mask & DYNMEM_FHANDLE_1)
       {
-  		FSMakeFSSpec(gDataVref, gDataDirID, "handart.rsrc", &fSpec);
-		hand_fnum = ResOpenFile(&fSpec);
+		hand_fnum = ResOpenFile("res/data/handart.res");
 		if (hand_fnum < 0)
 			critical_error(CRITERR_RES|3);
       }
@@ -141,17 +139,15 @@ errtype load_dynamic_memory(int mask)
       // digifx used to be FHANDLE_2
       if ((~loadcount) & mask & DYNMEM_FHANDLE_3)
       {
-  		FSMakeFSSpec(gDataVref, gDataDirID, "objart2.rsrc", &fSpec);
-		critter_fnum = ResOpenFile(&fSpec);
+		critter_fnum = ResOpenFile("res/data/objart2.res");
 		if (critter_fnum < 0)
 			critical_error(CRITERR_RES|8);
       }
 	 AdvanceProgress();
-      
+
       if ((~loadcount) & mask & DYNMEM_FHANDLE_4)
       {
-  		FSMakeFSSpec(gDataVref, gDataDirID, "objart3.rsrc", &fSpec);
-		critter_fnum2 = ResOpenFile(&fSpec);
+		critter_fnum2 = ResOpenFile("res/data/objart3.res");
 		if (critter_fnum2 < 0)
 			critical_error(CRITERR_RES|8);
       }
@@ -159,6 +155,7 @@ errtype load_dynamic_memory(int mask)
 
       loadcount |= mask;
    }
+
    return(OK);
 }
 

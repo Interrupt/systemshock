@@ -77,6 +77,7 @@ extern Ptr		gScreenAddress;
 //
 void mac_set_mode(void)
  {
+    printf("mac_set_mode\n");
  	grd_mode_cap.vbase = (uchar *) gScreenAddress;
  	
  	grd_canvas_table_list[BMT_DEVICE] = flat8_canvas_table;

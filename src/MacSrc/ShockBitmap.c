@@ -58,6 +58,7 @@ SDL_Renderer* 		renderer;*/
 //------------------------------------------------------------------------------------
 void SetupOffscreenBitmaps(void)
 {
+	printf("SetupOffscreenBitmaps\n");
 	/*SDL_Init(SDL_INIT_VIDEO);
 
     window = SDL_CreateWindow("SimpleMain", 320, 480, 640, 480, SDL_WINDOW_SHOWN);
@@ -197,6 +198,7 @@ void FreeShockBitmap(ShockBitmap *theMap)
 //------------------------------------------------------------------------------------
 Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height) 
 {
+	printf("Build8PixMap\n");
 	/*Rect        			bRect;
 	PixMapHandle		pmap;
 	PixMapPtr			pmaptr;

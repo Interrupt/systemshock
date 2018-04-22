@@ -140,6 +140,9 @@ errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uc
 errtype load_res_bitmap(grs_bitmap* bmp, Ref rid,uchar alloc)
 {
    errtype retval;
+
+   //printf("load_res_bitmap %x : %x\n", REFID(rid), REFINDEX(rid));
+
    RefTable *rt = ResReadRefTable(REFID(rid));
    retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, FALSE, NULL,(alloc) ? NULL : bmp->bits);
 
@@ -171,7 +174,7 @@ errtype load_res_bitmap(grs_bitmap* bmp, Ref rid,uchar alloc)
    sz = f->bm.w *f->bm.h;
    if (alloc)
    {
-      bits = Malloc(sz);
+      bits = malloc(sz);
       if (bits == NULL) { retval = ERR_NOMEM; goto out; }
    }
    LG_memcpy(bits,(char*)(f+1),sz);

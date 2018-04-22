@@ -819,7 +819,7 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e)
       // Get our funky mfd-beam-phaser-setting cursor
       uiPushRegionCursor(MFD_REGION(m),&slider_cursor);
 #ifdef CURSOR_BACKUPS
-   backup[20] = (uchar *)Malloc(f->bm.w * f->bm.h);
+   backup[20] = (uchar *)malloc(f->bm.w * f->bm.h);
    LG_memcpy(backup[20],f->bm.bits,f->bm.w * f->bm.h);
       gr_init_bm(&backup_mfd_cursor,backup[14],BMT_FLAT8, 0, mfd_cursor.w,mfd_cursor.h);
 #endif
@@ -1912,7 +1912,7 @@ uchar mfd_grenade_slider_handler(MFD* m,short val, uiEvent* ev, void* data)
       GRENADE_MOUSE_CONSTRAINED = m->id + 1;
       // Get our funky mfd-beam-phaser-setting cursor
 #ifdef CURSOR_BACKUPS
-   backup[20] = (uchar *)Malloc(f->bm.w * f->bm.h);
+   backup[20] = (uchar *)malloc(f->bm.w * f->bm.h);
    LG_memcpy(backup[20],f->bm.bits,f->bm.w * f->bm.h);
       gr_init_bm(&backup_mfd_cursor,backup[14],BMT_FLAT8, 0, mfd_cursor.w,mfd_cursor.h);
 #endif
