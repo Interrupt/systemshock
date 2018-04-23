@@ -140,8 +140,8 @@ void mfd_viewhelp_expose(MFD* mfd, ubyte control)
 
       // Clear the canvas by drawing the background bitmap
       if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
+         ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
 
       // figure out where to start, and what tracks are active.
       for (i = 0; i < NUM_CHECKBOX_FIELDS; i++)

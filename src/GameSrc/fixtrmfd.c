@@ -118,8 +118,8 @@ void mfd_fixture_expose(MFD* mfd, ubyte control)
 
       // Clear the canvas by drawing the background bitmap
       if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
+         ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
       draw_res_bm(REF_IMG_MFDButtonBack,0,0);
       if (full || player_struct.panel_ref != fd->last_obj)
       {

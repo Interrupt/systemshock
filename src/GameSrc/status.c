@@ -159,8 +159,8 @@ typedef struct {
 
 uchar gBioInited = FALSE;
 
-//KLC - chg for new art   uchar status_background[(DIFF_BIO_WIDTH+4)*(DIFF_BIO_HEIGHT+2)];
-uchar status_background[(266+4)*(44+2)];
+uchar status_background[(DIFF_BIO_WIDTH+4)*(DIFF_BIO_HEIGHT+2)];
+//uchar status_background[(266+4)*(44+2)];
 uchar bio_data_buffer[NUM_BIO_TRACKS * sizeof(bio_data_block)];
 
 #define FRAME_RATE_SCALE   20
@@ -451,8 +451,8 @@ void status_bio_draw(void)
    int               i;
 
    // Draw the background map
-//KLC - chg for new art   ss_bitmap(&bio_background_bitmap, STATUS_BIO_X, STATUS_BIO_Y);
-	gr_bitmap(&bio_background_bitmap, SCONV_X(STATUS_BIO_X), SCONV_Y(STATUS_BIO_Y));
+   ss_bitmap(&bio_background_bitmap, STATUS_BIO_X, STATUS_BIO_Y);
+	//gr_bitmap(&bio_background_bitmap, SCONV_X(STATUS_BIO_X), SCONV_Y(STATUS_BIO_Y));
 	
    // Go from left to right and draw all the tracks
    for (i=0; i < STATUS_BIO_LENGTH; i++)

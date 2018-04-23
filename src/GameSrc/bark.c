@@ -70,8 +70,8 @@ void mfd_bark_expose(MFD* mfd, ubyte control)
 
       // Clear the canvas by drawing the background bitmap
       if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
+         ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
 
       if (mfd_bark_mug>0)
       {
@@ -81,8 +81,8 @@ void mfd_bark_expose(MFD* mfd, ubyte control)
          bm.bits = NULL;
 
          extract_temp_res_bitmap(&bm,mug);
-//KLC - chg for new art         ss_bitmap(&bm,(MFD_VIEW_WID-bm.w)/2,(MFD_VIEW_HGT-bm.h)/2);
-         gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
+         ss_bitmap(&bm,(MFD_VIEW_WID-bm.w)/2,(MFD_VIEW_HGT-bm.h)/2);
+         //gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
       }
       else if (!full_game_3d)
       {

@@ -334,14 +334,18 @@ errtype screen_draw(void)
    update_meters(TRUE);
    uiShowMouse(NULL);
 
+   printf("screen_draw\n");
+
    return(OK);
 }
 
 errtype _screen_background(void)
 {
-//KLC - chg for new art   Ref back_id = REF_IMG_bmGamescreenBackground;
-//KLC - chg for new art   draw_raw_res_bm_extract(back_id, 0, 0);
-	draw_hires_resource_bm(REF_IMG_bmGamescreenBackground, 0, 0);
+   Ref back_id = REF_IMG_bmGamescreenBackground;
+   draw_raw_res_bm_extract(back_id, 0, 0);
+
+   printf("NOT WORKING: draw_hires_resource_bm\n");
+	//draw_hires_resource_bm(REF_IMG_bmGamescreenBackground, 0, 0);
 	return(OK);
 }
 

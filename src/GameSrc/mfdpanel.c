@@ -712,8 +712,8 @@ void mfd_accesspanel_expose(MFD* mfd, ubyte control)
       {  // put back correct part of background
          accessp_score_rect_f(ss_safe_set_cliprect,cscore,wppz->last_score,0);
          if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-            gr_bitmap(&mfd_background, 0, 0);
+            ss_bitmap(&mfd_background, 0, 0);
+            //gr_bitmap(&mfd_background, 0, 0);
          ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
          mfd_add_rect(accessp_score_rect(cscore,wppz->last_score,0));
          if (accessp_score_cmp(cscore,wppz->tscore,<=)&&accessp_score_cmp(wppz->tscore,wppz->last_score,<=))
@@ -732,8 +732,8 @@ void mfd_accesspanel_expose(MFD* mfd, ubyte control)
          {
             ss_safe_set_cliprect(ACCESSP_BTN_X,ACCESSP_BTN_Y,ACCESSP_BTN_X+ACCESSP_FULL_WD,lry);
             if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         		 gr_bitmap(&mfd_background, 0, 0);
+               ss_bitmap(&mfd_background, 0, 0);
+         		//gr_bitmap(&mfd_background, 0, 0);
             mfd_add_rect(ACCESSP_BTN_X,ACCESSP_BTN_Y,ACCESSP_BTN_X+ACCESSP_FULL_WD,lry);
             ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
          }

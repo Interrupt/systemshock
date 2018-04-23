@@ -483,9 +483,9 @@ errtype message_info(char *info_text)
       {
 	     if (!view360_message_obscured ||  game_paused)
          {
-//KLC - chg for new art            draw_raw_resource_bm(REF_IMG_bmBlankMessageLine,x,y);
-            draw_hires_resource_bm(REF_IMG_bmBlankMessageLine,
-            										 SCONV_X(x), SCONV_Y(y));
+            draw_raw_resource_bm(REF_IMG_bmBlankMessageLine,x,y);
+            //draw_hires_resource_bm(REF_IMG_bmBlankMessageLine,
+            //										 SCONV_X(x), SCONV_Y(y));
          }
          x += 2;
          y += 1;

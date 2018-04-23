@@ -869,7 +869,7 @@ void ShockGameLoop(void)
 		// HAX ALWAYS DRAW THESE
 		chg_set_flg(LL_CHG_MASK);
 		chg_set_flg(ML_CHG_MASK);
-		
+
 		chg_set_flg(DEMOVIEW_UPDATE);
 		chg_set_flg(INVENTORY_UPDATE);
 		chg_set_flg(MFD_UPDATE);

@@ -453,11 +453,11 @@ void side_icon_draw_bm(LGRect *r, ubyte icon, ubyte art)
 #endif
    if (is_onscreen()) uiHideMouse(r);
    if (art == ICON_ART_BACKGROUND)
-//KLC - chg for new art      draw_raw_resource_bm(side_icon_backid,r->ul.x,r->ul.y);
-      draw_hires_resource_bm(side_icon_backid, SCONV_X(r->ul.x), SCONV_Y(r->ul.y));
+      draw_raw_resource_bm(side_icon_backid,r->ul.x,r->ul.y);
+      //draw_hires_resource_bm(side_icon_backid, SCONV_X(r->ul.x), SCONV_Y(r->ul.y));
    else
-//KLC - chg for new art      draw_raw_resource_bm(side_icon_bmid(icon,art), r->ul.x, r->ul.y);
-      draw_hires_resource_bm(side_icon_bmid(icon,art), SCONV_X(r->ul.x), SCONV_Y(r->ul.y));
+      draw_raw_resource_bm(side_icon_bmid(icon,art), r->ul.x, r->ul.y);
+      //draw_hires_resource_bm(side_icon_bmid(icon,art), SCONV_X(r->ul.x), SCONV_Y(r->ul.y));
    if (is_onscreen()) uiShowMouse(r);
 #ifdef SVGA_SUPPORT
    gr2ss_override = old_over;

@@ -153,8 +153,8 @@ void mfd_target_expose(MFD *m, ubyte control)
       mfd_clear_rects();
 
       if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
+         ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
 
       if (full && target == OBJ_SPEC_NULL)
       {
@@ -210,7 +210,7 @@ void mfd_target_expose(MFD *m, ubyte control)
 //KLC - chg for new art
             x = SCONV_X(MFD_VIEW_WID) - res_bm_width(id) - SCONV_X(HP_BAR_MARGIN);
             y = (SCONV_Y(MFD_VIEW_HGT) - res_bm_height(id))/2;
-//            draw_raw_res_bm_extract(id,x,y,MFD_EXTRACT_BUF);
+            //draw_raw_res_bm_extract(id,x,y,MFD_EXTRACT_BUF);
             draw_hires_resource_bm(id, x, y);
          }
          if (full)
@@ -598,8 +598,8 @@ void mfd_targetware_expose(MFD* mfd, ubyte control)
    if (control == 0) return;
    gr_push_canvas(pmfd_canvas);
    mfd_clear_rects();
-//KLC - chg for new art   mfd_item_micro_expose(full,TARG_GOG_TRIPLE);
-   mfd_item_micro_hires_expose(full,TARG_GOG_TRIPLE);
+   mfd_item_micro_expose(full,TARG_GOG_TRIPLE);
+   //mfd_item_micro_hires_expose(full,TARG_GOG_TRIPLE);
    draw_mfd_item_spew(REF_STR_wareSpew0 + STRINGS_PER_WARE*n,v);
    if (full)
    {

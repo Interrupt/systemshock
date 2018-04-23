@@ -179,8 +179,8 @@ void mfd_clear_view(void)
 {
    if (full_game_3d) return;
    ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-   gr_bitmap(&mfd_background, 0, 0);
+   ss_bitmap(&mfd_background, 0, 0);
+   //gr_bitmap(&mfd_background, 0, 0);
    mfd_add_rect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
 }
 
@@ -194,8 +194,8 @@ int mfd_bmap_id(int triple)
 void draw_blank_mfd(void)
 {
    ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
-//KLC - chg for new art   draw_res_bm(REF_IMG_bmBlankMFD, 0,0);
-   draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
+   draw_res_bm(REF_IMG_bmBlankMFD, 0,0);
+   //draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
    draw_res_bm(MKREF(RES_mfdArtOverlays,MFD_ART_TRIOP),0,0);
 }
 
@@ -400,17 +400,17 @@ void mfd_weapon_expose(MFD *m, ubyte control)
 
       ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
       if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
+         ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
 
       // Draw the appropriate weapon art.
       // We draw it here because it is effectively "background" 
       // Hopefully update-rects will take care of us..
       {
          int id = mfd_bmap_id(triple);
-//KLC - chg for new art         draw_res_bm(id,(MFD_VIEW_WID-res_bm_width(id))/2, WEAPON_ART_Y);
-         draw_hires_resource_bm(id,
-         		(SCONV_X(MFD_VIEW_WID)-res_bm_width(id))/2, SCONV_Y(WEAPON_ART_Y));  // is this right?
+         draw_res_bm(id,(MFD_VIEW_WID-res_bm_width(id))/2, WEAPON_ART_Y);
+         //draw_hires_resource_bm(id,
+         //		(SCONV_X(MFD_VIEW_WID)-res_bm_width(id))/2, SCONV_Y(WEAPON_ART_Y));  // is this right?
       }
 
       // This is all stuff that should be drawn for a full expose of
@@ -498,8 +498,8 @@ void draw_ammo_button(int triple, short x, short y)
    draw_res_bm(REF_IMG_BullFrame+min(2,max(3-carts,0)),x,y);
    id = mfd_bmap_id(triple);
    h = res_bm_height(id);
-//KLC - chg for new art   draw_res_bm(id,x+4,y+AMMO_BUTTON_H-4-h);
-   draw_hires_resource_bm(id, SCONV_X(x+4), SCONV_Y(y+AMMO_BUTTON_H-3)-h);
+   draw_res_bm(id,x+4,y+AMMO_BUTTON_H-4-h);
+   //draw_hires_resource_bm(id, SCONV_X(x+4), SCONV_Y(y+AMMO_BUTTON_H-3)-h);
    if (carts > 0)
    {
       int cnt = carts%CARTRIDGE_BRACKET;
@@ -1031,8 +1031,8 @@ void mfd_item_micro_expose(uchar full, int triple)
    if (!full_game_3d)
    {
       ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-      gr_bitmap(&mfd_background, 0, 0);
+      ss_bitmap(&mfd_background, 0, 0);
+      //gr_bitmap(&mfd_background, 0, 0);
    }
    if (full)
    {
@@ -1289,8 +1289,8 @@ void mfd_item_expose(MFD *m, ubyte control)
 
             triple = get_triple_from_class_nth_item(CLASS_DRUG,currtype);
 
-//KLC - chg for new art            mfd_item_micro_expose(FullRedraw, triple);
-            mfd_item_micro_hires_expose(FullRedraw, triple);
+            mfd_item_micro_expose(FullRedraw, triple);
+            //mfd_item_micro_hires_expose(FullRedraw, triple);
             if (FullRedraw)
                draw_mfd_item_spew(REF_STR_drugSpew0 + currtype,1);
             draw_res_bm(REF_IMG_Apply,DRUG_BUTTON_X,DRUG_BUTTON_Y);
@@ -1300,8 +1300,8 @@ void mfd_item_expose(MFD *m, ubyte control)
          case MFD_INV_GRENADE:
 
             triple = get_triple_from_class_nth_item(CLASS_GRENADE,currtype);
-//KLC - chg for new art            mfd_item_micro_expose(FullRedraw, triple);
-            mfd_item_micro_hires_expose(FullRedraw, triple);
+            mfd_item_micro_expose(FullRedraw, triple);
+            //mfd_item_micro_hires_expose(FullRedraw, triple);
             break;
 
          case MFD_INV_HARDWARE:
@@ -1320,8 +1320,8 @@ void mfd_item_expose(MFD *m, ubyte control)
                short x = HARDWARE_BUTTON_X,y = HARDWARE_BUTTON_Y;
                triple = get_triple_from_class_nth_item(CLASS_HARDWARE,currtype);
 
-//KLC - chg for new art               mfd_item_micro_expose(FullRedraw, triple);
-               mfd_item_micro_hires_expose(FullRedraw, triple);
+               mfd_item_micro_expose(FullRedraw, triple);
+               //mfd_item_micro_hires_expose(FullRedraw, triple);
                if (!is_passive_hardware(currtype))
                {
                   id = (player_struct.hardwarez_status[currtype] & WARE_ON) ? REF_IMG_Active : REF_IMG_Inactive;
@@ -1563,10 +1563,10 @@ void mfd_lanternware_expose(MFD* mfd, ubyte control)
    mfd_clear_rects();
    ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
    if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-        gr_bitmap(&mfd_background, 0, 0);
-//KLC - chg for new art   mfd_item_micro_expose(full,LANTERN_HARD_TRIPLE);
-   mfd_item_micro_hires_expose(full,LANTERN_HARD_TRIPLE);
+         ss_bitmap(&mfd_background, 0, 0);
+        //gr_bitmap(&mfd_background, 0, 0);
+   mfd_item_micro_expose(full,LANTERN_HARD_TRIPLE);
+   //mfd_item_micro_hires_expose(full,LANTERN_HARD_TRIPLE);
    if (full)
       draw_mfd_item_spew(REF_STR_wareSpew0 + STRINGS_PER_WARE*n,v);
    if (full || LAMP_SETTING(s) != LANTERN_LAST_SETTING(mfd->id)
@@ -1705,10 +1705,10 @@ void mfd_shieldware_expose(MFD* mfd, ubyte control)
    ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
    mfd_clear_rects();
    if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
-//KLC - chg for new art   mfd_item_micro_expose(full,SHIELD_HARD_TRIPLE);
-   mfd_item_micro_hires_expose(full,SHIELD_HARD_TRIPLE);
+      ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
+   mfd_item_micro_expose(full,SHIELD_HARD_TRIPLE);
+   //mfd_item_micro_hires_expose(full,SHIELD_HARD_TRIPLE);
    if (full)
       draw_mfd_item_spew(REF_STR_wareSpew0 + STRINGS_PER_WARE*n,v);
    if (full || s != SHIELD_LAST_STATUS(mfd->id)
@@ -1826,8 +1826,8 @@ void mfd_motionware_expose(MFD* mfd, ubyte control)
    PUSH_CANVAS(pmfd_canvas);
    mfd_clear_rects();
    ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
-//KLC - chg for new art   mfd_item_micro_expose(full,MOTION_HARD_TRIPLE);
-   mfd_item_micro_hires_expose(full,MOTION_HARD_TRIPLE);
+   mfd_item_micro_expose(full,MOTION_HARD_TRIPLE);
+   //mfd_item_micro_hires_expose(full,MOTION_HARD_TRIPLE);
    if (full)
       draw_mfd_item_spew(REF_STR_wareSpew0 + STRINGS_PER_WARE*n,v);
    if (full || s != MOTION_LAST_STATUS(mfd->id)
@@ -2005,10 +2005,10 @@ void mfd_grenade_expose(MFD* mfd, ubyte control)
    PUSH_CANVAS(pmfd_canvas);
    ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
    if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
-//KLC - chg for new art   mfd_item_micro_expose(full,triple);
-   mfd_item_micro_hires_expose(full,triple);
+      ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
+   mfd_item_micro_expose(full,triple);
+   //mfd_item_micro_hires_expose(full,triple);
    LAST_GRENADE(mfd->id) = n;
    if (full || LAST_GRENADE_SETTING(mfd->id) != setting)
    {
@@ -2124,8 +2124,8 @@ void mfd_bioware_expose(MFD *m, ubyte control)
       ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
       mfd_clear_rects();
       if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
+         ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
       gr_set_font((grs_font*)ResLock(MFD_FONT));
 
       if (full)
@@ -2313,8 +2313,8 @@ errtype draw_shodan_influence(MFD *mfd, uchar amt)
    bm.bits = NULL;
 
    amt = min(NUM_SHODAN_MUGS -1,amt >> SHODAN_INTERVAL_SHIFT);
-//KLC - chg for new art   draw_raw_res_bm_extract(REF_IMG_EmailMugShotBase+FIRST_SHODAN_MUG +amt,0,0);
-   extract_temp_res_bitmap(&bm, REF_IMG_EmailMugShotBase+FIRST_SHODAN_MUG +amt);
+   draw_raw_res_bm_extract(REF_IMG_EmailMugShotBase+FIRST_SHODAN_MUG +amt,0,0);
+   //extract_temp_res_bitmap(&bm, REF_IMG_EmailMugShotBase+FIRST_SHODAN_MUG +amt);
    gr_bitmap(&bm, 0, 0);
 
    gr_set_font((grs_font*)ResLock(MFD_FONT));
@@ -3036,14 +3036,14 @@ void severed_head_expose(MFD* mfd, ubyte control)
       ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
             // Clear the canvas by drawing the background bitmap
       if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
+         ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
 
       mug = REF_IMG_EmailMugShotBase + objSmallstuffs[objs[head].specID].data1;
       bm.bits = NULL;
       extract_temp_res_bitmap(&bm,mug);
-//KLC - chg for new art	   ss_bitmap(&bm,(MFD_VIEW_WID-bm.w)/2,(MFD_VIEW_HGT-bm.h)/2);
-      gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
+      ss_bitmap(&bm,(MFD_VIEW_WID-bm.w)/2,(MFD_VIEW_HGT-bm.h)/2);
+      //gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
        
       // draw the name
       mfd_draw_string(get_object_long_name(ID2TRIP(head),NULL,0), X_MARGIN, 2, GREEN_YELLOW_BASE, TRUE);

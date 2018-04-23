@@ -808,8 +808,8 @@ void mfd_emailmug_expose(MFD* mfd, ubyte control)
 
       // Clear the canvas by drawing the background bitmap
       if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
+         ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
 
       // Slam in the mug shot, centered.  
       if ((mugnum<BASE_VMAIL)
@@ -822,8 +822,8 @@ void mfd_emailmug_expose(MFD* mfd, ubyte control)
          grs_bitmap bm;
          bm.bits = NULL;
          extract_temp_res_bitmap(&bm,mug);
-//KLC - chg for new art         ss_bitmap(&bm,(MFD_VIEW_WID-bm.w)/2,(MFD_VIEW_HGT-bm.h)/2);
-         gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
+         ss_bitmap(&bm,(MFD_VIEW_WID-bm.w)/2,(MFD_VIEW_HGT-bm.h)/2);
+         //gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
       }
 
 #ifdef AUDIOLOGS
@@ -1110,8 +1110,8 @@ void mfd_emailware_expose(MFD* mfd, ubyte control)
    ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
 
    // Lay down the "background" 
-//KLC - chg for new art   mfd_item_micro_expose(TRUE,VIDTEX_HARD_TRIPLE);
-   mfd_item_micro_hires_expose(TRUE,VIDTEX_HARD_TRIPLE);
+   mfd_item_micro_expose(TRUE,VIDTEX_HARD_TRIPLE);
+   //mfd_item_micro_hires_expose(TRUE,VIDTEX_HARD_TRIPLE);
    if (full)
    {
       uchar n = HARDWARE_EMAIL;

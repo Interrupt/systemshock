@@ -112,8 +112,8 @@ void mfd_gear_expose(MFD* mfd, ubyte control)
 
       // Clear the canvas by drawing the background bitmap
       if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
+         ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
 
       if (active < 0 || active >= NUM_GENERAL_SLOTS)
       {

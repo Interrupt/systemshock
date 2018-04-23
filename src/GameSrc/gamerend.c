@@ -471,7 +471,8 @@ void gamesys_render_effects(void)
   				}
 				if ((handart_show != 1) || ready_to_draw_handart())
 				{
-					draw_hires_resource_bm(temp, SCONV_X(deltax), SCONV_Y(deltay));
+					//draw_hires_resource_bm(temp, SCONV_X(deltax), SCONV_Y(deltay));
+               draw_res_bm(temp, deltax, deltay);
 					notify_draw_handart();
 				}
 			}
@@ -490,18 +491,19 @@ void gamesys_render_effects(void)
    // draw the gamescreen border
    if (!full_game_3d)
    {
-      draw_hires_resource_bm(REF_IMG_bm3dBackground1,0,-2);
-      draw_hires_resource_bm(REF_IMG_bm3dBackground2,226,-1);
-      draw_hires_resource_bm(REF_IMG_bm3dBackground2,270,-1);
-      draw_hires_resource_bm(REF_IMG_bm3dBackground3,522,-2);
-      draw_hires_resource_bm(REF_IMG_bm3dBackground4,0,197);
+      // was draw_hires_resource_bm
+      draw_res_bm(REF_IMG_bm3dBackground1,0,-2);
+      draw_res_bm(REF_IMG_bm3dBackground2,226,-1);
+      draw_res_bm(REF_IMG_bm3dBackground2,270,-1);
+      draw_res_bm(REF_IMG_bm3dBackground3,522,-2);
+      draw_res_bm(REF_IMG_bm3dBackground4,0,197);
 
       // whoop whoop whoop!
       // hack alert!  hack alert!
       if (convert_use_mode == 3)
       {
-         draw_hires_resource_bm(REF_IMG_bm3dBackground5,27,257);
-         draw_hires_resource_bm(REF_IMG_bm3dBackground6,415,257);
+         draw_res_bm(REF_IMG_bm3dBackground5,27,257);
+         draw_res_bm(REF_IMG_bm3dBackground6,415,257);
       }
    }
    else

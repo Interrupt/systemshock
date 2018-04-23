@@ -1387,12 +1387,12 @@ void mfd_draw_button(ubyte mfd_id, ubyte b)
       if (mfd_index(m->id) == b) gr_set_fcolor((long)MFD_BTTN_SELECT); // current
 
       uiHideMouse(&r);
-//KLC - chg for new art      ss_rect(r.ul.x, r.ul.y, r.lr.x-2, r.lr.y-2);
-{
+      ss_rect(r.ul.x, r.ul.y, r.lr.x-2, r.lr.y-2);
+/*{
 	short		bx = (mfd_id == 0) ? 3 : 629;
 	short		by = 333 + (b*26);
 	gr_rect(bx, by, bx+6, by+17);
-}
+}*/
 #ifdef SVGA_SUPPORT
       gr2ss_override = old_over;
 #endif
@@ -1474,8 +1474,8 @@ LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, uchar 
                    max(y-border,0),
                    x+w+border,y+h+border);
    if (!full_game_3d && !transp)
-//KLC - chg for new art      ss_bitmap(&mfd_background,0,0);
-      gr_bitmap(&mfd_background,0,0);
+      ss_bitmap(&mfd_background,0,0);
+      //gr_bitmap(&mfd_background,0,0);
    if (DrawString)
    {
       gr_set_fcolor(c);
@@ -1525,8 +1525,8 @@ void mfd_partial_clear(LGRect *r)
    {
       ss_safe_set_cliprect(r->ul.x,r->ul.y,r->lr.x,r->lr.y);
       mfd_add_rect(r->ul.x,r->ul.y,r->lr.x,r->lr.y);
-//KLC - chg for new art      ss_bitmap(&mfd_background, 0, 0);
-      gr_bitmap(&mfd_background, 0, 0);
+      ss_bitmap(&mfd_background, 0, 0);
+      //gr_bitmap(&mfd_background, 0, 0);
    }
 
    return;

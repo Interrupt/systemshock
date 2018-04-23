@@ -508,8 +508,8 @@ void draw_inventory_string(char* s, int x, int y, uchar clear)
       RECT_MOVE(&r,MakePoint(INVENTORY_PANEL_X,INVENTORY_PANEL_Y));
       uiHideMouse(&r);
       if (clear)
-//KLC - chg for new art      	ss_bitmap(&inv_backgnd,0,0);
-	 	gr_bitmap(&inv_backgnd, 0, 0);
+        ss_bitmap(&inv_backgnd,0,0);
+	 	    //gr_bitmap(&inv_backgnd, 0, 0);
       draw_shadowed_string(s,x,y,FALSE);
       uiShowMouse(&r);
    }
@@ -540,8 +540,8 @@ void clear_inventory_region(short x1,short y1,short x2,short y2)
       ss_safe_set_cliprect(x1,y1,x2,y2);
       RECT_MOVE(&r,MakePoint(INVENTORY_PANEL_X,INVENTORY_PANEL_Y));
       uiHideMouse(&r);
-//KLC - chg for new art      ss_bitmap(&inv_backgnd,0,0);
-	  gr_bitmap(&inv_backgnd, 0, 0);
+      ss_bitmap(&inv_backgnd,0,0);
+	    //gr_bitmap(&inv_backgnd, 0, 0);
       uiShowMouse(&r);
       RESTORE_CLIP(a,b,c,d);
    }
@@ -2105,8 +2105,8 @@ void draw_page_buttons(uchar full)
 
    if (full)
    {
-//      draw_res_bm(REF_IMG_bmInventoryButtonBackground,INVENT_BUTTON_PANEL_X, INVENT_BUTTON_PANEL_Y);
-		draw_hires_resource_bm(REF_IMG_bmInventoryButtonBackground, 0, 0);
+      draw_res_bm(REF_IMG_bmInventoryButtonBackground,INVENT_BUTTON_PANEL_X, INVENT_BUTTON_PANEL_Y);
+		  //draw_hires_resource_bm(REF_IMG_bmInventoryButtonBackground, 0, 0);
    }
 
    r.ul.y = INVENT_BTTN_Y;
@@ -2144,8 +2144,8 @@ void draw_page_buttons(uchar full)
       r.lr.x = x+INVENT_BTTN_WD;
       RECT_OFFSETTED_RECT(&r,MakePoint(INVENTORY_PANEL_X, BUTTON_PANEL_Y),&hider);
       uiHideMouse(&hider);
-//KLC - chg for new art      ss_rect(r.ul.x,r.ul.y,r.lr.x,r.lr.y);
-      gr_rect(SCONV_X(r.ul.x)+2, 2, SCONV_X(r.lr.x)+2, 10);
+      ss_rect(r.ul.x,r.ul.y,r.lr.x,r.lr.y);
+      //gr_rect(SCONV_X(r.ul.x)+2, 2, SCONV_X(r.lr.x)+2, 10);
       uiShowMouse(&hider);
       page_button_state[i] = old_button_state[i] = newstate;
    }
@@ -2182,8 +2182,8 @@ errtype inventory_clear(void)
       }
       uiHideMouse(&r);
       ss_safe_set_cliprect(0,0,INVENTORY_PANEL_WIDTH,INVENTORY_PANEL_HEIGHT);
-//KLC - chg for new art      ss_bitmap(&inv_backgnd, 0,0);
-	  gr_bitmap(&inv_backgnd, 0, 0);
+      ss_bitmap(&inv_backgnd, 0,0);
+	    //gr_bitmap(&inv_backgnd, 0, 0);
       uiShowMouse(&r);
    }
    gr_pop_canvas();
@@ -2818,10 +2818,10 @@ errtype inventory_update_screen_mode()
       gr_init_sub_canvas(grd_scr_canv, &inv_norm_canvas,174, 347, 290, 120);
       if (full_game_3d)
       {
-//KLC - chg for new art         gr_init_canvas(&inv_fullscrn_canvas,inv_backgnd.bits, BMT_FLAT8, SCONV_X(INVENTORY_PANEL_WIDTH),SCONV_Y(INVENTORY_PANEL_HEIGHT));
-         gr_init_canvas(&inv_fullscrn_canvas, inv_backgnd.bits, BMT_FLAT8, 290, 120);
-//KLC - chg for new art         gr_init_canvas(&inv_view360_canvas,inv_backgnd.bits, BMT_FLAT8, SCONV_X(INV_FULL_WD), SCONV_Y(INV_FULL_HT));
-         gr_init_canvas(&inv_view360_canvas, inv_backgnd.bits, BMT_FLAT8, 290, SCONV_Y(INV_FULL_HT));
+          gr_init_canvas(&inv_fullscrn_canvas,inv_backgnd.bits, BMT_FLAT8, SCONV_X(INVENTORY_PANEL_WIDTH),SCONV_Y(INVENTORY_PANEL_HEIGHT));
+         //gr_init_canvas(&inv_fullscrn_canvas, inv_backgnd.bits, BMT_FLAT8, 290, 120);
+          gr_init_canvas(&inv_view360_canvas,inv_backgnd.bits, BMT_FLAT8, SCONV_X(INV_FULL_WD), SCONV_Y(INV_FULL_HT));
+         //gr_init_canvas(&inv_view360_canvas, inv_backgnd.bits, BMT_FLAT8, 290, SCONV_Y(INV_FULL_HT));
       }
       else
       {

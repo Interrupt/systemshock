@@ -269,8 +269,8 @@ void mfd_plotware_expose(MFD* mfd, ubyte control)
       gr_push_canvas(pmfd_canvas);
       ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
 
-//KLC - chg for new art      mfd_item_micro_expose(TRUE,STATUS_HARD_TRIPLE);
-      mfd_item_micro_hires_expose(TRUE,STATUS_HARD_TRIPLE);
+      mfd_item_micro_expose(TRUE,STATUS_HARD_TRIPLE);
+      //mfd_item_micro_hires_expose(TRUE,STATUS_HARD_TRIPLE);
       if (!full) mfd_clear_rects();
 
       // INSERT GRAPHICS CODE HERE

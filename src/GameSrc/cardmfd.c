@@ -84,8 +84,8 @@ void mfd_accesscard_expose(MFD* mfd, ubyte control)
       ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
 
       if (!full_game_3d)
-//KLC - chg for new art         ss_bitmap(&mfd_background, 0, 0);
-         gr_bitmap(&mfd_background, 0, 0);
+         ss_bitmap(&mfd_background, 0, 0);
+         //gr_bitmap(&mfd_background, 0, 0);
       if (full)
       {
          mfd_draw_string(get_object_long_name(GENCARDS_TRIPLE,NULL,0),1,1,GREEN_YELLOW_BASE,TRUE);
