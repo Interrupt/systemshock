@@ -803,15 +803,27 @@ void ShockGameLoop(void)
 	gDeadPlayerQuit = FALSE;
 	gGameCompletedQuit = FALSE;
 
-	screen_start();											// Initialize the screen for slot view.
-	_new_mode = _current_loop = GAME_LOOP;
+	if (IsFullscreenWareOn())
+	{
+		fullscreen_start();
+		_new_mode = _current_loop = FULLSCREEN_LOOP;
+	}
+	else
+	{
+		screen_start();											// Initialize the screen for slot view.
+		_new_mode = _current_loop = GAME_LOOP;
+	}
 
 	StartShockTimer();									// Startup the game timer.
 
+	int tt = 0;
 	while (gPlayingGame)
 	{
 		//if (!(_change_flag&(ML_CHG_BASE<<1)))
 			//input_chk();
+
+		if(tt++ < 100)
+			gr_clear(0xF0);
 		
 		if (globalChanges)
 		{
@@ -853,6 +865,14 @@ void ShockGameLoop(void)
 		}*/
 		
 		chg_set_flg(_static_change);
+
+		// HAX ALWAYS DRAW THESE
+		chg_set_flg(LL_CHG_MASK);
+		chg_set_flg(ML_CHG_MASK);
+		
+		chg_set_flg(DEMOVIEW_UPDATE);
+		chg_set_flg(INVENTORY_UPDATE);
+		chg_set_flg(MFD_UPDATE);
 
 		SDLDraw();
 	}
@@ -1217,6 +1237,15 @@ void InitSDL()
 
 	gScreenRowbytes = drawSurface->w;
 	gScreenAddress = drawSurface->pixels;
+	gScreenWide = 640;
+	gScreenHigh = 480;
+	gActiveLeft = 0;
+	gActiveTop = 0;
+	gActiveWide = 640;
+	gActiveHigh = 480;
+
+	SetRect(&gActiveArea, gActiveLeft, gActiveTop, gActiveWide+gActiveLeft, gActiveHigh+gActiveTop);
+	SetRect(&gOffActiveArea, 0, 0, gActiveWide, gActiveHigh);
 
 	gr_init();
 
@@ -1228,7 +1257,7 @@ void InitSDL()
     gr_set_screen(svga_screen);
 
     svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels,
-		FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
+		FR_DOUBLEB_MASK|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
 		SCONV_X(SCREEN_VIEW_X), SCONV_Y(SCREEN_VIEW_Y), 
 		SCONV_X(SCREEN_VIEW_WIDTH), SCONV_Y(SCREEN_VIEW_HEIGHT));
 
@@ -1266,11 +1295,17 @@ void SetSDLPalette(int index, int count, uchar *pal)
 	SDL_SetSurfacePalette(offscreenDrawSurface, sdlPalette);
 }
 
+SDL_Rect destRect;
 void SDLDraw(void)
 {
+	destRect.x = 40;
+	destRect.y = 40;
+	destRect.w = 100;
+	destRect.h = 100;
+
 	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
-	//SDL_BlitSurface(offscreenDrawSurface, NULL, screenSurface, NULL);
 	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
+	//SDL_BlitSurface(offscreenDrawSurface, NULL, screenSurface, &destRect);
   	SDL_UpdateWindowSurface(window);
 	SDL_PumpEvents();
 }

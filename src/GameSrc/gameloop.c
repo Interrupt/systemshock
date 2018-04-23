@@ -158,11 +158,6 @@ void game_loop(void)
 			}
 */
 
-			// HAX ALWAYS DRAW THESE
-			chg_set_flg(DEMOVIEW_UPDATE);
-			chg_set_flg(INVENTORY_UPDATE);
-			chg_set_flg(MFD_UPDATE);
-
 			if (full_game_3d && ((_change_flag&INVENTORY_UPDATE) || (_change_flag&MFD_UPDATE)))
 				_change_flag|=DEMOVIEW_UPDATE;
 			if (_change_flag&INVENTORY_UPDATE)
@@ -176,14 +171,13 @@ void game_loop(void)
 				loopLine(GL|0x18,mfd_update());
 			}
 
-			// BUS error?
-			/*if (_change_flag&DEMOVIEW_UPDATE)
+			if (_change_flag&DEMOVIEW_UPDATE)
 			{ 
 //KLC - does nothing!
 //				if (sfx_on || music_on)
 //					loopLine(GL|0x1D,synchronous_update());
 				chg_unset_flg(DEMOVIEW_UPDATE); 
-			}*/
+			}
 		}
 		if (!full_game_3d) {
 			// BUS error?

@@ -286,9 +286,6 @@ void fr_startup(void)
 #endif
    _fr_init_all_tmaps();
    fr_tables_build();
-
-   printf("-------fr_startup RESET _sr!--------\n");
-
    _fr_glob_flags=0; _fr=_sr=NULL;
    fr_set_default_ptrs();
    fr_tfunc_grab_start();
@@ -323,9 +320,8 @@ int fr_set_view(frc *view)
    _chkNull(view);
    _sr=(fauxrend_context *)view;
 
-   printf("--------SET DEFAULT VIEW-------\n\n");
    if(_sr == NULL) {
-      printf("HOW IS THIS NULL?!\n");
+      printf("HOW IS _sr NULL?!\n");
    }
 
    _fr_ret;
@@ -478,7 +474,7 @@ frc *fr_place_view (frc *view, void *v_cam, void *cnvs, int pflags, char axis, i
 		else
 		{
 			// lets pretend we are getting a bitmap instead, eh?
-			//         fr->main_canvas=*((grs_canvas *)cnvs);
+			         //fr->main_canvas=*((grs_canvas *)cnvs);
 			gr_init_canvas(&fr->main_canvas,(uchar *)cnvs,BMT_FLAT8,wid,hgt);
 			pflags|=FR_OWNBITS_MASK;
 		}

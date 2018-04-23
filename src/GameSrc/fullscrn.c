@@ -297,11 +297,10 @@ void change_svga_screen_mode()
 	// KLC - we're never 320x200   amap_pixratio_set(svga_mode_data[mode_id]==GRM_320x200x8?FIX_UNIT:0);
 	amap_pixratio_set(0);
 
-   // CRASHES!
-	/*if (svga_render_context!=NULL) {
+	if (svga_render_context!=NULL) {
       printf(" fr_free_view\n");
 		fr_free_view(svga_render_context);
-   }*/
+   }
 	if (full_game_3d)
 	 {
       printf(" full_game_3d: true\n");
