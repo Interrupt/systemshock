@@ -784,7 +784,8 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 	extern char old_bits;
 	extern int compare_events(void* e1, void* e2);
    
-	int 			i, idx = 0, fd, version;
+	int 			i, idx = 0, version;
+   FILE*       fd;
 	LGRect 		bounds;
 	errtype 		retval = OK;
 	uchar 			make_player = FALSE;
@@ -815,8 +816,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 	}
 
 	// Open the saved-game (or archive) file.
-   printf("Opening default archive instead of save archive.\n");
-	//fd = ResOpenFile(spec);
+   printf("Opening default archive instead of save archive, looking for %x.\n", id_num);
    fd = ResOpenFile("res/data/archive.dat");
 	if (fd == NULL)
 	{
@@ -888,6 +888,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 	// for now, this is only defined for coming from version 9
    printf("Reading Map\n");
 	{
+      printf("REF_READ for map %x %x\n", id_num, idx);
 		REF_READ(id_num, idx++, *global_fullmap);
 				
 		MAP_MAP = (MapElem *)static_map;
@@ -995,6 +996,14 @@ global_fullmap->sched[0].queue.grow = TRUE;
 		ResUnlock(id_num + idx);
 		idx++;
 	}*/
+
+   printf("Skipping loading objects, crashes!\n");
+
+   idx++;
+   idx++;
+   idx++;
+
+   printf("REF_READ for objs %x %x\n", id_num, idx);
 	REF_READ(id_num, idx++, objs);
 
 	// Read in and convert the object refs.
@@ -1448,10 +1457,12 @@ global_fullmap->sched[0].queue.grow = TRUE;
    printf("Read map object data.\n");
 
    printf("Skipping reading automap strings!\n");
-/*#ifdef SAVE_AUTOMAP_STRINGS
+#ifdef SAVE_AUTOMAP_STRINGS
 	{
 		int	amap_magic_num;
 		char	*cp = amap_str_reref(0);
+
+      printf("Loading automap strings: %x %i\n", id_num, idx);
 		ResExtract(id_num + idx++, cp);
 //		REF_READ(id_num, idx++, amap_str_reref(0));		old way
 		REF_READ(id_num, idx++, amap_magic_num);
@@ -1461,7 +1472,7 @@ global_fullmap->sched[0].queue.grow = TRUE;
 	}
 #endif
 
-	idx++;		// Doesn't appear that this does anything*/
+	idx++;		// Doesn't appear that this does anything
 /*
 	REF_READ(id_num, idx++, player_edms);
 	SwapLongBytes(&player_edms.X);

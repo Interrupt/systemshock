@@ -116,7 +116,12 @@ uchar    fr_camera_create (cams *cam, int camtype, void *arg1, void *arg2)
       LG_memcpy(_cam->coor,arg1,sizeof(fix)*CAM_COOR_CNT);
 
    printf("Skipping LG_memcpy to set up camera!\n");
+   // LG_memcpy crashes?
    //LG_memcpy(_cam->args,arg2,sizeof(fix)*CAM_ARGS_CNT);
+   for(int i = 0; i < CAM_ARGS_CNT; i++) {
+      _cam->args[i] = arg2;
+   }
+
    return TRUE;
 }
 

@@ -162,11 +162,6 @@ uchar init_done = FALSE;
 uchar clear_player_data = TRUE;
 uchar objdata_loaded = FALSE;
 
-// Drawing!
-extern grs_screen  *cit_screen;
-extern SDL_Surface* drawSurface;
-extern SDL_Window* window;
-
 /*
 extern void (*enter_modes[])(void);
 
@@ -316,7 +311,7 @@ void init_all(void)
 //   AnimInit();
 
    // initialize renderer
-   InitSDL(cit_screen);
+   InitSDL();
 
 	// Initialize low-level keyboard and mouse input.  KLC - taken out of uiInit.
 	mouse_init(grd_cap->w,grd_cap->h);
@@ -424,8 +419,8 @@ void init_all(void)
    gamerend_init();
 
    // Crashes?
-   //printf("-Cameras startup\n");
-   //init_hack_cameras();
+   printf("-Cameras startup\n");
+   init_hack_cameras();
 
    printf("-End Sequence\n");
 	region_end_sequence(FALSE);

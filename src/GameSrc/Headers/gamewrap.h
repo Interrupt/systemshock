@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Remember, change in wrapper.c also
 #define OLD_SAVE_GAME_ID_BASE 550
-#define SAVE_GAME_ID_BASE  4000
+#define SAVE_GAME_ID_BASE  0x4000
 #define NUM_RESIDS_PER_LEVEL  100
 #define CURRENT_GAME_FNAME "Current Game"
 #define ARCHIVE_FNAME "archive.data"

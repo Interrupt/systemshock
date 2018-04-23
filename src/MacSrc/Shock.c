@@ -51,12 +51,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "input.h"
 #include "mainloop.h"
 #include "setup.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "fullscrn.h"
 #include "status.h"
 #include "gamewrap.h"
 #include "faketime.h"
 #include "map.h"
+#include "frtypes.h"
 
 #include <sdl.h>
 
@@ -101,7 +102,7 @@ void ShockGameLoop(void);
 void HandlePausedEvents(void);
 void SetupPauseMenus(void);
 void RestoreTitleScreen(void);
-void InitSDL(grs_screen* cit_screen);
+void InitSDL();
 void SDLDraw(void);
 errtype CheckFreeSpace(short	checkRefNum);
 
@@ -1192,7 +1193,7 @@ errtype CheckFreeSpace(short	checkRefNum)
 	return (OK);
 }
 
-void InitSDL(grs_screen* cit_screen)
+void InitSDL()
 {
 	SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -1219,6 +1220,7 @@ void InitSDL(grs_screen* cit_screen)
 	gScreenAddress = drawSurface->pixels;
 
 	gr_init();
+
     gr_set_mode(GRM_640x480x8, TRUE);
 
     printf("cit_screen %i %i\n", grd_cap->w,grd_cap->h);
@@ -1232,8 +1234,8 @@ void InitSDL(grs_screen* cit_screen)
 	gr_set_per_detail_level_param(3,4,16*FIX_UNIT,GR_LOW_PER_DETAIL);
 
 	// HAX why are these not set already?
-	grd_clip.right = 320;
-   	grd_clip.bot = 240;
+	grd_clip.right = grd_cap->w;
+   	grd_clip.bot = grd_cap->h;
 
 	gr_clear(0xFF);
 	SDLDraw();

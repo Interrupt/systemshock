@@ -129,7 +129,7 @@ void DoQuit(void);
 void HandleAEOpenGame(FSSpec *openSpec);
 void ScrollCredits(void);
 
-void InitSDL(grs_screen* cit_screen);
+void InitSDL();
 void SetSDLPalette(int index, int count, uchar *pal);
 void SDLDraw();
 

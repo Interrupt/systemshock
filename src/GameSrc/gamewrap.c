@@ -444,7 +444,7 @@ errtype load_level_from_file(int level_num)
 
 	//FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &fSpec);
 
-   printf("load_level_from_file %s\n", CURRENT_GAME_FNAME);
+   printf("load_level_from_file %x\n", ResIdFromLevel(level_num));
 
 	retval = load_current_map(ResIdFromLevel(level_num), NULL);
 
@@ -546,14 +546,16 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
 
    player_struct.rep = OBJ_NULL;
 
-   printf("Starting Load level\n");
-   //load_level_from_file(player_struct.level);
+   printf("--- Starting Load level: %i ---\n\n", player_struct.level);
+   load_level_from_file(player_struct.level);
+
+   return OK;
 
    obj_load_art(FALSE);							//KLC - added here (removed from load_level_data)
    amap_reset();
 
    printf("player_create_initial\n");
-   //player_create_initial();
+   player_create_initial();
 
    LG_memcpy(player_struct.name,tmpname,sizeof(player_struct.name));
    for (i=0; i<4; i++)
@@ -565,10 +567,8 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    printf("init_newmfd\n");
    init_newmfd();
 
-   printf("FIXME: set ticks\n");
-
    // No time elapsed, really, honest
-   //old_ticks = *tmd_ticks;
+   old_ticks = *tmd_ticks;
 
    printf("init_music\n");
 

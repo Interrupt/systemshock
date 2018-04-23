@@ -445,6 +445,7 @@ frc *fr_place_view (frc *view, void *v_cam, void *cnvs, int pflags, char axis, i
 			free(fr->realCanvasPtr);
 	}
 */	
+
 	if (pflags&FR_DOUBLEB_MASK)
 	{
 		if (cnvs==NULL)
