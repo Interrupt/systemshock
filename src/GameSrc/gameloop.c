@@ -146,15 +146,11 @@ void game_loop(void)
 		printf("messages\n");
 		loopLine(GL|0x1D,message_clear_check());  // This could be done more cleverly with change flags...
 
-		loopLine(GL|0x1B, inventory_draw());
-		loopLine(GL|0x18,mfd_update());
-
-		return;
-
 		if (localChanges)
 		{
 			loopLine(GL|0x1A, render_run());
 			printf("rendered\n");
+
 			loopLine(GL|0x17,if (!full_game_3d) status_vitals_update(FALSE));
 /*KLC - no longer needed
 			if (_change_flag&ANIM_UPDATE)
@@ -163,6 +159,12 @@ void game_loop(void)
 				chg_unset_flg(ANIM_UPDATE);
 			}
 */
+
+			// HAX ALWAYS DRAW THESE
+			//chg_set_flg(DEMOVIEW_UPDATE);
+			chg_set_flg(INVENTORY_UPDATE);
+			chg_set_flg(MFD_UPDATE);
+
 			if (full_game_3d && ((_change_flag&INVENTORY_UPDATE) || (_change_flag&MFD_UPDATE)))
 				_change_flag|=DEMOVIEW_UPDATE;
 			if (_change_flag&INVENTORY_UPDATE)
@@ -175,18 +177,23 @@ void game_loop(void)
 				chg_unset_flg(MFD_UPDATE);
 				loopLine(GL|0x18,mfd_update());
 			}
-			if (_change_flag&DEMOVIEW_UPDATE)
+
+			// BUS error?
+			/*if (_change_flag&DEMOVIEW_UPDATE)
 			{ 
 //KLC - does nothing!
 //				if (sfx_on || music_on)
 //					loopLine(GL|0x1D,synchronous_update());
 				chg_unset_flg(DEMOVIEW_UPDATE); 
-			}
+			}*/
 		}
-		if (!full_game_3d)
-			loopLine(GL|0x19,update_meters(FALSE));
-		if (!full_game_3d && olh_overlay_on)
+		if (!full_game_3d) {
+			// BUS error?
+			//loopLine(GL|0x19,update_meters(FALSE));
+		}
+		if (!full_game_3d && olh_overlay_on) {
 			olh_overlay();
+		}
 
       loopLine(GL|0x15,physics_run());
       {
@@ -203,7 +210,9 @@ void game_loop(void)
 		if (pal_fx_on && (++pal_frame == 2))
 		 {
 		 	pal_frame=0;
-			loopLine(GL|0x1F,palette_advance_all_fx(* (long *) 0x16a));	// TickCount()
+
+		 	// SEGFAULT error?
+			//loopLine(GL|0x1F,palette_advance_all_fx(* (long *) 0x16a));	// TickCount()
 		 }
 		 
 		loopLine(GL|0x20, destroy_destroyed_objects());

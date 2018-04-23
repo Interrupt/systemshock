@@ -997,8 +997,6 @@ global_fullmap->sched[0].queue.grow = TRUE;
 		idx++;
 	}*/
 
-   printf("Skipping loading objects, crashes!\n");
-
    idx++;
    idx++;
    idx++;

@@ -418,6 +418,7 @@ errtype uiUpdateScreenSize(LGPoint size)
       w = grd_screen_canvas->bm.w;
    if (size.y == UI_DETECT_SCREEN_SIZE.y)
       h = grd_screen_canvas->bm.h;
+
    gr_init_sub_canvas(grd_scr_canv,&DefaultCursorCanvas,0,0,w,h);
    gr_cset_cliprect(&DefaultCursorCanvas,0,0,w,h);
 //   mouse_set_screensize(w,h);

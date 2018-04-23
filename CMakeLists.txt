@@ -9,7 +9,7 @@ set(CMAKE_C_FLAGS -m32)
 set(CMAKE_CXX_FLAGS -m32)
 
 # HAAAAX!!
-add_definitions(-Dpowerc)
+add_definitions(-Dpowerc -DSVGA_SUPPORT)
 
 add_subdirectory(src/Libraries/)
 

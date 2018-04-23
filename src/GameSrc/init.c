@@ -310,9 +310,6 @@ void init_all(void)
 // Initialize the Animation system
 //   AnimInit();
 
-   // initialize renderer
-   InitSDL();
-
 	// Initialize low-level keyboard and mouse input.  KLC - taken out of uiInit.
 	mouse_init(grd_cap->w,grd_cap->h);
 	kb_init(NULL);
@@ -342,6 +339,10 @@ void init_all(void)
 	printf("- Renderer Startup\n");
 	fr_startup();
 	game_fr_startup();
+
+	// initialize renderer
+	printf("- SDL Startup\n");
+   	InitSDL(); 
 
 	// Initialize the main game screen
 	printf("- Main game screen Startup\n");

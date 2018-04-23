@@ -286,6 +286,9 @@ void fr_startup(void)
 #endif
    _fr_init_all_tmaps();
    fr_tables_build();
+
+   printf("-------fr_startup RESET _sr!--------\n");
+
    _fr_glob_flags=0; _fr=_sr=NULL;
    fr_set_default_ptrs();
    fr_tfunc_grab_start();
@@ -319,6 +322,12 @@ int fr_set_view(frc *view)
 {
    _chkNull(view);
    _sr=(fauxrend_context *)view;
+
+   printf("--------SET DEFAULT VIEW-------\n\n");
+   if(_sr == NULL) {
+      printf("HOW IS THIS NULL?!\n");
+   }
+
    _fr_ret;
 }
 
@@ -435,6 +444,7 @@ frc *fr_place_view (frc *view, void *v_cam, void *cnvs, int pflags, char axis, i
 	fauxrend_context *fr;
 
 	if (view==NULL)
+      printf(" malloc\n");
 		fr = (fauxrend_context *)malloc(sizeof(fauxrend_context));
 /* KLC - this never actually happens
 	else        // are their other canvii to free here...
@@ -450,8 +460,7 @@ frc *fr_place_view (frc *view, void *v_cam, void *cnvs, int pflags, char axis, i
 	{
 		if (cnvs==NULL)
 		{
-DebugString("Hey! I though we always supplied a canvas");
-/*
+         printf(" Setting up canvas\n");
 			uchar *p;
 			int	rowbytes = (wid + 31) & 0xFFFFFFE0;
 			
@@ -465,7 +474,6 @@ DebugString("Hey! I though we always supplied a canvas");
 			fr->realCanvasPtr = (Ptr)p;
 			gr_init_canvas(&fr->main_canvas, (uchar *)((ulong)(p+31) & 0xFFFFFFE0), BMT_FLAT8, wid, hgt);
 			fr->main_canvas.bm.row = rowbytes;
-*/
 		}
 		else
 		{
@@ -478,6 +486,7 @@ DebugString("Hey! I though we always supplied a canvas");
 	else
 		gr_init_sub_canvas(grd_screen_canvas,&fr->main_canvas,xc,yc,wid,hgt);
 	
+   printf("Setting up rendering context\n");
 	gr_init_sub_canvas(grd_screen_canvas,&fr->hack_canvas,xc,yc,wid,hgt);
 	// set everything and its brothers brother, first inherit global callbacks, then set up axis and window and all
 	fr->draw_call=_fr_glob_draw_call; fr->horizon_call=_fr_glob_horizon_call; fr->render_call=_fr_glob_render_call;
@@ -592,6 +601,11 @@ int fr_prepare_view(frc *view)
 {
    int det;
    _fr_top(view);
+
+   if(_fr == NULL) {
+      printf("ERROR DID NOT SET VIEW!\n");
+   }
+
    _fr_curflags=_fr_glob_flags|_fr->flags;       // for now, simply merge
    if (_fr->detail==FR_USE_GLOBAL_DETAIL)
       det = _fr_global_detail;

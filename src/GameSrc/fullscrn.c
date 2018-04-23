@@ -232,24 +232,34 @@ void change_svga_screen_mode()
 	extern void amap_pixratio_set(fix ratio);
 	extern uchar redraw_paused;
 	extern Boolean DoubleSize;
-	
+
 	uchar cur_pal[768];
 	uchar *s_table;
 	short cur_w, cur_h, cur_m;
 	short mx,my;
 	uchar mode_change = FALSE;
 	short temp;
+
+   printf("change_svga_screen_mode\n");
 	
 	if (convert_use_mode != mode_id)
 		mode_change = TRUE;
 	if (mode_change)
 	{
+      printf(" need to change mode\n");
+
 		int retval = -1;
 		
 		ui_mouse_get_xy(&mx,&my);
+
+      printf("  gr_get_light_tab\n");
 //		gr_get_pal(0,256,&cur_pal[0]);
 		s_table = gr_get_light_tab();
+
+      printf("  2\n");
 	    uiHideMouse(NULL);
+
+       printf("  3\n");
 		while (retval == -1)
 		{
 /*KLC  for stereo support
@@ -257,6 +267,8 @@ void change_svga_screen_mode()
             cur_m = i6d_ss->scr_mode;
          else
  */
+
+         printf("  trying mode\n");
 			cur_m=svga_mode_data[mode_id];
 			retval = gr_set_mode(cur_m, TRUE);
 			if (retval == -1)
@@ -271,9 +283,12 @@ void change_svga_screen_mode()
 			gr_free_screen(svga_screen);
 		svga_screen=gr_alloc_screen(cur_w,cur_h);
 		gr_set_screen(svga_screen);
+
+      return;
 	}
 	else
 	{
+      printf(" updating screen size\n");
 		cur_w=grd_mode_cap.w;
 		cur_h=grd_mode_cap.h;
 	}
@@ -281,10 +296,13 @@ void change_svga_screen_mode()
 	// KLC - we're never 320x200   amap_pixratio_set(svga_mode_data[mode_id]==GRM_320x200x8?FIX_UNIT:0);
 	amap_pixratio_set(0);
 
-	if (svga_render_context!=NULL)
+	if (svga_render_context!=NULL) {
+      printf(" fr_free_view\n");
 		fr_free_view(svga_render_context);
+   }
 	if (full_game_3d)
 	 {
+      printf(" full_game_3d: true\n");
 	 	if (DoubleSize)
 	 	{
 			if (!AllocDoubleBuffer(640, 480))
@@ -303,6 +321,7 @@ void change_svga_screen_mode()
 	 }
 	else
 	{
+      printf(" full_game_3d: false\n");
 	 	if (DoubleSize)
 	 	{
 			if (!AllocDoubleBuffer(536, 259))
@@ -314,13 +333,18 @@ void change_svga_screen_mode()
 		}
 		else
 		{
+         printf(" FreeDoubleBuffer\n");
 			FreeDoubleBuffer();
+
+         printf(" fr_place_view\n");
 			svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address, 
 																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
 																	SCONV_X(SCREEN_VIEW_X), SCONV_Y(SCREEN_VIEW_Y), 
 																	SCONV_X(SCREEN_VIEW_WIDTH), SCONV_Y(SCREEN_VIEW_HEIGHT));
 	 	}
 	}
+
+   printf(" fr_set_view\n");
 	fr_use_global_detail(svga_render_context);
 		_current_fr_context = svga_render_context;
 	if (full_game_3d)
@@ -333,6 +357,7 @@ void change_svga_screen_mode()
 	// Recompute zoom!
 	//   ss_recompute_zoom(_current_fr_context,old_mode);
 
+   printf(" chg_set_flg\n");
 	chg_set_flg(DEMOVIEW_UPDATE);
 	if (mode_change)
 	{

@@ -2804,6 +2804,9 @@ LGRegion* create_invent_region(LGRegion* root, LGRegion **pbuttons, LGRegion **p
       gr_clear(0);
       gr_pop_canvas();
    }
+
+   inventory_update_screen_mode();
+
    return invreg;
 }
 

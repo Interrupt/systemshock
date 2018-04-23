@@ -58,6 +58,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "map.h"
 #include "frtypes.h"
+#include "frprotox.h"
+#include "gr2ss.h"
 
 #include <sdl.h>
 
@@ -83,6 +85,7 @@ Boolean				gDeadPlayerQuit;
 Boolean				gGameCompletedQuit;
 
 grs_screen  *cit_screen;
+frc *cit_render_context;
 SDL_Surface* drawSurface;
 SDL_Window* window;
 
@@ -1223,10 +1226,31 @@ void InitSDL()
 
     gr_set_mode(GRM_640x480x8, TRUE);
 
-    printf("cit_screen %i %i\n", grd_cap->w,grd_cap->h);
+    printf("Setting up screen and view contexts\n");
 
     cit_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
     gr_set_screen(cit_screen);
+
+    // set context
+    cit_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address,
+		TRUE,0,0, 
+    	SCONV_X(SCREEN_VIEW_X)>>1, SCONV_Y(SCREEN_VIEW_Y)>>1, 
+		SCONV_X(SCREEN_VIEW_WIDTH)>>1, (SCONV_Y(SCREEN_VIEW_HEIGHT)+1)>>1);
+
+    fr_use_global_detail(cit_render_context);
+	_current_fr_context = cit_render_context;
+	_current_view = mainview_region;
+	_current_3d_flag = DEMOVIEW_UPDATE;
+	fr_set_view(cit_render_context);
+
+	chg_set_flg(DEMOVIEW_UPDATE);
+	game_redrop_rad(2+3);
+
+	uiUpdateScreenSize(UI_DETECT_SCREEN_SIZE);
+
+    // Main rendering setup? Would be nice to use this instead.
+    //change_svga_screen_mode();
+    //cit_screen = svga_screen;
 
 	gr_alloc_ipal();
 	gr_init_blend(1);
