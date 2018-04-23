@@ -343,8 +343,6 @@ errtype _screen_background(void)
 {
    Ref back_id = REF_IMG_bmGamescreenBackground;
    draw_raw_res_bm_extract(back_id, 0, 0);
-
-   printf("NOT WORKING: draw_hires_resource_bm\n");
 	//draw_hires_resource_bm(REF_IMG_bmGamescreenBackground, 0, 0);
 	return(OK);
 }
@@ -380,7 +378,6 @@ errtype load_misc_cursors(void)
       if (slider_cursor_bmap.bits != NULL)  free(slider_cursor_bmap.bits);
    }
 
-   printf("Loading bitmap cursor\n\n");
    load_hires_bitmap_cursor(&globcursor,   &_targbm,  REF_IMG_bmTargetCursor, TRUE);
    load_hires_bitmap_cursor(&wait_cursor,  &_waitbm,  REF_IMG_bmWaitCursor, TRUE);
    load_hires_bitmap_cursor(&fire_cursor,  &_firebm,  REF_IMG_bmFireCursor, TRUE);

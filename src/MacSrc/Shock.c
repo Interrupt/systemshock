@@ -816,14 +816,10 @@ void ShockGameLoop(void)
 
 	StartShockTimer();									// Startup the game timer.
 
-	int tt = 0;
 	while (gPlayingGame)
 	{
-		//if (!(_change_flag&(ML_CHG_BASE<<1)))
-			//input_chk();
-
-		if(tt++ < 100)
-			gr_clear(0xF0);
+		if (!(_change_flag&(ML_CHG_BASE<<1)))
+			input_chk();
 		
 		if (globalChanges)
 		{

@@ -90,6 +90,8 @@ void Fast_Slot_Copy(grs_bitmap *bm)
    	double 	*src,*dest,doub1,doub2;
    	int		rows = kFastSlotHigh;
    	int		src_rowb,dest_rowb;
+
+   	printf("Fast_Slot_Copy\n");
    	
    	src = (double *) bm->bits;
    	src_rowb = bm->row>>3;
@@ -249,6 +251,8 @@ void Fast_FullScreen_Copy(grs_bitmap *bm)
    	double 	*src,*dest,doub1,doub2;
    	int		rows = 480;
    	int		src_rowb,dest_rowb;
+
+   	printf("Fast_FullScreen_Copy\n");
 
    	src = (double *) bm->bits;
    	src_rowb = bm->row>>3;

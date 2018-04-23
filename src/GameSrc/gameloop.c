@@ -132,22 +132,16 @@ void game_loop(void)
 		loopLine(GL|0x10,update_state(time_passes));     // move game time
 		if (time_passes)
 		{
-			printf("ai_run\n");
 			loopLine(GL|0x12,ai_run());
-			printf("gamesys_run\n");
 			loopLine(GL|0x13,gamesys_run());
-			printf("advance_animations\n");
 			loopLine(GL|0x14, advance_animations());
 		}
-		printf("wares\n");
 		loopLine(GL|0x16,wares_update());
-		printf("messages\n");
 		loopLine(GL|0x1D,message_clear_check());  // This could be done more cleverly with change flags...
 
 		if (localChanges)
 		{
 			loopLine(GL|0x1A, render_run());
-			printf("rendered!\n");
 
 			loopLine(GL|0x17,if (!full_game_3d) status_vitals_update(FALSE));
 /*KLC - no longer needed

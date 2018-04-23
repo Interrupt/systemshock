@@ -578,6 +578,8 @@ errtype mouse_next(mouse_event *res)
 	EventRecord	theEvent;
 	Boolean			nowDown;
 	uchar			rbType = 0;
+
+	printf("mouse_next not implemented\n");
 	
 	// First, check to see if we get a simulated right button event.  This occurs for the
 	// space, enter, and return keys.
@@ -598,6 +600,7 @@ errtype mouse_next(mouse_event *res)
 	}
 	if (rbType)														// Send a right button event
 	{
+		/*printf(" 4\n");
 		Point mp = *(Point *)0x830;							// Get mouse location from low memory.
 		mp.h -= gActiveLeft;										// Convert to "local" screen coordinates.
 		mp.v -= gActiveTop;
@@ -608,7 +611,7 @@ errtype mouse_next(mouse_event *res)
 		res->timestamp = theEvent.when;
 		res->buttons = 2;
 		res->modifiers = 0;
-		return OK;
+		return OK;*/
 	}
 	
 	// Next, check the Mac event queue for mouse down/up events.
@@ -620,7 +623,7 @@ errtype mouse_next(mouse_event *res)
 
 	if (GetOSEvent(eventMask, &theEvent))				// If there is an event,
 	{
-/*		if (theEvent.what == keyDown || theEvent.what == keyUp)					// If it's a key event
+		if (theEvent.what == keyDown || theEvent.what == keyUp)					// If it's a key event
 		{
 			uchar	scanCode = (theEvent.message & keyCodeMask) >> 8;
 			if (scanCode == 0x31 || scanCode == 0x4C || scanCode == 0x24)		// and it's a "right button" key
@@ -639,15 +642,17 @@ errtype mouse_next(mouse_event *res)
 			}
 			else
 				goto checkMotion;									// Else, there's no click event.
-		} */
+		}
 		GlobalToLocal(&theEvent.where);
 		res->x = theEvent.where.h;								// fill in the mouse_event record.
 		res->y = theEvent.where.v;
 		res->timestamp = theEvent.when;
 		if (theEvent.modifiers & optionKey)					// If the option keys is down, send back a 
 		{																	// right-button event.
-			if (theEvent.what == mouseDown)
+			if (theEvent.what == mouseDown) {
+				printf("MOUSE_RDOWN\n");
 				res->type = MOUSE_RDOWN;
+			}
 			else if (theEvent.what == mouseUp)
 				res->type = MOUSE_RUP;
 			res->buttons = 2;
@@ -655,8 +660,10 @@ errtype mouse_next(mouse_event *res)
 		}
 		else																// Otherwise it's a left-button event.
 		{
-			if (theEvent.what == mouseDown)
+			if (theEvent.what == mouseDown) {
+				printf("MOUSE_LDOWN\n");
 				res->type = MOUSE_LDOWN;
+			}
 			else if (theEvent.what == mouseUp)
 				res->type = MOUSE_LUP;
 			res->buttons = 1;

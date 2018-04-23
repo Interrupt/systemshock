@@ -567,16 +567,19 @@ fixang fix_atan2 (fix y, fix x)
 #if defined(powerc) || defined(__powerc)
 fix fix24_div(fix24 a, fix24 b)
 {
+	printf("fix24_div not implemented.\n");
 	return a;
 }
 
 fix fix24_mul(fix24 a, fix24 b)
 {
+	printf("fix24_mul not implemented.\n");
 	return a;
 }
 
 fix fix24_pow(fix24 a, fix24 b)
 {
+	printf("fix24_pow not implemented.\n");
 	return a;
 }
 #else
@@ -677,7 +680,13 @@ AWide *AsmWideSub(AWide *target, AWide *source)
 AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target)
 {
 	printf("AsmWideMultiply\n");
-	target->hi = multiplicand * multiplier;
+
+	float v = fix_float(multiplicand);
+	float v2 = fix_float(multiplier);
+
+	v *= v2;
+	target->hi = (long)v;
+	target->lo = v - (long)v * 10;
 	return target;
 }
 
@@ -693,6 +702,7 @@ AWide *AsmWideNegate(AWide *target)
 {
 	printf("AsmWideNegate\n");
 	target->hi = -target->hi;
+	target->lo = -target->lo;
 	return target;
 }
 
@@ -705,6 +715,13 @@ AWide *AsmWideBitShift(AWide *src, long shift)
 AWide *WideSquareRoot(AWide *src)
 {
 	printf("WideSquareRoot\n");
+
+	float ff = src->hi + src->lo * 0.1;
+	sqrtf(ff);
+
+	src->hi = (int)ff;
+	src->lo = (ff - (int)ff) * 10;
+
 	return src;
 }
 #else

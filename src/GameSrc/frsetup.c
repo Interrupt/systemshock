@@ -440,7 +440,6 @@ frc *fr_place_view (frc *view, void *v_cam, void *cnvs, int pflags, char axis, i
 	fauxrend_context *fr;
 
 	if (view==NULL)
-      printf(" malloc\n");
 		fr = (fauxrend_context *)malloc(sizeof(fauxrend_context));
 /* KLC - this never actually happens
 	else        // are their other canvii to free here...
@@ -456,7 +455,6 @@ frc *fr_place_view (frc *view, void *v_cam, void *cnvs, int pflags, char axis, i
 	{
 		if (cnvs==NULL)
 		{
-         printf(" Setting up canvas\n");
 			uchar *p;
 			int	rowbytes = (wid + 31) & 0xFFFFFFE0;
 			
@@ -483,7 +481,6 @@ frc *fr_place_view (frc *view, void *v_cam, void *cnvs, int pflags, char axis, i
 		gr_init_sub_canvas(grd_screen_canvas,&fr->main_canvas,xc,yc,wid,hgt);
    }
 	
-   printf("Setting up rendering context\n");
 	gr_init_sub_canvas(grd_screen_canvas,&fr->hack_canvas,xc,yc,wid,hgt);
 	// set everything and its brothers brother, first inherit global callbacks, then set up axis and window and all
 	fr->draw_call=_fr_glob_draw_call; fr->horizon_call=_fr_glob_horizon_call; fr->render_call=_fr_glob_render_call;
@@ -637,8 +634,6 @@ int fr_start_view(void)
    int use_zoom;
    uchar old_cam_type;
    int detail;
-
-   printf("fr_start_view\n");
 
    // check detail for canvas sizing
    gr_set_canvas(&_fr->draw_canvas);

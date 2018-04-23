@@ -719,6 +719,8 @@ static void _fr_tmap_flr(void)
 
 static void _fr_tmap_lit_flr(void)
 {
+   printf("_fr_tmap_lit_flr\n");
+   
    uchar nrm_mask=fr_fnorm_list[_fdt_tt];
    int i, pt_code, loopcnt;
    g3s_phandle *pb;
@@ -1281,6 +1283,7 @@ void parse_clip_tile()
 // implicit parameters are _fdt_x,_fdt_y,_fdt_mptr,_fdt_mask
 void fr_draw_tile(void)
 {
+   printf("fr_draw_tile\n");
    if ((_fdt_tt=me_tiletype(_fdt_mptr))==TILE_SOLID)    // really, clip should deal
    {
       me_subclip_set(_fdt_mptr,SUBCLIP_OUT_OF_CONE);    // sure, deal with it...

@@ -691,7 +691,7 @@ void ui_poll_keyboard(void)
 {
 	extern uchar	pKbdGetKeys[16];
 	long			*keys = (long *)pKbdGetKeys;
-	//GetKeys((UInt32 *)keys);
+	GetKeys((UInt32 *)keys);
 
 	uchar *key;
 	for (key = ui_poll_keys; *key != KBC_NONE; key++)
@@ -791,12 +791,17 @@ errtype uiPoll(void)
 #endif // BURN_QUEUE
 
 //   ui_mouse_get_xy(&mousepos.x,&mousepos.y);
+
+   printf("mouse_get_xy\n");
    mouse_get_xy(&mousepos.x,&mousepos.y);
+
+   printf(" 1\n");
 
    while(!kbdone || !msdone)
    {
       if (!kbdone)
       {
+         printf(" kbdone\n");
          kbs_event kbe = kb_next();
          if (kbe.code != KBC_NONE)
          {
@@ -831,11 +836,13 @@ errtype uiPoll(void)
       }
       if (!msdone)
       {
+         printf(" msdone\n");
          mouse_event mse;
          errtype err = mouse_next(&mse);
          if (poll_mouse_motion)
             while (mse.type == MOUSE_MOTION  && err == OK)
             {
+               printf(" msdone 2\n");
                err = mouse_next(&mse);
             }
          if (err == OK)
@@ -856,6 +863,8 @@ errtype uiPoll(void)
          else msdone = TRUE;
       }
    }
+
+   printf(" 3\n");
    if (poll_mouse_motion)
    {
       mousepos = ui_poll_mouse_position();

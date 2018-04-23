@@ -294,6 +294,9 @@ uchar quad_order_lists[8][4]=
 
 int fr_pipe_go_3(void)
 {
+
+   printf("3D RENDERING: fr_pipe_go_3\n");
+   
    int i, j, p_dir;  // p_dir is how many per diagonal element
    uchar *loc_code_ptr, *quad_order;
    short clip_len[4]; // , clip_contrib[4];

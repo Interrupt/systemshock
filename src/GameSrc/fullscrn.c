@@ -239,27 +239,21 @@ void change_svga_screen_mode()
 	short mx,my;
 	uchar mode_change = FALSE;
 	short temp;
-
-   printf("change_svga_screen_mode\n");
 	
 	if (convert_use_mode != mode_id)
 		mode_change = TRUE;
 	if (mode_change)
 	{
-      printf(" need to change mode\n");
+      printf(" Changing screen mode\n");
 
 		int retval = -1;
 		
 		ui_mouse_get_xy(&mx,&my);
-
-      printf("  gr_get_light_tab\n");
 //		gr_get_pal(0,256,&cur_pal[0]);
 		s_table = gr_get_light_tab();
 
-      printf("  2\n");
 	    uiHideMouse(NULL);
 
-       printf("  3\n");
 		while (retval == -1)
 		{
 /*KLC  for stereo support
@@ -267,8 +261,6 @@ void change_svga_screen_mode()
             cur_m = i6d_ss->scr_mode;
          else
  */
-
-         printf("  trying mode\n");
 			cur_m=svga_mode_data[mode_id];
 			retval = gr_set_mode(cur_m, TRUE);
 			if (retval == -1)
@@ -289,7 +281,6 @@ void change_svga_screen_mode()
 	}
 	else
 	{
-      printf(" updating screen size\n");
 		cur_w=grd_mode_cap.w;
 		cur_h=grd_mode_cap.h;
 	}
@@ -298,28 +289,22 @@ void change_svga_screen_mode()
 	amap_pixratio_set(0);
 
 	if (svga_render_context!=NULL) {
-      printf(" fr_free_view\n");
 		fr_free_view(svga_render_context);
    }
 	if (full_game_3d)
 	 {
-      printf(" full_game_3d: true\n");
-      printf(" fr_place_view\n");
-		svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, drawSurface->pixels,
+		svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels,
 																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK,0,0, 
 	 																0,0,cur_w,cur_h);
 	 }
 	else
 	{
-      printf(" full_game_3d: false\n");
-      printf(" fr_place_view\n");
-		svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, drawSurface->pixels, 
-																FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
+		svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels, 
+																FR_DOUBLEB_MASK|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
 																SCONV_X(SCREEN_VIEW_X), SCONV_Y(SCREEN_VIEW_Y), 
 																SCONV_X(SCREEN_VIEW_WIDTH), SCONV_Y(SCREEN_VIEW_HEIGHT));
 	}
 
-   printf(" fr_set_view\n");
 	fr_use_global_detail(svga_render_context);
 		_current_fr_context = svga_render_context;
 	if (full_game_3d)
@@ -332,7 +317,6 @@ void change_svga_screen_mode()
 	// Recompute zoom!
 	//   ss_recompute_zoom(_current_fr_context,old_mode);
 
-   printf(" chg_set_flg\n");
 	chg_set_flg(DEMOVIEW_UPDATE);
 	if (mode_change)
 	{
