@@ -50,7 +50,6 @@ void update_level_gametime(void);
 errtype update_state(uchar time_running)
 {
    printf("update_state\n");
-   tmd_ticks = &gNewShockTicks; // weird!
 
    uchar update = TRUE;
    if (time_running)

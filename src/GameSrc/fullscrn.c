@@ -279,12 +279,13 @@ void change_svga_screen_mode()
 		convert_use_mode = mode_id;
 		cur_w=grd_mode_cap.w;
 		cur_h=grd_mode_cap.h;
-		if (svga_screen!=NULL)
-			gr_free_screen(svga_screen);
+
+      // CRASHES!
+		/*if (svga_screen!=NULL)
+			gr_free_screen(svga_screen);*/
+
 		svga_screen=gr_alloc_screen(cur_w,cur_h);
 		gr_set_screen(svga_screen);
-
-      return;
 	}
 	else
 	{
@@ -296,52 +297,27 @@ void change_svga_screen_mode()
 	// KLC - we're never 320x200   amap_pixratio_set(svga_mode_data[mode_id]==GRM_320x200x8?FIX_UNIT:0);
 	amap_pixratio_set(0);
 
-	if (svga_render_context!=NULL) {
+   // CRASHES!
+	/*if (svga_render_context!=NULL) {
       printf(" fr_free_view\n");
 		fr_free_view(svga_render_context);
-   }
+   }*/
 	if (full_game_3d)
 	 {
       printf(" full_game_3d: true\n");
-	 	if (DoubleSize)
-	 	{
-			if (!AllocDoubleBuffer(640, 480))
-				DebugString("Can't allocate low-res double buffer!"); 		//Handle memory error!!
-			svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address,
-																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK,0,0,
-	 																0,0,cur_w>>1,cur_h>>1);
-	 	}
-	 	else
-	 	{
-			FreeDoubleBuffer();
-			svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address,
+      printf(" fr_place_view\n");
+		svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels,
 																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK,0,0, 
 	 																0,0,cur_w,cur_h);
-	 	}
 	 }
 	else
 	{
       printf(" full_game_3d: false\n");
-	 	if (DoubleSize)
-	 	{
-			if (!AllocDoubleBuffer(536, 259))
-				DebugString("Can't allocate low-res double buffer!"); 		//Handle memory error!!
-			svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address, 
-																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0, 
-																	SCONV_X(SCREEN_VIEW_X)>>1, SCONV_Y(SCREEN_VIEW_Y)>>1, 
-																	SCONV_X(SCREEN_VIEW_WIDTH)>>1, (SCONV_Y(SCREEN_VIEW_HEIGHT)+1)>>1);
-		}
-		else
-		{
-         printf(" FreeDoubleBuffer\n");
-			FreeDoubleBuffer();
-
-         printf(" fr_place_view\n");
-			svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address, 
-																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
-																	SCONV_X(SCREEN_VIEW_X), SCONV_Y(SCREEN_VIEW_Y), 
-																	SCONV_X(SCREEN_VIEW_WIDTH), SCONV_Y(SCREEN_VIEW_HEIGHT));
-	 	}
+      printf(" fr_place_view\n");
+		svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels, 
+																FR_DOUBLEB_MASK|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
+																SCONV_X(SCREEN_VIEW_X), SCONV_Y(SCREEN_VIEW_Y), 
+																SCONV_X(SCREEN_VIEW_WIDTH), SCONV_Y(SCREEN_VIEW_HEIGHT));
 	}
 
    printf(" fr_set_view\n");

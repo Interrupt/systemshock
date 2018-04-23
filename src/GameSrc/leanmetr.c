@@ -292,7 +292,7 @@ void lean_icon(LGPoint* pos, grs_bitmap** icon, int* inum)
 		fix ln,crouch;
 		fix state = GET_STATE;
 		
-		EDMS_lean_o_meter(PLAYER_PHYSICS, ln, crouch);
+		//EDMS_lean_o_meter(PLAYER_PHYSICS, ln, crouch);
 		
 		crouch = velocity_crouch_filter(crouch);
 		if (player_struct.game_time > player_struct.posture_slam_state)
@@ -504,6 +504,8 @@ void update_lean_meter(uchar force)
 	current_meter_region = PICK_METER_REGION(full_game_3d);
 	set_base_lean_bmap(shield);
 	lean_icon(&pos,&icon,&inum);
+
+	return;
 	
 	if (shield_bmap_res > 0)
 		shieldstr = shield_bmap_res - RES_leanShield1;

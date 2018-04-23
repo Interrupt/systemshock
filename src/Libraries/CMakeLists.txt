@@ -195,7 +195,7 @@ set(AFILE_SRC
 #	AFILE/Source/AddSoundToMovie.c
 	AFILE/Source/afile.c
 	AFILE/Source/amov.c
-	AFILE/Source/animconv.c
+#	AFILE/Source/animconv.c
 	AFILE/Source/aqtm.c
 	AFILE/Source/compose.c
 	AFILE/Source/DumpHex.c

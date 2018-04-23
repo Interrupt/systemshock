@@ -47,11 +47,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 PixMapHandle 	gScreenPixMap;
 CTabHandle			gMainColorHand;
 Boolean				gChangedColors = false;
-ShockBitmap		gMainOffScreen;
+//ShockBitmap		gMainOffScreen;
 
-/*SDL_Window* 		window;
-SDL_Surface* 		screenSurface;
-SDL_Renderer* 		renderer;*/
+SDL_Surface* drawSurface;
+SDL_Surface* offscreenDrawSurface;
 
 //------------------------------------------------------------------------------------
 //		Setup the main offscreen bitmaps.
@@ -59,34 +58,18 @@ SDL_Renderer* 		renderer;*/
 void SetupOffscreenBitmaps(void)
 {
 	printf("SetupOffscreenBitmaps\n");
-	/*SDL_Init(SDL_INIT_VIDEO);
-
-    window = SDL_CreateWindow("SimpleMain", 320, 480, 640, 480, SDL_WINDOW_SHOWN);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-  	screenSurface = SDL_GetWindowSurface( window );
-
-  	SDL_SetRenderDrawColor(&renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-  	SDL_RenderClear(&renderer);
-  	SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0xFF, 0xFF, 0xFF ) );
-  	SDL_RenderPresent(&renderer);
-  	SDL_Delay(50);*/
-
-
-	/*GDHandle     	devhandle;
 	
-	devhandle = GetMainDevice();
-	gScreenPixMap = (*devhandle)->gdPMap;
-	
-	gMainColorHand = GetCTable(1000);								// Get the Shock CLUT
-	HLockHi((Handle)gMainColorHand);
-	SetEntries(0, 255, (**(gMainColorHand)).ctTable);
-	gChangedColors = true;
-	DrawMenuBar();		// redraw with new colors
-	
-	ResetCTSeed();
-	
-	// allocate main offscreen buffer
-	NewShockBitmap(&gMainOffScreen, gActiveWide, gActiveHigh, true);*/
+	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+	if(!drawSurface) {
+		DebugString("SDL: Failed to create draw surface");
+		return;
+	}
+
+	offscreenDrawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+	if(!offscreenDrawSurface) {
+		DebugString("SDL: Failed to create offscreen draw surface");
+		return;
+	}
 }
 
 //------------------------------------------------------------------------------------

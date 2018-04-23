@@ -483,8 +483,9 @@ frc *fr_place_view (frc *view, void *v_cam, void *cnvs, int pflags, char axis, i
 			pflags|=FR_OWNBITS_MASK;
 		}
 	}
-	else
+	else {
 		gr_init_sub_canvas(grd_screen_canvas,&fr->main_canvas,xc,yc,wid,hgt);
+   }
 	
    printf("Setting up rendering context\n");
 	gr_init_sub_canvas(grd_screen_canvas,&fr->hack_canvas,xc,yc,wid,hgt);
@@ -640,6 +641,8 @@ int fr_start_view(void)
    int use_zoom;
    uchar old_cam_type;
    int detail;
+
+   printf("fr_start_view\n");
 
    // check detail for canvas sizing
    gr_set_canvas(&_fr->draw_canvas);

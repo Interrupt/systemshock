@@ -109,8 +109,6 @@ void game_loop(void)
 //	Debugger();
 		
 	// Handle paused game state
-
-	draw_pause_string();
 	
 	if (game_paused)
 	{
@@ -149,7 +147,7 @@ void game_loop(void)
 		if (localChanges)
 		{
 			loopLine(GL|0x1A, render_run());
-			printf("rendered\n");
+			printf("rendered!\n");
 
 			loopLine(GL|0x17,if (!full_game_3d) status_vitals_update(FALSE));
 /*KLC - no longer needed
@@ -161,7 +159,7 @@ void game_loop(void)
 */
 
 			// HAX ALWAYS DRAW THESE
-			//chg_set_flg(DEMOVIEW_UPDATE);
+			chg_set_flg(DEMOVIEW_UPDATE);
 			chg_set_flg(INVENTORY_UPDATE);
 			chg_set_flg(MFD_UPDATE);
 
@@ -189,7 +187,7 @@ void game_loop(void)
 		}
 		if (!full_game_3d) {
 			// BUS error?
-			//loopLine(GL|0x19,update_meters(FALSE));
+			loopLine(GL|0x19,update_meters(FALSE));
 		}
 		if (!full_game_3d && olh_overlay_on) {
 			olh_overlay();

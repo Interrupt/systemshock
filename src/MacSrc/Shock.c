@@ -60,6 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frtypes.h"
 #include "frprotox.h"
 #include "gr2ss.h"
+#include "frflags.h"
 
 #include <sdl.h>
 
@@ -84,10 +85,11 @@ long					gGameSavedTime;
 Boolean				gDeadPlayerQuit;
 Boolean				gGameCompletedQuit;
 
-grs_screen  *cit_screen;
-frc *cit_render_context;
-SDL_Surface* drawSurface;
+grs_screen  *cit_screen; // unused?
 SDL_Window* window;
+
+extern grs_screen *svga_screen;
+extern 	frc *svga_render_context;
 
 //--------------------
 //  Prototypes
@@ -128,7 +130,6 @@ void main(void)
 		
 	//DoAEInstallation();
 	SetupWindows(&gMainWindow);								// setup everything
-	SetupOffscreenBitmaps();			
  	SetUpMenus(gMainMenus, kNumMenus);
 	//AddHelpMenu();
 	
@@ -799,16 +800,25 @@ void HandleAEOpenGame(FSSpec *openSpec)
 void ShockGameLoop(void)
 {
 	gPlayingGame = TRUE;
+	gDeadPlayerQuit = FALSE;
+	gGameCompletedQuit = FALSE;
+
+	screen_start();											// Initialize the screen for slot view.
+	_new_mode = _current_loop = GAME_LOOP;
+
+	StartShockTimer();									// Startup the game timer.
+
 	while (gPlayingGame)
 	{
-		/*if (!(_change_flag&(ML_CHG_BASE<<1)))
-			input_chk();
+		//if (!(_change_flag&(ML_CHG_BASE<<1)))
+			//input_chk();
+		
 		if (globalChanges)
 		{
 			if (_change_flag&(ML_CHG_BASE<<3))
 				loopmode_switch(&_current_loop);
 			chg_unset_flg(ML_CHG_BASE<<3);
-		}*/
+		}
 		
 		if (_current_loop == AUTOMAP_LOOP)
 			automap_loop();									// Do the fullscreen map loop.
@@ -1203,21 +1213,7 @@ void InitSDL()
 		DebugString("SDL: Init failed");
 	}
 
-	window = SDL_CreateWindow(
-		"System Shock", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		640, 480, SDL_WINDOW_SHOWN);
-
-	atexit(SDL_Quit);
-
-	SDL_RaiseWindow(window);
-	
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-
-	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
-	if(!drawSurface) {
-		DebugString("SDL: Failed to create draw surface");
-		return;
-	}
+	SetupOffscreenBitmaps();
 
 	gScreenRowbytes = drawSurface->w;
 	gScreenAddress = drawSurface->pixels;
@@ -1226,42 +1222,31 @@ void InitSDL()
 
     gr_set_mode(GRM_640x480x8, TRUE);
 
-    printf("Setting up screen and view contexts\n");
+    printf("Setting up screen and render contexts\n");
 
-    cit_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
-    gr_set_screen(cit_screen);
+    svga_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
+    gr_set_screen(svga_screen);
 
-    // set context
-    cit_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address,
-		TRUE,0,0, 
-    	SCONV_X(SCREEN_VIEW_X)>>1, SCONV_Y(SCREEN_VIEW_Y)>>1, 
-		SCONV_X(SCREEN_VIEW_WIDTH)>>1, (SCONV_Y(SCREEN_VIEW_HEIGHT)+1)>>1);
-
-    fr_use_global_detail(cit_render_context);
-	_current_fr_context = cit_render_context;
-	_current_view = mainview_region;
-	_current_3d_flag = DEMOVIEW_UPDATE;
-	fr_set_view(cit_render_context);
-
-	chg_set_flg(DEMOVIEW_UPDATE);
-	game_redrop_rad(2+3);
-
-	uiUpdateScreenSize(UI_DETECT_SCREEN_SIZE);
-
-    // Main rendering setup? Would be nice to use this instead.
-    //change_svga_screen_mode();
-    //cit_screen = svga_screen;
+    svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels,
+		FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
+		SCONV_X(SCREEN_VIEW_X), SCONV_Y(SCREEN_VIEW_Y), 
+		SCONV_X(SCREEN_VIEW_WIDTH), SCONV_Y(SCREEN_VIEW_HEIGHT));
 
 	gr_alloc_ipal();
-	gr_init_blend(1);
-
-	gr_set_per_detail_level_param(3,4,16*FIX_UNIT,GR_LOW_PER_DETAIL);
-
-	// HAX why are these not set already?
-	grd_clip.right = grd_cap->w;
-   	grd_clip.bot = grd_cap->h;
 
 	gr_clear(0xFF);
+
+	// Open window!
+	window = SDL_CreateWindow(
+		"System Shock", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN);
+
+	atexit(SDL_Quit);
+
+	SDL_RaiseWindow(window);
+	
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
 	SDLDraw();
 }
 
@@ -1278,11 +1263,13 @@ void SetSDLPalette(int index, int count, uchar *pal)
 	SDL_Palette* sdlPalette = SDL_AllocPalette(count);
 	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
 	SDL_SetSurfacePalette(drawSurface, sdlPalette);
+	SDL_SetSurfacePalette(offscreenDrawSurface, sdlPalette);
 }
 
 void SDLDraw(void)
 {
 	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+	//SDL_BlitSurface(offscreenDrawSurface, NULL, screenSurface, NULL);
 	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
   	SDL_UpdateWindowSurface(window);
 	SDL_PumpEvents();

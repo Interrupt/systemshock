@@ -175,7 +175,6 @@ extern short				gBarkVref;
 
 
 extern grs_screen  *cit_screen;
-extern SDL_Surface* drawSurface;
 extern SDL_Window* window;
 
 

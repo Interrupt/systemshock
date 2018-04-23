@@ -199,7 +199,7 @@ void fsmap_startup(void)
 		oAMap(MFD_FULLSCR_MAP)->flags = f;
 	
 	// Get the graphics system setup for fullscreen drawing.
-	full_map_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, gMainOffScreen.Address, 
+	full_map_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels, 
 														FR_DOUBLEB_MASK|FR_WINDOWD_MASK, 0, 0, 
 														0, 0, 640, 480);
 	gr_set_canvas(FULLMAP_CANVAS);
