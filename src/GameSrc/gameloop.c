@@ -142,7 +142,7 @@ void game_loop(void)
 		printf("wares_update\n");
 		loopLine(GL|0x16,wares_update());
 		printf("message_clear_check\n");
-		//loopLine(GL|0x1D,message_clear_check());  // This could be done more cleverly with change flags...
+		loopLine(GL|0x1D,message_clear_check());  // This could be done more cleverly with change flags...
 
 		if (localChanges)
 		{

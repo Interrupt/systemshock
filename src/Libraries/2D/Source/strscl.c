@@ -54,6 +54,11 @@ int gen_font_scale_string (grs_font *f, char *s, short x0, short y0, short w, sh
    int i;                     
    uchar c;                    /* current character */
 
+   if(w==0 || h==0) {
+      printf("gen_font_scale_string: %s %i %i bad sizes!\n", s, w, h);
+      return CLIP_NONE;
+   }
+
    char_buf = (uchar *)f + f->buf;
    offset_tab = f->off_tab;
    gr_init_bm (&bm, NULL, (f->id==0xcccc)? BMT_FLAT8: BMT_MONO,
