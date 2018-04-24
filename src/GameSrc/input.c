@@ -81,7 +81,7 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "otrip.h"
 #include "physics.h"
 #include "player.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "status.h"
 #include "svgacurs.h"
 #include "tools.h"

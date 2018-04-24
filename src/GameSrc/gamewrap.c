@@ -596,8 +596,8 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    do_level_entry_triggers();
    
    // KLC - if not already on, turn on-line help on.
-   if (!olh_active)
-      toggle_olh_func(0, 0, NULL);
+   //if (!olh_active)
+   //   toggle_olh_func(0, 0, NULL);
    
    // turn on help overlay. 
    olh_overlay_on = TRUE;

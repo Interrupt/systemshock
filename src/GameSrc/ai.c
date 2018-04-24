@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "safeedms.h"
 #include "treasure.h"
 #include "fullscrn.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "sfxlist.h"
 
 #include "ice.h"

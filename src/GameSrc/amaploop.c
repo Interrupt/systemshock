@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h" // for the full screen frame buffer canvas
 #include "frprotox.h"
 #include "frflags.h"
-#include "screen.h"
+#include "game_screen.h"
 
 // octant-wise, that is...
 #define NORTH 0

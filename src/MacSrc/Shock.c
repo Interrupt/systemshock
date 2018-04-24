@@ -797,6 +797,8 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 //  The main game loop for System Shock.
 //--------------------------------------------------------------------
+
+extern ushort olh_overlay_on;
 void ShockGameLoop(void)
 {
 	gPlayingGame = TRUE;
@@ -815,6 +817,9 @@ void ShockGameLoop(void)
 	}
 
 	StartShockTimer();									// Startup the game timer.
+
+    // OLH should start on? why do we need to force it again?
+	olh_overlay_on = TRUE;
 
 	while (gPlayingGame)
 	{

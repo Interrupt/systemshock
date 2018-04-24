@@ -328,6 +328,9 @@ void lean_icon(LGPoint* pos, grs_bitmap** icon, int* inum)
 	if (leanx < 0) pos->x = - pos->x;
 	pos->x += SCONV_X(LEANOMETER_X()) + (46+1)/2 - ((*icon)->w+1)/2;
 	pos->y += SCONV_Y(LEANOMETER_Y());
+
+	//pos->x += LEANOMETER_X() + (46+1)/2 - ((*icon)->w+1)/2;
+	//pos->y += LEANOMETER_Y();
 }
 
 static void undraw_meter_area(LGRect* r)
@@ -344,7 +347,7 @@ static void undraw_meter_area(LGRect* r)
 	saveMode = convert_use_mode;
 	convert_use_mode = 0;
 	if (is_onscreen()) uiHideMouse(r);
-	gr_bitmap(meter_bkgnd(), x, y);
+	//gr_bitmap(meter_bkgnd(), x, y);
 	if (is_onscreen()) uiShowMouse(r);
 	convert_use_mode = saveMode;
 	

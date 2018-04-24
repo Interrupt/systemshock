@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "input.h"
 #include "tools.h"
 #include "otrip.h"
-#include "screen.h"
+#include "game_screen.h"
 #include "cybstrng.h"
 #include "frprotox.h"
 #include "frflags.h"

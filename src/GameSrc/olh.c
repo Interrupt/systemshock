@@ -531,7 +531,7 @@ void olh_overlay(void)
    uiPushGlobalCursor(&globcursor);
    gr_push_canvas(grd_screen_canvas);
    uiHideMouse(NULL);
-   draw_hires_resource_bm(REF_IMG_bmHelpOverlayEnglish + MKREF(which_lang,0),0,0);
+   draw_res_bm(REF_IMG_bmHelpOverlayEnglish + MKREF(which_lang,0),0,0);
    uiShowMouse(NULL);
    gr_pop_canvas();
    uiFlush();
@@ -558,8 +558,11 @@ void olh_overlay(void)
                   hotkey_dispatch(key);
             }
       }
+
+      SDLDraw();
    }
-   uiPopGlobalCursor();
+
+   //uiPopGlobalCursor();
    uiFlush();
    olh_overlay_on = FALSE;
    screen_draw();
