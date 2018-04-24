@@ -584,7 +584,7 @@ errtype mouse_next(mouse_event *res)
 	// First, check to see if we get a simulated right button event.  This occurs for the
 	// space, enter, and return keys.
 	
-	nowDown = kb_state(0x31) || kb_state(0x4C) || kb_state(0x24);
+	/*nowDown = kb_state(0x31) || kb_state(0x4C) || kb_state(0x24);
 	if (!gRBtnWasDown)											// If the right button was not already down
 	{
 		if (nowDown)													// and it is down now
@@ -600,7 +600,7 @@ errtype mouse_next(mouse_event *res)
 	}
 	if (rbType)														// Send a right button event
 	{
-		/*printf(" 4\n");
+		printf(" 4\n");
 		Point mp = *(Point *)0x830;							// Get mouse location from low memory.
 		mp.h -= gActiveLeft;										// Convert to "local" screen coordinates.
 		mp.v -= gActiveTop;
@@ -611,8 +611,8 @@ errtype mouse_next(mouse_event *res)
 		res->timestamp = theEvent.when;
 		res->buttons = 2;
 		res->modifiers = 0;
-		return OK;*/
-	}
+		return OK;
+	}*/
 	
 	// Next, check the Mac event queue for mouse down/up events.
 	

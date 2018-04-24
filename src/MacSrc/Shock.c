@@ -680,7 +680,7 @@ void HandleNewGame()
 		InvalRect(&gMainWindow->portRect); 
 	}*/
 
-	gr_clear(0x0);
+	//gr_clear(0x0);
 
 	printf("Starting Game\n");
 	gIsNewGame = TRUE;									// It's a whole new ballgame.
@@ -819,7 +819,7 @@ void ShockGameLoop(void)
 	StartShockTimer();									// Startup the game timer.
 
     // OLH should start on? why do we need to force it again?
-	olh_overlay_on = TRUE;
+	//olh_overlay_on = TRUE;
 
 	while (gPlayingGame)
 	{
@@ -868,12 +868,12 @@ void ShockGameLoop(void)
 		chg_set_flg(_static_change);
 
 		// HAX ALWAYS DRAW THESE
-		chg_set_flg(LL_CHG_MASK);
-		chg_set_flg(ML_CHG_MASK);
+		// chg_set_flg(LL_CHG_MASK);
+		// chg_set_flg(ML_CHG_MASK);
 
-		chg_set_flg(DEMOVIEW_UPDATE);
-		chg_set_flg(INVENTORY_UPDATE);
-		chg_set_flg(MFD_UPDATE);
+		// chg_set_flg(DEMOVIEW_UPDATE);
+		// chg_set_flg(INVENTORY_UPDATE);
+		// chg_set_flg(MFD_UPDATE);
 
 		SDLDraw();
 	}
