@@ -801,8 +801,6 @@ errtype uiPoll(void)
    printf("mouse_get_xy\n");
    mouse_get_xy(&mousepos.x,&mousepos.y);
 
-   printf(" 1\n");
-
    while(!kbdone || !msdone)
    {
       if (!kbdone)
@@ -842,13 +840,12 @@ errtype uiPoll(void)
       }
       if (!msdone)
       {
-         printf(" msdone\n");
+         printf(" !msdone\n");
          mouse_event mse;
          errtype err = mouse_next(&mse);
          if (poll_mouse_motion)
             while (mse.type == MOUSE_MOTION  && err == OK)
             {
-               printf(" msdone 2\n");
                err = mouse_next(&mse);
             }
          if (err == OK)
