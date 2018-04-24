@@ -378,6 +378,12 @@ uchar event_dispatch_callback(LGRegion* reg, LGRect* rect, void* v)
    uiEvent* ev = (uiEvent*)v;
    handler_chain *ch = (handler_chain*)(reg->handler);
    int i,next;
+
+   if(ch == NULL) {
+      printf("WARNING! handler_chain is NULL in event_dispatch_callback\n");
+      return FALSE;
+   }
+   
    uiEventHandler* handlers = (uiEventHandler*)(ch->chain.vec);
    // Spew(DSRC_UI_Dispatch,("event_dispatch_callback(%x,%x,%x) event type %x\n",reg,r,v,ev->type));
 /*

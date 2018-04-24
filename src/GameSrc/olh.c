@@ -562,7 +562,7 @@ void olh_overlay(void)
       SDLDraw();
    }
 
-   //uiPopGlobalCursor();
+   uiPopGlobalCursor();
    uiFlush();
    olh_overlay_on = FALSE;
    screen_draw();
