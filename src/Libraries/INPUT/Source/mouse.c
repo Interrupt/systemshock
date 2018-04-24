@@ -53,6 +53,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <Carbon/Carbon.h>
 
+#include <sdl.h>
+
 typedef struct _mouse_state
 {
 	short x,y;
@@ -161,11 +163,64 @@ static void ReadMouseState(mouse_state *pMouseState);
 pascal void MousePollProc(void)
 //#endif
 {
+	Point 		mp;
+	short		i;
+	mouse_event	e;
+
+	int mouse_x;
+	int mouse_y;
+
+	uint mouse_state = SDL_GetMouseState(NULL, NULL);
+
+	//SDL_GetMouseState(&mouse_x, &mouse_y);
+	//printf("%i %i\n", mouse_x, mouse_y);
+
+	//mp.h = mouse_x;
+	//mp.v = mouse_y;
+
+	mouseInstantButts = 0;
+
+	if(mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+		mouseInstantButts = 1;
+		printf("Mouse Left clicked!\n");
+	}
+
+	if(mouse_state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
+		mouseInstantButts = 2;
+		printf("Mouse Right clicked!\n");
+	}
+
+	if (mouseInstantX != mouse_x || mouseInstantY != mouse_y)						// If different
+	{
+		mouseInstantX = mouse_x;												// save the position
+		mouseInstantY = mouse_y;
+		
+		e.x = mouse_x;																// and inform the callback routines
+		e.y = mouse_y;
+		e.type = MOUSE_MOTION;
+		e.buttons = mouseInstantButts;
+		for (i = 0; i < mouseCalls; i++)
+			if(mouseCall[i] !=NULL)
+				mouseCall[i](&e,mouseCallData[i]);
+
+		if (mouseMask & MOUSE_MOTION)							// Add a mouse-moved event
+		{																			// to the internal queue.
+			short newin = mouseQueueIn, newout = mouseQueueOut;
+			short in = newin;
+			mouseQueue[newin] = e;
+			newin =  (newin + 1  < mouseQueueSize) ? newin + 1 : 0;
+			if (newin == mouseQueueOut)
+				newout = (newout + 1 < mouseQueueSize) ? newout + 1 : 0;
+			mouseQueueOut = newout;
+			mouseQueueIn  = newin;
+		}
+	}
+
 //#ifndef __powerc
 //	MouseTaskPtr		tmTaskPtr = GetMouseTask();				// get address of task record
 //	long					curA5 = SetA5(tmTaskPtr->appA5);		// save and set value of A5
 //#endif
-	Point					mp;
+	/*Point					mp;
 	short					i;
 	mouse_event		e;
 
@@ -216,7 +271,10 @@ pascal void MousePollProc(void)
 //#ifndef __powerc
 //	SetA5(curA5);															// restore A5
 //#endif
+
+*/
 }
+
 #pragma require_prototypes on
 #if __profile__
 #pragma profile on
@@ -398,6 +456,8 @@ errtype mouse_get_xy(short* x, short* y)
 	GetMouse(&localPt);
 	*x = localPt.h;
 	*y = localPt.v;
+
+
 
 /*   if (!mouse_installed)
    {

@@ -613,6 +613,7 @@ void ss_mouse_convert(short *px, short *py, uchar down)
          }
       }
 #endif
+
       if (down)
       {
          *px = INV_SCONV_X(*px);
@@ -624,6 +625,8 @@ void ss_mouse_convert(short *px, short *py, uchar down)
          *py = SCONV_Y(*py);
       }
    }
+
+   printf(" nope", *px, *py);
 }
 
 void ss_mouse_convert_round(short *px, short *py, uchar down)

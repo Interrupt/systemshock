@@ -11,6 +11,10 @@ set(CMAKE_CXX_FLAGS -m32)
 # HAAAAX!!
 add_definitions(-Dpowerc -DSVGA_SUPPORT)
 
+# Find SDL
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
+
 add_subdirectory(src/Libraries/)
 
 set(MAC_SRC
@@ -170,9 +174,6 @@ target_link_libraries(TestSimpleMain
 	LG_LIB
 )
 
-# Find SDL
-find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
 target_link_libraries(TestSimpleMain ${SDL2_LIBRARIES})
 
 # Find Carbon

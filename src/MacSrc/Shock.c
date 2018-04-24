@@ -797,13 +797,20 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 //  The main game loop for System Shock.
 //--------------------------------------------------------------------
-
-extern ushort olh_overlay_on;
 void ShockGameLoop(void)
 {
+	extern ushort olh_overlay_on;
+	extern long	gShockTicks;
+
 	gPlayingGame = TRUE;
 	gDeadPlayerQuit = FALSE;
 	gGameCompletedQuit = FALSE;
+
+	gr_clear(0xFF);
+	load_da_palette();		// KLC - added here.  Used to be in setup_start().
+
+	// OLH should start on? why do we need to force it again?
+	//olh_overlay_on = TRUE;
 
 	if (IsFullscreenWareOn())
 	{
@@ -817,9 +824,6 @@ void ShockGameLoop(void)
 	}
 
 	StartShockTimer();									// Startup the game timer.
-
-    // OLH should start on? why do we need to force it again?
-	//olh_overlay_on = TRUE;
 
 	while (gPlayingGame)
 	{
@@ -867,13 +871,11 @@ void ShockGameLoop(void)
 		
 		chg_set_flg(_static_change);
 
-		// HAX ALWAYS DRAW THESE
-		// chg_set_flg(LL_CHG_MASK);
-		// chg_set_flg(ML_CHG_MASK);
+		// increment timer, needs to be 280 ticks / sec though
+		//gShockTicks += 1;
 
-		// chg_set_flg(DEMOVIEW_UPDATE);
-		// chg_set_flg(INVENTORY_UPDATE);
-		// chg_set_flg(MFD_UPDATE);
+		MousePollProc();		// update the cursor, was 35 times/sec originally
+		status_bio_update();	// draw the biometer
 
 		SDLDraw();
 	}
@@ -1264,8 +1266,6 @@ void InitSDL()
 
 	gr_alloc_ipal();
 
-	gr_clear(0xFF);
-
 	// Open window!
 	window = SDL_CreateWindow(
 		"System Shock", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -1299,11 +1299,6 @@ void SetSDLPalette(int index, int count, uchar *pal)
 SDL_Rect destRect;
 void SDLDraw(void)
 {
-	destRect.x = 40;
-	destRect.y = 40;
-	destRect.w = 100;
-	destRect.h = 100;
-
 	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
 	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
 	//SDL_BlitSurface(offscreenDrawSurface, NULL, screenSurface, &destRect);
