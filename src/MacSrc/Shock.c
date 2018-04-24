@@ -872,7 +872,7 @@ void ShockGameLoop(void)
 		chg_set_flg(_static_change);
 
 		// increment timer, needs to be 280 ticks / sec though
-		//gShockTicks += 1;
+		gShockTicks += 1;
 
 		MousePollProc();		// update the cursor, was 35 times/sec originally
 		status_bio_update();	// draw the biometer

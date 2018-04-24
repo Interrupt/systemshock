@@ -79,7 +79,11 @@ errtype update_state(uchar time_running)
    }
    if (update)
       last_real_time = *tmd_ticks;
+
+   printf("run_schedules\n");
    run_schedules();
+
+   printf("Done.\n");
    return(OK);
 }
 

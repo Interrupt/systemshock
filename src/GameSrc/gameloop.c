@@ -132,17 +132,24 @@ void game_loop(void)
 		loopLine(GL|0x10,update_state(time_passes));     // move game time
 		if (time_passes)
 		{
+			printf("ai_run\n");
 			loopLine(GL|0x12,ai_run());
+			printf("gamesys_run\n");
 			loopLine(GL|0x13,gamesys_run());
+			printf("advance_animations\n");
 			loopLine(GL|0x14, advance_animations());
 		}
+		printf("wares_update\n");
 		loopLine(GL|0x16,wares_update());
-		loopLine(GL|0x1D,message_clear_check());  // This could be done more cleverly with change flags...
+		printf("message_clear_check\n");
+		//loopLine(GL|0x1D,message_clear_check());  // This could be done more cleverly with change flags...
 
 		if (localChanges)
 		{
+			printf("render_run\n");
 			loopLine(GL|0x1A, render_run());
 
+			printf("status_vitals_update\n");
 			loopLine(GL|0x17,if (!full_game_3d) status_vitals_update(FALSE));
 /*KLC - no longer needed
 			if (_change_flag&ANIM_UPDATE)
@@ -156,11 +163,13 @@ void game_loop(void)
 				_change_flag|=DEMOVIEW_UPDATE;
 			if (_change_flag&INVENTORY_UPDATE)
 			{
+				printf("INVENTORY_UPDATE\n");
 				chg_unset_flg(INVENTORY_UPDATE);
 				loopLine(GL|0x1B, inventory_draw());
 			}
 			if (_change_flag&MFD_UPDATE)
 			{
+				printf("MFD_UPDATE\n");
 				chg_unset_flg(MFD_UPDATE);
 				loopLine(GL|0x18,mfd_update());
 			}
@@ -174,23 +183,28 @@ void game_loop(void)
 			}
 		}
 		if (!full_game_3d) {
-			// BUS error?
+			printf("update_meters\n");
 			loopLine(GL|0x19,update_meters(FALSE));
 		}
 		if (!full_game_3d && olh_overlay_on) {
+			printf("olh_overlay\n");
 			olh_overlay();
 		}
 
+		printf("physics_run\n");
       loopLine(GL|0x15,physics_run());
       {
-         if (!olh_overlay_on && olh_active && !global_fullmap->cyber)
+         if (!olh_overlay_on && olh_active && !global_fullmap->cyber) {
+         	printf("olh_scan_objects\n");
             olh_scan_objects();
+        }
       }
 //KLC - does nothing!         loopLine(GL|0x1D,synchronous_update());
       if (sfx_on || music_on)
       {
+      	 printf("sound_frame_update\n");
          loopLine(GL|0x1C,mlimbs_do_ai());
-	    loopLine(GL|0x1E,sound_frame_update());
+	     loopLine(GL|0x1E,sound_frame_update());
       }
 
 		if (pal_fx_on && (++pal_frame == 2))
@@ -201,6 +215,7 @@ void game_loop(void)
 			//loopLine(GL|0x1F,palette_advance_all_fx(* (long *) 0x16a));	// TickCount()
 		 }
 		 
+		 printf("destroy_destroyed_objects\n");
 		loopLine(GL|0x20, destroy_destroyed_objects());
 		loopLine(GL|0x21, check_cspace_death());
 	}
