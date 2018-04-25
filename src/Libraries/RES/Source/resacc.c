@@ -204,6 +204,8 @@ void *ResExtract(Id id, void *buffer)
 		return(buffer);
 	}
 
+	printf("ResExtract failed for %x\n", id);
+
 	//	If ResRetreive failed, return NULL ptr
 
 	return(NULL);

@@ -1287,10 +1287,12 @@ void fr_draw_tile(void)
    if ((_fdt_tt=me_tiletype(_fdt_mptr))==TILE_SOLID)    // really, clip should deal
    {
       me_subclip_set(_fdt_mptr,SUBCLIP_OUT_OF_CONE);    // sure, deal with it...
+      printf(" TILE_SOLID, skipping\n"); 
       return;                                           // so make this a warn later
    }
    if (me_subclip(_fdt_mptr)==SUBCLIP_OUT_OF_CONE)
    {
+      printf(" SUBCLIP_OUT_OF_CONE, skipping\n"); 
       return;                                           
    }
 

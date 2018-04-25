@@ -205,11 +205,15 @@ uchar ResRetrieve(Id id, void *buffer)
 	long size;
 	RefIndex numRefs;
 
-	//printf("ResRetrieve: for %x\n", id);
-
 	//	Check id and file number
 
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return FALSE;});
+
+	if (!ResCheckId(id)) {
+		printf("ResRetrieve failed ResCheckId! %x\n", id);
+		//return FALSE;
+	}
+
 	prd = RESDESC(id);
 	fd = resFile[prd->filenum].fd;
 

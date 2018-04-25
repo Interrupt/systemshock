@@ -832,7 +832,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 	}
 	AdvanceProgress();
 
-   printf("Opened\n");
+   printf(" Opened\n");
 
 	if (ResInUse(SAVELOAD_VERIFICATION_ID))
 	{
@@ -841,6 +841,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 		if ((verify_cookie != VERIFY_COOKIE_VALID) && (verify_cookie != OLD_VERIFY_COOKIE_VALID))
 			critical_error(CRITERR_FILE|5);
 	}
+
 	AdvanceProgress();
 
 	idx++;
@@ -848,6 +849,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 
 	// Check the version number of the map for this level.
 	REF_READ(id_num, idx++, version);
+
 	SwapLongBytes(&version);								// Mac
 	if (version != MAP_VERSION_NUMBER)
 	{

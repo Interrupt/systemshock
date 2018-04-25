@@ -49,8 +49,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ResDesc *gResDesc;								// ptr to array of resource descriptors
 Id resDescMax;									// max id in res desc
-#define DEFAULT_RESMAX 16383			// default max resource id
-#define DEFAULT_RESGROW 16384		// grow by blocks of 1024 resources
+#define DEFAULT_RESMAX 32767			// default max resource id
+#define DEFAULT_RESGROW 32768		// grow by blocks of 1024 resources
 														// must be power of 2!
 //	Some variables
 /*

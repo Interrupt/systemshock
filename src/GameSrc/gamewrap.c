@@ -450,6 +450,7 @@ errtype load_level_from_file(int level_num)
 
 	if (retval == OK)
 	{
+      printf(" loaded!\n");
 		player_struct.level = level_num;
 		
 		compute_shodometer_value(FALSE);
@@ -592,6 +593,8 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
 
    printf("do_level_entry_triggers\n");
    do_level_entry_triggers();
+
+   printf("PLAYER_BIN_X: %i, PLAYER_BIN_Y: %i\n", PLAYER_BIN_X, PLAYER_BIN_Y);
    
    // KLC - if not already on, turn on-line help on.
    //if (!olh_active)

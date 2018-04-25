@@ -756,7 +756,11 @@ int fr_start_view(void)
       if (_fr->horizon_call)
          _fr->horizon_call(&_fr->draw_canvas.bm, _fr_curflags);
 //KLC      else if (global_fullmap->cyber)
+
 		gr_clear(_frp.view.clear_color);
+
+      // HAX HAX HAX Why is this not 0 already?
+      gr_clear(0);
 		
    // now have everything set up for 3d view
    // if wacky secondary camera mode, set up
