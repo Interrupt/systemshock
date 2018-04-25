@@ -549,8 +549,6 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    printf("--- Starting Load level: %i ---\n\n", player_struct.level);
    load_level_from_file(player_struct.level);
 
-   return OK;
-
    obj_load_art(FALSE);							//KLC - added here (removed from load_level_data)
    amap_reset();
 
