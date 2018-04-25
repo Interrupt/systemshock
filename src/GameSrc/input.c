@@ -1118,7 +1118,7 @@ void reload_motion_cursors(uchar cyber)
     	   grs_bitmap* bm = &motion_cursor_bitmaps[i];
          if (REAL_CURS_ID(i) != 0)
          {
-      	   load_hires_bitmap_cursor(&motion_cursors[i],bm,REAL_CURS_ID(i),FALSE);
+      	   load_res_bitmap_cursor(&motion_cursors[i],bm,REAL_CURS_ID(i),FALSE);
          }
       }
 
@@ -1129,7 +1129,7 @@ void reload_motion_cursors(uchar cyber)
       for (i = 0; i < NUM_CYBER_CURSORS; i++)
       {
          grs_bitmap* bm = &motion_cursor_bitmaps[i];
-         load_hires_bitmap_cursor(&motion_cursors[i],bm,CYB_CURS_ID(i),FALSE);
+         load_res_bitmap_cursor(&motion_cursors[i],bm,CYB_CURS_ID(i),FALSE);
       }
 //KLC   uiShowMouse(NULL);
 }
@@ -1156,14 +1156,14 @@ void alloc_cursor_bitmaps(void)
       grs_bitmap* bm = &motion_cursor_bitmaps[i];
       w = res_bm_width(CYB_CURS_ID(i));
       h = res_bm_height(CYB_CURS_ID(i));
-//      ss_point_convert(&w,&h,FALSE);
+      ss_point_convert(&w,&h,FALSE);
       cybsz = w * h;
       
       if (REAL_CURS_ID(i) != 0)
       {
          w = res_bm_width(REAL_CURS_ID(i));
          h = res_bm_height(REAL_CURS_ID(i));
-//         ss_point_convert(&w,&h,FALSE);
+         ss_point_convert(&w,&h,FALSE);
          realsz = w * h;
       }
 
@@ -1182,7 +1182,7 @@ void alloc_cursor_bitmaps(void)
       {
          w = res_bm_width(REAL_CURS_ID(i));
          h = res_bm_height(REAL_CURS_ID(i));
-//         ss_point_convert(&w,&h,FALSE);
+         ss_point_convert(&w,&h,FALSE);
          sz = w * h;
       }
       bm->bits = (uchar *)malloc(sz);

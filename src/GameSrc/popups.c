@@ -111,6 +111,7 @@ void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* s, uint tmplt,uchar al
 	gr_set_font((grs_font*)ResLock(RES_tinyTechFont));
 	gr_string_size(s,&w,&h);
 	ss_point_convert(&w, &h, FALSE);
+
 	x = (r->ul.x + r->lr.x - w)/2 + offset.x;
 	y = (r->ul.y + r->lr.y - h)/2 + offset.y;
 	ss_point_convert(&x, &y, TRUE);

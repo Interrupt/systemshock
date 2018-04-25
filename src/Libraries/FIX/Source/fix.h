@@ -477,7 +477,7 @@ extern AWide *AsmWideAdd(AWide *target, AWide *source);
 extern AWide *AsmWideSub(AWide *target, AWide *source);
 extern AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target);
 extern long AsmWideDivide(long hi, long lo, long den);
-extern AWide *WideSquareRoot(AWide *src);
+//extern AWide *WideSquareRoot(AWide *src);
 
 // since these aren't implemented yet in our PPC code yet, we just call the fixMath versions
 // extern AWide *AsmWideNegate(AWide *target);

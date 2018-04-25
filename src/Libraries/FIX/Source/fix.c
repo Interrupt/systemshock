@@ -663,56 +663,41 @@ fix fix_pow(fix x,fix y)
 #if defined(powerc) || defined(__powerc)
 AWide *AsmWideAdd(AWide *target, AWide *source)
 {
-	printf("AsmWideAdd\n");
-	target->hi += source->hi;
-	target->lo += source->lo;
-	return target;
+	return (AWide *)WideAdd(target, source);
 }
 
 AWide *AsmWideSub(AWide *target, AWide *source)
 {
-	printf("AsmWideSub\n");
-	target->hi -= source->hi;
-	target->lo -= source->lo;
-	return target;
+	return (AWide *)WideSubtract(target, source);
 }
 
 AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target)
 {
-	printf("AsmWideMultiply\n");
-
-	float v = fix_float(multiplicand);
-	float v2 = fix_float(multiplier);
-
-	v *= v2;
-	target->hi = (long)v;
-	target->lo = v - (long)v * 10;
-	return target;
+	return (AWide *)WideMultiply(multiplicand, multiplier, target);
 }
 
 long AsmWideDivide(long hi, long lo, long divisor)
 {
-	fix orig = fix_make(hi, lo);
-	float ff1 = fix_float(orig);
-	float ff2 = fix_float(divisor);
-	return fix_from_float(ff1 / ff2);
+	AWide w;
+	w.hi = hi;
+	w.lo = lo;
+
+	long remainder;
+	
+	return WideDivide(&w, divisor, &remainder);
 }
 
 AWide *AsmWideNegate(AWide *target)
 {
-	printf("AsmWideNegate\n");
-	target->hi = -target->hi;
-	target->lo = -target->lo;
-	return target;
+	return (AWide *)WideNegate(target);
 }
 
 AWide *AsmWideBitShift(AWide *src, long shift)
 {
-	printf("AsmWideBitShift\n");
-	return src;
+	return (AWide *)WideBitShift(src, shift);
 }
 
-AWide *WideSquareRoot(AWide *src)
+/*AWide *WideSquareRoot(AWide *src)
 {
 	printf("WideSquareRoot\n");
 
@@ -723,7 +708,7 @@ AWide *WideSquareRoot(AWide *src)
 	src->lo = (ff - (int)ff) * 10;
 
 	return src;
-}
+}*/
 #else
  
 asm AWide *AsmWideSub(AWide *target, AWide *source)
