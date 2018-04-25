@@ -106,7 +106,7 @@ void *RefLock(Ref ref)
 	//	Return ptr
 	
 	if (!RefIndexValid(prt, index)) {
-		printf("Invalid Index!\n");
+		printf("RefLock: Invalid Index %x\n", ref);
 		return (NULL);
 	}
 	else
