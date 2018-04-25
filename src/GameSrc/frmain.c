@@ -86,6 +86,10 @@ int fr_rend(frc *view)
          _g3d_enable_blend=FALSE;
       }
 
+      // HAX HAX HAX: why is this needed to reset the view?
+      ss_safe_set_cliprect(0,0,640,480);
+      gr_clear(0x0);
+
       // MLA - does nothing!  
       // synchronous_update();            // Make sure our time-sensitive updater gets run
 #ifdef AUDIOLOGS

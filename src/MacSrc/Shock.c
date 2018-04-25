@@ -827,6 +827,9 @@ void ShockGameLoop(void)
 
 	while (gPlayingGame)
 	{
+		// HAX HAX HAX: why is this needed to reset the view?
+		ss_safe_set_cliprect(0,0,640,480);
+		
 		if (!(_change_flag&(ML_CHG_BASE<<1)))
 			input_chk();
 		
@@ -872,7 +875,7 @@ void ShockGameLoop(void)
 		chg_set_flg(_static_change);
 
 		// increment timer, needs to be 280 ticks / sec though
-		gShockTicks += 1;
+		gShockTicks += 4;
 
 		MousePollProc();		// update the cursor, was 35 times/sec originally
 		status_bio_update();	// draw the biometer
