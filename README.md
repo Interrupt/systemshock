@@ -5,7 +5,9 @@ Copyright 2015-2018, Night Dive Studios, Incorporated.
 GENERAL NOTES
 =============
 
-This is my attempt to get System Shock compiling on modern OSX with Clang. I'm in hack and slash mode while trying to do this, my goal is to get things compiling first by any means necessary and then go back and start to turn features back on.
+This is my attempt to get System Shock running on modern OSX. Once this runs well here, it should be much easier to port forward to other systems like Linux.
+
+![work so far](https://i.imgur.com/wFIaC8f.gif)
 
 # Working so far:
 - Loads original resource files
