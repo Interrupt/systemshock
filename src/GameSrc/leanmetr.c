@@ -292,6 +292,7 @@ void lean_icon(LGPoint* pos, grs_bitmap** icon, int* inum)
 		fix ln,crouch;
 		fix state = GET_STATE;
 		
+		printf("FIXME: EDMS_lean_o_meter disabled due to crash!\n");
 		//EDMS_lean_o_meter(PLAYER_PHYSICS, ln, crouch);
 		
 		crouch = velocity_crouch_filter(crouch);
@@ -306,6 +307,10 @@ void lean_icon(LGPoint* pos, grs_bitmap** icon, int* inum)
 		posture = POSTURE_STAND;
 		leanx = 0;
 	}
+
+	// HAX HAX HAX Disable when EDMS lean o meter is back on!
+	posture = POSTURE_STAND;
+	leanx = 0;
 	
 	// Calculate the bitmap resource index based on posture and lean.
 	*inum = posture*BMAPS_PER_POSTURE + ((100 - leanx)*BMAPS_PER_POSTURE/201);
@@ -326,11 +331,8 @@ void lean_icon(LGPoint* pos, grs_bitmap** icon, int* inum)
 	pos->y = 53 - (*icon)->h;
 	pos->x = (46 - (*icon)->w+1) * abs(leanx)/200;
 	if (leanx < 0) pos->x = - pos->x;
-	pos->x += SCONV_X(LEANOMETER_X()) + (46+1)/2 - ((*icon)->w+1)/2;
-	pos->y += SCONV_Y(LEANOMETER_Y());
-
-	//pos->x += LEANOMETER_X() + (46+1)/2 - ((*icon)->w+1)/2;
-	//pos->y += LEANOMETER_Y();
+	pos->x += LEANOMETER_X() + (25)/2 - ((*icon)->w+1)/2;
+	pos->y += LEANOMETER_Y() - 31;
 }
 
 static void undraw_meter_area(LGRect* r)
@@ -341,15 +343,12 @@ static void undraw_meter_area(LGRect* r)
 	
 	STORE_CLIP(a,b,c,d);
 	safe_set_cliprect(r->ul.x,r->ul.y,r->lr.x,r->lr.y);
-	x = SCONV_X(EYEMETER_X());
-	y = SCONV_Y(EYEMETER_Y());
-	
-	saveMode = convert_use_mode;
-	convert_use_mode = 0;
+	x = EYEMETER_X();
+	y = EYEMETER_Y();
+
 	if (is_onscreen()) uiHideMouse(r);
-	//gr_bitmap(meter_bkgnd(), x, y);
+		ss_bitmap(meter_bkgnd(), x, y);
 	if (is_onscreen()) uiShowMouse(r);
-	convert_use_mode = saveMode;
 	
 	RESTORE_CLIP(a,b,c,d);
 }
@@ -507,8 +506,6 @@ void update_lean_meter(uchar force)
 	current_meter_region = PICK_METER_REGION(full_game_3d);
 	set_base_lean_bmap(shield);
 	lean_icon(&pos,&icon,&inum);
-
-	return;
 	
 	if (shield_bmap_res > 0)
 		shieldstr = shield_bmap_res - RES_leanShield1;
@@ -538,10 +535,14 @@ void update_lean_meter(uchar force)
 	r.lr.x = r.ul.x + icon->w;
 	r.lr.y = r.ul.y + icon->h;
 	
-	saveMode = convert_use_mode;
-	convert_use_mode = 0;
+	//saveMode = convert_use_mode;
+	//convert_use_mode = 0;
+
+	// HAX HAX HAX: why is this needed to reset the view?
+   	ss_safe_set_cliprect(0,0,640,480);
+
 	if (is_onscreen()) uiHideMouse(&r);
-	gr_bitmap(icon, r.ul.x, r.ul.y);
+	ss_bitmap(icon, r.ul.x, r.ul.y);
 	
 	if (shield)
 	{
@@ -568,7 +569,7 @@ void update_lean_meter(uchar force)
    gBioInited = saveBio;
 
    if (is_onscreen()) uiShowMouse(&r);
-   convert_use_mode = saveMode;
+   //convert_use_mode = saveMode;
    
    last_lean_pos = pos;
    last_lean_icon = MKREF(lean_bmap_res,inum);

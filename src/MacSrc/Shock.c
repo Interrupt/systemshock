@@ -806,11 +806,8 @@ void ShockGameLoop(void)
 	gDeadPlayerQuit = FALSE;
 	gGameCompletedQuit = FALSE;
 
-	gr_clear(0xFF);
+	gr_clear(0x0);
 	load_da_palette();		// KLC - added here.  Used to be in setup_start().
-
-	// OLH should start on? why do we need to force it again?
-	//olh_overlay_on = TRUE;
 
 	if (IsFullscreenWareOn())
 	{
