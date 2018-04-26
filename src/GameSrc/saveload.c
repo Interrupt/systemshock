@@ -883,6 +883,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    if (global_fullmap->sched[0].queue.fullness > 0)      // KLC - no need to read in vec if none there.
    {
       printf("sched %i\n", idx);
+      // HAX HAX HAX this crashes!
       //REF_READ(id_num, idx++, *global_fullmap->sched[0].queue.vec);
       idx++;
    }
@@ -901,6 +902,8 @@ global_fullmap->sched[0].queue.grow = TRUE;
    }
 */
    map_set_default(global_fullmap);
+
+   printf("sizeof(Obj): %i\n", sizeof(Obj));
 
 /*���  Leave conversion from old objects out for now
 
@@ -958,29 +961,23 @@ global_fullmap->sched[0].queue.grow = TRUE;
    
    // Read in object information.  For the Mac version, copy from the resource's 27-byte structs, then
    // place it into an Obj struct (which is 28 bytes, due to alignment).  Swap bytes as needed.
-/* {
+ {
+      printf("NUM_OBJECTS: %i\n", NUM_OBJECTS);
       uchar *op = (uchar *)ResLock(id_num + idx);
       for(i = 0; i < NUM_OBJECTS; i++)
       {
-         BlockMoveData(op, &objs[i], 3);
-         BlockMoveData(op+3, &objs[i].specID, 24);
+         memmove(&objs[i], op, 3);
+         //BlockMoveData(op, &objs[i], 3);
+         memmove(&objs[i].specID, op+3, 24);
+         //BlockMoveData(op+3, &objs[i].specID, 24);
          op += 27;
-         
-         SwapShortBytes(&objs[i].specID);
-         SwapShortBytes(&objs[i].ref);
-         SwapShortBytes(&objs[i].next);
-         SwapShortBytes(&objs[i].prev);
-         SwapShortBytes(&objs[i].loc.x);
-         SwapShortBytes(&objs[i].loc.y);
-         SwapShortBytes(&objs[i].info.current_hp);
       }
       ResUnlock(id_num + idx);
       idx++;
-   }*/
+   }
 
-   goto obj_out;
-
-   REF_READ(id_num, idx++, objs);
+   // BUSTED?!
+   //REF_READ(id_num, idx++, objs);
 
    // Read in and convert the object refs.
    REF_READ(id_num, idx++, objRefs);
@@ -1253,18 +1250,16 @@ global_fullmap->sched[0].queue.grow = TRUE;
    REF_READ(id_num,idx++,default_hardware);
 
    // Convert the default software.  Resource is array of 9-byte structs.  Ours is 10.
-/* {
+{
       uchar *sp = (uchar *)ResLock(id_num + idx);
-      BlockMoveData(sp, &default_software, 7);
-      BlockMoveData(sp+7, &default_software.data_munge, 2);
-      SwapShortBytes(&default_software.id);
-      SwapShortBytes(&default_software.next);
-      SwapShortBytes(&default_software.prev);
-      SwapShortBytes(&default_software.data_munge);
+      memmove(&default_software, sp, 7);
+      memmove(&default_software.data_munge, sp+7, 2);
+      //BlockMoveData(sp, &default_software, 7);
+      //BlockMoveData(sp+7, &default_software.data_munge, 2);
       ResUnlock(id_num + idx);
       idx++;
-   }*/
-   REF_READ(id_num, idx++, default_software);
+   }
+   //REF_READ(id_num, idx++, default_software);
 
    // Convert the default big stuff.
    REF_READ(id_num, idx++, default_bigstuff);
@@ -1322,21 +1317,23 @@ global_fullmap->sched[0].queue.grow = TRUE;
    SwapLongBytes(&default_trap.p3);
    SwapLongBytes(&default_trap.p4);*/
 
-/* // Convert the default container.  Resource is a 21-byte struct.  Ours is 22.
+ // Convert the default container.  Resource is a 21-byte struct.  Ours is 22.
    {
       uchar *sp = (uchar *)ResLock(id_num + idx);
-      BlockMoveData(sp, &default_container, 17);
-      BlockMoveData(sp+17, &default_container.data1, 4);
-      SwapShortBytes(&default_container.id);
+      memmove(&default_container, sp, 17);
+      memmove(&default_container.data1, sp+17, 4);
+      //BlockMoveData(sp, &default_container, 17);
+      //BlockMoveData(sp+17, &default_container.data1, 4);
+      /*SwapShortBytes(&default_container.id);
       SwapShortBytes(&default_container.next);
       SwapShortBytes(&default_container.prev);
       SwapLongBytes(&default_container.contents1);
       SwapLongBytes(&default_container.contents2);
-      SwapLongBytes(&default_container.data1);
+      SwapLongBytes(&default_container.data1);*/
       ResUnlock(id_num + idx);
       idx++;
-   }*/
-   REF_READ(id_num,idx++,default_container);
+   }
+   //REF_READ(id_num,idx++,default_container);
 
    // Convert the default critter.
    REF_READ(id_num, idx++, default_critter);
@@ -1368,19 +1365,17 @@ global_fullmap->sched[0].queue.grow = TRUE;
    idx++;   // skip over resource where flickers once lived
 
    // Convert the anim textures.  Resource is a 7-byte struct.  Ours is 8.
-/* {
+   {
       uchar *ap = (uchar *)ResLock(id_num + idx);
       for (i=0; i < NUM_ANIM_TEXTURE_GROUPS; i++)
       {
-         BlockMoveData(ap, &animtextures[i], 7);
+         memmove(&animtextures[i], ap, 7);
          ap += 7;
-         SwapShortBytes(&animtextures[i].anim_speed);
-         SwapShortBytes(&animtextures[i].time_remainder);
       }
       ResUnlock(id_num + idx);
       idx++;
-   }*/
-   REF_READ(id_num, idx++, animtextures);
+   }
+   //REF_READ(id_num, idx++, animtextures);
 
    // Read in and convert the hack camera objects.
    REF_READ( id_num, idx++, hack_cam_objs);
@@ -1403,32 +1398,20 @@ global_fullmap->sched[0].queue.grow = TRUE;
    }
    
    // Get other level data at next id
-   REF_READ( id_num, idx++, level_gamedata);
-/* {
+   //REF_READ( id_num, idx++, level_gamedata);
+ {
       uchar *ldp = (uchar *)ResLock(id_num + idx);
       LG_memset(&level_gamedata, 0, sizeof(LevelData));
-      BlockMoveData(ldp, &level_gamedata, 9);
-      BlockMoveData(ldp+9, &level_gamedata.exit_time, 4);
-      SwapShortBytes(&level_gamedata.size);
-      SwapLongBytes(&level_gamedata.exit_time);
+      memmove(&level_gamedata, ldp, 9);
+      memmove(&level_gamedata.exit_time, ldp+9, 4);
       for (i = 0, ldp += 13; i < NUM_O_AMAP; i++, ldp += 27)
       {
-         BlockMoveData(ldp, &level_gamedata.auto_maps[i], 25);
-         BlockMoveData(ldp+25, &level_gamedata.auto_maps[i].sensor_rad, 2);
-         SwapLongBytes(&level_gamedata.auto_maps[i].xf);
-         SwapLongBytes(&level_gamedata.auto_maps[i].yf);
-         SwapShortBytes(&level_gamedata.auto_maps[i].lw);
-         SwapShortBytes(&level_gamedata.auto_maps[i].lh);
-         SwapShortBytes(&level_gamedata.auto_maps[i].obj_to_follow);
-         SwapShortBytes(&level_gamedata.auto_maps[i].sensor_obj);
-         SwapShortBytes(&level_gamedata.auto_maps[i].note_obj);
-         SwapShortBytes(&level_gamedata.auto_maps[i].flags);
-         SwapShortBytes(&level_gamedata.auto_maps[i].avail_flags);
-         SwapShortBytes(&level_gamedata.auto_maps[i].sensor_rad);
+         memmove(&level_gamedata.auto_maps[i], ldp, 25);
+         memmove(&level_gamedata.auto_maps[i].sensor_rad, ldp+25, 2);
       }
       ResUnlock(id_num + idx);
       idx++;
-   }*/
+   }
 
 #ifdef SAVE_AUTOMAP_STRINGS
    {
@@ -1471,21 +1454,21 @@ global_fullmap->sched[0].queue.grow = TRUE;
    REF_READ(id_num,idx++,used_paths);
 // SwapShortBytes(&used_paths);
 
-/* uchar *ap = (uchar *)ResLock(id_num + idx);
+   uchar *ap = (uchar *)ResLock(id_num + idx);
    for (i=0; i < MAX_ANIMLIST_SIZE; i++)
    {
-      BlockMoveData(ap, &animlist[i].id, 2);
-      BlockMoveData(ap+2, &animlist[i].flags, 1);
-      BlockMoveData(ap+3, &animlist[i].cbtype, 12);
+      memmove(&animlist[i].id, ap, 2);
+      memmove(&animlist[i].flags, ap+2, 1);
+      memmove(&animlist[i].cbtype, ap+3, 12);
       ap += 15;
-      SwapShortBytes(&animlist[i].id);
+      /*SwapShortBytes(&animlist[i].id);
       SwapShortBytes(&animlist[i].cbtype);
       SwapLongBytes(&animlist[i].callback);
-      SwapShortBytes(&animlist[i].speed);
+      SwapShortBytes(&animlist[i].speed);*/
    }
    ResUnlock(id_num + idx);
-   idx++;*/
-   REF_READ(id_num, idx++, animlist);    
+   idx++;
+   //REF_READ(id_num, idx++, animlist);    
 
    REF_READ(id_num, idx++, anim_counter);
 // SwapShortBytes(&anim_counter);
