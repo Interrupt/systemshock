@@ -149,6 +149,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fix.h"
 #include "2d.h"
 
+#pragma pack(2)
+
 // MLA defines
 #define SwapFix(x,y) {fix temp = (x); (x) = (y); (y) = temp;}
 #define vm1 view_matrix.m1
