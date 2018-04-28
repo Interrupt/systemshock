@@ -192,6 +192,16 @@ target_link_libraries(BoxTest
 	${CARBON}
 )
 
+add_executable(FixTest
+	src/Libraries/FIX/Tests/FixTest/fixtest.c
+)
+
+target_link_libraries(FixTest
+	FIX_LIB
+	${CARBON}
+	LG_LIB
+)
+
 # Find Carbon
 find_library(CARBON NAMES Carbon)
 

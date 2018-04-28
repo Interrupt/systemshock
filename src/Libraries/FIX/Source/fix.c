@@ -678,13 +678,9 @@ AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target)
 
 long AsmWideDivide(long hi, long lo, long divisor)
 {
-	AWide w;
-	w.hi = hi;
-	w.lo = lo;
-
-	long remainder;
-	
-	return WideDivide(&w, divisor, &remainder);
+	float af = (float)hi + (float)lo / 65536.0;
+	float bf = (float)divisor;
+	return fix_from_float(af / bf);
 }
 
 AWide *AsmWideNegate(AWide *target)
