@@ -32,12 +32,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "2d.h"
 #include "2dRes.h"
 #include "3d.h"
+#include "lg.h"
+
+#include <Carbon/Carbon.h>
+#include <sdl.h>
+#include <stdio.h>
 
 #define pitch        tx
 #define bank         tz
 #define head         ty
 
 long fr_clear_color = 0xff;
+
+long		gScreenRowbytes;
+Ptr			gScreenAddress;
 
 // prototypes
 void test_3d(void);
@@ -57,6 +65,48 @@ g3s_angvec viewer_orientation;
 #define box_right 3
 #define box_top 4
 #define box_bottom 5
+
+SDL_Window* window;
+SDL_Surface* drawSurface;
+
+void SetupSDL() {
+	window = SDL_CreateWindow(
+		"System Shock - SimpleMain Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		640, 480, SDL_WINDOW_SHOWN);
+
+	SDL_RaiseWindow(window);
+	
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
+	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+	if(!drawSurface) {
+		DebugString("SDL: Failed to create draw surface");
+		return;
+	}
+}
+
+void SetSDLPalette(int index, int count, uchar *pal)
+{
+	SDL_Color gamePalette[256];
+	for(int i = index; i < count; i++) {
+		gamePalette[index+i].r = *pal++;
+		gamePalette[index+i].g = *pal++;
+		gamePalette[index+i].b = *pal++;
+		gamePalette[index+i].a = 0xFF;
+	}
+
+	SDL_Palette* sdlPalette = SDL_AllocPalette(count);
+	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
+	SDL_SetSurfacePalette(drawSurface, sdlPalette);
+}
+
+void SDLDraw(void)
+{
+	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
+  	SDL_UpdateWindowSurface(window);
+  	SDL_PumpEvents();
+}
 
 
 // setup polygon for a box side (0-5, front, back, left, right, top, bottom)
@@ -172,34 +222,77 @@ void test_3d(void)
 	g3s_angvec		ang;
 	int						dx = 0, dy = 0, dz = 0;
 	grs_canvas 		*off_canvas;
-	Handle				palRes,bmres[num_bitmaps];
+	//Handle				palRes,bmres[num_bitmaps];
 	FrameDesc			*fd;
 	fix						vx,vy,vz;
 	int						ddx = 0, ddy = 0, ddz = 0;
 	long					time,frames;
 	Str255				str;
 	Rect					r;
+
+	uchar pal_buf[768];
+	uchar bitmap_buf[17000];
+
+	DebugString("Opening test.pal");
+	FILE* fp;
+	if(fp = fopen("test.pal","rb")) {
+		fread (pal_buf, 1, 768, fp);
+		fclose (fp);
+	} else {
+		DebugString("Open failed");
+		return;
+	}
+
+	DebugString("Opening test.img");
+	if(fp = fopen("test.img","rb")) {
+		fread (bitmap_buf, 1, 16412, fp);
+		fclose (fp);
+	} else {
+		DebugString("Open failed");
+		return;
+	}
 	
-	palRes = GetResource('pal ',1000);
-	HLock(palRes);
+	/*printf("Loading pal.dat\n");
+	palRes = GetResource('src/Libraries/3D/pal.dat ',1000);
+	HLock(palRes);*/
 	
-	for (i=0; i<num_bitmaps; i++)
+	/*for (i=0; i<num_bitmaps; i++)
 	 {
-		bmres[i] = GetResource('sIMG',1000+i);
+	 	printf("Loading bit.dat\n");
+		bmres[i] = GetResource('src/Libraries/3D/bit.dat',1000+i);
+
+		printf("Getting bits\n");
 		HLock(bmres[i]);
 		fd = (FrameDesc *) *bmres[i];
 		fd->bm.bits = (uchar *)(fd+1);
 		bm[i] = fd->bm;
-	 }
+	 }*/
+
+	SetupSDL();
+
+	gScreenRowbytes = drawSurface->w;
+	gScreenAddress = drawSurface->pixels;
 	
+	printf("Setting up screen\n");
 	gr_init();
+
+	for(int i = 0; i < num_bitmaps; i++) {
+   		gr_init_bm(&bm[i], (uchar *) bitmap_buf+28, BMT_FLAT8, 0, 128, 128);
+   	}
+
 	gr_set_mode(GRM_640x480x8, TRUE);
 	screen = gr_alloc_screen(640,480);
 	gr_set_screen (screen);
-	
-	gr_set_pal(0, 256, (uchar *) *palRes);
+
+	gr_set_pal(0, 256, pal_buf);
+	gr_alloc_ipal();
 	gr_set_fcolor(fr_clear_color);
+
+	SetSDLPalette(0, 256, pal_buf);
+
+	gr_clear(0x0);
 	
+	printf("Setting up canvas\n");
 	off_canvas = gr_alloc_canvas(BMT_FLAT8,640,480);
 	gr_set_canvas(off_canvas);
 	gr_clear(fr_clear_color);
@@ -225,35 +318,46 @@ void test_3d(void)
 	dy = 60;
 	
 	frames = 0;
-	time = TickCount();
+	time = 1;
 	do
 	 {	 	
-		gr_set_canvas(off_canvas);
+	 	time++;
+
+	 	uint8* keyboard;
+    	keyboard = SDL_GetKeyboardState(NULL);
+
+		//gr_set_canvas(off_canvas);
 		gr_clear(fr_clear_color);     
 
 		g3_start_frame();
-		g3_set_view_angles(&viewer_position,&viewer_orientation,ORDER_YXZ,g3_get_zoom('X',build_fix_angle(80),640,480));
+		g3_set_view_angles(&viewer_position,&viewer_orientation,ORDER_YXZ,g3_get_zoom('X',build_fix_angle(70),640,480));
 		
-		
-		if (GetOSEvent(keyDownMask+autoKeyMask,&evt))
-		 {
-		 	switch (evt.message & charCodeMask)
-		 	 {
-		 	 	case '8': vec.gY -= vy; break;
-		 	 	case '2': vec.gY += vy; break; 
-		 	 	case '6': vec.gX += vx; break;
-		 	 	case '4': vec.gX -= vx; break;
-		 	 	case '7': vec.gZ -= vz; break;
-		 	 	case '9': vec.gZ += vz; break;
-		 	 	
-		 	 	case 'a': dx -= ddx; break;
-		 	 	case 'd': dx += ddx; break;
-		 	 	case 'w': dy -= ddx; break;
-		 	 	case 's': dy += ddx; break;
-		 	 	case 'q': dz -= ddx; break;
-		 	 	case 'e': dz += ddx; break;
-		 	 }
-		 }
+
+		if (keyboard[SDL_SCANCODE_LEFT]) dz -= ddx;
+		if (keyboard[SDL_SCANCODE_RIGHT]) dz += ddx;
+
+		//if (keyboard[SDL_SCANCODE_LEFT]) vec.gZ -= vz;
+		//if (keyboard[SDL_SCANCODE_RIGHT]) vec.gZ += vz;
+
+		if (keyboard[SDL_SCANCODE_UP]) vec.gX -= vx;
+		if (keyboard[SDL_SCANCODE_DOWN]) vec.gX += vx;
+
+	 	/*switch (evt.message & charCodeMask)
+	 	 {
+	 	 	case '8': vec.gY -= vy; break;
+	 	 	case '2': vec.gY += vy; break; 
+	 	 	case '6': vec.gX += vx; break;
+	 	 	case '4': vec.gX -= vx; break;
+	 	 	case '7': vec.gZ -= vz; break;
+	 	 	case '9': vec.gZ += vz; break;
+	 	 	
+	 	 	case 'a': dx -= ddx; break;
+	 	 	case 'd': dx += ddx; break;
+	 	 	case 'w': dy -= ddx; break;
+	 	 	case 's': dy += ddx; break;
+	 	 	case 'q': dz -= ddx; break;
+	 	 	case 'e': dz += ddx; break;
+	 	 }*/
 		 
 		
 /*		dx += ddx;
@@ -278,8 +382,8 @@ void test_3d(void)
 		g3_end_object();
 		g3_end_frame();
 
-		gr_set_canvas(grd_screen_canvas);
-		gr_bitmap(&off_canvas->bm,0,0);	
+		//gr_set_canvas(grd_screen_canvas);
+		//gr_bitmap(&off_canvas->bm,0,0);	
 
 /*	 	frames++;
 		if (TickCount()-time>=60L)
@@ -293,9 +397,16 @@ void test_3d(void)
 			frames = 0;
 			time = TickCount();
 		 }*/
+
+		SDLDraw();
+		SDL_Delay(30);
 	 }
 	while (!Button());
      
 	g3_shutdown();
   gr_close();
+}
+
+void main() {
+	test_3d();
 }

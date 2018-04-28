@@ -25,6 +25,7 @@ set(MAC_SRC
 	src/MacSrc/Shock.c
 	src/MacSrc/Prefs.c
 	src/MacSrc/MacTune.c
+	src/MacSrc/Tests.c
 )
 
 set(GAME_SRC
@@ -172,9 +173,24 @@ target_link_libraries(TestSimpleMain
 	RES_LIB
 	FIX_LIB
 	LG_LIB
+	${SDL2_LIBRARIES}
+	${CARBON}
 )
 
-target_link_libraries(TestSimpleMain ${SDL2_LIBRARIES})
+add_executable(BoxTest
+	src/Libraries/3D/Tests/BoxTest.c
+)
+
+target_link_libraries(BoxTest
+	2D_LIB
+	GR_LIB
+	3D_LIB
+	RES_LIB
+	FIX_LIB
+	LG_LIB
+	${SDL2_LIBRARIES}
+	${CARBON}
+)
 
 # Find Carbon
 find_library(CARBON NAMES Carbon)
