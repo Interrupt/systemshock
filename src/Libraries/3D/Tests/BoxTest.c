@@ -75,6 +75,8 @@ void SetupSDL() {
 		640, 480, SDL_WINDOW_SHOWN);
 
 	SDL_RaiseWindow(window);
+
+	atexit(SDL_Quit);
 	
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
