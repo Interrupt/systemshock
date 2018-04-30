@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <Movies.h>
+//#include <Movies.h>
 
 #include "amap.h"
 #include "lvldata.h"
@@ -56,6 +56,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "Game_Screen.h"
 #include "fullscrn.h"
+
+#include <sdl.h>
 
 extern errtype object_data_load(void);
 
@@ -93,7 +95,12 @@ Boolean IsCmdKeyDown(void);
 short		gCurrTest;
 
 // defines
-#define QuickTickCount() (* (long *) 0x16A)
+//#define QuickTickCount() (* (long *) 0x16A)
+
+long tickCount = 0;
+long QuickTickCount() {
+	return tickCount;
+}
 
 Boolean IsOptKeyDown(void)
  {
@@ -131,7 +138,7 @@ void SetupTests(void)
 //------------------------------------------------------------------------
 //  Handle mouse-downs for tests.
 //------------------------------------------------------------------------
-void DoTestClick(Point localPt)
+/*void DoTestClick(Point localPt)
 {
 	switch(gCurrTest)
 	{
@@ -162,7 +169,7 @@ void DoTestUpdate(WindowPtr wnd)
 			DoUpdateBrowseFonts(wnd);
 			break;
 	}
-}
+}*/
 
 
 //=======================================================================
@@ -183,7 +190,7 @@ Id				pResId;
 //------------------------------------------------------------------------
 //  Initialize globals for tests.
 //------------------------------------------------------------------------
-void DoTestBrowseImages(void)
+/*void DoTestBrowseImages(void)
 {
 	StandardFileReply	reply;
 	SFTypeList				typeList;
@@ -597,27 +604,6 @@ void SetFont(Ptr p)
 			offp += gMainOffScreen.RowBytes;
 		}
 	}
-/*
-	else
-	{
-		ShockBitmap	monoMap;
-		Rect	r;
-
-		NewShockBitmap(&monoMap, fd->w, fd->h, FALSE);
-		imgp = (Ptr)fd;
-		imgp += fd->buf;
-		offp = monoMap.Address + (monoMap.RowBytes * 17);
-		for (i=0; i < fd->h; i++)						// Copy image data to the offscreen bitmap
-		{
-			BlockMove(imgp, offp, monoMap.RowBytes);
-			imgp += fd->w;
-			offp += monoMap.RowBytes;
-		}
-		SetRect(&r, 0, 0, fd->w, fd->h);
-	  	CopyBits(&monoMap.bits->portBits, &gMainOffScreen.bits->portBits,
-	  				  &r, &r, srcCopy, 0L);
-	}
-*/
   	CopyBits(&gMainOffScreen.bits->portBits, &gMainWindow->portBits,
   				  &gOffActiveArea, &gActiveArea, srcCopy, 0L);
 }
@@ -1382,9 +1368,9 @@ void DoPlayAudioLog(short cmd)
 	while (audiolog_playing(-1))
 		audiolog_loop_callback();
 }
+*/
 
-
-//=======================================================================
+/*//=======================================================================
 //  LOAD AND DISPLAY A LEVEL MAP.
 //=======================================================================
 errtype load_da_palette();
@@ -1425,7 +1411,7 @@ void DoZoomCurrMap(short cmd)
 		level_gamedata.auto_maps[MFD_FULLSCR_MAP].zoom--;
 
 	amap_draw(oAMap(MFD_FULLSCR_MAP), TRUE);
-}
+}*/
 
 //------------------------------------------------------------------------
 #define height_step fix_make(0,0x010000>>SLOPE_SHIFT)
@@ -1480,12 +1466,12 @@ void RenderTest(void)
 	_frc = (fauxrend_context *) fr_place_view((frc *) FR_NEWVIEW, (void *) FR_DEFCAM,0L, 0|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0, size_left, size_top, size_wide, size_high);
 	_frc->detail = 2;
 	
-	FSMakeFSSpec(gDataVref, gDataDirID, "archive.data", &fSpec);
+	//FSMakeFSSpec(gDataVref, gDataDirID, "archive.data", &fSpec);
 	load_current_map(4102, &fSpec);
 	load_da_palette();
 	gr_clear(0xff);
  	
- 	pic = GetPicture(19010);
+ 	/*pic = GetPicture(19010);
  	if (pic)
  	  {
 	 	r = (*pic)->picFrame;
@@ -1493,15 +1479,25 @@ void RenderTest(void)
 	 	OffsetRect(&r, 128,340);
 	 	DrawPicture(pic,&r);
 	 	ReleaseResource((Handle) pic);
- 	  }
+ 	  }*/
  	  
+ 	  printf("--- Making camera! ----\n");
 	_frc->camptr=NULL;
 	fr_camera_create(&test_cam,CAMTYPE_ABS,eye,NULL);
 	fr_camera_setdef(&test_cam);
 
-	detailCheck = time = QuickTickCount();
+	printf("Time!\n");
+
+	detailCheck = time = 0;
+
+	printf("Button?\n");
  	while (!Button())
  	  {		
+
+ 	  		uint8* keyboard;
+			SDL_PumpEvents();
+    		keyboard = SDL_GetKeyboardState(NULL);
+
 #if __profile__
  	  	if (kb_state(0x23) && !profileOn)	// P
  	  	 	{ProfilerInit(collectDetailed, bestTimeBase, 300, 30); profileOn = true;}
@@ -1519,7 +1515,7 @@ void RenderTest(void)
  	  		moveAmt = 0x2400;
  	  		
 		// forward
-		if (kb_state(0x5B) || kb_state(0x22))
+		if (keyboard[SDL_SCANCODE_UP])
 			 {	
 				fix_sincos(eye[3],&sinEye,&cosEye);
 			   	eye[0]+=fix_mul(sinEye,moveAmt);
@@ -1527,7 +1523,7 @@ void RenderTest(void)
 			 }
 			 
 		// back
-		if (kb_state(0x54) || kb_state(0x28))
+		if (keyboard[SDL_SCANCODE_DOWN])
 			 {
 				fix_sincos(eye[3],&sinEye,&cosEye);
 			   	eye[0]-=fix_mul(sinEye,moveAmt);
@@ -1535,9 +1531,9 @@ void RenderTest(void)
 			 }
 
 		// turn left, right
-		if (kb_state(0x56) || kb_state(0x26))
+		if (keyboard[SDL_SCANCODE_LEFT])
 			eye[EYE_H]-=(0x1400>>1);
-		if (kb_state(0x58) || kb_state(0x25))
+		if (keyboard[SDL_SCANCODE_RIGHT])
 			eye[EYE_H]+=(0x1400>>1);
 		
 		// look up, down
@@ -1628,9 +1624,13 @@ void RenderTest(void)
 			{detailCheck = QuickTickCount(); _frc->detail++; if (_frc->detail>=4) _frc->detail = 0;}
 		
 		if (frames & 1)
-			palette_advance_all_fx(QuickTickCount());		
+			palette_advance_all_fx(QuickTickCount());	
+
 		fr_camera_update(&test_cam,eye,CAM_UPDATE_NONE,NULL);
+
+		printf("fr_rend\n");
 		fr_rend(_frc);
+		SDLDraw();
 		
 		frames++;
 		if (showFrames && (QuickTickCount()-time>=60))
@@ -1641,7 +1641,7 @@ void RenderTest(void)
 		 	strcat((char *) str,", 0");
 		 	str[strlen((char *) str)-1] += _frc->detail;
 		 	MoveTo(2,418);
-		 	drawstring((char *) str);
+		 	//drawstring((char *) str);
 		 	
 		 	frames = 0;
 		 	time = QuickTickCount();
@@ -1652,16 +1652,18 @@ void RenderTest(void)
 	CTabHandle		ctab;
 
 	gr_clear(0xff);
-	ctab = GetCTable(9003);														// Get the title screen CLUT
+
+	SDLDraw();
+	/*ctab = GetCTable(9003);														// Get the title screen CLUT
 	if (ctab)	
 	 {
 		BlockMove(*ctab, *gMainColorHand, 8 + (sizeof(ColorSpec) * 256));
 		SetEntries(1, 253, &(**(gMainColorHand)).ctTable[1]);
 		ResetCTSeed();
 		ReleaseResource((Handle)ctab);
+	}*/
 	}
-}
-	DrawMenuBar();
-	InvalRect(&gMainWindow->portRect); 
-	ShowCursor();
+	//DrawMenuBar();
+	//InvalRect(&gMainWindow->portRect); 
+	//ShowCursor();
  }

@@ -690,6 +690,8 @@ void HandleNewGame()
 
 	printf("Starting Main Loop\n");
 	ShockGameLoop();
+
+	//RenderTest();
 }
 
 
@@ -826,12 +828,15 @@ void ShockGameLoop(void)
 	{
 		// HAX HAX HAX: why is this needed to reset the view?
 		ss_safe_set_cliprect(0,0,640,480);
+
+		//_current_loop = AUTOMAP_LOOP;
 		
 		if (!(_change_flag&(ML_CHG_BASE<<1)))
 			input_chk();
 		
 		if (globalChanges)
 		{
+			printf("globalChanges!\n");
 			if (_change_flag&(ML_CHG_BASE<<3))
 				loopmode_switch(&_current_loop);
 			chg_unset_flg(ML_CHG_BASE<<3);

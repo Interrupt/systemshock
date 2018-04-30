@@ -377,7 +377,7 @@ void test_3d(void)
 		 {
 			setup_box_side(fix_make(10,0), i, trans);
 			g3_check_and_draw_tmap_quad_tile(trans, &bm[face_value[i]],1,1);
-//			g3_check_and_draw_poly((10*i)+30,a4,trans);
+			//g3_check_and_draw_poly(fix_make(10,0),i,trans);
 		 } 
 		g3_end_object();
 		g3_end_frame();

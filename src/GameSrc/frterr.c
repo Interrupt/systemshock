@@ -732,6 +732,7 @@ static void _fr_tmap_lit_flr(void)
    do {
       for (pb=&_fdt_tmppts[0],i=0; i<_fdt_ttf->ptsper; i++)
       {
+         printf("draw\n");
          pt_code=*ptdat++; pt_code=(pt_code^pt_merge_mask[0])&pt_merge_mask[1];
          _fr_figure_pt(*pb,pt_code); pt_code&=FRPTSPTOFF; floor_uv_i(*pb,pt_code); _fr_pt_light(*pb++);
       }
@@ -859,6 +860,7 @@ static void _fr_tmap_ceil(void)
 
 static void _fr_tmap_lit_ceil(void)
 {
+   printf("_fr_tmap_lit_ceil\n");
    uchar nrm_mask=fr_fnorm_list[_fdt_tt];
    int i, pt_code, loopcnt=1;
    g3s_phandle *pb;
@@ -1359,6 +1361,7 @@ void fr_draw_tile(void)
    _fr_terr_ceil();
    // now check object cache
 
+   printf("_fr_parse_obj\n");
    _fr_parse_obj();
 
 #ifdef CLEAR_AS_WE_GO
@@ -1426,6 +1429,8 @@ void fr_terr_frame_start(void)
 {
    int wall_do, ceil_do, flr_do;
 
+   printf("fr_terr_frame_start\n");
+
 // cspace
    if (_fr_curflags&FR_PICKUPM_MASK)
       if (_frp.faces.cyber)
@@ -1436,7 +1441,8 @@ void fr_terr_frame_start(void)
       wall_do=ceil_do=flr_do=_frp.faces.cyber_full+FRT_CSPACE;
    else
 	{  // realspace
-      int lmod=_frp_light_bits_any()?1:0;
+      //int lmod=_frp_light_bits_any()?1:0;
+      int lmod = 0;
       wall_do=lmod+(((_frp.faces.main)&&(_frp.faces.wall   ))?FRT_TMAP:0);
       ceil_do=lmod+(((_frp.faces.main)&&(_frp.faces.ceiling))?FRT_TMAP:0);
 	   flr_do =lmod+(((_frp.faces.main)&&(_frp.faces.floor  ))?FRT_TMAP:0);
@@ -1460,6 +1466,7 @@ void fr_terr_frame_start(void)
 
 void fr_terr_frame_end(void)
 {
+   printf("fr_terr_frame_end\n");
    void fr_tfunc_grab_start(void); 
    fr_tfunc_grab_start();     // set up the physics facelet indirections...
    _fdt_terr=FALSE;
@@ -1498,7 +1505,9 @@ uchar wall_pc[]=
 // we set up primary and transform the center point into our space
 // then we just pass it on to facelet_solve, none the worse for wear...
 static void _render_tfunc_walls(int which, int cnt)
-{  // fuck it, ext_walls are always ext, so punt generality, lets go
+{  
+   printf("_render_tfunc_walls\n");
+   // fuck it, ext_walls are always ext, so punt generality, lets go
    fix pt[3];
    int pc=wall_pc[which];
    switch (which)    // set up localized point set
@@ -1523,6 +1532,7 @@ static void _render_tfunc_walls(int which, int cnt)
 
 static void _fr_tfunc_diag_wall(int wall_id)
 {
+   printf("_fr_tfunc_diag_wall\n");
    fix pt[3], C;
    int pfl;
    switch (wall_id)

@@ -92,6 +92,8 @@ g3s_phandle g3_rotate_point(g3s_vector *v)
 g3s_phandle g3_transform_point(g3s_vector *v)
  {
  	g3s_phandle tempH;
+
+ 	printf("g3_transform_point\n");
  	
  	tempH = g3_rotate_point(v);
  	g3_project_point(tempH);
@@ -157,11 +159,30 @@ int g3_project_point(g3s_phandle p)
 no_stereo1:
 #endif
 
+	printf("g3_project_point\n");
+
+	char printy[100];
+	fix_sprint(printy, p->gX);
+	printf("x: %s\n", printy);
+
+	fix_sprint(printy, p->gY);
+	printf("y: %s\n", printy);
+
+	fix_sprint(printy, p->gZ);
+	printf("z: %s\n", printy);
+
+	p->gZ = fix_make(2, 0);	
+
+	fix_sprint(printy, p->gZ);
+	printf("z2: %s\n", printy);
+
 	// check if this point is in front of the back plane.
 	z = p->gZ;
 	if (z<=0) return 0;
 	x = p->gX;
 	y = p->gY;
+
+	printf(" projecting!\n");
 	
 	// point is in front of back plane---do projection.
 	// project y coordinate.
@@ -171,11 +192,17 @@ no_stereo1:
 	if (AddLongWithOverflow(&res, res, _biasy)) {p->codes |= CC_CLIP_OVERFLOW; return 1;}
 	p->sy = res;
 
+	fix_sprint(printy, p->sy);
+	printf("p->sy %s\n", printy);
+
   // now project x point
 	res = fix_mul_div(x,_scrw,z);
 	if (gOVResult) {p->codes |= CC_CLIP_OVERFLOW; return 1;}
 	if (AddLongWithOverflow(&res, res, _biasx)) {p->codes |= CC_CLIP_OVERFLOW; return 1;}
 	p->sx = res;
+
+	fix_sprint(printy, p->sx);
+	printf("p->sx %s\n", printy);
 	
 	// modify point flags to indicate projection.
 	p->p3_flags |= PF_PROJECTED;

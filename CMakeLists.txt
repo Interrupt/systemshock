@@ -192,6 +192,21 @@ target_link_libraries(BoxTest
 	${CARBON}
 )
 
+add_executable(BitmapTest
+	src/Libraries/3D/Tests/BitmapTest.c
+)
+
+target_link_libraries(BitmapTest
+	2D_LIB
+	GR_LIB
+	3D_LIB
+	RES_LIB
+	FIX_LIB
+	LG_LIB
+	${SDL2_LIBRARIES}
+	${CARBON}
+)
+
 add_executable(FixTest
 	src/Libraries/FIX/Tests/FixTest/fixtest.c
 )

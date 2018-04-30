@@ -73,6 +73,7 @@ int fr_rend(frc *view)
 {
    fr_prepare_view(view);              /* init _fr, load flags, so on */
    if (!fr_start_view()) return -1;    /* broken broken - but what to really return */
+   ss_safe_set_cliprect(0,0,640,480);
    if (_fr_curflags&(FR_NORENDR_MASK|FR_SOLIDFR_MASK))  /* dont really render, call a game thing */
     { if (_fr->render_call) _fr->render_call(&_fr->draw_canvas.bm, _fr_curflags); }
    else
@@ -95,13 +96,18 @@ int fr_rend(frc *view)
 #ifdef AUDIOLOGS
       audiolog_loop_callback();
 #endif
+      printf(" fr_pipe_start\n");
       fr_pipe_start(-1);               /* set environment up */
+      printf(" fr_clip_cone\n");
       fr_clip_cone();                  /* generate basic spans */
+      printf(" fr_clip_tile\n");
       fr_clip_tile();                  /* clipping and obj sort pass */
       // MLA - does nothing!  
       // synchronous_update();            // One more time
 //    	ClearCache(_fr->draw_canvas.bm.bits, (_fr->draw_canvas.bm.row >> 5) * _fr->ywid);
+      printf(" fr_pipe_go_3\n");
      	fr_pipe_go_3();                  /* actually render the stuff */
+      printf(" fr_pipe_end\n");
       fr_pipe_end();                   /* clean environment up */
       // MLA - does nothing!  
       // synchronous_update();            // And one for the road.
@@ -113,6 +119,8 @@ int fr_rend(frc *view)
          _g3d_enable_blend=save_blend_flag;
       }
    }
+
+   printf(" fr_pipe_end\n");
    fr_send_view();                     /* send it, whether it came from 3d or special */
    if ((_fr->flags & FR_CURVIEW_MASK) == FR_CURVIEW_STRT)
 	   _frp.time.last_frame_cnt++;

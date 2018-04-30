@@ -419,7 +419,6 @@ void init_all(void)
    printf("-Gamerenderer startup\n");
    gamerend_init();
 
-   // Crashes?
    printf("-Cameras startup\n");
    init_hack_cameras();
 

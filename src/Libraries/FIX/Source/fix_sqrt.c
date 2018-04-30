@@ -69,9 +69,12 @@ asm long long_sqrt(long num);
 fix fix_sqrt(fix num)
 {
 	fix	res = long_sqrt(num);
+
+	float f = fix_float(num);
+	f = sqrt(f);
 	
 	// Make the number a fix and return it
-	return (res << 8);
+	return fix_from_float(f);
 }
 
 // PowerPC  versions of quad_sqrt & long_sqrt

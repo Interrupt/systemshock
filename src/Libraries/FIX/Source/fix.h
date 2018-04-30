@@ -460,8 +460,8 @@ char *fix24_sprint_hex (char *str, fix24 x);
 //============================================
 struct AWide
 {
-	long			hi;
-	unsigned long	lo;
+	int		hi;
+	uint	lo;
 };
 typedef struct AWide AWide;
 

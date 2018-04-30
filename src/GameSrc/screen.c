@@ -238,6 +238,8 @@ void screen_start()
 	uiSetCurrentSlab(&main_slab);
 	inventory_region = inventory_region_game;
 	pagebutton_region = pagebutton_region_game;
+
+   printf("screen_start screen_start screen_start!\n");
 	
 	// A rather strange function for a Mac program, but we'll keep it.
 	change_svga_screen_mode();

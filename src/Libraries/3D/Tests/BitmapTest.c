@@ -32,6 +32,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "3d.h"
 #include "fauxrend.h"
 
+#include <sdl.h>
+
+long     gScreenRowbytes;
+Ptr      gScreenAddress;
+
+SDL_Window* window;
+SDL_Surface* drawSurface;
+
 long fr_clear_color = 0xff;
 
 // prototypes
@@ -50,6 +58,45 @@ g3s_angvec viewer_orientation;
 #define _fr_top(vr) if (vr==NULL) _fr=_sr; else _fr=vr;
 #define coor(val) (fix_make((eye[val]>>MAP_SH),(eye[val]&MAP_MK)<<MAP_MS))
 #define ang(val)  (eye[val])
+
+void SetupSDL() {
+   window = SDL_CreateWindow(
+      "System Shock - BitmapTest", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+      640, 480, SDL_WINDOW_SHOWN);
+
+   SDL_RaiseWindow(window);
+   
+   SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
+   drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+   if(!drawSurface) {
+      DebugString("SDL: Failed to create draw surface");
+      return;
+   }
+}
+
+void SetSDLPalette(int index, int count, uchar *pal)
+{
+   SDL_Color gamePalette[256];
+   for(int i = index; i < count; i++) {
+      gamePalette[index+i].r = *pal++;
+      gamePalette[index+i].g = *pal++;
+      gamePalette[index+i].b = *pal++;
+      gamePalette[index+i].a = 0xFF;
+   }
+
+   SDL_Palette* sdlPalette = SDL_AllocPalette(count);
+   SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
+   SDL_SetSurfacePalette(drawSurface, sdlPalette);
+}
+
+void SDLDraw(void)
+{
+   SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+   SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
+   SDL_UpdateWindowSurface(window);
+   SDL_PumpEvents();
+}
 
 void eyepos_moveone(int which, int how)
 {
@@ -147,28 +194,48 @@ void setup_quad(fix x, fix y, fix z, int d, g3s_phandle *trans_p)
    trans_p[3]=g3_transform_point(&cur_vec);
 }
 
-char byt_buf[64000];
+char byt_buf[17000];
 char pal_buf[768];
 
-void test_3d(uchar *tmap, uchar* pal)
+void main()
 {
    fauxrend_context *main_view;
    g3s_phandle trans[8];
    int i,j,c=0;
    int fd;
    grs_bitmap bm;
-	 //EventRecord evt;
-	 g3s_point	*my_pt;
+
+	g3s_point	*my_pt;
    grs_screen *screen;
    g3s_vector vec[4];
-	 
-	 BlockMove(tmap,byt_buf,4096);
-	 BlockMove(pal,pal_buf,768);
+
+   DebugString("Opening test.pal");
+   FILE* fp;
+   if(fp = fopen("test.pal","rb")) {
+      fread (pal_buf, 1, 768, fp);
+      fclose (fp);
+   } else {
+      DebugString("Open failed");
+      return;
+   }
+
+   DebugString("Opening test.img");
+   if(fp = fopen("test.img","rb")) {
+      fread (byt_buf, 1, 16412, fp);
+      fclose (fp);
+   } else {
+      DebugString("Open failed");
+      return;
+   }
 	 
  /*  fd = open(argv[1], O_RDONLY|O_BINARY);
    read(fd, byt_buf, 4096);
    fd = open(argv[2], O_RDONLY|O_BINARY);
    read(fd, pal_buf, 768);*/
+
+   SetupSDL();
+   gScreenRowbytes = drawSurface->w;
+   gScreenAddress = drawSurface->pixels;
 
    gr_init();
    gr_set_mode(GRM_640x480x8, TRUE);
@@ -177,7 +244,10 @@ void test_3d(uchar *tmap, uchar* pal)
 
    gr_set_pal(0, 256, (uchar *) pal_buf);
    gr_set_fcolor(fr_clear_color);
-   gr_init_bm(&bm, (uchar *) byt_buf, BMT_FLAT8, 0, 64, 64);
+   //gr_init_bm(&bm, (uchar *) byt_buf, BMT_FLAT8, 0, 64, 64);
+   gr_init_bm(&bm, (uchar *) byt_buf+28, BMT_FLAT8, 0, 128, 128);
+
+   SetSDLPalette(0, 256, pal_buf);
 
    g3_init(DEFAULT_PT_CNT,AXIS_ORDER);
    main_view=fauxrend_place_3d(NULL,TRUE,0,0,0,0,640,480);
@@ -185,15 +255,24 @@ void test_3d(uchar *tmap, uchar* pal)
 	      
 
    while (!Button()) {
+      gr_safe_set_cliprect(0,0,640,480);
+
       _fr_top(NULL);
       fauxrend_start_frame();
-      g3_set_bitmap_scale (fix_make (0,65536/64), fix_make (0,65536/64));
-      setup_quad(0,0,4<<16,1,trans);
+      g3_set_bitmap_scale (fix_make (0,65536/128), fix_make (0,65536/128));
+      setup_quad(0,0,4,1,trans);
       g3_anchor_bitmap (&bm, trans[0], 32, 32);
-//      g3_check_and_draw_tmap_quad_tile(trans,&bm,1,1);
+      g3_check_and_draw_tmap_quad_tile(trans,&bm,1,1);
       fauxrend_send_frame();
 
-			c = 0;
+      uint8* keyboard;
+      keyboard = SDL_GetKeyboardState(NULL);
+      if (keyboard[SDL_SCANCODE_UP]) eyepos_moveone(EYE_X,16);
+      if (keyboard[SDL_SCANCODE_DOWN]) eyepos_moveone(EYE_X,-16);
+      if (keyboard[SDL_SCANCODE_LEFT]) eyepos_moveone(EYE_H,-16);
+      if (keyboard[SDL_SCANCODE_RIGHT]) eyepos_moveone(EYE_H,16);
+
+			/*c = 0;
 //			if (GetNextEvent(keyDownMask+autoKeyMask,&evt)) c = evt.message & charCodeMask;
       switch (c) {
       case 'i': eyepos_moveone(EYE_Y,16); break;
@@ -211,8 +290,13 @@ void test_3d(uchar *tmap, uchar* pal)
       case 'U': eyepos_moveone(EYE_Z,160); break;
       case 'O': eyepos_moveone(EYE_Z,-160); break;
       default: break;
-      }
+      }*/
  //     gr_clear (fr_clear_color);
+
+      gr_bitmap(&bm, 10, 10);
+
+      SDLDraw();
+      SDL_Delay(30);
    }
 
 	g3_shutdown();

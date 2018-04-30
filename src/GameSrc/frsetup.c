@@ -705,7 +705,7 @@ int fr_start_view(void)
       i6_video(I6VID_FRM_INFIN,NULL);  // begin infinite region
       gr_set_canvas(i6d_ss->cf_infin);
 //      gr_clear(0x78);
-      gr_clear(0);
+//      gr_clear(0);
       i6_video(I6VID_FRM_STEREO,NULL); // now, the stereo set
       gr_set_canvas(i6d_ss->cf_left);
       if (i6d_device == I6D_CTM)
@@ -760,7 +760,7 @@ int fr_start_view(void)
 		gr_clear(_frp.view.clear_color);
 
       // HAX HAX HAX Why is this not 0 already?
-      gr_clear(0);
+      //gr_clear(0);
 		
    // now have everything set up for 3d view
    // if wacky secondary camera mode, set up
@@ -783,6 +783,8 @@ int fr_send_view (void)
 {
    uchar 	snd_frm=TRUE;
    bool	ok_to_double;
+
+   printf("fr_send_view\n");
 
    // JAEMZ JAEMZ JAEMZ
    // render the stars, if there were

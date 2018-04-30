@@ -277,10 +277,7 @@ int blah;
 // Returns the distance from (0,0) to (a,b)
 //----------------------------------------------------------------------------
 fix fix_pyth_dist (fix a, fix b)
-{
-	gOVResult = 100;
-	blah	= 200;
-	
+{	
 	// ¥¥¥should check for overflow!
  	return fix_sqrt(fix_mul(a, a) + fix_mul(b, b));
 }
@@ -678,8 +675,10 @@ AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target)
 
 long AsmWideDivide(long hi, long lo, long divisor)
 {
-	float af = (float)hi + (float)lo / 65536.0;
-	float bf = (float)divisor;
+	printf("AsmWideDivide %i %i %i\n", hi, lo, divisor);
+	float af = (float)hi + ((float)lo / 65536.0f);
+	float bf = fix_float(divisor);
+
 	return fix_from_float(af / bf);
 }
 

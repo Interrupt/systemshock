@@ -194,6 +194,7 @@ int g3_light_tmap_tile(g3s_phandle upperleft,g3s_vector *u_vec,g3s_vector *v_vec
 
 int g3_draw_tmap_tile(g3s_phandle upperleft,g3s_vector *u_vec,g3s_vector *v_vec,int nverts,g3s_phandle *vp,grs_bitmap *bm)
  {
+ 	printf("g3_draw_tmap_tile\n");
  	tmap_func = (void *) &per_umap;
  	ti.tmap_type = GRC_PER;
  	ti.flags = 0;
@@ -604,6 +605,7 @@ int draw_tmap_common(int n, g3s_phandle *vp, grs_bitmap *bm)
 	
 	if (!light_flag)
 	 {
+	 	printf("Drawring!\n");
 	 	((void (*)(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti)) tmap_func) (bm,_n_verts,p_vpl,&ti);
 	 	return CLIP_NONE;
 	 }
