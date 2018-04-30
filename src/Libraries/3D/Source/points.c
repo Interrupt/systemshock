@@ -163,18 +163,13 @@ no_stereo1:
 
 	char printy[100];
 	fix_sprint(printy, p->gX);
-	printf("x: %s\n", printy);
+	printf("%s\n", printy);
 
 	fix_sprint(printy, p->gY);
-	printf("y: %s\n", printy);
+	printf("%s\n", printy);
 
 	fix_sprint(printy, p->gZ);
-	printf("z: %s\n", printy);
-
-	p->gZ = fix_make(2, 0);	
-
-	fix_sprint(printy, p->gZ);
-	printf("z2: %s\n", printy);
+	printf("%s\n", printy);
 
 	// check if this point is in front of the back plane.
 	z = p->gZ;
@@ -193,16 +188,13 @@ no_stereo1:
 	p->sy = res;
 
 	fix_sprint(printy, p->sy);
-	printf("p->sy %s\n", printy);
+	printf("%s\n", printy);
 
   // now project x point
 	res = fix_mul_div(x,_scrw,z);
 	if (gOVResult) {p->codes |= CC_CLIP_OVERFLOW; return 1;}
 	if (AddLongWithOverflow(&res, res, _biasx)) {p->codes |= CC_CLIP_OVERFLOW; return 1;}
 	p->sx = res;
-
-	fix_sprint(printy, p->sx);
-	printf("p->sx %s\n", printy);
 	
 	// modify point flags to indicate projection.
 	p->p3_flags |= PF_PROJECTED;
@@ -453,6 +445,8 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
  	AWide 	result,result2;
 //this matrix multiply here will someday be optimized for zero and one terms
 
+ 	printf("do_rotate: %f %f %f\n", fix_float(x), fix_float(y), fix_float(z));
+
 //first column
 	AsmWideMultiply(x, vm1, &result);
 	AsmWideMultiply(y, vm4, &result2);
@@ -476,6 +470,8 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 	AsmWideMultiply(z, vm9, &result2);
 	AsmWideAdd(&result, &result2);
 	*rz = (result.hi<<16) | (((ulong) result.lo)>>16);
+
+	printf("rotated to: %f %f %f\n", fix_float(*rx), fix_float(*ry), fix_float(*rz));
  }
 #else
 asm void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
