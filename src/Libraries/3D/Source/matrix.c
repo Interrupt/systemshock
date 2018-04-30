@@ -471,7 +471,7 @@ void g3_vec_rotate(g3s_vector *dest,g3s_vector *src,g3s_matrix *m)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(srcZ, m->m7, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gX = (result.hi<<16) | (((ulong) result.lo)>>16);
+	dest->gX = (long)result;
 	
 // second column
 	AsmWideMultiply(srcX, m->m2, &result);
@@ -479,7 +479,7 @@ void g3_vec_rotate(g3s_vector *dest,g3s_vector *src,g3s_matrix *m)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(srcZ, m->m8, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gY = (result.hi<<16) | (((ulong) result.lo)>>16);
+	dest->gY = (long)result;
 
 // third column
 	AsmWideMultiply(srcX, m->m3, &result);
@@ -487,7 +487,7 @@ void g3_vec_rotate(g3s_vector *dest,g3s_vector *src,g3s_matrix *m)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(srcZ, m->m9, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gZ = (result.hi<<16) | (((ulong) result.lo)>>16);
+	dest->gZ = (long)result;
  }	
 
 // transpose a matrix at esi in place
@@ -525,7 +525,7 @@ void g3_copy_transpose(g3s_matrix *dest,g3s_matrix *src)       //copy and transp
 	AsmWideAdd(&result, &result2);\
 	AsmWideMultiply(src1->s1_3, src2->s2_3, &result2);\
 	AsmWideAdd(&result, &result2);\
-	dest->dst = (result.hi<<16) | (((ulong) result.lo)>>16);}
+	dest->dst = (long)result;}
 
 // matrix by matrix multiply:  ebx = esi * edi
 // does ebx = edi * esi
@@ -559,7 +559,7 @@ void g3_matrix_x_matrix(g3s_matrix *dest,g3s_matrix *src1 ,g3s_matrix *src2 )
 	AsmWideMultiply(v1, v2, &result2);\
 	AsmWideNegate(&result); \
 	AsmWideAdd(&result, &result2);\
-	res = (result.hi<<16) | (((ulong) result.lo)>>16);}
+	res = (long)result;}
 
 #define do_cross_nofixup(v1,v2,v3,v4,wide_res) \
   {AWide	result2; \
@@ -584,10 +584,10 @@ void get_pyr_vector(g3s_vector *corners)
 	 	corners->gZ = f1_0;
 	 	
 	 	do_cross_nofixup(d89,d46,d79,d56,wide_den);
-	 	corners->gX = AsmWideDivide(wide_den.hi,wide_den.lo,den);
+	 	corners->gX = AsmWideDivide(wide_den,den);
 	 	
 	 	do_cross_nofixup(d79,d23,d13,d89,wide_den);
-	 	corners->gY = AsmWideDivide(wide_den.hi,wide_den.lo,den);
+	 	corners->gY = AsmWideDivide(wide_den,den);
 	 }
 	else	
 	 {
@@ -598,10 +598,10 @@ void get_pyr_vector(g3s_vector *corners)
 	 		corners->gX = f1_0;
 
 		 	do_cross_nofixup(d23,d79,d13,d89,wide_den);
-		 	corners->gY = AsmWideDivide(wide_den.hi,wide_den.lo,den);
+		 	corners->gY = AsmWideDivide(wide_den,den);
 
 		 	do_cross_nofixup(d13,d56,d23,d46,wide_den);
-		 	corners->gZ = AsmWideDivide(wide_den.hi,wide_den.lo,den);
+		 	corners->gZ = AsmWideDivide(wide_den,den);
 	 	 }
 	 	else
 	 	 {
@@ -611,10 +611,10 @@ void get_pyr_vector(g3s_vector *corners)
 	 		corners->gY = f1_0;
 
 		 	do_cross_nofixup(d56,d79,d46,d89,wide_den);
-		 	corners->gX = AsmWideDivide(wide_den.hi,wide_den.lo,den);
+		 	corners->gX = AsmWideDivide(wide_den,den);
 
 		 	do_cross_nofixup(d46,d23,d56,d13,wide_den);
-		 	corners->gZ = AsmWideDivide(wide_den.hi,wide_den.lo,den);
+		 	corners->gZ = AsmWideDivide(wide_den,den);
 	 	 }
 	 }
 	  
@@ -627,7 +627,7 @@ void get_pyr_vector(g3s_vector *corners)
 	AsmWideAdd(&wide_den, &wide2);
 	AsmWideMultiply(corners->gZ, vm9, &wide2);
 	AsmWideAdd(&wide_den, &wide2);
-	if (wide_den.hi<0)
+	if (wide_den<0)
 	 {
 	 	corners->gX = -corners->gX;
 	 	corners->gY = -corners->gY;

@@ -102,7 +102,7 @@ uchar g3_check_poly_facing(g3s_phandle p0,g3s_phandle p1,g3s_phandle p2)
 	AsmWideMultiply(p0->gZ, temp_vector.gZ, &result2);
 	AsmWideAdd(&result, &result2);
 
-	return(result.hi<0);
+	return(result<0);
  }
 
 // takes same input as draw_poly, but first checks if facing
@@ -550,5 +550,5 @@ uchar g3_check_normal_facing(g3s_vector *v,g3s_vector *normal)
 	AsmWideMultiply(v->gZ-_view_position.gZ, normal->gZ, &result2);
 	AsmWideAdd(&result, &result2);
 
-	return(result.hi<0);
+	return(result<0);
 }

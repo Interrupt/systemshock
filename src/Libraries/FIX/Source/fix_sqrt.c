@@ -93,7 +93,7 @@ long quad_sqrt(long hi, long lo)
 	if (hi == 0)										// If there is no high word
 	{
 		if (lo > 0)										// If lo word is positive, just call long_sqrt()
-			return(long_sqrt(lo));
+			return(sqrt(lo));
 		if (lo == 0)									// If lo word is zero, return 0.
 			return(0);
 	}
@@ -103,9 +103,11 @@ long quad_sqrt(long hi, long lo)
 	// If 'hi' is non-zero, call FixMath's WideSquareRoot.
 	
 	AWide	a;
-	a.hi = hi;
-	a.lo = lo;
-	return(WideSquareRoot(&a));
+	//a.hi = hi;
+	//a.lo = lo;
+	//return(WideSquareRoot(&a));
+
+	return sqrt(a);
 
 /*  We gave it the ol' college try, but WideSquareRoot is faster in this case.
 

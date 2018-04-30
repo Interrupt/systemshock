@@ -163,6 +163,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg_types.h"
 
 #include <stdlib.h>
+#include <stdint.h>
 
 // Globals
 extern int	gOVResult;
@@ -458,12 +459,12 @@ char *fix24_sprint_hex (char *str, fix24 x);
 //  Other multiply/div/add variants used by 2D and 3D.
 //
 //============================================
-struct AWide
+/*struct AWide
 {
 	long			hi;
 	unsigned long	lo;
-};
-typedef struct AWide AWide;
+};*/
+typedef int64_t AWide;
 
 #if defined(powerc) || defined(__powerc)
 #ifdef __cplusplus
