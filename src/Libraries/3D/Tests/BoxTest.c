@@ -321,11 +321,10 @@ void test_3d(void)
 	
 	frames = 0;
 	time = 1;
+	uint8* keyboard;
 	do
 	 {	 	
 	 	time++;
-
-	 	uint8* keyboard;
     	keyboard = SDL_GetKeyboardState(NULL);
 
 		//gr_set_canvas(off_canvas);
@@ -406,7 +405,7 @@ void test_3d(void)
 		SDLDraw();
 		SDL_Delay(30);
 	 }
-	while (!Button());
+	while (!keyboard[SDL_SCANCODE_ESCAPE]);
      
 	g3_shutdown();
   gr_close();

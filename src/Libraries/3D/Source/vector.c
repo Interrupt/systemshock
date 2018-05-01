@@ -87,7 +87,7 @@ fix g3_vec_mag(g3s_vector *v)
 	AsmWideMultiply(v->gZ, v->gZ, &result2);
 	AsmWideAdd(&result, &result2);
 
-	return ((long)sqrt(result));
+	return fix_from_float(sqrt(result));
 
 //	return(quad_sqrt(result.hi, result.lo));
  }
@@ -102,7 +102,7 @@ fix g3_vec_dotprod(g3s_vector *v0,g3s_vector *v1)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(v0->gZ, v1->gZ, &result2);
 	AsmWideAdd(&result, &result2);
-  return((long)result);
+  return fix_from_float(result);
  }
 
 

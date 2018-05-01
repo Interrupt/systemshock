@@ -411,7 +411,7 @@ void do_norm_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(z, uvm7, &result2);
 	AsmWideAdd(&result, &result2);
-	*rx = (long)result;
+	*rx = fix_from_float(result);
 
 //second column
 	AsmWideMultiply(x, uvm2, &result);
@@ -419,7 +419,7 @@ void do_norm_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(z, uvm8, &result2);
 	AsmWideAdd(&result, &result2);
-	*ry = (long)result;
+	*ry = fix_from_float(result);
 
 //third column
 	AsmWideMultiply(x, uvm3, &result);
@@ -427,7 +427,7 @@ void do_norm_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(z, uvm9, &result2);
 	AsmWideAdd(&result, &result2);
-	*rz = (long)result;
+	*rz = fix_from_float(result);
  }
  
 // made this a define - MLA 
@@ -591,19 +591,19 @@ void g3_rotate_delta_xz(g3s_vector *dest,fix dx,fix dz)
 	AsmWideMultiply(dx, vm1, &result);
 	AsmWideMultiply(dz, vm7, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gX = (long)result;
+	dest->gX = fix_from_float(result);
 
 //second column
 	AsmWideMultiply(dx, vm2, &result);
 	AsmWideMultiply(dz, vm8, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gY = (long)result;
+	dest->gY = fix_from_float(result);
 
 //third column
 	AsmWideMultiply(dx, vm3, &result);
 	AsmWideMultiply(dz, vm9, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gZ = (long)result;
+	dest->gZ = fix_from_float(result);
  }
 
 //rotate an xy delta. takes edi=dest vector, eax=dx, ebx=dy
@@ -616,19 +616,19 @@ void g3_rotate_delta_xy(g3s_vector *dest,fix dx,fix dy)
 	AsmWideMultiply(dx, vm1, &result);
 	AsmWideMultiply(dy, vm4, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gX = (long)result;
+	dest->gX = fix_from_float(result);
 
 //second column
 	AsmWideMultiply(dx, vm2, &result);
 	AsmWideMultiply(dy, vm5, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gY = (long)result;
+	dest->gY = fix_from_float(result);
 
 //third column
 	AsmWideMultiply(dx, vm3, &result);
 	AsmWideMultiply(dy, vm6, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gZ = (long)result;
+	dest->gZ = fix_from_float(result);
  }
 
 //rotate a yz delta. takes edi=dest vector, eax=dy, ebx=dz
@@ -641,19 +641,19 @@ void g3_rotate_delta_yz(g3s_vector *dest,fix dy,fix dz)
 	AsmWideMultiply(dy, vm4, &result);
 	AsmWideMultiply(dz, vm7, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gX = (long)result;
+	dest->gX = fix_from_float(result);
 
 //second column
 	AsmWideMultiply(dy, vm5, &result);
 	AsmWideMultiply(dz, vm8, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gY = (long)result;
+	dest->gY = fix_from_float(result);
 
 //third column
 	AsmWideMultiply(dy, vm6, &result);
 	AsmWideMultiply(dz, vm9, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gZ = (long)result;
+	dest->gZ = fix_from_float(result);
  }
 
 //rotate a delta vector. takes edi=dest, eax,ebx,ecx=dx,dy,dz
@@ -746,19 +746,19 @@ void g3_add_delta_xy(g3s_phandle p,fix dx,fix dy)
 	AsmWideMultiply(dx, vm1, &result);
 	AsmWideMultiply(dy, vm4, &result2);
 	AsmWideAdd(&result, &result2);
-	p->gX += (long)result;
+	p->gX += fix_from_float(result);
 
 //second column
 	AsmWideMultiply(dx, vm2, &result);
 	AsmWideMultiply(dy, vm5, &result2);
 	AsmWideAdd(&result, &result2);
-	p->gY += (long)result;
+	p->gY += fix_from_float(result);
 
 //third column
 	AsmWideMultiply(dx, vm3, &result);
 	AsmWideMultiply(dy, vm6, &result2);
 	AsmWideAdd(&result, &result2);
-	p->gZ += (long)result;
+	p->gZ += fix_from_float(result);
 
  	p->p3_flags &= ~PF_PROJECTED;
  	code_point(p);
@@ -774,19 +774,19 @@ void g3_add_delta_xz(g3s_phandle p,fix dx,fix dz)
 	AsmWideMultiply(dx, vm1, &result);
 	AsmWideMultiply(dz, vm7, &result2);
 	AsmWideAdd(&result, &result2);
-	p->gX += (long)result;
+	p->gX += fix_from_float(result);
 
 //second column
 	AsmWideMultiply(dx, vm2, &result);
 	AsmWideMultiply(dz, vm8, &result2);
 	AsmWideAdd(&result, &result2);
-	p->gY += (long)result;
+	p->gY += fix_from_float(result);
 
 //third column
 	AsmWideMultiply(dx, vm3, &result);
 	AsmWideMultiply(dz, vm9, &result2);
 	AsmWideAdd(&result, &result2);
-	p->gZ += (long)result;
+	p->gZ += fix_from_float(result);
 
  	p->p3_flags &= ~PF_PROJECTED;
  	code_point(p);
@@ -803,19 +803,19 @@ void g3_add_delta_yz(g3s_phandle p,fix dy,fix dz)
 	AsmWideMultiply(dy, vm4, &result);
 	AsmWideMultiply(dz, vm7, &result2);
 	AsmWideAdd(&result, &result2);
-	p->gX += (long)result;
+	p->gX += fix_from_float(result);
 
 //second column
 	AsmWideMultiply(dy, vm5, &result);
 	AsmWideMultiply(dz, vm8, &result2);
 	AsmWideAdd(&result, &result2);
-	p->gY += (long)result;
+	p->gY += fix_from_float(result);
 
 //third column
 	AsmWideMultiply(dy, vm6, &result);
 	AsmWideMultiply(dz, vm9, &result2);
 	AsmWideAdd(&result, &result2);
-	p->gZ += (long)result;
+	p->gZ += fix_from_float(result);
 
  	p->p3_flags &= ~PF_PROJECTED;
  	code_point(p);
@@ -942,19 +942,19 @@ g3s_phandle g3_copy_add_delta_xy(g3s_phandle src,fix dx,fix dy)
 	AsmWideMultiply(dx, vm1, &result);
 	AsmWideMultiply(dy, vm4, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gX = src->gX + ((long)result);
+	point->gX = src->gX + fix_from_float(result);
 
 //second column
 	AsmWideMultiply(dx, vm2, &result);
 	AsmWideMultiply(dy, vm5, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gY = src->gY + ((long)result);
+	point->gY = src->gY + fix_from_float(result);
 
 //third column
 	AsmWideMultiply(dx, vm3, &result);
 	AsmWideMultiply(dy, vm6, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gZ = src->gZ + ((long)result);
+	point->gZ = src->gZ + fix_from_float(result);
 
  	point->p3_flags = 0;
  	code_point(point);
@@ -975,19 +975,19 @@ g3s_phandle g3_copy_add_delta_xz(g3s_phandle src,fix dx,fix dz)
 	AsmWideMultiply(dx, vm1, &result);
 	AsmWideMultiply(dz, vm7, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gX = src->gX + ((long)result);
+	point->gX = src->gX + fix_from_float(result);
 
 //second column
 	AsmWideMultiply(dx, vm2, &result);
 	AsmWideMultiply(dz, vm8, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gY = src->gY + ((long)result);
+	point->gY = src->gY + fix_from_float(result);
 
 //third column
 	AsmWideMultiply(dx, vm3, &result);
 	AsmWideMultiply(dz, vm9, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gZ = src->gZ + ((long)result);
+	point->gZ = src->gZ + fix_from_float(result);
 
  	point->p3_flags = 0;
  	code_point(point);
@@ -1009,19 +1009,19 @@ g3s_phandle g3_copy_add_delta_yz(g3s_phandle src,fix dy,fix dz)
 	AsmWideMultiply(dy, vm4, &result);
 	AsmWideMultiply(dz, vm7, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gX = src->gX + ((long)result);
+	point->gX = src->gX + fix_from_float(result);
 
 //second column
 	AsmWideMultiply(dy, vm5, &result);
 	AsmWideMultiply(dz, vm8, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gY = src->gY + ((long)result);
+	point->gY = src->gY + fix_from_float(result);
 
 //third column
 	AsmWideMultiply(dy, vm6, &result);
 	AsmWideMultiply(dz, vm9, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gZ = src->gZ + ((long)result);
+	point->gZ = src->gZ + fix_from_float(result);
 
  	point->p3_flags = 0;
  	code_point(point);
