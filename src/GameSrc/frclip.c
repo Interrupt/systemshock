@@ -1030,6 +1030,10 @@ int fr_clip_tile(void)
    // also have to do exact correct reverse order, so obj_stack works, so go north first, then south
    // sadly, new render order invalidates this
 
+   // HAX HAX HAX draw all!
+   fr_clip_show_all();
+   _fr_ret;
+
    // next, do each direction
    if (_fr_curflags&FR_SHOWALL_MASK)
       { fr_clip_show_all(); _fr_ret;}  // fill in all things

@@ -1491,12 +1491,13 @@ void RenderTest(void)
 	detailCheck = time = 0;
 
 	printf("Button?\n");
- 	while (!Button())
+	uint8* keyboard = SDL_GetKeyboardState(NULL);
+ 	while (!keyboard[SDL_SCANCODE_ESCAPE])
  	  {		
-
- 	  		uint8* keyboard;
 			SDL_PumpEvents();
     		keyboard = SDL_GetKeyboardState(NULL);
+
+    		input_chk();
 
 #if __profile__
  	  	if (kb_state(0x23) && !profileOn)	// P
@@ -1510,7 +1511,7 @@ void RenderTest(void)
 #endif
  	  	 
  	  	if (kb_state(0x38))
- 	  		moveAmt = 0x1000;
+ 	  		moveAmt = 0x0050;
  	  	else
  	  		moveAmt = 0x2400;
  	  		
@@ -1630,6 +1631,8 @@ void RenderTest(void)
 
 		printf("fr_rend\n");
 		fr_rend(_frc);
+
+		SDL_Delay(1);
 		SDLDraw();
 		
 		frames++;

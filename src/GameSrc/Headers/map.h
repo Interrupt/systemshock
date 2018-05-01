@@ -125,10 +125,10 @@ typedef struct _map_element {
 //            uchar ceil;
 //         } cyber;
 //      } space;
-   uchar flag4;			// KLC swapped around
-   uchar flag3;
+   uchar flag1;			// KLC swapped around
    uchar flag2;
-   uchar flag1;      // rename these, perhaps
+   uchar flag3;
+   uchar flag4;      // rename these, perhaps
 //   ulong flags;
    uchar sub_clip;
    uchar clearsolid;

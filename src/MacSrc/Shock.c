@@ -689,9 +689,9 @@ void HandleNewGame()
 	SDLDraw();
 
 	printf("Starting Main Loop\n");
-	ShockGameLoop();
+	//ShockGameLoop();
 
-	//RenderTest();
+	RenderTest();
 }
 
 

@@ -870,6 +870,15 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    {
       printf("map data %i\n", idx);
       REF_READ(id_num, idx++, *global_fullmap);
+
+      printf(" map size: %i %i\n", global_fullmap->x_size, global_fullmap->y_size);
+
+      for(int y = 0; y < 64; y++) {
+         for(int x = 0; x < 64; x++) {
+            printf(" %i", global_fullmap->map[x + y * 64].tiletype);
+         }
+         printf("\n");
+      }
             
       printf("map tiles %i\n", idx);
       MAP_MAP = (MapElem *)static_map;
@@ -1565,6 +1574,18 @@ out:
       }
    }
    reload_motion_cursors(global_fullmap->cyber);
+
+   // Debug print the map
+   for(int y = 0; y < 64; y++) {
+      for(int x = 0; x < 64; x++) {
+         uchar tiletype = global_fullmap->map[x + y * 64].tiletype;
+         if(tiletype == 0)
+            printf("  ", tiletype);
+         else
+            printf(" %i", tiletype);
+      }
+      printf("\n");
+   }
    
 //KLC   physics_warmup();
 
