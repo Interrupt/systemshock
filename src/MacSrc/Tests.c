@@ -1511,7 +1511,7 @@ void RenderTest(void)
 #endif
  	  	 
  	  	if (kb_state(0x38))
- 	  		moveAmt = 0x0050;
+ 	  		moveAmt = 0x0010;
  	  	else
  	  		moveAmt = 0x2400;
  	  		
@@ -1581,7 +1581,7 @@ void RenderTest(void)
 		  }
 		  		  
 		 // slot/full
-		if (kb_state(1))	// slot
+		if (keyboard[SDL_SCANCODE_F])	// slot
 		  {
 			full_game_3d = false;
 			change_svga_screen_mode();

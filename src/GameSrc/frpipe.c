@@ -295,7 +295,7 @@ uchar quad_order_lists[8][4]=
 int fr_pipe_go_3(void)
 {  
 
-   _fr_x_cen = fix_make(0, 2);
+   //_fr_x_cen = fix_make(0, 2);
 
    int i, j, p_dir;  // p_dir is how many per diagonal element
    uchar *loc_code_ptr, *quad_order;
