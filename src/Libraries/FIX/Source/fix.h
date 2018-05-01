@@ -464,7 +464,7 @@ char *fix24_sprint_hex (char *str, fix24 x);
 	long			hi;
 	unsigned long	lo;
 };*/
-typedef int64_t AWide;
+typedef float AWide;
 
 #if defined(powerc) || defined(__powerc)
 #ifdef __cplusplus

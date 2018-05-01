@@ -269,10 +269,10 @@ void main()
 
       uint8* keyboard;
       keyboard = SDL_GetKeyboardState(NULL);
-      if (keyboard[SDL_SCANCODE_UP]) eyepos_moveone(EYE_X,16);
-      if (keyboard[SDL_SCANCODE_DOWN]) eyepos_moveone(EYE_X,-16);
-      if (keyboard[SDL_SCANCODE_LEFT]) eyepos_moveone(EYE_H,-16);
-      if (keyboard[SDL_SCANCODE_RIGHT]) eyepos_moveone(EYE_H,16);
+      if (keyboard[SDL_SCANCODE_UP]) eyepos_moveone(EYE_Y,1);
+      if (keyboard[SDL_SCANCODE_DOWN]) eyepos_moveone(EYE_Y,-1);
+      if (keyboard[SDL_SCANCODE_LEFT]) eyepos_moveone(EYE_H,-1);
+      if (keyboard[SDL_SCANCODE_RIGHT]) eyepos_moveone(EYE_H,1);
 
 			/*c = 0;
 //			if (GetNextEvent(keyDownMask+autoKeyMask,&evt)) c = evt.message & charCodeMask;
@@ -298,7 +298,7 @@ void main()
       gr_bitmap(&bm, 10, 10);
 
       SDLDraw();
-      SDL_Delay(30);
+      SDL_Delay(10);
    }
 
 	g3_shutdown();

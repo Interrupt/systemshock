@@ -471,7 +471,7 @@ void g3_vec_rotate(g3s_vector *dest,g3s_vector *src,g3s_matrix *m)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(srcZ, m->m7, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gX = (long)result;
+	dest->gX = fix_from_float(result);
 	
 // second column
 	AsmWideMultiply(srcX, m->m2, &result);
@@ -479,7 +479,7 @@ void g3_vec_rotate(g3s_vector *dest,g3s_vector *src,g3s_matrix *m)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(srcZ, m->m8, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gY = (long)result;
+	dest->gY = fix_from_float(result);
 
 // third column
 	AsmWideMultiply(srcX, m->m3, &result);
@@ -487,7 +487,7 @@ void g3_vec_rotate(g3s_vector *dest,g3s_vector *src,g3s_matrix *m)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(srcZ, m->m9, &result2);
 	AsmWideAdd(&result, &result2);
-	dest->gZ = (long)result;
+	dest->gZ = fix_from_float(result);
  }	
 
 // transpose a matrix at esi in place
@@ -525,7 +525,7 @@ void g3_copy_transpose(g3s_matrix *dest,g3s_matrix *src)       //copy and transp
 	AsmWideAdd(&result, &result2);\
 	AsmWideMultiply(src1->s1_3, src2->s2_3, &result2);\
 	AsmWideAdd(&result, &result2);\
-	dest->dst = (long)result;}
+	dest->dst = fix_from_float(result);}
 
 // matrix by matrix multiply:  ebx = esi * edi
 // does ebx = edi * esi
@@ -559,7 +559,7 @@ void g3_matrix_x_matrix(g3s_matrix *dest,g3s_matrix *src1 ,g3s_matrix *src2 )
 	AsmWideMultiply(v1, v2, &result2);\
 	AsmWideNegate(&result); \
 	AsmWideAdd(&result, &result2);\
-	res = (long)result;}
+	res = fix_from_float(result);}
 
 #define do_cross_nofixup(v1,v2,v3,v4,wide_res) \
   {AWide	result2; \

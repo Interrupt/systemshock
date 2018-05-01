@@ -141,6 +141,8 @@ void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0,g3s_vector *v1,g3s_ve
 	g3s_vector	temp_high;
 	long				temp_long;
  	int					shiftcount;
+
+ 	printf("g3_compute_normal_quick\n");
  	
  	g3_vec_sub(&temp_v0,v1,v0);
  	g3_vec_sub(&temp_v1,v2,v1);

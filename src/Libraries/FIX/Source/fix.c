@@ -670,28 +670,30 @@ AWide *AsmWideSub(AWide *target, AWide *source)
 	return target;
 }
 
-AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target)
+AWide *AsmWideMultiply(fix multiplicand, fix multiplier, AWide *target)
 {
-	uint64_t val = (uint64_t)multiplicand * (uint64_t)multiplier;
+	float val = fix_float(multiplicand) * fix_float(multiplier);
 	*target = val;
 	return target;
 }
 
-long AsmWideDivide(uint64_t src, long divisor)
+fix AsmWideDivide(AWide src, fix divisor)
 {
-	uint64_t val = src / (uint64_t)divisor;
+	float val = src / fix_float(divisor);
 	return (long)val;
 }
 
 AWide *AsmWideNegate(AWide *target)
 {
+	printf("AsmWideNegate\n");
 	*target = -(*target);
 	return target;
 }
 
 AWide *AsmWideBitShift(AWide *src, long shift)
 {
-	*src = *src << shift;
+	printf("AsmWideBitShift\n");
+	*src = ((long)*src) << shift;
 	return src;
 }
 

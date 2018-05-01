@@ -71,7 +71,7 @@ SDL_Surface* drawSurface;
 
 void SetupSDL() {
 	window = SDL_CreateWindow(
-		"System Shock - SimpleMain Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		"System Shock - BoxTest", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		640, 480, SDL_WINDOW_SHOWN);
 
 	SDL_RaiseWindow(window);
@@ -335,14 +335,17 @@ void test_3d(void)
 		g3_set_view_angles(&viewer_position,&viewer_orientation,ORDER_YXZ,g3_get_zoom('X',build_fix_angle(70),640,480));
 		
 
-		if (keyboard[SDL_SCANCODE_LEFT]) dz -= ddx;
-		if (keyboard[SDL_SCANCODE_RIGHT]) dz += ddx;
+		if (keyboard[SDL_SCANCODE_J]) dz -= ddx;
+		if (keyboard[SDL_SCANCODE_L]) dz += ddx;
 
 		//if (keyboard[SDL_SCANCODE_LEFT]) vec.gZ -= vz;
 		//if (keyboard[SDL_SCANCODE_RIGHT]) vec.gZ += vz;
 
-		if (keyboard[SDL_SCANCODE_UP]) vec.gX -= vx;
-		if (keyboard[SDL_SCANCODE_DOWN]) vec.gX += vx;
+		if (keyboard[SDL_SCANCODE_UP]) vec.gY -= vx;
+		if (keyboard[SDL_SCANCODE_DOWN]) vec.gY += vx;
+
+		if (keyboard[SDL_SCANCODE_LEFT]) vec.gX -= vx;
+		if (keyboard[SDL_SCANCODE_RIGHT]) vec.gX += vx;
 
 	 	/*switch (evt.message & charCodeMask)
 	 	 {

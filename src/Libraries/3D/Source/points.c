@@ -446,6 +446,7 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 //this matrix multiply here will someday be optimized for zero and one terms
 
  	printf("do_rotate: %f %f %f\n", fix_float(x), fix_float(y), fix_float(z));
+ 	printf(" matrix: %f %f %f : %f %f %f : %f %f %f\n", fix_float(vm1), fix_float(vm2), fix_float(vm3), fix_float(vm4), fix_float(vm5), fix_float(vm6), fix_float(vm7), fix_float(vm8), fix_float(vm9));
 
 //first column
 	AsmWideMultiply(x, vm1, &result);
@@ -453,7 +454,7 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(z, vm7, &result2);
 	AsmWideAdd(&result, &result2);
-	*rx = (long)result;
+	*rx = fix_from_float(result);
 
 //second column
 	AsmWideMultiply(x, vm2, &result);
@@ -461,7 +462,7 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(z, vm8, &result2);
 	AsmWideAdd(&result, &result2);
-	*ry = (long)result;
+	*ry = fix_from_float(result);
 
 //third column
 	AsmWideMultiply(x, vm3, &result);
@@ -469,7 +470,7 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(z, vm9, &result2);
 	AsmWideAdd(&result, &result2);
-	*rz = (long)result;
+	*rz = fix_from_float(result);
 
 	printf("rotated to: %f %f %f\n", fix_float(*rx), fix_float(*ry), fix_float(*rz));
  }
