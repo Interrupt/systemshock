@@ -463,7 +463,7 @@ g3s_phandle star_transform_point(g3s_vector *v)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(v->gZ, vm9, &result2);
 	AsmWideAdd(&result, &result2);
-	temp = (result.hi<<16) | (((ulong) result.lo)>>16);
+	temp = fix_from_float(result);
 
   // check out z, see if behind
   if (temp<std_min_z) {point->codes = CC_BEHIND; return(point);}
@@ -476,7 +476,7 @@ g3s_phandle star_transform_point(g3s_vector *v)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(v->gZ, vm7, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gX = (result.hi<<16) | (((ulong) result.lo)>>16);
+	point->gX = fix_from_float(result);
 
 //second column (y)
 	AsmWideMultiply(v->gX, vm2, &result);
@@ -484,7 +484,7 @@ g3s_phandle star_transform_point(g3s_vector *v)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(v->gZ, vm8, &result2);
 	AsmWideAdd(&result, &result2);
-	point->gY = (result.hi<<16) | (((ulong) result.lo)>>16);
+	point->gY = fix_from_float(result);
 
 //call clip codes
 	if (code_point(point)) return(point);
