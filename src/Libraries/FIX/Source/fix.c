@@ -679,7 +679,7 @@ AWide *AsmWideMultiply(fix multiplicand, fix multiplier, AWide *target)
 
 fix AsmWideDivide(AWide src, fix divisor)
 {
-	float val = src / fix_float(divisor);
+	float val = fix_float(divisor) / src;
 	return fix_from_float(val);
 }
 

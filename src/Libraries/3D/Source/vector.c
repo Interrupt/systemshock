@@ -152,24 +152,24 @@ void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0,g3s_vector *v1,g3s_ve
 	AsmWideMultiply(temp_v1.gY, temp_v0.gZ, &result2);
 	AsmWideNegate(&result2);
 	AsmWideAdd(&result, &result2);
- 	v->gX = result;
- 	temp_high.gX = result;
+ 	v->gX = fix_from_float(result);
+ 	temp_high.gX = fix_from_float(result);
  	
 // dest->y = v1x * v0z - v1z * v0x;
 	AsmWideMultiply(temp_v1.gX, temp_v0.gZ, &result);
 	AsmWideMultiply(temp_v1.gZ, temp_v0.gX, &result2);
 	AsmWideNegate(&result2);
 	AsmWideAdd(&result, &result2);
- 	v->gY = result;
- 	temp_high.gY = result;
+ 	v->gY = fix_from_float(result);
+ 	temp_high.gY = fix_from_float(result);
 
 // dest->z = v1y * v0x - v1x * v0y;
 	AsmWideMultiply(temp_v1.gY, temp_v0.gX, &result);
 	AsmWideMultiply(temp_v1.gX, temp_v0.gY, &result2);
 	AsmWideNegate(&result2);
 	AsmWideAdd(&result, &result2);
- 	v->gZ = result;
- 	temp_high.gZ = result;
+ 	v->gZ = fix_from_float(result);
+ 	temp_high.gZ = fix_from_float(result);
 
 return;
 	
