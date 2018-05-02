@@ -130,7 +130,7 @@ void render_parse_obj(void)
    }
    // HAX HAX HAX skipping rendering objects
    //printf("render_sorted_objs\n");
-   //render_sorted_objs();
+   render_sorted_objs();
 #else
    ushort curORef;
    curORef=_fdt_mptr->objRef;

@@ -690,7 +690,6 @@ void HandleNewGame()
 
 	printf("Starting Main Loop\n");
 	//ShockGameLoop();
-
 	RenderTest();
 }
 

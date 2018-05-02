@@ -882,7 +882,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
             
       printf("map tiles %i\n", idx);
       MAP_MAP = (MapElem *)static_map;
-      ResExtract(id_num + (idx++), MAP_MAP);
+      ResExtract(id_num + idx++, MAP_MAP);
       AdvanceProgress();
    }
 
@@ -1056,38 +1056,38 @@ global_fullmap->sched[0].queue.grow = TRUE;
    }*/
    
    // Read in and convert the hardwares.  Resource is array of 7-byte structs.  Ours are 8.
-/* {
+ {
       uchar *hp = (uchar *)ResLock(id_num + idx);
       for (i=0; i < NUM_OBJECTS_HARDWARE; i++)
       {
-         BlockMoveData(hp, &objHardwares[i], 7);
+         memmove(&objHardwares[i], hp, 7);
          hp += 7;
-         SwapShortBytes(&objHardwares[i].id);
-         SwapShortBytes(&objHardwares[i].next);
-         SwapShortBytes(&objHardwares[i].prev);
+         //SwapShortBytes(&objHardwares[i].id);
+         //SwapShortBytes(&objHardwares[i].next);
+         //SwapShortBytes(&objHardwares[i].prev);
       }
       ResUnlock(id_num + idx);
       idx++;
-   }*/
-   REF_READ(id_num, idx++, objHardwares);
+   }
+   //REF_READ(id_num, idx++, objHardwares);
    
    // Read in and convert the softwares.  Resource is array of 9-byte structs.  Ours are 10.
-/* {
+ {
       uchar *sp = (uchar *)ResLock(id_num + idx);
       for (i=0; i < NUM_OBJECTS_SOFTWARE; i++)
       {
-         BlockMoveData(sp, &objSoftwares[i], 7);
-         BlockMoveData(sp+7, &objSoftwares[i].data_munge, 2);
+         memmove(&objSoftwares[i], sp, 7);
+         memmove(&objSoftwares[i].data_munge, sp+7, 2);
          sp += 9;
-         SwapShortBytes(&objSoftwares[i].id);
+         /*SwapShortBytes(&objSoftwares[i].id);
          SwapShortBytes(&objSoftwares[i].next);
          SwapShortBytes(&objSoftwares[i].prev);
-         SwapShortBytes(&objSoftwares[i].data_munge);
+         SwapShortBytes(&objSoftwares[i].data_munge);*/
       }
       ResUnlock(id_num + idx);
       idx++;
-   }*/
-   REF_READ(id_num,idx++,objSoftwares);   
+   }
+   //REF_READ(id_num,idx++,objSoftwares);   
 
    // Read in and convert the big stuff.
    REF_READ(id_num, idx++, objBigstuffs);
@@ -1164,24 +1164,24 @@ global_fullmap->sched[0].queue.grow = TRUE;
    }  */
    
    // Read in and convert the containers.  Resource is array of 21-byte structs.  Ours are 22.
-/* {
+ {
       uchar *sp = (uchar *)ResLock(id_num + idx);
       for (i=0; i < NUM_OBJECTS_CONTAINER; i++)
       {
-         BlockMoveData(sp, &objContainers[i], 17);
-         BlockMoveData(sp+17, &objContainers[i].data1, 4);
+         memmove(&objContainers[i], sp, 17);
+         memmove(&objContainers[i].data1, sp+17, 4);
          sp += 21;
-         SwapShortBytes(&objContainers[i].id);
+         /*SwapShortBytes(&objContainers[i].id);
          SwapShortBytes(&objContainers[i].next);
          SwapShortBytes(&objContainers[i].prev);
          SwapLongBytes(&objContainers[i].contents1);
          SwapLongBytes(&objContainers[i].contents2);
-         SwapLongBytes(&objContainers[i].data1);
+         SwapLongBytes(&objContainers[i].data1);*/
       }
       ResUnlock(id_num + idx);
       idx++;
-   }*/
-   REF_READ(id_num,idx++,objContainers);
+   }
+   //REF_READ(id_num,idx++,objContainers);
 
    // Read in and convert the critters.
    REF_READ(id_num, idx++, objCritters);
@@ -1247,16 +1247,16 @@ global_fullmap->sched[0].queue.grow = TRUE;
    SwapShortBytes(&default_drug.prev);*/
    
    // Convert the default hardware.  Resource is array of 7-byte structs.  Ours is 8.
-/* {
+ {
       uchar *hp = (uchar *)ResLock(id_num + idx);
-      BlockMoveData(hp, &default_hardware, 7);
-      SwapShortBytes(&default_hardware.id);
+      memmove(&default_hardware, hp, 7);
+      /*SwapShortBytes(&default_hardware.id);
       SwapShortBytes(&default_hardware.next);
-      SwapShortBytes(&default_hardware.prev);
+      SwapShortBytes(&default_hardware.prev);*/
       ResUnlock(id_num + idx);
       idx++;
-   }*/
-   REF_READ(id_num,idx++,default_hardware);
+   }
+   //REF_READ(id_num,idx++,default_hardware);
 
    // Convert the default software.  Resource is array of 9-byte structs.  Ours is 10.
 {

@@ -707,18 +707,24 @@ int AfileSetFramePal(Afile *paf, Apalette *ppal)
 //	---------------------------------------------------------
 long SwapLongBytes(long in)
 {
-	long	out;
+	/*long	out;
 	*(uchar*)&out = *(((uchar *)&in)+3);
 	*(((uchar*)&out)+1) = *(((uchar *)&in)+2);
 	*(((uchar*)&out)+2) = *(((uchar *)&in)+1);
 	*(((uchar*)&out)+3) = *(uchar *)&in;
-	return(out);
+	return(out);*/
+
+	printf("SwapLongBytes\n");
+	return in;
 }
 
 short SwapShortBytes(short in)
 {
-	short out;
+	/*short out;
 	*(uchar*)&out = *(((uchar *)&in)+1);
 	*(((uchar*)&out)+1) = *(uchar *)&in;
-	return(out);
+	return(out);*/
+
+	printf("SwapShortBytes\n");
+	return in;
 }
