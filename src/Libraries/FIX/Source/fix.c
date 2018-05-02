@@ -685,7 +685,6 @@ fix AsmWideDivide(AWide src, fix divisor)
 
 AWide *AsmWideNegate(AWide *target)
 {
-	printf("AsmWideNegate\n");
 	*target = -(*target);
 	return target;
 }

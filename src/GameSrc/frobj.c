@@ -108,7 +108,6 @@ void render_parse_obj(void)
    curORef=_fdt_mptr->objRef;
    while (curORef!=OBJ_REF_NULL)
    {
-      printf(" showing obj\n");
       uchar show_here;
       cobjid=objRefs[curORef].obj;
       if (!ObjCheckDealt(cobjid))
@@ -121,7 +120,7 @@ void render_parse_obj(void)
 
       if (show_here)
       {
-         printf("Rendering %d at %d %d\n",curORef,_fdt_x,_fdt_y);
+         //printf("Rendering %d at %d %d\n",curORef,_fdt_x,_fdt_y);
          _fr_sdbg(OBJ_TALK,mprintf("Rendering %d at %d %d\n",curORef,_fdt_x,_fdt_y));
          sort_show_obj(cobjid);
       }
@@ -129,7 +128,8 @@ void render_parse_obj(void)
 //         mprintf("not rend %d @ %d %d\n",curORef,_fdt_x,_fdt_y);
       curORef = objRefs[curORef].next;
    }
-   printf("render_sorted_objs\n");
+   // HAX HAX HAX skipping rendering objects
+   //printf("render_sorted_objs\n");
    //render_sorted_objs();
 #else
    ushort curORef;

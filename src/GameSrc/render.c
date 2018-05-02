@@ -340,12 +340,14 @@ errtype render_run(void)
    if (region_obscured(mainview_region,mainview_region->r) == UNOBSCURED)
 #endif
    {
-      printf("render_run_start\n");
+      //printf("render_run_start\n");
       screen_static_drawn = FALSE;
       current_num_hudobjs =0; //clear the hud objects
       rendrect = mainview_region->r;
-      printf("fr_rend\n");
+
+      //printf("fr_rend\n");
       fr_rend(NULL);
+
       if (view360_render_on)
          view360_render();
       render_hack_cameras();

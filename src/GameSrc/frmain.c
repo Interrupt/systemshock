@@ -96,19 +96,24 @@ int fr_rend(frc *view)
 #ifdef AUDIOLOGS
       audiolog_loop_callback();
 #endif
-      printf(" fr_pipe_start\n");
+      //printf(" fr_pipe_start\n");
       fr_pipe_start(-1);               /* set environment up */
-      printf(" fr_clip_cone\n");
+
+      //printf(" fr_clip_cone\n");
       fr_clip_cone();                  /* generate basic spans */
-      printf(" fr_clip_tile\n");
+
+      //printf(" fr_clip_tile\n");
       fr_clip_tile();                  /* clipping and obj sort pass */
+
       // MLA - does nothing!  
       // synchronous_update();            // One more time
 //    	ClearCache(_fr->draw_canvas.bm.bits, (_fr->draw_canvas.bm.row >> 5) * _fr->ywid);
-      printf(" fr_pipe_go_3\n");
+      //printf(" fr_pipe_go_3\n");
      	fr_pipe_go_3();                  /* actually render the stuff */
-      printf(" fr_pipe_end\n");
+
+      //printf(" fr_pipe_end\n");
       fr_pipe_end();                   /* clean environment up */
+
       // MLA - does nothing!  
       // synchronous_update();            // And one for the road.
 #ifdef AUDIOLOGS
@@ -120,7 +125,7 @@ int fr_rend(frc *view)
       }
    }
 
-   printf(" fr_pipe_end\n");
+   //printf(" fr_pipe_end\n");
    fr_send_view();                     /* send it, whether it came from 3d or special */
    if ((_fr->flags & FR_CURVIEW_MASK) == FR_CURVIEW_STRT)
 	   _frp.time.last_frame_cnt++;

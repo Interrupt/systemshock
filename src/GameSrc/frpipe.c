@@ -302,7 +302,7 @@ int fr_pipe_go_3(void)
    short clip_len[4]; // , clip_contrib[4];
    MapElem *endcaps[4], *center=MAP_GET_XY(_fr_x_cen,_fr_y_cen);
 
-   printf("  pipedist %d center %x %x\n",frpipe_dist,_fr_x_cen,_fr_y_cen);
+   //printf("  pipedist %d center %x %x\n",frpipe_dist,_fr_x_cen,_fr_y_cen);
 
 //   mprintf("\npipedist %d center %x %x\n",frpipe_dist,_fr_x_cen,_fr_y_cen);
    fr_rend_start();

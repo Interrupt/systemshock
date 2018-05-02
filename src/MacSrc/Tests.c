@@ -1513,7 +1513,7 @@ void RenderTest(void)
  	  	if (kb_state(0x38))
  	  		moveAmt = 0x0010;
  	  	else
- 	  		moveAmt = 0x2400;
+ 	  		moveAmt = 0x0200;
  	  		
 		// forward
 		if (keyboard[SDL_SCANCODE_UP])
@@ -1533,9 +1533,9 @@ void RenderTest(void)
 
 		// turn left, right
 		if (keyboard[SDL_SCANCODE_LEFT])
-			eye[EYE_H]-=(0x1400>>1);
+			eye[EYE_H]-=(moveAmt>>1);
 		if (keyboard[SDL_SCANCODE_RIGHT])
-			eye[EYE_H]+=(0x1400>>1);
+			eye[EYE_H]+=(moveAmt>>1);
 		
 		// look up, down
 		if (kb_state(0x57) || kb_state(0x17))
@@ -1629,7 +1629,6 @@ void RenderTest(void)
 
 		fr_camera_update(&test_cam,eye,CAM_UPDATE_NONE,NULL);
 
-		printf("fr_rend\n");
 		fr_rend(_frc);
 
 		SDL_Delay(1);
@@ -1656,7 +1655,9 @@ void RenderTest(void)
 
 	gr_clear(0xff);
 
+	SDL_Delay(250);
 	SDLDraw();
+
 	/*ctab = GetCTable(9003);														// Get the title screen CLUT
 	if (ctab)	
 	 {

@@ -93,7 +93,7 @@ g3s_phandle g3_transform_point(g3s_vector *v)
  {
  	g3s_phandle tempH;
 
- 	printf("g3_transform_point\n");
+ 	//printf("g3_transform_point\n");
  	
  	tempH = g3_rotate_point(v);
  	g3_project_point(tempH);
@@ -159,7 +159,7 @@ int g3_project_point(g3s_phandle p)
 no_stereo1:
 #endif
 
-	printf("g3_project_point\n");
+	/*printf("g3_project_point\n");
 
 	char printy[100];
 	fix_sprint(printy, p->gX);
@@ -169,15 +169,13 @@ no_stereo1:
 	printf("%s\n", printy);
 
 	fix_sprint(printy, p->gZ);
-	printf("%s\n", printy);
+	printf("%s\n", printy);*/
 
 	// check if this point is in front of the back plane.
 	z = p->gZ;
 	if (z<=0) return 0;
 	x = p->gX;
 	y = p->gY;
-
-	printf(" projecting!\n");
 	
 	// point is in front of back plane---do projection.
 	// project y coordinate.
@@ -186,9 +184,6 @@ no_stereo1:
 	res = -res;
 	if (AddLongWithOverflow(&res, res, _biasy)) {p->codes |= CC_CLIP_OVERFLOW; return 1;}
 	p->sy = res;
-
-	fix_sprint(printy, p->sy);
-	printf("%s\n", printy);
 
   // now project x point
 	res = fix_mul_div(x,_scrw,z);
@@ -445,8 +440,8 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
  	AWide 	result,result2;
 //this matrix multiply here will someday be optimized for zero and one terms
 
- 	printf("do_rotate: %f %f %f\n", fix_float(x), fix_float(y), fix_float(z));
- 	printf(" matrix: %f %f %f : %f %f %f : %f %f %f\n", fix_float(vm1), fix_float(vm2), fix_float(vm3), fix_float(vm4), fix_float(vm5), fix_float(vm6), fix_float(vm7), fix_float(vm8), fix_float(vm9));
+ 	//printf("do_rotate: %f %f %f\n", fix_float(x), fix_float(y), fix_float(z));
+ 	//printf(" matrix: %f %f %f : %f %f %f : %f %f %f\n", fix_float(vm1), fix_float(vm2), fix_float(vm3), fix_float(vm4), fix_float(vm5), fix_float(vm6), fix_float(vm7), fix_float(vm8), fix_float(vm9));
 
 //first column
 	AsmWideMultiply(x, vm1, &result);
@@ -472,7 +467,7 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 	AsmWideAdd(&result, &result2);
 	*rz = fix_from_float(result);
 
-	printf("rotated to: %f %f %f\n", fix_float(*rx), fix_float(*ry), fix_float(*rz));
+	//printf("rotated to: %f %f %f\n", fix_float(*rx), fix_float(*ry), fix_float(*rz));
  }
 #else
 asm void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)

@@ -784,7 +784,7 @@ int fr_send_view (void)
    uchar 	snd_frm=TRUE;
    bool	ok_to_double;
 
-   printf("fr_send_view\n");
+   //printf("fr_send_view\n");
 
    // JAEMZ JAEMZ JAEMZ
    // render the stars, if there were

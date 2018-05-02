@@ -718,9 +718,7 @@ static void _fr_tmap_flr(void)
 }
 
 static void _fr_tmap_lit_flr(void)
-{
-   printf("_fr_tmap_lit_flr\n");
-   
+{  
    uchar nrm_mask=fr_fnorm_list[_fdt_tt];
    int i, pt_code, loopcnt;
    g3s_phandle *pb;
@@ -732,7 +730,6 @@ static void _fr_tmap_lit_flr(void)
    do {
       for (pb=&_fdt_tmppts[0],i=0; i<_fdt_ttf->ptsper; i++)
       {
-         printf("draw\n");
          pt_code=*ptdat++; pt_code=(pt_code^pt_merge_mask[0])&pt_merge_mask[1];
          _fr_figure_pt(*pb,pt_code); pt_code&=FRPTSPTOFF; floor_uv_i(*pb,pt_code); _fr_pt_light(*pb++);
       }
@@ -860,7 +857,6 @@ static void _fr_tmap_ceil(void)
 
 static void _fr_tmap_lit_ceil(void)
 {
-   printf("_fr_tmap_lit_ceil\n");
    uchar nrm_mask=fr_fnorm_list[_fdt_tt];
    int i, pt_code, loopcnt=1;
    g3s_phandle *pb;
@@ -1285,7 +1281,6 @@ void parse_clip_tile()
 // implicit parameters are _fdt_x,_fdt_y,_fdt_mptr,_fdt_mask
 void fr_draw_tile(void)
 {
-   printf("fr_draw_tile\n");
    if ((_fdt_tt=me_tiletype(_fdt_mptr))==TILE_SOLID)    // really, clip should deal
    {
       me_subclip_set(_fdt_mptr,SUBCLIP_OUT_OF_CONE);    // sure, deal with it...
@@ -1361,7 +1356,6 @@ void fr_draw_tile(void)
    _fr_terr_ceil();
    // now check object cache
 
-   printf("_fr_parse_obj\n");
    _fr_parse_obj();
 
 #ifdef CLEAR_AS_WE_GO
@@ -1429,8 +1423,6 @@ void fr_terr_frame_start(void)
 {
    int wall_do, ceil_do, flr_do;
 
-   printf("fr_terr_frame_start\n");
-
 // cspace
    if (_fr_curflags&FR_PICKUPM_MASK)
       if (_frp.faces.cyber)
@@ -1466,7 +1458,6 @@ void fr_terr_frame_start(void)
 
 void fr_terr_frame_end(void)
 {
-   printf("fr_terr_frame_end\n");
    void fr_tfunc_grab_start(void); 
    fr_tfunc_grab_start();     // set up the physics facelet indirections...
    _fdt_terr=FALSE;
@@ -1532,7 +1523,6 @@ static void _render_tfunc_walls(int which, int cnt)
 
 static void _fr_tfunc_diag_wall(int wall_id)
 {
-   printf("_fr_tfunc_diag_wall\n");
    fix pt[3], C;
    int pfl;
    switch (wall_id)
