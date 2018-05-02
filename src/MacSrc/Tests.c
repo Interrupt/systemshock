@@ -1428,7 +1428,7 @@ void RenderTest(void)
  	extern fauxrend_context 		*_sr;           /* current and default fauxrend contexts */
 
 //   	fix 						eye[6] = {fix_make(0x18,0xc400),fix_make(0x16,0xb400),fix_make(1,0x0000),0,0,0};
-   	fix 						eye[6] = {0x1e8a00,0x168900,0x22000,0xC000,0,0};
+   	fix 						eye[6] = {0x1e8a00,0x168900,0x22000,0xC000,0,fix_make(0, 5)};
 	FSSpec					fSpec;
 	cams 						test_cam;
    	fauxrend_context 	*_frc;
@@ -1466,20 +1466,9 @@ void RenderTest(void)
 	_frc = (fauxrend_context *) fr_place_view((frc *) FR_NEWVIEW, (void *) FR_DEFCAM,0L, 0|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0, size_left, size_top, size_wide, size_high);
 	_frc->detail = 2;
 	
-	//FSMakeFSSpec(gDataVref, gDataDirID, "archive.data", &fSpec);
 	load_current_map(4102, &fSpec);
 	load_da_palette();
 	gr_clear(0xff);
- 	
- 	/*pic = GetPicture(19010);
- 	if (pic)
- 	  {
-	 	r = (*pic)->picFrame;
-	 	OffsetRect(&r,-r.left, -r.top);
-	 	OffsetRect(&r, 128,340);
-	 	DrawPicture(pic,&r);
-	 	ReleaseResource((Handle) pic);
- 	  }*/
  	  
  	  printf("--- Making camera! ----\n");
 	_frc->camptr=NULL;
@@ -1510,8 +1499,8 @@ void RenderTest(void)
  	  	  }
 #endif
  	  	 
- 	  	if (kb_state(0x38))
- 	  		moveAmt = 0x0010;
+ 	  	if (keyboard[SDL_SCANCODE_LSHIFT])
+ 	  		moveAmt = 0x1000;
  	  	else
  	  		moveAmt = 0x0300;
  	  		
@@ -1546,19 +1535,21 @@ void RenderTest(void)
 			eye[EYE_P]-=(moveAmt>>1);
 		
 		// tilt head
-		if (kb_state(0x59))
+		if (keyboard[SDL_SCANCODE_A])
 			eye[EYE_B]-=(moveAmt>>1);
-		if (kb_state(0x53))
+		if (keyboard[SDL_SCANCODE_D])
 			eye[EYE_B]+=(moveAmt>>1);
 				
 		// move up, down
-		if (kb_state(0x55) || kb_state(0x29))
+		if (keyboard[SDL_SCANCODE_Q])
 			eye[2]-=moveAmt;
-		if (kb_state(0x5c) || kb_state(0x23))
+		if (keyboard[SDL_SCANCODE_E])
 			eye[2]+=moveAmt;
 
 		// blending
 		if ((QuickTickCount()-detailCheck>20L) && kb_state(0x0B)) {_g3d_enable_blend = !_g3d_enable_blend; detailCheck = QuickTickCount();}
+
+		_g3d_enable_blend = TRUE;
 		
 		// debugger
 		if (kb_state(0x32)) Debugger();
@@ -1588,7 +1579,7 @@ void RenderTest(void)
 			_frc = (fauxrend_context *) svga_render_context;
 			gr_clear(0xff);
 		  
-		 	pic = GetPicture(19010);
+		 	/*pic = GetPicture(19010);
 		 	if (pic)
 		 	  {
 			 	r = (*pic)->picFrame;
@@ -1596,7 +1587,7 @@ void RenderTest(void)
 			 	OffsetRect(&r, 128,340);
 			 	DrawPicture(pic,&r);
 			 	ReleaseResource((Handle) pic);
-		 	  }
+		 	  }*/
 		  }
 
 		if (kb_state(3)) // full

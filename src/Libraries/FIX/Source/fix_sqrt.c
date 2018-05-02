@@ -102,11 +102,10 @@ long quad_sqrt(long hi, long lo)
 	
 	// If 'hi' is non-zero, call FixMath's WideSquareRoot.
 	
+	// HAX HAX HAX fix this math!
 	AWide	a;
-	//a.hi = hi;
-	//a.lo = lo;
-	//return(WideSquareRoot(&a));
-
+	a = hi + lo / 63500;
+	printf("quad_sqrt: FIXME!\n");
 	return sqrt(a);
 
 /*  We gave it the ol' college try, but WideSquareRoot is faster in this case.
