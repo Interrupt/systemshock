@@ -254,7 +254,7 @@ typedef struct {
 #define _me_cybcolor_ceil(me_ptr)      (*((uchar *)(&((me_ptr)->tmap_ccolor))+1))
 
 // note this returns a long of form f4f3f2f1, so flag4 is most significant, as it were
-#define _me_flags(me_ptr)              (*((ulong *)(&((me_ptr)->flag4))))		// KLC changed
+#define _me_flags(me_ptr)              (*((ulong *)(&((me_ptr)->flag1))))		// KLC changed
 #define _me_flag1(me_ptr)                ((me_ptr)->flag1)
 #define _me_flag2(me_ptr)                ((me_ptr)->flag2)
 #define _me_flag3(me_ptr)                ((me_ptr)->flag3)

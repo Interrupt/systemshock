@@ -1513,7 +1513,7 @@ void RenderTest(void)
  	  	if (kb_state(0x38))
  	  		moveAmt = 0x0010;
  	  	else
- 	  		moveAmt = 0x0200;
+ 	  		moveAmt = 0x0300;
  	  		
 		// forward
 		if (keyboard[SDL_SCANCODE_UP])
@@ -1540,9 +1540,9 @@ void RenderTest(void)
 		// look up, down
 		if (kb_state(0x57) || kb_state(0x17))
 			eye[EYE_P] = 0;
-		if (kb_state(0x7E))
+		if (keyboard[SDL_SCANCODE_W])
 			eye[EYE_P]+=(moveAmt>>1);
-		if (kb_state(0x7D))
+		if (keyboard[SDL_SCANCODE_S])
 			eye[EYE_P]-=(moveAmt>>1);
 		
 		// tilt head
@@ -1631,7 +1631,7 @@ void RenderTest(void)
 
 		fr_rend(_frc);
 
-		SDL_Delay(1);
+		//SDL_Delay(1);
 		SDLDraw();
 		
 		frames++;
@@ -1655,7 +1655,6 @@ void RenderTest(void)
 
 	gr_clear(0xff);
 
-	SDL_Delay(250);
 	SDLDraw();
 
 	/*ctab = GetCTable(9003);														// Get the title screen CLUT
