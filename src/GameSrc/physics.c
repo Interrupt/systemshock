@@ -659,6 +659,7 @@ errtype physics_run(void)
       }
       else
 #endif
+         printf("EDMS_control_pelvis\n");
          EDMS_control_pelvis(PLAYER_PHYSICS,plr_y,plr_alpha,plr_side,plr_lean,plr_z,crouch_controls[player_struct.posture]);
 
 #ifdef SOLITON_HACK_REFLEX

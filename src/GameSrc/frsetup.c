@@ -652,6 +652,8 @@ int fr_start_view(void)
    viewer_position.xaxis   = coor(EYE_X); viewer_position.yaxis   =-coor(EYE_Z); viewer_position.zaxis   = coor(EYE_Y);
    viewer_orientation.pitch=  ang(EYE_P); viewer_orientation.bank =  ang(EYE_B); viewer_orientation.head =  ang(EYE_H);
 
+   printf("EYE_X: %f, EYE_Y: %f\n", fix_float(coor(EYE_X)), fix_float(coor(EYE_Y)));
+
    if (_fr->detail==FR_USE_GLOBAL_DETAIL)
       detail = _fr_global_detail;
    else

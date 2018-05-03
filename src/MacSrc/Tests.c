@@ -57,6 +57,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Game_Screen.h"
 #include "fullscrn.h"
 
+#include "objects.h";
+#include "player.h"
+
 #include <sdl.h>
 
 extern errtype object_data_load(void);
@@ -1422,6 +1425,7 @@ void DoZoomCurrMap(short cmd)
 
 extern Boolean DoubleSize;
 extern Boolean SkipLines;
+extern cams* player_cam;
 
 void RenderTest(void)
  {
@@ -1464,12 +1468,15 @@ void RenderTest(void)
 	_frc = (fauxrend_context *) svga_render_context;
 																																				// 	FR_DOUBLEB_MASK
 	_frc = (fauxrend_context *) fr_place_view((frc *) FR_NEWVIEW, (void *) FR_DEFCAM,0L, 0|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0, size_left, size_top, size_wide, size_high);
+
+	printf("Eye: %f %f %f\n", fix_float(eye[0]), fix_float(eye[1]), fix_float(eye[2]));
 	
 	load_current_map(4102, &fSpec);
 	load_da_palette();
 	gr_clear(0xff);
  	  
  	  printf("--- Making camera! ----\n");
+
 	_frc->camptr=NULL;
 	fr_camera_create(&test_cam,CAMTYPE_ABS,eye,NULL);
 	fr_camera_setdef(&test_cam);
@@ -1485,7 +1492,12 @@ void RenderTest(void)
 			SDL_PumpEvents();
     		keyboard = SDL_GetKeyboardState(NULL);
 
+    		//physics_set_player_controls(1,1,keyboard[SDL_SCANCODE_UP],0,keyboard[SDL_SCANCODE_LEFT],0,0);
+
+    		//physics_set_player_controls(MOUSE_CONTROL_BANK,xvel,yvel,CONTROL_NO_CHANGE,xyrot,CONTROL_NO_CHANGE,CONTROL_NO_CHANGE);
+
     		input_chk();
+    		physics_run();
 
 #if __profile__
  	  	if (kb_state(0x23) && !profileOn)	// P
@@ -1642,12 +1654,13 @@ void RenderTest(void)
 		 }
 	 }
 
+	 // Back to player cam
+	 fr_camera_setdef(&player_cam);
+
  {
-	CTabHandle		ctab;
 
-	gr_clear(0xff);
-
-	SDLDraw();
+	//gr_clear(0xff);
+	//SDLDraw();
 
 	/*ctab = GetCTable(9003);														// Get the title screen CLUT
 	if (ctab)	

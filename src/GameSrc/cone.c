@@ -792,8 +792,9 @@ uchar find_view_area(fix *cone_list, fix floor_val, fix roof_val, int *count, fi
          *(current_pt++) = tx;  *(current_pt++) = tz;
       }
 
-      if (index < 2)
-         ; // Warning(("HEY - Only one point for cone - this is bad....\n"));
+      if (index < 2) {
+         Warning(("HEY - Only one point for cone - this is bad....\n"));
+      }
  
       index = radius_fix(index, new_pts, viewer_point);
       reverse_poly_list(index, new_pts);
@@ -805,9 +806,9 @@ uchar find_view_area(fix *cone_list, fix floor_val, fix roof_val, int *count, fi
    // Clip the polygon
    old_clip.f = grd_fix_clip;
    gr_set_fix_cliprect(FIX_ZERO, FIX_ZERO, MAP_X, MAP_Y);
+
    index = gr_clip_fix_poly(index, new_pts, new_pts);
    grd_fix_clip = old_clip.f;
-
 
 // I don't think we need this stuff, and when it gets called - it
 // causes bad things to happen!!!
@@ -977,7 +978,7 @@ void simple_cone_clip_pass(void)
       if ((viewer_position.gX < MAP_X) && (viewer_position.gX > FIX_ZERO)
          && (viewer_position.gZ < MAP_Y) && (viewer_position.gZ > FIX_ZERO))
       {
-         // Warning(("Not a valid cone found and we're inside the map!\n"));
+         Warning(("Not a valid cone found and we're inside the map!\n"));
       }
       return;
    }
@@ -1006,6 +1007,8 @@ void simple_cone_clip_pass(void)
       }
    }
 
+   //printf("y_min: %f, y_max: %f\n", fix_float(y_min), fix_float(y_max));
+
    /* check if this is a horizontal line. */
    if (fix_int (y_min) == fix_int (y_max))
    {
@@ -1022,6 +1025,8 @@ void simple_cone_clip_pass(void)
       v_left = (v_left+1)%n;
    while (view_cone_list[2*((v_right+n-1)%n)+1] == y_min)
       v_right = (v_right+n-1)%n;
+
+   //printf("v_left: %i, v_right: %i\n", fix_float(v_left), fix_float(v_right));
 
    intersect_cone_sides(view_cone_list, n, y_min, y_max, v_left, v_right, v_max);
 

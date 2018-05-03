@@ -62,6 +62,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "frflags.h"
 
+#include "player.h"
+
 #include <sdl.h>
 
 extern uchar game_paused;		// I've learned such bad lessons from LG.
@@ -97,7 +99,7 @@ extern 	frc *svga_render_context;
 extern void init_all(void);
 extern void inv_change_fullscreen(uchar on);
 extern void object_data_flush(void);
-extern Boolean IsFullscreenWareOn(void);
+//extern Boolean IsFullscreenWareOn(void);
 extern errtype load_da_palette(void);
 
 void SetupTitleMenus(void);
@@ -690,7 +692,19 @@ void HandleNewGame()
 
 	printf("Starting Main Loop\n");
 	//ShockGameLoop();
+
 	RenderTest();
+
+	ObjLoc plr_loc;
+	plr_loc.x=obj_coord_from_fix(fix_make(30,3));
+	plr_loc.y=obj_coord_from_fix(fix_make(23,3));
+	plr_loc.h = 200;
+	plr_loc.z = fix_make(2, 125);
+	plr_loc.p = 0;
+	plr_loc.b = 0;
+	obj_move_to(PLAYER_OBJ, &plr_loc, FALSE);
+
+	ShockGameLoop();
 }
 
 

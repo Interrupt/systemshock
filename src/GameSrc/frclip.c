@@ -1031,14 +1031,17 @@ int fr_clip_tile(void)
    // sadly, new render order invalidates this
 
    // HAX HAX HAX draw all!
-   fr_clip_show_all();
-   _fr_ret;
+   //fr_clip_show_all();
+   //_fr_ret;
+
+   printf("Frame start at %x %x\n",coor(EYE_X),coor(EYE_Y));
 
    // next, do each direction
    if (_fr_curflags&FR_SHOWALL_MASK)
       { fr_clip_show_all(); _fr_ret;}  // fill in all things
    _fr_sdbg(VECSPEW,mprintf("Frame start at %x %x\n",coor(EYE_X),coor(EYE_Y)));
    eye_mptr=MAP_GET_XY(_fr_x_cen,_fr_y_cen);
+
    for (northward=1; northward>=0; northward--)
    {
       // set up the initial vectors and list

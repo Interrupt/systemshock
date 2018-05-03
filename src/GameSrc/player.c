@@ -263,16 +263,16 @@ errtype player_tele_to(int x, int y)
 
 */
 
-#define INITIAL_PLAYER_X   0x1E
-#define INITIAL_PLAYER_Y   0x16
+#define INITIAL_PLAYER_X   0x1EEE
+#define INITIAL_PLAYER_Y   0x16EE
 
 errtype player_create_initial()
 {
    ObjLoc plr_loc;
    extern Pelvis standard_pelvis;
 
-   plr_loc.x=(INITIAL_PLAYER_X<<8)+0x80;
-   plr_loc.y=(INITIAL_PLAYER_Y<<8)+0x80;
+   plr_loc.x=(INITIAL_PLAYER_X)+0x80;
+   plr_loc.y=(INITIAL_PLAYER_Y)+0x80;
    plr_loc.h = 192;
    plr_loc.z = obj_height_from_fix((standard_pelvis.height>>1)+fix_from_map_height(me_height_flr(MAP_GET_XY(plr_loc.x>>8,plr_loc.y>>8))));
    plr_loc.p = 0;

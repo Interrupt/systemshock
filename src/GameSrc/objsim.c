@@ -1313,6 +1313,8 @@ errtype obj_create_player(ObjLoc *plr_loc)
 #endif
    fix pos_list[3];
 
+   printf("Created player!\n");
+
    player_struct.rep = obj_create_base(PLAYER_TRIP);
    if (player_struct.rep == OBJ_NULL)
    {
@@ -1425,36 +1427,41 @@ errtype ObjClassInit(ObjID id, ObjSpecID specid, int subclass)
 
 errtype obj_load_properties()
 {
-	 Handle	res;
+	 //Handle	res;
 	 int		version, i, j;
-	 char		*cp;
+	 //char		*cp;
 
 	extern void SwapLongBytes(void *pval4);
 	extern void SwapShortBytes(void *pval2);
 
-/*  For Mac version, replaced with GetResource
+   printf("obj_load_properties\n");
 
-   strcpy(levname, OBJPROP_FILENAME);
-   if (DatapathFind(&DataDirPath, levname, path))
+   printf("levname %s\n", OBJPROP_FILENAME);
+
+//  For Mac version, replaced with GetResource
+
+   //Spew(DSRC_GFX_Anim, ("objprop path = %s\n",path));
+   FILE* f = fopen("res/data/objprop.dat", "rb");
+   if (f == NULL)
    {
-      Spew(DSRC_GFX_Anim, ("objprop path = %s\n",path));
-      fd = open(path, O_RDONLY|O_BINARY);
-      if (fd != -1)
-      {
-    sz += read(fd, &version, sizeof(version));
-    if (version != OBJPROP_VERSION_NUMBER)
-    {
+      return(ERR_FOPEN);
+   }
+   
+   fread(&version, sizeof(version), 1, f);
+   if (version != OBJPROP_VERSION_NUMBER)
+   {
 #ifndef PLAYTEST
-       critical_error(CRITERR_MISC|0);
+      critical_error(CRITERR_MISC|0);
 #else // !PLAYTEST
-       Warning(("Bad Object Properties version number.\n"));
+      Warning(("Bad Object Properties version number.\n"));
 #endif 
-    }
-*/
+   }
+
+    printf("Got good version.\n");
 	
 	// Read in the Object Properties resource.
 	
-	res = GetResource('oprp',1000);
+	/*res = GetResource('oprp',1000);
 	if (!res) return(ERR_FOPEN);
 	HLock(res);
 	cp = *res;
@@ -1464,23 +1471,27 @@ errtype obj_load_properties()
 	cp += 4;
 	SwapLongBytes(&version);
 	if (version != OBJPROP_VERSION_NUMBER)
-		critical_error(CRITERR_MISC|0);
+		critical_error(CRITERR_MISC|0);*/
 	
 	// Copy the data to the various global arrays, converting as needed.
 	
 	//-------------
 	// GUNS
 	//-------------
-	BlockMoveData(cp, GunProps, sizeof(GunProps));
-	cp += sizeof(GunProps);
+   fread(&GunProps, sizeof(GunProps), 1, f);
+	//cp += sizeof(GunProps);
 	
+   fread(&PistolGunProps, sizeof(PistolGunProps), 1, f);
 	//BlockMoveData(cp, PistolGunProps, NUM_PISTOL_GUN);		Dummies
-	cp += NUM_PISTOL_GUN;
+	//cp += NUM_PISTOL_GUN;
 	
+   fread(&AutoGunProps, sizeof(AutoGunProps), 1, f);
 	//BlockMoveData(cp, AutoGunProps, NUM_AUTO_GUN);				Dummies
-	cp += NUM_AUTO_GUN;
+	//cp += NUM_AUTO_GUN;
+
+   fread(&SpecialGunProps, sizeof(SpecialGunProps), 1, f);
 	
-	for (i = 0; i < NUM_SPECIAL_GUN; i++)
+	/*for (i = 0; i < NUM_SPECIAL_GUN; i++)
 	{
 		SpecialGunProp *sgp = &SpecialGunProps[i];
 		
@@ -1501,9 +1512,10 @@ errtype obj_load_properties()
 		sgp->attack_speed = *(short *)cp;
 		cp += 2;
 		SwapShortBytes(&sgp->attack_speed);
-	}
+	}*/
 	
-	for (i = 0; i < NUM_HANDTOHAND_GUN; i++)
+   fread(&HandtohandGunProps, sizeof(HandtohandGunProps), 1, f);
+	/*for (i = 0; i < NUM_HANDTOHAND_GUN; i++)
 	{
 		HandtohandGunProp *hhgp = &HandtohandGunProps[i];
 		
@@ -1522,9 +1534,9 @@ errtype obj_load_properties()
 		hhgp->attack_speed = *(short *)cp;
 		cp += 2;
 		SwapShortBytes(&hhgp->attack_speed);
-	}
+	}*/
 	
-	for (i = 0; i < NUM_BEAM_GUN; i++)
+	/*for (i = 0; i < NUM_BEAM_GUN; i++)
 	{
 		BeamGunProp *bgp = &BeamGunProps[i];
 		
@@ -1927,6 +1939,7 @@ errtype obj_load_properties()
 
 	HUnlock(res);
 	ReleaseResource(res);
+   */
 
 	return(OK);
 }

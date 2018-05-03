@@ -153,6 +153,7 @@ fix fix_mul_asm_safe(fix a, fix b)
 {
 	float af = fix_float(a);
 	float bf = fix_float(b);
+	float val = af * bf;
 	return fix_from_float(af * bf);
 }
 #else
@@ -660,7 +661,7 @@ fix fix_pow(fix x,fix y)
 #if defined(powerc) || defined(__powerc)
 AWide *AsmWideAdd(AWide *target, AWide *source)
 {
-	*target = *target + *source;
+	*target = (*target + *source);
 	return target;
 }
 

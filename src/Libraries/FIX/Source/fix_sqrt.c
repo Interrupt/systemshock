@@ -104,7 +104,7 @@ long quad_sqrt(long hi, long lo)
 	
 	// HAX HAX HAX fix this math!
 	AWide	a;
-	a = hi + lo / 63500;
+	a = hi + lo / 65536.0f;
 	printf("quad_sqrt: FIXME!\n");
 	return sqrt(a);
 

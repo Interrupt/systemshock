@@ -610,7 +610,6 @@ int draw_tmap_common(int n, g3s_phandle *vp, grs_bitmap *bm)
 	 }
 	else
 	 {
-	 	printf("Drawing lit tile\n");
 	 	extern 	fix gr_clut_lit_tol;
 	 	int					temp_n;
 	 	fix					imax,imin,temp_i;

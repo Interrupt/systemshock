@@ -95,7 +95,6 @@ void draw_pause_string(void)
 	old_over = gr2ss_override;
 }
 
-
 //------------------------------------------------------------------
 void game_loop(void)
 {
@@ -109,7 +108,6 @@ void game_loop(void)
 //	Debugger();
 		
 	// Handle paused game state
-	
 	if (game_paused)
 	{
 		if (redraw_paused)
@@ -130,6 +128,7 @@ void game_loop(void)
 	else
 	{
 		loopLine(GL|0x10,update_state(time_passes));     // move game time
+
 		if (time_passes)
 		{
 			printf("ai_run\n");
@@ -196,7 +195,7 @@ void game_loop(void)
       {
          if (!olh_overlay_on && olh_active && !global_fullmap->cyber) {
          	printf("olh_scan_objects\n");
-            olh_scan_objects();
+            //olh_scan_objects();
         }
       }
 //KLC - does nothing!         loopLine(GL|0x1D,synchronous_update());

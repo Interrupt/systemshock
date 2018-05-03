@@ -1727,6 +1727,8 @@ int view3d_mouse_input(LGPoint pos, LGRegion* reg,uchar move,int* lastsect)
       pos.x *= 2;
       pos.y *= 2;
    }
+
+   printf("view3d_mouse_input %i\n", move);
    
    if (!cyber)
    {
@@ -1758,8 +1760,9 @@ int view3d_mouse_input(LGPoint pos, LGRegion* reg,uchar move,int* lastsect)
 	if (x < -cw)
    {
       cnum = VIEW_LSIDE;
-      if (move)
+      if (move) {
          xyrot = (x + cw)*100/(cx - cw - reg->abs_x);
+      }
    }
 	else if (x > cw)
    {
@@ -2377,6 +2380,8 @@ uchar view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
    extern int _fr_glob_flags;
 
    pt = evp;
+
+   ev->action = MOUSE_LDOWN;
    
 #ifdef STEREO_SUPPORT
    if (convert_use_mode == 5)
@@ -2511,6 +2516,8 @@ uchar view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
       view3d_dclick(evp,data->fr);
       data->lastleft = MakePoint(-100,-100);
    }
+
+   //data->ldown = TRUE;
 
    // Do mouse motion.
    if (view3d_mouse_input(evp,r,data->ldown,&data->lastsect)!=0)
