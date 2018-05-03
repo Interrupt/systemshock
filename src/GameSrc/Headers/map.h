@@ -223,8 +223,8 @@ typedef struct {
    Schedule sched[NUM_MAP_SCHEDULES];
 } FullMap;
 
-#define _me_normal_x(me_ptr,strname,maskname) me_ptr->strname&maskname##_MASK
-#define _me_normal_n(me_ptr,strname,maskname) _me_normal_x(me_ptr,strname,maskname)>>maskname##_SHF
+#define _me_normal_x(me_ptr,strname,maskname) ((me_ptr)->strname & (maskname##_MASK))
+#define _me_normal_n(me_ptr,strname,maskname) (_me_normal_x(me_ptr,strname,maskname) >> maskname##_SHF)
 
 #define _me_tiletype(me_ptr)             ((me_ptr)->tiletype)
 
@@ -297,7 +297,7 @@ typedef struct {
 
 // implicit me_ptr and v
 #define _me_merge_set(me_ptr,v,strname,maskname) \
-                                         ((me_ptr)->strname=((me_ptr)->strname&~(maskname##_MASK))|((v)<<(maskname##_SHF)))
+                                         ((me_ptr)->strname=((me_ptr)->strname &~(maskname##_MASK))|((v)<<(maskname##_SHF)))
 
 // Now all the set primitives
 #define _me_tiletype_set(me_ptr,v)       ((me_ptr)->tiletype=(v))
