@@ -312,6 +312,8 @@ int _fr_do_light_val(int which, fix dist_val)
 //	   if (i<0) i=0;
    }
 
+   //printf("Lighting! %x\n", i);
+
    return i;
 
 //   if (_frp_light_bits_norm())
@@ -1433,8 +1435,7 @@ void fr_terr_frame_start(void)
       wall_do=ceil_do=flr_do=_frp.faces.cyber_full+FRT_CSPACE;
    else
 	{  // realspace
-      //int lmod=_frp_light_bits_any()?1:0;
-      int lmod = 0;
+      int lmod=_frp_light_bits_any()?1:0;
       wall_do=lmod+(((_frp.faces.main)&&(_frp.faces.wall   ))?FRT_TMAP:0);
       ceil_do=lmod+(((_frp.faces.main)&&(_frp.faces.ceiling))?FRT_TMAP:0);
 	   flr_do =lmod+(((_frp.faces.main)&&(_frp.faces.floor  ))?FRT_TMAP:0);

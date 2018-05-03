@@ -339,10 +339,30 @@ errtype Init_Lighting(void)
    int		i;
    
    // Read in the standard shading table
-   res = GetResource('shad',1000);
-   if (!res) return(ERR_FOPEN);
+   /*res = GetResource('shad',1000);
+   if (!res) {
+      printf("Could not open lighting table.\n");
+      return(ERR_FOPEN);
+   }
    BlockMove(*res, shading_table,(256 * 16));
-   ReleaseResource(res);
+   ReleaseResource(res);*/
+
+   // HAX HAX HAX use the real res/data/shadtable.dat for this!
+   DebugString("HAX: Reading shading table src/Libraries/2D/test.shd");
+   FILE *fp = fopen("src/Libraries/2D/test.shd","rb");
+   fread (shading_table, 1, 256 * 16, fp);
+   fclose (fp);
+
+   for (i=0; i<256*16; i+=256)
+   {
+      shading_table[i]=0xFF;           // i love our shading table
+   }
+
+   DebugString("Set Light Table");  
+   gr_set_light_tab(shading_table);
+   fr_set_cluts(shading_table,shading_table,shading_table,shading_table);
+
+   //fr_set_cluts(shading_table,bw_shading_table,bw_shading_table,bw_shading_table);
 
 // MLA- changed this to use resources
 /*   char shad_path[255];
@@ -367,10 +387,10 @@ errtype Init_Lighting(void)
    }
    close(fd);*/
    
-   for (i=0; i<256*16; i+=256)
+   /*for (i=0; i<256*16; i+=256)
    {
-      shading_table[i]=0;  			// i love our shading table
-      shading_table[i+255]=0xFF;  	// KLC - so do I
+      shading_table[i]=0xFF;  			// i love our shading table
+      //shading_table[i+255]=0xFF;  	// KLC - so do I
    }
  
    // Now choose this one as our normal shading table   
@@ -380,7 +400,7 @@ errtype Init_Lighting(void)
    res = GetResource('shad',1001);
    if (!res) return(ERR_FOPEN);
    BlockMove(*res, bw_shading_table,(256 * 16));
-   ReleaseResource(res);
+   ReleaseResource(res);*/
    
 // MLA- changed this to use resources
 /*   if (!DatapathFind(&DataDirPath,SHADING_TABLE_BW_FNAME,shad_path))
@@ -404,10 +424,10 @@ errtype Init_Lighting(void)
    close(fd);
    */
    
-   for (i=0; i<256*16; i+=256)
-      bw_shading_table[i]=0;  // i love our shading table
+   //for (i=0; i<256*16; i+=256)
+   //   bw_shading_table[i]=0;  // i love our shading table
 
-   fr_set_cluts(shading_table,bw_shading_table,bw_shading_table,bw_shading_table);
+   //fr_set_cluts(shading_table,bw_shading_table,bw_shading_table,bw_shading_table);
 
    return(OK);
 }

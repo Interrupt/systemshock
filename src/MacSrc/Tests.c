@@ -1464,7 +1464,6 @@ void RenderTest(void)
 	_frc = (fauxrend_context *) svga_render_context;
 																																				// 	FR_DOUBLEB_MASK
 	_frc = (fauxrend_context *) fr_place_view((frc *) FR_NEWVIEW, (void *) FR_DEFCAM,0L, 0|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0, size_left, size_top, size_wide, size_high);
-	_frc->detail = 2;
 	
 	load_current_map(4102, &fSpec);
 	load_da_palette();
@@ -1621,6 +1620,8 @@ void RenderTest(void)
 		fr_camera_update(&test_cam,eye,CAM_UPDATE_NONE,NULL);
 
 		fr_rend(_frc);
+
+		//amap_draw(oAMap(MFD_FULLSCR_MAP), TRUE);
 
 		//SDL_Delay(1);
 		SDLDraw();
