@@ -263,8 +263,8 @@ errtype player_tele_to(int x, int y)
 
 */
 
-#define INITIAL_PLAYER_X   0x1EEE
-#define INITIAL_PLAYER_Y   0x16EE
+#define INITIAL_PLAYER_X   0x1E00
+#define INITIAL_PLAYER_Y   0x1620
 
 errtype player_create_initial()
 {

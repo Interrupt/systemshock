@@ -691,14 +691,14 @@ void HandleNewGame()
 
 	printf("Starting Game\n");
 	gIsNewGame = TRUE;									// It's a whole new ballgame.
-	gGameSavedTime = 0;
+	gGameSavedTime = *tmd_ticks;
 	go_and_start_the_game_already();				// Load up everything for a new game
 	SDLDraw();
 
 	printf("Starting Main Loop\n");
-	//ShockGameLoop();
+	ShockGameLoop();
 
-	RenderTest();
+	/*RenderTest();
 
 	// HAX HAX HAX try to reset the player physics after Test Mode
 	ObjLoc plr_loc;
@@ -730,7 +730,7 @@ void HandleNewGame()
 	physics_running = TRUE;
 	//EDMS_settle_object( ph );
 
-	ShockGameLoop();
+	ShockGameLoop();*/
 }
 
 
@@ -864,12 +864,7 @@ void ShockGameLoop(void)
 	StartShockTimer();									// Startup the game timer.
 
 	while (gPlayingGame)
-	{
-		// HAX HAX HAX: why is this needed to reset the view?
-		ss_safe_set_cliprect(0,0,640,480);
-
-		//_current_loop = AUTOMAP_LOOP;
-		
+	{	
 		if (!(_change_flag&(ML_CHG_BASE<<1)))
 			input_chk();
 		
@@ -886,32 +881,6 @@ void ShockGameLoop(void)
 		else {
 			game_loop();										// Run the game!
 		}
-		
-		/*if (game_paused)									// If the game is paused, go to the "paused" Mac
-		{															// event handling loop.
-			if (music_on)
-				MacTuneKillCurrentTheme();
-			status_bio_end();
-			uiHideMouse(NULL);							// Setup the environment for the Mac loop.
-			//CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
-			SetupPauseMenus();
-			ShowMenuBar();
-			ShowCursor();
-			
-			//MaxMem(&dummy);							// Compact heap during a pause.
-
-		 	do														// The loop itself.
-				HandlePausedEvents();
-			while (game_paused);
-			
-			HideCursor();
-			HideMenuBar();
-			FlushEvents(everyEvent, 0);
-			status_bio_start();
-			uiShowMouse(NULL);
-			if (music_on)
-				MacTuneStartCurrentTheme();
-		}*/
 		
 		chg_set_flg(_static_change);
 
@@ -1345,7 +1314,6 @@ void SDLDraw(void)
 {
 	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
 	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
-	//SDL_BlitSurface(offscreenDrawSurface, NULL, screenSurface, &destRect);
   	SDL_UpdateWindowSurface(window);
 	SDL_PumpEvents();
 }
