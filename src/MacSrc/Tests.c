@@ -1492,10 +1492,6 @@ void RenderTest(void)
 			SDL_PumpEvents();
     		keyboard = SDL_GetKeyboardState(NULL);
 
-    		//physics_set_player_controls(1,1,keyboard[SDL_SCANCODE_UP],0,keyboard[SDL_SCANCODE_LEFT],0,0);
-
-    		//physics_set_player_controls(MOUSE_CONTROL_BANK,xvel,yvel,CONTROL_NO_CHANGE,xyrot,CONTROL_NO_CHANGE,CONTROL_NO_CHANGE);
-
     		input_chk();
     		physics_run();
 
@@ -1655,6 +1651,7 @@ void RenderTest(void)
 	 }
 
 	 // Back to player cam
+	 _frc->camptr=NULL;
 	 fr_camera_setdef(&player_cam);
 
  {

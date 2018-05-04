@@ -1252,6 +1252,8 @@ uchar obj_destroy(ObjID id)
 	extern void check_panel_ref(uchar puntme);
 	short x,y;
 	uchar  terrain_object = FALSE;
+
+   printf("Obj_destroy\n");
 	
 	decrement_shodan_value(id, TRUE);
 	if (id != OBJ_NULL) 
@@ -1360,8 +1362,10 @@ errtype obj_create_player(ObjLoc *plr_loc)
    else
 #endif
    {
+      printf("Making pelvis?\n");
       instantiate_pelvis(PLAYER_TRIP,&player_pelvis);
       objs[PLAYER_OBJ].info.ph = ph = EDMS_make_pelvis(&player_pelvis, &new_state);
+      printf("objs[PLAYER_OBJ].info.ph %i\n", objs[PLAYER_OBJ].info.ph);
    }
    physics_handle_id[ph] = PLAYER_OBJ;
 

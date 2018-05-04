@@ -192,14 +192,19 @@ void    fr_camera_slewone(cams *cam, int which, int how)
 void    fr_camera_getobjloc (int oid, fix *store)
 {
    Obj *cobj=&objs[oid];
-   if (cobj->info.ph!=-1)
+
+   printf("fr_camera_getobjloc: HAX can't get physics obj state!\n");
+
+   /*if (cobj->info.ph!=-1)
    {
 #ifndef __RENDTEST__
       extern uchar get_phys_info(int ph, fix *targ_array, int cnt);
 #endif
+
+      printf("fr_camera_getobjloc\n");
      get_phys_info(cobj->info.ph,store,6);
    }
-   else
+   else*/
    {
       store[0]=cobj->loc.x<<8;                        store[1]=cobj->loc.y<<8;
 	   store[2]=cobj->loc.z<<(8+SLOPE_SHIFT_D);        store[3]=(cobj->loc.h<<8);

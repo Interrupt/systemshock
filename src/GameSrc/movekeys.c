@@ -139,11 +139,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 											case _W_|ALT: \
 											case _W_|SHF:
 #define JUMP_CASES				case _J_: \
-											case _J_|SHF:
-//KLC									case _SPACE_|SHF: \
-//KLC									case _SPACE_|ALT: \
-//KLC									case _SPACE_|CTRL: \
-//KLC									case _SPACE_:
+											case _J_|SHF: \
+									case _SPACE_|SHF: \
+									case _SPACE_|ALT: \
+									case _SPACE_|CTRL: \
+									case _SPACE_:
 #define EYEUP_CASES				case _R_: \
 											case _R_|CTRL: \
 											case _UP_|CTRL: \
@@ -519,7 +519,7 @@ uchar motion_key_scancodes[] =
       _LEFT2_ , // second leftarrow
       _DOWN2_ , // second downarrow
       _RIGHT2_, // second rightarrow
-//KLC      _SPACE_ , // spacebar
+      _SPACE_ , // spacebar
 //KLC      _ENTER2_, // keypad enter
 //KLC      _ENTER_ , // enter
       _R_     , // r

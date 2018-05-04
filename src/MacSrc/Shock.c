@@ -63,6 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frflags.h"
 
 #include "player.h"
+#include "physics.h"
 
 #include <sdl.h>
 
@@ -101,6 +102,8 @@ extern void inv_change_fullscreen(uchar on);
 extern void object_data_flush(void);
 //extern Boolean IsFullscreenWareOn(void);
 extern errtype load_da_palette(void);
+
+extern ObjID physics_handle_id[MAX_OBJ];
 
 void SetupTitleMenus(void);
 void HandleNewGame(void);
@@ -641,6 +644,8 @@ void SetupTitleMenus(void)
 }
 
 
+extern cams player_cam;
+
 //------------------------------------------------------------------------------------
 //  Handle "New Game" command.
 //------------------------------------------------------------------------------------
@@ -695,14 +700,34 @@ void HandleNewGame()
 
 	RenderTest();
 
+	// HAX HAX HAX try to reset the player physics after Test Mode
 	ObjLoc plr_loc;
 	plr_loc.x=obj_coord_from_fix(fix_make(30,3));
 	plr_loc.y=obj_coord_from_fix(fix_make(23,3));
 	plr_loc.h = 200;
-	plr_loc.z = fix_make(2, 125);
+	plr_loc.z = map_height_from_fix(fix_make(17, 0));
 	plr_loc.p = 0;
 	plr_loc.b = 0;
+
 	obj_move_to(PLAYER_OBJ, &plr_loc, FALSE);
+
+	Pelvis player_pelvis;
+	physics_handle ph;
+
+	State new_state;
+	new_state = standard_state;
+	new_state.X = plr_loc.x<<8;
+	new_state.Y = plr_loc.y<<8;
+	new_state.Z = plr_loc.z<<8;
+	new_state.alpha = phys_angle_from_obj(plr_loc.h);
+	new_state.beta = plr_loc.p;
+	new_state.gamma = plr_loc.b;
+
+	instantiate_pelvis(MAKETRIP(CLASS_CRITTER,0,6),&player_pelvis);
+	objs[PLAYER_OBJ].info.ph = ph = EDMS_make_pelvis(&player_pelvis, &new_state);
+	physics_handle_id[ph] = PLAYER_OBJ;
+
+	physics_running = TRUE;
 
 	ShockGameLoop();
 }
