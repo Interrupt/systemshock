@@ -48,7 +48,7 @@ struct {
    fix u0,v0;
 } grd_pc_point;
 
-int fix_mul_16_32_20(int one, int two) {
+/*int fix_mul_16_32_20(int one, int two) {
    return one * two;
 }
 
@@ -62,7 +62,7 @@ int fix_mul_3_32_16(int one, int two) {
 
 int fix_mul_3_3_3(int one, int two) {
    return one * two;
-}
+}*/
 
 int gri_per_umap_setup (int n, grs_vertex **vplist, grs_per_setup *ps)
 {

@@ -705,7 +705,7 @@ void HandleNewGame()
 	plr_loc.x=obj_coord_from_fix(fix_make(30,3));
 	plr_loc.y=obj_coord_from_fix(fix_make(23,3));
 	plr_loc.h = 200;
-	plr_loc.z = map_height_from_fix(fix_make(17, 0));
+	plr_loc.z = map_height_from_fix(fix_make(15, 0));
 	plr_loc.p = 0;
 	plr_loc.b = 0;
 
@@ -728,6 +728,7 @@ void HandleNewGame()
 	physics_handle_id[ph] = PLAYER_OBJ;
 
 	physics_running = TRUE;
+	//EDMS_settle_object( ph );
 
 	ShockGameLoop();
 }

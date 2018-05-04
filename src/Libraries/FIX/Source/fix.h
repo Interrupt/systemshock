@@ -161,7 +161,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __FIX_H
 
 #include "lg_types.h"
-
+	
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -169,23 +169,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern int	gOVResult;
 
 
-//////////////////////////////
+///////////////////////////////
 //
 // First some math functions that don't use fixes.
 //
-/*  ¥¥¥ Change this
+/*  @@@ Change this
 // Returns 0 if x < 0
-ushort long_sqrt (long x);
 #pragma aux long_sqrt parm [eax] value [ax] modify [eax ebx ecx edx esi edi]
 */
+int long_sqrt(int  x);
 
 //////////////////////////////
 //
 // fix.c
 //
 
-long long_fast_pyth_dist (long a, long b);
-long long_safe_pyth_dist (long a, long b);
+int long_fast_pyth_dist (int a, int b);
+int long_safe_pyth_dist (int a, int b);
 
 
 //========================================
@@ -198,7 +198,7 @@ long long_safe_pyth_dist (long a, long b);
    bits of integer, and 16 bits of fraction.  thus, a rational number a is
    represented as a 32-bit number as a*2^16. */
 
-typedef long fix;
+typedef int fix;
 typedef fix fix16;
 
 // define min and max
@@ -220,7 +220,7 @@ typedef fix fix16;
 typedef ushort fixang;
 
 /* makes a fixed point number with integral part a and fractional part b. */
-#define fix_make(a,b) ((((long)(a))<<16)|(b))
+#define fix_make(a,b) ((((int)(a))<<16)|(b))
 
 #define FIX_UNIT fix_make(1,0)
 
@@ -265,7 +265,7 @@ typedef ushort fixang;
 #define fixrad_to_fixang(fixradian) (fix_frac(fix_div((fixradian),fix_2pi)))
 #define fixang_to_fixrad(ang) fix_div(fix_mul(ang,fix_2pi),0x10000)
 #define degrees_to_fixang(d)    ((fixang)(((d)*FIXANG_PI)/180))
-#define fixang_to_degrees(ang)  (((long)(ang)*180)/FIXANG_PI)
+#define fixang_to_degrees(ang)  (((int)(ang)*180)/FIXANG_PI)
 
 // turns a fixed point into a float.
 #define fix_float(n) ((float)(fix_int(n)) + (float)(fix_frac(n))/65536.0)
@@ -273,21 +273,27 @@ typedef ushort fixang;
 // makes a fixed point from a float.
 #define fix_from_float(n) ((fix)(65536.0*(n)))
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 //========================================
 //
 // Multiplication and division.
 //
 //========================================
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
+// For Mac version: The PowerPC version uses two assembly language routines
+// to do the multiply and divide.
 fix fix_mul(fix a, fix b);
+fix fix_mul_asm_safe(fix a, fix b);
 fix fix_div(fix a, fix b);
+fix fix_div_int(fix a, fix b);
+fix fix_div_safe_cint(fix a, fix b);
 fix fix_mul_div (fix m0, fix m1, fix d);
 fix fast_fix_mul_int(fix a, fix b);
 #define fast_fix_mul fix_mul
+
 
 //========================================
 //
@@ -310,18 +316,7 @@ fix fix_safe_pyth_dist (fix a, fix b);
 // Returns 0 if x < 0
 fix fix_sqrt (fix x);
 
-#if defined(powerc) || defined(__powerc)
-long quad_sqrt(long hi, long lo);
-#else
-asm long quad_sqrt(long hi, long lo);
-#endif
-
-
-// Returns 0 if x < 0
-/* ¥¥¥ Fix this
-fix fix_sloppy_sqrt (fix x);
-#pragma aux fix_sloppy_sqrt parm [eax] value [eax] modify [eax ebx ecx edx esi edi]
-*/
+int quad_sqrt(int hi, int lo);
 
 //========================================
 //
@@ -353,10 +348,10 @@ fixang fix_acos (fix x);
 // Computes the atan of y/x, in the correct quadrant and everything
 fixang fix_atan2 (fix y, fix x);
 
-
 #if defined(__cplusplus)
 }
 #endif
+
 
 //========================================
 //
@@ -365,7 +360,7 @@ fixang fix_atan2 (fix y, fix x);
 //========================================
 
 //	Converts string into fixed-point
-fix atofix(char *p);
+//fix atofix(const char *p);
 
 // Puts a decimal representation of x into str
 char *fix_sprint (char *str, fix x);
@@ -388,9 +383,9 @@ fix fix_exp (fix x);
 //
 // fix24.c
 
-typedef long fix24;
+typedef int fix24;
 
-#define fix24_make(a,b) ((((long)(a))<<8)|(b))
+#define fix24_make(a,b) ((((int)(a))<<8)|(b))
 #define fix24_trunc(n) ((n)&0xffffff00)
 #define fix24_round(n) (((n)+128)&0xffffff00)
 #define fix24_int(n) ((n)>>8)
@@ -407,39 +402,12 @@ typedef long fix24;
 
 // For Mac version: The PowerPC version uses an assembly language routine
 // to do the multiply.
-#if defined(powerc) || defined(__powerc)
-#ifdef __cplusplus
-extern "C"
-{
-fix24 fix24_mul_asm(fix24 a, fix24 b);
-fix24 fix24_div_asm(fix24 a, fix24 b);
-}
-#define fix24_mul fix24_mul_asm
-#define fix24_div fix24_div_asm
-#endif
-#else
-
-fix24 asm fix24_mul(fix24 a, fix24 b);
-fix24 asm fix24_div (fix24 a, fix24 b);
-
-#endif
-
-/* ¥¥¥ Fix this
-fix24 fix24_mul_div (fix24 m0, fix24 m1, fix24 d);
-#pragma aux fix24_mul_div =\
-   "imul    edx"     \
-   "idiv    ebx"     \
-   parm [eax] [edx] [ebx]  \
-   modify [eax edx];
-*/
+fix24 fix24_mul(fix24 a, fix24 b);
+fix24 fix24_div(fix24 a, fix24 b);
 
 fix24 fix24_pyth_dist (fix24 a, fix24 b);
 fix24 fix24_fast_pyth_dist (fix24 a, fix24 b);
 fix24 fix24_safe_pyth_dist (fix24 a, fix24 b);
-/* ¥¥¥ Fix this
-fix24 fix24_sqrt (fix24 x);
-#pragma aux fix24_sqrt parm [eax] value [eax] modify [eax ebx ecx edx esi edi]
-*/
 void fix24_sincos (fixang theta, fix24 *sin, fix24 *cos);
 fix24 fix24_sin (fixang theta);
 fix24 fix24_cos (fixang theta);
@@ -459,41 +427,25 @@ char *fix24_sprint_hex (char *str, fix24 x);
 //  Other multiply/div/add variants used by 2D and 3D.
 //
 //============================================
-/*struct AWide
+struct AWide
 {
-	long			hi;
-	unsigned long	lo;
-};*/
-typedef float AWide;
+	unsigned int	lo;
+	int			hi;
+};
+typedef struct AWide AWide;
 
-#if defined(powerc) || defined(__powerc)
-#ifdef __cplusplus
-extern "C"
-{
 extern fix fix_mul_3_3_3_asm (fix a, fix b);
 extern fix fix_mul_3_32_16_asm (fix a, fix b);
 extern fix fix_mul_3_16_20_asm (fix a, fix b);
 extern fix fix_mul_16_32_20_asm (fix a, fix b);
-extern AWide *AsmWideAdd(AWide *target, AWide *source);
-extern AWide *AsmWideSub(AWide *target, AWide *source);
-extern AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target);
-extern long AsmWideDivide(long hi, long lo, long den);
-//extern AWide *WideSquareRoot(AWide *src);
-
-// since these aren't implemented yet in our PPC code yet, we just call the fixMath versions
-// extern AWide *AsmWideNegate(AWide *target);
-// extern AWide *AsmWideBitShift(AWide *src, long shift);
-#define AsmWideNegate(target) (AWide *) WideNegate((wide *) target)
-#define AsmWideBitShift(target,count) (AWide *) WideBitShift((wide *) target,count)
-}
-#endif
-#else
-extern asm AWide *AsmWideAdd(AWide *target, AWide *source);
-extern asm AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target);
-extern asm long AsmWideDivide(long hi, long lo, long divisor);
-extern asm AWide *AsmWideNegate(AWide *target);
-extern asm AWide *AsmWideBitShift(AWide *src, long shift);
-#endif
-
+extern AWide *AsmWideAdd(AWide *target, const AWide *source);
+extern AWide *AsmWideSub(AWide *target, const AWide *source);
+extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);
+extern int AsmWideDivide(int hi, int lo, int den);
+// New functions
+extern int AsmWideDivide_ZeroAware(int hi, int lo, int divisor);
+extern unsigned int OurWideSquareRoot(const AWide *source);
+extern AWide *AsmWideNegate(AWide *target);
+extern AWide *AsmWideBitShift(AWide *target, int count);
 
 #endif /* !__fix24_H */

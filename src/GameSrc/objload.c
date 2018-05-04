@@ -213,10 +213,10 @@ errtype obj_load_art(uchar flush_all)
 		FSSpec	fSpec;
 		
 		objfnum = ResOpenFile("res/data/objart.res");
-		if (objfnum < 0)
+		if (objfnum == NULL)
 			critical_error(CRITERR_RES|5);
 		
-		prt = (RefTable *)(frameBuffer+sizeof(frameBuffer)-APPROX_REF_TAB_SIZE);
+		//prt = (RefTable *)(frameBuffer+sizeof(frameBuffer)-APPROX_REF_TAB_SIZE);
 		
 /* KLC  Changed to the following.
 		if(ResExtractRefTable(OBJECT_ART_BASE, prt, APPROX_REF_TAB_SIZE))
@@ -232,6 +232,7 @@ errtype obj_load_art(uchar flush_all)
 		// Read out the infamous bitmap zero
 		if (!bitmap_zero_loaded)
 		{
+         printf("Read Bitmap Zero\n");
 			bitmaps_3d[count_3d] = get_objbitmap_from_pool(count_3d,1);	// KLC - added here.
 			load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, prt, TRUE, &dummy_anchor, NULL);
 			bitmap_zero_loaded = TRUE;

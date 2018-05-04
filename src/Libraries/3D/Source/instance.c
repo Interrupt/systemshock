@@ -151,7 +151,7 @@ uchar start_obj_common(g3s_vector *p,g3s_angvec *o,int rotation_order)
 	AsmWideMultiply(c1, s1, &result);\
 	AsmWideMultiply(c2, s2, &result2); \
 	AsmWideAdd(&result, &result2);\
-	dest = fix_from_float(result);}
+	dest = (result.hi<<16) | (((ulong) result.lo) >> 16);}
 
 // dest=c1*s1-c2*s2
 #define update_ms(dest,c1,s1,c2,s2) \
@@ -160,7 +160,7 @@ uchar start_obj_common(g3s_vector *p,g3s_angvec *o,int rotation_order)
 	AsmWideMultiply(c2, s2, &result2); \
 	AsmWideNegate(&result2); \
 	AsmWideAdd(&result, &result2);\
-	dest = fix_from_float(result);}
+	dest = (result.hi<<16) | (((ulong) result.lo) >> 16);}
 
 
 //rotate around the specified axis. angle = ebx
@@ -195,13 +195,13 @@ uchar instance_y(fixang ty)
 	AsmWideMultiply(_view_position.gX, cos_y, &result2);
 	AsmWideNegate(&result);
 	AsmWideAdd(&result, &result2);
-	temp = fix_from_float(result);
+	temp = (result.hi<<16) | (((ulong) result.lo) >> 16);
 
 	AsmWideMultiply(_view_position.gX, sin_y, &result);
 	_view_position.gX = temp;
 	AsmWideMultiply(_view_position.gZ, cos_y, &result);
 	AsmWideAdd(&result, &result2);
-	_view_position.gZ = fix_from_float(result);
+	_view_position.gZ = (result.hi<<16) | (((ulong) result.lo) >> 16);
 
 //now modify matrix
 	update_ms(temp1,cos_y,vm1,sin_y,vm7);
@@ -249,14 +249,14 @@ uchar instance_x(fixang tx)
 	AsmWideMultiply(_view_position.gZ, sin_x, &result);
 	AsmWideMultiply(_view_position.gY, cos_x, &result2);
 	AsmWideAdd(&result, &result2);
-	temp = fix_from_float(result);
+	temp = (result.hi<<16) | (((ulong) result.lo) >> 16);
 
 	AsmWideMultiply(_view_position.gY, sin_x, &result);
 	_view_position.gY = temp;
 	AsmWideMultiply(_view_position.gZ, cos_x, &result);
 	AsmWideNegate(&result);
 	AsmWideAdd(&result, &result2);
-	_view_position.gZ = fix_from_float(result);
+	_view_position.gZ = (result.hi<<16) | (((ulong) result.lo) >> 16);
 
 //now modify matrix
 
@@ -306,14 +306,14 @@ uchar instance_z(fixang tz)
 	AsmWideMultiply(_view_position.gY, sin_z, &result);
 	AsmWideMultiply(_view_position.gX, cos_z, &result2);
 	AsmWideAdd(&result, &result2);
-	temp = fix_from_float(result);
+	temp = (result.hi<<16) | (((ulong) result.lo) >> 16);
 
 	AsmWideMultiply(_view_position.gX, sin_z, &result);
 	_view_position.gX = temp;
 	AsmWideMultiply(_view_position.gY, cos_z, &result);
 	AsmWideNegate(&result);
 	AsmWideAdd(&result, &result2);
-	_view_position.gY = fix_from_float(result);
+	_view_position.gY = (result.hi<<16) | (((ulong) result.lo) >> 16);
 	
 //now modify matrix
 	update_m(temp1,cos_z,vm1,sin_z,vm4);

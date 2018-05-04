@@ -66,6 +66,8 @@ errtype update_state(uchar time_running)
       else
          deltat = *tmd_ticks - last_real_time;
 
+      printf("DeltaT: %i\n", deltat);
+
       if (deltat > MAX_DELTAT) deltat = MAX_DELTAT;
       if (deltat < MIN_DELTAT)
       {
@@ -74,7 +76,7 @@ errtype update_state(uchar time_running)
       }
 
       // update game time.
-      player_struct.deltat =  deltat;
+      player_struct.deltat = deltat;
       player_struct.game_time += deltat;
    }
    if (update)

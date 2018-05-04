@@ -577,6 +577,7 @@ errtype physics_run(void)
       }
       
       time_diff = fix_make(deltat, 0);      // do this here for constant length kickback hack
+
       if (time_diff>fix_make(CIT_CYCLE,0)/MIN_FRAME_RATE) time_diff=fix_make(CIT_CYCLE,0)/MIN_FRAME_RATE;
 
       if (player_struct.controls[CONTROL_XZROT] != 0)
@@ -671,7 +672,7 @@ errtype physics_run(void)
 #endif
 
         printf("EDMS_soliton_vector %i %i\n", time_diff, CIT_CYCLE);
-        EDMS_soliton_vector(time_diff / CIT_CYCLE);
+        EDMS_soliton_vector(fix_make(0, 8));
 
       edms_delete_go();
 
@@ -686,8 +687,13 @@ errtype physics_run(void)
             ObjLoc newloc;
 
             newloc = objs[oid].loc;
+
             EDMS_get_state(objs[oid].info.ph, &new_state);
             state_to_objloc(&new_state, &newloc);
+
+            printf("loc:    %f %f %f\n", fix_float(objs[oid].loc.x), fix_float(objs[oid].loc.y), fix_float(objs[oid].loc.z));
+            printf("newLoc: %f %f %f\n", fix_float(newloc.x), fix_float(newloc.y), fix_float(newloc.z));
+
             if ((oid == PLAYER_OBJ) && global_fullmap->cyber)
             {
                printf("IN CYBERSPACE oooeeooo\n");

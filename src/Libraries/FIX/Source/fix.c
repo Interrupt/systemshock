@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
+
 /*
 ** fix.c
 **
@@ -90,187 +91,154 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdlib.h>
-// #include <FixMath.h>
-//#include <stdio.h>
-//#include <lg.h>
+#include <stdint.h>
 #include "fix.h"
 #include "trigtab.h"
+#include <math.h>       // for sqrtl only
 
-// #include <Carbon/Carbon.h>
+fix fix_mul_3_3_3_asm(fix a, fix b)
+{
+    return (fix)(((int64_t)(a) * (int64_t)(b)) >> 29);
+}
+
+fix fix_mul_3_32_16_asm(fix a, fix b)
+{
+    return (fix)(((int64_t)(a) * (int64_t)(b)) >> 13);
+}
+
+fix fix_mul_3_16_20_asm(fix a, fix b)
+{
+    return (fix)(((int64_t)(a) * (int64_t)(b)) >> 33);
+}
+
+fix fix_mul_16_32_20_asm(fix a, fix b)
+{
+    return (fix)(((int64_t)(a) * (int64_t)(b)) >> 4);
+}
+
+// Custom Wide assignment macros
+#define ASSIGN_WIDE_TO_64(x, w) x = (uint64_t)(w)->lo + (((int64_t)(w)->hi) << 32)
+#define ASSIGN_64_TO_WIDE(w, x) (w)->lo = x & 0xFFFFFFFF; (w)->hi = x >> 32
 
 int	gOVResult;
 
-
-//----------------------------------------------------------------------------
-// fix_mul: Multiply two fixed numbers.
-//----------------------------------------------------------------------------
-#if defined(powerc) || defined(__powerc)
 fix fix_mul(fix a, fix b)
 {
-	float af = fix_float(a);
-	float bf = fix_float(b);
-	return fix_from_float(af * bf);
+    return (fix)(((int64_t)(a) * (int64_t)(b)) >> 16);
 }
-#else
-fix asm fix_mul(fix a, fix b)
-{
- 	move.l	4(sp),d0
-	dc.w		0x4c2f,0x0c01,0x0008		// 	muls.l	8(sp),d1:d0
-	move.w	d1,d0
-	swap		d0
-	rts
-}
-#endif
 
-
-//----------------------------------------------------------------------------
-// fast_fix_mul_int: Return the high word of a fixed multiply.
-//----------------------------------------------------------------------------
-#if defined(powerc) || defined(__powerc)
 fix fast_fix_mul_int(fix a, fix b)
 {
-	float af = fix_float(a);
-	float bf = fix_float(b);
-	fix f = fix_from_float(af * bf);
-	return fix_int(f);
+	return (fix)(((int64_t)(a) * (int64_t)(b)) >> 32);
 }
-#else
-fix asm fast_fix_mul_int(fix a, fix b)
-{
- 	move.l	4(sp),d0
-	dc.w		0x4c2f,0x0c01,0x0008		// 	muls.l	8(sp),d1:d0
-	move.l	d1,d0
-	rts
-}
-#endif
 
-
-//----------------------------------------------------------------------------
-// fix_mul_asm_safe: Multiply two fixed numbers, checking for -1/0 problems
-//----------------------------------------------------------------------------
-#if defined(powerc) || defined(__powerc)
 fix fix_mul_asm_safe(fix a, fix b)
 {
-	float af = fix_float(a);
-	float bf = fix_float(b);
-	float val = af * bf;
-	return fix_from_float(af * bf);
+    int64_t intermediate = (int64_t)(a) * (int64_t)(b);
+    // Apparently PowerPC and Motorola 68000 codes differ here
+    // PowerPC will check if the lower 32 bits of the intemerdiate result are equal to -1 (cmpi 1,r6,-1), while
+    // 68K will check if the lower *16* bits of the intermediate result are equal to -1 (cmp.w #-1,d2).
+    // The result should be the same because bits 31:16 of the intermediate result already are tested for being
+    // equal to -1, but I'm leaving this comment here anyway for future reference
+    //int16_t d2 = intermediate & 0xFFFF;         // 68K code
+    int32_t d2 = intermediate & 0xFFFFFFFF;     // PPC code
+    fix result = (fix)(intermediate >> 16);
+    if (result == -1 && d2 != -1)
+    {
+        return 0;
+    }
+    return result;
 }
-#else
-fix asm fix_mul_asm_safe(fix a, fix b)
+
+// fix fix_div(fix a, fix b)
+fix fix_div(fix a, fix b)
 {
- 	move.l	4(sp),d0
-	dc.w		0x4c2f,0x0c01,0x0008		// 	muls.l	8(sp),d1:d0
-	move.w	d0,d2
-	move.w	d1,d0
-	swap		d0
-	
-	cmp.l		#-1,d0
-	beq.s		@MaybeBad
-	rts
-	
-@MaybeBad:	
-	cmp.w		#-1,d2
-	beq.s		@OK
-	
-	moveq		#0,d0		// zero it
-	
-@OK:
-	rts
+	if (b == 0)
+	{
+		gOVResult = 2;
+		fix r = 0x7FFFFFFF;
+		if (a >= 0)
+		{
+			return r;
+		}
+		return -r;
+	}
+	gOVResult = 0;
+	int64_t r64 = ((int64_t)(a) << 16) / (int64_t)(b);
+	int32_t r32 = (int32_t)(r64 & 0xFFFFFFFF);
+	if (r64 != (int64_t)r32)
+	{
+		gOVResult = 1;
+		fix r = 0x7FFFFFFF;
+		if (a >= 0)
+		{
+			return r;
+		}
+		return -r;
+	}
+	return r32;
 }
-#endif
+
+// fix fix_div_int(fix a, fix b)
+//{
+//    return (fix)(((int64_t)(a) << 16) / (int64_t)(b));
+//}
+fix fix_div_int(fix a, fix b)
+{
+	int64_t r64 = ((int64_t)(a) << 16) / (int64_t)(b);
+	int32_t r32 = (int32_t)((r64 >> 16) & 0xFFFFFFFF);
+	return r32;
+}
+
+// fix fix_div_safe_cint(fix a, fix b)
+//{
+//    return (fix)(((int64_t)(a) << 16) / (int64_t)(b));
+//}
+fix fix_div_safe_cint(fix a, fix b)
+{
+	int64_t r64 = ((int64_t)(a) << 16) / (int64_t)(b);
+	int32_t r32 = (int32_t)((r64 >> 16) & 0xFFFFFFFF);
+    if ((r64 & 0xFFFF) != 0)
+    {
+        return r32 + 1;
+    }
+	return r32;
+}
+
 
 //----------------------------------------------------------------------------
 // fix_div: Divide two fixed numbers.
 //----------------------------------------------------------------------------
-#if defined(powerc) || defined(__powerc)
-fix fix_div(fix a, fix b)
+
+fix fix_mul_div (fix m0, fix m1, fix d)
 {
-	float af = fix_float(a);
-	float bf = fix_float(b);
-	return fix_from_float(af / bf);
+    //return (fix)(((int64_t)(m0) * (int64_t)(m1)) / (int64_t)(d));
+	int64_t mr = ((int64_t)(m0) * (int64_t)(m1));
+	if (d == 0)
+	{
+		gOVResult = 2;
+		fix r = 0x7FFFFFFF;
+		if (mr >= 0)
+		{
+			return r;
+		}
+		return -r;
+	}
+	gOVResult = 0;
+	int64_t r64 = mr / (int64_t)(d);
+	int32_t r32 = (int32_t)(r64 & 0xFFFFFFFF);
+	if (r64 != (int64_t)r32)
+	{
+		gOVResult = 1;
+		fix r = 0x7FFFFFFF;
+		if (mr >= 0)
+		{
+			return r;
+		}
+		return -r;
+	}
+	return r32;
 }
-#else
-fix asm fix_div(fix a, fix b)
-{
-	clr.l		gOVResult
-	move.l	8(sp),d2
-	beq.s		@DivZero
- 	moveq		#0,d1
- 	move.l	4(sp),d0
- 	swap		d0
- 	move.w	d0,d1
- 	ext.l		d1
- 	clr.w		d0
- 	dc.l		0x4C420C01          // DIVS.L    D2,D1:D0
- 	bvs.s		@DivOverflow
- 	rts
- 	
-@DivOverflow:
-	move.l	#1,gOVResult
-	move.l	#0x7FFFFFFF,d0
-	tst.b		4(sp)
-	bpl.s		@noNeg
-	neg.l		d0
-@noNeg:
-	rts
-
-@DivZero:
-	move.l	#2,gOVResult
-	move.l	#0x7FFFFFFF,d0
-	tst.b		4(sp)
-	bpl.s		@noNeg2
-	neg.l		d0
-@noNeg2:
-	rts
- }
-#endif
-
-//----------------------------------------------------------------------------
-// Multiply two numbers, and divide by a third. Used to be in asm, but
-// now in C.
-//----------------------------------------------------------------------------
-#if defined(powerc) || defined(__powerc)
-fix fix_mul_div(fix m0, fix m1, fix d)
-{
-	float af = fix_float(m0);
-	float bf = fix_float(m1);
-	float df = fix_float(d);
-	return fix_from_float((af * bf) / df);
-}
-#else
-fix asm fix_mul_div (fix m0, fix m1, fix d)
- {
-	clr.l		gOVResult
- 	move.l	4(sp),d0
-	dc.w		0x4c2f,0x0c01,0x0008		// 	muls.l	8(sp),d1:d0
-	
-  move.l	12(sp),d2
-	beq.s		@DivZero
-	dc.l		0x4C420C01         			//  DIVS.L  D2,D1:D0
-	bvs.s		@DivOverflow
-	rts
-
-@DivOverflow:
-	move.l	#1,gOVResult
-	move.l	#0x7FFFFFFF,d0
-	tst.l		d1
-	bpl.s		@noNeg
-	neg.l		d0
-@noNeg:
-	rts
-	
-@DivZero:
-	move.l	#2,gOVResult
-	move.l	#0x7FFFFFFF,d0
-	tst.l		d1									// sign of high double long from multiply
-	bpl.s		@noNeg2
-	neg.l		d0
-@noNeg2:
-	rts
- }
-#endif
-
 
 int blah;
 
@@ -278,8 +246,11 @@ int blah;
 // Returns the distance from (0,0) to (a,b)
 //----------------------------------------------------------------------------
 fix fix_pyth_dist (fix a, fix b)
-{	
-	// ¥¥¥should check for overflow!
+{
+	gOVResult = 100;
+	blah	= 200;
+	
+	// @@@should check for overflow!
  	return fix_sqrt(fix_mul(a, a) + fix_mul(b, b));
 }
 
@@ -299,7 +270,7 @@ fix fix_fast_pyth_dist (fix a, fix b)
 //----------------------------------------------------------------------------
 // We can use the fix function because the difference in scale doesn't matter.
 //----------------------------------------------------------------------------
-long long_fast_pyth_dist (long a, long b)
+int long_fast_pyth_dist (int a, int b)
 {
    return (fix_fast_pyth_dist (a, b));
 }
@@ -328,8 +299,9 @@ fix fix_safe_pyth_dist (fix a, fix b)
 	{
 		if (a > 0x2fffffff)
 		{
-//			Warning (("Overflow in fix_safe_pyth_dist\n"));
-			DebugString("Overflow in fix_safe_pyth_dist");
+//			ssWarning (("Overflow in fix_safe_pyth_dist\n"));
+			//DebugStr("\pOverflow in fix_safe_pyth_dist");
+			DebugStr("Overflow in fix_safe_pyth_dist");
 			return 0;
 		}
 		for (;;)
@@ -349,7 +321,7 @@ fix fix_safe_pyth_dist (fix a, fix b)
 //----------------------------------------------------------------------------
 // We can use the fix function because the difference in scale doesn't matter.
 //----------------------------------------------------------------------------
-long long_safe_pyth_dist (long a, long b)
+int long_safe_pyth_dist (int a, int b)
 {
    return (fix_safe_pyth_dist (a, b));
 }
@@ -525,7 +497,7 @@ fixang fix_atan2 (fix y, fix x)
 	// Use fix_asin or fix_acos depending on where we are.  We don't want to use
 	// fix_asin if the sin is close to 1 or -1
 	s = fix_div (y, hyp);
-	if ((ulong) s < 0x00004000 || (ulong) s > 0xffffc000)
+	if ((uint) s < 0x00004000 || (uint) s > 0xffffc000)
 	{												// range is good, use asin
 		th = fix_asin (s);
 		if (x < 0)
@@ -559,76 +531,15 @@ fixang fix_atan2 (fix y, fix x)
 	return th;
 }
 
-//----------------------------------------------------------------------------
-// fix24_div: Divide two fix24 numbers.
-//----------------------------------------------------------------------------
-#if defined(powerc) || defined(__powerc)
-fix fix24_div(fix24 a, fix24 b)
+fix24 fix24_mul(fix24 a, fix24 b)
 {
-	printf("fix24_div not implemented.\n");
-	return a;
+    return (fix24)(((int64_t)a * (int64_t)b) >> 8);
 }
 
-fix fix24_mul(fix24 a, fix24 b)
+fix24 fix24_div(fix24 a, fix24 b)
 {
-	printf("fix24_mul not implemented.\n");
-	return a;
+    return (fix24)(((int64_t)a << 8) / (int64_t)b);
 }
-
-fix fix24_pow(fix24 a, fix24 b)
-{
-	printf("fix24_pow not implemented.\n");
-	return a;
-}
-#else
-fix24 asm fix24_div(fix24 a, fix24 b)
- {
-	clr.l		gOVResult
-	tst.l		8(sp)
-	beq.s		@DivZero
-
- 	moveq		#0,d1
- 	move.l	4(sp),d0
- 	move.b	4(sp),d1								// get high byte of A in low byte of d1
-	ext.w		d1
-	ext.l		d1
-	lsl.l		#8,d0										// shift rest of A up 8 bits
-	dc.w		0x4C6F,0x0C01,0x0008		// 	divs.l	8(sp),d1:d0
-	bvs.s		@DivOverflow
- 	rts
-
-@DivOverflow:
-	move.l	#1,gOVResult
-	move.l	#0x7FFFFFFF,d0
-	tst.b		4(sp)
-	bpl.s		@noNeg
-	neg.l		d0
-@noNeg:
-	rts
-
-@DivZero:
-	move.l	#2,gOVResult
-	move.l	#0x7FFFFFFF,d0
-	tst.b		4(sp)
-	bpl.s		@noNeg2
-	neg.l		d0
-@noNeg2:
-	rts
- }
-
-fix24 asm fix24_mul(fix24 a, fix24 b)
- {
- 	move.l	4(sp),d0
-	dc.w		0x4c2f,0x0c01,0x0008		// 	muls.l	8(sp),d1:d0
-	lsr.l		#8,d0						// shift down 8
-	ror.l		#8,d1						// get low 8 bits of d1 into high 8 bits
-	andi.l	#0xff000000,d1	// mask everything else off
-	or.l		d1,d0						// OR result into d0
-	rts
- }
-
-#endif
-
 
 fix fix_pow(fix x,fix y)
 {
@@ -654,174 +565,93 @@ fix fix_pow(fix x,fix y)
    return ans;
 }
 
-//----------------------------------------------------------------------------
-// AsmWideDivide: Divide a 64 bit long by a 32 bit long, return 32 bit result.
-//----------------------------------------------------------------------------
-
-#if defined(powerc) || defined(__powerc)
-AWide *AsmWideAdd(AWide *target, AWide *source)
+AWide *AsmWideAdd(AWide *target, const AWide *source)
 {
-	*target = (*target + *source);
-	return target;
+    int64_t t, s;
+    ASSIGN_WIDE_TO_64(t, target);
+    ASSIGN_WIDE_TO_64(s, source);
+    t += s;
+    ASSIGN_64_TO_WIDE(target, t);
+    return target;
 }
 
-AWide *AsmWideSub(AWide *target, AWide *source)
+AWide *AsmWideSub(AWide *target, const AWide *source)
 {
-	*target = *target - *source;
-	return target;
+    int64_t t, s;
+    ASSIGN_WIDE_TO_64(t, target);
+    ASSIGN_WIDE_TO_64(s, source);
+    t -= s;
+    ASSIGN_64_TO_WIDE(target, t);
+    return target;
 }
 
-AWide *AsmWideMultiply(fix multiplicand, fix multiplier, AWide *target)
+AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target)
 {
-	float val = fix_float(multiplicand) * fix_float(multiplier);
-	*target = val;
-	return target;
+    int64_t a, b;
+    a = multiplicand;
+    b = multiplier;
+    a *= b;
+    ASSIGN_64_TO_WIDE(target, a);
+    return target;
 }
 
-fix AsmWideDivide(AWide src, fix divisor)
+int AsmWideDivide(int hi, int lo, int divisor)
 {
-	float val = fix_float(divisor) / src;
-	return fix_from_float(val);
+    int64_t x;
+    AWide w;
+    w.lo = lo;
+    w.hi = hi;
+    ASSIGN_WIDE_TO_64(x, &w);
+    return (int)(x / (int64_t)divisor);
+}
+
+int AsmWideDivide_ZeroAware(int hi, int lo, int divisor)
+{
+    int64_t x;
+    AWide w;
+
+    if (divisor == 0)
+    {
+        if (hi >= 0)
+        {
+            return 0x7FFFFFFF;
+        }
+        return -0x7FFFFFFF;
+    }
+    w.lo = lo;
+    w.hi = hi;
+    ASSIGN_WIDE_TO_64(x, &w);
+    return (int)(x / (int64_t)divisor);
+}
+
+unsigned int OurWideSquareRoot(const AWide *source)
+{
+    int64_t x;
+    ASSIGN_WIDE_TO_64(x, source);
+    return (unsigned int)sqrtl((long double)x);
 }
 
 AWide *AsmWideNegate(AWide *target)
 {
-	*target = -(*target);
-	return target;
+    int64_t x;
+    ASSIGN_WIDE_TO_64(x, target);
+    x = -x;
+    ASSIGN_64_TO_WIDE(target, x);
+    return target;
 }
 
-AWide *AsmWideBitShift(AWide *src, long shift)
+AWide *AsmWideBitShift(AWide *target, int shift)
 {
-	printf("AsmWideBitShift\n");
-	*src = ((long)*src) << shift;
-	return src;
+    int64_t x;
+    ASSIGN_WIDE_TO_64(x, target);
+    if (shift < 0)
+    {
+        x <<= -shift;
+    }
+    else
+    {
+        x >>= shift;
+    }
+    ASSIGN_64_TO_WIDE(target, x);
+    return target;
 }
-
-/*AWide *WideSquareRoot(AWide *src)
-{
-	printf("WideSquareRoot\n");
-
-	float ff = src->hi + src->lo * 0.1;
-	sqrtf(ff);
-
-	src->hi = (int)ff;
-	src->lo = (ff - (int)ff) * 10;
-
-	return src;
-}*/
-#else
- 
-asm AWide *AsmWideSub(AWide *target, AWide *source)
- {
- 	move.l	4(sp),a0		// target
- 	move.l	8(sp),a1		// source
- 	
- 	move.l	(a0),d1			// get high bytes
- 	move.l	(a1),d2
- 	
- 	move.l	4(a1),d0		// get low byte
- 	sub.l		d0,4(a0)		// target.lo -= source.lo
- 	
- 	subx.l	d2,d1				// target.hi -= source.hi + X
- 	move.l	d1,(a0)			// save it
- 	
-	rts
- }
-
-
-asm AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target)
- {
- 	move.l	4(sp),d0
-	dc.w		0x4c2f,0x0c01,0x0008		// 	muls.l	8(sp),d1:d0
- 	move.l	12(sp),a0
- 	move.l	d1,(a0)
- 	move.l	d0,4(a0)
- 	rts
- }
-
-
-asm long AsmWideDivide(long hi, long lo, long divisor)
- {
-	clr.l		gOVResult
-	move.l	12(sp),d2
-	beq.s		@DivZero
-	move.l	4(sp),d1
-	move.l	8(sp),d0
- 	dc.l		0x4C420C01          // DIVS.L    D2,D1:D0
-	bvs.s		@DivOverflow
- 	rts
-
-@DivOverflow:
-	move.l	#1,gOVResult
-	move.l	#0x7FFFFFFF,d0
-	tst.b		4(sp)
-	bpl.s		@noNeg
-	neg.l		d0
-@noNeg:
-	rts
-
-@DivZero:
-	move.l	#2,gOVResult
-	move.l	#0x7FFFFFFF,d0
-	tst.b		4(sp)
-	bpl.s		@noNeg2
-	neg.l		d0
-@noNeg2:
-	rts
- }
-
-asm AWide *AsmWideNegate(AWide *target)
- {
- 	move.l	4(a7),a0
- 	move.l	(a0)+,d0
- 	move.l	(a0),d1
- 	moveq		#0,d2
- 	
- 	not.l		d0			// not high reg
- 	not.l		d1			// not low reg
- 	addq.l	#1,d1
- 	addx.l	d2,d0		// +1
- 	
- 	move.l	d1,(a0)		// save result
- 	move.l	d0,-(a0)
- 
-@Done:
- 	rts
- }
- 
-asm AWide *AsmWideBitShift(AWide *src, long shift)
- {
- 	move.l	4(a7),a0
- 	move.l	8(a7),d2
- 	beq.s		@exit
- 	bmi.s		@negshift
- 	
- 	move.l	(a0),d1		// get high
- 	move.l	4(a0),d0	// get low 
-	subq.w	#1,d2			// for dbra
-	
-@Loop:
-	asr.l		#1,d1
-  roxr.l	#1,d0				// shift low down with carry
-	dbra		d2,@Loop
-	bra.s		@done
- 	
-@negshift:
-	neg.l		d2
-	subq.w	#1,d2				// for dbra
-	
-@Loop2:
-	lsl.l		#1,d0				// shift low up 1
-	roxl.l	#1,d1				// shift high up with carry
-	dbra		d2,@Loop2
-
-@done:
-	move.l	d1,(a0)
-	move.l	d0,4(a0)
-
-@exit:
- 	rts
- }
- 
- 
-#endif

@@ -87,7 +87,7 @@ fix g3_vec_mag(g3s_vector *v)
 	AsmWideMultiply(v->gZ, v->gZ, &result2);
 	AsmWideAdd(&result, &result2);
 
-	return fix_from_float(sqrt(result));
+	return (quad_sqrt(result.hi, result.lo));
 
 //	return(quad_sqrt(result.hi, result.lo));
  }
@@ -102,7 +102,7 @@ fix g3_vec_dotprod(g3s_vector *v0,g3s_vector *v1)
 	AsmWideAdd(&result, &result2);
 	AsmWideMultiply(v0->gZ, v1->gZ, &result2);
 	AsmWideAdd(&result, &result2);
-  return fix_from_float(result);
+  return ((result.hi<<16) | (((ulong) result.lo)>>16));
  }
 
 
@@ -152,29 +152,51 @@ void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0,g3s_vector *v1,g3s_ve
 	AsmWideMultiply(temp_v1.gY, temp_v0.gZ, &result2);
 	AsmWideNegate(&result2);
 	AsmWideAdd(&result, &result2);
- 	v->gX = fix_from_float(result);
- 	temp_high.gX = fix_from_float(result);
+ 	v->gX = result.lo;
+ 	temp_high.gX = result.hi;
  	
 // dest->y = v1x * v0z - v1z * v0x;
 	AsmWideMultiply(temp_v1.gX, temp_v0.gZ, &result);
 	AsmWideMultiply(temp_v1.gZ, temp_v0.gX, &result2);
 	AsmWideNegate(&result2);
 	AsmWideAdd(&result, &result2);
- 	v->gY = fix_from_float(result);
- 	temp_high.gY = fix_from_float(result);
+ 	v->gY = result.lo;
+ 	temp_high.gY = result.hi;
 
 // dest->z = v1y * v0x - v1x * v0y;
 	AsmWideMultiply(temp_v1.gY, temp_v0.gX, &result);
 	AsmWideMultiply(temp_v1.gX, temp_v0.gY, &result2);
 	AsmWideNegate(&result2);
 	AsmWideAdd(&result, &result2);
- 	v->gZ = fix_from_float(result);
- 	temp_high.gZ = fix_from_float(result);
+ 	v->gZ = result.lo;
+ 	temp_high.gZ = result.hi;
 
-return;
+// see if fit into a longword
+	result.hi = temp_high.gX;
+	result.lo = v->gX;
+	if (result.hi < 0)
+		AsmWideNegate(&result);
+	Double_64(result.hi,result.lo);
+	temp_long = result.hi;
+	
+	result.hi = temp_high.gY;
+	result.lo = v->gY;
+	if (result.hi < 0)
+		AsmWideNegate(&result);
+	Double_64(result.hi,result.lo);
+	temp_long |= result.hi;
+	
+	result.hi = temp_high.gZ;
+	result.lo = v->gZ;
+	if (result.hi < 0)
+		AsmWideNegate(&result);
+	Double_64(result.hi,result.lo);
+	temp_long |= result.hi;
+	
+	if (!temp_long) return; // everything fits in the low longword. hurrah. see ya.
 	
 // see how far to shift to fit in a longword
-	/*shiftcount = 0;
+	shiftcount = 0;
 	while (((unsigned long) temp_long) >= 0x0100)
 	 {
 	 	shiftcount += 8;
@@ -196,5 +218,5 @@ return;
 	result.hi = temp_high.gZ;
 	result.lo = v->gZ;
 	AsmWideBitShift(&result, shiftcount);
-	v->gZ = result.lo;*/
+	v->gZ = result.lo;
  }

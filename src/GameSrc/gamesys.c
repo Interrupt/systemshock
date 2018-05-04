@@ -1054,7 +1054,7 @@ void expose_player(byte damage, ubyte type, ushort tsecs)
 // 
 // returns damage to player after enviro-suit
 
-extern long long_sqrt(long num);
+extern int long_sqrt(int num);
 
 #define ENVIRO_ABSORB_DENOM 5 
 #define ENVIRO_DRAIN_DENOM  1

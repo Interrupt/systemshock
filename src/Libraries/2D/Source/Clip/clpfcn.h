@@ -50,7 +50,7 @@ extern int gr_clip_fix_code
 extern int gr_clip_int_line
    (short *x0, short *y0, short *x1, short *y1);
 extern int gr_clip_fix_line
-   (long *x0, long *y0, long *x1, long *y1);
+   (fix *x0, fix *y0, fix *x1, fix *y1);
 extern int gr_clip_fix_poly
    (int n, fix *vlist, fix *clist);
 extern int gr_clip_poly

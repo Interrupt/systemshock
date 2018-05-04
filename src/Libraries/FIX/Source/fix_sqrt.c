@@ -58,7 +58,7 @@ ubyte  pGuessTable[256] =
 //  Includes
 //--------------------
 #if defined(powerc) || defined(__powerc)
-long long_sqrt(long num);
+int long_sqrt(int num);
 #else
 asm long long_sqrt(long num);
 #endif
@@ -82,7 +82,7 @@ fix fix_sqrt(fix num)
 //-----------------------------------------------------------------
 //  Calculate the square root of a wide (64-bit) number.
 //-----------------------------------------------------------------
-long quad_sqrt(long hi, long lo)
+int quad_sqrt(int hi, int lo)
 {
 //	uchar	testb, trans;
 //	uchar	shift;
@@ -101,12 +101,11 @@ long quad_sqrt(long hi, long lo)
 		return(0);
 	
 	// If 'hi' is non-zero, call FixMath's WideSquareRoot.
-	
-	// HAX HAX HAX fix this math!
 	AWide	a;
-	a = hi + lo / 65536.0f;
-	printf("quad_sqrt: FIXME!\n");
-	return sqrt(a);
+	a.hi = hi;
+	a.lo = lo;
+
+	return OurWideSquareRoot(&a);
 
 /*  We gave it the ol' college try, but WideSquareRoot is faster in this case.
 
@@ -197,7 +196,7 @@ q_found_byte:
 //-----------------------------------------------------------------
 //  Calculate the square root of a long number.
 //-----------------------------------------------------------------
-long long_sqrt(long num)
+int long_sqrt(int num)
 {
 	fix		savediv;
 	fix		temp;
