@@ -186,32 +186,33 @@ errtype init_player(Player *pplr)
    pplr->active_bio_tracks = 0xFF;
    pplr->actives[ACTIVE_EMAIL] = 0xFF;
 
-// take out.  This gives me everything!
-//for (i=0; i < NUM_HARDWAREZ; i++)
-//	pplr->hardwarez[i] = 1;
 
-//pplr->softs.misc[(TRIP2TY(GAMES_TRIPLE) + NUM_ONESHOT_SOFTWARE)] = 0xff;
-/*
-pplr->weapons[0].type = 4;
-pplr->weapons[0].subtype = 1;
-pplr->weapons[2].ammo = 25;
-pplr->weapons[1].type = 4;
-pplr->weapons[1].subtype = 2;
-pplr->weapons[2].type = 0;
-pplr->weapons[2].subtype = 4;
-pplr->weapons[2].ammo = 100;
-pplr->weapons[3].type = 1;
-pplr->weapons[3].subtype = 0;
-pplr->weapons[3].ammo = 150;
-pplr->weapons[4].type = 2;
-pplr->weapons[4].subtype = 0;
-pplr->weapons[4].ammo = 50;
-pplr->weapons[5].type = 4;
-pplr->weapons[5].subtype = 0;
-pplr->weapons[6].type = 3;
-pplr->weapons[6].subtype = 0;
-//
-*/
+   // HAX HAX HAX give he player everything!
+   {
+      for (i=0; i < NUM_HARDWAREZ; i++)
+      	pplr->hardwarez[i] = 1;
+
+      pplr->softs.misc[(TRIP2TY(GAMES_TRIPLE) + NUM_ONESHOT_SOFTWARE)] = 0xff;
+
+      pplr->weapons[0].type = 4;
+      pplr->weapons[0].subtype = 1;
+      pplr->weapons[2].ammo = 25;
+      pplr->weapons[1].type = 4;
+      pplr->weapons[1].subtype = 2;
+      pplr->weapons[2].type = 0;
+      pplr->weapons[2].subtype = 4;
+      pplr->weapons[2].ammo = 100;
+      pplr->weapons[3].type = 1;
+      pplr->weapons[3].subtype = 0;
+      pplr->weapons[3].ammo = 150;
+      pplr->weapons[4].type = 2;
+      pplr->weapons[4].subtype = 0;
+      pplr->weapons[4].ammo = 50;
+      pplr->weapons[5].type = 4;
+      pplr->weapons[5].subtype = 0;
+      pplr->weapons[6].type = 3;
+      pplr->weapons[6].subtype = 0;
+   }
 
    // init physics stuff
    player_reset_eye();
