@@ -672,7 +672,7 @@ errtype physics_run(void)
 #endif
 
         printf("EDMS_soliton_vector %i %i\n", time_diff, CIT_CYCLE);
-        EDMS_soliton_vector(fix_make(0, 9));
+        EDMS_soliton_vector((time_diff / CIT_CYCLE));
 
       edms_delete_go();
 
@@ -1914,6 +1914,7 @@ void instantiate_pelvis(int triple, Pelvis* new_pelvis)
             new_pelvis->gravity = 0;
          break;
    }
+
    newmass = ObjProps[OPTRIP(triple)].mass;
    if (newmass > 0)
       new_pelvis->mass = fix_make(newmass,0)/(PHYS_MASS_UNIT*PHYS_MASS_C_NUM/PHYS_MASS_C_DEN);

@@ -921,7 +921,6 @@ extern void	null_function( int );
 extern "C" {
 
 void    EDMS_lean_o_meter( physics_handle ph, fix& lean, fix& crouch ) {
-
         
         lean = crouch = 0;
 
@@ -931,10 +930,12 @@ void    EDMS_lean_o_meter( physics_handle ph, fix& lean, fix& crouch ) {
 
 int             on = ph2on[ph];
 
+				printf("EDMS_lean_o_meter: %i\n", on);
+
 //              Are you a pelvis...
 //              -------------------
                 if ( I[on][30] == PELVIS ) {
-
+                		printf("Is a pelvis!\n");
                         lean = S[on][5][0].to_fix();
                         crouch = I[on][0].to_fix() - 3*V_floor[2].to_fix();
 

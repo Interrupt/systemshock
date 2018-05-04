@@ -1362,10 +1362,10 @@ errtype obj_create_player(ObjLoc *plr_loc)
    else
 #endif
    {
-      printf("Making pelvis?\n");
+      printf("Making player physics\n");
       instantiate_pelvis(PLAYER_TRIP,&player_pelvis);
       objs[PLAYER_OBJ].info.ph = ph = EDMS_make_pelvis(&player_pelvis, &new_state);
-      printf("objs[PLAYER_OBJ].info.ph %i\n", objs[PLAYER_OBJ].info.ph);
+      printf("objs[PLAYER_OBJ].info.ph: %i\n", objs[PLAYER_OBJ].info.ph);
    }
    physics_handle_id[ph] = PLAYER_OBJ;
 

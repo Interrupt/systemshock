@@ -292,8 +292,7 @@ void lean_icon(LGPoint* pos, grs_bitmap** icon, int* inum)
 		fix ln,crouch;
 		fix state = GET_STATE;
 		
-		printf("FIXME: EDMS_lean_o_meter disabled due to crash!\n");
-		//EDMS_lean_o_meter(PLAYER_PHYSICS, ln, crouch);
+		EDMS_lean_o_meter(PLAYER_PHYSICS, &ln, &crouch);
 		
 		crouch = velocity_crouch_filter(crouch);
 		if (player_struct.game_time > player_struct.posture_slam_state)
