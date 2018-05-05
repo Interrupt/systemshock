@@ -135,8 +135,11 @@ void palette_advance_all_fx(long timestamp)
 			palette_advance_effect(i, steps_to_do);
 		}
 	}
-	if (Palette_Effects_Table[0].effect == CBANK)
+	if (Palette_Effects_Table[0].effect == CBANK) {
 		gr_set_pal((int)c1, (int)(c2 - c1 +1), &local_smap[c1*3]);
+   }
+
+   SetSDLPalette(0, 256, local_smap);
 }
 
 uchar c_off_stack[3];

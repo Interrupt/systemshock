@@ -209,12 +209,10 @@ void game_loop(void)
 		if (pal_fx_on && (++pal_frame == 2))
 		 {
 		 	pal_frame=0;
-
-		 	// SEGFAULT error?
-			//loopLine(GL|0x1F,palette_advance_all_fx(* (long *) 0x16a));	// TickCount()
+			loopLine(GL|0x1F,palette_advance_all_fx(*tmd_ticks));
 		 }
 		 
-		 printf("destroy_destroyed_objects\n");
+		printf("destroy_destroyed_objects\n");
 		loopLine(GL|0x20, destroy_destroyed_objects());
 		loopLine(GL|0x21, check_cspace_death());
 	}
