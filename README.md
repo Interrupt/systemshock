@@ -7,7 +7,7 @@ GENERAL NOTES
 
 This is my attempt to get System Shock running on modern OSX. Once this runs well here, it should be much easier to port forward to other systems like Linux.
 
-![work so far](https://i.imgur.com/wFIaC8f.gif)
+![work so far](https://i.imgur.com/PWdEo9J.gif)
 
 # Working so far:
 - Loads original resource files
@@ -16,17 +16,20 @@ This is my attempt to get System Shock running on modern OSX. Once this runs wel
 - Level loading
 - Starting a new game
 - Some HUD rendering
+- 3D rendering
 
 # Not working:
 - Keyboard Input / Mouse Clicks
   - polling should be switched to SDL
-- 3d rendering
-  - need to implement some integer math functions
+- Physics
+  - player controller is acting weird
+- Object loading
+  - no objects in levels, need to actually load their properties
 - Main Menu
   - can be turned back on when input works
 - Sound & Music
 - Video Files
-- Saving / Loading
+- Saving
 
 Compiling / Running
 ============
