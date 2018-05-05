@@ -6,37 +6,40 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 //		ResAcc.c		Resource access
 //		Rex E. Bradford
 /*
-* $Header: r:/prj/lib/src/res/rcs/resacc.c 1.4 1994/08/30 15:18:20 rex Exp $
-* $Log: resacc.c $
+ * $Header: r:/prj/lib/src/res/rcs/resacc.c 1.4 1994/08/30 15:18:20 rex Exp $
+ * $Log: resacc.c $
  * Revision 1.4  1994/08/30  15:18:20  rex
  * Made sure ResGet() returns NULL if ResLoadResource() did
- * 
+ *
  * Revision 1.3  1994/08/30  15:14:32  rex
  * Put in check for NULL return from ResLoadResource
- * 
+ *
  * Revision 1.2  1994/06/16  11:06:05  rex
- * Modified routines to handle LRU list better (keep locked and nodrop stuff out)
- * 
+ * Modified routines to handle LRU list better (keep locked and nodrop stuff
+ * out)
+ *
  * Revision 1.1  1994/02/17  11:23:31  rex
  * Initial revision
- * 
-*/
+ *
+ */
 
+#include <stdbool.h>
 #include <string.h>
 
+#include "lg_types.h"
 #include "res.h"
 #include "res_.h"
 
@@ -48,41 +51,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //	Returns: ptr to locked resource
 //	---------------------------------------------------------
-//  For Mac version:  Change 'ptr' refs to 'hdl', lock resource handle and return ptr.
+//  For Mac version:  Change 'ptr' refs to 'hdl', lock resource handle and
+//  return ptr.
 
-void *ResLock(Id id)
-{
-	ResDesc *prd;
+void *ResLock(Id id) {
+  ResDesc *prd;
 
-	//	Check if valid id
-//	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
+  //	Check if valid id
+  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
 
-	//	Add to cumulative stats
-//	CUMSTATS(id,numLocks);
+  //	Add to cumulative stats
+  //	CUMSTATS(id,numLocks);
 
-	//	If resource not loaded, load it
+  //	If resource not loaded, load it
 
-	prd = RESDESC(id);
-	if (ResLoadResource(id) == NULL) {
-		printf("ResLock: Could not load %x", id);
-		return(NULL);
-	}
+  prd = RESDESC(id);
+  if (ResLoadResource(id) == NULL)
+    return (NULL);
+  else if (prd->lock == 0)
+    ResRemoveFromLRU(prd);
 
-//	else if (prd->lock == 0)
-//		ResRemoveFromLRU(prd);
+  //	Tally stats, check for over-lock
 
-	//	Tally stats, check for over-lock
+  //	DBG(DSRC_RES_Stat, {if (prd->lock == 0) resStat.numLocked++;});
 
-//	DBG(DSRC_RES_Stat, {if (prd->lock == 0) resStat.numLocked++;});
+  //	Increment lock count, check for overlock
 
-	//	Increment lock count, check for overlock
+  //	DBG(DSRC_RES_ChkLock, {if (prd->lock == RES_MAXLOCK) prd->lock--;});
+  prd->lock++;
 
-//	DBG(DSRC_RES_ChkLock, {if (prd->lock == RES_MAXLOCK) prd->lock--;});
-	prd->lock++;
+  //	Return ptr
 
-	//	Return ptr
-
-	return(prd->ptr);
+  //  if (prd->lock == 1)
+  //    HLock(prd->hdl);
+  return (prd->ptr);
 }
 
 //	---------------------------------------------------------
@@ -93,10 +95,24 @@ void *ResLock(Id id)
 //
 //	Returns: ptr to locked resource
 //	---------------------------------------------------------
-void *ResLockHi(Id id)
-{
-	return ResLock(id);
+// FIXME: MacOS Cleanup
+/*
+void *ResLockHi(Id id) {
+  ResDesc *prd;
+
+  //	If resource not loaded, load it.
+  prd = RESDESC(id);
+  if (ResLoadResource(id) == nil)
+    return (nil);
+
+  // Lock the handle.
+  prd->lock++;
+  if (prd->lock == 1)
+    HLockHi(prd->hdl);
+
+  return (*prd->hdl);
 }
+*/
 
 //	---------------------------------------------------------
 //
@@ -106,36 +122,27 @@ void *ResLockHi(Id id)
 //	---------------------------------------------------------
 //  For Mac version:  Change 'ptr' refs to 'hdl', unlock resource handle.
 
-void ResUnlock(Id id)
-{
-	ResDesc *prd;
+void ResUnlock(Id id) {
+  ResDesc *prd;
 
-	//	Check if valid id
-//	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
+  //	Check if valid id
+  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
 
-	//	Check for under-lock
+  //	Check for under-lock
 
-	prd = RESDESC(id);
-
-	if(prd->lock == 0) {
-		printf("ResUnlock: id $%x already unlocked\n", id);
-		return;
-	}
-
-//	DBG(DSRC_RES_ChkLock, {if (prd->lock == 0) { \
+  prd = RESDESC(id);
+  //	DBG(DSRC_RES_ChkLock, {if (prd->lock == 0) { \
 //		Warning(("ResUnlock: id $%x already unlocked\n", id)); return;} });
 
-	//	Else decrement lock, if 0 move to tail and tally stats
-	
-	if (prd->lock > 0)
-		prd->lock--;
+  //	Else decrement lock, if 0 move to tail and tally stats
 
-	if (prd->lock == 0)
-	{
-//		HUnlock(prd->hdl);
-//		ResAddToTail(prd);
-//		DBG(DSRC_RES_Stat, {resStat.numLocked--;});
-	}
+  if (prd->lock > 0)
+    prd->lock--;
+  if (prd->lock == 0) {
+    // HUnlock(prd->hdl);
+    ResAddToTail(prd);
+    //		DBG(DSRC_RES_Stat, {resStat.numLocked--;});
+  }
 }
 
 //	-------------------------------------------------------------
@@ -147,71 +154,73 @@ void ResUnlock(Id id)
 //	Returns: ptr to resource (ptr only guaranteed until next Malloc(),
 //				Lock(), Get(), etc.
 //	---------------------------------------------------------
+//  For Mac version:  Change 'ptr' refs to 'hdl', lock resource handle and
+//  return ptr.
 
-void *ResGet(Id id)  
-{  
-    ResDesc *prd;
-  
-//  Check if valid id  
-  
-    //ValidateRes(id);  
-  
-    /*DBG(DSRC_RES_ChkIdRef,  
-    {  
-        if (!ResCheckId(id))  
-            return NULL;  
-    });*/  
-  
-//  Add to cumulative stats  
-  
-    //CUMSTATS(id, numGets);  
-  
-//  Load resource or move to tail  
-  
-    prd = RESDESC(id);
-    if (prd->ptr == NULL)  
-    {
-        if (ResLoadResource(id) == NULL)  
-        {  
-            return (NULL);  
-        }  
-    }
-  
-    //ValidateRes(id);
-  
-//  Return ptr  
-    return (prd->ptr);  
-}  
+void *ResGet(Id id) {
+  ResDesc *prd = RESDESC(id);
 
+  //	Check if valid id
+
+  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
+
+  //	Add to cumulative stats
+
+  //	CUMSTATS(id,numGets);
+
+  //	Load resource or move to tail
+
+  if (prd->ptr == NULL) {
+    if (ResLoadResource(id) == NULL)
+      return (NULL);
+    ResAddToTail(prd);
+  } else if (prd->lock == 0) {
+    ResMoveToTail(prd);
+  }
+
+  //	ResAddToTail(prd);
+  //	if (prd->lock == 0)
+  //		ResMoveToTail(prd);
+
+  //	Return ptr
+
+  return (prd->ptr);
+}
 
 //	---------------------------------------------------------
 //
 //	ResExtract() extracts a resource from an open resource file.
 //
 //		id   = id
-//		buff = ptr to buffer (use ResSize() to compute needed buffer size)
+//		buff = ptr to buffer (use ResSize() to compute needed buffer
+// size)
 //
 //	Returns: ptr to supplied buffer, or NULL if problem
 //	---------------------------------------------------------
 //  For Mac version:  Copies information from resource handle into the buffer.
 
-void *ResExtract(Id id, void *buffer)
-{
-	//	Retrieve the data into the buffer, please
+void *ResExtract(Id id, void *buffer) {
+  // Retrieve the data into the buffer, please
+  if (ResRetrieve(id, buffer)) {
+    return buffer;
+  }
+  // If ResRetreive failed, return NULL ptr
+  return (buffer);
 
-	if (ResRetrieve(id, buffer))
-	{
-		return(buffer);
-	}
+  /*
+          //	Retrieve the data into the buffer, please
 
-	printf("ResExtract failed for %x\n", id);
+          if (ResRetrieve(id, buffer))
+                  {
+                  CUMSTATS(id,numExtracts);
+                  return(buffer);
+                  }
 
-	//	If ResRetreive failed, return NULL ptr
+          //	If ResRetreive failed, return NULL ptr
 
-	return(NULL);
-
+          return(NULL);
+  */
 }
-
 
 //	----------------------------------------------------------
 //
@@ -219,55 +228,42 @@ void *ResExtract(Id id, void *buffer)
 //
 //		id = resource id
 //	----------------------------------------------------------
-//  For Mac version:  Calls Resource Mgr function EmptyHandle to purge the handle.
+//  For Mac version:  Calls Resource Mgr function EmptyHandle to purge the
+//  handle.
 
-void ResDrop(Id id)
-{
-	ResDesc *prd;
+void ResDrop(Id id) {
+  ResDesc *prd;
 
-	//	Check for locked
+  //	Check for locked
 
-//	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
+  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
 
-	prd = RESDESC(id);
-//	DBG(DSRC_RES_ChkLock, {if (prd->lock) \
+  prd = RESDESC(id);
+  //	DBG(DSRC_RES_ChkLock, {if (prd->lock) \
 //		Warning(("ResDrop: Block $%x is locked, dropping anyway\n", id));});
-//	DBG(DSRC_RES_ChkLock, {if (prd->flags & RDF_NODROP) \
+  //	DBG(DSRC_RES_ChkLock, {if (prd->flags & RDF_NODROP) \
 //		Warning(("ResDrop: Block $%x has NODROP flag set, dropping anyway\n", id));});
 
-//	Spew(DSRC_RES_DelDrop, ("ResDrop: dropping $%x\n", id));
+  //	Spew(DSRC_RES_DelDrop, ("ResDrop: dropping $%x\n", id));
 
-	//	Remove from LRU chain
+  // Remove from LRU chain
+  if (prd->lock == 0)
+    ResRemoveFromLRU(prd);
 
-//	if (prd->lock == 0)
-//		ResRemoveFromLRU(prd);
+  //	Tally stats
 
-	//	Tally stats
+  //	DBG(DSRC_RES_Stat, {resStat.totMemAlloc -= prd->size;
+  //		resStat.numLoaded--;
+  //		Spew(DSRC_RES_Stat, ("ResDrop: free %d, total now %d bytes\n",
+  //			prd->size, resStat.totMemAlloc));});
 
-//	DBG(DSRC_RES_Stat, {resStat.totMemAlloc -= prd->size;
-//		resStat.numLoaded--;
-//		Spew(DSRC_RES_Stat, ("ResDrop: free %d, total now %d bytes\n",
-//			prd->size, resStat.totMemAlloc));});
-
-	//	Free memory and set ptr to NULL
-
-	if (prd->ptr == NULL)  
-    {  
-        printf("DoResDrop: Block $%x not in memory, ignoring request\n", id);  
-        return;  
-    }  
-
-    if (prd->lock != 0)  
-    {  
-        printf("DoResDrop: Dropping resource 0x%x that's in use.\n",id);
-        prd->lock = 0;  
-    }
-
-    if (prd->ptr != NULL)  
-    {  
-        free(prd->ptr);  
-        prd->ptr = NULL;  
-    }
+  //	Free memory and set ptr to NULL
+  // FIXME Do what they sad
+  /*
+  if (prd->hdl) {
+    EmptyHandle(prd->hdl);
+  }
+  */
 }
 
 //	-------------------------------------------------------
@@ -276,52 +272,46 @@ void ResDrop(Id id)
 //
 //		Id = id of resource
 //	-------------------------------------------------------
-//  For Mac version:  Call ReleaseResource on the handle and set its ref to null.
+//  For Mac version:  Call ReleaseResource on the handle and set its ref to
+//  null.
 //  The next ResLoadResource on the resource will load it back in.
 
-void ResDelete(Id id)
-{
-	ResDesc *prd;
+void ResDelete(Id id) {
+  ResDesc *prd;
 
-	//	If locked, issue warning
+  //	If locked, issue warning
 
-//	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
+  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
 
-	prd = RESDESC(id);
-//	DBG(DSRC_RES_ChkLock, {if (prd->lock) \
+  prd = RESDESC(id);
+  //	DBG(DSRC_RES_ChkLock, {if (prd->lock) \
 //		Warning(("ResDelete: Block $%x is locked!\n", id));});
 
-	//	If in use: if in ram, free memory & LRU, then in any case zap entry
+  // If in use: if in ram, free memory & LRU, then in any case zap entry
+  if (prd->offset) {
+    //		Spew(DSRC_RES_DelDrop, ("ResDelete: deleting $%x\n", id));
+    if (prd->ptr) {
+      // Spew(DSRC_RES_DelDrop, ("ResDelete: freeing memory for $%x\n", id));
+      // DBG(DSRC_RES_Stat, {resStat.totMemAlloc -= prd->size;
+      // resStat.numLoaded--;
+      // Spew(DSRC_RES_Stat, ("ResDelete: free %d, total now %d bytes\n",
+      //					prd->size,
+      // resStat.totMemAlloc));});
 
-	if (prd->offset)
-	{
-//		Spew(DSRC_RES_DelDrop, ("ResDelete: deleting $%x\n", id));
-		if (prd->ptr)
-		{
-//			Spew(DSRC_RES_DelDrop, ("ResDelete: freeing memory for $%x\n", id));
-//			DBG(DSRC_RES_Stat, {resStat.totMemAlloc -= prd->size;
-//				resStat.numLoaded--;
-//				Spew(DSRC_RES_Stat, ("ResDelete: free %d, total now %d bytes\n",
-//					prd->size, resStat.totMemAlloc));});
+      // FIXME Memory handling
+      // ReleaseResource(prd->hdl); // release the resource.
+      ResDrop(id);
 
-			//ReleaseResource(prd->hdl);				// release the resource.
+    }
+    memset(prd, 0, sizeof(ResDesc));
+  }
 
-			//if (prd->lock == 0)
-				//ResRemoveFromLRU(prd);
+  //	Else if not in use, spew to whoever's listening
 
-			ResDrop(id);
-		}
-		LG_memset(prd, 0, sizeof(ResDesc));
-	}
-
-//	Else if not in use, spew to whoever's listening
-
-//	else
-//		{
-//		Spew(DSRC_RES_DelDrop, ("ResDelete: $%x not in use\n", id));
-//		}
+  // else {
+  //   Spew(DSRC_RES_DelDrop, ("ResDelete: $%x not in use\n", id));
+  // }
 }
-
 
 //	--------------------------------------------------------
 //		INTERNAL ROUTINES
@@ -331,20 +321,16 @@ void ResDelete(Id id)
 //
 //		id = id to be checked
 //
-//	Returns: TRUE if id ok, FALSE if invalid & prints warning
+//	Returns: true if id ok, false if invalid & prints warning
 
-uchar ResCheckId(Id id)
-{
-	if (id < ID_MIN)
-		{
-		printf("ResCheckId: id $%x invalid\n", id);
-		return FALSE;
-		}
-	if (id > resDescMax)
-		{
-		printf("ResCheckId: id $%x exceeds table\n", id);
-		return FALSE;
-		}
-	return TRUE;
+bool ResCheckId(Id id) {
+  if (id < ID_MIN) {
+    //Warning(("ResCheckId: id $%x invalid\n", id));
+    return false;
+  }
+  if (id > resDescMax) {
+    //Warning(("ResCheckId: id $%x exceeds table\n", id));
+    return false;
+  }
+  return true;
 }
-

@@ -19,10 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //		Restest.C	Resource system tester
 //		Rex E. Bradford (REX)
 /*
-* $Header: n:/project/lib/src/res/rcs/restest.c 1.7 1994/05/26 13:54:14 rex Exp
-* $
-* $log$
-*/
+ * $Header: n:/project/lib/src/res/rcs/restest.c 1.7 1994/05/26 13:54:14 rex Exp
+ * $
+ * $log$
+ */
 
 //#include <fcntl.h>
 //#include <sys\stat.h>
@@ -42,11 +42,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Prototypes
 //--------------------------------------
 int RestestHeapWalk();
-void TestCreateFile(FSSpec *specPtr);
-void TestDumpFile(FSSpec *specPtr);
-void TestEditFile(FSSpec *specPtr);
-void TestSpin(FSSpec *specPtr);
-void TestRefExtract(FSSpec *specPtr);
+void TestCreateFile(char *filename);
+void TestDumpFile(char *filename);
+void TestEditFile(char *filename);
+void TestSpin(char *filename);
+void TestRefExtract(char *filename);
 void DumpBlock(Ptr p, short psize);
 
 //----------------------------------------------------------------------------------
@@ -55,55 +55,56 @@ void DumpBlock(Ptr p, short psize);
 void main() {
   char ans[10];
   char c;
-  StandardFileReply reply;
-  SFTypeList typeList;
+  char reply[13];
+  //  SFTypeList typeList;
 
-  typeList[0] = 'Sgam';
+  //  typeList[0] = 'Sgam';
 
   ResInit();
 
-LOOP:
-  printf("\n(C)reate, (D)ump, (E)dit, (R)ef Extract, (S)pin, (Q)uit : ");
-  fgets(ans, sizeof(ans), stdin);
-  c = toupper(ans[0]);
-  switch (c) {
-  case 'C':
-    StandardPutFile("Create a resource file:", "Test Res File", &reply);
-    if (reply.sfGood)
-      TestCreateFile(&reply.sfFile);
-    break;
-  case 'D':
-    StandardGetFile(nil, 1, typeList, &reply);
-    if (reply.sfGood)
-      TestDumpFile(&reply.sfFile);
-    break;
-  case 'E':
-    StandardGetFile(nil, 1, typeList, &reply);
-    if (reply.sfGood)
-      TestEditFile(&reply.sfFile);
-    break;
-  case 'R':
-    StandardGetFile(nil, 1, typeList, &reply);
-    if (reply.sfGood)
-      TestRefExtract(&reply.sfFile);
-    break;
-  case 'S':
-    StandardGetFile(nil, 1, typeList, &reply);
-    if (reply.sfGood)
-      TestSpin(&reply.sfFile);
-    break;
-  case 'Q':
-  case 27:
-    ResTerm();
-    exit(0);
-  }
-  goto LOOP;
+  while (1) {
+    printf("\n(C)reate, (D)ump, (E)dit, (R)ef Extract, (S)pin, (Q)uit : ");
+    fgets(ans, sizeof(ans), stdin);
+    c = toupper(ans[0]);
+    switch (c) {
+    case 'C':
+      printf("Create a resource file:");
+      scanf("%s", reply);
+      if (reply)
+        TestCreateFile(reply);
+      break;
+    case 'D':
+      scanf("%s", reply);
+      if (reply)
+        TestDumpFile(reply);
+      break;
+    case 'E':
+      scanf("%s", reply);
+      if (reply)
+        TestEditFile(reply);
+      break;
+    case 'R':
+      scanf("%s", reply);
+      if (reply)
+        TestRefExtract(reply);
+      break;
+    case 'S':
+      scanf("%s", reply);
+      if (reply)
+        TestSpin(reply);
+      break;
+    case 'Q':
+    case 27:
+      ResTerm();
+      exit(0);
+    }
+  };
 }
 
 //----------------------------------------------------------------------------------
 //  Create a test file, add some resources to it.
 //----------------------------------------------------------------------------------
-void TestCreateFile(FSSpec *specPtr) {
+void TestCreateFile(char *filename) {
   static uchar data1[] = {0x10, 0x11, 0x12, 0x13, 0x14, 0x15};
   static uchar data2[] = {
       0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96,
@@ -125,7 +126,7 @@ void TestCreateFile(FSSpec *specPtr) {
   short filenum;
   Ptr p;
 
-  filenum = ResCreateFile(specPtr);
+  filenum = ResCreateFile(filename);
   printf("filenum = %d\n", filenum);
 
   ResSetComment(filenum, "This is a test\nresource file\n");
@@ -167,7 +168,7 @@ void TestDumpBlockDumper(void *buff, long numBytes, long iblock)
 //----------------------------------------------------------------------------------
 //  Dump the bytes in each resource.
 //----------------------------------------------------------------------------------
-void TestDumpFile(FSSpec *specPtr) {
+void TestDumpFile(char *filename) {
   int filenum;
   Id id;
   Ptr p;
@@ -175,7 +176,7 @@ void TestDumpFile(FSSpec *specPtr) {
   ResDesc *prd;
 
   printf("opening file\n");
-  filenum = ResOpenFile(specPtr);
+  filenum = ResOpenFile(filename);
   printf("filenum = %d\n", filenum);
 
   for (id = ID_MIN; id <= resDescMax; id++) {
@@ -201,21 +202,21 @@ void TestDumpFile(FSSpec *specPtr) {
 //----------------------------------------------------------------------------------
 //  Edit a res file (add and delete resources).
 //----------------------------------------------------------------------------------
-void TestEditFile(FSSpec *specPtr) {
+void TestEditFile(char *filename) {
   int filenum;
   char ans[10];
   int c;
   Id id;
   Ptr buff;
 
-  filenum = ResEditFile(specPtr, TRUE);
+  filenum = ResEditFile(filename, TRUE);
   if (filenum < 0) {
-    printf("Error return: %d");
+    printf("Error return: %d\n", filenum);
     return;
   }
   printf("File opened at filenum: %d\n", filenum);
   ResSetComment(filenum, "This file edited using ResEditFile");
-//	ResAutoPackOff(filenum);
+  //	ResAutoPackOff(filenum);
 
 LOOP:
   printf("(A)dd, (K)ill, (C)lose : ");
@@ -251,13 +252,13 @@ LOOP:
 //----------------------------------------------------------------------------------
 //  Who know what this does?  At least it doesn't crash.
 //----------------------------------------------------------------------------------
-void TestSpin(FSSpec *specPtr) {
+void TestSpin(char *filename) {
   int filenum, i;
   Id id;
   uchar *p;
 
   printf("opening file\n");
-  filenum = ResOpenFile(specPtr);
+  filenum = ResOpenFile(filename);
   printf("filenum = %d\n", filenum);
 
   for (i = 0; i < 1000; i++) {
@@ -275,7 +276,7 @@ void TestSpin(FSSpec *specPtr) {
 //----------------------------------------------------------------------------------
 //  Extract data from a resource using two different methods.
 //----------------------------------------------------------------------------------
-void TestRefExtract(FSSpec *specPtr) {
+void TestRefExtract(char *filename) {
   int filenum;
   char ans[10];
   int c, rfs;
@@ -283,9 +284,9 @@ void TestRefExtract(FSSpec *specPtr) {
   Ptr p, cur;
   RefTable *rt;
 
-  filenum = ResEditFile(specPtr, TRUE);
+  filenum = ResEditFile(filename, TRUE);
   if (filenum < 0) {
-    printf("Error return: %d");
+    printf("Error return: %d\n", filenum);
     return;
   }
   printf("File opened at filenum: %d\n", filenum);
@@ -318,7 +319,7 @@ void TestRefExtract(FSSpec *specPtr) {
 
     rt = ResReadRefTable(REFID(rid));
     rfs = RefSize(rt, REFINDEX(rid));
-    p = NewPtrClear(rfs);
+    p = malloc(rfs);
     RefExtract(rt, rid, p);
     ResFreeRefTable(rt);
 
