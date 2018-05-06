@@ -228,6 +228,23 @@ target_link_libraries(FixPPTest
 	LG_LIB
 )
 
+add_executable(ResDump
+	src/Libraries/RES/Tests/ResDump/resdump.c
+)
+
+target_link_libraries(ResDump
+	RES_LIB
+)
+
+add_executable(ResTest
+    src/Libraries/RES/Tests/Res/restest.c
+)
+
+target_link_libraries(ResTest
+    RES_LIB
+    LG_LIB
+)
+
 # Find Carbon
 find_library(CARBON NAMES Carbon)
 

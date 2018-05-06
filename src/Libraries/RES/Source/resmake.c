@@ -101,7 +101,7 @@ void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags) {
   //	Spew(DSRC_RES_Make, ("ResMake: making compound resource $%x\n", id));
 
   sizeTable = REFTABLESIZE(0);
-  prt = (RefTable *)calloc(1, sizeTable);
+  prt = (RefTable *)malloc(sizeTable);
   prt->numRefs = 0;
   prt->offset[0] = sizeTable;
 
@@ -126,7 +126,7 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
   ResDesc *prd;
   RefTable *prt;
   RefIndex index, i;
-  int32_t sizeItemOffsets, oldSize, sizeDiff, hdlSize;
+  int32_t sizeItemOffsets, oldSize, sizeDiff;
 
   //	Error check
 
@@ -199,11 +199,10 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
       prt->offset[i] += sizeItemOffsets;
     }
 
-    for (i = prt->numRefs/* + 1*/; i <= index; i++) {
+    for (i = prt->numRefs + 1; i <= index; i++) {
       prt->offset[i] = prt->offset[prt->numRefs];
     }
-    prt->offset[1] = 20;
-
+    // Save size of whole dir entry
     prt->offset[index + 1] = prt->offset[index] + itemSize;
 
     // Copy data into place, set new numRefs
@@ -227,11 +226,5 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
 //  the handle was made from will still be around).
 
 void ResUnmake(Id id) {
-  ResDesc *prd;
-
-  prd = RESDESC(id);
-  if (prd->ptr) {
-    prd->ptr = NULL;
-    memset(prd, 0, sizeof(ResDesc));
-  }
+  memset(RESDESC(id), 0, sizeof(ResDesc));
 }

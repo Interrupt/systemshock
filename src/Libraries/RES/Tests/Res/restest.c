@@ -68,7 +68,7 @@ void main() {
     c = toupper(ans[0]);
     switch (c) {
     case 'C':
-      printf("Create a resource file:");
+      printf("Create a resource file: ");
       scanf("%s", reply);
       if (reply)
         TestCreateFile(reply);
@@ -124,7 +124,7 @@ void TestCreateFile(char *filename) {
   static uchar data5[] = {0x25, 0x25, 0x25, 0x26, 0x26, 0x26};
 
   short filenum;
-  Ptr p;
+  void *p;
 
   filenum = ResCreateFile(filename);
   printf("filenum = %d\n", filenum);
@@ -137,7 +137,7 @@ void TestCreateFile(char *filename) {
 
   p = malloc(sizeof(data2));
   memcpy(p, data2, sizeof(data2));
-  ResMake(0x101, p, sizeof(data2), RTYPE_UNKNOWN, filenum, RDF_LZW);
+  ResMake(0x101, p, sizeof(data2), RTYPE_UNKNOWN, filenum, 0);//RDF_LZW);
   printf("resources added\n");
 
   ResMakeCompound(0x102, RTYPE_IMAGE, filenum, 0);

@@ -126,10 +126,12 @@ bool ResEraseIfInFile(Id id);          // erases a resource if it's in a
 
 //	Each compound resource starts with a Ref Table
 
+#pragma pack(1)
 typedef struct {
   RefIndex numRefs;  // # items in compound resource
   int32_t offset[1]; // offset to each item (numRefs + 1 of them)
 } RefTable;
+#pragma pack()
 
 void *RefLock(Ref ref); // lock compound res, get ptr to item
 #define RefUnlock(ref) ResUnlock(REFID(ref)) // unlock compound res item
@@ -144,9 +146,8 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff); // extract ref
 #define RefIndexValid(prt, index) ((index) < (prt)->numRefs)
 #define RefSize(prt, index) (prt->offset[(index) + 1] - prt->offset[index])
 
-int32_t
-ResNumRefs(Id id); // returns the number of refs in a resource, extracting
-                   // if necessary.
+// returns the number of refs in a resource, extracting if necessary.
+int32_t ResNumRefs(Id id);
 
 #define REFTABLESIZE(numrefs)                                                  \
   (sizeof(RefIndex) + (((numrefs) + 1) * sizeof(int32_t)))
