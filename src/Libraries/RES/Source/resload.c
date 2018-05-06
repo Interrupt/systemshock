@@ -42,7 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //#include <io.h>
 
-#include "dbg.h"
 #include "lzw.h"
 #include "res.h"
 #include "res_.h"
@@ -80,13 +79,20 @@ void *ResLoadResource(Id id) {
   if (prd->ptr == NULL)
     return (NULL);
 
-/*  if (ResFlags(id) & RDF_LZW) {
-    LoadCompressedResource(prd, id);
+  if (ResFlags(id) & RDF_LZW) {
+    FILE *fd = resFile[prd->filenum].fd;
+
+    RefTable *prt = (RefTable *)prd->ptr;
+    fseek(fd, &prt->numRefs, sizeof(RefIndex));
+    fread(&prt->offset[0], sizeof(int32_t) * (prt->numRefs +1), 1, fd);
+
+    RefExtract(prt, MKREF(id,0), (uint8_t *) (prd->ptr)) + (sizeof(RefIndex) + sizeof(int32_t) * (prt->numRefs+1));
+
   } else {
-    //      ResLoadResource(id);
+    ResRetrieve(id, prd->ptr);
   }
 
-  return (prd->ptr);*/
+  return (prd->ptr);
   //	Tally memory allocated to resources
 
   //	DBG(DSRC_RES_Stat, {resStat.totMemAlloc += prd->size;});
@@ -129,15 +135,15 @@ void *ResLoadResource(Id id) {
 //  size. Finally, we expand the data into prd->hdl.
 //	---------------------------------------------------------
 
-void LoadCompressedResource(ResDesc *prd, Id id) {
+/*void LoadCompressedResource(ResDesc *prd, Id id) {
   //  Handle mirrorHdl;
   Ptr resPtr, expPtr;
   int32_t exlen;
   int32_t tableSize = 0;
   uint16_t numRefs;
 
-  DebugString("LoadCompressedResource");
-/*  ResDesc2 *prd2 = RESDESC2(id);
+//  DebugString("LoadCompressedResource");
+*//*  ResDesc2 *prd2 = RESDESC2(id);
 
   // If everything's still in memory, there's no need to load.
   if (prd->ptr != NULL)
@@ -193,10 +199,10 @@ void LoadCompressedResource(ResDesc *prd, Id id) {
   if (exlen < 0) {
     DebugStr("LoadCompressedResource: Can't expand resource.\n");
     return;
-  }*/
+  }*//*
 
   // DisposeHandle(mirrorHdl); // Free the mirror buffer.
-}
+}*/
 
 //	---------------------------------------------------------
 //
@@ -250,5 +256,5 @@ uint8_t ResRetrieve(Id id, void *buffer) {
   else
     fread(p, size, 1, fd);
 
-  return TRUE;
+  return true;
 }

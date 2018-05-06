@@ -244,12 +244,12 @@ void ResAddPath(char *path); // add search path for resfiles
 int32_t ResOpenResFile(char *fname, ResOpenMode mode,
                        uint8_t auxinfo); // openfile
 void ResCloseFile(int32_t filenum);      // close res file
-void ResSetCDSpoof(char *path, void (*spoof_cb)(int32_t size, Id id));
+//void ResSetCDSpoof(char *path, void (*spoof_cb)(int32_t size, Id id));
 
-#define ResOpenFile(fname) ResOpenResFile(fname, ROM_READ, FALSE)
+#define ResOpenFile(fname) ResOpenResFile(fname, ROM_READ, false)
 #define ResEditFile(fname, creat)                                              \
-  ResOpenResFile(fname, (creat) ? ROM_EDITCREATE : ROM_EDIT, TRUE)
-#define ResCreateFile(fname) ResOpenResFile(fname, ROM_CREATE, TRUE)
+  ResOpenResFile(fname, (creat) ? ROM_EDITCREATE : ROM_EDIT, true)
+#define ResCreateFile(fname) ResOpenResFile(fname, ROM_CREATE, true)
 
 #define MAX_RESFILENUM 15 // maximum file number
 
@@ -259,12 +259,12 @@ void ResSetCDSpoof(char *path, void (*spoof_cb)(int32_t size, Id id));
 //		RESOURCE MEMORY MANAGMENT ROUTINES  (resmem.c)
 //	---------------------------------------------------------
 
-void *ResMalloc(size_t size);
-void *ResRealloc(void *p, size_t newsize);
-void ResFree(void *p);
-void *ResPage(int32_t size);
+//void *ResMalloc(size_t size);
+//void *ResRealloc(void *p, size_t newsize);
+//void ResFree(void *p);
+//void *ResPage(int32_t size);
 
-void ResInstallPager(void *f(int32_t size));
+//void ResInstallPager(void *f(int32_t size));
 
 //	---------------------------------------------------------
 //		RESOURCE STATS - ACCESSIBLE AT ANY TIME

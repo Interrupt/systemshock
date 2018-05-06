@@ -205,7 +205,7 @@ void *ResExtract(Id id, void *buffer) {
     return buffer;
   }
   // If ResRetreive failed, return NULL ptr
-  return (buffer);
+  return (NULL);
 
   /*
           //	Retrieve the data into the buffer, please
