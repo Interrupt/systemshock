@@ -287,7 +287,7 @@ void ResCloseFile(int32_t filenum) {
 int32_t ResFindFreeFilenum() {
   int32_t filenum;
 
-  for (filenum = 0; filenum <= MAX_RESFILENUM; filenum++) {
+  for (filenum = 1; filenum <= MAX_RESFILENUM; filenum++) {
     if (resFile[filenum].fd == NULL)
       return (filenum);
   }
