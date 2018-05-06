@@ -24,19 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $log$
  */
 
-//#include <fcntl.h>
-//#include <sys\stat.h>
-//#include <io.h>
-//#include <conio.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-//#include <lg.h>
 #include "res.h"
-//#include <mprintf.h>
-//#include <_res.h>
 
 //--------------------------------------
 //  Prototypes
@@ -47,7 +40,7 @@ void TestDumpFile(char *filename);
 void TestEditFile(char *filename);
 void TestSpin(char *filename);
 void TestRefExtract(char *filename);
-void DumpBlock(Ptr p, short psize);
+void DumpBlock(char *p, short psize);
 
 //----------------------------------------------------------------------------------
 //  Main routine.
@@ -55,10 +48,7 @@ void DumpBlock(Ptr p, short psize);
 void main() {
   char ans[10];
   char c;
-  char reply[13];
-  //  SFTypeList typeList;
-
-  //  typeList[0] = 'Sgam';
+  char *reply = "test.res";
 
   ResInit();
 
@@ -68,28 +58,30 @@ void main() {
     c = toupper(ans[0]);
     switch (c) {
     case 'C':
-      printf("Create a resource file: ");
-      scanf("%s", reply);
-      if (reply)
-        TestCreateFile(reply);
+      printf("Creating resource file %s\n", reply);
+      TestCreateFile(reply);
       break;
     case 'D':
-      scanf("%s", reply);
-      if (reply)
-        TestDumpFile(reply);
+      printf("Dumping resource file %s\n", reply);
+      TestDumpFile(reply);
       break;
     case 'E':
-      scanf("%s", reply);
-      if (reply)
-        TestEditFile(reply);
+      printf("Editing resource file: %s\n", reply);
+      TestEditFile(reply);
       break;
     case 'R':
+      printf("Extract a resource file: ");
       scanf("%s", reply);
+      while (getchar() != '\n')
+        ;
       if (reply)
         TestRefExtract(reply);
       break;
     case 'S':
+      printf("Spin a resource file: ");
       scanf("%s", reply);
+      while (getchar() != '\n')
+        ;
       if (reply)
         TestSpin(reply);
       break;
@@ -105,8 +97,8 @@ void main() {
 //  Create a test file, add some resources to it.
 //----------------------------------------------------------------------------------
 void TestCreateFile(char *filename) {
-  static uchar data1[] = {0x10, 0x11, 0x12, 0x13, 0x14, 0x15};
-  static uchar data2[] = {
+  static uint8_t data1[] = {0x10, 0x11, 0x12, 0x13, 0x14, 0x15};
+  static uint8_t data2[] = {
       0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96,
       0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96,
       0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96,
@@ -114,14 +106,14 @@ void TestCreateFile(char *filename) {
       0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96,
       0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96, 0x99, 0x98, 0x97, 0x96,
   };
-  static uchar data3[] = {
+  static uint8_t data3[] = {
       0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0x45, 0x45, 0x45,
       0x45, 0x45, 0x45, 0x45, 0x45, 0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
       0x44, 0x44, 0x45, 0x45, 0x45, 0x45, 0x45, 0x45, 0x45, 0x45,
   };
-  static uchar data4[] = {0x48, 0x48, 0x48, 0x48};
+  static uint8_t data4[] = {0x48, 0x48, 0x48, 0x48};
   // static uchar data5[] = {0x38,0x38};
-  static uchar data5[] = {0x25, 0x25, 0x25, 0x26, 0x26, 0x26};
+  static uint8_t data5[] = {0x25, 0x25, 0x25, 0x26, 0x26, 0x26};
 
   short filenum;
   void *p;
@@ -137,7 +129,7 @@ void TestCreateFile(char *filename) {
 
   p = malloc(sizeof(data2));
   memcpy(p, data2, sizeof(data2));
-  ResMake(0x101, p, sizeof(data2), RTYPE_UNKNOWN, filenum, 0);//RDF_LZW);
+  ResMake(0x101, p, sizeof(data2), RTYPE_UNKNOWN, filenum, RDF_LZW);
   printf("resources added\n");
 
   ResMakeCompound(0x102, RTYPE_IMAGE, filenum, 0);
@@ -171,7 +163,7 @@ void TestDumpBlockDumper(void *buff, long numBytes, long iblock)
 void TestDumpFile(char *filename) {
   int filenum;
   Id id;
-  Ptr p;
+  char *p;
   int i, rs;
   ResDesc *prd;
 
@@ -187,8 +179,8 @@ void TestDumpFile(char *filename) {
       p = malloc(rs);
       ResExtract(id, p);
       ResUnlock(id);
-      printf("Res $%x (size %d):\n", id, rs);
-      DumpBlock((Ptr)p, rs);
+      printf("Res 0x%x (size %d):\n", id, rs);
+      DumpBlock(p, rs);
     }
   }
 
@@ -207,46 +199,51 @@ void TestEditFile(char *filename) {
   char ans[10];
   int c;
   Id id;
-  Ptr buff;
+  void *buff;
 
-  filenum = ResEditFile(filename, TRUE);
+  filenum = ResEditFile(filename, true);
   if (filenum < 0) {
     printf("Error return: %d\n", filenum);
     return;
   }
   printf("File opened at filenum: %d\n", filenum);
   ResSetComment(filenum, "This file edited using ResEditFile");
-  //	ResAutoPackOff(filenum);
+  // ResAutoPackOff(filenum);
 
-LOOP:
-  printf("(A)dd, (K)ill, (C)lose : ");
-  fgets(ans, sizeof(ans), stdin);
-  switch (toupper(ans[0])) {
-  case 'A':
-    printf("Hit char for id : ");
+  while (1) {
+    printf("(A)dd, (K)ill, (C)lose : ");
     fgets(ans, sizeof(ans), stdin);
-    c = atoi(ans);
-    id = 0x100 + c;
-    buff = malloc(16);
-    memset(buff, c, 16);
-    ResMake(id, buff, 13, 0, filenum, 0);
-    c = ResWrite(id);
-    printf("Wrote %d bytes\n", c);
-    break;
+    while (getchar() != '\n')
+      ;
+    switch (toupper(ans[0])) {
+    case 'A':
+      printf("Hit char for id : ");
+      fgets(ans, sizeof(ans), stdin);
+      while (getchar() != '\n')
+        ;
 
-  case 'K':
-    printf("Hit char for id : ");
-    fgets(ans, sizeof(ans), stdin);
-    c = atoi(ans);
-    id = 0x100 + c;
-    ResKill(id);
-    break;
+      c = atoi(ans);
+      id = 0x100 + c;
+      buff = malloc(16);
+      memset(buff, c, 16);
+      ResMake(id, buff, sizeof(buff), 0, filenum, 0);
+      c = ResWrite(id);
+      printf("Wrote %d bytes\n", c);
+      break;
 
-  case 'C':
-    ResCloseFile(filenum);
-    return;
+    case 'K':
+      printf("Hit char for id : ");
+      fgets(ans, sizeof(ans), stdin);
+      c = atoi(ans);
+      id = 0x100 + c;
+      ResKill(id);
+      break;
+
+    case 'C':
+      ResCloseFile(filenum);
+      return;
+    }
   }
-  goto LOOP;
 }
 
 //----------------------------------------------------------------------------------
@@ -255,7 +252,7 @@ LOOP:
 void TestSpin(char *filename) {
   int filenum, i;
   Id id;
-  uchar *p;
+  uint8_t *p;
 
   printf("opening file\n");
   filenum = ResOpenFile(filename);
@@ -263,7 +260,7 @@ void TestSpin(char *filename) {
 
   for (i = 0; i < 1000; i++) {
     for (id = 0x100; id <= 0x101; id++) {
-      p = (uchar *)ResLock(id);
+      p = (uint8_t *)ResLock(id);
       if (i == 999)
         printf("$%x: $%x $%x ... (size %d)\n", id, *p, *(p + 1), ResSize(id));
       ResUnlock(id);
@@ -281,10 +278,10 @@ void TestRefExtract(char *filename) {
   char ans[10];
   int c, rfs;
   Ref rid;
-  Ptr p, cur;
+  char *p, cur;
   RefTable *rt;
 
-  filenum = ResEditFile(filename, TRUE);
+  filenum = ResEditFile(filename, true);
   if (filenum < 0) {
     printf("Error return: %d\n", filenum);
     return;
@@ -293,6 +290,8 @@ void TestRefExtract(char *filename) {
 
   printf("Extract method (1) or (2) or (L)ist table? ");
   fgets(ans, sizeof(ans), stdin);
+  while (getchar() != '\n')
+    ;
   switch (ans[0]) {
   case 'l':
   case 'L':
@@ -306,7 +305,7 @@ void TestRefExtract(char *filename) {
     fgets(ans, sizeof(ans), stdin);
     c = atoi(ans);
     rid = MKREF(0x102, c);
-    p = (Ptr)RefLock(rid);
+    p = RefLock(rid);
     // Copy into your own buffer here.
     RefUnlock(rid);
     break;
@@ -334,14 +333,14 @@ void TestRefExtract(char *filename) {
 //----------------------------------------------------------------------------------
 //  Dumps the contents of a pointer.
 //----------------------------------------------------------------------------------
-void DumpBlock(Ptr p, short psize) {
+void DumpBlock(char *p, short psize) {
   short c = 1;
-  Ptr cur = p;
-  uchar ch;
+  char *cur = p;
+  uint8_t ch;
 
   while ((cur - p) < psize) {
     ch = *cur;
-    printf("$%x ", ch);
+    printf("0x%02x ", ch);
     c++;
     cur++;
     if (c > 8) {
@@ -351,80 +350,3 @@ void DumpBlock(Ptr p, short psize) {
       printf("\n");
   }
 }
-
-/*
-int RestestHeapWalk()
-{
-        struct _heapinfo hinfo;
-        int hstat;
-
-//	Walk heap, collecting info
-
-        hinfo._pentry = NULL;
-        while (TRUE)
-                {
-                hstat = _heapwalk(&hinfo);
-                printf("Heapwalk: pentry: $%Fp, size: %d, use: %d (stat =
-%d)\n",
-                        hinfo._pentry, hinfo._size, hinfo._useflag, hstat);
-                if (hstat != _HEAPOK)
-                        break;
-                }
-
-//	Return 0 or error (-1)
-
-        if (hstat != _HEAPEND)
-                {
-                Warning(("MemStats: heap bad\n"));
-                return(-1);
-                }
-        return(0);
-}
-
-#include "lzw.h"
-
-void DoesItCompile()
-{
-        LzwCompressBuff2Buff(0,0,0,0);
-        LzwCompressBuff2Fd(0,0,0);
-        LzwCompressBuff2Fp(0,0,0);
-        LzwCompressBuff2Null(0,0);
-        LzwCompressBuff2User(0,0,0,0,0,0);
-        LzwCompressFd2Buff(0,0,0,0);
-        LzwCompressFd2Fd(0,0,0);
-        LzwCompressFd2Fp(0,0,0);
-        LzwCompressFd2Null(0,0);
-        LzwCompressFd2User(0,0,0,0,0,0);
-        LzwCompressFp2Buff(0,0,0,0);
-        LzwCompressFp2Fd(0,0,0);
-        LzwCompressFp2Fp(0,0,0);
-        LzwCompressFp2Null(0,0);
-        LzwCompressFp2User(0,0,0,0,0,0);
-        LzwCompressUser2Buff(0,0,0,0,0,0);
-        LzwCompressUser2Fd(0,0,0,0,0);
-        LzwCompressUser2Fp(0,0,0,0,0);
-        LzwCompressUser2Null(0,0,0,0);
-        LzwCompressUser2User(0,0,0,0,0,0,0,0);
-
-        LzwExpandBuff2Buff(0,0,0,0);
-        LzwExpandBuff2Fd(0,0,0,0);
-        LzwExpandBuff2Fp(0,0,0,0);
-        LzwExpandBuff2Null(0,0,0);
-        LzwExpandBuff2User(0,0,0,0,0,0);
-        LzwExpandFd2Buff(0,0,0,0);
-        LzwExpandFd2Fd(0,0,0,0);
-        LzwExpandFd2Fp(0,0,0,0);
-        LzwExpandFd2Null(0,0,0);
-        LzwExpandFd2User(0,0,0,0,0,0);
-        LzwExpandFp2Buff(0,0,0,0);
-        LzwExpandFp2Fd(0,0,0,0);
-        LzwExpandFp2Fp(0,0,0,0);
-        LzwExpandFp2Null(0,0,0);
-        LzwExpandFp2User(0,0,0,0,0,0);
-        LzwExpandUser2Buff(0,0,0,0,0,0);
-        LzwExpandUser2Fd(0,0,0,0,0,0);
-        LzwExpandUser2Fp(0,0,0,0,0,0);
-        LzwExpandUser2Null(0,0,0,0,0);
-        LzwExpandUserUser(0,0,0,0,0,0,0,0);
-}
-*/
