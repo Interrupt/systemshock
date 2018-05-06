@@ -123,11 +123,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //		HEADER SECTION
 //	------------------------------------------------------------
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "lg.h"
 #ifndef __LZW_H
 #include "lzw.h"
 #endif
@@ -168,7 +168,7 @@ uint8_t *LzwDecodeString(uint8_t *buffer, uint32_t code);
 //	 routines are used.
 
 void LzwInit(void) {
-  //	AtExit(LzwTerm);
+  atexit(LzwTerm);
 }
 
 //	------------------------------------------------------------
@@ -176,7 +176,9 @@ void LzwInit(void) {
 // LzwTerm() needs to be called once when the lzw compression
 //	 routines are no longer needed.
 
-void LzwTerm(void) { LzwFreeBuffer(); }
+void LzwTerm(void) {
+  LzwFreeBuffer();
+}
 
 //	------------------------------------------------------------
 //		BUFFER SETTING
@@ -187,30 +189,30 @@ void LzwTerm(void) { LzwFreeBuffer(); }
 //	Returns: 0 if ok, -1 if buffer not ok
 
 int32_t LzwSetBuffer(void *buff, int32_t buffSize) {
-  //	Check buffer size
+  // Check buffer size
 
   if (buffSize < LZW_BUFF_SIZE) {
-    //		Warning(("LzwSetBuffer: buffer too small!\n"));
+    // Warning(("LzwSetBuffer: buffer too small!\n"));
     return (-1);
   }
 
-  //	De-allocate current buffer if malloced
+  // De-allocate current buffer if malloced
 
   LzwTerm();
 
-  //	Set buffer pointers
+  // Set buffer pointers
 
   lzwBuffer = buff;
   lzwDecodeStack = lzwBuffer;
-  lzwFdReadBuff = ((uint8_t *)lzwDecodeStack) + LZW_DECODE_STACK_SIZE;
-  lzwFdWriteBuff = ((uint8_t *)lzwFdWriteBuff) + LZW_FD_READ_BUFF_SIZE;
+  lzwFdReadBuff = (lzwDecodeStack) + LZW_DECODE_STACK_SIZE;
+  lzwFdWriteBuff = (lzwFdWriteBuff) + LZW_FD_READ_BUFF_SIZE;
   lzwCodeValue =
-      (int16_t *)(((uint8_t *)lzwDecodeStack) + LZW_FD_WRITE_BUFF_SIZE);
+      (int16_t *)((lzwDecodeStack) + LZW_FD_WRITE_BUFF_SIZE);
   lzwPrefixCode = (uint16_t *)(((uint8_t *)lzwCodeValue) +
                                (LZW_TABLE_SIZE * sizeof(uint16_t)));
   lzwAppendChar =
       ((uint8_t *)lzwPrefixCode) + (LZW_TABLE_SIZE * sizeof(uint16_t));
-  lzwBufferMalloced = FALSE;
+  lzwBufferMalloced = false;
   return (0);
 }
 
@@ -226,12 +228,11 @@ int32_t LzwMallocBuffer() {
   if ((lzwBuffer == NULL) || (!lzwBufferMalloced)) {
     buff = malloc(LZW_BUFF_SIZE);
     if (buff == NULL) {
-      //			Warning(("LzwMallocBuffer: failed to allocate
-      // buffers\n"));
+      // Warning(("LzwMallocBuffer: failed to allocate buffers\n"));
       return (-1);
     } else {
       LzwSetBuffer(buff, LZW_BUFF_SIZE);
-      lzwBufferMalloced = TRUE;
+      lzwBufferMalloced = true;
     }
   }
   return (0);
@@ -245,7 +246,7 @@ void LzwFreeBuffer() {
   if (lzwBufferMalloced) {
     free(lzwBuffer);
     lzwBuffer = NULL;
-    lzwBufferMalloced = FALSE;
+    lzwBufferMalloced = false;
   }
 }
 
@@ -316,15 +317,13 @@ int32_t LzwCompress(
     int32_t destSizeMax              // max size of dest (or LZW_MAXSIZE)
 ) {
 
-  //	If not already initialized, do it
-
+  // If not already initialized, do it
   if (lzwBuffer == NULL) {
     if (LzwMallocBuffer() < 0)
       return (0);
   }
 
-  //	Set up for compress loop
-
+  // Set up for compress loop
   lzwc.next_code = 256; // skip over real 256 char values
   memset(lzwCodeValue, -1, sizeof(int16_t) * LZW_TABLE_SIZE);
 
@@ -342,22 +341,18 @@ int32_t LzwCompress(
   // the input has been exhausted.  Note that it stops adding codes to the
   // table after all of the possible codes have been defined.
 
-  while (TRUE) {
-
-    //	Get next input char, if read all data then exit loop
-
+  while (true) {
+    // Get next input char, if read all data then exit loop
     lzwc.character = (*f_SrcGet)();
     if (lzwc.lzwInputCharCount++ >= srcSize)
       break;
 
-    //	See if string is in string table.  If it is, get the code value.
-
+    // See if string is in string table.  If it is, get the code value.
     lzwc.index = LzwFindMatch(lzwc.string_code, lzwc.character);
     if (lzwCodeValue[lzwc.index] != -1)
       lzwc.string_code = lzwCodeValue[lzwc.index];
 
-    //	Else if string not in string table, try to add it.
-
+    // Else if string not in string table, try to add it.
     else {
       if (lzwc.next_code <= MAX_CODE) {
         lzwCodeValue[lzwc.index] = lzwc.next_code++;
@@ -366,11 +361,8 @@ int32_t LzwCompress(
         LzwOutputCode(lzwc.string_code);
         lzwc.string_code = lzwc.character;
       }
-
-      //	Else if table is full and has been for a while, flush it, and
-      // drain
-      //	the code value table too.
-
+      // Else if table is full and has been for a while, flush it, and
+      // drain the code value table too.
       else if (lzwc.next_code > MAX_CODE + FLUSH_PAUSE) {
         LzwOutputCode(lzwc.string_code);
         LzwOutputCode(FLUSH_CODE);
@@ -378,9 +370,7 @@ int32_t LzwCompress(
         lzwc.string_code = lzwc.character;
         lzwc.next_code = 256;
       }
-
-      //	Else if can't add but table not full, just output the code.
-
+      // Else if can't add but table not full, just output the code.
       else {
         lzwc.next_code++;
         LzwOutputCode(lzwc.string_code);
@@ -389,14 +379,14 @@ int32_t LzwCompress(
     }
   }
 
-  //	Done with processing loop, output current code, end-of-data code,
-  //	and a final 0 to flush the buffer.
+  // Done with processing loop, output current code, end-of-data code,
+  // and a final 0 to flush the buffer.
 
   LzwOutputCode(lzwc.string_code);
   LzwOutputCode(MAX_VALUE);
   LzwOutputCode(0);
 
-  //	Shut down source and destination and return size of output
+  // Shut down source and destination and return size of output
 
   (*f_SrcCtrl)(srcLoc, END);
   (*f_DestCtrl)(destLoc, END);
@@ -465,15 +455,12 @@ int32_t LzwExpand(
     int32_t destSkip,                // # dest bytes to skip over (or 0)
     int32_t destSize                 // # dest bytes to capture (if 0, all)
 ) {
-
-  //	If not already initialized, do it
-
+  // If not already initialized, do it
   if (lzwBuffer == NULL) {
     if (LzwMallocBuffer() < 0)
       return (0);
   }
-
-  //	Set up for expansion loop
+  // Set up for expansion loop
 
   lzwe.lzwInputBitCount = 0;
   lzwe.lzwInputBitBuffer = 0;
@@ -482,13 +469,11 @@ int32_t LzwExpand(
   lzwe.destSkip = destSkip;
   lzwe.destSize = destSize ? destSize : LZW_MAXSIZE;
 
-  //	Notify the control routines
-
+  // Notify the control routines
   (*f_SrcCtrl)(srcLoc, BEGIN);
   (*f_DestCtrl)(destLoc, BEGIN);
 
-  //	Get first code & output it.
-
+  // Get first code & output it.
   lzwe.old_code = LzwInputCode(f_SrcGet);
   lzwe.character = lzwe.old_code;
 
@@ -497,13 +482,11 @@ int32_t LzwExpand(
     lzwe.outputSize++;
   }
 
-  //	This is the expansion loop.  It reads in codes from the source until
-  //	it sees the special end-of-data code.
-
+  // This is the expansion loop.  It reads in codes from the source until
+  // it sees the special end-of-data code.
   while ((lzwe.new_code = LzwInputCode(f_SrcGet)) != MAX_VALUE) {
 
-    //	If flush code, flush the string table & restart from top of loop
-
+    // If flush code, flush the string table & restart from top of loop
     if (lzwe.new_code == FLUSH_CODE) {
       lzwe.next_code = 256;
       lzwe.old_code = LzwInputCode(f_SrcGet);
@@ -516,23 +499,21 @@ int32_t LzwExpand(
       continue;
     }
 
-    //	Check for the special STRING+CHARACTER+STRING+CHARACTER+STRING, which
-    //	generates an undefined code.  Handle it by decoding the last code,
-    //	adding a single character to the end of the decode string.
+    // Check for the special STRING+CHARACTER+STRING+CHARACTER+STRING, which
+    // generates an undefined code.  Handle it by decoding the last code,
+    // adding a single character to the end of the decode string.
 
     if (lzwe.new_code >= lzwe.next_code) {
       *lzwDecodeStack = lzwe.character;
       lzwe.string = LzwDecodeString(lzwDecodeStack + 1, lzwe.old_code);
     }
 
-    //	Otherwise we do a straight decode of the new code.
-
+    // Otherwise we do a straight decode of the new code.
     else {
       lzwe.string = LzwDecodeString(lzwDecodeStack, lzwe.new_code);
     }
 
-    //	Output the decode string to the destination, in reverse order.
-
+    // Output the decode string to the destination, in reverse order.
     lzwe.character = *lzwe.string;
     while (lzwe.string >= lzwDecodeStack) {
       if (--lzwe.destSkip < 0) {
@@ -543,8 +524,7 @@ int32_t LzwExpand(
       --lzwe.string;
     }
 
-    //	If possible, add a new code to the string table.
-
+    // If possible, add a new code to the string table.
     if (lzwe.next_code <= MAX_CODE) {
       lzwPrefixCode[lzwe.next_code] = lzwe.old_code;
       lzwAppendChar[lzwe.next_code] = lzwe.character;
@@ -553,7 +533,7 @@ int32_t LzwExpand(
     lzwe.old_code = lzwe.new_code;
   }
 
-  //	When break out of expansion loop, shut down source & dest & return size.
+  // When break out of expansion loop, shut down source & dest & return size.
 
 DONE_EXPAND:
 
@@ -577,7 +557,9 @@ void LzwBuffSrcCtrl(int32_t srcLoc, LzwCtrl ctrl) {
     lzwBuffSrcPtr = (uint8_t *)srcLoc;
 }
 
-uint8_t LzwBuffSrcGet() { return (*lzwBuffSrcPtr++); }
+uint8_t LzwBuffSrcGet() {
+  return (*lzwBuffSrcPtr++);
+}
 
 //	---------------------------------------------------------------
 //
