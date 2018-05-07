@@ -70,12 +70,8 @@ void main() {
       TestEditFile(reply);
       break;
     case 'R':
-      printf("Extract a resource file: ");
-      scanf("%s", reply);
-      while (getchar() != '\n')
-        ;
-      if (reply)
-        TestRefExtract(reply);
+      printf("Extracting resource file: %s\n", reply);
+      TestRefExtract(reply);
       break;
     case 'S':
       printf("Spin a resource file: ");
@@ -116,7 +112,7 @@ void TestCreateFile(char *filename) {
   static uint8_t data5[] = {0x25, 0x25, 0x25, 0x26, 0x26, 0x26};
 
   short filenum;
-  void *p;
+  char * p;
 
   filenum = ResCreateFile(filename);
   printf("filenum = %d\n", filenum);
@@ -146,6 +142,7 @@ void TestCreateFile(char *filename) {
 
   ResCloseFile(filenum);
   printf("resource file closed\n");
+  ResTerm();
 }
 /*
 void TestDumpBlockDumper(void *buff, long numBytes, long iblock)
@@ -161,10 +158,9 @@ void TestDumpBlockDumper(void *buff, long numBytes, long iblock)
 //  Dump the bytes in each resource.
 //----------------------------------------------------------------------------------
 void TestDumpFile(char *filename) {
-  int filenum;
+  int filenum, rs;
   Id id;
   char *p;
-  int i, rs;
   ResDesc *prd;
 
   printf("opening file\n");
@@ -189,6 +185,7 @@ void TestDumpFile(char *filename) {
           ResExtractInBlocks(0x100, buff, 4, TestDumpBlockDumper);
   */
   ResCloseFile(filenum);
+  ResTerm();
 }
 
 //----------------------------------------------------------------------------------
