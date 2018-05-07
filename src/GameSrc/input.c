@@ -1926,6 +1926,7 @@ void view3d_rightbutton_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data
       }
    }
 */
+
    switch (input_cursor_mode)
    {
    case INPUT_NORMAL_CURSOR:
@@ -1933,6 +1934,7 @@ void view3d_rightbutton_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data
       if (left_down_jump) break;
       if (data->rdown)
       {
+         printf("FIRE WEAPON!\n");
 	      if (fire_player_weapon(&aimpos,r,weapon_button_up) && (ev->action & MOUSE_RDOWN) && !fire_slam)
          {
             if (full_game_3d)

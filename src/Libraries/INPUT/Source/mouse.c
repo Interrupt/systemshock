@@ -534,7 +534,13 @@ errtype mouse_put_xy(short x, short y)
 
 errtype mouse_check_btn(short button, bool* res)
 {
-	*res = Button();
+
+	if(button == 1) {
+		*res = SDL_BUTTON(SDL_BUTTON_LEFT);
+	}
+	else if(button == 2) {
+		*res = SDL_BUTTON(SDL_BUTTON_RIGHT);
+	}
 /*   if (!mouse_installed) 
    {
       Warning(("mouse_get_xy(): mouse not installed.\n"));

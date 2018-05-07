@@ -151,10 +151,10 @@ typedef struct {
 
 #define OBJ_LOC_BIN_X(oloc) ((oloc).x >> 8)
 #define OBJ_LOC_BIN_Y(oloc) ((oloc).y >> 8)
-#define OBJ_LOC_FINE_X(oloc) ((ushort)((oloc).x & 0xFF))
-#define OBJ_LOC_FINE_Y(oloc) ((ushort)((oloc).y & 0xFF))
+#define OBJ_LOC_FINE_X(oloc) ((ushort)((oloc).x & 0xFF00))
+#define OBJ_LOC_FINE_Y(oloc) ((ushort)((oloc).y & 0xFF00))
 #ifdef SAFE_FIX
-#define OBJ_LOC_VAL_TO_FIX(value) (fix_make((value >> 8), ((value & 0xFF) << 8)))
+#define OBJ_LOC_VAL_TO_FIX(value) (fix_make((value >> 8), ((value & 0xFF00) << 8)))
 #else
 #define OBJ_LOC_VAL_TO_FIX(value) (((fix)value)<<8)				
 #endif

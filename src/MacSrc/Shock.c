@@ -699,7 +699,7 @@ void HandleNewGame()
 
 	// Disabling physics turns on noclip mode
 	physics_running = FALSE;
-	
+
 	ShockGameLoop();
 
 	/*RenderTest();

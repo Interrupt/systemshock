@@ -369,6 +369,8 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
    if (*use_ref != NULL)
       *use_ref = 0;
 
+   printf("bitmap_from_tpoly_data\n");
+
    tpdata = tpdata & 0xFFF;
    style = (tpdata & TPOLY_STYLE_MASK) >> (TPOLY_INDEX_BITS + TPOLY_TYPE_BITS + TPOLY_SCALE_BITS);
    *scale = ((tpdata & TPOLY_SCALE_MASK) >> (TPOLY_INDEX_BITS + TPOLY_TYPE_BITS)) << TPOLY_SCALE_SHIFT;
@@ -1433,103 +1435,96 @@ errtype obj_load_properties()
 {
 	 //Handle	res;
 	 int		version, i, j;
-	 //char		*cp;
+	 char		*cp;
 
-	extern void SwapLongBytes(void *pval4);
-	extern void SwapShortBytes(void *pval2);
+	//extern void SwapLongBytes(void *pval4);
+	//extern void SwapShortBytes(void *pval2);
 
    printf("obj_load_properties\n");
 
-   printf("levname %s\n", OBJPROP_FILENAME);
+   printf(" loading obj prop file: %s\n", OBJPROP_FILENAME);
 
 //  For Mac version, replaced with GetResource
 
    //Spew(DSRC_GFX_Anim, ("objprop path = %s\n",path));
    FILE* f = fopen("res/data/objprop.dat", "rb");
+
    if (f == NULL)
    {
       return(ERR_FOPEN);
    }
-   
-   fread(&version, sizeof(version), 1, f);
-   if (version != OBJPROP_VERSION_NUMBER)
-   {
-#ifndef PLAYTEST
-      critical_error(CRITERR_MISC|0);
-#else // !PLAYTEST
-      Warning(("Bad Object Properties version number.\n"));
-#endif 
-   }
 
-    printf("Got good version.\n");
-	
-	// Read in the Object Properties resource.
-	
-	/*res = GetResource('oprp',1000);
-	if (!res) return(ERR_FOPEN);
-	HLock(res);
-	cp = *res;
+   fseek(f, 0, SEEK_END);
+   int len = ftell(f);
+   rewind(f);
+
+   cp = (char*)malloc((len+1)*sizeof(char));
+   fread(cp, len, 1, f);
+   fclose(f);
 	
 	// Check to make sure we have the right version.
+   printf("Checking version.\n");
 	version = *(int *)cp;
 	cp += 4;
-	SwapLongBytes(&version);
-	if (version != OBJPROP_VERSION_NUMBER)
-		critical_error(CRITERR_MISC|0);*/
+	//SwapLongBytes(&version);
+	if (version != OBJPROP_VERSION_NUMBER) {
+      printf("Bad version!\n");
+		critical_error(CRITERR_MISC|0);
+   }
+
+   printf("Good version!\n");
 	
 	// Copy the data to the various global arrays, converting as needed.
 	
-	//-------------
-	// GUNS
-	//-------------
-   fread(&GunProps, sizeof(GunProps), 1, f);
-	//cp += sizeof(GunProps);
-	
-   fread(&PistolGunProps, sizeof(PistolGunProps), 1, f);
-	//BlockMoveData(cp, PistolGunProps, NUM_PISTOL_GUN);		Dummies
-	//cp += NUM_PISTOL_GUN;
-	
-   fread(&AutoGunProps, sizeof(AutoGunProps), 1, f);
-	//BlockMoveData(cp, AutoGunProps, NUM_AUTO_GUN);				Dummies
-	//cp += NUM_AUTO_GUN;
+   //-------------
+   // GUNS
+   //-------------
+   BlockMoveData(cp, GunProps, sizeof(GunProps));
+   cp += sizeof(GunProps);
+   
+   //BlockMoveData(cp, PistolGunProps, NUM_PISTOL_GUN);     Dummies
+   cp += NUM_PISTOL_GUN;
+   
+   //BlockMoveData(cp, AutoGunProps, NUM_AUTO_GUN);            Dummies
+   cp += NUM_AUTO_GUN;
 
-   fread(&SpecialGunProps, sizeof(SpecialGunProps), 1, f);
+   //fread(&SpecialGunProps, sizeof(SpecialGunProps), 1, f);
 	
-	/*for (i = 0; i < NUM_SPECIAL_GUN; i++)
+	for (i = 0; i < NUM_SPECIAL_GUN; i++)
 	{
 		SpecialGunProp *sgp = &SpecialGunProps[i];
 		
 		sgp->damage_modifier = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&sgp->damage_modifier);
+		//SwapShortBytes(&sgp->damage_modifier);
 		sgp->offense_value = *cp++;
 		sgp->damage_type = *(int *)cp;
 		cp += 4;
-		SwapLongBytes(&sgp->damage_type);
+		//SwapLongBytes(&sgp->damage_type);
 		sgp->penetration = *cp++;
 		
 		sgp->speed = *cp++;
 		sgp->proj_triple = *(int *)cp;
 		cp += 4;
-		SwapLongBytes(&sgp->proj_triple);
+		//SwapLongBytes(&sgp->proj_triple);
 		sgp->attack_mass = *cp++;
 		sgp->attack_speed = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&sgp->attack_speed);
-	}*/
+		//SwapShortBytes(&sgp->attack_speed);
+	}
 	
-   fread(&HandtohandGunProps, sizeof(HandtohandGunProps), 1, f);
-	/*for (i = 0; i < NUM_HANDTOHAND_GUN; i++)
+   //fread(&HandtohandGunProps, sizeof(HandtohandGunProps), 1, f);
+	for (i = 0; i < NUM_HANDTOHAND_GUN; i++)
 	{
 		HandtohandGunProp *hhgp = &HandtohandGunProps[i];
 		
 		hhgp->damage_modifier = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&hhgp->damage_modifier);
+		//SwapShortBytes(&hhgp->damage_modifier);
 		hhgp->offense_value = *cp++;
 		hhgp->damage_type = *(int *)cp;
 		cp += 4;
-		SwapLongBytes(&hhgp->damage_type);
+		//SwapLongBytes(&hhgp->damage_type);
 		hhgp->penetration = *cp++;
 		
 		hhgp->energy_use = *cp++;
@@ -1537,20 +1532,20 @@ errtype obj_load_properties()
 		hhgp->attack_range = *cp++;
 		hhgp->attack_speed = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&hhgp->attack_speed);
-	}*/
+		//SwapShortBytes(&hhgp->attack_speed);
+	}
 	
-	/*for (i = 0; i < NUM_BEAM_GUN; i++)
+	for (i = 0; i < NUM_BEAM_GUN; i++)
 	{
 		BeamGunProp *bgp = &BeamGunProps[i];
 		
 		bgp->damage_modifier = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&bgp->damage_modifier);
+		//SwapShortBytes(&bgp->damage_modifier);
 		bgp->offense_value = *cp++;
 		bgp->damage_type = *(int *)cp;
 		cp += 4;
-		SwapLongBytes(&bgp->damage_type);
+		//SwapLongBytes(&bgp->damage_type);
 		bgp->penetration = *cp++;
 		
 		bgp->max_charge = *cp++;
@@ -1558,7 +1553,7 @@ errtype obj_load_properties()
 		bgp->attack_range = *cp++;
 		bgp->attack_speed = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&bgp->attack_speed);
+		//SwapShortBytes(&bgp->attack_speed);
 	}
 	
 	for (i = 0; i < NUM_BEAMPROJ_GUN; i++)
@@ -1567,22 +1562,22 @@ errtype obj_load_properties()
 		
 		bgp->damage_modifier = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&bgp->damage_modifier);
+		//SwapShortBytes(&bgp->damage_modifier);
 		bgp->offense_value = *cp++;
 		bgp->damage_type = *(int *)cp;
 		cp += 4;
-		SwapLongBytes(&bgp->damage_type);
+		//SwapLongBytes(&bgp->damage_type);
 		bgp->penetration = *cp++;
 		
 		bgp->max_charge = *cp++;
 		bgp->attack_mass = *cp++;
 		bgp->attack_speed = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&bgp->attack_speed);
+		//SwapShortBytes(&bgp->attack_speed);
 		bgp->speed = *cp++;
 		bgp->proj_triple = *(int *)cp;
 		cp += 4;
-		SwapLongBytes(&bgp->proj_triple);
+		//SwapLongBytes(&bgp->proj_triple);
 		bgp->flags = *cp++;
 	}
 
@@ -1595,18 +1590,18 @@ errtype obj_load_properties()
 		
 		ap->damage_modifier = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&ap->damage_modifier);
+		//SwapShortBytes(&ap->damage_modifier);
 		ap->offense_value = *cp++;
 		ap->damage_type = *(int *)cp;
 		cp += 4;
-		SwapLongBytes(&ap->damage_type);
+		//SwapLongBytes(&ap->damage_type);
 		ap->penetration = *cp++;
 		
 		ap->cartridge_size = *cp++;
 		ap->bullet_mass = *cp++;
 		ap->bullet_speed = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&ap->bullet_speed);
+		//SwapShortBytes(&ap->bullet_speed);
 		ap->range = *cp++;
 		ap->recoil_force = *cp++;
 	}
@@ -1652,8 +1647,8 @@ errtype obj_load_properties()
 		
 		for (j = 0; j < 4; j++)
 		{
-			SwapShortBytes(&tpp->xcoords[j]);
-			SwapShortBytes(&tpp->ycoords[j]);
+			//SwapShortBytes(&tpp->xcoords[j]);
+			//SwapShortBytes(&tpp->ycoords[j]);
 		}
 	}
 
@@ -1673,11 +1668,11 @@ errtype obj_load_properties()
 		
 		gp->damage_modifier = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&gp->damage_modifier);
+		//SwapShortBytes(&gp->damage_modifier);
 		gp->offense_value = *cp++;
 		gp->damage_type = *(int *)cp;
 		cp += 4;
-		SwapLongBytes(&gp->damage_type);
+		//SwapLongBytes(&gp->damage_type);
 		gp->penetration = *cp++;
 		
 		gp->touchiness = *cp++;
@@ -1687,7 +1682,7 @@ errtype obj_load_properties()
 		gp->attack_mass = *cp++;
 		gp->flags = *(short *)cp;
 		cp += 2;
-		SwapShortBytes(&gp->flags);
+		//SwapShortBytes(&gp->flags);
 	}
 
 	//BlockMoveData(cp, DirectGrenadeProps, NUM_DIRECT_GRENADE);			Dummies
@@ -1861,26 +1856,26 @@ errtype obj_load_properties()
 		for (j = 0; j < NUM_ALTERNATE_ATTACKS; j++)
 		{
 			crp->attacks[j].damage_type = *(int *)cp; cp += 4;
-			SwapLongBytes(&crp->attacks[j].damage_type);
+			//SwapLongBytes(&crp->attacks[j].damage_type);
 			crp->attacks[j].damage_modifier = *(short *)cp; cp += 2;
-			SwapShortBytes(&crp->attacks[j].damage_modifier);
+			//SwapShortBytes(&crp->attacks[j].damage_modifier);
 			crp->attacks[j].offense_value = *cp++;
 			crp->attacks[j].penetration = *cp++;
 			crp->attacks[j].attack_mass = *cp++;
 			crp->attacks[j].attack_velocity = *(short *)cp; cp += 2;
-			SwapShortBytes(&crp->attacks[j].attack_velocity);
+			//SwapShortBytes(&crp->attacks[j].attack_velocity);
 			crp->attacks[j].accuracy = *cp++;
 			crp->attacks[j].att_range = *cp++;
 			crp->attacks[j].speed = *(int *)cp; cp += 4;
-			SwapLongBytes(&crp->attacks[j].speed);
+			//SwapLongBytes(&crp->attacks[j].speed);
 			crp->attacks[j].slow_proj = *(int *)cp; cp += 4;
-			SwapLongBytes(&crp->attacks[j].slow_proj);
+			//SwapLongBytes(&crp->attacks[j].slow_proj);
 		}
 		crp->perception = *cp++;
 		crp->defense = *cp++;
 		crp->proj_offset = *cp++;
 		crp->flags = *(int *)cp; cp += 4;
-		SwapLongBytes(&crp->flags);
+		//SwapLongBytes(&crp->flags);
 		crp->mirror = *cp++;
 		for (j = 0; j < NUM_CRITTER_POSTURES; j++)
 			crp->frames[j] = *cp++;
@@ -1891,7 +1886,7 @@ errtype obj_load_properties()
 		crp->death_sound = *cp++;
 		crp->notice_sound = *cp++;
 		crp->corpse = *(int *)cp; cp += 4;
-		SwapLongBytes(&crp->corpse);
+		//SwapLongBytes(&crp->corpse);
 		crp->views = *cp++;
 		crp->alt_perc = *cp++;
 		crp->disrupt_perc = *cp++;
@@ -1908,7 +1903,7 @@ errtype obj_load_properties()
 	BlockMoveData(cp, CyborgCritterProps, sizeof(CyborgCritterProps));
 	cp += sizeof(CyborgCritterProps);
 	for (i = 0; i < NUM_CYBORG_CRITTER; i++)
-		SwapShortBytes(&CyborgCritterProps[i].shield_energy);
+		//SwapShortBytes(&CyborgCritterProps[i].shield_energy);
 
 	for (i = 0; i < NUM_CYBER_CRITTER; i++)
 	{
@@ -1933,17 +1928,16 @@ errtype obj_load_properties()
 		BlockMoveData(cp, op, 27);
 		cp += 27;
 
-		SwapLongBytes(&op->mass);
-		SwapShortBytes(&op->hit_points);
-		SwapLongBytes(&op->resistances);
-		SwapShortBytes(&op->flags);
-		SwapShortBytes(&op->mfd_id);
-		SwapShortBytes(&op->bitmap_3d);
+		//SwapLongBytes(&op->mass);
+		//SwapShortBytes(&op->hit_points);
+		//SwapLongBytes(&op->resistances);
+		//SwapShortBytes(&op->flags);
+		//SwapShortBytes(&op->mfd_id);
+		//SwapShortBytes(&op->bitmap_3d);
 	}
 
-	HUnlock(res);
-	ReleaseResource(res);
-   */
+	//HUnlock(res);
+	//ReleaseResource(res);
 
 	return(OK);
 }

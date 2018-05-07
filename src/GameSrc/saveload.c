@@ -870,15 +870,6 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    {
       printf("map data %i\n", idx);
       REF_READ(id_num, idx++, *global_fullmap);
-
-      printf(" map size: %i %i\n", global_fullmap->x_size, global_fullmap->y_size);
-
-      for(int y = 0; y < 64; y++) {
-         for(int x = 0; x < 64; x++) {
-            printf(" %i", global_fullmap->map[x + y * 64].tiletype);
-         }
-         printf("\n");
-      }
             
       printf("map tiles %i\n", idx);
       MAP_MAP = (MapElem *)static_map;
@@ -891,7 +882,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    global_fullmap->sched[0].queue.comp = compare_events;
    if (global_fullmap->sched[0].queue.fullness > 0)      // KLC - no need to read in vec if none there.
    {
-      printf("sched %i\n", idx);
+      printf("FIXME: not loading sched at %i\n", idx);
       // HAX HAX HAX this crashes!
       //REF_READ(id_num, idx++, *global_fullmap->sched[0].queue.vec);
       idx++;
@@ -899,8 +890,8 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    else
       idx++;
 
-//KLC��� Big hack!  Force the schedule to growable.
-global_fullmap->sched[0].queue.grow = TRUE;
+   //KLC��� Big hack!  Force the schedule to growable.
+   global_fullmap->sched[0].queue.grow = TRUE;
 
    printf("loved_textures\n", version);
    REF_READ(id_num, idx++, loved_textures);
@@ -1500,6 +1491,7 @@ obj_out:
 
    FORALLOBJS(oid)
    {
+      //printf("Obj class: %i\n", objs[oid].obclass);
       switch (objs[oid].obclass)
       {
          case CLASS_DOOR:
@@ -1523,8 +1515,10 @@ obj_out:
       }
 
       objs[oid].info.ph = -1;
-      if (objs[oid].loc.x != 0xFFFF)
+      if (objs[oid].loc.x != 0xFFFF) {
+         printf("Moved object\n");
          obj_move_to(oid, &objs[oid].loc,TRUE);
+      }
       
       // sleep the object (this may become "settle" the object)
       if (objs[oid].info.ph != -1)

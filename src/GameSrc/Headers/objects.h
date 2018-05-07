@@ -134,8 +134,8 @@ typedef struct ObjSpecHeader {
 typedef struct ObjSpec {
 	union {
 		struct {
-			ushort tile : 1;					// look in tiled array?
 			ObjID id : 15;						// ID in master list
+			ushort tile : 1;					// look in tiled array?
 		} bits;	
 		ObjSpecID headused;
 	};

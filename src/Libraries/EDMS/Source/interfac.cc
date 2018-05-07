@@ -98,6 +98,7 @@ Q terrain( Q X, Q Y, int deriv )
 {
 	Q	ans;
 
+	printf("FIXME: disabled terrain!\n");
 	//ans.fix_to( Terrain( X.to_fix(), Y.to_fix(), deriv ) );
 	return ans;
 }
