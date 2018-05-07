@@ -320,6 +320,7 @@ void g3_interpret_object(ubyte *object_ptr,...)
 g3_interpret_object_raw:
 #endif
 
+    printf(" 1\n");
 	va_start(parm_ptr, object_ptr);	// get addr of stack parms
 
 // MLA- not used ever?
@@ -360,14 +361,17 @@ g3_interpret_object_raw:
 	 	 }
 	 }
 
+     printf(" 2\n");
 	interpreter_loop(object_ptr);
 	
 	// free res points
+    printf(" 3\n");
 	for (i=N_RES_POINTS-1; i--; i>=0)
 	 	if (resbuf[i]) 
 	 		freepnt(resbuf[i]);
 	
   // set lighting back to how it was
+        printf(" 4\n");
 	if ((_g3d_light_type & (LT_SPEC | LT_DIFF))!=0)
 	 {
 	 	gr_set_fill_type(FILL_NORM);
@@ -375,6 +379,7 @@ g3_interpret_object_raw:
    }
    
 Exit:
+    printf(" 5\n");
  	BlockMove(obj_space,object_ptr-2,size);
  }
 
@@ -1083,17 +1088,17 @@ g3_light_check_normal_facing:
 
 void FlipShort(short *sh)
  {
- 	uchar temp;
+ 	/*uchar temp;
  	uchar *src = (uchar *) sh;
  	
  	temp = src[0];
  	src[0] = src[1];
- 	src[1] = temp;
+ 	src[1] = temp;*/
  }
  
 void FlipLong(long *lng)
  {
- 	short *src = (short *) lng;
+ 	/*short *src = (short *) lng;
  	short	temp;
  	
  	temp = src[0];
@@ -1101,15 +1106,15 @@ void FlipLong(long *lng)
  	src[1] = temp;
  	
  	FlipShort(src);
- 	FlipShort(src+1);
+ 	FlipShort(src+1);*/
  }
  
 void FlipVector(short n, g3s_vector *vec)
  {
- 	int		i,j;
+ 	/*int		i,j;
  	
  	for (i=0; i<n; i++, vec++)
  	 	for (j=0; j<3; j++)
- 	 		FlipLong((long *) &vec->xyz[j]);
+ 	 		FlipLong((long *) &vec->xyz[j]);*/
  }
 
