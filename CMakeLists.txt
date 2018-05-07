@@ -242,7 +242,6 @@ add_executable(ResTest
 
 target_link_libraries(ResTest
     RES_LIB
-    LG_LIB
 )
 
 # Find Carbon
