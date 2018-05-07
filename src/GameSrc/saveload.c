@@ -961,15 +961,19 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    
    // Read in object information.  For the Mac version, copy from the resource's 27-byte structs, then
    // place it into an Obj struct (which is 28 bytes, due to alignment).  Swap bytes as needed.
- {
+   {
       printf("NUM_OBJECTS: %i\n", NUM_OBJECTS);
       uchar *op = (uchar *)ResLock(id_num + idx);
       for(i = 0; i < NUM_OBJECTS; i++)
       {
-         memmove(&objs[i], op, 3);
-         //BlockMoveData(op, &objs[i], 3);
+         memmove(&objs[i].active, op, 1);
+         memmove(&objs[i].obclass, op+1, 1);
+         memmove(&objs[i].subclass, op+2, 1);
          memmove(&objs[i].specID, op+3, 24);
-         //BlockMoveData(op+3, &objs[i].specID, 24);
+
+         if(objs[i].active)
+            printf("obj: %i %i\n", objs[i].obclass, objs[i].subclass);
+         
          op += 27;
       }
       ResUnlock(id_num + idx);
@@ -1491,10 +1495,10 @@ obj_out:
 
    FORALLOBJS(oid)
    {
-      //printf("Obj class: %i\n", objs[oid].obclass);
       switch (objs[oid].obclass)
       {
          case CLASS_DOOR:
+            printf("Found a door!\n");
             set_door_data(oid);
             break;
       }
@@ -1516,7 +1520,6 @@ obj_out:
 
       objs[oid].info.ph = -1;
       if (objs[oid].loc.x != 0xFFFF) {
-         printf("Moved object\n");
          obj_move_to(oid, &objs[oid].loc,TRUE);
       }
       

@@ -649,9 +649,8 @@ void show_obj(ObjID cobjid)
    _fr_cobj=&objs[cobjid];
    o3drep = compute_3drep(_fr_cobj,cobjid,obj_type);
 
-   //printf("show_obj: %i\n", obj_type);
-   //printf("triple: %x\n", ID2TRIP(cobjid));
-   //printf("WORDS_TRIPLE: %x\n", WORDS_TRIPLE);
+   printf("show_obj: %i %x\n", obj_type, objtrip);
+   printf("WORDS_TRIPLE: %x\n", WORDS_TRIPLE);
 
    _fr_p.gX = _fr_cobj->loc.x<<8;
    _fr_p.gZ = _fr_cobj->loc.y<<8;
