@@ -863,6 +863,7 @@ void zoom_rect(LGRect* start, LGRect* end)
    uiHideMouse(NULL);
    gr_set_fill_type(FILL_XOR);
    gr_set_fcolor(WHITE);
+
    for (i = 0; i < NUM_BOXES; i++)
    {
       short ulx = INTERP(start->ul.x,end->ul.x,i);
@@ -871,7 +872,15 @@ void zoom_rect(LGRect* start, LGRect* end)
       short lry = INTERP(start->lr.y,end->lr.y,i);
       ss_box(ulx,uly,lrx,lry);
       ss_box(ulx-1,uly-1,lrx+1,lry+1);
-      while(*tmd_ticks - last_time < TICKS_PER_BOX);
+
+      extern SDLDraw(void);
+      for(int ii = 0; ii < TICKS_PER_BOX; ii++) {
+         SDLDraw();
+      }
+
+      // FIXME: nope!
+      //while(*tmd_ticks - last_time < TICKS_PER_BOX);
+
       ss_box(ulx,uly,lrx,lry);
       ss_box(ulx-1,uly-1,lrx+1,lry+1);
       last_time = *tmd_ticks;
