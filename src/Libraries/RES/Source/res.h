@@ -101,7 +101,7 @@ typedef uint16_t RefIndex; // index part of ref
 //	Here's how you get parts of a ref, or make a ref
 
 #define REFID(ref) ((ref) >> 16)     // get id from ref
-#define REFINDEX(ref) ((ref)&0xFFFF) // get index from ref
+#define REFINDEX(ref) (uint16_t)((ref) & 0xFFFF) // get index from ref
 #define MKREF(id, index) ((((uint32_t)id) << 16) | (index)) // make ref
 
 #define ID_NULL 0 // null resource id

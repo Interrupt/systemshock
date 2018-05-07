@@ -80,7 +80,7 @@ void *ResLoadResource(Id id) {
     FILE *fd = resFile[prd->filenum].fd;
 
     RefTable *prt = (RefTable *)prd->ptr;
-    fseek(fd, &prt->numRefs, sizeof(RefIndex));
+    fseek(fd, prt->numRefs, sizeof(RefIndex));
     fread(&prt->offset[0], sizeof(int32_t) * (prt->numRefs +1), 1, fd);
 
     RefExtract(prt, MKREF(id,0), (uint8_t *) (prd->ptr)) + (sizeof(RefIndex) + sizeof(int32_t) * (prt->numRefs+1));

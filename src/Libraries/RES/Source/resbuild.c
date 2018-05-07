@@ -303,7 +303,7 @@ int32_t ResPack(int32_t filenum) {
   // write directory on closing)
 
   // FIXME Non-portable
-  ftruncate(prf->fd, dataWrite);
+  ftruncate(fileno(prf->fd), dataWrite);
 
   // Return # bytes reclaimed
   /* Spew(DSRC_RES_Write, ("ResPack: reclaimed %d bytes\n", sizeReclaimed)); */
