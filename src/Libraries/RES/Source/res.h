@@ -72,7 +72,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __RES_H
 #define __RES_H
 
-#include "lg.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -85,6 +84,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __RESTYPES_H
 #include "restypes.h"
 #endif
+
+#define	max(a,b) (((a) > (b)) ? (a) : (b))
+#define	min(a,b) (((a) < (b)) ? (a) : (b))
 
 //	---------------------------------------------------------
 //		ID AND REF DEFINITIONS AND MACROS

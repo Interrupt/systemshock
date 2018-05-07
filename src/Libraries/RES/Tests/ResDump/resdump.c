@@ -48,9 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <io.h>
 
-#include "lg.h"
 #include "res.h"
 #include "res_.h"
 
@@ -127,7 +125,7 @@ int main(int argc, char *argv[]) {
 
   for (fn = 0; fn < 23; fn++) {
     strcpy(fname, res_files[fn]);
-    foundsome = FALSE;
+    foundsome = false;
 #endif
 
     filenum = ResOpenFile(fname);
@@ -188,7 +186,7 @@ int main(int argc, char *argv[]) {
 #ifdef LISTALLFILES
       // if ((pentry->flags & RDF_LZW) && (pentry->flags & RDF_COMPOUND))
       if (pentry->flags & RDF_LZW) {
-        foundsome = TRUE;
+        foundsome = true;
 #endif
         puts(buff);
 #ifdef LISTALLFILES

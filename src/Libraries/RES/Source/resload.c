@@ -40,12 +40,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-//#include <io.h>
-
 #include "lzw.h"
 #include "res.h"
 #include "res_.h"
-//#include <_res.h>
 
 //-------------------------------
 //  Private Prototypes
@@ -223,13 +220,13 @@ uint8_t ResRetrieve(Id id, void *buffer) {
 
   //	Check id and file number
 
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return FALSE;});
+  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return false;});
   prd = RESDESC(id);
   prd2 = RESDESC2(id);
   fd = resFile[prd->filenum].fd;
   //	DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
 //		Warning(("ResRetrieve: id $%x doesn't exist\n", id)); \
-//		return FALSE; \
+//		return false; \
 //		}});
 
   //	Seek to data, set up

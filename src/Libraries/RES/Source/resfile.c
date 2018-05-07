@@ -38,15 +38,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-//#include <fcntl.h>
-//#include <sys\stat.h>
-//#include <io.h>
 #include <string.h>
 
 #include "res.h"
 #include "res_.h"
-
-//#include <_res.h>
 
 //	Resource files start with this signature
 

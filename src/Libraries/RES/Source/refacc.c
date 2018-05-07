@@ -37,14 +37,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 #include <unistd.h>
-//#include <string.h>
-//#include <io.h>
 
-#include "dbg.h"
 #include "lzw.h"
 #include "res.h"
 #include "res_.h"
-#include "lzw.h"
 
 
 //	---------------------------------------------------------
@@ -466,7 +462,7 @@ int32_t RefInject(RefTable *prt, Ref ref, void *buff)
 //
 //		ref = ref to be checked
 //
-//	Returns: TRUE if ref ok, FALSE if invalid & prints warning
+//	Returns: true if ref ok, false if invalid & prints warning
 
 uint8_t RefCheckRef(Ref ref)
 {
@@ -474,15 +470,15 @@ uint8_t RefCheckRef(Ref ref)
 
         id = REFID(ref);
         if (!ResCheckId(id))
-                return FALSE;
+                return false;
 
         if ((ResFlags(id) & RDF_COMPOUND) == 0)
                 {
                 Warning(("RefCheckRef: id $%x is not a compound resource\n",
 id));
-                return FALSE;
+                return false;
                 }
 
-        return TRUE;
+        return true;
 }
 */

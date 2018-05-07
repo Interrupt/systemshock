@@ -39,7 +39,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdbool.h>
 #include <string.h>
 
-#include "lg_types.h"
 #include "res.h"
 #include "res_.h"
 

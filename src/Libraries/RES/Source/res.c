@@ -37,16 +37,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-//#include <io.h>
+
 #include <stdlib.h>
 #include <string.h>
 
-#include "lg.h"
 #include "lzw.h"
-#include "memall.h"
+//#include "memall.h"
 #include "res.h"
 #include "res_.h"
-//#include <_res.h>
+
 
 //	The resource descriptor table
 
@@ -79,7 +78,7 @@ void ResInit() {
   //	Set memory allocator, init LZW system
 
   // MemPushAllocator(ResMalloc, ResRealloc, ResFree);
-  // resPushedAllocators = TRUE;
+  // resPushedAllocators = true;
   LzwInit();
 
   //	Allocate initial resource descriptor table, default size (can't fail)
@@ -143,7 +142,7 @@ void ResTerm() {
           if (resPushedAllocators)
                   {
                   MemPopAllocator();
-                  resPushedAllocators = FALSE;
+                  resPushedAllocators = false;
                   }
 
   //	We're outta here
