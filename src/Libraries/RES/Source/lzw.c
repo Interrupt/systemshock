@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+// clang-format off
 //		LZW.C		New improved super-duper LZW compressor & decompressor
 //		This module by Greg Travis and Rex Bradford
 //
@@ -107,17 +108,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //		source function.  The DestPut() function is called repeatedly to
 //		put the next byte to the user output stream.
 //
-//		Note that user sources can be used for both compression (source of
-//		uncompressed bytes) and expansion (source of compressed bytes).
+//		Note that user sources can be used for both compression (source
+//		of uncompressed bytes) and expansion (source of compressed bytes).
 //		Similarly, user destinations can be used for both compression
 //		(destination of compressed bytes) and expansion (destination of
 //		uncompressed bytes).  This is true of standard sources and
 //		destinations as well, of course.
-
+// clang-format on
 /*
-* $Header: n:/project/lib/src/res/rcs/lzw.c 1.4 1994/02/17 11:24:13 rex Exp $
-* $log$
-*/
+ * $Header: n:/project/lib/src/res/rcs/lzw.c 1.4 1994/02/17 11:24:13 rex Exp $
+ * $log$
+ */
 
 //	------------------------------------------------------------
 //		HEADER SECTION
@@ -167,18 +168,14 @@ uint8_t *LzwDecodeString(uint8_t *buffer, uint32_t code);
 //	LzwInit()  needs to be called once before any of the compression
 //	 routines are used.
 
-void LzwInit(void) {
-  atexit(LzwTerm);
-}
+void LzwInit(void) { atexit(LzwTerm); }
 
 //	------------------------------------------------------------
 //
 // LzwTerm() needs to be called once when the lzw compression
 //	 routines are no longer needed.
 
-void LzwTerm(void) {
-  LzwFreeBuffer();
-}
+void LzwTerm(void) { LzwFreeBuffer(); }
 
 //	------------------------------------------------------------
 //		BUFFER SETTING
@@ -206,8 +203,7 @@ int32_t LzwSetBuffer(void *buff, int32_t buffSize) {
   lzwDecodeStack = lzwBuffer;
   lzwFdReadBuff = (lzwDecodeStack) + LZW_DECODE_STACK_SIZE;
   lzwFdWriteBuff = (lzwFdWriteBuff) + LZW_FD_READ_BUFF_SIZE;
-  lzwCodeValue =
-      (int16_t *)((lzwDecodeStack) + LZW_FD_WRITE_BUFF_SIZE);
+  lzwCodeValue = (int16_t *)((lzwDecodeStack) + LZW_FD_WRITE_BUFF_SIZE);
   lzwPrefixCode = (uint16_t *)(((uint8_t *)lzwCodeValue) +
                                (LZW_TABLE_SIZE * sizeof(uint16_t)));
   lzwAppendChar =
@@ -249,7 +245,7 @@ void LzwFreeBuffer() {
     lzwBufferMalloced = false;
   }
 }
-
+// clang-format off
 //	------------------------------------------------------------
 //		COMPRESSION
 //	------------------------------------------------------------
@@ -275,6 +271,7 @@ void LzwFreeBuffer() {
 //	and call the destination put routine whenever more than 8 bits
 //	are available.  If the output data size ever exceeds the alloted
 //	size, the source and destination are shut down and -1 is returned.
+// clang-format on
 
 typedef struct {
   uint32_t next_code;          // next available string code
@@ -307,13 +304,13 @@ LzwC lzwc; // current compress state
   }
 
 int32_t LzwCompress(
-    void (*f_SrcCtrl)(int32_t srcLoc, LzwCtrl ctrl), // func to control source
+    void (*f_SrcCtrl)(intptr_t srcLoc, LzwCtrl ctrl), // func to control source
     uint8_t (*f_SrcGet)(), // func to get bytes from source
-    int32_t srcLoc,        // source "location" (ptr, FILE *, etc.)
+    intptr_t srcLoc,       // source "location" (ptr, FILE *, etc.)
     int32_t srcSize,       // size of source in bytes
-    void (*f_DestCtrl)(int32_t destLoc, LzwCtrl ctrl), // func to control dest
+    void (*f_DestCtrl)(intptr_t destLoc, LzwCtrl ctrl), // func to control dest
     void (*f_DestPut)(uint8_t byte), // func to put bytes to dest
-    int32_t destLoc,                 // dest "location" (ptr, FILE *, etc.)
+    intptr_t destLoc,                // dest "location" (ptr, FILE *, etc.)
     int32_t destSizeMax              // max size of dest (or LZW_MAXSIZE)
 ) {
 
@@ -394,6 +391,7 @@ int32_t LzwCompress(
   return (lzwc.lzwOutputSize);
 }
 
+// clang-format off
 //	-----------------------------------------------------------
 //		EXPANSION
 //	-----------------------------------------------------------
@@ -413,6 +411,7 @@ int32_t LzwCompress(
 //		destSize     = # bytes of output to store (if 0, everything)
 //
 //	Returns: # bytes in uncompressed output
+// clang-format on
 
 typedef struct {
   int32_t lzwInputBitCount;
@@ -446,12 +445,12 @@ static uint32_t LzwInputCode(uint8_t (*f_SrcGet)()) {
 }
 
 int32_t LzwExpand(
-    void (*f_SrcCtrl)(int32_t srcLoc, LzwCtrl ctrl), // func to control source
+    void (*f_SrcCtrl)(intptr_t srcLoc, LzwCtrl ctrl), // func to control source
     uint8_t (*f_SrcGet)(), // func to get bytes from source
-    int32_t srcLoc,        // source "location" (ptr, FILE *, etc.)
-    void (*f_DestCtrl)(int32_t destLoc, LzwCtrl ctrl), // func to control dest
+    intptr_t srcLoc,       // source "location" (ptr, FILE *, etc.)
+    void (*f_DestCtrl)(intptr_t destLoc, LzwCtrl ctrl), // func to control dest
     void (*f_DestPut)(uint8_t byte), // func to put bytes to dest
-    int32_t destLoc,                 // dest "location" (ptr, FILE *, etc.)
+    intptr_t destLoc,                // dest "location" (ptr, FILE *, etc.)
     int32_t destSkip,                // # dest bytes to skip over (or 0)
     int32_t destSize                 // # dest bytes to capture (if 0, all)
 ) {
@@ -552,14 +551,12 @@ DONE_EXPAND:
 
 static uint8_t *lzwBuffSrcPtr;
 
-void LzwBuffSrcCtrl(int32_t srcLoc, LzwCtrl ctrl) {
+void LzwBuffSrcCtrl(intptr_t srcLoc, LzwCtrl ctrl) {
   if (ctrl == BEGIN)
     lzwBuffSrcPtr = (uint8_t *)srcLoc;
 }
 
-uint8_t LzwBuffSrcGet() {
-  return (*lzwBuffSrcPtr++);
-}
+uint8_t LzwBuffSrcGet() { return (*lzwBuffSrcPtr++); }
 
 //	---------------------------------------------------------------
 //
@@ -569,9 +566,9 @@ uint8_t LzwBuffSrcGet() {
 static FILE *lzwFdSrc;
 static int32_t lzwReadBuffIndex;
 
-void LzwFdSrcCtrl(int32_t srcLoc, LzwCtrl ctrl) {
+void LzwFdSrcCtrl(intptr_t srcLoc, LzwCtrl ctrl) {
   if (ctrl == BEGIN) {
-    lzwFdSrc = srcLoc;
+    lzwFdSrc = (FILE *)srcLoc;
     lzwReadBuffIndex = LZW_FD_READ_BUFF_SIZE;
   }
 }
@@ -591,7 +588,7 @@ uint8_t LzwFdSrcGet() {
 
 static FILE *lzwFpSrc;
 
-void LzwFpSrcCtrl(int32_t srcLoc, LzwCtrl ctrl) {
+void LzwFpSrcCtrl(intptr_t srcLoc, LzwCtrl ctrl) {
   if (ctrl == BEGIN)
     lzwFpSrc = (FILE *)srcLoc;
 }
@@ -607,7 +604,7 @@ uint8_t LzwFpSrcGet() { return (fgetc(lzwFpSrc)); }
 
 static uint8_t *lzwBuffDestPtr;
 
-void LzwBuffDestCtrl(int32_t destLoc, LzwCtrl ctrl) {
+void LzwBuffDestCtrl(intptr_t destLoc, LzwCtrl ctrl) {
   if (ctrl == BEGIN)
     lzwBuffDestPtr = (uint8_t *)destLoc;
 }
@@ -622,9 +619,9 @@ void LzwBuffDestPut(uint8_t byte) { *lzwBuffDestPtr++ = byte; }
 static FILE *lzwFdDest;
 static int32_t lzwWriteBuffIndex;
 
-void LzwFdDestCtrl(int32_t destLoc, LzwCtrl ctrl) {
+void LzwFdDestCtrl(intptr_t destLoc, LzwCtrl ctrl) {
   if (ctrl == BEGIN) {
-    lzwFdDest = (int32_t)destLoc;
+    lzwFdDest = (FILE *)destLoc;
     lzwWriteBuffIndex = 0;
   } else if (ctrl == END) {
     if (lzwWriteBuffIndex)
@@ -647,7 +644,7 @@ void LzwFdDestPut(uint8_t byte) {
 
 static FILE *lzwFpDest;
 
-void LzwFpDestCtrl(int32_t destLoc, LzwCtrl ctrl) {
+void LzwFpDestCtrl(intptr_t destLoc, LzwCtrl ctrl) {
   if (ctrl == BEGIN)
     lzwFpDest = (FILE *)destLoc;
 }
