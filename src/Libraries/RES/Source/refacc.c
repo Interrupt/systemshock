@@ -92,7 +92,7 @@ void *RefLock(Ref ref) {
 
   // if (prd->lock == 1)
   //  HLock(prd->filenum);
-  prt = (RefTable *)prd->filenum;
+  prt = (RefTable *)prd->ptr;
   index = REFINDEX(ref);
   //	DBG(DSRC_RES_ChkIdRef, {if (!RefIndexValid(prt,index)) \
 //		Warning(("RefLock: reference: $%x bad, index out of range\n", ref));});
@@ -175,7 +175,7 @@ void *RefGet(Ref ref) {
 //  functionality.
 
 RefTable *ResReadRefTable(Id id) {
-  int32_t fd;
+  FILE *fd;
   ResDesc *prd;
   // Handle resHdl;
   RefIndex numRefs;
@@ -212,11 +212,11 @@ RefTable *ResReadRefTable(Id id) {
 
   //	Seek to data, read numrefs, allocate table, read in offsets
 
-  lseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
-  read(fd, &numRefs, sizeof(RefIndex));
+  fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
+  fread(&numRefs, sizeof(RefIndex), 1, fd);
   prt = malloc(REFTABLESIZE(numRefs));
   prt->numRefs = numRefs;
-  read(fd, &prt->offset[0], sizeof(int32_t) * (numRefs + 1));
+  fread(&prt->offset[0], sizeof(int32_t) * (numRefs + 1), 1, fd);
 
   return (prt);
 }
