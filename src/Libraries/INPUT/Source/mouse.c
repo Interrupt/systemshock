@@ -643,7 +643,7 @@ errtype mouse_next(mouse_event *res)
 	res->x = mouse_x;
 	res->y = mouse_y;
 	res->buttons = 0;
-	res->timestamp = 1;
+	res->timestamp = mouse_get_time();
 	res->modifiers = 0;
 	res->type = MOUSE_MOTION;
 
