@@ -30,16 +30,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-//#include <io.h>
-//#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "dbg.h"
 #include "lzw.h"
 #include "res.h"
 #include "res_.h"
-//#include <_res.h>
 
 // make sure comment ends with one, so can type a file
 #define CTRL_Z 26
