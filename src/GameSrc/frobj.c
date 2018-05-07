@@ -120,7 +120,6 @@ void render_parse_obj(void)
 
       if (show_here)
       {
-         printf("Rendering %d at %d %d\n",curORef,_fdt_x,_fdt_y);
          _fr_sdbg(OBJ_TALK,mprintf("Rendering %d at %d %d\n",curORef,_fdt_x,_fdt_y));
          sort_show_obj(cobjid);
       }

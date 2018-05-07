@@ -325,8 +325,6 @@ void sort_show_obj(ObjID cobjid)
    obj_type=ObjProps[objtrip].render_type;
    if (obj_type==FAUBJ_NOOBJ) return;
 
-   printf("sort_show_obj: obj_type %i\n", obj_type);
-
    score_list[cur_obj_num]=(obj_type<<24)+objtrip;
    sq_Refs[cur_obj_num]=cobjid;
    cur_obj_num++;

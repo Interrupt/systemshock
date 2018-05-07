@@ -187,6 +187,7 @@ errtype init_player(Player *pplr)
    pplr->actives[ACTIVE_EMAIL] = 0xFF;
 
 
+   return OK;
    // HAX HAX HAX give he player everything!
    {
       for (i=0; i < NUM_HARDWAREZ; i++)

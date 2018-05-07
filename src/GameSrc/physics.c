@@ -672,7 +672,7 @@ errtype physics_run(void)
 #endif
 
         printf("EDMS_soliton_vector %i %i\n", time_diff, CIT_CYCLE);
-        EDMS_soliton_vector((time_diff / CIT_CYCLE));
+        EDMS_soliton_vector(time_diff / CIT_CYCLE);
 
       edms_delete_go();
 

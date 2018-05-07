@@ -702,10 +702,10 @@ void HandleNewGame()
 
 	ShockGameLoop();
 
-	/*RenderTest();
+	//RenderTest();
 
 	// HAX HAX HAX try to reset the player physics after Test Mode
-	ObjLoc plr_loc;
+	/*ObjLoc plr_loc;
 	plr_loc.x=obj_coord_from_fix(fix_make(30,3));
 	plr_loc.y=obj_coord_from_fix(fix_make(23,3));
 	plr_loc.h = 200;

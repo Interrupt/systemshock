@@ -649,9 +649,6 @@ void show_obj(ObjID cobjid)
    _fr_cobj=&objs[cobjid];
    o3drep = compute_3drep(_fr_cobj,cobjid,obj_type);
 
-   printf("show_obj: %i %x\n", obj_type, objtrip);
-   printf("WORDS_TRIPLE: %x\n", WORDS_TRIPLE);
-
    _fr_p.gX = _fr_cobj->loc.x<<8;
    _fr_p.gZ = _fr_cobj->loc.y<<8;
    _fr_p.gY =-_fr_cobj->loc.z*height_step>>3;    // down 3, neato magic number technology
@@ -762,28 +759,6 @@ void show_obj(ObjID cobjid)
 	      _fdt_mptr=tmp;
 	   }
 	   else _sq_lght=0;
-
-      g3s_phandle note_pts[4];
-      int h=player_struct.game_time&0x3fff;
-
-      {
-         int col=hud_colors[hud_color_bank][2];
-         _fr_p.gY-=0x4000;
-         g3_start_object_angles_xyz(&_fr_p,0,h<<2,0,ANGLE_ORDER);
-         gen_tetra(note_pts, 0x2000, 0, 0);
-         gr_set_fcolor(col);
-         g3_draw_line(note_pts[1],note_pts[0]);
-         g3_draw_line(note_pts[2],note_pts[0]);
-         g3_draw_line(note_pts[3],note_pts[0]);
-         g3_draw_line(note_pts[1],note_pts[2]);
-         g3_draw_line(note_pts[2],note_pts[3]);
-         g3_draw_line(note_pts[3],note_pts[1]);
-         g3_free_list(4,note_pts);
-         g3_end_object();
-         _fr_p.gY+=0x6500;
-      }
-
-      //printf("_fr_cobj->obclass: %x\n", _fr_cobj->obclass);
 
    switch (obj_type)
    {
@@ -1035,9 +1010,7 @@ void show_obj(ObjID cobjid)
             case CLASS_BIGSTUFF:
                switch (ID2TRIP(cobjid))
                {
-                  printf("BIGSTUFF!\n");
                   case WORDS_TRIPLE:
-                     printf("WORDS_TRIPLE\n");
             		   tpdata = get_text_bitmap_obj(cobjid, 0, &scale); // C is for magic cookie, it's good enough for me   
                      ref = 0xFFFFFFFF;
                      break;
