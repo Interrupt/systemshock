@@ -264,9 +264,6 @@ void _fr_draw_polyobj(void *model_ptr, uchar use_lighting)
    }
 #endif
    g3_start_object_angles_xyz(&_fr_p,_fr_cobj->loc.p<<8,_fr_cobj->loc.h<<8,_fr_cobj->loc.b<<8,ANGLE_ORDER);
-
-   // HAX HAX HAX skipping drawing objects
-   printf("g3_interpret_object crashes! %x\n", model_ptr);
    g3_interpret_object((ubyte *) model_ptr,((PARM_MAX+PARM_BASE)-pos_parm)<<PARM_SHF,PARM_BASE<<PARM_SHF);
    g3_end_object();
 #ifdef LIGHT_3D_OBJS

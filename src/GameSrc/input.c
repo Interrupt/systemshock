@@ -2382,8 +2382,6 @@ uchar view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
    extern int _fr_glob_flags;
 
    pt = evp;
-
-   ev->action = MOUSE_LDOWN;
    
 #ifdef STEREO_SUPPORT
    if (convert_use_mode == 5)
@@ -2514,6 +2512,7 @@ uchar view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
 
    if (ev->action & UI_MOUSE_LDOUBLE)
    {
+      printf("use this, bay-bee!\n");
       //Spew(DSRC_USER_I_Motion,("use this, bay-bee!\n"));
       view3d_dclick(evp,data->fr);
       data->lastleft = MakePoint(-100,-100);

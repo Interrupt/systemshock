@@ -520,8 +520,8 @@ uchar motion_key_scancodes[] =
       _DOWN2_ , // second downarrow
       _RIGHT2_, // second rightarrow
       _SPACE_ , // spacebar
-//KLC      _ENTER2_, // keypad enter
-//KLC      _ENTER_ , // enter
+      _ENTER2_, // keypad enter
+      _ENTER_ , // enter
       _R_     , // r
       _V_     , // v
       _J_     , // j

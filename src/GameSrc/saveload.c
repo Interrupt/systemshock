@@ -797,7 +797,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    bool        do_anims = FALSE;
 
    // HAX HAX HAX force level number
-   id_num = 0x1006;
+   //id_num = 0x1006;
    
 //   _MARK_("load_current_map:Start");
 
