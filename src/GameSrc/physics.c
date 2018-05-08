@@ -658,6 +658,7 @@ errtype physics_run(void)
 #ifdef DIRAC_EDMS
       if (global_fullmap->cyber)
       {
+         printf("EDMS_control_Dirac_frame\n");
          EDMS_control_Dirac_frame(PLAYER_PHYSICS, plr_z, plr_alpha, plr_y,plr_side);
       }
       else
@@ -670,8 +671,6 @@ errtype physics_run(void)
         EDMS_soliton_vector((time_diff / CIT_CYCLE) >> 2);
       else
 #endif
-
-        printf("EDMS_soliton_vector %i %i\n", time_diff, CIT_CYCLE);
         EDMS_soliton_vector(time_diff / CIT_CYCLE);
 
       edms_delete_go();

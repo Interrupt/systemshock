@@ -336,12 +336,12 @@ set(EDMS_SRC
 	EDMS/Source/MODELS/biped.cc
 #	EDMS/Source/MODELS/b.cc
 #	EDMS/Source/MODELS/ff_ftl.cc
-#	EDMS/Source/MODELS/cr_biped.cc
+	EDMS/Source/MODELS/cr_biped.cc
 #	EDMS/Source/MODELS/old_ftl.cc
-#	EDMS/Source/MODELS/bip_skel.cc
-#	EDMS/Source/MODELS/bipface.cc
+	EDMS/Source/MODELS/bip_skel.cc
+	EDMS/Source/MODELS/bipface.cc
 #	EDMS/Source/MODELS/bb.cc
-#	EDMS/Source/MODELS/death.cc
+	EDMS/Source/MODELS/death.cc
 	EDMS/Source/MODELS/d_f_2.cc
 )
 

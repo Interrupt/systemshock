@@ -624,7 +624,7 @@ void terrfunc_one_map_square(int fmask)
 }
 
 #define FACELET_MASK_Z   0
-#define fcs(v1,v2)      (FACELET_MASK_##v1|FACELET_MASK_##v2)
+#define fcs(v1,v2)      ((FACELET_MASK_##v1)|(FACELET_MASK_##v2))
 
 // probably could be just 5,5 by having it algorithimically flip the list if needed
 uchar tf_wall_check[5][2][5]=
@@ -753,7 +753,7 @@ void tf_global_bcd_add(int flg, int param)
  * note us passing lots of annoying useless things on the stack and annoying everyone
  */
 //extern "C"
-//{
+//\{
 void Indoor_Terrain(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph);
 //}
 

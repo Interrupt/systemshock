@@ -167,9 +167,8 @@ errtype pqueue_insert(PQueue* q, void* elem)
       char* newp = malloc(q->elemsize * q->size*2);
       if (newp == NULL)
       	return ERR_NOMEM;
-      // FIXME check is memmove eq BlockMoveData 
-      memmove(q->vec, newp, q->size * q->elemsize);
-      free(q->vec);
+      BlockMoveData(q->vec, newp, q->size * q->elemsize);
+      DisposePtr(q->vec);
       q->vec = newp;
       q->size*=2;
    }

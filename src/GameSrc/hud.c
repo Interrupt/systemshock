@@ -610,9 +610,9 @@ errtype hud_update(uchar redraw_whole, frc* context)
    short y = Y_MARGIN;
    short x = X_MARGIN;
    short xwid = fc->xwid;
-//KLC   short a,b,c,d;
-//KLC   STORE_CLIP(a,b,c,d);
-//KLC   safe_set_cliprect(0,0,fc->xwid,fc->ywid);
+   short a,b,c,d;
+   STORE_CLIP(a,b,c,d);
+   safe_set_cliprect(0,0,fc->xwid,fc->ywid);
    gr_set_font((grs_font*)ResLock(RES_tinyTechFont));
 
 /* TEMP		This is where we display the frame counter, if it is on.
@@ -672,7 +672,7 @@ if (msg[0])
    hud_do_objs(fc->xtop,fc->ytop,fc->xwid,fc->ywid,FALSE);
 
    ResUnlock(RES_tinyTechFont);
-//KLC   RESTORE_CLIP(a,b,c,d);
+   RESTORE_CLIP(a,b,c,d);
    return(OK);
 }
 

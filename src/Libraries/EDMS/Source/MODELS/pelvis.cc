@@ -149,6 +149,8 @@ extern void	shall_we_dance( int object, Q& result0, Q& result1, Q& result2 );
 
                 EDMS_pelvis_is_climbing = 0;
 
+        printf("shall_we_dance\n");
+
 		indoor_terrain( A[object][0][0],			//Get the info...
 										A[object][1][0],
 										A[object][2][0],
@@ -815,6 +817,7 @@ extern void	null_function( int );
 //	==============================================================================
 	if ( object_number < MAX_OBJ ) {
 
+		printf("make_pelvis\n");
 
 //		Now we can create the pelvis:  first dump the initial state vector...
 //		=====================================================================
@@ -935,7 +938,6 @@ int             on = ph2on[ph];
 //              Are you a pelvis...
 //              -------------------
                 if ( I[on][30] == PELVIS ) {
-                		printf("Is a pelvis!\n");
                         lean = S[on][5][0].to_fix();
                         crouch = I[on][0].to_fix() - 3*V_floor[2].to_fix();
 

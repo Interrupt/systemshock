@@ -862,6 +862,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    physics_init();   
 
    // Read in the global fullmap (without disrupting schedule vec ptr)
+   schedule_init(&global_fullmap->sched[0],400,FALSE);
    schedvec = global_fullmap->sched[0].queue.vec;     // KLC - Only one schedule, so just save it.
    
    // convert_from is the version we are coming from.
@@ -875,14 +876,17 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
 
    // Load schedules, performing some voodoo.  
-   global_fullmap->sched[0].queue.vec = schedvec;        // KLC - Only one schedule, so restore it.
-   global_fullmap->sched[0].queue.comp = compare_events;
+   //global_fullmap->sched[0].queue.vec = schedvec;        // KLC - Only one schedule, so restore it.
+   //global_fullmap->sched[0].queue.comp = compare_events;
+
    if (global_fullmap->sched[0].queue.fullness > 0)      // KLC - no need to read in vec if none there.
    {
-      printf("FIXME: not loading sched at %i\n", idx);
-      // HAX HAX HAX this crashes!
+      // HAX HAX HAX will there ever be more than 400 schedules?
+      schedule_init(&global_fullmap->sched[0],400,FALSE);
+      schedvec = malloc(400 * sizeof(SchedEvent));
+      REF_READ(id_num, idx++, *schedvec);
+      global_fullmap->sched[0].queue.vec = schedvec;
       //REF_READ(id_num, idx++, *global_fullmap->sched[0].queue.vec);
-      idx++;
    }
    else
       idx++;

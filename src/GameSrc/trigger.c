@@ -458,6 +458,8 @@ errtype trap_monster_func(int p1, int p2, int p3, int p4)
    char monster_count;
    MapElem *pme;
 
+   printf("trap_monster_func\n");
+
    quan = qdata_get(p3);
    switch(player_struct.difficulty[COMBAT_DIFF_INDEX]) {
       case 0: quan=0; break;
@@ -602,6 +604,8 @@ errtype trap_ai_func(int p1, int p2, int p3, int p4)
    ObjSpecID osid;
    ObjRefID oref;
    ObjID oid,o1,o2;
+
+   printf("trap_ai_func\n");
                              
    if (p1 & 0x40000)
    {
@@ -697,6 +701,8 @@ errtype trap_scheduler_func(int p1, int p2, int p3, int p4)
    TrapSchedEvent new_event;
    uint *p;
 
+   printf("trap_scheduler_func\n");
+
    if ((p3 >= 0xFFFF) || 
        ((p3 > 0x1000) && (QUESTBIT_GET(p3 & 0xFFF))) ||
        ((p3 < 0x1000) && (p3 > 0)))
@@ -763,6 +769,8 @@ errtype trap_main_light_func(int p1, int p2, int p3, int p4)
    if (!(p3 & 0x10000))
       trap_lighting_func(TRUE, p1,p2,p3&0xffff,p4);
 
+   printf("trap_main_light_func\n");
+
    // Do transition rescheduling & incrementing
    if (p2 & 0xFFFF)
    {
@@ -811,6 +819,8 @@ errtype trap_lighting_func(uchar floor, int p1, int p2, int p3, int p4)
    char v[4];
    char light_state;
    uint *p;
+
+   printf("trap_lighting_func\n");
 
    o1 = qdata_get(p1 & 0xFFFF);
    o2 = qdata_get(p1 >> 16);
@@ -1137,6 +1147,8 @@ errtype trap_create_obj_func(int p1, int p2, int p3, int p4)
    ObjID new_id, oid;
    ObjLoc new_loc;
 
+   printf("trap_create_obj_func\n");
+
    if ((p1 & 0xFFFF) == OBJ_NULL)
    {
       return(ERR_NOEFFECT);
@@ -1188,6 +1200,8 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4)
    short qarg, mod;
    qarg = p2 & 0xFFFF;
    mod = p2 >> 16;
+
+   printf("trap_questbit_func\n");
 
    if ((p1 & 0xF000) == 0)
       p1 |= 0x2000;
@@ -1276,6 +1290,7 @@ errtype trap_cutscene_func(int p1, int p2, int p3, int p4)
 
 errtype trap_terrain_func(int p1, int p2, int p3, int p4)
 {
+   printf("trap_terrain_func\n");
    MapElem *pme;
    uchar reprocess = FALSE;
    extern void rendedit_process_tilemap(FullMap* map,LGRect* r,uchar newMap);
@@ -1306,6 +1321,7 @@ errtype trap_terrain_func(int p1, int p2, int p3, int p4)
 
 errtype trap_height_func(int p1, int p2, int p3, int p4)
 {
+   printf("trap_height_func\n");
    MapElem *pme;
    HeightSchedEvent hse;
    ushort use_val;
@@ -1647,6 +1663,8 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4)
    void plotware_showpage(uchar page);
    void check_panel_ref(uchar puntme);
    void email_slam_hack(short which);
+
+   printf("trap_hack_func %i\n", p1);
 
    // As we need hacks in the game, just add new
    // cases here to do your particular hack.
@@ -2349,7 +2367,7 @@ errtype do_level_entry_triggers()
    uchar special;
 
    printf("FIXME: Skipping do_level_entry_triggers!\n");
-   return(OK);
+   //return(OK);
 
    osid = objTraps[0].id;
    while (osid != OBJ_SPEC_NULL)
@@ -2360,6 +2378,8 @@ errtype do_level_entry_triggers()
          {
             grind_trap(objTraps[osid].trap_type,objTraps[osid].p1,objTraps[osid].p2,objTraps[osid].p3,objTraps[osid].p4,
                &objTraps[osid].destroy_count,objTraps[osid].id);
+
+            return(OK);
          }
       }
       osid = objTraps[osid].next;
