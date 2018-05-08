@@ -286,6 +286,7 @@ void load_textures(void)
    AdvanceProgress();
    
    // Copy the appropriate things into textprops
+   printf("Loading textprops\n");
    for (i=0; i < NUM_LOADED_TEXTURES; i ++)
       textprops[i] = texture_properties[loved_textures[i]];
    AdvanceProgress();
@@ -435,14 +436,48 @@ errtype Init_Lighting(void)
 errtype load_master_texture_properties(void)
 {
    int version,i;
-   Handle res;
+   char     *cp;
       
    texture_properties = (TextureProp *)malloc(GAME_TEXTURES * sizeof(TextureProp));
 
    // Load Properties from disk
    clear_texture_properties();
+
+   printf("load_master_texture_properties\n");
+
+   FILE* f = fopen("res/data/textprop.dat", "rb");
+
+   if (f == NULL)
+   {
+      return(ERR_FOPEN);
+   }
+
+   fseek(f, 0, SEEK_END);
+   int len = ftell(f);
+   rewind(f);
+
+   cp = (char*)malloc((len+1)*sizeof(char));
+   fread(cp, len, 1, f);
+   fclose(f);
+
+   {
+      BlockMoveData(cp, &version, sizeof(version));
+      cp += sizeof(version);
+
+      if (version == TEXTPROP_VERSION_NUMBER)
+      {
+         // 363 seems magic. GAME_TEXTURES instead?
+         for (i=0; i<363; i++) {
+            BlockMoveData(cp, &texture_properties[i], 11);
+            cp += 11;
+         }
+      }
+      else {
+         printf("Skipping loading textprops.dat, bad version!\n");
+      }
+   }
    
-   res = GetResource('tprp',1000);
+   /*res = GetResource('tprp',1000);
    if (res)
     {
      FlipLong((long *) (*res));
@@ -461,21 +496,27 @@ errtype load_master_texture_properties(void)
         }
       }
 	 ReleaseResource(res);
-    }
+    }*/
 // MLA- changed this to use resources
-/*   if (DatapathFind(&DataDirPath, levname, path))
-   {
-      fd = open(path, O_RDONLY|O_BINARY);
-      if (fd != -1)
+   //if (DatapathFind(&DataDirPath, levname, path))
+   /*{
+      FILE* f = fopen("res/data/textprop.dat", "rb");
+      if (f != NULL)
       {
-         sz += READ(fd, version);
+         fread(version, sizeof(short), 1, f);
          if (version == TEXTPROP_VERSION_NUMBER)
          {
-            sz += read(fd, texture_properties, GAME_TEXTURES * 10);
+            fread(&texture_properties, 1, GAME_TEXTURES * 10, f);
+         }
+         else {
+            printf("Bad Texture Properties version number (%d).  Current = %d.\n",version,TEXTPROP_VERSION_NUMBER);
          }
 //         else
 //            Warning(("Bad Texture Properties version number (%d).  Current = %d.\n",version,TEXTPROP_VERSION_NUMBER));
-         close(fd);
+         fclose(f);
+      }
+      else {
+         printf("Cannot load textprops!\n");
       }
     }*/
     
