@@ -320,7 +320,6 @@ void g3_interpret_object(ubyte *object_ptr,...)
 g3_interpret_object_raw:
 #endif
 
-    printf(" 1\n");
 	va_start(parm_ptr, object_ptr);	// get addr of stack parms
 
 // MLA- not used ever?
@@ -361,17 +360,14 @@ g3_interpret_object_raw:
 	 	 }
 	 }
 
-     printf(" 2\n");
 	interpreter_loop(object_ptr);
 	
 	// free res points
-    printf(" 3\n");
 	for (i=N_RES_POINTS-1; i--; i>=0)
 	 	if (resbuf[i]) 
 	 		freepnt(resbuf[i]);
 	
   // set lighting back to how it was
-        printf(" 4\n");
 	if ((_g3d_light_type & (LT_SPEC | LT_DIFF))!=0)
 	 {
 	 	gr_set_fill_type(FILL_NORM);
@@ -379,7 +375,6 @@ g3_interpret_object_raw:
    }
    
 Exit:
-    printf(" 5\n");
  	BlockMove(obj_space,object_ptr-2,size);
  }
 

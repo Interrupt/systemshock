@@ -369,8 +369,6 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
    if (*use_ref != NULL)
       *use_ref = 0;
 
-   printf("bitmap_from_tpoly_data\n");
-
    tpdata = tpdata & 0xFFF;
    style = (tpdata & TPOLY_STYLE_MASK) >> (TPOLY_INDEX_BITS + TPOLY_TYPE_BITS + TPOLY_SCALE_BITS);
    *scale = ((tpdata & TPOLY_SCALE_MASK) >> (TPOLY_INDEX_BITS + TPOLY_TYPE_BITS)) << TPOLY_SCALE_SHIFT;
@@ -1255,7 +1253,7 @@ uchar obj_destroy(ObjID id)
 	short x,y;
 	uchar  terrain_object = FALSE;
 
-   printf("Obj_destroy\n");
+   printf("obj_destroy %x\n", id);
 	
 	decrement_shodan_value(id, TRUE);
 	if (id != OBJ_NULL) 
@@ -1317,7 +1315,7 @@ errtype obj_create_player(ObjLoc *plr_loc)
 #endif
    fix pos_list[3];
 
-   printf("Created player!\n");
+   printf("obj_create_player\n");
 
    player_struct.rep = obj_create_base(PLAYER_TRIP);
    if (player_struct.rep == OBJ_NULL)
@@ -1364,7 +1362,6 @@ errtype obj_create_player(ObjLoc *plr_loc)
    else
 #endif
    {
-      printf("Making player physics\n");
       instantiate_pelvis(PLAYER_TRIP,&player_pelvis);
       objs[PLAYER_OBJ].info.ph = ph = EDMS_make_pelvis(&player_pelvis, &new_state);
       printf("objs[PLAYER_OBJ].info.ph: %i\n", objs[PLAYER_OBJ].info.ph);
@@ -1463,7 +1460,6 @@ errtype obj_load_properties()
    fclose(f);
 	
 	// Check to make sure we have the right version.
-   printf("Checking version.\n");
 	version = *(int *)cp;
 	cp += 4;
 	//SwapLongBytes(&version);
@@ -1471,8 +1467,6 @@ errtype obj_load_properties()
       printf("Bad version!\n");
 		critical_error(CRITERR_MISC|0);
    }
-
-   printf("Good version!\n");
 	
 	// Copy the data to the various global arrays, converting as needed.
 	

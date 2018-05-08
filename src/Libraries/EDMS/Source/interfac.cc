@@ -110,6 +110,7 @@ void indoor_terrain( Q X, Q Y, Q Z, Q R, physics_handle ph )
 {
 	if ( (X > 1)  &&  (Y > 1)  &&   (X < 64) &&  (Y < 64 ) )
    {
+   	printf("Indoor terrain!\n");
       Indoor_Terrain( X.to_fix(), Y.to_fix(), Z.to_fix(), R.to_fix(), ph );
 	}
    else

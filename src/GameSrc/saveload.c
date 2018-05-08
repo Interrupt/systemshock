@@ -855,7 +855,6 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 
    //  object version number!
    REF_READ(id_num, idx++, version);
-   printf("Obj Version: %i\n", version);
    //SwapLongBytes(&version);                        // Mac
 
    // Clear out old physics data and object data
@@ -868,10 +867,8 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    // convert_from is the version we are coming from.
    // for now, this is only defined for coming from version 9
    {
-      printf("map data %i\n", idx);
       REF_READ(id_num, idx++, *global_fullmap);
-            
-      printf("map tiles %i\n", idx);
+
       MAP_MAP = (MapElem *)static_map;
       ResExtract(id_num + idx++, MAP_MAP);
       AdvanceProgress();
@@ -893,7 +890,6 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    //KLC��� Big hack!  Force the schedule to growable.
    global_fullmap->sched[0].queue.grow = TRUE;
 
-   printf("loved_textures\n", version);
    REF_READ(id_num, idx++, loved_textures);
 /*
    for (i = 0; i < NUM_LOADED_TEXTURES; i++)
@@ -902,8 +898,6 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
 */
    map_set_default(global_fullmap);
-
-   printf("sizeof(Obj): %i\n", sizeof(Obj));
 
 /*���  Leave conversion from old objects out for now
 
@@ -962,7 +956,6 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    // Read in object information.  For the Mac version, copy from the resource's 27-byte structs, then
    // place it into an Obj struct (which is 28 bytes, due to alignment).  Swap bytes as needed.
    {
-      printf("NUM_OBJECTS: %i\n", NUM_OBJECTS);
       uchar *op = (uchar *)ResLock(id_num + idx);
       for(i = 0; i < NUM_OBJECTS; i++)
       {
@@ -970,9 +963,6 @@ errtype load_current_map(Id id_num, FSSpec* spec)
          memmove(&objs[i].obclass, op+1, 1);
          memmove(&objs[i].subclass, op+2, 1);
          memmove(&objs[i].specID, op+3, 24);
-
-         if(objs[i].active)
-            printf("obj: %i %i\n", objs[i].obclass, objs[i].subclass);
          
          op += 27;
       }
@@ -1498,7 +1488,6 @@ obj_out:
       switch (objs[oid].obclass)
       {
          case CLASS_DOOR:
-            printf("Found a door!\n");
             set_door_data(oid);
             break;
       }
@@ -1594,6 +1583,5 @@ out:
    _MARK_("load_current_map:End");
 */
 
-   printf("load_current_map:End\n");
    return retval;
 }
