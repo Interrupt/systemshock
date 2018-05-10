@@ -49,8 +49,6 @@ void update_level_gametime(void);
 
 errtype update_state(uchar time_running)
 {
-   printf("update_state\n");
-
    uchar update = TRUE;
    if (time_running)
    {
@@ -66,8 +64,6 @@ errtype update_state(uchar time_running)
       else
          deltat = *tmd_ticks - last_real_time;
 
-      printf("DeltaT: %i\n", deltat);
-
       if (deltat > MAX_DELTAT) deltat = MAX_DELTAT;
       if (deltat < MIN_DELTAT)
       {
@@ -82,10 +78,8 @@ errtype update_state(uchar time_running)
    if (update)
       last_real_time = *tmd_ticks;
 
-   printf("run_schedules\n");
    run_schedules();
 
-   printf("Done.\n");
    return(OK);
 }
 

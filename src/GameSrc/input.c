@@ -1398,7 +1398,7 @@ void init_input(void)
 
    // init mouse
 //KLC   mouse_set_timestamp_register((ulong*)tmd_ticks);
-   dvec[0] = 10; //KLC 30;		// default double click deleay;
+   dvec[0] = 8; //KLC 30;		// default double click deleay;
    dvec[1] = 45; // 175;	// default double click time
    i = 2;
 //KLC   config_get_value(CFG_DCLICK_RATE_VAR,CONFIG_INT_TYPE,dvec,&i);
