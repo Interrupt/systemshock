@@ -844,9 +844,6 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 void ShockGameLoop(void)
 {
-	extern ushort olh_overlay_on;
-	extern long	gShockTicks;
-
 	gPlayingGame = TRUE;
 	gDeadPlayerQuit = FALSE;
 	gGameCompletedQuit = FALSE;
@@ -887,9 +884,6 @@ void ShockGameLoop(void)
 		}
 		
 		chg_set_flg(_static_change);
-
-		// increment timer, needs to be 280 ticks / sec though
-		gShockTicks += 4;
 
 		MousePollProc();		// update the cursor, was 35 times/sec originally
 		status_bio_update();	// draw the biometer
@@ -1253,7 +1247,7 @@ errtype CheckFreeSpace(short	checkRefNum)
 void InitSDL()
 {
 	SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
-	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
 		DebugString("SDL: Init failed");
 	}
 

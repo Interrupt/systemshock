@@ -195,7 +195,7 @@ void game_loop(void)
       {
          if (!olh_overlay_on && olh_active && !global_fullmap->cyber) {
          	printf("olh_scan_objects\n");
-            //olh_scan_objects();
+            olh_scan_objects();
         }
       }
 //KLC - does nothing!         loopLine(GL|0x1D,synchronous_update());
@@ -206,9 +206,8 @@ void game_loop(void)
 	     loopLine(GL|0x1E,sound_frame_update());
       }
 
-		if (pal_fx_on && (++pal_frame == 2))
+		if (pal_fx_on)
 		 {
-		 	pal_frame=0;
 			loopLine(GL|0x1F,palette_advance_all_fx(*tmd_ticks));
 		 }
 		 

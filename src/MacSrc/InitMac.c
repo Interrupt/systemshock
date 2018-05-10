@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "InitMac.h"
 #include "ShockBitmap.h"
 //#include "MacTune.h"
+#include <sdl.h>
 
 #include <Carbon/Carbon.h>
 
@@ -471,14 +472,29 @@ void RemoveShockTimers(void)
 }
 
 //------------------------------------------------------------------------------------
+//  Timer tick callback.
+//------------------------------------------------------------------------------------
+Uint32 TimerTickCallback(Uint32 interval, void *param)
+{
+	gShockTicks++;
+	return interval;
+}
+
+//------------------------------------------------------------------------------------
 //  Prime the System Shock timer.
 //------------------------------------------------------------------------------------
 void StartShockTimer(void)
 {
-	pShockTicksTask.task.tmWakeUp = 0;
-	pShockTicksTask.task.tmReserved = 0;
+	//pShockTicksTask.task.tmWakeUp = 0;
+	//pShockTicksTask.task.tmReserved = 0;
 	//InsXTime((QElemPtr)&pShockTicksTask);
 	//PrimeTime((QElemPtr)&pShockTicksTask, kShockTicksFreq);	// Increment 280 times a second
+
+	/*SDL_TimerID SDL_AddTimer(Uint32            interval,
+                         SDL_TimerCallback callback,
+                         void*             param)*/
+
+	SDL_TimerID my_timer_id = SDL_AddTimer(1000 / 280, TimerTickCallback, NULL);
 }
 
 //------------------------------------------------------------------------------------
