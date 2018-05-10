@@ -29,13 +29,15 @@ bravery, and to C++ for being such a complex and neurotic language.
 #ifndef __FIXPP_H
 #define __FIXPP_H
 
-#include <iostream>
+#include <istream>
 #include <stdio.h>
 #include <stdlib.h>
 
+extern "C"
+{
 //#include "mprintf.h"
 #include "fix.h"                       // A big thank you to Dan and Matt.
-
+}
 
 // How many bits to shift an integer up to make it a fixpoint.
 // ===========================================================
@@ -66,9 +68,9 @@ bravery, and to C++ for being such a complex and neurotic language.
 // Here is a nice forward declaration.
 // ===================================
 
-class Fixpoint;
+class Fixpoint ;
 
-#define Q	Fixpoint		// Added by KC for Mac version
+#define Q Fixpoint
 
 // Here are some nice constants.
 // ============================================
@@ -290,7 +292,7 @@ public:
                 cond_eq,
                 cond_neq;
 
-   static void report_on( void ) { click_bool = 1; }
+   static void  report_on( void ) { click_bool = 1; }
    static void report_off( void ) { click_bool = 0; }
 
    static void report( std::ostream& );
@@ -330,7 +332,9 @@ inline Fixpoint::Fixpoint( double d )
 { CLICK( constructor_double); val = (long int)(d * SHIFTMULTIPLIER); }
 
 
-//inline Fixpoint rawConstruct( long l ) ¥¥¥ Removed inline.  Put code in fixpp.cc
+inline Fixpoint rawConstruct( long l )
+{ Fixpoint f; f.val = l; return f; }
+#define f2Fixpoint(x) (rawConstruct( (long)((x)*SHIFTMULTIPLIER) ))
 
 
 
@@ -355,7 +359,7 @@ inline Fixpoint::Fixpoint( double d )
 ////////////
 inline Fixpoint& Fixpoint::operator+=(Fixpoint fp2 )
 {
-//   CLICK( add_eq );
+   CLICK( add_eq );
 
    val += fp2.val;
 
@@ -375,14 +379,6 @@ inline Fixpoint& Fixpoint::operator-=(Fixpoint fp2 )
    return *this;
 }
 
-/*
-long int _fix_do_mult( long int val1, long int val2 );
-#pragma aux _fix_do_mult =    \
-   "imul    edx"              \
-   "shrd    eax,edx,16"       \
-   parm [eax] [edx]           \
-   modify [eax edx] ;
-*/
 
 ////////////
 //        //
@@ -391,23 +387,12 @@ long int _fix_do_mult( long int val1, long int val2 );
 ////////////
 inline Fixpoint& Fixpoint::operator*=(Fixpoint fp2 )
 {
-//	CLICK( mul_eq );
+   CLICK( mul_eq );
 
-//   val = _fix_do_mult( val, fp2.val );
-	val = fix_mul(val, fp2.val);
-	return *this;
+   val = (long)fix_mul( (fix)val, (fix)fp2.val );
+   return *this;
 }
 
-/*
-long int _fix_do_div( long int val1, long int val2 );
-#pragma aux _fix_do_div =     \
-   "mov     edx,eax"          \
-   "sar     edx,16"           \
-   "shl     eax,16"           \
-   "idiv    ebx"              \
-   parm [eax] [ebx]           \
-   modify [eax edx];
-*/
 
 ////////////
 //        //
@@ -418,8 +403,8 @@ inline Fixpoint& Fixpoint::operator/=(Fixpoint fp2 )
 {
    CLICK( div_eq );
 
-//   val = _fix_do_div(val, fp2.val);
-   val = fix_div(val, fp2.val);
+   val = (long)fix_div((fix)val,(fix)fp2.val);
+// val = _fix_do_div(val, fp2.val);
    return *this;
 }
 
@@ -437,38 +422,29 @@ inline Fixpoint& Fixpoint::operator>>=(unsigned int n)
 
 
 
-inline Fixpoint& operator+(const Fixpoint& a, const Fixpoint& b)
-{
-//  CLICK (Fixpoint::binary_add);
-   
-   Fixpoint	c;
-   c.val = a.val + b.val;
-   return c;
+inline Fixpoint operator+(Fixpoint a,Fixpoint b)
+{  CLICK (Fixpoint::binary_add);
+   a.val+=b.val;
+   return a;
 }
 
-inline Fixpoint& operator-(const Fixpoint& a, const Fixpoint& b)
-{
-//  CLICK (Fixpoint::binary_sub);
-   Fixpoint	c;
-   c.val = a.val - b.val;
-   return c;
+inline Fixpoint operator-(Fixpoint a,Fixpoint b)
+{  CLICK (Fixpoint::binary_sub);
+   a.val-=b.val;
+   return a;
 }
 
-inline Fixpoint& operator*(const Fixpoint& a, const Fixpoint& b)
-{
-//  CLICK (Fixpoint::binary_mul);
-   Fixpoint	c;
-   c.val = fix_mul(a.val,b.val);
-   return c;
+inline Fixpoint operator*(Fixpoint a,Fixpoint b)
+{  CLICK (Fixpoint::binary_mul);
+   a.val=(long)fix_mul((fix)a.val,(fix)b.val);
+   return a;
 }
 
-inline Fixpoint& operator/(const Fixpoint& a, const Fixpoint& b)
-{
-//  CLICK (Fixpoint::binary_div);
-//   a.val=_fix_do_div(a.val,b.val);
-   Fixpoint	c;
-   c.val= fix_div(a.val,b.val);
-   return c;
+inline Fixpoint operator/(Fixpoint a,Fixpoint b)
+{  CLICK (Fixpoint::binary_div);
+   a.val = (long)fix_div((fix)a.val,(fix)b.val);
+// a.val=_fix_do_div(a.val,b.val);
+   return a;
 }
 
 
@@ -709,49 +685,13 @@ inline Fixpoint operator* ( int i, Fixpoint fp ) { return Fixpoint(i) * fp ; }
 inline Fixpoint operator* ( unsigned int i, Fixpoint fp ) { return Fixpoint(i) * fp ; }
 inline Fixpoint operator* ( long int i, Fixpoint fp ) { return Fixpoint(i) * fp ; }
 inline Fixpoint operator* ( unsigned long int i, Fixpoint fp ) { return Fixpoint(i) * fp ; }
-//inline Fixpoint operator* ( double d, Fixpoint fp ) { return Fixpoint(d) * fp ; }
-inline Fixpoint& operator* (const double& d, const Fixpoint& fp)
-{
-	Fixpoint c;
-	c.val = fix_mul((long int)(d * SHIFTMULTIPLIER), fp.val);
-	return c;
-}
+inline Fixpoint operator* ( double d, Fixpoint fp ) { return Fixpoint(d) * fp ; }
 
-//inline Fixpoint operator- ( int i, Fixpoint fp ) { return Fixpoint(i) - fp ; }
-//inline Fixpoint operator- ( unsigned int i, Fixpoint fp ) { return Fixpoint(i) - fp ; }
-//inline Fixpoint operator- ( long int i, Fixpoint fp ) { return Fixpoint(i) - fp ; }
-//inline Fixpoint operator- ( unsigned long int i, Fixpoint fp ) { return Fixpoint(i) - fp ; }
-//inline Fixpoint operator- ( double d, Fixpoint fp ) { return Fixpoint(d) - fp ; }
-inline Fixpoint& operator- ( const int& i, const Fixpoint& fp )
-{
-	Fixpoint c;
-	c.val = (i << SHIFTUP) - fp.val;
-	return c;
-}
-inline Fixpoint& operator- ( const unsigned int& i, const Fixpoint& fp )
-{
-	Fixpoint c;
-	c.val = (i << SHIFTUP) - fp.val;
-	return c;
-}
-inline Fixpoint& operator- ( const long int& i, const Fixpoint& fp )
-{
-	Fixpoint c;
-	c.val = (i << SHIFTUP) - fp.val;
-	return c;
-}
-inline Fixpoint& operator- ( const unsigned long int& i, const Fixpoint& fp )
-{
-	Fixpoint c;
-	c.val = (i << SHIFTUP) - fp.val;
-	return c;
-}
-inline Fixpoint& operator- (const double& d, const Fixpoint& fp)
-{
-	Fixpoint c;
-	c.val = (long int)(d * SHIFTMULTIPLIER) - fp.val;
-	return c;
-}
+inline Fixpoint operator- ( int i, Fixpoint fp ) { return Fixpoint(i) - fp ; }
+inline Fixpoint operator- ( unsigned int i, Fixpoint fp ) { return Fixpoint(i) - fp ; }
+inline Fixpoint operator- ( long int i, Fixpoint fp ) { return Fixpoint(i) - fp ; }
+inline Fixpoint operator- ( unsigned long int i, Fixpoint fp ) { return Fixpoint(i) - fp ; }
+inline Fixpoint operator- ( double d, Fixpoint fp ) { return Fixpoint(d) - fp ; }
 
 inline Fixpoint operator+ ( int i, Fixpoint fp ) { return Fixpoint(i) + fp ; }
 inline Fixpoint operator+ ( unsigned int i, Fixpoint fp ) { return Fixpoint(i) + fp ; }
@@ -830,20 +770,13 @@ inline std::istream& operator >> ( std::istream & is, Fixpoint &fp )
 //
 // ====================================================
 
-/*
-int _fix_do_mul_div(int a,int b,int c);
-#pragma aux _fix_do_mul_div = \
-   "imul edx" \
-   "idiv ebx" \
-   parm [eax] [edx] [ebx] \
-   modify [eax edx];
-*/
 
 inline Fixpoint mul_div(Fixpoint a,Fixpoint b,Fixpoint c)
 {  Fixpoint r;
-   r.val = fix_mul_div(a.val,b.val,c.val);
+   r.val = (long)fix_mul_div((fix)a.val,(fix)b.val,(fix)c.val);
    return r;
 }
+
 
 
 inline Fixpoint sqrt( Fixpoint a )
@@ -854,7 +787,6 @@ inline Fixpoint sqrt( Fixpoint a )
 
    return ans;
 }
-
 
 inline Fixpoint exp(Fixpoint a)
 {  Fixpoint ans;
@@ -988,3 +920,4 @@ void touch( Fixpoint& );
 
 
 #endif /* !__FIXPP_H */
+

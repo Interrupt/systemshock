@@ -2366,9 +2366,6 @@ errtype do_level_entry_triggers()
    ObjSpecID osid;
    uchar special;
 
-   printf("FIXME: Skipping do_level_entry_triggers!\n");
-   //return(OK);
-
    osid = objTraps[0].id;
    while (osid != OBJ_SPEC_NULL)
    {

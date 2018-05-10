@@ -82,7 +82,7 @@ void  ( *idof_functions[MAX_OBJ] )( int ),         //Pointers to the appropriate
 Q     *utility_pointer[MAX_OBJ];       //Biped skeletons, Jello translucencies, etc...    
 
 
-Q     hash_scale = 1.;        //The ratio betwixt coordinate and collision...
+Q     hash_scale = 1.0;        //The ratio betwixt coordinate and collision...
 
 // Courtesy of C++ and inline fixpoint and such...
 // ===============================================
@@ -134,6 +134,8 @@ register	Q	*S_Object;
    Q       average_frequency;
    int     ccount = 0;
    int     count = 0;
+
+   printf("soliton_lite\n");
 
    // Copy the state vector initially into the argument vector...
    // ===========================================================
@@ -559,6 +561,9 @@ void EDMS_initialize( EDMS_data *D )
    hash_scale.fix_to( D->playfield_size );
    hash_scale = collision_size / hash_scale;
 
+   printf("hash_scale: %f\n", fix_float(hash_scale.to_fix()));
+   printf("collision_size: %f\n", fix_float(collision_size.to_fix()));
+
    for ( coord = 0; coord < EDMS_DATA_SIZE; coord++ )
    {
       for ( deriv = 0; deriv < EDMS_DATA_SIZE; deriv++ )
@@ -612,6 +617,8 @@ int EDMS_kill( int deadguy )
    int   error_code = -1;
    int   deriv = 0;
    int	 object;
+
+   printf("EDMS_kill\n");
 
    // First see if there is, in fact, an object there...
    // ==================================================
@@ -744,6 +751,8 @@ void  collision_wakeup( int object )
    void     (*idof_function_save)( int );
 
    extern void     inventory_and_statistics();
+
+   printf("collision_wakeup\n");
 
    // Save me, save me...
    // ===================

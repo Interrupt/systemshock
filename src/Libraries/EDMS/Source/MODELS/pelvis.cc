@@ -221,6 +221,7 @@ Q		mag = i_object[18]*i_object[18] + i_object[19]*i_object[19];
 //		CONTROL...
 //		==========
 
+		printf("head motion\n");
 
 //		Head motion for fucking hacking...
 //		----------------------------------
@@ -488,6 +489,8 @@ Q   Head_tau_beta =  -.1*i_object[0]*sin_beta*(  head_kappa[2] - head_delta[2] )
                                   - i_object[1]*A[object][5][0]	  /**(1-.5*(i_object[10]==1))*/
                                   - .8*i_object[2]*A[object][5][1] /**(1-.5*(i_object[10]==1))*/	  
                                   + i_object[15] );
+
+  printf("Done!\n");
 
 
 //	That's all, folks...

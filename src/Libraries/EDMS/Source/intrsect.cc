@@ -68,6 +68,8 @@ void shall_we_dance( int object, Q& result0, Q& result1, Q& result2 )
    // mask contains the bits corresponding to the objects that could be
    // intersecting object.
 
+   printf("intrsect shall_we_dance?\n");
+
    ulong mask = are_you_there (object);
    ulong bit  = 0;                     // which object bit we're checking
 
@@ -209,6 +211,8 @@ uchar do_work( int object, int other_object, Q my_rad, Q your_rad,
    dx = my_pos[0] - other_pos[0];
    dy = my_pos[1] - other_pos[1];
    dz = my_pos[2] - other_pos[2];
+
+   printf("do_work\n");
 
    if (dx >= cm_radius || dy >= cm_radius || dz >= cm_radius)
    {

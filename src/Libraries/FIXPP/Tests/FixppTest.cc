@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "fixpp.h"
 
-main( void )
+int main( void )
 {
    int                c =  1;
    signed int        sc =  2;
@@ -73,7 +73,7 @@ main( void )
 
    Fixpoint fo = CONST;
 
-   cout << fa << "\n" << fb << "\n" << fc << "\n" << fd << "\n" << fe
+   std::cout << fa << "\n" << fb << "\n" << fc << "\n" << fd << "\n" << fe
         << "\n" << ff << "\n" << fg << "\n" << fh << "\n" << fi << "\n"
         << fj << "\n" << fk << "\n" << fl << "\n" << fm << "\n" << fn
         << "\n" << fo << "\n--------------------\n" ;
@@ -108,7 +108,7 @@ main( void )
       float              f = fm.to_double();
       double             d = fn.to_double();
 
-      cout << c << "\n" << sc << "\n" << uc << "\n" <<  s << "\n" << ss
+      std::cout << c << "\n" << sc << "\n" << uc << "\n" <<  s << "\n" << ss
            << "\n" << us << "\n" <<  i << "\n" << si << "\n" << ui << "\n"
            <<  l   << "\n" << sl << "\n" << ul << "\n" <<  f << "\n"
            << d << "\n--------------------\n" ;
@@ -135,28 +135,28 @@ main( void )
    // Homo math.
    // ==========
 
-   cout << (fc = fa * fb) << "\n";
-   cout << (fd = fc / fa) << "\n";
-   cout << (fe = fd + fa) << "\n";
-   cout << (ff = fe - fb) << "\n";
+   std::cout << (fc = fa * fb) << "\n";
+   std::cout << (fd = fc / fa) << "\n";
+   std::cout << (fe = fd + fa) << "\n";
+   std::cout << (ff = fe - fb) << "\n";
 
-   cout << (fa += fb) << "\n";
-   cout << (fa -= fc) << "\n";
-   cout << (fa *= fd) << "\n";
-   cout << (fa /= fe) << "\n";
+   std::cout << (fa += fb) << "\n";
+   std::cout << (fa -= fc) << "\n";
+   std::cout << (fa *= fd) << "\n";
+   std::cout << (fa /= fe) << "\n";
 
-   cout << (fa = -fa) << "\n";
-   cout << (fa = +fa) << "\n";
+   std::cout << (fa = -fa) << "\n";
+   std::cout << (fa = +fa) << "\n";
 
-   cout << (fa  < fb) << "\n";
-   cout << (fa  > fb) << "\n";
-   cout << (fa <= fb) << "\n";
-   cout << (fa <= fb) << "\n";
-   cout << (fa == fb) << "\n";
-   cout << (fa != fd) << "\n";
+   std::cout << (fa  < fb) << "\n";
+   std::cout << (fa  > fb) << "\n";
+   std::cout << (fa <= fb) << "\n";
+   std::cout << (fa <= fb) << "\n";
+   std::cout << (fa == fb) << "\n";
+   std::cout << (fa != fd) << "\n";
 
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
    {
@@ -170,55 +170,55 @@ main( void )
    // ==========
 
 
-   cout << (fa =  c) << "\n";
-   cout << (fb = sc) << "\n";
-   cout << (fc = uc) << "\n";
+   std::cout << (fa =  c) << "\n";
+   std::cout << (fb = sc) << "\n";
+   std::cout << (fc = uc) << "\n";
 
-   cout << (fd =  s) << "\n";
-   cout << (fe = ss) << "\n";
-   cout << (ff = us) << "\n";
+   std::cout << (fd =  s) << "\n";
+   std::cout << (fe = ss) << "\n";
+   std::cout << (ff = us) << "\n";
 
-   cout << (fg =  i) << "\n";
-   cout << (fh = si) << "\n";
-   cout << (fi = ui) << "\n";
+   std::cout << (fg =  i) << "\n";
+   std::cout << (fh = si) << "\n";
+   std::cout << (fi = ui) << "\n";
 
-   cout << (fj =  l) << "\n";
-   cout << (fk = sl) << "\n";
-   cout << (fl = ul) << "\n";
+   std::cout << (fj =  l) << "\n";
+   std::cout << (fk = sl) << "\n";
+   std::cout << (fl = ul) << "\n";
 
-   cout << (fm =  f) << "\n";
-   cout << (fn =  d) << "\n";
-   cout << (fo = CONST) << "\n";
+   std::cout << (fm =  f) << "\n";
+   std::cout << (fn =  d) << "\n";
+   std::cout << (fo = CONST) << "\n";
 
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
    // other = Fp
    // ==========
 
 
-   cout << ( c = (char)               fa.to_lint()) << "\n";
-   cout << (sc = (signed char)        fb.to_lint()) << "\n";
-   cout << (uc = (unsigned char)      fc.to_lint()) << "\n";
+   std::cout << ( c = (char)               fa.to_lint()) << "\n";
+   std::cout << (sc = (signed char)        fb.to_lint()) << "\n";
+   std::cout << (uc = (unsigned char)      fc.to_lint()) << "\n";
 
-   cout << ( s = (short int)          fd.to_lint()) << "\n";
-   cout << (ss = (signed short int)   fe.to_lint()) << "\n";
-   cout << (us = (unsigned short int) ff.to_lint()) << "\n";
+   std::cout << ( s = (short int)          fd.to_lint()) << "\n";
+   std::cout << (ss = (signed short int)   fe.to_lint()) << "\n";
+   std::cout << (us = (unsigned short int) ff.to_lint()) << "\n";
 
-   cout << ( i = fg.to_lint()) << "\n";
-   cout << (si = fh.to_lint()) << "\n";
-   cout << (ui = fi.to_lint()) << "\n";
+   std::cout << ( i = fg.to_lint()) << "\n";
+   std::cout << (si = fh.to_lint()) << "\n";
+   std::cout << (ui = fi.to_lint()) << "\n";
 
-   cout << ( l = fj.to_lint()) << "\n";
-   cout << (sl = fk.to_lint()) << "\n";
-   cout << (ul = fl.to_lint()) << "\n";
+   std::cout << ( l = fj.to_lint()) << "\n";
+   std::cout << (sl = fk.to_lint()) << "\n";
+   std::cout << (ul = fl.to_lint()) << "\n";
 
-   cout << ( f = fm.to_double()) << "\n";
-   cout << ( d = fn.to_double()) << "\n";
+   std::cout << ( f = fm.to_double()) << "\n";
+   std::cout << ( d = fn.to_double()) << "\n";
 
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
 
@@ -227,147 +227,147 @@ main( void )
    // ==========
 
 
-   cout << (fa <  c) << "\n" ;
-   cout << (fb < sc) << "\n" ;
-   cout << (fc < uc) << "\n" ;
+   std::cout << (fa <  c) << "\n" ;
+   std::cout << (fb < sc) << "\n" ;
+   std::cout << (fc < uc) << "\n" ;
 
-   cout << (fd <  s) << "\n" ;
-   cout << (fe < ss) << "\n" ;
-   cout << (ff < us) << "\n" ;
+   std::cout << (fd <  s) << "\n" ;
+   std::cout << (fe < ss) << "\n" ;
+   std::cout << (ff < us) << "\n" ;
 
-   cout << (fg <  i) << "\n" ;
-   cout << (fh < si) << "\n" ;
-   cout << (fi < ui) << "\n" ;
+   std::cout << (fg <  i) << "\n" ;
+   std::cout << (fh < si) << "\n" ;
+   std::cout << (fi < ui) << "\n" ;
 
-   cout << (fj <  l) << "\n" ;
-   cout << (fk < sl) << "\n" ;
-   cout << (fl < ul) << "\n" ;
+   std::cout << (fj <  l) << "\n" ;
+   std::cout << (fk < sl) << "\n" ;
+   std::cout << (fl < ul) << "\n" ;
 
-   cout << (fm <  f) << "\n" ;
-   cout << (fn <  d) << "\n" ;
-   cout << (fn < CONST) << "\n";
-
-
-   cout << "--------\n" ;
+   std::cout << (fm <  f) << "\n" ;
+   std::cout << (fn <  d) << "\n" ;
+   std::cout << (fn < CONST) << "\n";
 
 
-   cout << (fa >  c) << "\n" ;
-   cout << (fb > sc) << "\n" ;
-   cout << (fc > uc) << "\n" ;
-
-   cout << (fd >  s) << "\n" ;
-   cout << (fe > ss) << "\n" ;
-   cout << (ff > us) << "\n" ;
-
-   cout << (fg >  i) << "\n" ;
-   cout << (fh > si) << "\n" ;
-   cout << (fi > ui) << "\n" ;
-
-   cout << (fj >  l) << "\n" ;
-   cout << (fk > sl) << "\n" ;
-   cout << (fl > ul) << "\n" ;
-
-   cout << (fm >  f) << "\n" ;
-   cout << (fn >  d) << "\n" ;
-   cout << (fn > CONST) << "\n";
+   std::cout << "--------\n" ;
 
 
-   cout << "--------\n" ;
+   std::cout << (fa >  c) << "\n" ;
+   std::cout << (fb > sc) << "\n" ;
+   std::cout << (fc > uc) << "\n" ;
+
+   std::cout << (fd >  s) << "\n" ;
+   std::cout << (fe > ss) << "\n" ;
+   std::cout << (ff > us) << "\n" ;
+
+   std::cout << (fg >  i) << "\n" ;
+   std::cout << (fh > si) << "\n" ;
+   std::cout << (fi > ui) << "\n" ;
+
+   std::cout << (fj >  l) << "\n" ;
+   std::cout << (fk > sl) << "\n" ;
+   std::cout << (fl > ul) << "\n" ;
+
+   std::cout << (fm >  f) << "\n" ;
+   std::cout << (fn >  d) << "\n" ;
+   std::cout << (fn > CONST) << "\n";
 
 
-   cout << (fa <=  c) << "\n" ;
-   cout << (fb <= sc) << "\n" ;
-   cout << (fc <= uc) << "\n" ;
-
-   cout << (fd <=  s) << "\n" ;
-   cout << (fe <= ss) << "\n" ;
-   cout << (ff <= us) << "\n" ;
-
-   cout << (fg <=  i) << "\n" ;
-   cout << (fh <= si) << "\n" ;
-   cout << (fi <= ui) << "\n" ;
-
-   cout << (fj <=  l) << "\n" ;
-   cout << (fk <= sl) << "\n" ;
-   cout << (fl <= ul) << "\n" ;
-
-   cout << (fm <=  f) << "\n" ;
-   cout << (fn <=  d) << "\n" ;
-   cout << (fn <= CONST) << "\n";
+   std::cout << "--------\n" ;
 
 
-   cout << "--------\n" ;
+   std::cout << (fa <=  c) << "\n" ;
+   std::cout << (fb <= sc) << "\n" ;
+   std::cout << (fc <= uc) << "\n" ;
+
+   std::cout << (fd <=  s) << "\n" ;
+   std::cout << (fe <= ss) << "\n" ;
+   std::cout << (ff <= us) << "\n" ;
+
+   std::cout << (fg <=  i) << "\n" ;
+   std::cout << (fh <= si) << "\n" ;
+   std::cout << (fi <= ui) << "\n" ;
+
+   std::cout << (fj <=  l) << "\n" ;
+   std::cout << (fk <= sl) << "\n" ;
+   std::cout << (fl <= ul) << "\n" ;
+
+   std::cout << (fm <=  f) << "\n" ;
+   std::cout << (fn <=  d) << "\n" ;
+   std::cout << (fn <= CONST) << "\n";
 
 
-   cout << (fa >=  c) << "\n" ;
-   cout << (fb >= sc) << "\n" ;
-   cout << (fc >= uc) << "\n" ;
-
-   cout << (fd >=  s) << "\n" ;
-   cout << (fe >= ss) << "\n" ;
-   cout << (ff >= us) << "\n" ;
-
-   cout << (fg >=  i) << "\n" ;
-   cout << (fh >= si) << "\n" ;
-   cout << (fi >= ui) << "\n" ;
-
-   cout << (fj >=  l) << "\n" ;
-   cout << (fk >= sl) << "\n" ;
-   cout << (fl >= ul) << "\n" ;
-
-   cout << (fm >=  f) << "\n" ;
-   cout << (fn >=  d) << "\n" ;
-   cout << (fn >= CONST) << "\n";
+   std::cout << "--------\n" ;
 
 
-   cout << "--------\n" ;
+   std::cout << (fa >=  c) << "\n" ;
+   std::cout << (fb >= sc) << "\n" ;
+   std::cout << (fc >= uc) << "\n" ;
+
+   std::cout << (fd >=  s) << "\n" ;
+   std::cout << (fe >= ss) << "\n" ;
+   std::cout << (ff >= us) << "\n" ;
+
+   std::cout << (fg >=  i) << "\n" ;
+   std::cout << (fh >= si) << "\n" ;
+   std::cout << (fi >= ui) << "\n" ;
+
+   std::cout << (fj >=  l) << "\n" ;
+   std::cout << (fk >= sl) << "\n" ;
+   std::cout << (fl >= ul) << "\n" ;
+
+   std::cout << (fm >=  f) << "\n" ;
+   std::cout << (fn >=  d) << "\n" ;
+   std::cout << (fn >= CONST) << "\n";
 
 
-   cout << (fa ==  c) << "\n" ;
-   cout << (fb == sc) << "\n" ;
-   cout << (fc == uc) << "\n" ;
-
-   cout << (fd ==  s) << "\n" ;
-   cout << (fe == ss) << "\n" ;
-   cout << (ff == us) << "\n" ;
-
-   cout << (fg ==  i) << "\n" ;
-   cout << (fh == si) << "\n" ;
-   cout << (fi == ui) << "\n" ;
-
-   cout << (fj ==  l) << "\n" ;
-   cout << (fk == sl) << "\n" ;
-   cout << (fl == ul) << "\n" ;
-
-   cout << (fm ==  f) << "\n" ;
-   cout << (fn ==  d) << "\n" ;
-   cout << (fn == CONST) << "\n";
-
-   cout << "--------\n" ;
-
-   cout << (fa !=  c) << "\n" ;
-   cout << (fb != sc) << "\n" ;
-   cout << (fc != uc) << "\n" ;
-
-   cout << (fd !=  s) << "\n" ;
-   cout << (fe != ss) << "\n" ;
-   cout << (ff != us) << "\n" ;
-
-   cout << (fg !=  i) << "\n" ;
-   cout << (fh != si) << "\n" ;
-   cout << (fi != ui) << "\n" ;
-
-   cout << (fj !=  l) << "\n" ;
-   cout << (fk != sl) << "\n" ;
-   cout << (fl != ul) << "\n" ;
-
-   cout << (fm !=  f) << "\n" ;
-   cout << (fn !=  d) << "\n" ;
-   cout << (fn != CONST) << "\n";
+   std::cout << "--------\n" ;
 
 
-   cout << "--------\n" ;
-   cout << "--------\n" ;
+   std::cout << (fa ==  c) << "\n" ;
+   std::cout << (fb == sc) << "\n" ;
+   std::cout << (fc == uc) << "\n" ;
+
+   std::cout << (fd ==  s) << "\n" ;
+   std::cout << (fe == ss) << "\n" ;
+   std::cout << (ff == us) << "\n" ;
+
+   std::cout << (fg ==  i) << "\n" ;
+   std::cout << (fh == si) << "\n" ;
+   std::cout << (fi == ui) << "\n" ;
+
+   std::cout << (fj ==  l) << "\n" ;
+   std::cout << (fk == sl) << "\n" ;
+   std::cout << (fl == ul) << "\n" ;
+
+   std::cout << (fm ==  f) << "\n" ;
+   std::cout << (fn ==  d) << "\n" ;
+   std::cout << (fn == CONST) << "\n";
+
+   std::cout << "--------\n" ;
+
+   std::cout << (fa !=  c) << "\n" ;
+   std::cout << (fb != sc) << "\n" ;
+   std::cout << (fc != uc) << "\n" ;
+
+   std::cout << (fd !=  s) << "\n" ;
+   std::cout << (fe != ss) << "\n" ;
+   std::cout << (ff != us) << "\n" ;
+
+   std::cout << (fg !=  i) << "\n" ;
+   std::cout << (fh != si) << "\n" ;
+   std::cout << (fi != ui) << "\n" ;
+
+   std::cout << (fj !=  l) << "\n" ;
+   std::cout << (fk != sl) << "\n" ;
+   std::cout << (fl != ul) << "\n" ;
+
+   std::cout << (fm !=  f) << "\n" ;
+   std::cout << (fn !=  d) << "\n" ;
+   std::cout << (fn != CONST) << "\n";
+
+
+   std::cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
 
@@ -383,150 +383,150 @@ main( void )
    // BAD!!!!
    // ==========
 
-   cout << (  c<fa ) << "\n" ;
-   cout << ( sc<fb ) << "\n" ;
-   cout << ( uc<fc ) << "\n" ;
+   std::cout << (  c<fa ) << "\n" ;
+   std::cout << ( sc<fb ) << "\n" ;
+   std::cout << ( uc<fc ) << "\n" ;
 
-   cout << (  s<fd ) << "\n" ;
-   cout << ( ss<fe ) << "\n" ;
-   cout << ( us<ff ) << "\n" ;
+   std::cout << (  s<fd ) << "\n" ;
+   std::cout << ( ss<fe ) << "\n" ;
+   std::cout << ( us<ff ) << "\n" ;
 
-   cout << (  i<fg ) << "\n" ;
-   cout << ( si<fh ) << "\n" ;
-   cout << ( ui<fi ) << "\n" ;
+   std::cout << (  i<fg ) << "\n" ;
+   std::cout << ( si<fh ) << "\n" ;
+   std::cout << ( ui<fi ) << "\n" ;
 
-   cout << (  l<fj ) << "\n" ;
-   cout << ( sl<fk ) << "\n" ;
-   cout << ( ul<fl ) << "\n" ;
+   std::cout << (  l<fj ) << "\n" ;
+   std::cout << ( sl<fk ) << "\n" ;
+   std::cout << ( ul<fl ) << "\n" ;
 
-   cout << (  f<fm ) << "\n" ;
-   cout << (  d<fn ) << "\n" ;
+   std::cout << (  f<fm ) << "\n" ;
+   std::cout << (  d<fn ) << "\n" ;
 
-   cout << (CONST<fo) << "\n";
-
-
-   cout << "--------\n" ;
+   std::cout << (CONST<fo) << "\n";
 
 
-   cout << (  c>fa ) << "\n" ;
-   cout << ( sc>fb ) << "\n" ;
-   cout << ( uc>fc ) << "\n" ;
-
-   cout << (  s>fd ) << "\n" ;
-   cout << ( ss>fe ) << "\n" ;
-   cout << ( us>ff ) << "\n" ;
-
-   cout << (  i>fg ) << "\n" ;
-   cout << ( si>fh ) << "\n" ;
-   cout << ( ui>fi ) << "\n" ;
-
-   cout << (  l>fj ) << "\n" ;
-   cout << ( sl>fk ) << "\n" ;
-   cout << ( ul>fl ) << "\n" ;
-
-   cout << (  f>fm ) << "\n" ;
-   cout << (  d>fn ) << "\n" ;
-
-   cout << (CONST>fo) << "\n";
+   std::cout << "--------\n" ;
 
 
-   cout << "--------\n" ;
+   std::cout << (  c>fa ) << "\n" ;
+   std::cout << ( sc>fb ) << "\n" ;
+   std::cout << ( uc>fc ) << "\n" ;
+
+   std::cout << (  s>fd ) << "\n" ;
+   std::cout << ( ss>fe ) << "\n" ;
+   std::cout << ( us>ff ) << "\n" ;
+
+   std::cout << (  i>fg ) << "\n" ;
+   std::cout << ( si>fh ) << "\n" ;
+   std::cout << ( ui>fi ) << "\n" ;
+
+   std::cout << (  l>fj ) << "\n" ;
+   std::cout << ( sl>fk ) << "\n" ;
+   std::cout << ( ul>fl ) << "\n" ;
+
+   std::cout << (  f>fm ) << "\n" ;
+   std::cout << (  d>fn ) << "\n" ;
+
+   std::cout << (CONST>fo) << "\n";
 
 
-   cout << (  c<=fa ) << "\n" ;
-   cout << ( sc<=fb ) << "\n" ;
-   cout << ( uc<=fc ) << "\n" ;
-
-   cout << (  s<=fd ) << "\n" ;
-   cout << ( ss<=fe ) << "\n" ;
-   cout << ( us<=ff ) << "\n" ;
-
-   cout << (  i<=fg ) << "\n" ;
-   cout << ( si<=fh ) << "\n" ;
-   cout << ( ui<=fi ) << "\n" ;
-
-   cout << (  l<=fj ) << "\n" ;
-   cout << ( sl<=fk ) << "\n" ;
-   cout << ( ul<=fl ) << "\n" ;
-
-   cout << (  f<=fm ) << "\n" ;
-   cout << (  d<=fn ) << "\n" ;
-
-   cout << (CONST<=fo) << "\n";
-
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
-   cout << (  c>=fa ) << "\n" ;
-   cout << ( sc>=fb ) << "\n" ;
-   cout << ( uc>=fc ) << "\n" ;
+   std::cout << (  c<=fa ) << "\n" ;
+   std::cout << ( sc<=fb ) << "\n" ;
+   std::cout << ( uc<=fc ) << "\n" ;
 
-   cout << (  s>=fd ) << "\n" ;
-   cout << ( ss>=fe ) << "\n" ;
-   cout << ( us>=ff ) << "\n" ;
+   std::cout << (  s<=fd ) << "\n" ;
+   std::cout << ( ss<=fe ) << "\n" ;
+   std::cout << ( us<=ff ) << "\n" ;
 
-   cout << (  i>=fg ) << "\n" ;
-   cout << ( si>=fh ) << "\n" ;
-   cout << ( ui>=fi ) << "\n" ;
+   std::cout << (  i<=fg ) << "\n" ;
+   std::cout << ( si<=fh ) << "\n" ;
+   std::cout << ( ui<=fi ) << "\n" ;
 
-   cout << (  l>=fj ) << "\n" ;
-   cout << ( sl>=fk ) << "\n" ;
-   cout << ( ul>=fl ) << "\n" ;
+   std::cout << (  l<=fj ) << "\n" ;
+   std::cout << ( sl<=fk ) << "\n" ;
+   std::cout << ( ul<=fl ) << "\n" ;
 
-   cout << (  f>=fm ) << "\n" ;
-   cout << (  d>=fn ) << "\n" ;
+   std::cout << (  f<=fm ) << "\n" ;
+   std::cout << (  d<=fn ) << "\n" ;
 
-   cout << (CONST>=fo) << "\n";
+   std::cout << (CONST<=fo) << "\n";
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
-   cout << (  c==fa ) << "\n" ;
-   cout << ( sc==fb ) << "\n" ;
-   cout << ( uc==fc ) << "\n" ;
+   std::cout << (  c>=fa ) << "\n" ;
+   std::cout << ( sc>=fb ) << "\n" ;
+   std::cout << ( uc>=fc ) << "\n" ;
 
-   cout << (  s==fd ) << "\n" ;
-   cout << ( ss==fe ) << "\n" ;
-   cout << ( us==ff ) << "\n" ;
+   std::cout << (  s>=fd ) << "\n" ;
+   std::cout << ( ss>=fe ) << "\n" ;
+   std::cout << ( us>=ff ) << "\n" ;
 
-   cout << (  i==fg ) << "\n" ;
-   cout << ( si==fh ) << "\n" ;
-   cout << ( ui==fi ) << "\n" ;
+   std::cout << (  i>=fg ) << "\n" ;
+   std::cout << ( si>=fh ) << "\n" ;
+   std::cout << ( ui>=fi ) << "\n" ;
 
-   cout << (  l==fj ) << "\n" ;
-   cout << ( sl==fk ) << "\n" ;
-   cout << ( ul==fl ) << "\n" ;
+   std::cout << (  l>=fj ) << "\n" ;
+   std::cout << ( sl>=fk ) << "\n" ;
+   std::cout << ( ul>=fl ) << "\n" ;
 
-   cout << (  f==fm ) << "\n" ;
-   cout << (  d==fn ) << "\n" ;
+   std::cout << (  f>=fm ) << "\n" ;
+   std::cout << (  d>=fn ) << "\n" ;
 
-   cout << (CONST==fo) << "\n";
+   std::cout << (CONST>=fo) << "\n";
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
-   cout << (  c!=fa ) << "\n" ;
-   cout << ( sc!=fb ) << "\n" ;
-   cout << ( uc!=fc ) << "\n" ;
 
-   cout << (  s!=fd ) << "\n" ;
-   cout << ( ss!=fe ) << "\n" ;
-   cout << ( us!=ff ) << "\n" ;
+   std::cout << (  c==fa ) << "\n" ;
+   std::cout << ( sc==fb ) << "\n" ;
+   std::cout << ( uc==fc ) << "\n" ;
 
-   cout << (  i!=fg ) << "\n" ;
-   cout << ( si!=fh ) << "\n" ;
-   cout << ( ui!=fi ) << "\n" ;
+   std::cout << (  s==fd ) << "\n" ;
+   std::cout << ( ss==fe ) << "\n" ;
+   std::cout << ( us==ff ) << "\n" ;
 
-   cout << (  l!=fj ) << "\n" ;
-   cout << ( sl!=fk ) << "\n" ;
-   cout << ( ul!=fl ) << "\n" ;
+   std::cout << (  i==fg ) << "\n" ;
+   std::cout << ( si==fh ) << "\n" ;
+   std::cout << ( ui==fi ) << "\n" ;
 
-   cout << (  f!=fm ) << "\n" ;
-   cout << (  d!=fn ) << "\n" ;
+   std::cout << (  l==fj ) << "\n" ;
+   std::cout << ( sl==fk ) << "\n" ;
+   std::cout << ( ul==fl ) << "\n" ;
 
-   cout << (CONST!=fo) << "\n";
+   std::cout << (  f==fm ) << "\n" ;
+   std::cout << (  d==fn ) << "\n" ;
 
-   cout << "--------\n" ;
-   cout << "--------\n" ;
+   std::cout << (CONST==fo) << "\n";
+
+   std::cout << "--------\n" ;
+
+   std::cout << (  c!=fa ) << "\n" ;
+   std::cout << ( sc!=fb ) << "\n" ;
+   std::cout << ( uc!=fc ) << "\n" ;
+
+   std::cout << (  s!=fd ) << "\n" ;
+   std::cout << ( ss!=fe ) << "\n" ;
+   std::cout << ( us!=ff ) << "\n" ;
+
+   std::cout << (  i!=fg ) << "\n" ;
+   std::cout << ( si!=fh ) << "\n" ;
+   std::cout << ( ui!=fi ) << "\n" ;
+
+   std::cout << (  l!=fj ) << "\n" ;
+   std::cout << ( sl!=fk ) << "\n" ;
+   std::cout << ( ul!=fl ) << "\n" ;
+
+   std::cout << (  f!=fm ) << "\n" ;
+   std::cout << (  d!=fn ) << "\n" ;
+
+   std::cout << (CONST!=fo) << "\n";
+
+   std::cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
 
@@ -541,93 +541,93 @@ main( void )
 
 
 
-   cout << (  c*=fa ) << "\n" ;
-   cout << ( sc*=fb ) << "\n" ;
-   cout << ( uc*=fc ) << "\n" ;
+   std::cout << (  c*=fa ) << "\n" ;
+   std::cout << ( sc*=fb ) << "\n" ;
+   std::cout << ( uc*=fc ) << "\n" ;
 
-   cout << (  s*=fd ) << "\n" ;
-   cout << ( ss*=fe ) << "\n" ;
-   cout << ( us*=ff ) << "\n" ;
+   std::cout << (  s*=fd ) << "\n" ;
+   std::cout << ( ss*=fe ) << "\n" ;
+   std::cout << ( us*=ff ) << "\n" ;
 
-   cout << (  i*=fg ) << "\n" ;
-   cout << ( si*=fh ) << "\n" ;
-   cout << ( ui*=fi ) << "\n" ;
+   std::cout << (  i*=fg ) << "\n" ;
+   std::cout << ( si*=fh ) << "\n" ;
+   std::cout << ( ui*=fi ) << "\n" ;
 
-   cout << (  l*=fj ) << "\n" ;
-   cout << ( sl*=fk ) << "\n" ;
-   cout << ( ul*=fl ) << "\n" ;
+   std::cout << (  l*=fj ) << "\n" ;
+   std::cout << ( sl*=fk ) << "\n" ;
+   std::cout << ( ul*=fl ) << "\n" ;
 
-   cout << (  f*=fm ) << "\n" ;
-   cout << (  d*=fn ) << "\n" ;
-
-
-   cout << "--------\n" ;
-
-   cout << (  c+=fa ) << "\n" ;
-   cout << ( sc+=fb ) << "\n" ;
-   cout << ( uc+=fc ) << "\n" ;
-
-   cout << (  s+=fd ) << "\n" ;
-   cout << ( ss+=fe ) << "\n" ;
-   cout << ( us+=ff ) << "\n" ;
-
-   cout << (  i+=fg ) << "\n" ;
-   cout << ( si+=fh ) << "\n" ;
-   cout << ( ui+=fi ) << "\n" ;
-
-   cout << (  l+=fj ) << "\n" ;
-   cout << ( sl+=fk ) << "\n" ;
-   cout << ( ul+=fl ) << "\n" ;
-
-   cout << (  f+=fm ) << "\n" ;
-   cout << (  d+=fn ) << "\n" ;
+   std::cout << (  f*=fm ) << "\n" ;
+   std::cout << (  d*=fn ) << "\n" ;
 
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
-   cout << (  c-=fa ) << "\n" ;
-   cout << ( sc-=fb ) << "\n" ;
-   cout << ( uc-=fc ) << "\n" ;
+   std::cout << (  c+=fa ) << "\n" ;
+   std::cout << ( sc+=fb ) << "\n" ;
+   std::cout << ( uc+=fc ) << "\n" ;
 
-   cout << (  s-=fd ) << "\n" ;
-   cout << ( ss-=fe ) << "\n" ;
-   cout << ( us-=ff ) << "\n" ;
+   std::cout << (  s+=fd ) << "\n" ;
+   std::cout << ( ss+=fe ) << "\n" ;
+   std::cout << ( us+=ff ) << "\n" ;
 
-   cout << (  i-=fg ) << "\n" ;
-   cout << ( si-=fh ) << "\n" ;
-   cout << ( ui-=fi ) << "\n" ;
+   std::cout << (  i+=fg ) << "\n" ;
+   std::cout << ( si+=fh ) << "\n" ;
+   std::cout << ( ui+=fi ) << "\n" ;
 
-   cout << (  l-=fj ) << "\n" ;
-   cout << ( sl-=fk ) << "\n" ;
-   cout << ( ul-=fl ) << "\n" ;
+   std::cout << (  l+=fj ) << "\n" ;
+   std::cout << ( sl+=fk ) << "\n" ;
+   std::cout << ( ul+=fl ) << "\n" ;
 
-   cout << (  f-=fm ) << "\n" ;
-   cout << (  d-=fn ) << "\n" ;
-
-
-   cout << "--------\n" ;
-
-   cout << (  c/=fa ) << "\n" ;
-   cout << ( sc/=fb ) << "\n" ;
-   cout << ( uc/=fc ) << "\n" ;
-
-   cout << (  s/=fd ) << "\n" ;
-   cout << ( ss/=fe ) << "\n" ;
-   cout << ( us/=ff ) << "\n" ;
-
-   cout << (  i/=fg ) << "\n" ;
-   cout << ( si/=fh ) << "\n" ;
-   cout << ( ui/=fi ) << "\n" ;
-
-   cout << (  l/=fj ) << "\n" ;
-   cout << ( sl/=fk ) << "\n" ;
-   cout << ( ul/=fl ) << "\n" ;
-
-   cout << (  f/=fm ) << "\n" ;
-   cout << (  d/=fn ) << "\n" ;
+   std::cout << (  f+=fm ) << "\n" ;
+   std::cout << (  d+=fn ) << "\n" ;
 
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
+
+   std::cout << (  c-=fa ) << "\n" ;
+   std::cout << ( sc-=fb ) << "\n" ;
+   std::cout << ( uc-=fc ) << "\n" ;
+
+   std::cout << (  s-=fd ) << "\n" ;
+   std::cout << ( ss-=fe ) << "\n" ;
+   std::cout << ( us-=ff ) << "\n" ;
+
+   std::cout << (  i-=fg ) << "\n" ;
+   std::cout << ( si-=fh ) << "\n" ;
+   std::cout << ( ui-=fi ) << "\n" ;
+
+   std::cout << (  l-=fj ) << "\n" ;
+   std::cout << ( sl-=fk ) << "\n" ;
+   std::cout << ( ul-=fl ) << "\n" ;
+
+   std::cout << (  f-=fm ) << "\n" ;
+   std::cout << (  d-=fn ) << "\n" ;
+
+
+   std::cout << "--------\n" ;
+
+   std::cout << (  c/=fa ) << "\n" ;
+   std::cout << ( sc/=fb ) << "\n" ;
+   std::cout << ( uc/=fc ) << "\n" ;
+
+   std::cout << (  s/=fd ) << "\n" ;
+   std::cout << ( ss/=fe ) << "\n" ;
+   std::cout << ( us/=ff ) << "\n" ;
+
+   std::cout << (  i/=fg ) << "\n" ;
+   std::cout << ( si/=fh ) << "\n" ;
+   std::cout << ( ui/=fi ) << "\n" ;
+
+   std::cout << (  l/=fj ) << "\n" ;
+   std::cout << ( sl/=fk ) << "\n" ;
+   std::cout << ( ul/=fl ) << "\n" ;
+
+   std::cout << (  f/=fm ) << "\n" ;
+   std::cout << (  d/=fn ) << "\n" ;
+
+
+   std::cout << "--------\n" ;
 
 
 #endif /* BADMIX */
@@ -639,98 +639,98 @@ main( void )
    // ===========
 
 
-   cout << (fa *=  c) << "\n" ;
-   cout << (fb *= sc) << "\n" ;
-   cout << (fc *= uc) << "\n" ;
+   std::cout << (fa *=  c) << "\n" ;
+   std::cout << (fb *= sc) << "\n" ;
+   std::cout << (fc *= uc) << "\n" ;
 
-   cout << (fd *=  s) << "\n" ;
-   cout << (fe *= ss) << "\n" ;
-   cout << (ff *= us) << "\n" ;
+   std::cout << (fd *=  s) << "\n" ;
+   std::cout << (fe *= ss) << "\n" ;
+   std::cout << (ff *= us) << "\n" ;
 
-   cout << (fg *=  i) << "\n" ;
-   cout << (fh *= si) << "\n" ;
-   cout << (fi *= ui) << "\n" ;
+   std::cout << (fg *=  i) << "\n" ;
+   std::cout << (fh *= si) << "\n" ;
+   std::cout << (fi *= ui) << "\n" ;
 
-   cout << (fj *=  l) << "\n" ;
-   cout << (fk *= sl) << "\n" ;
-   cout << (fl *= ul) << "\n" ;
+   std::cout << (fj *=  l) << "\n" ;
+   std::cout << (fk *= sl) << "\n" ;
+   std::cout << (fl *= ul) << "\n" ;
 
-   cout << (fm *=  f) << "\n" ;
-   cout << (fn *=  d) << "\n" ;
+   std::cout << (fm *=  f) << "\n" ;
+   std::cout << (fn *=  d) << "\n" ;
 
-   cout << (fo *= CONST) << "\n";
+   std::cout << (fo *= CONST) << "\n";
 
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
-   cout << (fa +=  c) << "\n" ;
-   cout << (fb += sc) << "\n" ;
-   cout << (fc += uc) << "\n" ;
+   std::cout << (fa +=  c) << "\n" ;
+   std::cout << (fb += sc) << "\n" ;
+   std::cout << (fc += uc) << "\n" ;
 
-   cout << (fd +=  s) << "\n" ;
-   cout << (fe += ss) << "\n" ;
-   cout << (ff += us) << "\n" ;
+   std::cout << (fd +=  s) << "\n" ;
+   std::cout << (fe += ss) << "\n" ;
+   std::cout << (ff += us) << "\n" ;
 
-   cout << (fg +=  i) << "\n" ;
-   cout << (fh += si) << "\n" ;
-   cout << (fi += ui) << "\n" ;
+   std::cout << (fg +=  i) << "\n" ;
+   std::cout << (fh += si) << "\n" ;
+   std::cout << (fi += ui) << "\n" ;
 
-   cout << (fj +=  l) << "\n" ;
-   cout << (fk += sl) << "\n" ;
-   cout << (fl += ul) << "\n" ;
+   std::cout << (fj +=  l) << "\n" ;
+   std::cout << (fk += sl) << "\n" ;
+   std::cout << (fl += ul) << "\n" ;
 
-   cout << (fm +=  f) << "\n" ;
-   cout << (fn +=  d) << "\n" ;
+   std::cout << (fm +=  f) << "\n" ;
+   std::cout << (fn +=  d) << "\n" ;
 
-   cout << (fo += CONST) << "\n";
+   std::cout << (fo += CONST) << "\n";
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
-   cout << (fa -=  c) << "\n" ;
-   cout << (fb -= sc) << "\n" ;
-   cout << (fc -= uc) << "\n" ;
+   std::cout << (fa -=  c) << "\n" ;
+   std::cout << (fb -= sc) << "\n" ;
+   std::cout << (fc -= uc) << "\n" ;
 
-   cout << (fd -=  s) << "\n" ;
-   cout << (fe -= ss) << "\n" ;
-   cout << (ff -= us) << "\n" ;
+   std::cout << (fd -=  s) << "\n" ;
+   std::cout << (fe -= ss) << "\n" ;
+   std::cout << (ff -= us) << "\n" ;
 
-   cout << (fg -=  i) << "\n" ;
-   cout << (fh -= si) << "\n" ;
-   cout << (fi -= ui) << "\n" ;
+   std::cout << (fg -=  i) << "\n" ;
+   std::cout << (fh -= si) << "\n" ;
+   std::cout << (fi -= ui) << "\n" ;
 
-   cout << (fj -=  l) << "\n" ;
-   cout << (fk -= sl) << "\n" ;
-   cout << (fl -= ul) << "\n" ;
+   std::cout << (fj -=  l) << "\n" ;
+   std::cout << (fk -= sl) << "\n" ;
+   std::cout << (fl -= ul) << "\n" ;
 
-   cout << (fm -=  f) << "\n" ;
-   cout << (fn -=  d) << "\n" ;
+   std::cout << (fm -=  f) << "\n" ;
+   std::cout << (fn -=  d) << "\n" ;
 
-   cout << (fo -= CONST) << "\n";
+   std::cout << (fo -= CONST) << "\n";
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
-   cout << (fa /=  c) << "\n" ;
-   cout << (fb /= sc) << "\n" ;
-   cout << (fc /= uc) << "\n" ;
+   std::cout << (fa /=  c) << "\n" ;
+   std::cout << (fb /= sc) << "\n" ;
+   std::cout << (fc /= uc) << "\n" ;
 
-   cout << (fd /=  s) << "\n" ;
-   cout << (fe /= ss) << "\n" ;
-   cout << (ff /= us) << "\n" ;
+   std::cout << (fd /=  s) << "\n" ;
+   std::cout << (fe /= ss) << "\n" ;
+   std::cout << (ff /= us) << "\n" ;
 
-   cout << (fg /=  i) << "\n" ;
-   cout << (fh /= si) << "\n" ;
-   cout << (fi /= ui) << "\n" ;
+   std::cout << (fg /=  i) << "\n" ;
+   std::cout << (fh /= si) << "\n" ;
+   std::cout << (fi /= ui) << "\n" ;
 
-   cout << (fj /=  l) << "\n" ;
-   cout << (fk /= sl) << "\n" ;
-   cout << (fl /= ul) << "\n" ;
+   std::cout << (fj /=  l) << "\n" ;
+   std::cout << (fk /= sl) << "\n" ;
+   std::cout << (fl /= ul) << "\n" ;
 
-   cout << (fm /=  f) << "\n" ;
-   cout << (fn /=  d) << "\n" ;
+   std::cout << (fm /=  f) << "\n" ;
+   std::cout << (fn /=  d) << "\n" ;
 
-   cout << (fo /= CONST) << "\n";
+   std::cout << (fo /= CONST) << "\n";
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
 
@@ -739,105 +739,105 @@ main( void )
    // ==========
 
 
-   cout << fa *  c << "\n" ;
-   cout << fb * sc << "\n" ;
-   cout << fc * uc << "\n" ;
+   std::cout << fa *  c << "\n" ;
+   std::cout << fb * sc << "\n" ;
+   std::cout << fc * uc << "\n" ;
 
-   cout << fd *  s << "\n" ;
-   cout << fe * ss << "\n" ;
-   cout << ff * us << "\n" ;
+   std::cout << fd *  s << "\n" ;
+   std::cout << fe * ss << "\n" ;
+   std::cout << ff * us << "\n" ;
 
-   cout << fg *  i << "\n" ;
-   cout << fh * si << "\n" ;
-   cout << fi * ui << "\n" ;
+   std::cout << fg *  i << "\n" ;
+   std::cout << fh * si << "\n" ;
+   std::cout << fi * ui << "\n" ;
 
-   cout << fj *  l << "\n" ;
-   cout << fk * sl << "\n" ;
-   cout << fl * ul << "\n" ;
+   std::cout << fj *  l << "\n" ;
+   std::cout << fk * sl << "\n" ;
+   std::cout << fl * ul << "\n" ;
 
-   cout << fm *  f << "\n" ;
-   cout << fn *  d << "\n" ;
+   std::cout << fm *  f << "\n" ;
+   std::cout << fn *  d << "\n" ;
 
-   cout << fo * CONST << "\n";
-
-
-   cout << "--------\n" ;
+   std::cout << fo * CONST << "\n";
 
 
-
-   cout << fa -  c << "\n" ;
-   cout << fb - sc << "\n" ;
-   cout << fc - uc << "\n" ;
-
-   cout << fd -  s << "\n" ;
-   cout << fe - ss << "\n" ;
-   cout << ff - us << "\n" ;
-
-   cout << fg -  i << "\n" ;
-   cout << fh - si << "\n" ;
-   cout << fi - ui << "\n" ;
-
-   cout << fj -  l << "\n" ;
-   cout << fk - sl << "\n" ;
-   cout << fl - ul << "\n" ;
-
-   cout << fm -  f << "\n" ;
-   cout << fn -  d << "\n" ;
-
-   cout << fo - CONST << "\n";
-
-
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
 
-   cout << fa +  c << "\n" ;
-   cout << fb + sc << "\n" ;
-   cout << fc + uc << "\n" ;
+   std::cout << fa -  c << "\n" ;
+   std::cout << fb - sc << "\n" ;
+   std::cout << fc - uc << "\n" ;
 
-   cout << fd +  s << "\n" ;
-   cout << fe + ss << "\n" ;
-   cout << ff + us << "\n" ;
+   std::cout << fd -  s << "\n" ;
+   std::cout << fe - ss << "\n" ;
+   std::cout << ff - us << "\n" ;
 
-   cout << fg +  i << "\n" ;
-   cout << fh + si << "\n" ;
-   cout << fi + ui << "\n" ;
+   std::cout << fg -  i << "\n" ;
+   std::cout << fh - si << "\n" ;
+   std::cout << fi - ui << "\n" ;
 
-   cout << fj +  l << "\n" ;
-   cout << fk + sl << "\n" ;
-   cout << fl + ul << "\n" ;
+   std::cout << fj -  l << "\n" ;
+   std::cout << fk - sl << "\n" ;
+   std::cout << fl - ul << "\n" ;
 
-   cout << fm +  f << "\n" ;
-   cout << fn +  d << "\n" ;
+   std::cout << fm -  f << "\n" ;
+   std::cout << fn -  d << "\n" ;
 
-   cout << fo + CONST << "\n";
-
-   cout << "--------\n" ;
+   std::cout << fo - CONST << "\n";
 
 
-   cout << fa /  c << "\n" ;
-   cout << fb / sc << "\n" ;
-   cout << fc / uc << "\n" ;
+   std::cout << "--------\n" ;
 
-   cout << fd /  s << "\n" ;
-   cout << fe / ss << "\n" ;
-   cout << ff / us << "\n" ;
 
-   cout << fg /  i << "\n" ;
-   cout << fh / si << "\n" ;
-   cout << fi / ui << "\n" ;
 
-   cout << fj /  l << "\n" ;
-   cout << fk / sl << "\n" ;
-   cout << fl / ul << "\n" ;
+   std::cout << fa +  c << "\n" ;
+   std::cout << fb + sc << "\n" ;
+   std::cout << fc + uc << "\n" ;
 
-   cout << fm /  f << "\n" ;
-   cout << fn /  d << "\n" ;
+   std::cout << fd +  s << "\n" ;
+   std::cout << fe + ss << "\n" ;
+   std::cout << ff + us << "\n" ;
 
-   cout << fo / CONST << "\n";
+   std::cout << fg +  i << "\n" ;
+   std::cout << fh + si << "\n" ;
+   std::cout << fi + ui << "\n" ;
 
-   cout << "--------\n" ;
-   cout << "--------\n" ;
+   std::cout << fj +  l << "\n" ;
+   std::cout << fk + sl << "\n" ;
+   std::cout << fl + ul << "\n" ;
+
+   std::cout << fm +  f << "\n" ;
+   std::cout << fn +  d << "\n" ;
+
+   std::cout << fo + CONST << "\n";
+
+   std::cout << "--------\n" ;
+
+
+   std::cout << fa /  c << "\n" ;
+   std::cout << fb / sc << "\n" ;
+   std::cout << fc / uc << "\n" ;
+
+   std::cout << fd /  s << "\n" ;
+   std::cout << fe / ss << "\n" ;
+   std::cout << ff / us << "\n" ;
+
+   std::cout << fg /  i << "\n" ;
+   std::cout << fh / si << "\n" ;
+   std::cout << fi / ui << "\n" ;
+
+   std::cout << fj /  l << "\n" ;
+   std::cout << fk / sl << "\n" ;
+   std::cout << fl / ul << "\n" ;
+
+   std::cout << fm /  f << "\n" ;
+   std::cout << fn /  d << "\n" ;
+
+   std::cout << fo / CONST << "\n";
+
+   std::cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
 
@@ -847,96 +847,96 @@ main( void )
    // ==========
 
 
-   cout <<  c / fa << "\n" ;
-   cout << sc / fb << "\n" ;
-   cout << uc / fc << "\n" ;
+   std::cout <<  c / fa << "\n" ;
+   std::cout << sc / fb << "\n" ;
+   std::cout << uc / fc << "\n" ;
 
-   cout <<  s / fd << "\n" ;
-   cout << ss / fe << "\n" ;
-   cout << us / ff << "\n" ;
+   std::cout <<  s / fd << "\n" ;
+   std::cout << ss / fe << "\n" ;
+   std::cout << us / ff << "\n" ;
 
-   cout <<  i / fg << "\n" ;
-   cout << si / fh << "\n" ;
-   cout << ui / fi << "\n" ;
+   std::cout <<  i / fg << "\n" ;
+   std::cout << si / fh << "\n" ;
+   std::cout << ui / fi << "\n" ;
 
-   cout <<  l / fj << "\n" ;
-   cout << sl / fk << "\n" ;
-   cout << ul / fl << "\n" ;
+   std::cout <<  l / fj << "\n" ;
+   std::cout << sl / fk << "\n" ;
+   std::cout << ul / fl << "\n" ;
 
-   cout <<  f / fm << "\n" ;
-   cout <<  d / fn << "\n" ;
+   std::cout <<  f / fm << "\n" ;
+   std::cout <<  d / fn << "\n" ;
 
-   cout << CONST / fo << "\n";
+   std::cout << CONST / fo << "\n";
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
-   cout <<  c * fa << "\n" ;
-   cout << sc * fb << "\n" ;
-   cout << uc * fc << "\n" ;
+   std::cout <<  c * fa << "\n" ;
+   std::cout << sc * fb << "\n" ;
+   std::cout << uc * fc << "\n" ;
 
-   cout <<  s * fd << "\n" ;
-   cout << ss * fe << "\n" ;
-   cout << us * ff << "\n" ;
+   std::cout <<  s * fd << "\n" ;
+   std::cout << ss * fe << "\n" ;
+   std::cout << us * ff << "\n" ;
 
-   cout <<  i * fg << "\n" ;
-   cout << si * fh << "\n" ;
-   cout << ui * fi << "\n" ;
+   std::cout <<  i * fg << "\n" ;
+   std::cout << si * fh << "\n" ;
+   std::cout << ui * fi << "\n" ;
 
-   cout <<  l * fj << "\n" ;
-   cout << sl * fk << "\n" ;
-   cout << ul * fl << "\n" ;
+   std::cout <<  l * fj << "\n" ;
+   std::cout << sl * fk << "\n" ;
+   std::cout << ul * fl << "\n" ;
 
-   cout <<  f * fm << "\n" ;
-   cout <<  d * fn << "\n" ;
+   std::cout <<  f * fm << "\n" ;
+   std::cout <<  d * fn << "\n" ;
 
-   cout << CONST * fo << "\n";
+   std::cout << CONST * fo << "\n";
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
 
-   cout <<  c - fa << "\n" ;
-   cout << sc - fb << "\n" ;
-   cout << uc - fc << "\n" ;
+   std::cout <<  c - fa << "\n" ;
+   std::cout << sc - fb << "\n" ;
+   std::cout << uc - fc << "\n" ;
 
-   cout <<  s - fd << "\n" ;
-   cout << ss - fe << "\n" ;
-   cout << us - ff << "\n" ;
+   std::cout <<  s - fd << "\n" ;
+   std::cout << ss - fe << "\n" ;
+   std::cout << us - ff << "\n" ;
 
-   cout <<  i - fg << "\n" ;
-   cout << si - fh << "\n" ;
-   cout << ui - fi << "\n" ;
+   std::cout <<  i - fg << "\n" ;
+   std::cout << si - fh << "\n" ;
+   std::cout << ui - fi << "\n" ;
 
-   cout <<  l - fj << "\n" ;
-   cout << sl - fk << "\n" ;
-   cout << ul - fl << "\n" ;
+   std::cout <<  l - fj << "\n" ;
+   std::cout << sl - fk << "\n" ;
+   std::cout << ul - fl << "\n" ;
 
-   cout <<  f - fm << "\n" ;
-   cout <<  d - fn << "\n" ;
+   std::cout <<  f - fm << "\n" ;
+   std::cout <<  d - fn << "\n" ;
 
-   cout << CONST - fo << "\n";
+   std::cout << CONST - fo << "\n";
 
-   cout << "--------\n" ;
+   std::cout << "--------\n" ;
 
-   cout <<  c + fa << "\n" ;
-   cout << sc + fb << "\n" ;
-   cout << uc + fc << "\n" ;
+   std::cout <<  c + fa << "\n" ;
+   std::cout << sc + fb << "\n" ;
+   std::cout << uc + fc << "\n" ;
 
-   cout <<  s + fd << "\n" ;
-   cout << ss + fe << "\n" ;
-   cout << us + ff << "\n" ;
+   std::cout <<  s + fd << "\n" ;
+   std::cout << ss + fe << "\n" ;
+   std::cout << us + ff << "\n" ;
 
-   cout <<  i + fg << "\n" ;
-   cout << si + fh << "\n" ;
-   cout << ui + fi << "\n" ;
+   std::cout <<  i + fg << "\n" ;
+   std::cout << si + fh << "\n" ;
+   std::cout << ui + fi << "\n" ;
 
-   cout <<  l + fj << "\n" ;
-   cout << sl + fk << "\n" ;
-   cout << ul + fl << "\n" ;
+   std::cout <<  l + fj << "\n" ;
+   std::cout << sl + fk << "\n" ;
+   std::cout << ul + fl << "\n" ;
 
-   cout <<  f + fm << "\n" ;
-   cout <<  d + fn << "\n" ;
+   std::cout <<  f + fm << "\n" ;
+   std::cout <<  d + fn << "\n" ;
 
-   cout << CONST + fo << "\n\n";
+   std::cout << CONST + fo << "\n\n";
 
 
 // Trig things
@@ -948,7 +948,7 @@ main( void )
             PI_over_4 = PI/4,
             three_PI_over_2 = (3*PI)/2;
 
-   cout << Zero.to_fixang() << "\n"
+   std::cout << Zero.to_fixang() << "\n"
         << PI.to_fixang() << "\n"
         << PI_over_2.to_fixang() << "\n"
         << PI_over_4.to_fixang() << "\n"
@@ -961,13 +961,13 @@ main( void )
    pi_over_4.fixang_to( 0x2000 );
    three_pi_over_2.fixang_to( 0xC000 );
 
-   cout << zero << "\n"
+   std::cout << zero << "\n"
         << pi << "\n"
         << pi_over_2 << "\n" 
         << pi_over_4 << "\n"
         << three_pi_over_2 << "\n\n" ;
 
-   cout
+   std::cout
         << sin( 0 ) << "\n"
         << sin( PI ) << "\n"
         << sin( PI_over_2 ) << "\n"
@@ -991,12 +991,12 @@ main( void )
 
    Fixpoint one_over_root_two = 1./sqrt(2.);
 
-   cout << one_over_root_two << "\n\n" ;
+   std::cout << one_over_root_two << "\n\n" ;
 
    Fixpoint One = 1.;
 
 
-   cout
+   std::cout
         << asin( Zero ) << "\n"
         << asin( one_over_root_two ) << "\n"
         << asin( One ) << "\n"
@@ -1009,7 +1009,7 @@ main( void )
         << acos( -one_over_root_two ) << "\n"
         << acos( -One ) << "\n\n" ;
 
-   cout << "Atan2 test\n\n"
+   std::cout << "Atan2 test\n\n"
         << atan2( 1, 2 ) << "\n"
         << atan2( 1, -2 ) << "\n"
         << atan2( -1, -2 ) << "\n"
@@ -1025,39 +1025,39 @@ main( void )
 
    Fixpoint sn, cs;
 
-   cout << "Sincos test\n\n" ;
+   std::cout << "Sincos test\n\n" ;
    sincos( 0, &sn, &cs );
-   cout << sn << " " << cs << "\n" ;
+   std::cout << sn << " " << cs << "\n" ;
    sincos( PI, &sn, &cs );
-   cout << sn << " " << cs << "\n" ;
+   std::cout << sn << " " << cs << "\n" ;
    sincos( PI_over_2, &sn, &cs );
-   cout << sn << " " << cs << "\n" ;
+   std::cout << sn << " " << cs << "\n" ;
    sincos( PI_over_4, &sn, &cs );
-   cout << sn << " " << cs << "\n" ;
+   std::cout << sn << " " << cs << "\n" ;
    sincos( three_PI_over_2, &sn, &cs );
-   cout << sn << " " << cs << "\n" ;
+   std::cout << sn << " " << cs << "\n" ;
    sincos( -PI, &sn, &cs );
-   cout << sn << " " << cs << "\n" ;
+   std::cout << sn << " " << cs << "\n" ;
    sincos( -PI_over_2, &sn, &cs );
-   cout << sn << " " << cs << "\n" ;
+   std::cout << sn << " " << cs << "\n" ;
    sincos( -PI_over_4, &sn, &cs );
-   cout << sn << " " << cs << "\n" ;
+   std::cout << sn << " " << cs << "\n" ;
    sincos( -three_PI_over_2, &sn, &cs );
-   cout << sn << " " << cs << "\n\n\n" ;
+   std::cout << sn << " " << cs << "\n\n\n" ;
 
    long lang;
    fixang fang;
    Fixpoint Fang;
-   cout << "Tan test\n\n" ;
+   std::cout << "Tan test\n\n" ;
    for (lang = 0; lang < 0x10000; lang += 0x2000)
    {
       fang = (fixang)lang;
       char str[20];
       sprintf( str, "%x ", fang );
       Fang.fixang_to( fang );
-      cout << str << tan( Fang ) << "\n" ;
+      std::cout << str << tan( Fang ) << "\n" ;
    }
-   cout << "\n\n" ;
+   std::cout << "\n\n" ;
 
    Fixpoint :: report();
    

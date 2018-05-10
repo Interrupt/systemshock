@@ -1011,7 +1011,7 @@ void place_obj_at_objloc(ObjID id, ObjLoc *newloc, ushort xsize, ushort ysize)
 
    if ((xsize > MAX_PLACE_SIZE) || (ysize > MAX_PLACE_SIZE))
    {
-//      Warning(("place_obj_at_objloc: obj %d size too large!! (xsize = 0x%x  ysize = 0x%x)\n",id,xsize,ysize));
+      printf("place_obj_at_objloc: obj %d size too large!! (xsize = 0x%x  ysize = 0x%x)\n",id,xsize,ysize);
       xsize = min(0x200,xsize);
       ysize = min(0x200,ysize);
    }
@@ -1094,8 +1094,11 @@ errtype obj_move_to_vel(ObjID id, ObjLoc *newloc, uchar phys_tel, fix x_dot, fix
 		new_state.Z_dot = z_dot;
 		new_state.alpha = phys_angle_from_obj(newloc->h);
 
+      printf("obj_move_to_vel %f %f %f\n", fix_float(new_state.X), fix_float(new_state.Y), fix_float(new_state.Z));
+
 		if (!(CHECK_OBJ_PH(id)))
 		{
+         printf(" needs assembling.\n");
 			assemble_physics_object(id, &new_state);
 			if (!CHECK_OBJ_PH(id))
 				return(ERR_NOEFFECT);
@@ -1371,6 +1374,7 @@ errtype obj_create_player(ObjLoc *plr_loc)
    if (ph>physics_handle_max)
       physics_handle_max=ph;
 
+   printf("obj_move_to PLAYER_OBJ\n");
    obj_move_to(PLAYER_OBJ, plr_loc, !use_new);
 
    if ( (!global_fullmap->cyber) && (ocp_settle_the_player) )
@@ -2913,12 +2917,13 @@ errtype obj_physics_refresh(short x, short y, uchar use_floor)
    int count = 0,i;
    ObjID move_list[MAX_MOVE_OBJS];
 
+   printf("Use floor %i\n", use_floor);
+
    oref = me_objref(MAP_GET_XY(x,y));
    while (oref != OBJ_REF_NULL)
    {
       ObjID oid=objRefs[oref].obj;
-//      if (!ObjCheckDealt(oid))
-      if (1)
+      if (!ObjCheckDealt(oid))
       {
          ObjSetDealt(oid);
 	      move_list[count++] = oid;
@@ -2942,6 +2947,7 @@ errtype obj_physics_refresh(short x, short y, uchar use_floor)
          // If we are on the floor, then refresh us!
          if ((ObjProps[OPNUM(id)].physics_model) && (use_floor || (objs[id].loc.z > obj_floor_height(id) + REFRESH_HEIGHT)))
          {
+            printf("We're on the floor!\n");
             if (CHECK_OBJ_PH(id))
             {
                EDMS_get_state(objs[id].info.ph, &goof);
@@ -2964,6 +2970,7 @@ errtype obj_physics_refresh(short x, short y, uchar use_floor)
 
 errtype obj_physics_refresh_area(short x, short y, uchar use_floor)
 {
+   printf("obj_physics_refresh_area %i %i %i\n", x, y, use_floor);
    ObjsClearDealt();
    obj_physics_refresh(x-1,y,use_floor);
    obj_physics_refresh(x+1,y,use_floor);

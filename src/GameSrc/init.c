@@ -265,6 +265,8 @@ void init_all(void)
    if (start_mem < MINIMUM_GAME_THRESHOLD)
       critical_error(CRITERR_MEM|1);
 
+  printf("Start mem: %i\n", start_mem);
+
    ResInit();
 //Where are these defined?
 //   restemp_buffer = ALTERNATE_BUFFER;

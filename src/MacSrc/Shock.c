@@ -103,8 +103,6 @@ extern void object_data_flush(void);
 //extern Boolean IsFullscreenWareOn(void);
 extern errtype load_da_palette(void);
 
-extern ObjID physics_handle_id[MAX_OBJ];
-
 void SetupTitleMenus(void);
 void HandleNewGame(void);
 void HandleOpenGame(void);
@@ -1304,6 +1302,12 @@ void SetSDLPalette(int index, int count, uchar *pal)
 		gamePalette[index+i].b = *pal++;
 		gamePalette[index+i].a = 0xFF;
 	}
+
+	// Hack black!
+	gamePalette[255].r = 0x0;
+	gamePalette[255].g = 0x0;
+	gamePalette[255].b = 0x0;
+	gamePalette[255].a = 0xFF;
 
 	SDL_Palette* sdlPalette = SDL_AllocPalette(count);
 	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);

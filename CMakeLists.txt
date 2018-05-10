@@ -148,6 +148,7 @@ include_directories(
 	src/Libraries/3D/Source
 	src/Libraries/DSTRUCT/Source
 	src/Libraries/EDMS/Source
+	src/Libraries/FIXPP/Source
 	src/Libraries/INPUT/Source
 	src/Libraries/PALETTE/Source
 	src/Libraries/RES/Source
@@ -213,6 +214,16 @@ add_executable(FixTest
 
 target_link_libraries(FixTest
 	FIX_LIB
+	${CARBON}
+	LG_LIB
+)
+
+add_executable(FixPPTest
+	src/Libraries/FIXPP/Tests/FixppTest.cc
+)
+
+target_link_libraries(FixPPTest
+	FIXPP_LIB
 	${CARBON}
 	LG_LIB
 )
