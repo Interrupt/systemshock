@@ -990,8 +990,6 @@ errtype ai_run()
       return(OK);
 #endif
 
-   return OK;
-
    check_requests(FALSE);
 
    // Check ICE agitation

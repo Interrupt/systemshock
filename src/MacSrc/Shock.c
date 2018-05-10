@@ -695,9 +695,6 @@ void HandleNewGame()
 
 	printf("Starting Main Loop\n");
 
-	// Disabling physics turns on noclip mode
-	physics_running = FALSE;
-
 	ShockGameLoop();
 
 	//RenderTest();
