@@ -51,6 +51,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef LLIST_H
 #define LLIST_H
 
+#include <stdbool.h>
+
 #include "lg_types.h"
 
 //	--------------------------------------------------------------

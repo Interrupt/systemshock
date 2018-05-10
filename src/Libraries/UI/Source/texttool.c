@@ -23,7 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <string.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #include "lg.h"
@@ -119,14 +121,14 @@ uchar tt_toast(TextTool *old_tt)
       free(old_tt->lines[i]);
    free(*(old_tt->lines));
    free(old_tt->line_info);
-   return TRUE;
+   return true;
 }
 
 // set this tt to be the default one
 uchar tt_set(TextTool *def_tt)
 {
    cur_tt=def_tt;
-   return TRUE;
+   return true;
 }
 
 void tt_move(TextTool *tt, int xoff, int yoff)
@@ -241,7 +243,7 @@ void _tt_show_line(long line_num, long p_left, long p_right)
 {
    int llin=line_num-_tt->disp_y, cy=line_num;
 //   long c_left, c_right;
-   uchar blnk_line=TRUE;
+   uchar blnk_line=true;
 
    if ((line_num<_tt->disp_y)||(line_num>=_tt->disp_y+_tt->disp_rows)) return;
    if (p_left==-1) p_left=0; if (p_right==-1) p_right=_tt->scr_loc.w-1;
@@ -266,7 +268,7 @@ void _tt_show_line(long line_num, long p_left, long p_right)
          wid=StrDraw(st_base+_tt->line_info[cy].chr[0],
                      _tt->scr_loc.crn.pt.x+_tt->line_info[cy].pix[0],
                      _tt->scr_loc.crn.pt.y+llin*_tt->lfont->height);
-         *s=c; blnk_line=FALSE;
+         *s=c; blnk_line=false;
          if (p_left+wid<p_right)
             LenClr(p_right-p_left-wid,_tt->scr_loc.crn.pt.x+wid,_tt->scr_loc.crn.pt.y+llin*_tt->lfont->height);
       }
@@ -403,7 +405,7 @@ uchar _tt_wrap_check(long *line_num, long *cur_pos)
 {
    char *s, *p, sw=0;                   /* pointers for manipulation, sw is the swap character */
    long ln=*line_num;
-   uchar wr=FALSE;
+   uchar wr=false;
    // first, do we wrap back to the last line (should use pixwid, not stl)
    if (LineExist(_tt,ln-1)&&((_tt->line_info[ln-1].flg&TTC_FLG_RET)==0))
       if (_tt->line_info[ln-1].stl+1+_tt_word_len(TTWL_FIRST,_tt->lines[ln],0)<_tt->es.right_m)
@@ -429,7 +431,7 @@ uchar _tt_wrap_check(long *line_num, long *cur_pos)
          printf("Note strlen %d and stl %d for .%s./.%s.\n",strlen(s),_tt->line_info[(*line_num)+1].stl,s,_tt->lines[(*line_num)+1]);
          if ((*cur_pos)>brk)
           { (*line_num)++; (*cur_pos)-=brk; }
-         wr=TRUE;
+         wr=true;
       }
    }
    // now, should we bring something in from the next line, and propagate down
@@ -442,13 +444,13 @@ uchar _tt_add_char(long *line_num, long *cur_pos, char c)
 {
    long new_stl=_tt->line_info[*line_num].stl, new_pos=*cur_pos;
    char *s=_tt->lines[*line_num];
-   uchar add_at_end=TRUE; 
+   uchar add_at_end=true;
 
    if (new_stl>*cur_pos)                         // insert
       if ((_tt->es.mode&TTS_OVER)==0)            // actually have to insert
          LG_memmove(&s[*(cur_pos)+1],&s[*cur_pos],new_stl-*cur_pos);
       else
-         add_at_end=FALSE;                       // just a punch in
+         add_at_end=false;                       // just a punch in
    if (add_at_end&&(_tt->es.max_w>0)&&(new_stl>=_tt->es.max_w))
       new_stl--;                                 // punt final character, we are out of space
    if (add_at_end)
@@ -460,9 +462,9 @@ uchar _tt_add_char(long *line_num, long *cur_pos, char c)
    (*cur_pos)++;                                 // go to next character
    _tt_build_cheat(*line_num);                   // we can do incremental cheats later
    if (_tt->es.mode&TTS_WRAP)
-      if (_tt_wrap_check(line_num,cur_pos)) return TRUE;
+      if (_tt_wrap_check(line_num,cur_pos)) return true;
    _tt_display_line(*line_num,-1,-1);
-   return FALSE;
+   return false;
 }
 
 // learn this about return flag
@@ -491,15 +493,15 @@ uchar _tt_del_chars(long *line_num, long *cur_pos, int cnt)
 //      if (cnt>0) _tt->cur_w=0; else _tt->cur_w=_tt->line_info[_tt->cur_h].stl;
 //      _tt_chg_colu(cnt-dir);           /* extra bonus wrap character there... */
    }      
-   return TRUE;
+   return true;
 }
 
 // return TRUE if we are out of space
 uchar _tt_chg_line(int how)
 {
-   uchar edge=FALSE;                    /* edge of available space */
+   uchar edge=false;                    /* edge of available space */
    how+=_tt->cur_h;
-   if (how<0) { _tt->cur_h=0; edge=TRUE; }
+   if (how<0) { _tt->cur_h=0; edge=true; }
    else if (how>=_tt->max_h)
    {
       if (_tt->es.mode&TTS_CGROW)
@@ -509,7 +511,7 @@ uchar _tt_chg_line(int how)
 	      _tt->cur_w=0; _tt->cur_h--;      // back to the last line
       }
       else
-       { edge=TRUE; _tt->cur_h=_tt->max_h-1; }
+       { edge=true; _tt->cur_h=_tt->max_h-1; }
    }
    else
    {
@@ -532,17 +534,17 @@ uchar _tt_chg_colu(int how)
       how+=_tt->cur_w;
       if (how>0) { how-=lin_wid; dir=1; } else dir=-1;
       if (_tt_chg_line(dir))
-       { if (dir>0) _tt->cur_w=_tt->line_info[_tt->cur_h].stl; else _tt->cur_w=0; return TRUE; }
+       { if (dir>0) _tt->cur_w=_tt->line_info[_tt->cur_h].stl; else _tt->cur_w=0; return true; }
       if (how>0) _tt->cur_w=0; else _tt->cur_w=_tt->line_info[_tt->cur_h].stl;
       _tt_chg_colu(how-dir);           /* extra bonus wrap character there... */
    }
-   return FALSE;
+   return false;
 }
 
 // should wrap to the next line
 void _tt_return(void)
 {
-   uchar line_gen=FALSE;
+   uchar line_gen=false;
 
 
    switch (_tt->es.mode&TTS_MODE)
@@ -553,7 +555,7 @@ void _tt_return(void)
    	{
 	      tt_fill_line(NULL,TTF_INSWHOLE,_tt->cur_h+1,_tt->lines[_tt->cur_h]+_tt->cur_w);
 	      _tt_break_line(_tt->cur_h,_tt->cur_w);
-	      line_gen=TRUE;
+	      line_gen=true;
 	   }
 	   _tt->cur_h++; _tt->cur_w=0;         /* go to beginning of next line */
 	   if ((!line_gen)&&((_tt->es.mode&(TTS_OVER|TTS_READONLY))==0))

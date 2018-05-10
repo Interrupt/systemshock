@@ -64,34 +64,34 @@ void ConvertTKHD(void *data, ulong length, uchar read);
 void ConvertVMHD(void *data, ulong length, uchar read);
 
 QT_ChunkInfoAndConvert chunkInfo[] = {
-	QT_CLIP,FALSE,NULL,
-	QT_CRGN,TRUE,NULL,
-	QT_DINF,FALSE,NULL,
-	QT_DREF,TRUE,NULL,
-	QT_EDTS,FALSE,NULL,
-	QT_ELST,TRUE,ConvertELST,
-	QT_HDLR,TRUE,ConvertHDLR,
-	QT_KMAT,TRUE,NULL,
-	QT_MATT,FALSE,NULL,
-	QT_MDAT,TRUE,NULL,
-	QT_MDIA,FALSE,NULL,
-	QT_MDHD,TRUE,ConvertMDHD,
-	QT_MINF,FALSE,NULL,
-	QT_MOOV,FALSE,NULL,
-	QT_MVHD,TRUE,ConvertMVHD,
-	QT_SMHD,TRUE,ConvertSMHD,
-	QT_STBL,FALSE,NULL,
-	QT_STCO,TRUE,ConvertSTCO,
-	QT_STSC,TRUE,ConvertSTSC,
-	QT_STSD,TRUE,ConvertSTSD,
-	QT_STSH,TRUE,ConvertSTSH,
-	QT_STSS,TRUE,ConvertSTSS,
-	QT_STSZ,TRUE,ConvertSTSZ,
-	QT_STTS,TRUE,ConvertSTTS,
-	QT_TKHD,TRUE,ConvertTKHD,
-	QT_TRAK,FALSE,NULL,
-	QT_UDTA,FALSE,NULL,
-	QT_VMHD,TRUE,ConvertVMHD,
+	QT_CLIP,false,NULL,
+	QT_CRGN,true,NULL,
+	QT_DINF,false,NULL,
+	QT_DREF,true,NULL,
+	QT_EDTS,false,NULL,
+	QT_ELST,true,ConvertELST,
+	QT_HDLR,true,ConvertHDLR,
+	QT_KMAT,true,NULL,
+	QT_MATT,false,NULL,
+	QT_MDAT,true,NULL,
+	QT_MDIA,false,NULL,
+	QT_MDHD,true,ConvertMDHD,
+	QT_MINF,false,NULL,
+	QT_MOOV,false,NULL,
+	QT_MVHD,true,ConvertMVHD,
+	QT_SMHD,true,ConvertSMHD,
+	QT_STBL,false,NULL,
+	QT_STCO,true,ConvertSTCO,
+	QT_STSC,true,ConvertSTSC,
+	QT_STSD,true,ConvertSTSD,
+	QT_STSH,true,ConvertSTSH,
+	QT_STSS,true,ConvertSTSS,
+	QT_STSZ,true,ConvertSTSZ,
+	QT_STTS,true,ConvertSTTS,
+	QT_TKHD,true,ConvertTKHD,
+	QT_TRAK,false,NULL,
+	QT_UDTA,false,NULL,
+	QT_VMHD,true,ConvertVMHD,
 	0,0,NULL,
 };
 
@@ -213,7 +213,7 @@ void QuikWriteChunk(FILE *fp, QT_Ctype ctype, void *data, ulong len)
 		{
 		pinfo = (QT_ChunkInfoAndConvert *) QuikFindChunkInfo(&chunkHdr);
 		if (pinfo && pinfo->f_convert)
-			(*pinfo->f_convert)(data, len, FALSE);
+			(*pinfo->f_convert)(data, len, false);
 		fwrite(data, len, 1, fp);
 		}
 }

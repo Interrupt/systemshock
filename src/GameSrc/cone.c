@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/08/29 00:18:59 $
  */
 
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -138,21 +139,21 @@ uchar clockwise_poly(int index, fix *poly_pts)
    fix_point   point;
    fix         cross_prd;
    uchar        clockwise;
-   uchar        extra_div = TRUE;
+   uchar        extra_div = true;
 
    if (index <3)
-      return(TRUE);  // Is a point or line clockwise??? - hmmmmmm, why not?
+      return(true);  // Is a point or line clockwise??? - hmmmmmm, why not?
 
    LG_memcpy(temp_pts, poly_pts, sizeof(fix) * 2 * index);
    while (extra_div)
    {
       int      i;
 
-      extra_div = FALSE;
+      extra_div = false;
       for (i=0;i<(index*2); i++)
          if (temp_pts[i] > FIX_SQRT_MAX)
          {
-            extra_div = TRUE;
+            extra_div = true;
             break;
          }
       if (extra_div)
@@ -171,7 +172,7 @@ uchar clockwise_poly(int index, fix *poly_pts)
    if (cross_prd == FIX_ZERO)
    {
       if (index == 3)      // Another Straight line - this is different though
-         clockwise = TRUE;
+         clockwise = true;
       else
       {
          point.x = temp_pts[6]; // fix_div(poly_pts[6], FIX_SQRT_MAX);
@@ -180,7 +181,7 @@ uchar clockwise_poly(int index, fix *poly_pts)
          if (cross_prd == FIX_ZERO)
          {
             // Warning(("We've got a problem: Four colinear points.\n"));
-            clockwise = TRUE;
+            clockwise = true;
          }
          else
             clockwise = (cross_prd < FIX_ZERO);
@@ -210,8 +211,8 @@ int insert_viewer_position(int index, fix *new_pts, fix_point viewer_point)
    int         i;
    int         insert;
    
-   uchar        extra_div = TRUE;
-   uchar        inside = FALSE;
+   uchar        extra_div = true;
+   uchar        inside = false;
 
    // Reduce values to a reasonable number, so cross product is happy
    // Copy over the raw data to the temp list
@@ -221,15 +222,15 @@ int insert_viewer_position(int index, fix *new_pts, fix_point viewer_point)
       
    while (extra_div)
    {
-      extra_div = FALSE;
+      extra_div = false;
       for (i=0; i<(index*2); i++)
          if (temp_pts[i] > FIX_SQRT_MAX)
          {
-            extra_div = TRUE;
+            extra_div = true;
             break;
          }
       if ((!extra_div) && ((viewer_point.x > FIX_SQRT_MAX) || (viewer_point.y > FIX_SQRT_MAX)))
-         extra_div = TRUE;
+         extra_div = true;
 
       if (extra_div)
       {
@@ -443,14 +444,14 @@ int radius_fix(int index, fix *new_pts, fix_point viewer)
 
    new_index = 1;
    insert_pt = current_pt+2;
-   middle = FALSE;
+   middle = false;
    if (!((x==x2) || (y==y2)))
    {
       if (index == 3)
       {
          // If there are 3 verticies, then we save the middle to be
          // checked with the last vertex.
-         middle = TRUE;
+         middle = true;
          current_pt +=2;
       }
       else
@@ -503,23 +504,23 @@ int radius_fix(int index, fix *new_pts, fix_point viewer)
 
    if (new_index > 2)
    {
-      uchar extra_div = TRUE;
+      uchar extra_div = true;
 
       // This will remove convexness from the polygon
       // We are assuming counter-clockwise, due to sorting by angles.
 
-      second = third = TRUE;
+      second = third = true;
 
       LG_memcpy(temp_pts, new_pts, sizeof(fix) * 2 * index);
 
       // shrink down values to compensate for fix-point limitations
       while (extra_div)
       {
-         extra_div = FALSE;
+         extra_div = false;
          for (i=0;i<(index*2); i++)
             if (temp_pts[i] > FIX_SQRT_MAX)
             {
-               extra_div = TRUE;
+               extra_div = true;
                break;
             }
          if (extra_div)
@@ -536,7 +537,7 @@ int radius_fix(int index, fix *new_pts, fix_point viewer)
 
       cross_prd = FIX_CROSS_DIRECTION(poly_line, test_pt);
       if (cross_prd >= FIX_ZERO)
-         second = FALSE;
+         second = false;
 
       if (new_index == 4)
       {
@@ -545,14 +546,14 @@ int radius_fix(int index, fix *new_pts, fix_point viewer)
       
          cross_prd = FIX_CROSS_DIRECTION(poly_line, test_pt);
          if (cross_prd >= FIX_ZERO)
-            second = FALSE;
+            second = false;
 
          test_pt.x = temp_pts[4];
          test_pt.y = temp_pts[5];
 
          cross_prd = FIX_CROSS_DIRECTION(poly_line, test_pt);
          if (cross_prd >= FIX_ZERO)
-            third = FALSE;
+            third = false;
          else
          {
             poly_line.start.x = temp_pts[2];
@@ -560,7 +561,7 @@ int radius_fix(int index, fix *new_pts, fix_point viewer)
 
             cross_prd = FIX_CROSS_DIRECTION(poly_line, test_pt);
             if (cross_prd >= FIX_ZERO)
-               third = FALSE;
+               third = false;
          }
       }
 
@@ -615,7 +616,7 @@ uchar find_view_area(fix *cone_list, fix floor_val, fix roof_val, int *count, fi
    if (radius <= fix_make(0,0))
    {
       *count = 0;
-      return (FALSE);
+      return (false);
    }
 
    radius_square = (radius >= FIX_SQRT_MAX) ? FIX_MAX : fix_mul(radius, radius);
@@ -821,9 +822,9 @@ uchar find_view_area(fix *cone_list, fix floor_val, fix roof_val, int *count, fi
    *count = index;
 
    if (index > 2)
-      return(TRUE);
+      return(true);
    else
-      return(FALSE);
+      return(false);
 }
 
 // ---------------------------------------------
@@ -1039,7 +1040,7 @@ void simple_cone_clip_pass(void)
    for (y=fix_int (y_min); y<y_top; y++)
    {
       /* process completed left edge(s). */
-      left_line = left_repeat = FALSE;
+      left_line = left_repeat = false;
       x_outer_left = fix_make(-1,0);
       while (fix_int (view_cone_list[2*v_left+1]) == y)
       {
@@ -1050,18 +1051,18 @@ void simple_cone_clip_pass(void)
          if (left_repeat)
          {
             x_outer_left = min(x_outer_left, x_left);
-            left_line = TRUE;
+            left_line = true;
          }   
          else
          {
             x_outer_left = x_left;
             if (m_prev > fix_make(0,0))
             {
-               left_line = TRUE;
+               left_line = true;
                x_outer_left -= fix_mul(fix_frac(y_left), m_prev);           // save the left point's X coordinate
             }
 
-            left_repeat = TRUE;            // signal that if we do this again - we've repeated
+            left_repeat = true;            // signal that if we do this again - we've repeated
          }
          x_abs_left = min(view_cone_list[2*v_left], x_left);       
          d = view_cone_list[2*v_left+1]-y_left;
@@ -1087,7 +1088,7 @@ void simple_cone_clip_pass(void)
          }
       }
 
-      right_line = right_repeat = FALSE;
+      right_line = right_repeat = false;
       x_outer_right = fix_make(-1,0);
 
       /* process completed right edge(s). */
@@ -1100,7 +1101,7 @@ void simple_cone_clip_pass(void)
          if (right_repeat)
          {
             x_outer_right = max(x_outer_right, x_right);
-            right_line = TRUE;
+            right_line = true;
          }
          else
          {
@@ -1108,9 +1109,9 @@ void simple_cone_clip_pass(void)
             if (m_prev < fix_make(0,0))
             {
                x_outer_right += fix_abs(fix_mul(fix_frac(y_right), m_prev));
-               right_line = TRUE;
+               right_line = true;
             }
-            right_repeat = TRUE;
+            right_repeat = true;
          }
          x_abs_right = max(view_cone_list[2*v_right],x_right);
          d = view_cone_list[2*v_right+1]-y_right;

@@ -98,7 +98,7 @@ FullMap* map_create(int xshf, int yshf,int zshf, uchar cyb)
 	}
 	fmap->x_scale = fmap->y_scale = fmap->z_scale = 0;
 	for (i = 0; i < NUM_MAP_SCHEDULES; i++)
-		schedule_init(&fmap->sched[i],MAP_SCHEDULE_SIZE,FALSE);
+		schedule_init(&fmap->sched[i],MAP_SCHEDULE_SIZE,false);
 	return fmap;
 }
 
@@ -106,12 +106,12 @@ uchar map_set_default(FullMap *fmap)
 {
    global_fullmap=fmap;
    global_map=fmap->map;
-   return TRUE;
+   return true;
 }
 
 void map_init(void)
 {
-   FullMap* ourmap = map_create(DEFAULT_XSHF,DEFAULT_YSHF,DEFAULT_ZSHF,FALSE);
+   FullMap* ourmap = map_create(DEFAULT_XSHF,DEFAULT_YSHF,DEFAULT_ZSHF,false);
    map_set_default(ourmap);
 }
 

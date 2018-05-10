@@ -37,6 +37,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 #define __FRCOMPIL_SRC
+
+#include <stdbool.h>
+
 #include "frintern.h"
 #include "map.h"
 #include "mapflags.h"
@@ -68,5 +71,5 @@ void fr_compile_restart(fmp *fmptr)
 {
 	FullMap *fm = (FullMap *)fmptr;
 	fr_pipe_resize(fm_x_sz(fm),fm_y_sz(fm),fm_z_shft(fm),fm_map(fm));
-	fr_compile_rect(fm,0,0,fm_x_sz(fm),fm_y_sz(fm),FALSE);
+	fr_compile_rect(fm,0,0,fm_x_sz(fm),fm_y_sz(fm),false);
 }

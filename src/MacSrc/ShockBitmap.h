@@ -24,9 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
+#include <stdbool.h>
 
 #include <Carbon/Carbon.h>
-
 #include <sdl.h>
 
 //--------------------
@@ -38,7 +38,7 @@ typedef struct
 	long		RowBytes;
 	GrafPtr	bits;
 	Rect		bounds;
-	Boolean	Color;
+	bool	Color;
 	
 	BitMap	BWBits;			// B&W port & map
 	GrafPort BWPort;
@@ -55,7 +55,7 @@ typedef struct
 //--------------------
 extern PixMapHandle 		gScreenPixMap;
 extern CTabHandle			gMainColorHand;
-extern Boolean				gChangedColors;
+extern bool				gChangedColors;
 //extern ShockBitmap			gMainOffScreen;
 
 extern SDL_Surface* drawSurface;
@@ -69,7 +69,7 @@ void SetupOffscreenBitmaps(void);
 void ResetCTSeed(void);
 void RememberSeed(void);
 void FixPalette(void);
-void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color);
+void NewShockBitmap(ShockBitmap *theMap, short width, short height, bool color);
 void FreeShockBitmap(ShockBitmap *theMap);
 Handle Build8PixMap(CGrafPtr theCGrafPtr,short width, short height);
 short CurScreenDepth(void);

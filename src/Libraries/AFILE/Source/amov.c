@@ -43,6 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <string.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "lg.h"
@@ -174,7 +175,7 @@ int AmovReadHeader(Afile *paf)
 
 // No new palette
 
-   pmi->newPal = FALSE;
+   pmi->newPal = false;
 
 //	Current chunk is first one
 
@@ -271,7 +272,7 @@ NEXT_CHUNK:
             {
 				fseek(paf->fp, pmi->pcurrChunk->offset, SEEK_SET);
             fread(pmi->pal, 768, 1, paf->fp);
-            pmi->newPal = TRUE;
+            pmi->newPal = true;
             }
          pmi->pcurrChunk++;
          goto NEXT_CHUNK;
@@ -297,11 +298,11 @@ int AmovReadFramePal(Afile *paf, Apalette *ppal)
       {
       ppal->numcols = 256;
       memcpy(ppal->rgb, pmi->pal, 768);
-      pmi->newPal = FALSE;
-      return TRUE;
+      pmi->newPal = false;
+      return true;
       }
 
-	return FALSE;
+	return false;
 }
 
 //	----------------------------------------------------------

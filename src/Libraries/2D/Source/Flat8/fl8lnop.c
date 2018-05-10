@@ -108,7 +108,7 @@ int Handle_LinClut_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
          *(p_dest++) = t_clut[t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]];		
          u+=du; v+=dv;
        }
-	  } else if (x<0) return TRUE; // punt this tmap 
+	  } else if (x<0) return true; // punt this tmap
 	  
 	  u=(tli->left.u+=tli->left.du);
 	  tli->right.u+=tli->right.du;
@@ -125,7 +125,7 @@ int Handle_LinClut_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
 	tli->right.x = rx;
 	tli->left.x = lx;
 
-	return FALSE; // tmap OK 
+	return false; // tmap OK
  }
 								
 
@@ -244,7 +244,7 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	        }
 	        break;
 	     }
-	  } else if (d<0) return TRUE; /* punt this tmap */
+	  } else if (d<0) return true; /* punt this tmap */
 	  
 	  u=(tli->left.u+=tli->left.du);
 	  tli->right.u+=tli->right.du;
@@ -258,7 +258,7 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	  tli->y++;
 		start_pdest += gr_row;
 	} while (--(tli->n) > 0);
-	return FALSE; /* tmap OK */
+	return false; /* tmap OK */
 
 // handle 68K loops
 #else
@@ -411,11 +411,11 @@ asm int Handle_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 
 @Done:
   movem.l	(sp)+,d0-d7/a0-a6
-	moveq		#FALSE,d0
+	moveq		#false,d0
   rts
 
 @Err: 	
-	moveq		#TRUE,d0
+	moveq		#true,d0
   movem.l	(sp)+,d0-d7/a0-a6
   rts
  }

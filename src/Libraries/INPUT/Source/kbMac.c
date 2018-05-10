@@ -21,7 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // kbMac.c - All the keyboard handling routines that are specific to the Macintosh.
 //
 //===============================================================
-
+#include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 //#include <Timer.h>
 #include "lg.h"
@@ -74,7 +75,7 @@ void kb_set_flags(int flags)
 kbs_event kb_next(void)
 {
 	int				flags = kb_get_flags();
-	bool				gotKey = FALSE;
+	bool				gotKey = false;
 	EventRecord	theEvent;
 	kbs_event		retEvent = { 0xFF, 0x00 };
 
@@ -100,7 +101,7 @@ kbs_event kb_next(void)
 kbs_event kb_look_next(void)
 {
 	int				flags = kb_get_flags();
-	bool				gotKey = FALSE;
+	bool				gotKey = false;
 	EventRecord	theEvent;
 	kbs_event		retEvent = { 0xFF, 0x00 };
 
@@ -135,6 +136,6 @@ void kb_flush(void)
 //---------------------------------------------------------------
 uchar kb_state(uchar code)
 {
-	GetKeys((UInt32 *) pKbdGetKeys);
+	GetKeys((uint32_t *) pKbdGetKeys);
 	return ((pKbdGetKeys[code>>3] >> (code & 7)) & 1);
 }

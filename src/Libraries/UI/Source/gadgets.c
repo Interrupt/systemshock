@@ -48,8 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //---------------------------------------------------------------
 #define NUM_RESOURCE_FILES 1
 
-uchar gadget_initialization  = FALSE;
-uchar initialize_2d = FALSE;
+uchar gadget_initialization  = false;
+uchar initialize_2d = false;
 
 
 //---------------------------------------------------------------
@@ -144,10 +144,10 @@ errtype gad_Mac_init(Gadget *g, LGPoint extent)
 	if (!initialize_2d)
 	{
 		gr_init();
-		gr_set_mode(GRM_640x480x8, TRUE);
+		gr_set_mode(GRM_640x480x8, true);
 		screen = gr_alloc_screen(extent.x,extent.y);
 		gr_set_screen(screen);
-		initialize_2d = TRUE;
+		initialize_2d = true;
 	}
 	
 	g->device_data = (grs_canvas *)malloc(sizeof(grs_canvas));
@@ -271,7 +271,7 @@ Gadget *gadget_init(int display_type, LGPoint extent)
 //		Spew(DSRC_UI_Bounds, ("Nonpositive extent in gadget_init!\n"));
    if (!gadget_initialization)
    {
-      gadget_initialization = TRUE;
+      gadget_initialization = true;
       gadget_initialize_system();
    }
 
@@ -365,7 +365,7 @@ errtype gadget_shutdown()
 
 
 // Destroys the gadget and any children gadgets
-uchar in_destroy = FALSE;
+uchar in_destroy = false;
 errtype gadget_destroy(Gadget **pvic)
 {
    LGRegion *curp, *nextp;
@@ -376,7 +376,7 @@ errtype gadget_destroy(Gadget **pvic)
 
    inner_destroy = in_destroy;
    if (!inner_destroy)
-      in_destroy = TRUE;
+      in_destroy = true;
 /*
    if (victim->rep != NULL)
    {
@@ -404,7 +404,7 @@ errtype gadget_destroy(Gadget **pvic)
          if (curp->user_data != NULL)
             gadget_destroy(&(GD_GADG(curp)));
          else
-            region_destroy(curp, FALSE);
+            region_destroy(curp, false);
          curp = nextp;
       }
       region_destroy(victim->rep, !inner_destroy);
@@ -417,7 +417,7 @@ errtype gadget_destroy(Gadget **pvic)
 
    if (!inner_destroy)
    {
-      in_destroy = FALSE;
+      in_destroy = false;
    }
    return (OK);
 }
@@ -436,7 +436,7 @@ uchar gadget_frob_canvas(LGRegion *reg, void *data)
       RectWidth(g->rep->r), RectHeight(g->rep->r));
    ((LGPoint *)(data))->x = 0;
    ((LGPoint *)(data))->y = 0;
-   return(FALSE);
+   return(false);
 }
 
 errtype gadget_move(Gadget *g, LGPoint coord, int z)
@@ -588,7 +588,7 @@ uchar gadget_tng_keyboard_handler(uiEvent *e, LGRegion *r, void *state)
    dummy = state;
    
    if ((e->type != UI_EVENT_KBD_COOKED) || !(e->subtype & KB_FLAG_DOWN))
-      return FALSE;
+      return false;
    cke = (uiCookedKeyEvent *)e;
    g = GD_GADG(r);
    return(g->tng_data->keycooked(g->tng_data, cke->code));

@@ -104,7 +104,7 @@ void cursor_draw_callback(mouse_event* e, void* data)
 #define GR_HFLIP_BITMAP_IN_PLACE(x) 
 
 static grs_canvas* old_canvas = NULL;
-bool	doubleUndraw = FALSE;
+bool	doubleUndraw = false;
 
 //-----------------------------------------------------------
 void bitmap_cursor_drawfunc(int cmd, LGRegion* r, LGCursor* c, LGPoint pos)
@@ -136,7 +136,7 @@ void bitmap_cursor_drawfunc(int cmd, LGRegion* r, LGCursor* c, LGPoint pos)
 			GR_GET_BITMAP(&SaveUnder.bm,pos.x,pos.y);
 			// Blit over the save under
 			GR_BITMAP(bm,pos.x,pos.y);
-			doubleUndraw = FALSE;
+			doubleUndraw = false;
 			break;
 
 		case CURSOR_DRAW_HFLIP:
@@ -156,12 +156,12 @@ void bitmap_cursor_drawfunc(int cmd, LGRegion* r, LGCursor* c, LGPoint pos)
 			gr_init_bm(&SaveUnder.bm,SaveUnder.bm.bits,BMT_SAVEUNDER,0,bm->w,bm->h);
 			GR_GET_BITMAP(&SaveUnder.bm,pos.x,pos.y);
 			gr_scale_bitmap(bm, pos.x, pos.y, (bm->w >> 1), (bm->h >> 1));
-			doubleUndraw = TRUE;
+			doubleUndraw = true;
 			break;
 		
 		case 4:	// Scale cursor down half-size, don't save the background.
 			gr_scale_bitmap(bm, pos.x, pos.y, (bm->w >> 1), (bm->h >> 1));
-			doubleUndraw = FALSE;
+			doubleUndraw = false;
 			break;
 	}
 	gr_set_canvas(old_canvas);

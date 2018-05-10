@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __SETUP_SRC
 
+#include <stdio.h>
 #include <string.h>
 
 #include "ShockDialogs.h"
@@ -86,7 +87,7 @@ Region setup_root_region;
 */
 
 uchar play_intro_anim;
-uchar save_game_exists = FALSE;
+uchar save_game_exists = false;
 uchar startup_music;
 int setup_mode;
 int intro_num;
@@ -96,7 +97,7 @@ extern char which_lang;
 
 ubyte valid_save;
 
-uchar setup_bio_started = FALSE;
+uchar setup_bio_started = false;
 
 // ----------------------
 // Internal Prototypes
@@ -272,7 +273,7 @@ errtype draw_difficulty_char(int char_num);
 errtype draw_difficulty_description(int which_cat, int color);
 errtype journey_continue_func(uchar draw_stuff);
 
-uchar setup_sound_on=FALSE;
+uchar setup_sound_on=false;
 
 #define MAX_NAME_SIZE   sizeof(player_struct.name)
 #define start_name (player_struct.name)
@@ -285,13 +286,13 @@ char *stp_themes[]={"titloop.xmi","endloop.xmi"};
 uchar start_setup_sound(int which)
 {
    if ((setup_sound_on)||(!music_on))
-      return FALSE;
+      return false;
 
    if (citmusic_swap_to_xmi(stp_themes[which])!=-1)
    {
       if (which==0)
 	      AIL_branch_index((SEQUENCE *)snd_get_sequence(cmus_theme_seq_id),0);
-      setup_sound_on=TRUE;
+      setup_sound_on=true;
    }
    return setup_sound_on;
 }
@@ -305,7 +306,7 @@ void end_setup_sound(void)
    if (!setup_sound_on)
       return;
    citmusic_stop_simple_xmi();
-   setup_sound_on = FALSE;
+   setup_sound_on = false;
 }
 
 // --------------------------------------------------------------------
@@ -327,7 +328,7 @@ errtype compute_new_diff()
 
 #define NUM_DIFF_CATEGORIES   4
 char curr_diff = 0;
-uchar start_selected = FALSE;
+uchar start_selected = false;
 
 #define CATEGORY_STRING_BASE  REF_STR_diffCategories
 #define DIFF_STRING_BASE      REF_STR_diffStrings
@@ -483,7 +484,7 @@ errtype journey_draw(char part)
    if (setup_bio_started)
    {
       status_bio_end();
-      setup_bio_started = FALSE;
+      setup_bio_started = false;
    }
 
    // extract into buffer - AFTER we've stopped biorhythms (which used that buffer.....)
@@ -533,7 +534,7 @@ errtype journey_intro_func(uchar draw_stuff)
    if (draw_stuff)
       res_draw_string(RES_citadelFont, SETUP_STRING_BASE, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT1_TOP + 2);
    uiShowMouse(NULL);    // need to leave it hidden
-   return(play_cutscene(START_CUTSCENE, TRUE));
+   return(play_cutscene(START_CUTSCENE, true));
 #endif
 }
 #pragma enable_message(202)
@@ -549,7 +550,7 @@ errtype journey_newgame_func()
 {
    extern uchar clear_player_data;
 
-   clear_player_data = TRUE;
+   clear_player_data = true;
 
    printf("Load object data\n");
    object_data_load();
@@ -563,7 +564,7 @@ errtype journey_newgame_func()
 /* not yet
    change_mode_func(0,0,(void *)GAME_LOOP);
 */
-   startup_music = TRUE;
+   startup_music = true;
    return(OK);
 }
 
@@ -579,11 +580,11 @@ errtype journey_difficulty_func(uchar draw_stuff)
    if (draw_stuff)
       res_draw_string(RES_citadelFont, SETUP_STRING_BASE + 1, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT2_TOP + 2);
    uiShowMouse(NULL);
-   difficulty_draw(TRUE);
+   difficulty_draw(true);
    compute_new_diff();
    status_bio_set(DIFF_BIO);
    status_bio_start();
-   setup_bio_started = TRUE;
+   setup_bio_started = true;
    return(OK);
 }
 
@@ -621,7 +622,7 @@ void journey_credits_done()
    if (current_cutscene == WIN_CUTSCENE)
    {
       current_cutscene = SECRET_EXIT_TO_DOS_CUTSCENE;
-      journey_credits_func(FALSE);
+      journey_credits_func(false);
    }
    else if (current_cutscene == SECRET_EXIT_TO_DOS_CUTSCENE)
    {
@@ -706,7 +707,7 @@ errtype load_that_thar_game(FSSpec *loadSpec)
 //KLC - not in Mac version      draw_sg_slot(-1);             // highlight the current save game slot with SELECTED_COLOR
 //KLC - have Mac version up at this point      begin_wait();
 // is this needed?      check_and_update_initial();
-      clear_player_data=TRUE;   // initializes the player struct in object_data_load
+      clear_player_data=true;   // initializes the player struct in object_data_load
       object_data_load();
       player_create_initial();
       player_struct.level = 0xFF;      // make sure we load textures
@@ -723,7 +724,7 @@ errtype load_that_thar_game(FSSpec *loadSpec)
       }
 //KLC - don't do the following.
 //      if (curr_vol_lev != 0)
-      startup_music = TRUE;
+      startup_music = true;
 //KLC      end_wait();
 //KLC - not in Mac version   }
    return(OK);
@@ -841,7 +842,7 @@ journey_func journey_funcs[4] =
 
 // if there are two different input events - only let's one
 // call a journey_func
-uchar journey_lock = FALSE;
+uchar journey_lock = false;
 
 // -------------------------------------------------------------
 // intro_mouse_handler()
@@ -878,9 +879,9 @@ uchar intro_mouse_handler(uiEvent *ev, Region *r, void *user_data)
                   {
                      uiHideMouse(NULL);
                      gr_set_fcolor(SELECTED_COLOR);
-                     journey_lock = TRUE;
-                     journey_funcs[which_one](TRUE);
-                     journey_lock = FALSE;
+                     journey_lock = true;
+                     journey_funcs[which_one](true);
+                     journey_lock = false;
                   }
                }
             }
@@ -900,7 +901,7 @@ uchar intro_mouse_handler(uiEvent *ev, Region *r, void *user_data)
             }
             break;
          case SETUP_DIFFICULTY:
-            diff_changed = FALSE;
+            diff_changed = false;
             // given that these are all rectangles, i bet you could just get mouse pos and divide, eh?
             for (i=0; i<16; i++)
             {
@@ -914,7 +915,7 @@ uchar intro_mouse_handler(uiEvent *ev, Region *r, void *user_data)
                   draw_difficulty_char(((i/4) * 4) + old_diff);
                   draw_difficulty_char(i);
                   draw_difficulty_description(i/4,NORMAL_ENTRY_COLOR);
-                  diff_changed = TRUE;
+                  diff_changed = true;
                }
             }
             if (diff_changed)
@@ -924,7 +925,7 @@ uchar intro_mouse_handler(uiEvent *ev, Region *r, void *user_data)
             break;
       }
    }
-   return(TRUE);
+   return(true);
 }
 
 // -------------------------------------------------------------
@@ -968,9 +969,9 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
                {
                   uiHideMouse(NULL);
                   gr_set_fcolor(SELECTED_COLOR);
-                  journey_lock = TRUE;
-                  journey_funcs[curr_setup_line](TRUE);
-                  journey_lock = FALSE;
+                  journey_lock = true;
+                  journey_funcs[curr_setup_line](true);
+                  journey_lock = false;
                }
                break;
             }
@@ -1024,22 +1025,22 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
                   n++;                                   // now -1 or 1
                   if (start_selected && n == 1)
                   {
-                     start_selected = FALSE;
+                     start_selected = false;
                      curr_diff = 0;
                   }
                   else if (start_selected && n == NUM_DIFF_CATEGORIES-1)
                   {
-                     start_selected = FALSE;
+                     start_selected = false;
                      curr_diff = NUM_DIFF_CATEGORIES-1;
                   }
                   else if ((curr_diff == NUM_DIFF_CATEGORIES-1 && n == 1) || (curr_diff == 0 && n == NUM_DIFF_CATEGORIES-1))
-                     start_selected = TRUE;
+                     start_selected = true;
                   else
                   {
-                     start_selected = FALSE;
+                     start_selected = false;
                      curr_diff = (curr_diff + n) % NUM_DIFF_CATEGORIES;
                   }
-                  difficulty_draw(FALSE);
+                  difficulty_draw(false);
                   break;                   
                case KEY_ENTER:
 //                  if (start_name[0] != '\0' && start_selected)
@@ -1143,14 +1144,14 @@ errtype setup_init(void)
    int   cnt;
 #endif
 
-   generic_reg_init(TRUE,&setup_root_region,NULL,&setup_slab,intro_key_handler,intro_mouse_handler);
+   generic_reg_init(true,&setup_root_region,NULL,&setup_slab,intro_key_handler,intro_mouse_handler);
 
 #ifndef GAMEONLY
    cnt = 1;
    if (config_get_value("intro", CONFIG_INT_TYPE, data, &cnt))
    {
-      physics_running = TRUE;
-      time_passes = TRUE;
+      physics_running = true;
+      time_passes = true;
       _current_loop = SETUP_LOOP;
    }
    if (!config_get_raw(CFG_NAME_VAR, start_name, 40))
@@ -1165,8 +1166,8 @@ errtype setup_init(void)
 // setup_start()
 //
 
-static uchar direct_into_cutscene = FALSE;
-uchar start_first_time = TRUE;
+static uchar direct_into_cutscene = false;
+uchar start_first_time = true;
 
 #define MAX_TRY_NUM   8
 #define CFG_INIT_SVG "init_savegame"
@@ -1181,28 +1182,28 @@ void setup_start()
    load_savegame_names();
 #endif
 
-   startup_music = FALSE;
+   startup_music = false;
    save_game_exists = (valid_save != 0);
 
    if (setup_mode != SETUP_CREDITS)
    {
       if (!save_game_exists && start_first_time)
       {
-         play_intro_anim = TRUE; 
+         play_intro_anim = true;
          setup_mode = SETUP_ANIM; 
       }
       else
       {
-         play_intro_anim = FALSE; 
+         play_intro_anim = false;
          setup_mode = SETUP_JOURNEY;
       }
    }
    if (!start_first_time)
    {
 //      start_setup_sound();
-      closedown_game(TRUE);
+      closedown_game(true);
    }
-   start_first_time = FALSE;
+   start_first_time = false;
 
 #ifdef GADGET
    _current_root = NULL;     /* got rid of pointer type mismatch
@@ -1257,13 +1258,13 @@ void setup_start()
       switch (setup_mode)
       {
          case SETUP_DIFFICULTY:
-            difficulty_draw(TRUE);
+            difficulty_draw(true);
             break;
          case SETUP_JOURNEY:
             journey_draw(0);
             break;
       }
-      direct_into_cutscene = FALSE;
+      direct_into_cutscene = false;
       if (setup_mode != SETUP_CREDITS)
          start_setup_sound(0);
       else
@@ -1271,8 +1272,8 @@ void setup_start()
    }
    else
    {
-      direct_into_cutscene = TRUE;
-      play_cutscene(START_CUTSCENE, TRUE);
+      direct_into_cutscene = true;
+      play_cutscene(START_CUTSCENE, true);
    }
 
 }
@@ -1315,7 +1316,7 @@ void setup_exit()
    // must get rid of mouse - to maintain hidden mouse after loop
    if (!direct_into_cutscene)
       uiHideMouse(NULL);
-   direct_into_cutscene = FALSE;
+   direct_into_cutscene = false;
 }
 
 #endif //NOT_YET

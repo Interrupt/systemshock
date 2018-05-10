@@ -167,7 +167,7 @@ int lg_vsprintf(char *buf, const char *format, va_list arglist)
    big=DEFAULT;
 
    while( src_char=format[src_ind++] ) {
-      this_is_len=FALSE;
+      this_is_len=false;
       if( stage!=STAGE_TEXT ) {
          switch( src_char ) {
             case '.':
@@ -175,11 +175,11 @@ int lg_vsprintf(char *buf, const char *format, va_list arglist)
                break;
             case '-':
                if(stage==STAGE_FLAGS)
-                  ladjust=TRUE;
+                  ladjust=true;
                break;
             case '#':
                if(stage==STAGE_FLAGS)
-                  altform=TRUE;
+                  altform=true;
                break;
             case '0':
                if(stage==STAGE_FLAGS) {
@@ -199,7 +199,7 @@ int lg_vsprintf(char *buf, const char *format, va_list arglist)
                if(stage==STAGE_FWID)
                   fwid=fwid*10+(src_char-'0');
                else {
-                  pspec=TRUE;
+                  pspec=true;
                   precis=precis*10+(src_char-'0');
                }
                break;
@@ -208,12 +208,12 @@ int lg_vsprintf(char *buf, const char *format, va_list arglist)
                stage=STAGE_TEXT;
                break;
             case 'h':
-               this_is_len=TRUE;
+               this_is_len=true;
                big=SMALL;
                break;
             case 'L':
             case 'l':
-               this_is_len=TRUE;
+               this_is_len=true;
                big=BIG; // of course, currently this is ingored.
                break;
             case 'n':
@@ -400,7 +400,7 @@ string_copy:
             stage=STAGE_FLAGS;
             pad_char=' ';
             fwid=precis=0;
-            ladjust=altform=pspec=FALSE;
+            ladjust=altform=pspec=false;
          }
          else
             buf[dest_ind++]=src_char;

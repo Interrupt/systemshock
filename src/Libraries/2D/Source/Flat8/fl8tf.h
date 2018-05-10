@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
+
 #include "tmapint.h"
 #include "pertyp.h"
 

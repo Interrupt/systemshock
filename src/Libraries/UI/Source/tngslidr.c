@@ -51,7 +51,7 @@ errtype tng_slider_full_init(void *ui_data, TNG *ptng, TNGStyle *sty, int alignm
    psltng->value = value;
    psltng->increm = increm;
    psltng->size = size;
-   psltng->dragging = FALSE;
+   psltng->dragging = false;
    
    psltng->left_id = left_id;
    psltng->right_id = right_id;
@@ -242,7 +242,7 @@ uchar tng_slider_keycooked(TNG *ptng, ushort key)
 {
    TNG_slider *psltng;
    int code = key & 0xff;
-   uchar retval = FALSE;
+   uchar retval = false;
 
    psltng = (TNG_slider *)ptng->type_data;
    if (psltng->alignment == TNG_SL_VERTICAL)
@@ -268,18 +268,18 @@ uchar tng_slider_apply_click(TNG *ptng, LGPoint loc)
    int perc;
    TNG_slider *psltng;
    int right_edge, left_edge, top_edge, bottom_edge;
-   uchar inc_area, dec_area, retval = FALSE;
+   uchar inc_area, dec_area, retval = false;
    float t1,t2;
 
    psltng = (TNG_slider *)ptng->type_data;
    if (!psltng->dragging)
-      return(FALSE);
+      return(false);
    if ((loc.x < 0) || (loc.y < 0) || (loc.x > psltng->size.x) || (loc.y > psltng->size.y))
    {
      //Spew(DSRC_UI_Slider, ("Slider Releasing Focus\n"));
-     psltng->dragging = FALSE;
+     psltng->dragging = false;
      TNG_RELEASE_FOCUS(ptng, TNG_EVENT_MOUSE|TNG_EVENT_MOUSE_MOVE);
-     return(FALSE);
+     return(false);
    }
    if (psltng->alignment == TNG_SL_HORIZONTAL)
    {
@@ -334,33 +334,33 @@ uchar tng_slider_apply_click(TNG *ptng, LGPoint loc)
 uchar tng_slider_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
    TNG_slider *psltng;
-   uchar retval = FALSE;
+   uchar retval = false;
 
    psltng = (TNG_slider *)ptng->type_data;
    //Spew(DSRC_UI_Slider, ("type == %x  MOUSE_LDOWN = %x  MOUSE_LUP = %x\n",type, TNG_MOUSE_LDOWN,TNG_MOUSE_LUP));
    if (type & TNG_MOUSE_LUP)
    {
      //Spew(DSRC_UI_Slider, ("Slider Releasing Focus\n"));
-     psltng->dragging = FALSE;
+     psltng->dragging = false;
      TNG_RELEASE_FOCUS(ptng, TNG_EVENT_MOUSE|TNG_EVENT_MOUSE_MOVE);
      IF_SET_RV(ptng->signal(ptng, TNG_SIGNAL_CHANGED));
    }
    else if (type & TNG_MOUSE_LDOWN)
    {
       //Spew(DSRC_UI_Slider, ("Slider Grabbing Focus\n"));
-      psltng->dragging = TRUE;
+      psltng->dragging = true;
       TNG_GRAB_FOCUS(ptng, TNG_EVENT_MOUSE|TNG_EVENT_MOUSE_MOVE);
       IF_SET_RV(tng_slider_apply_click(ptng, loc));
    }
    IF_SET_RV(tng_cb_mousebutt(ptng, type,loc));
-   retval = TRUE;
+   retval = true;
    return(retval);
 }
 
 // Handle incoming signals
 uchar tng_slider_signal(TNG *ptng, ushort signal)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    //Spew(DSRC_UI_Slider, ("Slider Received signal: %x\n",signal));
    if (signal & TNG_SIGNAL_INCREMENT)
       IF_SET_RV(tng_slider_increm((TNG_slider *)ptng->type_data));
@@ -378,7 +378,7 @@ uchar tng_slider_increm(TNG_slider *psltng)
    if (psltng->value > psltng->max)
       psltng->value = psltng->max;
    psltng->tng_data->signal(psltng->tng_data, TNG_SIGNAL_CHANGED);
-   return(TRUE);
+   return(true);
 }
 
 uchar tng_slider_decrem(TNG_slider *psltng)
@@ -387,7 +387,7 @@ uchar tng_slider_decrem(TNG_slider *psltng)
    if (psltng->value < psltng->min)
       psltng->value = psltng->min;
    psltng->tng_data->signal(psltng->tng_data, TNG_SIGNAL_CHANGED);
-   return(TRUE);
+   return(true);
 }
 
 errtype tng_slider_set(TNG_slider *psltng, int perc)

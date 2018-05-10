@@ -96,7 +96,7 @@ void main(void)
 	long        i,j;
 
 	gr_init();
-	gr_set_mode (GRM_640x480x8, TRUE);
+	gr_set_mode (GRM_640x480x8, true);
 	screen = gr_alloc_screen (grd_cap->w, grd_cap->h);
 	gr_set_screen (screen);
 

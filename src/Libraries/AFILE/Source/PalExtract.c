@@ -71,7 +71,7 @@ static char *tableNames[] = {
 	short	resID = 128;
 
 	long	frames = 0;
-	dumpChunkHdrs = TRUE;
+	dumpChunkHdrs = true;
 
 	Handle		changesHdl;
 	PalChange	*pcp;
@@ -180,7 +180,7 @@ static char *tableNames[] = {
 		pmc = (MovieChunk *)malloc(mh.sizeChunks);
 		fread(pmc, mh.sizeChunks, 1, fpi);
       	pmcBase = pmc;
-		while (TRUE)
+		while (true)
 		{
 			uchar	s1, s2;
 			

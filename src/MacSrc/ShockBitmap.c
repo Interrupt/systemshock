@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Shock.h"
 #include "InitMac.h"
 #include "ShockBitmap.h"
+#include "dbg.h"
 
 //#import <Cocoa/Cocoa.h>
 
@@ -46,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 PixMapHandle 	gScreenPixMap;
 CTabHandle			gMainColorHand;
-Boolean				gChangedColors = false;
+bool				gChangedColors = false;
 //ShockBitmap		gMainOffScreen;
 
 SDL_Surface* drawSurface;
@@ -108,7 +109,7 @@ void FixPalette(void)
 //------------------------------------------------------------------------------------
 // 	Setup a new ShockBitmap structure.
 //------------------------------------------------------------------------------------
-void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color)
+void NewShockBitmap(ShockBitmap *theMap, short width, short height, bool color)
 {
 	/*GrafPtr 			savePort;
 	PixMapPtr		pmaptr;
@@ -397,8 +398,8 @@ int TrackTitleButton(int btn)
 {
 	/*PicHandle	phNorm, phClick;
 	Point			currPt;
-	Boolean		oldState = TRUE;
-	Boolean		newState;
+	bool		oldState = TRUE;
+	bool		newState;
 	Rect			r = pBtnRect[btn];
 		
 	// Get handles to the regular and pressed buttons.

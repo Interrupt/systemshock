@@ -55,7 +55,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #define __FROSLEW_SRC
+
+#include <stdbool.h>
+
 #include "fauxrint.h"
+#include "fix.h"
 #include "froslew.h"
 #ifndef __RENDTEST__
 #include "objsim.h"
@@ -131,7 +135,7 @@ uchar fr_objslew_go_real_height(Obj *cobj, long *eye)
    // now add height of current posture...
    eye[2]=z+PLAYER_HEIGHT/2;             /* this should probably be fixed */
    if (cobj!=NULL) fr_objslew_list_to_obj(eye,cobj,3);
-   return TRUE;
+   return true;
 }
 
 uchar fr_objslew_allowed(Obj *cobj, long *eye)
@@ -142,12 +146,12 @@ uchar fr_objslew_allowed(Obj *cobj, long *eye)
    if (cobj!=NULL) fr_objslew_obj_to_list(eye,cobj,3);
    x=eye[0]>>MAP_SH; y=eye[1]>>MAP_SH;
    if ((x<0)||(x>=MAP_XSIZE)||(y<0)||(y>=MAP_YSIZE))
-      return FALSE;
+      return false;
    o_t=MAP_GET_XY(x,y);
    if (me_tiletype(o_t)==TILE_SOLID)
-      return FALSE;
+      return false;
    if (cobj!=NULL) fr_objslew_list_to_obj(eye,cobj,3);
-   return TRUE;
+   return true;
 }
 
 // to physics teleport or not
@@ -155,7 +159,7 @@ uchar fr_objslew_allowed(Obj *cobj, long *eye)
 uchar fr_objslew_moveone(Obj *cobj, ObjID objnum, int which, int how, uchar conform)
 {
    long eye[4];
-   uchar valid_pos=TRUE;
+   uchar valid_pos=true;
 
    if (cobj==NULL) cobj=&objs[objnum];
    fr_objslew_obj_to_list(eye,cobj,4);
@@ -176,13 +180,13 @@ uchar fr_objslew_moveone(Obj *cobj, ObjID objnum, int which, int how, uchar conf
 	      eye[0]+=fix_int(fix_mul(v[0],tot));
 	      eye[1]+=fix_int(fix_mul(v[1],tot));
 		   if (conform)
-	         if ((valid_pos=fr_objslew_allowed(NULL,eye))==TRUE)
+	         if ((valid_pos=fr_objslew_allowed(NULL,eye))==true)
 			      fr_objslew_go_real_height(NULL,eye);
          break;
 	   }
    }
    fr_objslew_list_to_obj(eye,cobj,3);
-   obj_move_to(cobj-objs, &cobj->loc, TRUE);
+   obj_move_to(cobj-objs, &cobj->loc, true);
    return valid_pos;
 }
 
@@ -194,17 +198,17 @@ uchar fr_objslew_setone(int which, int l_new)
    {
    case EYE_HEADH:
 	      eye_mods[0]=l_new;
-         return TRUE;
+         return true;
    case EYE_H:     
       break; 
-   case EYE_RESET: eye_mods[0]=eye_mods[1]=eye_mods[2]=0; return TRUE;
-   case EYE_P:     eye_mods[1]=l_new; return TRUE;
-   case EYE_B:     eye_mods[2]=l_new; return TRUE;
+   case EYE_RESET: eye_mods[0]=eye_mods[1]=eye_mods[2]=0; return true;
+   case EYE_P:     eye_mods[1]=l_new; return true;
+   case EYE_B:     eye_mods[2]=l_new; return true;
    case EYE_Z:     
    case EYE_Y:
    case EYE_X:     break;
    }
-   return TRUE;
+   return true;
 }
 //#pragma enable_message(202)
 

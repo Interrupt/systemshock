@@ -161,7 +161,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __FIX_H
 
 #include "lg_types.h"
-	
+
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
 

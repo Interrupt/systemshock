@@ -58,8 +58,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define topLeft(r)	(((Point *) &(r))[0])
 #define botRight(r)	(((Point *) &(r))[1])
 
-#define TRUE		true
-#define FALSE		false
 
 #ifndef powerc
  #include <MixedMode.h>

@@ -30,6 +30,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //#include <GestaltEqu.h>
 //#include <Folders.h>
+
+#include <stdbool.h>
+
 #include "Shock.h"
 #include "Prefs.h"
 
@@ -43,15 +46,15 @@ void SetShockGlobals(void);
 //--------------------
 ShockPrefs		gShockPrefs;
 char		which_lang;
-uchar sfx_on = TRUE;
+bool sfx_on = true;
 
 //--------------------
 //  Externs
 //--------------------
 //extern uchar 	sfx_on;
 extern int 		_fr_global_detail;
-extern Boolean	DoubleSize;
-extern Boolean	SkipLines;
+extern bool	DoubleSize;
+extern bool	SkipLines;
 
 
 //--------------------------------------------------------------------

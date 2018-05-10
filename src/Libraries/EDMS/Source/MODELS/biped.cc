@@ -382,7 +382,7 @@ terrain_ff      TFF;
 //	=============================
 	TFF.caller = on2ph[object];
 	TFF.terrain_information = 0;
-        ff_terrain( foot_r[0] + A[object][0][0], foot_r[1] + A[object][1][0], foot_r[2] + A[object][2][0], FALSE, &TFF );
+        ff_terrain( foot_r[0] + A[object][0][0], foot_r[1] + A[object][1][0], foot_r[2] + A[object][2][0], false, &TFF );
         terrain_r.fix_to( TFF.g_height );       terrain_r -= A[object][2][0];
         terrain_r_dx.fix_to( TFF.g_dx );
         terrain_r_dy.fix_to( TFF.g_dy );
@@ -393,7 +393,7 @@ terrain_ff      TFF;
 	ground_info.fix_to( TFF.terrain_information );
 
 
-        ff_terrain( foot_l[0] + A[object][0][0], foot_l[1] + A[object][1][0], foot_l[2] + A[object][2][0], FALSE, &TFF );
+        ff_terrain( foot_l[0] + A[object][0][0], foot_l[1] + A[object][1][0], foot_l[2] + A[object][2][0], false, &TFF );
         terrain_l.fix_to( TFF.g_height );       terrain_l -= A[object][2][0];
         terrain_l_dx.fix_to( TFF.g_dx );
         terrain_l_dy.fix_to( TFF.g_dy );
@@ -617,7 +617,7 @@ terrain_ff      TFF;
 
 //	Actual bodily forces, collisions, and cetera...
 //	===============================================
-        ff_terrain( A[object][0][0], A[object][1][0], A[object][2][0], FALSE, &TFF );
+        ff_terrain( A[object][0][0], A[object][1][0], A[object][2][0], false, &TFF );
 
 Q	object0;
 Q	object1;

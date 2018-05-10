@@ -148,10 +148,10 @@ int fnt_init_from_style(void *style_ptr)
 // 
 uchar fnt_free(void)
 {
-   if (_fnt_count==-1) return FALSE;
+   if (_fnt_count==-1) return false;
    free(_fnt_lists);
    _fnt_count=-1;
-   return TRUE;
+   return true;
 }
 
 // return the handle of the loaded font or -1
@@ -195,21 +195,21 @@ int fnt_load_from_style(void *style_ptr)
 // unload the specified font
 uchar fnt_unload(int fnt_handle)
 {
-   if (fnt_handle>=_fnt_count) return FALSE;
+   if (fnt_handle>=_fnt_count) return false;
    if (fnt_handle!=_fnt_count-1)
       LG_memcpy(&_fnt_lists[fnt_handle],&_fnt_lists[_fnt_count-1],sizeof(struct _fnt_data));
    if (fnt_handle==_fnt_current)       /* should check here for not deleting default font */
       _fnt_current=0;
    _fnt_count--;
-   return TRUE;
+   return true;
 }
 
 // set the current font
 uchar fnt_select(int fnt_handle)
 {
-   if (fnt_handle>=_fnt_count) return FALSE;
+   if (fnt_handle>=_fnt_count) return false;
    _fnt_current=fnt_handle;
-   return TRUE;
+   return true;
 }
 
 #ifdef nOAG

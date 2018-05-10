@@ -60,7 +60,7 @@ errtype tng_menu_init(void *ui_data, TNG *ptng, TNGStyle *sty, LGPoint coord, in
    pmntng->current_selection = NULL;
    pmntng->popup_func = upfunc;
    pmntng->popdown_func = downfunc;
-   pmntng->popped_up = FALSE;
+   pmntng->popped_up = false;
    pmntng->coord = coord;
    llist_init(&(pmntng->element_header));
 
@@ -184,7 +184,7 @@ int tng_menu_getvalue(TNG *ptng)
 uchar tng_menu_keycooked(TNG *ptng, ushort key)
 {
    ushort code = key ^ KB_FLAG_DOWN;
-   uchar retval = FALSE;
+   uchar retval = false;
    MenuElement *csel, *next;
 
    switch(code)
@@ -224,7 +224,7 @@ uchar tng_menu_keycooked(TNG *ptng, ushort key)
          TNG_DRAW(ptng);
          break;
    }
-   retval = TRUE;
+   retval = true;
    IF_SET_RV(tng_cb_keycooked(ptng, key));
    return(retval);
 }
@@ -232,7 +232,7 @@ uchar tng_menu_keycooked(TNG *ptng, ushort key)
 // React appropriately for receiving the specified mouse button event
 uchar tng_menu_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    int localy;
    TNG_menu *pmntng;
    MenuElement *curp;
@@ -256,24 +256,24 @@ uchar tng_menu_mousebutt(TNG *ptng, uchar type, LGPoint loc)
          pmntng->current_selection = NULL;
    }
    IF_SET_RV(tng_cb_mousebutt(ptng,type,loc));
-   retval = TRUE;
+   retval = true;
    return(retval);
 }
 
 // Handle incoming signals
 uchar tng_menu_signal(TNG *ptng, ushort signal)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
 
    if (signal & TNG_SIGNAL_SELECT)
       IF_SET_RV(tng_menu_selection(ptng));
    if (signal & TNG_SIGNAL_DESELECT)
    {
-      retval = TRUE;
+      retval = true;
       TNG_MN(ptng)->popdown_func(ptng);
    }
    IF_SET_RV(tng_cb_signal(ptng,signal));
-   retval = TRUE;
+   retval = true;
    return(retval);
 }
 

@@ -49,6 +49,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #define __FRMAIN_SRC
+
+#include <stdbool.h>
+
 #include "frtypes.h"
 #include "frintern.h"
 #include "frparams.h"
@@ -79,12 +82,12 @@ int fr_rend(frc *view)
    else
    {                                   /* actually do the 3d thang */
       extern uchar _g3d_enable_blend;
-      extern Boolean DoubleSize;
+      extern bool DoubleSize;
       uchar save_blend_flag;
 
       if ((_fr_curflags&FR_PICKUPM_MASK) || DoubleSize) {
          save_blend_flag=_g3d_enable_blend;
-         _g3d_enable_blend=FALSE;
+         _g3d_enable_blend=false;
       }
 
       // HAX HAX HAX: why is this needed to reset the view?

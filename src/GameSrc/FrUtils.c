@@ -24,9 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *  Contiains Mac specific utils for the renderer (fast draw slot view, full screen, etc.)
  *
  */
- 
- #include "FrUtils.h"
- #include "Shock.h"
+
+#include <stdbool.h>
+
+#include "FrUtils.h"
+#include "Shock.h"
 
 // ------------------
 //  GLOBALS
@@ -379,7 +381,7 @@ asm void Fast_FullScreen_Copy(grs_bitmap *bm)
 
 //=================================================================
 // Doubling routines
-extern Boolean SkipLines;
+extern bool SkipLines;
 
 // copy the slot view from offscreen to on, doubling it
 #if (defined(powerc) || defined(__powerc))	

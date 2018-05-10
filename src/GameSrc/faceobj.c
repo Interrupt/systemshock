@@ -23,11 +23,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/09/08 06:30:25 $
  */
 
+#include <stdbool.h>
 #include <string.h>
 
 #include "frcamera.h"
 #include "gameobj.h"
 
+#include "fix.h"
 #include "fr3d.h"
 #include "frintern.h"
 #include "frtables.h"
@@ -119,12 +121,12 @@ uchar _axial_relativize(fix *src_pts, fix *targ_pts, uchar vec) // (fixang l_h, 
       else if ((l_b)==0)
       {  // 2d transform, just pitch and heading..
 //         Warning(("Obj with pitch and heading changed\n"));
-         return FALSE;
+         return false;
       }
       else
       {     // unsupported case for now
 //         Warning(("Obj w/all 3 axis changed\n"));
-         return FALSE;
+         return false;
       }
    }
    else if (l_h)
@@ -135,7 +137,7 @@ uchar _axial_relativize(fix *src_pts, fix *targ_pts, uchar vec) // (fixang l_h, 
       
 //   mprintf("Rtv'd %x %x %x to %x %x %x from %x %x %x\n",
 //      src_pts[0],src_pts[1],src_pts[2],targ_pts[0],targ_pts[1],targ_pts[2],l_h,l_p,l_b);
-   return TRUE;
+   return true;
 }
 
 uchar setup_cube_face(fix ndist, fix xp, fix yp, fix xhlf, fix yhlf, int nrm_cmp)
@@ -155,7 +157,7 @@ uchar setup_cube_face(fix ndist, fix xp, fix yp, fix xhlf, fix yhlf, int nrm_cmp
       unit_norm[(-nrm_cmp)-1] = -fix_1;
    else
       unit_norm[  nrm_cmp -1] =  fix_1;
-   _axial_relativize(unit_norm,nrm,TRUE);
+   _axial_relativize(unit_norm,nrm,true);
    if (nrm[2]>fix_make(0,0xC000))   // sure, why not...
       flg|=SS_BCD_TYPE_FLOOR;
    else 
@@ -168,7 +170,7 @@ uchar setup_cube_face(fix ndist, fix xp, fix yp, fix xhlf, fix yhlf, int nrm_cmp
 #define MIN_SIZE 0x0050
 uchar _face_parm_cube(fix *cntr, int x, int y, int z)
 {
-   uchar rv=FALSE;
+   uchar rv=false;
 //   mprintf("FDPC: o %x %x %x ph %x %x %x, at %x %x %x, size %x %x %x, rad %x\n",
 //      _n_fr_p.x,_n_fr_p.y,_n_fr_p.z,tf_raw_pt[0],tf_raw_pt[1],tf_raw_pt[2],cntr[0],cntr[1],cntr[2],x,y,z,tf_rad);
    if ((y>MIN_SIZE)&&(z>MIN_SIZE))
@@ -222,7 +224,7 @@ void facelet_obj(ObjID cobjid)
    short objtrip;
    int obj_type=FAUBJ_UNKNOWN;
    char scale = 0;
-   uchar tfimp = FALSE;
+   uchar tfimp = false;
 
    // This should do something to distinguish between wall-like terrain and complex terrain
    // values, but I'm not sure what.  Right now they just both keep cranking, although in 
@@ -316,7 +318,7 @@ void facelet_obj(ObjID cobjid)
             if (b1 != NULL)
             {
                localize_object(loc_pts);   // fill in local frame
-               if (_axial_relativize(loc_pts,cube_pts,FALSE))
+               if (_axial_relativize(loc_pts,cube_pts,false))
                {
                   cube_pts[2]-=fz;
                   tfimp=_face_parm_cube(cube_pts,fx,fy,fz);
@@ -343,7 +345,7 @@ void facelet_obj(ObjID cobjid)
          if (scale > 0)  { fix_xoff<<=scale; fix_yoff<<=scale; } 
          else            { fix_xoff>>=-scale; fix_yoff>>=-scale; }
          localize_object(loc_pts);   // fill in local frame
-         if (_axial_relativize(loc_pts,door_pts,FALSE))
+         if (_axial_relativize(loc_pts,door_pts,false))
             tfimp=_face_parm_cube(door_pts, fix_xoff, 0, fix_yoff);
          break;
       }

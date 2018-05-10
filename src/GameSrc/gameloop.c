@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/19 20:35:51 $
  */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "mainloop.h"
@@ -65,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------
 // GLOBALS
 // ----------
-uchar redraw_paused=TRUE;
+uchar redraw_paused=true;
 
 // ----------
 // PROTOTYPES
@@ -114,7 +115,7 @@ void game_loop(void)
 		{
 			printf("Drawing pause!\n");
 			draw_pause_string();
-			redraw_paused=FALSE;
+			redraw_paused=false;
 		}
 //KLC - does nothing!			loopLine(GL|0x1D,synchronous_update());
 		/*if (music_on)
@@ -149,7 +150,7 @@ void game_loop(void)
 			loopLine(GL|0x1A, render_run());
 
 			printf("status_vitals_update\n");
-			loopLine(GL|0x17,if (!full_game_3d) status_vitals_update(FALSE));
+			loopLine(GL|0x17,if (!full_game_3d) status_vitals_update(false));
 /*KLC - no longer needed
 			if (_change_flag&ANIM_UPDATE)
 			{
@@ -183,7 +184,7 @@ void game_loop(void)
 		}
 		if (!full_game_3d) {
 			printf("update_meters\n");
-			loopLine(GL|0x19,update_meters(FALSE));
+			loopLine(GL|0x19,update_meters(false));
 		}
 		if (!full_game_3d && olh_overlay_on) {
 			printf("olh_overlay\n");

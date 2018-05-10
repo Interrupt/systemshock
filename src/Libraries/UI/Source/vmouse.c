@@ -36,14 +36,14 @@ errtype ui_mouse_get_xy(short *pmx, short *pmy)
 {
    errtype retval;
    retval = mouse_get_xy(pmx,pmy);
-   ui_mouse_do_conversion(pmx,pmy,TRUE);
+   ui_mouse_do_conversion(pmx,pmy,true);
    return(retval);
 }
 
 errtype ui_mouse_put_xy(short pmx, short pmy)
 {
    errtype retval;
-   ui_mouse_do_conversion(&pmx,&pmy,FALSE);
+   ui_mouse_do_conversion(&pmx,&pmy,false);
    retval = mouse_put_xy(pmx,pmy);
    return(retval);
 }
@@ -59,8 +59,8 @@ errtype ui_mouse_constrain_xy(short xl, short yl, short xh, short yh)
       uyl=yl;
       uxh=xh;
       uyh=yh;
-      ui_mouse_convert_round(&uxl,&uyl,FALSE);
-      ui_mouse_convert_round(&uxh,&uyh,FALSE);
+      ui_mouse_convert_round(&uxl,&uyl,false);
+      ui_mouse_convert_round(&uxh,&uyh,false);
       return(mouse_constrain_xy(uxl,uyl,uxh,uyh));
    }
 }

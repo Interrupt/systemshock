@@ -111,7 +111,7 @@ int Handle_Lit_Lin_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
            *(p_dest++) = g_ltab[t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]+fix_light(i)];		
            u+=du; v+=dv; i+=di;
 	        }
-      } else if (x<0) return TRUE; // punt this tmap 
+      } else if (x<0) return true; // punt this tmap
       
       u=(tli->left.u+=tli->left.du);
       tli->right.u+=tli->right.du;
@@ -127,7 +127,7 @@ int Handle_Lit_Lin_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
       dx=tli->right.x-tli->left.x;
 			start_pdest += gr_row;
    } while (--(tli->n) > 0);
-   return FALSE; // tmap OK 
+   return false; // tmap OK
  }														
 
 
@@ -177,7 +177,7 @@ int Handle_TLit_Lin_Loop2_C(fix u, fix v, fix du, fix dv, fix dx,
              
            p_dest++; u+=du; v+=dv; i+=di;
           }
-      } else if (x<0) return TRUE; // punt this tmap
+      } else if (x<0) return true; // punt this tmap
       
       u=(tli->left.u+=tli->left.du);
       tli->right.u+=tli->right.du;
@@ -197,7 +197,7 @@ int Handle_TLit_Lin_Loop2_C(fix u, fix v, fix du, fix dv, fix dx,
 	tli->left.x = lx;
 	tli->right.x = rx;
 
-   return FALSE; // tmap OK 
+   return false; // tmap OK
  }
 
 
@@ -301,7 +301,7 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
             }
             break;
           }
-      } else if (d<0) return TRUE; /* punt this tmap */
+      } else if (d<0) return true; /* punt this tmap */
       
       u=(tli->left.u+=tli->left.du);
       tli->right.u+=tli->right.du;
@@ -318,7 +318,7 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
       tli->y++;
 			start_pdest += gr_row;
    } while (--(tli->n) > 0);
-   return FALSE; /* tmap OK */
+   return false; /* tmap OK */
 
 // handle 68K loops
 #else
@@ -504,7 +504,7 @@ asm int Handle_Lit_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 
 @Done:
   movem.l	(sp)+,d0-d7/a0-a6
-	moveq		#FALSE,d0
+	moveq		#false,d0
   rts
 
 @Err: 	

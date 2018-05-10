@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 static MemStack *temp_mem_stack=NULL;
 
 /* TRUE if buffer is allocated by temp_mem_init. */
-static uchar stack_dynamic=FALSE;
+static uchar stack_dynamic=false;
 
 MemStack *temp_mem_get_stack(void)
 {
@@ -62,7 +62,7 @@ int temp_mem_init(MemStack *ms)
          Warning(("TempMemInit: can't allocate dynamic buffer.\n"));
          return -1;
       }
-      stack_dynamic=TRUE;
+      stack_dynamic=true;
       ms->baseptr=(void *)(ms+1);
       ms->sz=TEMP_BUF_SIZE;
       MemStackInit(ms);
@@ -79,12 +79,12 @@ int temp_mem_init(MemStack *ms)
    if the buffer was allocated dynamically, it's freed. */
 int temp_mem_uninit(void)
 {
-   if (stack_dynamic==TRUE) {
+   if (stack_dynamic==true) {
 //      Spew(DSRC_LG_Tempmem,
 //           ("TempMemUninit: freeing dynamically allocated stack\n"));
       free(temp_mem_stack);
 //      free((Ptr)temp_mem_stack);
-      stack_dynamic=FALSE;
+      stack_dynamic=false;
    }
    temp_mem_stack=NULL;
    return 0;
@@ -108,7 +108,7 @@ void *temp_realloc(void *p,long n)
 /* free temporary buffer pointed to by p. */
 int temp_free(void *p)
 {
-   return MemStackFree(temp_mem_stack,p)==FALSE;
+   return MemStackFree(temp_mem_stack,p)==false;
 }
 
 #ifdef DBG_ON

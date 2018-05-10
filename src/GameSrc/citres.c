@@ -23,11 +23,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/07 13:22:58 $
  *
  */
+
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "citres.h"
 #include "criterr.h"
 #include "gr2ss.h"
+#include "res.h"
 #include "statics.h"
 
 // Internal Prototypes
@@ -73,7 +78,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
 {
    Ref rid;
    FrameDesc *f;
-   uchar alloced_fdesc = FALSE;
+   uchar alloced_fdesc = false;
    extern int memcount;
 
    if(!RefIndexValid(rt,i))
@@ -88,7 +93,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
    {
 //      Warning(("damn, we have to malloc...need %d, buffer = %d\n",RefSize(rt,i),FRAME_BUFFER_SIZE));
       f = (FrameDesc *)malloc(RefSize(rt,i));
-      alloced_fdesc = TRUE;
+      alloced_fdesc = true;
    }
    else
    {
@@ -132,7 +137,7 @@ if (bmp == NULL)
 
 errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar transp, LGRect *anchor, uchar *p)
 {
-   return master_load_bitmap_from_res(bmp,id_num,i,rt,FALSE,anchor,p);
+   return master_load_bitmap_from_res(bmp,id_num,i,rt,false,anchor,p);
 }
 
 
@@ -144,7 +149,7 @@ errtype load_res_bitmap(grs_bitmap* bmp, Ref rid,uchar alloc)
    //printf("load_res_bitmap %x : %x\n", REFID(rid), REFINDEX(rid));
 
    RefTable *rt = ResReadRefTable(REFID(rid));
-   retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, FALSE, NULL,(alloc) ? NULL : bmp->bits);
+   retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, false, NULL,(alloc) ? NULL : bmp->bits);
 
    ResFreeRefTable(rt);
 
@@ -155,7 +160,7 @@ errtype extract_temp_res_bitmap(grs_bitmap* bmp, Ref rid)
 {
    errtype retval;
    RefTable *rt = ResReadRefTable(REFID(rid));
-   retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, TRUE, NULL,NULL);
+   retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, true, NULL,NULL);
    ResFreeRefTable(rt);
    return(retval);
 }
@@ -188,7 +193,7 @@ out:
 
 errtype simple_load_res_bitmap(grs_bitmap* bmp, Ref rid)
 {
-   return load_res_bitmap(bmp,rid,TRUE);
+   return load_res_bitmap(bmp,rid,true);
 }
 
 #pragma mark -
@@ -210,10 +215,10 @@ errtype load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar allo
    ss_set_hack_mode(2,&temp);
    
    gr2ss_override = OVERRIDE_ALL;
-   master_load_bitmap_from_res(&temp_bmp, REFID(rid), REFINDEX(rid), rt, FALSE, &anchor,NULL);
+   master_load_bitmap_from_res(&temp_bmp, REFID(rid), REFINDEX(rid), rt, false, &anchor,NULL);
    w = temp_bmp.w;
    h = temp_bmp.h;
-   ss_point_convert(&w,&h,FALSE);
+   ss_point_convert(&w,&h,false);
    if (alloc)
       bits = (uchar *)malloc(sizeof(char)*w*h);
    else
@@ -238,7 +243,7 @@ errtype load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar allo
    ss_set_hack_mode(0,&temp);
    gr2ss_override = old_over;
 #else
-   retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, FALSE, &anchor,(alloc) ? NULL : bmp->bits);
+   retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, false, &anchor,(alloc) ? NULL : bmp->bits);
    ResFreeRefTable(rt);
    retval = uiMakeBitmapCursor(c,bmp,anchor.ul);
 #endif
@@ -247,7 +252,7 @@ errtype load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar allo
 
 errtype simple_load_res_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid)
 {
-   return load_res_bitmap_cursor(c,bmp,rid,TRUE);
+   return load_res_bitmap_cursor(c,bmp,rid,true);
 }
 
 errtype load_hires_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar alloc)
@@ -256,7 +261,7 @@ errtype load_hires_bitmap_cursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar al
 	LGRect anchor;
 	
 	RefTable *rt = ResReadRefTable(REFID(rid));
-	retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, FALSE, &anchor,
+	retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, false, &anchor,
 															   (alloc) ? NULL : bmp->bits);
 	ResFreeRefTable(rt);
 	retval = uiMakeBitmapCursor(c,bmp,anchor.ul);

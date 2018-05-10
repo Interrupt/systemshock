@@ -55,7 +55,7 @@ errtype update_shodometer(short new_val, uchar game_stuff)
    QUESTVAR_SET(SHODAN_QV, new_val);
    if (game_stuff)
    {
-      mfd_notify_func(MFD_PLOTWARE_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+      mfd_notify_func(MFD_PLOTWARE_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
       do_shodan_triggers();
       hud_set_time(HUD_SHODOMETER, HUD_SHODOMETER_TICKS);
    }

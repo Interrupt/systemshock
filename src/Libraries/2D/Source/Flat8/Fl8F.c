@@ -213,7 +213,7 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
                p_dest++; u+=du; v+=dv;
             }
          }
-      } else if (d<0) return TRUE; /* punt this tmap */
+      } else if (d<0) return true; /* punt this tmap */
       
       tli->w+=tli->dw;
 
@@ -239,7 +239,7 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
       dx=tli->right.x-tli->left.x;
       tli->y++;
    } while (--(tli->n) > 0);
-   return FALSE; /* tmap OK */
+   return false; /* tmap OK */
 // handle 68K loops
 #else
 	return(Handle_Floor_68K_Loop(u,v,du,dv,dx,tli,grd_bm.bits,t_bits,grd_bm.row));
@@ -393,11 +393,11 @@ asm int Handle_Floor_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 
 @Done:
   movem.l	(sp)+,d0-d7/a0-a6
-	moveq		#FALSE,d0
+	moveq		#false,d0
   rts
 
 @Err: 	
-	moveq		#TRUE,d0
+	moveq		#true,d0
   movem.l	(sp)+,d0-d7/a0-a6
   rts
  }

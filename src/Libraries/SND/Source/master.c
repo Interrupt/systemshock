@@ -78,7 +78,7 @@ void snd_shutdown(void)
 {
 	for (int i=0; i < _snd_smp_cnt; i++)
 	{
-		SndDisposeChannel(_snd_smp_prm[i].sndChan, TRUE);
+		SndDisposeChannel(_snd_smp_prm[i].sndChan, true);
 		free(_snd_smp_prm[i].sndChan);
 	}
 	
@@ -102,8 +102,8 @@ pascal void HandleSndCallBack(SndChannelPtr chan, SndCommand *cmd)
 	{
 		if (p->loops > 1) p->loops--;
 
-		SndPlay(chan, (SndListHandle)p->sample, TRUE);		// Play the sound again.
-		SndDoCommand(chan, cmd, FALSE);					// Call us back again.
+		SndPlay(chan, (SndListHandle)p->sample, true);		// Play the sound again.
+		SndDoCommand(chan, cmd, false);					// Call us back again.
 	}
 	else
 	{

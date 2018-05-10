@@ -200,7 +200,7 @@ uchar cursor_get_callback(LGRegion* reg, LGRect* rect, void *vp)
 {
 	 cstate *s = (cstate *)vp;
    cursor_stack* cs = (cursor_stack*)(reg->cursors);
-   uchar anal = FALSE;
+   uchar anal = false;
    //DBG(DSRC_UI_Anal, { anal = TRUE;});
    //if (anal) SPEW_ANAL(DSRC_UI_Cursor_Stack,("cursor_get_callback(%x,%x,%x)\n",reg,rect,s)); 
    if (cs == NULL) *(s->out) = NULL;
@@ -438,14 +438,14 @@ errtype ui_shutdown_cursors(void)
 uchar ui_set_current_cursor(LGPoint pos)
 {
    cstate s;
-   uchar result = FALSE;
+   uchar result = false;
 
-   ui_mouse_do_conversion(&(pos.x),&(pos.y),TRUE);
+   ui_mouse_do_conversion(&(pos.x),&(pos.y),true);
    // Spew(DSRC_UI_Cursors,("ui_set_current_cursor(<%d,%d>)\n",pos.x,pos.y));
    if (uiCurrentSlab == NULL)
    {
       //SPEW_ANAL(DSRC_UI_Cursors,("ui_set_current_cursor(): no current slab\n"));
-      result = FALSE;
+      result = false;
       goto out;
    }
    if (uiCurrentSlab->cstack.fullness > 1)
@@ -458,7 +458,7 @@ uchar ui_set_current_cursor(LGPoint pos)
    if (RootCursorRegion == NULL)
    {
       //SPEW_ANAL(DSRC_UI_Cursors,("ui_set_current_cursor(): no root region\n"));
-      result = FALSE;
+      result = false;
       goto out;
    }
    s.out = &CurrentCursor;
@@ -653,12 +653,12 @@ errtype uiHideMouse(LGRect* r)
    if (!hide)
    {
       mr.ul = LastCursorPos;
-      ui_mouse_do_conversion(&(mr.ul.x),&(mr.ul.y),TRUE);
+      ui_mouse_do_conversion(&(mr.ul.x),&(mr.ul.y),true);
       if (LastCursor != NULL)
       {
          mr.lr.x = LastCursorPos.x + LastCursor->w;
          mr.lr.y = LastCursorPos.y + LastCursor->h;
-         ui_mouse_do_conversion(&mr.lr.x,&mr.lr.y,TRUE);
+         ui_mouse_do_conversion(&mr.lr.x,&mr.lr.y,true);
       }
       else mr.lr = mr.ul;
       curhiderect++;
@@ -704,12 +704,12 @@ errtype uiShowMouse(LGRect* r)
    if (!show)
    {
       mr.ul = LastCursorPos;
-      ui_mouse_do_conversion(&(mr.ul.x),&(mr.ul.y),TRUE);
+      ui_mouse_do_conversion(&(mr.ul.x),&(mr.ul.y),true);
       if (LastCursor != NULL)
       {
          mr.lr.x = LastCursorPos.x + LastCursor->w;
          mr.lr.y = LastCursorPos.y + LastCursor->h;
-         ui_mouse_do_conversion(&mr.lr.x,&mr.lr.y,TRUE);
+         ui_mouse_do_conversion(&mr.lr.x,&mr.lr.y,true);
       }
       else mr.lr = mr.ul;
       show = RECT_TEST_SECT(r,&mr);

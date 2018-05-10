@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
 */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -85,7 +86,7 @@ static char *tableNames[] = {
 	char infile[128];
 	char buff[128];
 
-	dumpChunkHdrs = TRUE;
+	dumpChunkHdrs = true;
 
 	printf ("File to dump: ");
 	fgets (infile, sizeof(infile), stdin);
@@ -151,7 +152,7 @@ static char *tableNames[] = {
 		pmc = (MovieChunk *)malloc(mh.sizeChunks);
 		fread(pmc, mh.sizeChunks, 1, fpi);
       	pmcBase = pmc;
-		while (TRUE)
+		while (true)
 		{
 			uchar	s1, s2;
 			

@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
+
 #include "gamescr.h"
 #include "mfdint.h"
 #include "mfdext.h"
@@ -131,11 +133,11 @@ void mfd_fixture_expose(MFD* mfd, ubyte control)
          else get_object_long_name(ID2TRIP(player_struct.panel_ref),buf,sizeof(buf));
          gr_set_font((grs_font*)ResLock(MFD_FONT));
          wrap_text(buf,TEXT_LABEL_W);
-         mfd_string_wrap = FALSE;
+         mfd_string_wrap = false;
          gr_string_size(buf,&w,&h);
          w = (TEXT_LABEL_W - w)/2;
          h = (TEXT_LABEL_H - h)/2;
-         mfd_draw_string(buf,TEXT_LABEL_X + w,TEXT_LABEL_Y + h,TEXT_COLOR,TRUE);
+         mfd_draw_string(buf,TEXT_LABEL_X + w,TEXT_LABEL_Y + h,TEXT_COLOR,true);
          ResUnlock(MFD_FONT);
          fd->last_obj = player_struct.panel_ref;
          mfd_string_wrap = wrap;
@@ -186,9 +188,9 @@ uchar mfd_fixture_handler(MFD* m, uiEvent* e)
 	pos.y -= m->rect.ul.y;
 	if (me->action & MOUSE_LDOWN && RECT_TEST_PT(&brect,pos))
 	{
-		object_use(player_struct.panel_ref, TRUE, OBJ_NULL);
-		mfd_notify_func(MFD_FIXTURE_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
-		return TRUE;
+		object_use(player_struct.panel_ref, true, OBJ_NULL);
+		mfd_notify_func(MFD_FIXTURE_FUNC, MFD_INFO_SLOT, true, MFD_ACTIVE, true);
+		return true;
 	}
-	return FALSE;
+	return false;
 }

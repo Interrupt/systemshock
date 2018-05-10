@@ -65,9 +65,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __FRCLIP_SRC
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "fix.h"
 #include "frintern.h"
 #include "frspans.h"
 #include "frtables.h"
@@ -179,7 +181,7 @@ void store_x_span(int y, int lx, int rx)
    {
       LGPoint p;
       for (p.x=lx,p.y=y; p.x<=rx; p.x++)
-         TileMapSetHighlight(NULL,p,0,TRUE);
+         TileMapSetHighlight(NULL,p,0,true);
    }
 #endif // _FR_TILEMAP
 }
@@ -561,7 +563,7 @@ static uchar *_sclip_mask, *_sclip_door;
 uchar _fr_move_ccv_x(struct _nVecWork *nvp)
 {
    int tt, oflow;
-   uchar move_in_y=TRUE, move_in_x=TRUE;
+   uchar move_in_y=true, move_in_x=true;
 
    // should be saving off texture cuts some day!!
    ccv->loc[1]+=nvp->stepy;
@@ -569,7 +571,7 @@ uchar _fr_move_ccv_x(struct _nVecWork *nvp)
    if (fr_obj_block(ccv->mptr,_sclip_door,(int *)ccv->loc)||
        ((_face_curedge[tt<<2]==0xff)||(me_clearsolid(ccv->mptr)&_face_curmask)))
    {  // these really have to get wacky and learn about partial obscuration
-      move_in_x=move_in_y=FALSE;
+      move_in_x=move_in_y=false;
       _fr_sdbg(VECSPEW,mprintf("move_x(top): hit our tile\n"));
    }
    else
@@ -580,7 +582,7 @@ uchar _fr_move_ccv_x(struct _nVecWork *nvp)
       tt=me_tiletype(ccv->mptr);
       if ((_face_nxtedge[tt<<2]==0xff)||(me_clearsolid(ccv->mptr)&_face_nxtmask)||out_of_cone(ccv->mptr))
       {  // these really have to get wacky and learn about partial obscuration
-         move_in_x=move_in_y=FALSE;
+         move_in_x=move_in_y=false;
 	      ccv->mptr-=nvp->mapstep[0];
          _fr_sdbg(VECSPEW,mprintf("move_x top: hit other tile\n"));
       }   
@@ -600,7 +602,7 @@ uchar _fr_move_ccv_x(struct _nVecWork *nvp)
       oflow+=nvp->stepy;
       if (oflow&0xffff0000)
       {  // perhaps should get more elegant, but i mean really, how could it?
-         move_in_x=FALSE; move_in_y=TRUE;
+         move_in_x=false; move_in_y=true;
          _fr_sdbg(VECSPEW,mprintf("move_x(while): reached y\n"));
       }
       else
@@ -612,7 +614,7 @@ uchar _fr_move_ccv_x(struct _nVecWork *nvp)
          if (fr_obj_block(ccv->mptr,_sclip_door,(int *)ccv->loc)||
              ((_face_curedge[tt<<2]==0xff)||(me_clearsolid(ccv->mptr)&_face_curmask)))
          {  // these really have to get wacky and learn about partial obscuration
-	         move_in_x=move_in_y=FALSE;
+	         move_in_x=move_in_y=false;
             _fr_sdbg(VECSPEW,mprintf("move_x(while): hit our tile\n"));
          }
 	      else
@@ -623,7 +625,7 @@ uchar _fr_move_ccv_x(struct _nVecWork *nvp)
 		      tt=me_tiletype(ccv->mptr);
             if ((_face_nxtedge[tt<<2]==0xff)||(me_clearsolid(ccv->mptr)&_face_nxtmask)||out_of_cone(ccv->mptr))
             {  // these really have to get wacky and learn about partial obscuration
-	            move_in_x=move_in_y=FALSE; 
+	            move_in_x=move_in_y=false;
 	   	      ccv->mptr-=nvp->mapstep[0];
                _fr_sdbg(VECSPEW,mprintf("move_x(while): hit other tile\n"));
 	         }
@@ -653,16 +655,16 @@ uchar _fr_move_ccv_x(struct _nVecWork *nvp)
 
 void _fr_move_along_dcode(int dircode)
 {
-   uchar move_in_y=TRUE;
+   uchar move_in_y=true;
    struct _nVecWork *nvp=&_nVP[dircode];
 
    if (dircode&nVW_XDIR) nvp->remx=_fixp1-1-fix_frac(ccv->loc[0]);
    else                  nvp->remx=-fix_frac(ccv->loc[0]);
 
    if (ccv->deltas[1]==0)                 // no y delta
-	 {	nvp->move_x=TRUE; nvp->stepy=0; }   // lets do the flat line thing
+	 {	nvp->move_x=true; nvp->stepy=0; }   // lets do the flat line thing
    else if (ccv->deltas[0]==0)            // just do a single y step
-      nvp->move_x=FALSE;                  // no need to set step or anything
+      nvp->move_x=false;                  // no need to set step or anything
    else                                   // replace with wacky table neg?
    {                                      // get the signs right, as it were
       if (nvp->remx)
@@ -673,7 +675,7 @@ void _fr_move_along_dcode(int dircode)
  		   case nVW_PXNY: nvp->move_x=(-nvp->remx*ccv->deltas[1] < (fix_frac(ccv->loc[1]))*ccv->deltas[0]); break;          // flip yd, sign
 		   case nVW_PXPY: nvp->move_x=( nvp->remx*ccv->deltas[1] < (_fixp1-1-fix_frac(ccv->loc[1]))*ccv->deltas[0]); break;    // all things good   
 	      }
-      else nvp->move_x=TRUE;
+      else nvp->move_x=true;
       if (nvp->move_x)
 	      nvp->stepy=fix_mul_div(nvp->remx,ccv->deltas[1],ccv->deltas[0]);
    }
@@ -881,8 +883,8 @@ uchar _fr_move_new_dels(FrClipVec *lv, FrClipVec *rv, uchar northward)
    store_x_span(fix_int(lv->loc[1]),fix_int(lm),fix_int(rm));
    _fr_sdbg(VECSPEW, mprintf("new_dels: setting span %d to %x,%x - o: %x %x c: x %x %x y %x %x m %x\n",span_count(fix_int(lv->loc[1])),lm,rm,lv->oldx,rv->oldx,lv->loc[0],rv->loc[0],lv->loc[1],rv->loc[1],lv->mptr));
 
-   if (_fr_skip_solid_right_n_back(lv,rv->loc[0],new_del_mapstep[northward])) return FALSE;
-   if (_fr_skip_solid_left_n_back(rv,lv->loc[0],new_del_mapstep[northward])) { _fr_sdbg(SANITY,mprintf("new_dels ERR: closure from right\n")); return FALSE; }
+   if (_fr_skip_solid_right_n_back(lv,rv->loc[0],new_del_mapstep[northward])) return false;
+   if (_fr_skip_solid_left_n_back(rv,lv->loc[0],new_del_mapstep[northward])) { _fr_sdbg(SANITY,mprintf("new_dels ERR: closure from right\n")); return false; }
 
    lv->loc[1]+=rmmod[northward+1];  // if we are keeping the vectors, move their y coordinates appropriately
    rv->loc[1]+=rmmod[northward+1];
@@ -894,7 +896,7 @@ uchar _fr_move_new_dels(FrClipVec *lv, FrClipVec *rv, uchar northward)
    lm=lv->flags&FRVECSELF;   // now move everyones map coordinates
    rm=rv->nxtv;
    for (;lm!=rm;lm=(allclipv+lm)->nxtv) (allclipv+lm)->mptr+=new_del_mapstep[northward];
-   return TRUE;
+   return true;
 }
 
 // remembering you fallen into my arms
@@ -957,12 +959,12 @@ uchar _fr_setup_first_pair(uchar headnorth)
 #else
    if (headnorth)
    {
-      if (span_lines[3]<0) return FALSE;
+      if (span_lines[3]<0) return false;
       ray[0]=span_lines[2]; ray[1]=span_lines[3];
    }
    else
    {
-      if (span_lines[1]>0) return FALSE;
+      if (span_lines[1]>0) return false;
       ray[0]=span_lines[0]; ray[1]=span_lines[1];
    }
    org[2]=coor(EYE_Z);        // these are constant
@@ -1005,7 +1007,7 @@ uchar _fr_setup_first_pair(uchar headnorth)
       _face_botmask=FMK_INT_NW;
    }
    fr_clip_start(headnorth);
-   return TRUE;
+   return true;
 }
 
 #if _fr_defdbg(VECTRACK)

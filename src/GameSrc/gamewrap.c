@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __GAMEWRAP_SRC
 
 #include <string.h>
+#include <slcurses.h>
 
 #include "Shock.h"
 #include "ShockDialogs.h"
@@ -35,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybmem.h"
 #include "cybstrng.h"
 #include "dynmem.h"
+#include "edms.h"
 #include "faketime.h"
 #include "gamewrap.h"
 #include "hkeyfunc.h"
@@ -91,7 +93,7 @@ errtype interpret_qvars(void);
 
 #define OldResIdFromLevel(level) (OLD_SAVE_GAME_ID_BASE+(level*2)+2)
 
-errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile)
+errtype copy_file(FSSpec *srcFile, FSSpec *destFile, bool saveGameFile)
 {
 	OSErr	err;
 	FInfo		fi;
@@ -173,7 +175,7 @@ void startup_game(uchar visible)
    {
       mfd_force_update();
       side_icon_expose_all();
-      status_vitals_update(TRUE);
+      status_vitals_update(true);
       inventory_page = 0;
       inv_last_page = INV_BLANK_PAGE;
    }
@@ -223,7 +225,7 @@ errtype save_game(FSSpec *saveSpec)
 	
 	// Open the current game file to save some more resources into it.
 	FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
-	filenum = ResEditFile(&currSpec, FALSE);
+	filenum = ResEditFile(&currSpec, false);
 	if (filenum < 0)
 	{
 		DebugString("Couldn't open Current Game\n");
@@ -271,7 +273,7 @@ errtype save_game(FSSpec *saveSpec)
 	AdvanceProgress();
 	
 	// Save current level
-	retval = write_level_to_disk(ResIdFromLevel(player_struct.level), TRUE);
+	retval = write_level_to_disk(ResIdFromLevel(player_struct.level), true);
 	if (retval)
 	{
 		DebugString("Return value from write_level_to_disk is non-zero!\n");//
@@ -279,7 +281,7 @@ errtype save_game(FSSpec *saveSpec)
 	}
 
 	// Copy current game out to save game slot
-	if (copy_file(&currSpec, saveSpec, TRUE) != OK)
+	if (copy_file(&currSpec, saveSpec, true) != OK)
 	{
 		// Put up some alert here.
 		DebugString("No good copy, dude!\n");
@@ -363,14 +365,14 @@ errtype load_game(FSSpec *loadSpec)
 {
    int 			filenum;
    ObjID 		old_plr;
-   uchar 		bad_save = FALSE;
+   uchar 		bad_save = false;
    char 		orig_lvl;
    FSSpec	currSpec;
    extern errtype change_detail_level(byte new_level);
    extern void player_set_eye_fixang(int ang);
    extern uint dynmem_mask;
 
-   closedown_game(TRUE);
+   closedown_game(true);
 //KLC - don't do this here   stop_music();
 
 // KLC - user will not be able to open current game file in Mac version, so skip this check.
@@ -382,7 +384,7 @@ errtype load_game(FSSpec *loadSpec)
 	 FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
       
       // Copy game to load to the current file game.
-      retval = copy_file(loadSpec, &currSpec, FALSE);
+      retval = copy_file(loadSpec, &currSpec, false);
       if (retval != OK)
       {
 		// bring up an alert here??
@@ -403,9 +405,9 @@ errtype load_game(FSSpec *loadSpec)
    player_struct.rep = old_plr;
    player_set_eye_fixang(player_struct.eye_pos);
    if (!bad_save)
-      obj_move_to(PLAYER_OBJ, &(player_struct.realspace_loc), FALSE);
+      obj_move_to(PLAYER_OBJ, &(player_struct.realspace_loc), false);
    if (load_game_schedules() != OK)
-      bad_save = TRUE;
+      bad_save = true;
    ResCloseFile(filenum);
    if (orig_lvl == player_struct.level)
    {
@@ -413,18 +415,18 @@ errtype load_game(FSSpec *loadSpec)
       dynmem_mask = DYNMEM_PARTIAL;
    }
    load_level_from_file(player_struct.level);
-   obj_load_art(FALSE);							//KLC - added here (removed from load_level_data)
+   obj_load_art(false);							//KLC - added here (removed from load_level_data)
 //KLC   string_message_info(REF_STR_LoadGameLoaded);
    dynmem_mask = DYNMEM_ALL;
    chg_set_flg(_current_3d_flag);
    old_ticks = *tmd_ticks;
    interpret_qvars();
-   startup_game(FALSE);
+   startup_game(false);
 
 //KLC - do following instead     recompute_music_level(QUESTVAR_GET(MUSIC_VOLUME_QVAR));
 	if (music_on)
 	{
-		mlimbs_on = TRUE;
+		mlimbs_on = true;
 		mlimbs_AI_init();
 		mai_intro();																		//KLC - added here
 		load_score_for_location(PLAYER_BIN_X, PLAYER_BIN_Y);		//KLC - added here
@@ -453,7 +455,7 @@ errtype load_level_from_file(int level_num)
       printf(" loaded!\n");
 		player_struct.level = level_num;
 		
-		compute_shodometer_value(FALSE);
+		compute_shodometer_value(false);
 
 		// if this is the first time the level is loaded, compute the inital shodan security level
 		if (player_struct.initial_shodan_vals[player_struct.level] == -1)
@@ -550,7 +552,7 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    printf("--- Starting Load level: %i ---\n\n", player_struct.level);
    load_level_from_file(player_struct.level);
 
-   obj_load_art(FALSE);							//KLC - added here (removed from load_level_data)
+   obj_load_art(false);							//KLC - added here (removed from load_level_data)
    amap_reset();
 
    printf("player_create_initial\n");
@@ -578,7 +580,7 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
 
 	if (music_on)
 	{
-		mlimbs_on = TRUE;
+		mlimbs_on = true;
 		mlimbs_AI_init();
 		mai_intro();																		//KLC - added here
 		load_score_for_location(PLAYER_BIN_X, PLAYER_BIN_Y);		//KLC - added here
@@ -601,11 +603,11 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    //   toggle_olh_func(0, 0, NULL);
    
    // turn on help overlay. 
-   olh_overlay_on = TRUE;
+   olh_overlay_on = true;
 
    // Plot timers
 
-   return(FALSE);
+   return(false);
 }
 
 errtype write_level_to_disk(int idnum, uchar flush_mem)
@@ -617,5 +619,5 @@ errtype write_level_to_disk(int idnum, uchar flush_mem)
 
 	FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
 	
-	return(save_current_map(&currSpec, idnum, flush_mem,TRUE));
+	return(save_current_map(&currSpec, idnum, flush_mem,true));
 }

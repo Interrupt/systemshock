@@ -182,6 +182,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef __FLAT8_H
 #define __FLAT8_H
+
+#include <stdbool.h>
+
 #include "grs.h"
 #include "plytyp.h"
 #include "tmapint.h"

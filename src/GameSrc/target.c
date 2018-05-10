@@ -25,11 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "target.h"
 #include "colors.h"
+#include "event.h"
 #include "newmfd.h"
 #include "mfdext.h"
 #include "mfddims.h"
@@ -139,7 +141,7 @@ void mfd_target_expose(MFD *m, ubyte control)
       target = OBJ_SPEC_NULL;
       player_struct.curr_target = OBJ_NULL;
    }
-   if (player_struct.curr_target != LAST_TARGET(m->id)) full = TRUE;
+   if (player_struct.curr_target != LAST_TARGET(m->id)) full = true;
 
    if (control & MFD_EXPOSE) {
 
@@ -164,10 +166,10 @@ void mfd_target_expose(MFD *m, ubyte control)
          gr_set_font((grs_font*)ResLock(TARGET_FONT));
          get_string((version > 0) ? REF_STR_NoTarget : REF_STR_NoTargetWare,buf,sizeof(buf));
          wrap_text(buf,MFD_VIEW_WID);
-         mfd_string_wrap = FALSE;
+         mfd_string_wrap = false;
          gr_string_size(buf,&w,&h);
-         mfd_full_draw_string(buf, (MFD_VIEW_WID - w)/2, MFD_VIEW_HGT/2-((version>0)?h:(h/2)), TEXT_COLOR, TARGET_FONT, TRUE, TRUE);
-         mfd_string_wrap = TRUE;
+         mfd_full_draw_string(buf, (MFD_VIEW_WID - w)/2, MFD_VIEW_HGT/2-((version>0)?h:(h/2)), TEXT_COLOR, TARGET_FONT, true, true);
+         mfd_string_wrap = true;
          unwrap_text(buf);
          if(version>0) {
 #ifdef REF_STR_NumKills
@@ -177,10 +179,10 @@ void mfd_target_expose(MFD *m, ubyte control)
 #endif
             sprintf(buf + strlen(buf), "%d", player_struct.num_victories);
             //numtostring(player_struct.num_victories,buf+strlen(buf));
-            mfd_string_wrap = FALSE;
+            mfd_string_wrap = false;
             gr_string_size(buf,&w,&h);
-            mfd_full_draw_string(buf, (MFD_VIEW_WID - w)/2, MFD_VIEW_HGT/2, TEXT_COLOR, TARGET_FONT, TRUE, TRUE);
-            mfd_string_wrap = TRUE;
+            mfd_full_draw_string(buf, (MFD_VIEW_WID - w)/2, MFD_VIEW_HGT/2, TEXT_COLOR, TARGET_FONT, true, true);
+            mfd_string_wrap = true;
             unwrap_text(buf);
          }
          if(version>0) {
@@ -252,13 +254,13 @@ void mfd_target_expose(MFD *m, ubyte control)
                right_justify_num(small_buf, 2);
                strcpy(buf+len+4, small_buf);
             }
-            siz = mfd_full_draw_string(buf, LEFT_MARGIN, y, TEXT_COLOR, TARGET_FONT, TRUE, TRUE);
+            siz = mfd_full_draw_string(buf, LEFT_MARGIN, y, TEXT_COLOR, TARGET_FONT, true, true);
             y += siz.y;
 
             // draw target name. 
             get_object_long_name(triple,buf,TBUFSIZ);
             string_replace_char(buf,'\n',CHAR_SOFTSP);
-            siz = mfd_full_draw_string(buf, LEFT_MARGIN, y, TEXT_COLOR, TARGET_FONT, TRUE, TRUE);
+            siz = mfd_full_draw_string(buf, LEFT_MARGIN, y, TEXT_COLOR, TARGET_FONT, true, true);
             y += siz.y;
             if(version>0) {
                // draw buttons
@@ -289,14 +291,14 @@ void mfd_target_expose(MFD *m, ubyte control)
             gr_set_fcolor(TEXT_COLOR);
             gr_set_font((grs_font*)ResLock(TARGET_FONT));
 //            if (full)
-               siz = mfd_full_draw_string(get_temp_string(REF_STR_TargRange), LEFT_MARGIN, y, TEXT_COLOR, TARGET_FONT, TRUE, TRUE);
+               siz = mfd_full_draw_string(get_temp_string(REF_STR_TargRange), LEFT_MARGIN, y, TEXT_COLOR, TARGET_FONT, true, true);
 //            else
 //               gr_string_size(get_temp_string(REF_STR_TargRange),&siz.x,&siz.y);
             lg_sprintf(rstr,"%2.2fm",dist);
             // lx used as dummy variable here, before we really need it.
             gr_string_size(rstr,&x,&lx);
             x=LEFT_MARGIN+siz.x+RNG_FIELD-x;
-            draw_shadowed_string(rstr,x,y,TRUE);
+            draw_shadowed_string(rstr,x,y,true);
             lx = LEFT_MARGIN + siz.x;
             if (lx < x)
             {
@@ -305,7 +307,7 @@ void mfd_target_expose(MFD *m, ubyte control)
                mfd_partial_clear(&r);
             }
             mfd_add_rect(x,y,TEXT_RIGHT_X,y+siz.y);
-            mfd_notify_func(MFD_TARGET_FUNC,MFD_TARGET_SLOT,FALSE,MFD_ACTIVE,FALSE);
+            mfd_notify_func(MFD_TARGET_FUNC,MFD_TARGET_SLOT,false,MFD_ACTIVE,false);
             ResUnlock(TARGET_FONT);
          }         
 
@@ -326,7 +328,7 @@ void mfd_target_expose(MFD *m, ubyte control)
 
                get_string(REF_STR_CritMoods + mood,buf,TBUFSIZ);
                if (mood == AI_MOOD_HOSTILE) clr = RED_BASE+1;
-               siz = mfd_full_draw_string(buf, LEFT_MARGIN, MOOD_Y, clr, TARGET_FONT, TRUE, TRUE);
+               siz = mfd_full_draw_string(buf, LEFT_MARGIN, MOOD_Y, clr, TARGET_FONT, true, true);
                mfd_add_rect(LEFT_MARGIN,MOOD_Y,MFD_VIEW_WID,MOOD_Y+siz.y);
                LAST_MOOD(m->id) = mood;
             }
@@ -345,7 +347,7 @@ void mfd_target_expose(MFD *m, ubyte control)
 
 //             siz = mfd_draw_string(get_temp_string(REF_STR_Condition), LEFT_MARGIN, y, TEXT_COLOR, TRUE);
 //             y += siz.y + 1;
-               siz = mfd_full_draw_string(buf, LEFT_MARGIN, y, TEXT_COLOR, TARGET_FONT, TRUE, TRUE);
+               siz = mfd_full_draw_string(buf, LEFT_MARGIN, y, TEXT_COLOR, TARGET_FONT, true, true);
                y += siz.y + 1;
                LAST_STATUS(m->id) = dmg;
             }
@@ -380,9 +382,9 @@ void select_current_target(ObjID id, uchar force_mfd)
    if (objs[id].info.current_hp <= 0)
       return;
 
-   hudobj_set_id(player_struct.curr_target,FALSE); 
+   hudobj_set_id(player_struct.curr_target,false);
    player_struct.curr_target = id; 
-   hudobj_set_id(id,TRUE);
+   hudobj_set_id(id,true);
    targ_frame = NUM_TARG_FRAMES;
    if (force_mfd)
    {
@@ -394,7 +396,7 @@ void select_current_target(ObjID id, uchar force_mfd)
       if(m!=NUM_MFDS)
          full_visible |= visible_mask(m);
    }
-   mfd_notify_func(MFD_TARGET_FUNC,MFD_TARGET_SLOT,FALSE,MFD_ACTIVE,TRUE);
+   mfd_notify_func(MFD_TARGET_FUNC,MFD_TARGET_SLOT,false,MFD_ACTIVE,true);
 #ifdef ANNOY_PLAYERS_TRYING_TO_TARGET_THINGS
    change_current(objs[id].ref);
 #endif
@@ -438,9 +440,9 @@ uchar iter_eligible_targets(ObjSpecID *sid)
    	if (ray_cast_objects(PLAYER_OBJ, oid, VISIBLE_MASS, VISIBLE_SIZE,
          VISIBLE_SPEED, fix_make(ELIGIBLE_TARGET_RANGE,0)) != oid)
          continue;
-      return TRUE;
+      return true;
    }
-   return FALSE;
+   return false;
 
 }
 
@@ -471,7 +473,7 @@ void select_closest_target(void)
          bestdist = dsq;
       }
    }
-   select_current_target(bestid,TRUE);
+   select_current_target(bestid,true);
    if (player_struct.curr_target == OBJ_NULL)
       string_message_info(REF_STR_NoTargetsAround);
 }
@@ -503,7 +505,7 @@ void toggle_current_target_backwards(void)
          bestid = oid;
       }
    }
-   select_current_target(bestid,TRUE);
+   select_current_target(bestid,true);
    if (player_struct.curr_target == OBJ_NULL)
       string_message_info(REF_STR_NoTargetsAround);
 }
@@ -534,20 +536,20 @@ void toggle_current_target()
 
    if (osid != OBJ_SPEC_NULL && objCritters[osid].id != PLAYER_OBJ)
    {
-      select_current_target(objCritters[osid].id,TRUE);
+      select_current_target(objCritters[osid].id,true);
    }
    else if (oldsid != OBJ_SPEC_NULL)
    {
-      select_current_target(objCritters[oldsid].id,TRUE);
+      select_current_target(objCritters[oldsid].id,true);
    }
    else player_struct.curr_target = OBJ_NULL;
 
    if (player_struct.curr_target != old)
    {
       if (player_struct.curr_target == OBJ_NULL)
-         mfd_notify_func(MFD_TARGET_FUNC, MFD_TARGET_SLOT, FALSE, MFD_ACTIVE, TRUE);
+         mfd_notify_func(MFD_TARGET_FUNC, MFD_TARGET_SLOT, false, MFD_ACTIVE, true);
       else
-         mfd_notify_func(MFD_TARGET_FUNC, MFD_TARGET_SLOT, FALSE, MFD_FLASH, TRUE);
+         mfd_notify_func(MFD_TARGET_FUNC, MFD_TARGET_SLOT, false, MFD_FLASH, true);
    }
    if (player_struct.curr_target == OBJ_NULL)
       string_message_info(REF_STR_NoTargetsAround);
@@ -569,19 +571,19 @@ uchar mfd_target_handler(MFD *m, uiEvent *e)
    pos.y = e->pos.y - m->rect.ul.y;
 
    if(player_struct.hardwarez[CPTRIP(TARG_GOG_TRIPLE)]==0)
-      return FALSE;
+      return false;
 
    if (pos.y < BUTTON_Y || pos.x > TEXT_RIGHT_X)
-      return FALSE;
+      return false;
 
-   if (!(ratbert->action & MOUSE_LDOWN)) return TRUE;
+   if (!(ratbert->action & MOUSE_LDOWN)) return true;
    if (pos.x >= TEXT_RIGHT_X - PAGEBUTT_W)
       toggle_current_target();
    else if (pos.x <= PAGEBUTT_W)
       toggle_current_target_backwards();
    else
       select_closest_target();
-   return TRUE;
+   return true;
 }
 
 
@@ -627,12 +629,12 @@ uchar mfd_targetware_handler(MFD *m, uiEvent *e)
    if (pos.y < BUTTON_Y
       || abs(2*pos.x - MFD_VIEW_WID) > BUTTON_SIZE
       || e->type != UI_EVENT_MOUSE)
-      return FALSE;
+      return false;
 
-   if (!(ratbert->action & MOUSE_LDOWN)) return TRUE;
+   if (!(ratbert->action & MOUSE_LDOWN)) return true;
    if (player_struct.curr_target == OBJ_NULL)
       select_closest_target();
    mfd_change_slot(m->id,MFD_TARGET_SLOT);
 
-   return TRUE;
+   return true;
 }

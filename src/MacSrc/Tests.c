@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -89,8 +90,8 @@ void SetFont(Ptr p);
 void DoClickBrowseFonts(Point localPt);
 void DoClickLoadPalette(Point localPt);
 void MoveSquare(short x, short y);
-Boolean IsOptKeyDown(void);
-Boolean IsCmdKeyDown(void);
+bool IsOptKeyDown(void);
+bool IsCmdKeyDown(void);
 
 //--------------------
 //  Globals
@@ -105,7 +106,7 @@ long QuickTickCount() {
 	return tickCount;
 }
 
-Boolean IsOptKeyDown(void)
+bool IsOptKeyDown(void)
  {
 	long		keys[4];
 
@@ -117,7 +118,7 @@ Boolean IsOptKeyDown(void)
 	return((keys[1] & 0x00000004) != 0L);
  }
 
-Boolean IsCmdKeyDown(void)
+bool IsCmdKeyDown(void)
  {
 	long		keys[4];
 
@@ -824,7 +825,7 @@ void DoTestMoveKeys(void)
 	GrafPtr		savePort;
 	RGBColor	black = {0, 0, 0};
 	RGBColor	white = {0xffff, 0xffff, 0xffff};
-	Boolean		done;
+	bool		done;
 	
 	GetPort(&savePort);									// Clear out the offscreen bitmap
 	SetPort(gMainOffScreen.bits);
@@ -913,7 +914,7 @@ void DoTestMouse(void)
 	GrafPtr		savePort;
 	RGBColor	black = {0, 0, 0};
 	RGBColor	white = {0xffff, 0xffff, 0xffff};
-	Boolean		done;
+	bool		done;
 	int			callbackid = -1;
 	
 	GetPort(&savePort);									// Clear out the offscreen bitmap
@@ -1033,7 +1034,7 @@ void DoPlayMovie(short cmd)
 	RGBColor				black = {0, 0, 0};
 	RGBColor				white = {0xffff, 0xffff, 0xffff};
 #ifdef PAL_CHG_TEST
-	Boolean					chgPal = FALSE;
+	bool					chgPal = FALSE;
 #endif
 
 	EnterMovies();
@@ -1055,7 +1056,7 @@ void DoPlayMovie(short cmd)
 		{
 			short 		movieResID = 0;		// get first movie
 			Str255 		movieName;
-			Boolean 		wasChanged;
+			bool 		wasChanged;
 		
 			err = NewMovieFromFile(&aMovie, movieResFile, &movieResID,
 							movieName, newMovieActive, &wasChanged);
@@ -1077,7 +1078,7 @@ void DoPlayMovie(short cmd)
 		Rect 					movieBox, r;
 		EventRecord		theEvent;
 		WindowPtr			whichWindow;
-		Boolean				done;
+		bool				done;
 		TimeValue			tv;
 		TimeScale			ts;
 		short					mv;
@@ -1423,8 +1424,8 @@ void DoZoomCurrMap(short cmd)
 #include "Profiler.h"
 #endif
 
-extern Boolean DoubleSize;
-extern Boolean SkipLines;
+extern bool DoubleSize;
+extern bool SkipLines;
 extern cams* player_cam;
 
 void RenderTest(void)
@@ -1436,19 +1437,19 @@ void RenderTest(void)
 	FSSpec					fSpec;
 	cams 						test_cam;
    	fauxrend_context 	*_frc;
-	uchar 						_rt_inside=TRUE;
-	uchar 						all_axis = FALSE;
+	uchar 						_rt_inside=true;
+	uchar 						all_axis = false;
 	long						time,detailCheck;
 	Str255					str;
 	long						frames = 0L;
 	fix						sinEye,cosEye;
 	fix						moveAmt;
-	Boolean					profileOn = false;
+	bool					profileOn = false;
 	extern void game_redrop_rad(int);
 	int						size_left, size_top, size_wide, size_high;
 	PicHandle				pic;
 	Rect						r;
-	Boolean				    	showFrames = false;
+	bool				    	showFrames = false;
 	extern 	void 			change_svga_screen_mode();
 	extern 	frc 			*svga_render_context;
 	extern void _fr_change_detail(int det);
@@ -1556,7 +1557,7 @@ void RenderTest(void)
 		// blending
 		if ((QuickTickCount()-detailCheck>20L) && kb_state(0x0B)) {_g3d_enable_blend = !_g3d_enable_blend; detailCheck = QuickTickCount();}
 
-		_g3d_enable_blend = TRUE;
+		_g3d_enable_blend = true;
 		
 		// debugger
 		if (kb_state(0x32)) Debugger();

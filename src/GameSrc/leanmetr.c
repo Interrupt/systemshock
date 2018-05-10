@@ -24,7 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
+
 #include "faketime.h"
+#include "fix.h"
 #include "citres.h"
 #include "physics.h"
 #include "player.h"
@@ -33,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "froslew.h"
 #include "objprop.h"
 #include "objsim.h"
+#include "res.h"
 #include "wares.h"
 #include "cit2d.h"
 #include "canvchek.h"
@@ -130,7 +134,7 @@ ushort shield_bmap_res = 0;
 #define meter_bkgnd() (get_bitmap_from_ref(full_game_3d ? REF_IMG_bmLeanBkgndTransp : REF_IMG_bmLeanBkgnd))
 
 
-uchar eye_fine_mode = FALSE;
+uchar eye_fine_mode = false;
 
 
 // ---------
@@ -399,8 +403,8 @@ uchar eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void * data)
    short x = ev->pos.x - r->abs_x;
    short y = ev->pos.y - r->abs_y;
    extern uchar hack_takeover;
-   if (hack_takeover || global_fullmap->cyber) return FALSE;
-   if (x < 0 || x >= EYEMETER_W) return FALSE;
+   if (hack_takeover || global_fullmap->cyber) return false;
+   if (x < 0 || x >= EYEMETER_W) return false;
    eye_fine_mode = 2*x > EYEMETER_W;
    if (!eye_fine_mode) y = discrete_eye_height[y*DISCRETE_EYE_POSITIONS/EYEMETER_H]; 
    if (ev->buttons & (1 << MOUSE_LBUTTON))
@@ -408,18 +412,18 @@ uchar eye_mouse_handler(uiMouseEvent* ev, LGRegion* r, void * data)
       int theta;
       if ((ev->action & MOUSE_LDOWN) == 0
          && uiLastMouseRegion[MOUSE_LBUTTON] != r)
-            return FALSE;
+            return false;
       if (eye_fine_mode) theta = -2*MAX_EYE_ANGLE*(y)/(EYEMETER_H-1) + MAX_EYE_ANGLE;
       else theta = -FIXANG_PI/6*(y*DISCRETE_EYE_POSITIONS/EYEMETER_H-1);
 //      ui_mouse_constrain_xy(ev->pos.x,r->abs_y,ev->pos.x,r->abs_y+EYEMETER_H-1);
       player_set_eye_fixang(theta);
-      physics_set_relax(CONTROL_YZROT,FALSE);
+      physics_set_relax(CONTROL_YZROT,false);
    }
    if (ev->buttons == 0)
    {
 //      mouse_constrain_xy(0,0,grd_cap->w-1,grd_cap->h-1);                           
    }
-   return TRUE;
+   return true;
 }
 
 
@@ -427,19 +431,19 @@ uchar lean_mouse_handler(uiMouseEvent* ev, LGRegion* r, void * data)
 {
    short x = ev->pos.x - r->abs_x - LEANOMETER_XOFF;
    short y = ev->pos.y - r->abs_y - LEANOMETER_YOFF;
-   if (x < 0 || x >= LEANOMETER_W || global_fullmap->cyber) return FALSE;
+   if (x < 0 || x >= LEANOMETER_W || global_fullmap->cyber) return false;
    if (ev->buttons & (1 << MOUSE_LBUTTON))
    {
       short posture = y*3/LEANOMETER_H;
       short xlean = x*220/(LEANOMETER_W-1)-110;
       if ((ev->action & MOUSE_LDOWN) == 0
          && uiLastMouseRegion[MOUSE_LBUTTON] != r)
-            return FALSE;
+            return false;
       if (xlean>10) xlean-=10; else if (xlean<-10) xlean+=10; else xlean=0;
       if (posture != player_struct.posture)
          player_set_posture(posture);
       player_set_lean(xlean,player_struct.leany);
-      physics_set_relax(CONTROL_XZROT,FALSE);
+      physics_set_relax(CONTROL_XZROT,false);
 //     ui_mouse_constrain_xy(LEANOMETER_X(),LEANOMETER_Y()+posture*LEANOMETER_H/3+1,LEANOMETER_X()+LEANOMETER_W-1,LEANOMETER_Y()+(posture+1)*LEANOMETER_H/3-1);
    }
    if (ev->buttons == 0)
@@ -447,7 +451,7 @@ uchar lean_mouse_handler(uiMouseEvent* ev, LGRegion* r, void * data)
       extern void mouse_unconstrain(void);
 //      mouse_unconstrain();
    }
-   return TRUE;
+   return true;
 }
 
 
@@ -483,7 +487,7 @@ void init_posture_meters(LGRegion* root, uchar fullscreen)
 
 void update_lean_meter(uchar force)
 {
-	static uchar 		 last_shield = FALSE;
+	static uchar 		 last_shield = false;
 	static uchar	 last_shieldstr = 0;
 	static int		 last_lean_icon = -1;
 	static LGPoint	 last_lean_pos = { -1, -1};
@@ -521,7 +525,7 @@ void update_lean_meter(uchar force)
 	ss_safe_set_cliprect(LEANOMETER_X(),LEANOMETER_Y(),LEANOMETER_X()+LEANOMETER_W,LEANOMETER_Y()+LEANOMETER_H);
 	
 	saveBio = gBioInited;											// Turn off biometer while updating the lean meter.
-	gBioInited = FALSE;
+	gBioInited = false;
 
 	if (force || last_lean_icon != -1)
 	{
@@ -610,7 +614,7 @@ void update_eye_meter(uchar force)
 {
    static short last_y = 0;
    static short last_ly = 0;
-   static uchar last_mode = FALSE;
+   static uchar last_mode = false;
 
    short a,b,c,d;
    fix pos = eye_mods[1];
@@ -638,7 +642,7 @@ void update_eye_meter(uchar force)
    ss_safe_set_cliprect(EYEMETER_X(),EYEMETER_Y(),EYEMETER_X()+EYEMETER_W,EYEMETER_Y()+EYEMETER_H);
 
 	saveBio = gBioInited;											// Turn off biometer while updating the eye meter.
-	gBioInited = FALSE;
+	gBioInited = false;
 
    if (force)
    {
@@ -669,7 +673,7 @@ void update_meters(uchar force)
 void zoom_to_lean_meter(void)
 {
    extern void zoom_rect(LGRect*,LGRect*);
-   extern Boolean DoubleSize;
+   extern bool DoubleSize;
 
    LGPoint pos;
    LGRect start = { { -5,-5}, {+5,+5}};
@@ -680,7 +684,7 @@ void zoom_to_lean_meter(void)
    RECT_MOVE(&end,MakePoint(LEANOMETER_X(),LEANOMETER_Y()));
    mouse_get_xy(&pos.x,&pos.y);
    if (!DoubleSize)
-      ss_point_convert(&(pos.x),&(pos.y),TRUE);
+      ss_point_convert(&(pos.x),&(pos.y),true);
    RECT_MOVE(&start,pos);
    zoom_rect(&start,&end);
 }

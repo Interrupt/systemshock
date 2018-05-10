@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern errtype musicai_reset(uchar runai);
 extern errtype musicai_shutdown();
 
-struct mlimbs_request_info default_request = { 0, 0, 4, 100, 0, 64, TRUE, 0, 0 };
+struct mlimbs_request_info default_request = { 0, 0, 4, 100, 0, 64, true, 0, 0 };
 
 extern int ext_rp ;
 extern char mlimbs_machine;
@@ -130,8 +130,8 @@ extern uchar bad_digifx;
 
 extern uchar mlimbs_semaphore;
 
-uchar run_asynch_music_ai = FALSE;
-uchar mai_semaphor = FALSE;
+uchar run_asynch_music_ai = false;
+uchar mai_semaphor = false;
 
 errtype check_asynch_ai(uchar new_score_ok);
 void grind_music_ai(void);
@@ -139,14 +139,14 @@ void grind_music_ai(void);
 void music_ai()
 {
 //   mlimbs_semaphore = TRUE;
-   ai_cycle = TRUE;
+   ai_cycle = true;
 //   if ((run_asynch_music_ai) && (!mai_semaphor))
    if (!mai_semaphor)
    {
-      mai_semaphor = TRUE;
-      check_asynch_ai(FALSE);
-      mai_semaphor = FALSE;
-      ai_cycle = FALSE;
+      mai_semaphor = true;
+      check_asynch_ai(false);
+      mai_semaphor = false;
+      ai_cycle = false;
    }
 }
 
@@ -232,8 +232,8 @@ void grind_music_ai(void)
    if (score_playing == ELEVATOR_ZONE)
    {
       curr_crossfade = 0;
-      in_deconst = FALSE;
-      old_deconst = FALSE;
+      in_deconst = false;
+      old_deconst = false;
       grind_credits_music_ai();
       return;
    }

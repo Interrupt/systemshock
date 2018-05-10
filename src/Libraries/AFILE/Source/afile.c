@@ -52,6 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <string.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "lg.h"
@@ -141,7 +142,7 @@ int AfileOpen(Afile *paf, char *filename)
 	memset(paf, 0, sizeof(Afile));
 	paf->fp = fp;
 	paf->type = aftype;
-	paf->writing = FALSE;
+	paf->writing = false;
 	paf->pm = methods[paf->type];
 	paf->currFrame = 0;
 
@@ -343,7 +344,7 @@ uchar AfileGetFramePal(Afile *paf, Apalette *ppal)
 //	Spew(DSRC_2D_Afile, ("AfileGetFramePal: getting pal\n"));
 
 	if (paf->pm->f_ReadFramePal == NULL)
-		return FALSE;
+		return false;
 
 	(*paf->pm->f_ReadFramePal)(paf, ppal);
 	return(ppal->numcols != 0);
@@ -524,7 +525,7 @@ int AfileCreate(Afile *paf, char *filename, fix frameRate)
 	memset(paf, 0, sizeof(Afile));
 	paf->fp = fp;
 	paf->type = aftype;
-	paf->writing = TRUE;
+	paf->writing = true;
 	paf->pm = methods[paf->type];
 
 	paf->v.frameRate = frameRate;

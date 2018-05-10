@@ -66,11 +66,11 @@ uchar llist_move_queue(llist_head *plh, queue *plq)
 
 //	See if priority warrants moving the queue node
 
-	moved = FALSE;
+	moved = false;
 	if ((plq->pprev != (queue *)llist_beg(plh)) && (plq->priority > plq->pprev->priority))
-		moved = TRUE;
+		moved = true;
 	else if ((plq->pnext != (queue *)llist_end(plh)) && (plq->priority < plq->pnext->priority))
-		moved = TRUE;
+		moved = true;
 
 //	Yes, detach from queue and re-insert
 

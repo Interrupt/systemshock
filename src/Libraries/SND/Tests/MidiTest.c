@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //===========================================================================
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,8 +69,8 @@ TunePlayer			thePlayer;
 short				gCurTheme;
 long					gVolume;
 
-Boolean				gTuneDone;				// True when a sequence has finished playing.
-Boolean				gReadyToQueue;			// True when it's time to queue up a new sequence.
+bool				gTuneDone;				// True when a sequence has finished playing.
+bool				gReadyToQueue;			// True when it's time to queue up a new sequence.
 long					gNextSeq;				// The next sequence to queue up.
 long					gLevelState;				// Walking, combat, etc. for the level theme.
 
@@ -118,7 +119,7 @@ void main(void)
 	WDPBRec	wdpb;
 	OSErr		err;
  	kbs_event	event;
-	uchar 		inloop = TRUE;
+	uchar 		inloop = true;
 	long			statusCount;
 	int			seq;
 	FSSpec		themeSpec;
@@ -179,8 +180,8 @@ void main(void)
 	gCurTheme = 0;
 	
 	// Setup the queueing globals.
-	gTuneDone = FALSE;
-	gReadyToQueue = FALSE;
+	gTuneDone = false;
+	gReadyToQueue = false;
 	gNextSeq = 0;
 	
 	// Start off by playing the intro loop sequence (#2).
@@ -210,7 +211,7 @@ void main(void)
 			printf("Queueing sequence %d.\n", gNextSeq);
 			err = TuneQueue(thePlayer, (unsigned long *)(*gTuneHdl + gOffsets[gNextSeq]), 0x10000,
 							  0, 0x7FFFFFFF, 0, gTuneCBProcPtr, 0);
-			gReadyToQueue = FALSE;
+			gReadyToQueue = false;
 		}
 		
 		// If gTuneDone is TRUE, then a sequence just finished playing, which means a new sequence
@@ -219,7 +220,7 @@ void main(void)
 		{
 			printf("Priming timer to fire in 6 seconds.\n");
 			PrimeTime((QElemPtr)&gTriggerTask, 6000);				// Trigger in 6 seconds
-			gTuneDone = FALSE;
+			gTuneDone = false;
 		}
 		
 		// Check for keypresses.
@@ -229,7 +230,7 @@ void main(void)
 			{
 				case 'q':
 					printf("Quitting.\n");
-					inloop=FALSE;
+					inloop=false;
 					break;
 					
 				case 'e':
@@ -242,7 +243,7 @@ void main(void)
 						ExitMovies();
 						return;
 					}
-					gTuneDone = FALSE;
+					gTuneDone = false;
 					gCurTheme = 7;
 					gNextSeq = 0;
 					TuneQueue(thePlayer, (unsigned long *)(*gTuneHdl), 0x10000,
@@ -260,7 +261,7 @@ void main(void)
 						ExitMovies();
 						return;
 					}
-					gTuneDone = FALSE;
+					gTuneDone = false;
 					gCurTheme = 7;
 					gNextSeq = 2;
 					TuneQueue(thePlayer, (unsigned long *)(*gTuneHdl + gOffsets[2]), 0x10000,
@@ -279,7 +280,7 @@ void main(void)
 						return;
 					}
 					gOffsets = (long *)*gOfsHdl;
-					gTuneDone = FALSE;
+					gTuneDone = false;
 					gCurTheme = 1;
 					gNextSeq = 7;
 					gLevelState = kWalking;
@@ -300,7 +301,7 @@ void main(void)
 						return;
 					}
 					gOffsets = (long *)*gOfsHdl;
-					gTuneDone = FALSE;
+					gTuneDone = false;
 					gCurTheme = 2;
 					gNextSeq = 7;
 					gLevelState = kWalking;
@@ -359,7 +360,7 @@ void main(void)
 //--------------------------------------------------------------------------
 void EndSequenceCallBack(long seq_id)
 {
-	gTuneDone = TRUE;
+	gTuneDone = true;
 }
 
 //--------------------------------------------------------------------------
@@ -476,5 +477,5 @@ void MyMusicAI(void)
 			break;
 	}
 	
-	gReadyToQueue = TRUE;
+	gReadyToQueue = true;
 }

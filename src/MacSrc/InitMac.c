@@ -32,6 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <GestaltEqu.h>
 //#include <Movies.h>
 
+#include <stdbool.h>
+
 #include "Shock.h"
 #include "InitMac.h"
 #include "ShockBitmap.h"
@@ -60,7 +62,7 @@ short				gScreenWide, gScreenHigh;
 short				gActiveWide, gActiveHigh;
 short				gActiveLeft, gActiveTop;
 Rect				gActiveArea, gOffActiveArea;
-Boolean			gIsPowerPC = false;
+bool			gIsPowerPC = false;
 long				gDataDirID;
 short				gDataVref;
 long				gCDDataDirID;
@@ -69,7 +71,7 @@ long				gAlogDirID;
 short				gAlogVref;
 long				gBarkDirID;
 short				gBarkVref;
-Boolean			gMenusHid;
+bool			gMenusHid;
 
 //---------------------------
 //  Externs
@@ -348,7 +350,7 @@ void GetFolders(void)
 
 	// Check for the CD-ROM volume, and look for sub-folders there.
 
-	Boolean	foundCD = FALSE;
+	bool	foundCD = FALSE;
 	int		volIndex = 1;
 	do
 	{

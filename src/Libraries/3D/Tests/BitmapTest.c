@@ -28,6 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 #define __FAUXREND_SRC
+
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "2d.h"
 #include "3d.h"
 #include "fauxrend.h"
@@ -159,7 +163,7 @@ uchar fauxrend_start_frame(void)
    viewer_orientation.head = ang(EYE_H);
    g3_start_frame();
    g3_set_view_angles(&viewer_position,&viewer_orientation,ANGLE_ORDER,_fr->viewer_zoom);
-   return TRUE;
+   return true;
 }
 
 void fauxrend_send_frame(void)
@@ -240,7 +244,7 @@ void main()
    gScreenAddress = drawSurface->pixels;
 
    gr_init();
-   gr_set_mode(GRM_640x480x8, TRUE);
+   gr_set_mode(GRM_640x480x8, true);
    screen = gr_alloc_screen(640,480);
    gr_set_screen (screen);
 
@@ -252,7 +256,7 @@ void main()
    SetSDLPalette(0, 256, pal_buf);
 
    g3_init(DEFAULT_PT_CNT,AXIS_ORDER);
-   main_view=fauxrend_place_3d(NULL,TRUE,0,0,0,0,640,480);
+   main_view=fauxrend_place_3d(NULL,true,0,0,0,0,640,480);
    fauxrend_set_context(main_view);
 	      
 
@@ -267,7 +271,7 @@ void main()
       g3_check_and_draw_tmap_quad_tile(trans,&bm,1,1);
       fauxrend_send_frame();
 
-      uint8* keyboard;
+      uint8_t *keyboard;
       keyboard = SDL_GetKeyboardState(NULL);
       if (keyboard[SDL_SCANCODE_UP]) eyepos_moveone(EYE_Y,1);
       if (keyboard[SDL_SCANCODE_DOWN]) eyepos_moveone(EYE_Y,-1);

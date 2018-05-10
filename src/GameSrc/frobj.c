@@ -92,7 +92,7 @@ uchar pick_best_ref(ObjRefID cRef)
 	   return (BRef==cRef);
    }
    else
-      return FALSE;
+      return false;
 }
 
 // this is a total mess

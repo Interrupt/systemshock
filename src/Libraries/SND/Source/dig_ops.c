@@ -224,7 +224,7 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, snd_digi_parms *dprm)
 	if (dprm != NULL)
 		lpri = dprm->pri;
 	
-	if ((hnd_id = snd_find_free_handle(lpri, FALSE)) == SND_PERROR )
+	if ((hnd_id = snd_find_free_handle(lpri, false)) == SND_PERROR )
 	{
 		snd_error = SND_NO_HANDLE;
 //      mprintf("no free handle error %d\n",snd_error);
@@ -267,14 +267,14 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, snd_digi_parms *dprm)
 	// Play the sound.
 	
 	HLock(sndHdl);
-	SndPlay(ourSC, (SndListHandle)sndHdl, TRUE);
+	SndPlay(ourSC, (SndListHandle)sndHdl, true);
 	
 	// Call our call-back routine when the sound is done playing.
 	
 	sc.cmd = callBackCmd;
 	sc.param1 = 1;							// Sound complete
 	sc.param2 = (long)hnd_parm;		// Ptr to current sound parameters
-	SndDoCommand(ourSC, &sc, FALSE);
+	SndDoCommand(ourSC, &sc, false);
 
 	return hnd_id;
 }

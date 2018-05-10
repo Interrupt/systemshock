@@ -19,6 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MAP_H
 #define __MAP_H
 
+#include <stdbool.h>
+#include <stdlib.h>
+
 /*
  * 
  *

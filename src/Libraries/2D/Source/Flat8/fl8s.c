@@ -146,7 +146,7 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
 
    xl=fix_cint(tli->left.x);
    xr=fix_cint(tli->right.x);
-   if (xr<=xl) return TRUE;
+   if (xr<=xl) return true;
    ul=tli->left.u;
    dx=tli->right.x-tli->left.x;
    du=fix_div(tli->right.u-ul,dx);
@@ -195,7 +195,7 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
       tli->y++;
    } while (--(tli->n) > 0);
    
-   return FALSE; /* tmap OK */
+   return false; /* tmap OK */
 }
  
 // ------------------------------------------------------------------------
@@ -269,7 +269,7 @@ int gri_scale_umap_loop_68K(grs_tmap_loop_info *tli) {
 
    xl=fix_cint(tli->left.x);
    xr=fix_cint(tli->right.x);
-   if (xr<=xl) return TRUE;
+   if (xr<=xl) return true;
    ul=tli->left.u;
    dx=tli->right.x-tli->left.x;
    du=fix_div(tli->right.u-ul,dx);
@@ -279,7 +279,7 @@ int gri_scale_umap_loop_68K(grs_tmap_loop_info *tli) {
    p_src=tli->bm.bits+tli->bm.row*fix_int(tli->left.v);
    p_dest = grd_bm.bits + (grd_bm.row*tli->y) + xl;
    ILoop68k(xr-xl, ul, du, p_src, p_dest, tli);
-   return FALSE; /* tmap OK */
+   return false; /* tmap OK */
 }
 
 

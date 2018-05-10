@@ -168,11 +168,11 @@ command cmd_list[] =
 uchar check_args (int num)
 {
 	if (num_args >= num)
-		return TRUE;
+		return true;
 	else
 	{
 		printf ("Need %d args\n", num);
-		return FALSE;
+		return false;
 	}
 }
 
@@ -181,8 +181,8 @@ void parse (char *str, uchar command)
 {
 	char *c;										// pointer to current char in str
 	int val;										// value of current arg
-	uchar neg = FALSE;							// is this arg negative?
-	uchar frac = FALSE;						// is this arg really a fraction (after decimal point)?
+	uchar neg = false;							// is this arg negative?
+	uchar frac = false;						// is this arg really a fraction (after decimal point)?
 	int i;										// counter
 	int den;										// denominator of fraction
 
@@ -218,10 +218,10 @@ void parse (char *str, uchar command)
 	val = 0;
 	if (*c == '-')
 	{
-		args_neg[0] = neg = TRUE; c++;
+		args_neg[0] = neg = true; c++;
 	}
 	else
-		args_neg[0] = neg = FALSE;
+		args_neg[0] = neg = false;
 
 	while (*c != NULL)
 	{
@@ -254,21 +254,21 @@ void parse (char *str, uchar command)
 			// are we about to do a decimal part?
 			if (*c == '.')
 			{
-				frac = TRUE;
+				frac = true;
 				den = 1;
 			}
 			else
-				frac = FALSE;
+				frac = false;
 
 			// prepare for the next argument
 			c++;
-			args_neg[num_args] = neg = FALSE;
+			args_neg[num_args] = neg = false;
 			if (num_args == MAX_ARGS) break;
 			while (isspace(*c)) c++;
 			val = 0;
 			if (*c == '-')
 			{
-				args_neg[num_args] = neg = TRUE; c++;
+				args_neg[num_args] = neg = true; c++;
 			}
 		}	
 	}
@@ -566,11 +566,11 @@ void main ()
 	printf ("+ 5.0 3.14\n* 0.324 -15.1\n\n");
 	printf ("'?' for more help, 'cmd-Q' to quit\n\n");
 	
-	while (TRUE)
+	while (true)
 	{	
 		printf (": ");
 		fgets (ans, sizeof(ans), stdin);
-		parse (ans, TRUE);
+		parse (ans, true);
 		if (cmd != CMD_NONE)
 		{
 			switch (cmd)

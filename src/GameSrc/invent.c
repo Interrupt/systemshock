@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Source code for inventory manipulation / display
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -314,7 +315,7 @@ color_func color_func_list[] = { email_color_func };
 // The current inventory "page" 
 
 short inventory_page = 0;
-uchar show_all_actives=FALSE;
+uchar show_all_actives=false;
 
 // The last page we drew 
 short inv_last_page = INV_BLANK_PAGE;
@@ -511,7 +512,7 @@ void draw_inventory_string(char* s, int x, int y, uchar clear)
       if (clear)
         ss_bitmap(&inv_backgnd,0,0);
 	 	    //gr_bitmap(&inv_backgnd, 0, 0);
-      draw_shadowed_string(s,x,y,FALSE);
+      draw_shadowed_string(s,x,y,false);
       uiShowMouse(&r);
    }
    else
@@ -523,7 +524,7 @@ void draw_inventory_string(char* s, int x, int y, uchar clear)
          ss_rect(x,y,x+w,y+h-1);
       }
       gr_set_fcolor(oldcolor);
-      draw_shadowed_string(s,x,y,TRUE);
+      draw_shadowed_string(s,x,y,true);
    }
    RESTORE_CLIP(a,b,c,d);
 }
@@ -565,8 +566,8 @@ void draw_quant_line(char* name, char* quant, long color, uchar active, short le
       gr_set_fcolor(SELECTED_ITEM_COLOR);
    else if(color<256)
       gr_set_fcolor(color);
-   draw_inventory_string(name,left,y,FALSE);
-   draw_inventory_string(quant,right-wd,y,FALSE);
+   draw_inventory_string(name,left,y,false);
+   draw_inventory_string(quant,right-wd,y,false);
 }
 
 
@@ -586,13 +587,13 @@ void draw_quant_list(inv_display* dp, uchar newpage)
    if (active >= 0 && active < dp->listlen && quant[active] == 0)
    {
       player_struct.actives[dp->activenum] = active = MFD_INV_NOTYPE;
-      set_inventory_mfd(dp->mfdtype,MFD_INV_NOTYPE,TRUE);
+      set_inventory_mfd(dp->mfdtype,MFD_INV_NOTYPE,true);
    }
    if (newpage && dp->titlenum != REF_STR_Null)
    {
       gr_set_fcolor(dp->titlecolor);
       get_string(dp->titlenum,buf,BUFSZ);
-      draw_inventory_string(buf,dp->left,dp->top,TRUE);
+      draw_inventory_string(buf,dp->left,dp->top,true);
    }
    if (dp->first != 0) wtype = dp->first;
    else 
@@ -778,9 +779,9 @@ void draw_weapons_list(inv_display *dp)
    {
       gr_set_fcolor(dp->titlecolor);
       get_string(REF_STR_WeaponTitle,buf,BUFSZ);
-      draw_inventory_string(buf,WEAPON_X,TOP_MARGIN,TRUE);
+      draw_inventory_string(buf,WEAPON_X,TOP_MARGIN,true);
       get_string(REF_STR_AmmoTitle,buf,BUFSZ);
-      draw_inventory_string(buf,AMMO_X-gr_string_width(buf),TOP_MARGIN,TRUE);
+      draw_inventory_string(buf,AMMO_X-gr_string_width(buf),TOP_MARGIN,true);
    }
    s = dp->relnum*WEAPONS_PER_PAGE;
    y = TOP_MARGIN + Y_STEP;
@@ -819,7 +820,7 @@ void draw_weapons_list(inv_display *dp)
 
 uchar inventory_select_weapon(inv_display* dp, int w)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    int aw = player_struct.actives[ACTIVE_WEAPON];
 #ifndef NO_DUMMIES
    inv_display* newdisp; newdisp = dp;
@@ -834,21 +835,21 @@ uchar inventory_select_weapon(inv_display* dp, int w)
       player_struct.fire_rate = weapon_fire_rate(ws->type,ws->subtype);
    }
    player_struct.actives[ACTIVE_WEAPON] = w;
-   set_inventory_mfd(MFD_INV_WEAPON,w,TRUE);
-   set_inventory_mfd(MFD_INV_AMMO,0,TRUE);
-   mfd_notify_func(NOTIFY_ANY_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,TRUE);
+   set_inventory_mfd(MFD_INV_WEAPON,w,true);
+   set_inventory_mfd(MFD_INV_AMMO,0,true);
+   mfd_notify_func(NOTIFY_ANY_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,true);
    INVENT_CHANGED;
-   retval = TRUE;
+   retval = true;
 out: 
    return retval;   
 }
 
 uchar weapon_use_func(inv_display* dp, int w)
 {
-   if (player_struct.weapons[w].type == EMPTY_WEAPON_SLOT) return FALSE;
+   if (player_struct.weapons[w].type == EMPTY_WEAPON_SLOT) return false;
    inventory_select_weapon(dp,w);
    mfd_change_slot(mfd_grab_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT),MFD_WEAPON_SLOT);
-   return TRUE;
+   return true;
 }
 
 ubyte weapons_add_func(inv_display* dp, int row, ObjID* objP,uchar select)
@@ -884,7 +885,7 @@ ubyte weapons_add_func(inv_display* dp, int row, ObjID* objP,uchar select)
    ws->ammo = objGuns[spec].ammo_count;
    ws->ammo_type = objGuns[spec].ammo_type;
    if (player_struct.actives[ACTIVE_WEAPON] == row)
-      set_inventory_mfd(MFD_INV_WEAPON,row,TRUE);
+      set_inventory_mfd(MFD_INV_WEAPON,row,true);
    if (tmp.type != EMPTY_WEAPON_SLOT)
    {
       objs[obj].subclass = tmp.type;
@@ -903,11 +904,11 @@ ubyte weapons_add_func(inv_display* dp, int row, ObjID* objP,uchar select)
 
    if (player_struct.actives[ACTIVE_WEAPON] == row)
    {
-      set_inventory_mfd(MFD_INV_WEAPON,row,TRUE);
-      mfd_notify_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT,TRUE,MFD_ACTIVE,TRUE);
+      set_inventory_mfd(MFD_INV_WEAPON,row,true);
+      mfd_notify_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT,true,MFD_ACTIVE,true);
    }
    // in case ammo mfd
-   mfd_notify_func(NOTIFY_ANY_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,TRUE);
+   mfd_notify_func(NOTIFY_ANY_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,true);
    return retval;
 }
 
@@ -942,12 +943,12 @@ void weapon_drop_func(inv_display* dp, int itemnum)
       player_struct.actives[ACTIVE_WEAPON]--;
 
    // in case ammo mfd
-   mfd_notify_func(NOTIFY_ANY_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, TRUE);
+   mfd_notify_func(NOTIFY_ANY_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, true);
    // In case the weapons MFD was looking at that weapon, nix it
    if (player_struct.weapons[player_struct.actives[ACTIVE_WEAPON]].type == EMPTY_WEAPON_SLOT)
-      mfd_notify_func(MFD_EMPTY_FUNC, MFD_WEAPON_SLOT, TRUE, MFD_EMPTY, TRUE);
+      mfd_notify_func(MFD_EMPTY_FUNC, MFD_WEAPON_SLOT, true, MFD_EMPTY, true);
    else
-      set_inventory_mfd(MFD_INV_WEAPON,player_struct.actives[ACTIVE_WEAPON],TRUE);
+      set_inventory_mfd(MFD_INV_WEAPON,player_struct.actives[ACTIVE_WEAPON],true);
    INVENT_CHANGED;
 }
 
@@ -995,13 +996,13 @@ ubyte generic_add_func(inv_display* dp, int row, ObjID* idP,uchar select)
             play_digi_fx(SFX_INVENT_SELECT,1);
          }
          if (select || n == player_struct.actives[dp->activenum])
-            set_inventory_mfd(dp->mfdtype,n,TRUE);
+            set_inventory_mfd(dp->mfdtype,n,true);
       }
       obj_destroy(id);
       // This is a special-case hack for cartridges.
       if(obclass==CLASS_AMMO) {
-         mfd_notify_func(NOTIFY_ANY_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, TRUE);
-         mfd_notify_func(MFD_WEAPON_FUNC, MFD_WEAPON_SLOT, FALSE, MFD_ACTIVE, TRUE);
+         mfd_notify_func(NOTIFY_ANY_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, true);
+         mfd_notify_func(MFD_WEAPON_FUNC, MFD_WEAPON_SLOT, false, MFD_ACTIVE, true);
          INVENT_CHANGED;
       }
       return ADD_POP;
@@ -1029,7 +1030,7 @@ void generic_drop_func(inv_display* dp, int row)
    if (dp->activenum != NULL_ACTIVE && player_struct.actives[dp->activenum] == itemnum && quant[itemnum] == 0)
    {
       player_struct.actives[dp->activenum] = 0xFF;
-      set_inventory_mfd(dp->mfdtype,MFD_INV_NOTYPE,FALSE);
+      set_inventory_mfd(dp->mfdtype,MFD_INV_NOTYPE,false);
    }
    INVENT_CHANGED;
 }
@@ -1133,7 +1134,7 @@ void push_live_grenade_cursor(ObjID obj)
       ss_bitmap(bmap,(INV_SCONV_X(grenade_bmap.w) - bmap->w)/2,0);
       gr_set_fcolor(0x4c);
       draw_shadowed_string(live_string,(INV_SCONV_X(grenade_bmap.w) - w)/2,
-         INV_SCONV_Y(grenade_bmap.h) - h,TRUE);
+         INV_SCONV_Y(grenade_bmap.h) - h,true);
    }
    else
    {
@@ -1141,7 +1142,7 @@ void push_live_grenade_cursor(ObjID obj)
       ss_bitmap(bmap,(grenade_bmap.w - bmap->w)/2,0);
       gr_set_fcolor(0x4c);
       draw_shadowed_string(live_string,(grenade_bmap.w - w)/2+1,
-         grenade_bmap.h - h,TRUE);
+         grenade_bmap.h - h,true);
 #ifdef SVGA_SUPPORT
    }
 #endif
@@ -1179,26 +1180,26 @@ uchar grenade_use_func(inv_display* dp, int row)
    int triple;
    ubyte* quant;
    ObjSpecID spec;
-   if (itemnum < 0 || itemnum >= dp->listlen) return(FALSE);
+   if (itemnum < 0 || itemnum >= dp->listlen) return(false);
    quant = (ubyte *)&player_struct + dp->offset;
-   if (quant[itemnum] == 0) return(FALSE);
+   if (quant[itemnum] == 0) return(false);
    quant[itemnum]--;
    triple = nth_after_triple(dp->basetrip,itemnum);
    obj = obj_create_base(triple);
    if (obj == OBJ_NULL)
    {
-      return(FALSE);
+      return(false);
    }
    if (dp->activenum != NULL_ACTIVE && player_struct.actives[dp->activenum] == itemnum && quant[itemnum] == 0)
    {
       player_struct.actives[dp->activenum] = 0xFF;
-      set_inventory_mfd(dp->mfdtype,MFD_INV_NOTYPE,FALSE);
+      set_inventory_mfd(dp->mfdtype,MFD_INV_NOTYPE,false);
    }
    INVENT_CHANGED;
    push_live_grenade_cursor(obj);
    spec = objs[obj].specID;
    activate_grenade(spec);
-   return(TRUE);
+   return(true);
 }
 
 ubyte grenade_add_func(inv_display* dp, int row, ObjID* idP, uchar select)
@@ -1231,13 +1232,13 @@ char* drug_name_func(inv_display* dp, int n, char* buf)
 
 uchar drug_use_func(inv_display* dp, int row)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    int n = dp->lines[row].num;
    if (n < dp->listlen)
    {
       drug_use(n);
-      set_inventory_mfd(dp->mfdtype,n,TRUE);
-      retval = TRUE;
+      set_inventory_mfd(dp->mfdtype,n,true);
+      retval = true;
       INVENT_CHANGED;
    }
    return retval;
@@ -1296,7 +1297,7 @@ static uchar ware_use_func(inv_display* dp,int row)
 {
    int waretype;
    int t = dp->lines[row].num;
-   if (t >= dp->listlen) return FALSE;
+   if (t >= dp->listlen) return false;
    switch(dp->activenum)  
    {
    case ACTIVE_HARDWARE:
@@ -1313,7 +1314,7 @@ static uchar ware_use_func(inv_display* dp,int row)
       break;
    }
    use_ware(waretype,t);
-   return TRUE;
+   return true;
 }
 
 
@@ -1324,7 +1325,7 @@ void hardware_add_specials(int n, int ver)
    switch (n)
    {
    case HARDWARE_AUTOMAP:
-      mfd_notify_func(MFD_MAP_FUNC, MFD_MAP_SLOT, TRUE, MFD_ACTIVE, TRUE);
+      mfd_notify_func(MFD_MAP_FUNC, MFD_MAP_SLOT, true, MFD_ACTIVE, true);
       {
          int i;
          for (i=0; i<NUM_O_AMAP; i++)
@@ -1332,7 +1333,7 @@ void hardware_add_specials(int n, int ver)
       }
       break;
    case HARDWARE_TARGET:
-      mfd_notify_func(MFD_TARGET_FUNC, MFD_TARGET_SLOT, TRUE, MFD_ACTIVE, TRUE);
+      mfd_notify_func(MFD_TARGET_FUNC, MFD_TARGET_SLOT, true, MFD_ACTIVE, true);
       break;
    case HARDWARE_SHIELD:
    {
@@ -1347,7 +1348,7 @@ void hardware_add_specials(int n, int ver)
          ener=energy_cost(CPTRIP(SHIELD_HARD_TRIPLE))-ener;
          set_player_energy_spend(min(MAX_ENERGY,player_struct.energy_spend+ener));
       }
-      mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
+      mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
    }
       break;
    case HARDWARE_ENVIROSUIT:
@@ -1379,13 +1380,13 @@ ubyte ware_add_func(inv_display* dp, int nn, ObjID* idP,uchar select)
    ObjID id = *idP;
    int trip = ID2TRIP(id);
    uchar oneshot; 
-   uchar bigstuff_fake=FALSE;
+   uchar bigstuff_fake=false;
    int n;
    extern uchar shameful_obselete_flag;
 
    if (global_fullmap->cyber && (objs[id].obclass == CLASS_BIGSTUFF))
    {
-      bigstuff_fake = TRUE;
+      bigstuff_fake = true;
       trip = MAKETRIP(CLASS_SOFTWARE, objBigstuffs[objs[id].specID].data1, objBigstuffs[objs[id].specID].data2);
    }
    n = OPTRIP(trip) - OPTRIP(dp->basetrip);
@@ -1409,7 +1410,7 @@ ubyte ware_add_func(inv_display* dp, int nn, ObjID* idP,uchar select)
       else if (quants[n] >= ver)
       {
          string_message_info(REF_STR_AlreadyHaveOne);
-         shameful_obselete_flag=TRUE;
+         shameful_obselete_flag=true;
          return ADD_NOEFFECT;
       }
       else quants[n] = ver;
@@ -1420,7 +1421,7 @@ ubyte ware_add_func(inv_display* dp, int nn, ObjID* idP,uchar select)
          player_struct.actives[dp->activenum] = n;
       }
       if (select || n == player_struct.actives[dp->activenum])
-         set_inventory_mfd(dp->mfdtype,n,TRUE);
+         set_inventory_mfd(dp->mfdtype,n,true);
       obj_destroy(id);
  
       // Tell the side icons that things may no longer be what they were
@@ -1471,7 +1472,7 @@ void ware_drop_func(inv_display* dp, int n)
    {
       player_struct.actives[dp->activenum] = 0xFF;
       // Tell the item mfd that what it was looking at may no longer be there
-      set_inventory_mfd(dp->mfdtype,MFD_INV_NOTYPE,FALSE);
+      set_inventory_mfd(dp->mfdtype,MFD_INV_NOTYPE,false);
    }
    INVENT_CHANGED;
 
@@ -1480,11 +1481,11 @@ void ware_drop_func(inv_display* dp, int n)
    side_icon_expose_all();
 
 
-   mfd_notify_func(NOTIFY_ANY_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
+   mfd_notify_func(NOTIFY_ANY_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
 
    // If we no longer have an automapper, let the mfd know
    if (player_struct.hardwarez[HARDWARE_AUTOMAP] == 0)
-      mfd_notify_func(MFD_EMPTY_FUNC, MFD_MAP_SLOT, TRUE, MFD_EMPTY, TRUE);
+      mfd_notify_func(MFD_EMPTY_FUNC, MFD_MAP_SLOT, true, MFD_EMPTY, true);
 #endif // !GAME_ONLY
 }
 
@@ -1583,7 +1584,7 @@ void draw_general_list(inv_display *dp)
    {
       gr_set_fcolor(dp->titlecolor);
       get_string(dp->titlenum,buf,BUFSZ);
-      draw_inventory_string(buf,dp->left,dp->top,TRUE);
+      draw_inventory_string(buf,dp->left,dp->top,true);
    }
    s = dp->relnum*dp->pgsize;
    y = dp->top + Y_STEP;
@@ -1614,28 +1615,28 @@ uchar general_use_func(inv_display* dp, int row)
 {
    ObjID id = player_struct.inventory[row];
    extern errtype object_use(ObjID id, uchar in_inv, ObjID cursor_obj);
-   if (id == OBJ_NULL) return FALSE;
+   if (id == OBJ_NULL) return false;
    if (ObjProps[OPNUM(id)].flags & OBJECT_USE_NOCURSOR)
    {
-      object_use(id,TRUE,object_on_cursor);
+      object_use(id,true,object_on_cursor);
       // only change mfd if using object did not destroy it.
       if (player_struct.current_active == dp->activenum
           && row <= player_struct.actives[dp->activenum])
-         set_inventory_mfd(dp->mfdtype,row,TRUE);
+         set_inventory_mfd(dp->mfdtype,row,true);
       if(player_struct.inventory[row]==id) {
-         set_inventory_mfd(dp->mfdtype,row,TRUE);
+         set_inventory_mfd(dp->mfdtype,row,true);
          mfd_change_slot(mfd_grab_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT),MFD_ITEM_SLOT);
       }
    }
    else
       if (dp->drop != NULL)
          dp->drop(dp,row);
-   return TRUE;
+   return true;
 }
 
 ubyte inv_empty_trash(void)
 {
-   uchar found = FALSE;
+   uchar found = false;
    ubyte non_trash = 0;
    ubyte trash;
    ubyte last_trash = NUM_GENERAL_SLOTS;
@@ -1645,7 +1646,7 @@ ubyte inv_empty_trash(void)
       ObjID id = player_struct.inventory[trash];
       if (id != OBJ_NULL && !(ObjProps[OPNUM(id)].flags & INVENTORY_GENERAL))
       {
-         found = TRUE;
+         found = true;
          break;
       }
    }
@@ -1814,12 +1815,12 @@ void remove_general_item(ObjID obj)
    {
       case TRACBEAM_TRIPLE:
          if (objs[obj].info.inst_flags & CLASS_INST_FLAG)
-            obj_tractor_beam_func(obj,FALSE);
+            obj_tractor_beam_func(obj,false);
          break;
    }
    if (player_struct.current_active == ACTIVE_GENERAL)
-      set_inventory_mfd(MFD_INV_GENINV,player_struct.actives[ACTIVE_GENERAL],TRUE);
-   mfd_notify_func(NOTIFY_ANY_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,FALSE);
+      set_inventory_mfd(MFD_INV_GENINV,player_struct.actives[ACTIVE_GENERAL],true);
+   mfd_notify_func(NOTIFY_ANY_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,false);
    // Redraw the panel, or setup thereof
    INVENT_CHANGED;
 }
@@ -1838,13 +1839,13 @@ void general_drop_func(inv_display* dp, int row)
 
 uchar inv_select_general(inv_display* dp, int w)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    if (player_struct.inventory[w] == OBJ_NULL)
       goto out;
    player_struct.actives[dp->activenum] = w;
-   set_inventory_mfd(dp->mfdtype,w,TRUE);
+   set_inventory_mfd(dp->mfdtype,w,true);
    INVENT_CHANGED;
-   retval = TRUE;
+   retval = true;
 out:
    return retval;
 }
@@ -1880,33 +1881,33 @@ void email_more_draw(inv_display *dp)
          short y = dp->top+Y_STEP;
          char buf[50];
          get_string(REF_STR_EmailMoreRight,buf,sizeof(buf));
-         draw_quant_line("",buf,MORE_COLOR,FALSE,dp->left,dp->right,y);
-         email_morebuttons[1] = TRUE;
+         draw_quant_line("",buf,MORE_COLOR,false,dp->left,dp->right,y);
+         email_morebuttons[1] = true;
       }
-      else email_morebuttons[1] = FALSE;
+      else email_morebuttons[1] = false;
    }
    else if (dp->relnum != 0)
    {
       short y = dp->top + Y_STEP;
       char buf[50];
       get_string(REF_STR_EmailMoreLeft,buf,sizeof(buf));
-      draw_quant_line(buf,"",MORE_COLOR,FALSE,dp->left,dp->right,y);
-      email_morebuttons[0] = TRUE;
+      draw_quant_line(buf,"",MORE_COLOR,false,dp->left,dp->right,y);
+      email_morebuttons[0] = true;
    }
-   else email_morebuttons[0] = FALSE;
+   else email_morebuttons[0] = false;
    ResUnlock(ITEM_FONT);
 }
 
 
 uchar email_more_use(inv_display* dp, int w)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    if (dp->relnum != 0 && email_morebuttons[dp->relnum % 2])
    {
       int newpage = (dp->relnum % 2 == 0) ? inventory_page - 1 : inventory_page + 1;
       inventory_page = newpage;
       INVENT_CHANGED;
-      retval = TRUE;
+      retval = true;
    }
    return retval;
 }
@@ -1918,13 +1919,13 @@ uchar email_more_use(inv_display* dp, int w)
 uchar email_use_func(inv_display* dp, int row)
 {
    extern void read_email(Id,int);
-   uchar retval = FALSE;
+   uchar retval = false;
    int n = dp->lines[row].num;
 
    if (n < dp->listlen)
    {
       read_email(EMAIL_BASE_ID,n);
-      retval = TRUE;
+      retval = true;
    }
    return retval;
 }
@@ -1937,7 +1938,7 @@ void email_select_func(inv_display* dp, int row)
    if (n < dp->listlen)
    {
       play_digi_fx(SFX_INVENT_SELECT,1);
-      select_email(n,TRUE);
+      select_email(n,true);
    }
 }
 
@@ -1948,7 +1949,7 @@ void add_email_datamunge(short mung,uchar select)
    extern void set_email_flags(int n);
 
    int n;
-   uchar flash_email = TRUE;
+   uchar flash_email = true;
    ubyte ver;
    extern short last_email_taken;
 
@@ -1966,11 +1967,11 @@ void add_email_datamunge(short mung,uchar select)
          n = NUM_EMAIL_PROPER + n;
          if (player_struct.email[n] == 0)
             player_struct.logs[lev]++;
-         flash_email = FALSE;
+         flash_email = false;
       }
       break;
    case DATA_VER:
-      flash_email = FALSE;
+      flash_email = false;
       n = n + NUM_EMAIL-NUM_DATA;
       break;
    }
@@ -2017,12 +2018,12 @@ char* log_name_func(void* v, int num, char* buf)
 
 uchar log_use_func(inv_display* dp, int row)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    int n = dp->lines[row].num;
    if (n < dp->listlen)
    {
       inventory_draw_new_page(FIRST_LOG_PAGE+n);
-      retval = TRUE;
+      retval = true;
    }
    return retval;
 }
@@ -2162,7 +2163,7 @@ void draw_page_buttons(uchar full)
 // EXTERNALS
 // ---------
 
-uchar dirty_inv_canvas = FALSE;
+uchar dirty_inv_canvas = false;
 
 
 errtype inventory_clear(void)
@@ -2181,7 +2182,7 @@ errtype inventory_clear(void)
       {
          FrameDesc* f = (FrameDesc*)RefGet(REF_IMG_bmBlankInventoryPanel);
          LG_memcpy(inv_backgnd.bits,f+1,f->bm.w*f->bm.h);
-         dirty_inv_canvas = FALSE;
+         dirty_inv_canvas = false;
       }
       uiHideMouse(&r);
       ss_safe_set_cliprect(0,0,INVENTORY_PANEL_WIDTH,INVENTORY_PANEL_HEIGHT);
@@ -2273,14 +2274,14 @@ uchar inventory_add_object(ObjID obj,uchar select)
 
 uchar do_selection(inv_display* dp, int row)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    int w = dp->lines[row].num;
    if (w >= dp->listlen) goto out;
    if (dp->activenum == NULL_ACTIVE) goto out;
    player_struct.actives[dp->activenum] = w;
-   set_inventory_mfd(dp->mfdtype,w,TRUE);
+   set_inventory_mfd(dp->mfdtype,w,true);
    INVENT_CHANGED;
-   retval = TRUE;
+   retval = true;
 out:
    return retval;
 }
@@ -2292,14 +2293,14 @@ void add_object_on_cursor(inv_display* dp, int row)
 	if (dp != NULL)
 		pop = (dp->add_classes & (1 << TRIP2CL(ID2TRIP(object_on_cursor)))) ? ADD_POP : ADD_REJECT;
 	if (pop != ADD_REJECT && dp->add != NULL)
-		pop = dp->add(dp,row,&obj,FALSE);
+		pop = dp->add(dp,row,&obj,false);
 	if (pop == ADD_NOROOM)
 	{
 		string_message_info(REF_STR_InvNoRoom);
 		return;
 	}
 	if (pop == ADD_REJECT)
-		pop = add_to_some_page(obj,FALSE);
+		pop = add_to_some_page(obj,false);
 	if (pop != ADD_REJECT && pop != ADD_FAIL)
 	{
 		INVENT_CHANGED;
@@ -2315,7 +2316,7 @@ void add_object_on_cursor(inv_display* dp, int row)
 
 uchar inventory_handle_leftbutton(uiEvent* ev, inv_display* dp, int row)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
 #ifndef NO_DUMMIES
    void* dummy; dummy = ev;
 #endif // NO_DUMMIES
@@ -2330,53 +2331,53 @@ uchar inventory_handle_leftbutton(uiEvent* ev, inv_display* dp, int row)
       break;
    case INPUT_OBJECT_CURSOR:
       add_object_on_cursor(dp,row);
-      retval = TRUE;
+      retval = true;
       break;
    }
    return retval;
 }
 
 
-static uchar invpanel_focus = FALSE;
+static uchar invpanel_focus = false;
 
 uchar inventory_handle_rightbutton(uiEvent* ev, LGRegion* reg, inv_display* dp, int row)
 {
    static int lastrow = 0;
    static inv_display* lastdp = NULL;
 
-   uchar retval = FALSE;
+   uchar retval = false;
    LGRect r;
-   uchar grab= FALSE;
+   uchar grab= false;
 
-   if (input_cursor_mode != INPUT_NORMAL_CURSOR) return FALSE;
+   if (input_cursor_mode != INPUT_NORMAL_CURSOR) return false;
    if (ev->subtype & MOUSE_RDOWN && row >= 0 && dp != NULL && !invpanel_focus)
    {
       // let us know if we leave the region
-      invpanel_focus = TRUE;
+      invpanel_focus = true;
       uiGrabFocus(reg,UI_EVENT_MOUSE_MOVE);
       lastrow = row;
       lastdp =dp;
-      retval = TRUE;
+      retval = true;
    }
    // Check to see if we've left the region and release focus.  
    region_abs_rect(reg,reg->r,&r);
    if (!RECT_TEST_PT(&r,ev->pos))
    {
-      grab = TRUE;
+      grab = true;
       row = lastrow;
       dp = lastdp;
-      retval = TRUE;
+      retval = true;
    }
    if (ev->subtype & MOUSE_RUP)
    {
       if (row == lastrow && dp == lastdp)
-         grab = TRUE;
+         grab = true;
    }
    else if (ev->subtype & MOUSE_MOTION && (row != lastrow || dp != lastdp))
    {
       row = lastrow;
       dp = lastdp;
-      grab = TRUE;
+      grab = true;
    }
    if (grab && dp != NULL && row >= 0)
    {
@@ -2393,7 +2394,7 @@ uchar inventory_handle_rightbutton(uiEvent* ev, LGRegion* reg, inv_display* dp, 
       }
       lastrow = -1;
       lastdp = NULL;
-      retval = TRUE;
+      retval = true;
    }
    return retval;
 }
@@ -2402,7 +2403,7 @@ uchar inventory_handle_rightbutton(uiEvent* ev, LGRegion* reg, inv_display* dp, 
 
 uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void* data)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    uiMouseEvent *mev = (uiMouseEvent*) ev;
    int relx;
    inv_display* dp = NULL;
@@ -2413,7 +2414,7 @@ uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void* data)
    short temp;
 #endif
    if (game_paused)
-      return(TRUE);
+      return(true);
 
 #ifdef STEREO_SUPPORT
    if (convert_use_mode == 5)
@@ -2435,17 +2436,17 @@ uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void* data)
    if (invpanel_focus && !(mev->buttons & (1 << MOUSE_RBUTTON)))
    {
       uiReleaseFocus(r,UI_EVENT_MOUSE_MOVE);
-      invpanel_focus = FALSE;
+      invpanel_focus = false;
    }
    if (full_game_3d && !(full_visible & FULL_INVENT_MASK))
-      return FALSE;
+      return false;
    if (full_game_3d && !(mev->buttons & (1 << MOUSE_RBUTTON)))
       {
          if (!(mev->action & ~MOUSE_MOTION))
-            return FALSE;
+            return false;
          if (input_cursor_mode != INPUT_OBJECT_CURSOR)
          {
-            uchar found = FALSE;
+            uchar found = false;
             short rel_y;
             short x,y;
             short smx,smy;
@@ -2473,7 +2474,7 @@ uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void* data)
             smy = SEARCH_MARGIN;
 #ifdef SVGA_SUPPORT  
             ss_set_hack_mode(2, &temp);
-            ss_point_convert(&smx,&smy,FALSE);
+            ss_point_convert(&smx,&smy,false);
 #endif
             for (x = relx-smx; !found && x <= relx + smx; x++)
                for (y = rel_y - smy; !found && y <= rel_y + smy; y++)
@@ -2482,10 +2483,10 @@ uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void* data)
                   usex = x;
                   usey = y;
 #ifdef SVGA_SUPPORT
-                  ss_point_convert(&usex,&usey,FALSE);
+                  ss_point_convert(&usex,&usey,false);
 #endif
                   if (gr_get_pixel(usex,usey) != 0) // found non-transparent pixel
-                     found = TRUE;
+                     found = true;
                }
 #ifdef SVGA_SUPPORT
             ss_set_hack_mode(0,&temp);
@@ -2493,7 +2494,7 @@ uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void* data)
             gr_pop_canvas();
             if (!found)
             {
-               return FALSE;
+               return false;
             }
          }
        }
@@ -2510,16 +2511,16 @@ uchar inventory_mouse_handler(uiEvent* ev, LGRegion* r, void* data)
    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (mev->action & (MOUSE_LDOWN|MOUSE_RUP|UI_MOUSE_LDOUBLE)))
    {
       add_object_on_cursor(dp,row);
-      return TRUE;
+      return true;
    }
    if ((mev->buttons & (1 << MOUSE_RBUTTON)) || (ev->subtype & (MOUSE_RUP|MOUSE_RDOWN)))
       if (inventory_handle_rightbutton(ev,r,dp,row))
-         retval = TRUE;
+         retval = true;
    // Handle left button
    if (ev->subtype & MOUSE_LDOWN)
    {
       if (inventory_handle_leftbutton(ev,dp,row))
-         retval = TRUE;
+         retval = true;
    }
    // Handle left doubleclick
    if (ev->subtype & UI_MOUSE_LDOUBLE)
@@ -2545,7 +2546,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent* ev, LGRegion* r, void* data)
       && uiLastMouseRegion[MOUSE_LBUTTON] != r)
    {
       uiSetRegionDefaultCursor(r,NULL);
-      return FALSE;
+      return false;
    }
 
    pos.x -= INVENTORY_PANEL_X;
@@ -2556,7 +2557,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent* ev, LGRegion* r, void* data)
    {
       last_invent_cnum = cnum;
       uiSetRegionDefaultCursor(r,NULL);
-      return FALSE;
+      return false;
    }
 
 
@@ -2570,23 +2571,23 @@ uchar pagebutton_mouse_handler(uiMouseEvent* ev, LGRegion* r, void* data)
       last_invent_cnum = cnum;
 #ifdef SVGA_SUPPORT
       free(invent_bttn_bitmap.bits);
-      make_popup_cursor(c,&invent_bttn_bitmap,cursor_strings[cnum],POPUP_DOWN,TRUE,offset);
+      make_popup_cursor(c,&invent_bttn_bitmap,cursor_strings[cnum],POPUP_DOWN,true,offset);
 #else
-      make_popup_cursor(c,&invent_bttn_bitmap,cursor_strings[cnum],POPUP_DOWN,FALSE,offset);
+      make_popup_cursor(c,&invent_bttn_bitmap,cursor_strings[cnum],POPUP_DOWN,false,offset);
 #endif
       uiSetRegionDefaultCursor(r,c);
    }
 
    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (ev->action & (MOUSE_LDOWN|MOUSE_RDOWN|UI_MOUSE_LDOUBLE)))
    {
-      AddResult pop = (AddResult)add_to_some_page(object_on_cursor,FALSE);
+      AddResult pop = (AddResult)add_to_some_page(object_on_cursor,false);
       if (IS_POP_RESULT(pop))
          pop_cursor_object();
-      return TRUE;
+      return true;
    }
 
    if (page_button_state[cnum] == BttnDummy)
-      return FALSE;
+      return false;
 
 
 
@@ -2622,7 +2623,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent* ev, LGRegion* r, void* data)
             INVENT_CHANGED;
          }
     }
-   return TRUE;
+   return true;
 }
 
 #define MAX_HOTKEY_PAGES  6
@@ -2665,7 +2666,7 @@ uchar invent_hotkey_func(ushort keycode, ulong context, int data)
          full_visible |= FULL_INVENT_MASK;
    }
    INVENT_CHANGED;
-   return TRUE;
+   return true;
 }
 
 uchar cycle_weapons_func(ushort keycode, ulong context, int data)
@@ -2699,7 +2700,7 @@ got_soft:
       }
       inventory_select_weapon(NULL,aw);
    }
-   return TRUE;
+   return true;
 }
 
 
@@ -2732,7 +2733,7 @@ void invent_language_change(void)
 
 LGRegion* create_invent_region(LGRegion* root, LGRegion **pbuttons, LGRegion **pinvent)
 {
-   static uchar done_init = FALSE;
+   static uchar done_init = false;
    extern void add_email_handler(LGRegion* r);
    int id;
    LGRect invrect;
@@ -2771,7 +2772,7 @@ LGRegion* create_invent_region(LGRegion* root, LGRegion **pbuttons, LGRegion **p
 
    if (!done_init)
    {
-      done_init = TRUE;
+      done_init = true;
       // Assign different cursors to different buttons in pagebutton region
       {
          grs_bitmap* bm = &invent_bttn_bitmap;
@@ -2779,7 +2780,7 @@ LGRegion* create_invent_region(LGRegion* root, LGRegion **pbuttons, LGRegion **p
          LGPoint offset = {0,-1};
 
          invent_language_change();
-         make_popup_cursor(c,bm,cursor_strings[0],POPUP_DOWN,TRUE,offset);
+         make_popup_cursor(c,bm,cursor_strings[0],POPUP_DOWN,true,offset);
       }
       
       // Pull in the background bitmap
@@ -2865,7 +2866,7 @@ void inv_change_fullscreen(uchar on)
       gr_push_canvas(pinv_canvas);
       gr_clear(0);
       gr_pop_canvas();
-      dirty_inv_canvas = TRUE;
+      dirty_inv_canvas = true;
    }
    else
    {
@@ -3177,10 +3178,10 @@ uchar gen_inv_page(int pgnum, int *i, inv_display** dp)
       if (idp->pgnum == pgnum)
       {
          *dp = idp;
-         return TRUE;
+         return true;
       }
    }
-   return FALSE;
+   return false;
 }
 
 #define LOG_PAGE_SHF 8
@@ -3194,9 +3195,9 @@ uchar gen_inv_displays(int *i, inv_display** dp)
    {
       inv_display* idp = &inv_display_list[*i];
       *dp = idp;
-      return TRUE;
+      return true;
    }
-   return FALSE;
+   return false;
 }
 
 
@@ -3204,7 +3205,7 @@ void absorb_object_on_cursor(short keycode, ulong context, void* data)
 {
    if(object_on_cursor==NULL) return;
 
-   if(inventory_add_object(object_on_cursor,TRUE))
+   if(inventory_add_object(object_on_cursor,true))
       pop_cursor_object();
    return;
 }

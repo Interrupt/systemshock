@@ -136,7 +136,7 @@ int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli) {
 	         }
 	       }
 	     }
-	    else if (d<0) return TRUE; /* punt this tmap */
+	    else if (d<0) return true; /* punt this tmap */
 	  
 	  u=(tli->left.u+=tli->left.du);
 	  tli->right.u+=tli->right.du;
@@ -151,7 +151,7 @@ int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli) {
 		start_pdest += gr_row;
 	} while (--(tli->n) > 0);
 
-	return FALSE; /* tmap OK */
+	return false; /* tmap OK */
 
 // handle 68K loops
 #else
@@ -305,7 +305,7 @@ asm int Handle_Solid_Lin_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 
 @Done:
   movem.l	(sp)+,d0-d7/a0-a6
-	moveq		#FALSE,d0
+	moveq		#false,d0
   rts
 
 @Err: 	
@@ -480,7 +480,7 @@ int gri_trans_solid_floor_umap_loop(grs_tmap_loop_info *tli) {
                p_dest++; u+=du; v+=dv;
              }
 				  }
-      } else if (d<0) return TRUE; /* punt this tmap */
+      } else if (d<0) return true; /* punt this tmap */
       tli->w+=tli->dw;
       u=fix_div((tli->left.u+=tli->left.du),tli->w);
       tli->right.u+=tli->right.du;
@@ -493,7 +493,7 @@ int gri_trans_solid_floor_umap_loop(grs_tmap_loop_info *tli) {
       dx=tli->right.x-tli->left.x;
       tli->y++;
    } while (--(tli->n) > 0);
-   return FALSE; /* tmap OK */
+   return false; /* tmap OK */
 // handle 68K loops
 #else
 	return(Handle_Solid_Floor_68K_Loop(u,v,du,dv,dx,tli,grd_bm.bits,t_bits,gr_row));
@@ -643,7 +643,7 @@ asm int Handle_Solid_Floor_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 
 @Done:
   movem.l	(sp)+,d0-d7/a0-a6
-	moveq		#FALSE,d0
+	moveq		#false,d0
   rts
 
 @Err: 	
@@ -777,7 +777,7 @@ int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli) {
                p_dest += gr_row; u+=du; v+=dv;
             }
           }
-      } else if (d<0) return TRUE; /* punt this tmap */
+      } else if (d<0) return true; /* punt this tmap */
       
 			
       tli->w+=tli->dw;
@@ -794,7 +794,7 @@ int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli) {
          
    } while (--(tli->n) > 0);
 
-	return FALSE;
+	return false;
 // handle 68K loops
 #else
 	return(Handle_Solid_Wall_68K_Loop(u,v,du,dv,dy,tli,grd_bm.bits,t_bits,gr_row)); 
@@ -931,7 +931,7 @@ asm int Handle_Solid_Wall_68K_Loop(fix u, fix v, fix du, fix dv, fix dy,
 
 @Done:
   movem.l	(sp)+,d0-d7/a0-a6
-	moveq		#FALSE,d0
+	moveq		#false,d0
   rts
 
 @Err: 	

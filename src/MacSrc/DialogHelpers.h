@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
+#include <stdbool.h>
 
 //--------------------
 //  Constants
@@ -45,14 +46,14 @@ typedef pascal void (*SliderCallbackProcPtr)(short value);
 //--------------------
 //  Globals
 //--------------------
-extern Boolean		gGrayOK;
-extern Boolean		gIgnoreGray;
+extern bool		gGrayOK;
+extern bool		gIgnoreGray;
 extern Str255		gDimTitle;
-extern Boolean		gDimmed;
+extern bool		gDimmed;
 extern MenuHandle	gPopupMenuHdl;
 extern short			gPopupSel;
 extern short			gSliderLastPos;
-extern Boolean		gSliderDimmed;
+extern bool		gSliderDimmed;
 
 extern short			gNewGameSel[4];
 
@@ -62,8 +63,8 @@ extern short			gNewGameSel[4];
 void FlashButton(WindowPtr dlog, short itemN);
 pascal void OKButtonUser(WindowPtr dlog, short itemN);
 
-pascal Boolean ShockFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit);
-pascal Boolean ShockAlertFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit);
+pascal bool ShockFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit);
+pascal bool ShockAlertFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit);
 
 pascal void DimStaticUser(WindowPtr dlog, short itemN);
 

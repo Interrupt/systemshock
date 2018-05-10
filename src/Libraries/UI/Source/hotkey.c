@@ -215,7 +215,7 @@ static uchar shutdown_iter_func(void* elem, void* data)
    data = dummy;
 #endif // NO_DUMMIES
    array_destroy(&ch->keychain);
-   return FALSE;
+   return false;
 }
 
 errtype hotkey_shutdown(void)

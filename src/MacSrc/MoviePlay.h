@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
+#include <stdbool.h>
 
 //--------------------
 //  Types
@@ -36,7 +37,7 @@ typedef struct {
 //--------------------
 //  Prototypes
 //--------------------
-void PlayCutScene(FSSpec *movieSpec, Boolean showSubs, Boolean allowHalt);
+void PlayCutScene(FSSpec *movieSpec, bool showSubs, bool allowHalt);
 void PlayVMail(FSSpec *movieSpec, short orgx, short orgy);
 void PlayIntroCutScene(void);
 void PlayStartupMovie(FSSpec *movieSpec, short orgx, short orgy);

@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ** $Header: n:/project/cit/src/RCS/objapp.c 1.17 1994/05/14 03:30:03 xemu Exp $
  * 
 */
+#include <stdbool.h>
 
 #include "objects.h"
 #include "objsim.h"
@@ -170,8 +171,8 @@ void ObjRefStateBinIteratorInit (void)
 
 uchar ObjRefStateBinIterator (ObjRefStateBin *bin)
 {
-	if (map_y == MAP_YSIZE) return FALSE;
+	if (map_y == MAP_YSIZE) return false;
 	bin->sq.x = map_x; bin->sq.y = map_y;
 	if (++map_x == MAP_XSIZE) { map_x = 0; map_y++; }
-	return TRUE;
+	return true;
 }

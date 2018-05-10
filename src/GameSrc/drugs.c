@@ -162,7 +162,7 @@ void drug_use(int n)
 
    if (Drugs[n].use) Drugs[n].use();
    
-   mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+   mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
    if (_current_loop <= FULLSCREEN_LOOP) \
       chg_set_flg(INVENTORY_UPDATE);
 
@@ -181,7 +181,7 @@ void drug_wear_off(int n)
 
    if (Drugs[n].wearoff) Drugs[n].wearoff();
 
-   mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+   mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
    
    return;
 }
@@ -643,7 +643,7 @@ void drug_genius_use()
 {
    void mfd_gridpanel_set_winmove(uchar check);
 
-   mfd_gridpanel_set_winmove(TRUE);
+   mfd_gridpanel_set_winmove(true);
    return;
 }
 

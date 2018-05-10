@@ -252,7 +252,7 @@ physics_handle EDMS_FF_cast_projectile_new
          {
             // We hit someone!
 
-            hit_terrain = FALSE;
+            hit_terrain = false;
 
             victim_on = ph2on[victim];
             Q iota_c = 20*I[victim_on][36]*mass*speed;
@@ -292,13 +292,13 @@ physics_handle EDMS_FF_cast_projectile_new
 
       // Did we hit a wall, or did we hit range out?
       // ===========================================
-      hit = FALSE;
+      hit = false;
       g_info =
       w_info = 0;
 
       if (hit_terrain)
       {
-         hit = TRUE;
+         hit = true;
          g_info = TFF.DATA1;
       }
       else
@@ -306,7 +306,7 @@ physics_handle EDMS_FF_cast_projectile_new
       // -----------------
       if ( stepper == max_step )
       {           //Check for rangeout...
-         hit = FALSE;
+         hit = false;
          g_info = 
          w_info = 0;
       }
@@ -316,7 +316,7 @@ physics_handle EDMS_FF_cast_projectile_new
       // --------------------
       if( victim != -1 )
       {
-         hit = TRUE;
+         hit = true;
          g_info =
          w_info = 0;
       }
@@ -565,7 +565,7 @@ physics_handle EDMS_FF_cast_projectile( Q *X, // source
          uchar maybe_hit = ff_terrain (X[0],                //Get the info...
                           X[1],
                           X[2],
-                          TRUE,
+                          true,
                           &TFF);
 
          if (maybe_hit)
@@ -668,7 +668,7 @@ physics_handle EDMS_FF_cast_projectile( Q *X, // source
 
       // Did we hit a wall, or did we hit range out?
       // ===========================================
-      hit = FALSE;
+      hit = false;
       g_info =
       w_info = 0;
 
@@ -678,7 +678,7 @@ physics_handle EDMS_FF_cast_projectile( Q *X, // source
       {
          g_info = 0;
          w_info = TFF.DATA2;
-         hit = TRUE;
+         hit = true;
       }
 
       // Hit ground...
@@ -687,14 +687,14 @@ physics_handle EDMS_FF_cast_projectile( Q *X, // source
       {
          g_info = TFF.DATA1;  //Check for ground...
          w_info = 0;
-         hit = TRUE;
+         hit = true;
       }  
 
       // Did we range out?
       // -----------------
       if ( stepper == max_step )
       {           //Check for rangeout...
-         hit = FALSE;
+         hit = false;
          g_info = 
          w_info = 0;
       }
@@ -704,7 +704,7 @@ physics_handle EDMS_FF_cast_projectile( Q *X, // source
       // --------------------
       if( victim != -1 )
       {
-         hit = TRUE;
+         hit = true;
          g_info =
          w_info = 0;
       }

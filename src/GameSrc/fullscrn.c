@@ -26,6 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __FULLSCRN_SRC
 
+#include <stdbool.h>
+#include <stdio.h>
+
 #include "ShockBitmap.h"
 #include "Prefs.h"
 
@@ -71,8 +74,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // -------
 // GLOBALS
 // -------
-uchar fullscrn_vitals = TRUE;
-uchar fullscrn_icons = TRUE;
+uchar fullscrn_vitals = true;
+uchar fullscrn_icons = true;
 
 extern uchar inp6d_stereo_active;
 extern uchar inp6d_stereo;
@@ -117,7 +120,7 @@ errtype fullscreen_init(void)
    extern errtype wrapper_create_mouse_region(LGRegion*);
    extern LGRect fscrn_rect;
 
-   generic_reg_init(TRUE ,fullroot_region,NULL,&fullscreen_slab,main_kb_callback,NULL);
+   generic_reg_init(true ,fullroot_region,NULL,&fullscreen_slab,main_kb_callback,NULL);
 
    // Full-screen 3d view region
    fullview_region = &fullview_region_data;
@@ -128,8 +131,8 @@ errtype fullscreen_init(void)
 
 //KLC - no wrapper in Mac   wrapper_create_mouse_region(fullview_region);
    create_invent_region(fullview_region, &pagebutton_region_full, &inventory_region_full);
-   init_posture_meters(fullview_region, TRUE);
-   screen_init_mfd(TRUE);
+   init_posture_meters(fullview_region, true);
+   screen_init_mfd(true);
    screen_init_side_icons(fullview_region);
 
 //   mouse_get_rate(&base_mouse_xr, &base_mouse_yr, &base_mouse_thresh);
@@ -169,9 +172,9 @@ errtype fullscreen_overlay()
    if (fullscrn_vitals)
    {
       extern void update_meters(bool);
-      status_vitals_update(TRUE);
+      status_vitals_update(true);
       if (!global_fullmap->cyber)
-         update_meters(TRUE);
+         update_meters(true);
    }
    if ((!global_fullmap->cyber) && (fullscrn_icons))
       side_icon_expose_all();
@@ -231,17 +234,17 @@ void change_svga_screen_mode()
 	extern void view360_update_screen_mode();
 	extern void amap_pixratio_set(fix ratio);
 	extern uchar redraw_paused;
-	extern Boolean DoubleSize;
+	extern bool DoubleSize;
 
 	uchar cur_pal[768];
 	uchar *s_table;
 	short cur_w, cur_h, cur_m;
 	short mx,my;
-	uchar mode_change = FALSE;
+	uchar mode_change = false;
 	short temp;
 	
 	if (convert_use_mode != mode_id)
-		mode_change = TRUE;
+		mode_change = true;
 	if (mode_change)
 	{
       printf(" Changing screen mode\n");
@@ -262,7 +265,7 @@ void change_svga_screen_mode()
          else
  */
 			cur_m=svga_mode_data[mode_id];
-			retval = gr_set_mode(cur_m, TRUE);
+			retval = gr_set_mode(cur_m, true);
 			if (retval == -1)
 			{
 				mode_id = (mode_id + 1 ) % 5;
@@ -325,7 +328,7 @@ void change_svga_screen_mode()
 		else
 			game_redrop_rad(2+mode_id);
 		
-		ss_mouse_convert(&mx,&my,FALSE);
+		ss_mouse_convert(&mx,&my,false);
 /*KLC  leave out until stereo view is needed
 		if (mode_id == 5) // hack hack stereo hack
 		{
@@ -354,7 +357,7 @@ void change_svga_screen_mode()
 	if (full_game_3d)
 	{
 		static_change_copy();
-		mfd_change_fullscreen(TRUE);
+		mfd_change_fullscreen(true);
 	}
 	status_bio_update_screenmode();
 	ss_set_hack_mode(2,&temp);
@@ -367,7 +370,7 @@ void change_svga_screen_mode()
 	change_svga_cursors();
 //KLC	gamma_dealfunc(QUESTVAR_GET(GAMMACOR_QVAR));
 	gamma_dealfunc(gShockPrefs.doGamma);
-	redraw_paused=TRUE;
+	redraw_paused=true;
 }
 
 
@@ -381,7 +384,7 @@ void fullscreen_start()
 // Hey, we don't need to hide here because the mouse already gets hidden by fooscreen_exit
 //   uiHideMouse(NULL);
    HotkeyContext = DEMO_CONTEXT;
-   full_game_3d = TRUE;
+   full_game_3d = true;
    uiSetCurrentSlab(&fullscreen_slab);
 
    inventory_region = inventory_region_full;
@@ -396,12 +399,12 @@ void fullscreen_start()
 #endif
    change_svga_screen_mode();
 
-   inv_change_fullscreen(TRUE);
+   inv_change_fullscreen(true);
 //   mouse_unconstrain();
    player_struct.hardwarez_status[CPTRIP(FULLSCR_HARD_TRIPLE)] |= WARE_ON;
    string_message_info(REF_STR_FSMode);
    mfd_force_update();
-   draw_page_buttons(TRUE);
+   draw_page_buttons(true);
 #ifdef STEREO_SUPPORT
    if (inp6d_stereo)
    {
@@ -418,10 +421,10 @@ void fullscreen_start()
 	      {
             Warning(("Stereo setup failed"));
             i6_video(I6VID_CLEAR_MODE,i6d_ss);
-            inp6d_stereo_active=FALSE;
+            inp6d_stereo_active=false;
          }
          else
-            inp6d_stereo_active=TRUE;
+            inp6d_stereo_active=true;
       }
    }
 #endif
@@ -448,7 +451,7 @@ void fullscreen_exit()
    if (inp6d_stereo_active)
    {
       i6_video(I6VID_CLEAR_MODE,i6d_ss);
-      inp6d_stereo_active=FALSE;
+      inp6d_stereo_active=false;
    }
 #endif
    uiHideMouse(NULL);
@@ -458,7 +461,7 @@ void fullscreen_exit()
    {
       s_table = gr_get_light_tab();
       gr_get_pal(0,256,&cur_pal[0]);
-      gr_set_mode(GRM_320x200x8, TRUE);
+      gr_set_mode(GRM_320x200x8, true);
       gr_set_screen(cit_screen);
       convert_use_mode = 0;
 //KLC      change_svga_cursors();
@@ -467,9 +470,9 @@ void fullscreen_exit()
 #endif
    if (_new_mode == -1)
       return;
-   full_game_3d = FALSE;
-   mfd_change_fullscreen(FALSE);
-   inv_change_fullscreen(FALSE);
+   full_game_3d = false;
+   mfd_change_fullscreen(false);
+   inv_change_fullscreen(false);
    player_struct.hardwarez_status[CPTRIP(FULLSCR_HARD_TRIPLE)] &= ~WARE_ON;
    hud_unset(HUD_MSGLINE);
 
@@ -491,7 +494,7 @@ errtype full_lower_region(LGRegion *r)
    errtype retval;
    region_begin_sequence();
    retval = region_move(r, r->r->ul.x, r->r->ul.y, 0);
-   region_end_sequence(FALSE);
+   region_end_sequence(false);
    return(retval);
 }
 
@@ -501,6 +504,6 @@ errtype full_raise_region(LGRegion *r)
    errtype retval;
    region_begin_sequence();
    retval = region_move(r, r->r->ul.x, r->r->ul.y, 2);
-   region_end_sequence(FALSE);
+   region_end_sequence(false);
    return(retval);
 }

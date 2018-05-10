@@ -24,7 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
+
 #include "tools.h"
+#include "event.h"
 #include "game_screen.h"
 #include "input.h"
 
@@ -51,7 +54,7 @@ uchar amap_mouse_handler(uiEvent *ev, LGRegion *reg, void *v)
    if (mev->action & ~MOUSE_MOTION)
       if (mev->action < 8)
          return amap_ms_callback(oAMap(MFD_FULLSCR_MAP),mev->pos.x,mev->pos.y,mev->action,mev->buttons);
-   return(TRUE);
+   return(true);
 }
 
 uchar amap_kb_callback(curAMap *amptr, int code);
@@ -61,7 +64,7 @@ uchar amap_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
    uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
    
    if (amap_kb_callback(oAMap(MFD_FULLSCR_MAP),kev->code))
-      return FALSE;
+      return false;
    return(main_kb_callback(ev,r,user_data));
 }
 
@@ -78,7 +81,7 @@ errtype amap_init(void)
 	int 		id;
 	LGRect	mac_rect = {{0,0},{640,480}};
 
-   generic_reg_init(TRUE,&amap_root_region,&mac_rect,&amap_slab,amap_key_handler,amap_mouse_handler);
+   generic_reg_init(true,&amap_root_region,&mac_rect,&amap_slab,amap_key_handler,amap_mouse_handler);
    uiInstallRegionHandler(&amap_root_region,UI_EVENT_KBD_POLL|UI_EVENT_MOUSE_MOVE, amap_scroll_handler, NULL, &id);
    return(OK);
 }

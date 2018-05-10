@@ -74,15 +74,15 @@ uint  _change_flag   = 0;          /* change flags for loop */
 uint  _static_change = 0;          /* current static changes */
 short _new_mode      = 0;          /* mode to change to, if any */
 short _last_mode     = 0;          /* last mode, if you want to change back to it */
-uchar time_passes = TRUE;
-uchar saves_allowed = FALSE;
-uchar physics_running = TRUE;
-uchar ai_on = TRUE;
-uchar anim_on = TRUE;
-uchar player_invulnerable = FALSE;
-uchar player_immortal = FALSE;
-uchar always_render = FALSE;
-uchar pal_fx_on = TRUE;
+uchar time_passes = true;
+uchar saves_allowed = false;
+uchar physics_running = true;
+uchar ai_on = true;
+uchar anim_on = true;
+uchar player_invulnerable = false;
+uchar player_immortal = false;
+uchar always_render = false;
+uchar pal_fx_on = true;
 
 
 #else     // NOT _MAINLOOP_SRC

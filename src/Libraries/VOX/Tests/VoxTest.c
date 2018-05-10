@@ -42,9 +42,9 @@ WindowPtr	gMainWindow;
 
 // prototypes
 void voxel_convert(grs_bitmap *bmp);
-Boolean IsOptKeyDown(void);
-Boolean IsCmdKeyDown(void);
-Boolean IsShiftKeyDown(void);
+bool IsOptKeyDown(void);
+bool IsCmdKeyDown(void);
+bool IsShiftKeyDown(void);
 
 // globals
 uchar pal_buf[768];
@@ -81,7 +81,7 @@ void main (void)
 	SetupOffscreenBitmaps();			
 				
 	gr_init();
-	gr_set_mode (GRM_640x480x8, TRUE);
+	gr_set_mode (GRM_640x480x8, true);
 	screen = gr_alloc_screen (grd_cap->w, grd_cap->h);
 	gr_set_screen (screen);
 	off_canvas = gr_alloc_canvas(BMT_FLAT8,512,480);
@@ -159,9 +159,9 @@ void main (void)
 		fix					vec2X = 0, vec2Y = 0;
 		ushort 			cooked = 0;
 		uchar 				result;
-		Boolean			done = FALSE;
+		bool			done = false;
 		Rect				clrRect;
-		Boolean			optDown, cmdDown, shiftDown;
+		bool			optDown, cmdDown, shiftDown;
 		
 		SetRect(&clrRect, 128, 0, 640, 480);
 		vx_init(16);
@@ -199,7 +199,7 @@ void main (void)
 			cmdDown = IsCmdKeyDown();
 			shiftDown = IsShiftKeyDown();
 				if (kb_state(0x0C))
-					done = TRUE;
+					done = true;
 				else
 				{
 					if (kb_state(0x7B))
@@ -267,7 +267,7 @@ void voxel_convert(grs_bitmap *bmp)
             bmp->bits[(y * bmp->w) + x] -= 208;
 }
 
-Boolean IsShiftKeyDown(void)
+bool IsShiftKeyDown(void)
  {
 	long		keys[4];
 
@@ -275,7 +275,7 @@ Boolean IsShiftKeyDown(void)
 	return((keys[1] & 0x00000001) != 0L);
  }
 
-Boolean IsOptKeyDown(void)
+bool IsOptKeyDown(void)
  {
 	long		keys[4];
 
@@ -283,7 +283,7 @@ Boolean IsOptKeyDown(void)
 	return((keys[1] & 0x00000004) != 0L);
  }
 
-Boolean IsCmdKeyDown(void)
+bool IsCmdKeyDown(void)
  {
 	long		keys[4];
 

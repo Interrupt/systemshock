@@ -91,7 +91,7 @@ const Q	one_sixth = .1666666666667,      //Overboard?
 			point_one_two_five = .125,
 			two = 2.,
 			point_1 = 0.1,
-			min_scale_slice = .03;	// ¥¥¥¥Ê.03
+			min_scale_slice = .03;	// ï¿½ï¿½ï¿½ï¿½ï¿½.03
 
 //      Sleeping...
 //      -----------
@@ -115,7 +115,7 @@ int    active_objects = 0;
 
 // Are non-sleeping objects in the middle of doing their integrating thing,
 // and thus using A[][][] instead of S[][][]?
-uchar   A_is_active = FALSE;
+uchar   A_is_active = false;
 
 //	Here is a slower converging, albeit hopefully equally stable integrator, soliton_light, which
 //	we'll subject to some speed trials.  This could be used for certain applications, such as
@@ -250,7 +250,7 @@ register	Q	*S_Object;
       }
    }
 
-   A_is_active = TRUE;                 // A is where object's real locations are
+   A_is_active = true;                 // A is where object's real locations are
 
 // mout << "NextStep...\n";
 
@@ -459,7 +459,7 @@ int     total = 0;
             EDMS_kill_object( on2ph[object] );    //You deserve to die!
       }
    }
-   A_is_active = FALSE;
+   A_is_active = false;
 }
 
 

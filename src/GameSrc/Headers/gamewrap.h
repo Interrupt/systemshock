@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Includes
+#include <stdbool.h>
 
 // Remember, change in wrapper.c also
 #define OLD_SAVE_GAME_ID_BASE 550
@@ -47,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Loads or saves a game named by fname. 
 //KLC - following is Mac version		errtype copy_file(char *src_fname, char *dest_fname);
-errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile);
+errtype copy_file(FSSpec *srcFile, FSSpec *destFile, bool saveGameFile);
 //KLC - following is Mac version 		errtype save_game(char *fname, char *comment);
 errtype save_game(FSSpec *fSpec);
 //KLC - following is Mac version 		errtype load_game(char *fname);

@@ -178,7 +178,7 @@ uchar *gr_rsd8_unpack(uchar *src, uchar *dest)
 			 } 		 	
  		 }
  	 } 
- 	while (true);
+ 	while (1);
  	
  	return(dest);
  }

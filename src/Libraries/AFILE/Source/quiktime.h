@@ -388,7 +388,7 @@ void QuikSetPal(QTM *pqtm, uchar *pal);
 void QuikAddVideoSample(QTM *pqtm, FILE *fp, grs_bitmap *pbm, fix time);
 void QuikWriteMovieAndClose(QTM *pqtm, FILE *fp);
 
-#define QuikSetDepth16(pqtm) ((pqtm)->depth16 = TRUE)
+#define QuikSetDepth16(pqtm) ((pqtm)->depth16 = true)
 
 //	Prototypes: quikconv.c (reading chunks for inspection/dumping)
 

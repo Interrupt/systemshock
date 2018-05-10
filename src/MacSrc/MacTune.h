@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //==============================================================================
 
+#include <stdbool.h>
 
 #include <Carbon/Carbon.h>
 //#include <Timer.h>
@@ -71,8 +72,8 @@ extern uchar	mlimbs_semaphore;
 extern Handle			gHeaderHdl, gTuneHdl, gOfsHdl;		// Holds the tune-related data for the current theme file.
 extern long				*gOffsets;									// Array of offsets for the beginning of each tune.
 //extern TunePlayer	gPlayer;									// The Tune Player.
-extern Boolean		gTuneDone;									// True when a sequence has finished playing (set by CB proc).
-extern Boolean		gReadyToQueue;							// True when it's time to queue up a new sequence.
+extern bool		gTuneDone;									// True when a sequence has finished playing (set by CB proc).
+extern bool		gReadyToQueue;							// True when it's time to queue up a new sequence.
 
 //extern TuneCallBackUPP	gTuneCBProc;						// The tune's callback proc.
 //extern CalcTuneTask		gCalcTuneTask;					// Global to hold task info.

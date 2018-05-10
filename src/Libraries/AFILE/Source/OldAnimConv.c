@@ -147,7 +147,7 @@ void main(void)
 	SetupOffscreenBitmaps();			
 
 	gr_init();
-	gr_set_mode (GRM_640x480x8, TRUE);
+	gr_set_mode (GRM_640x480x8, true);
 	screen = gr_alloc_screen (grd_cap->w, grd_cap->h);
 	gr_set_screen (screen);
 	gr_set_unpack_buf((uchar *)malloc(640 * 480));
@@ -281,7 +281,7 @@ void main(void)
 			// parameters for the output movie and begin a compression sequence.
 			if (i == 0)
 			{
-				result = SCDefaultPixMapSettings(ci, ((CGrafPort *)(gMainWindow))->portPixMap, TRUE);
+				result = SCDefaultPixMapSettings(ci, ((CGrafPort *)(gMainWindow))->portPixMap, true);
 			 	result = SCRequestSequenceSettings(ci);
 			 	if (result == scUserCancelled)
 			 	{

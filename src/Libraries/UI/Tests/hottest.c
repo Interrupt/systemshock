@@ -42,33 +42,33 @@ uchar toggle_mode(short keycode, ulong context, void* state)
       printf("Entering ping mode\n");
       HotkeyContext = PING;
    }
-   return TRUE;
+   return true;
 }
 
 
 uchar ping(short keycode, ulong context, void* state)
 {
    printf("PING\n");
-   return TRUE;
+   return true;
 }
 
 
 uchar pong(short keycode, ulong context, void* state)
 {
    printf("PONG %x\n",state);
-   return TRUE;
+   return true;
 }
 
 
 uchar quit(short keycode, ulong context, void* state)
 {
    printf("Hey, look!  I'm an Origin Game!\n");
-   return *(bool*)state = TRUE;
+   return *(bool*)state = true;
 }
 
 void main()
 {
-   uchar done = FALSE;
+   uchar done = false;
    hotkey_init(10);
    hotkey_add(' '|KB_FLAG_DOWN,PING|PONG,toggle_mode,NULL);
    hotkey_add_help('x'|KB_FLAG_DOWN|KB_FLAG_CTRL,PING|PONG,quit,&done,"HELP TEXT");

@@ -125,7 +125,7 @@ uchar fauxrend_start_frame(void)
    viewer_orientation.head = ang(EYE_H);
    g3_start_frame();
    g3_set_view_angles(&viewer_position,&viewer_orientation,ANGLE_ORDER,_fr->viewer_zoom);
-   return TRUE;
+   return true;
 }
 
 void fauxrend_send_frame(void)
@@ -194,14 +194,14 @@ void test_3d(uchar *tmap, uchar* pal)
 	BlockMove(pal,pal_buf,768);
 
    gr_init();
-   gr_set_mode(GRM_640x480x8, TRUE);
+   gr_set_mode(GRM_640x480x8, true);
    screen = gr_alloc_screen(640,480);
    gr_set_screen (screen);
    g3_init(DEFAULT_PT_CNT,AXIS_ORDER);
    
    gr_set_fcolor(fr_clear_color);
    gr_init_bm(&bm, (uchar *) byt_buf, BMT_FLAT8, 0, 64, 64);
-   main_view=fauxrend_place_3d(NULL,FALSE,0,0,0,0,640,480);
+   main_view=fauxrend_place_3d(NULL,false,0,0,0,0,640,480);
    fauxrend_set_context(main_view);
 
    while (true) {

@@ -40,7 +40,7 @@ void goofy_callback(mouse_event* e,void* data)
 
 void main()
 {
-	uchar done = FALSE;
+	uchar done = false;
 	int	 callbackid = -1;
 	
 	printf ("Click the mouse...\n\n");
@@ -65,7 +65,7 @@ void main()
 		mouse_get_xy(&x,&y);
 //		mouse_check_btn(0,&done);
 if (eventcount > 3)
-	done = TRUE;		
+	done = true;
 	}
 	mouse_shutdown();
 	printf("Event count = %d\n",eventcount);

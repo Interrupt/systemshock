@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================
 
+#include <stdbool.h>
 
 #include "Shock.h"
 #include "AEHandlers.h"
@@ -80,7 +81,7 @@ pascal OSErr HandleODOC(AppleEvent *theAppleEvent, AppleEvent *, long  )
 	DescType		typeCode;
 	Size				actualSize;
 	FInfo				theFInfo;
-	Boolean			isStationery;
+	bool			isStationery;
 	
 	anErr = AEGetParamDesc(theAppleEvent, keyDirectObject, typeAEList, &docList);
 	if (anErr)return(anErr);

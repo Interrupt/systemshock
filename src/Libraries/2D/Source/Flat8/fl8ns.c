@@ -46,7 +46,7 @@ int gri_tluc8_scale_umap_loop(grs_tmap_loop_info *tli) {
 
    pl=tli->d+fix_cint(tli->left.x);
    pr=tli->d+fix_cint(tli->right.x);
-   if (pr<=pl) return TRUE;
+   if (pr<=pl) return true;
    ul=tli->left.u;
    du=fix_div(tli->right.u-ul,tli->right.x-tli->left.x);
    ul+=fix_mul(du,fix_ceil(tli->left.x)-tli->left.x);
@@ -93,7 +93,7 @@ int gri_tluc8_scale_umap_loop(grs_tmap_loop_info *tli) {
       pl+=grd_bm.row;
       pr+=grd_bm.row;
    } while (--(tli->n) > 0);
-   return FALSE; /* tmap OK */
+   return false; /* tmap OK */
 }
 
 void gri_tluc8_trans_scale_umap_init(grs_tmap_loop_info *tli) {

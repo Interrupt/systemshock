@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
+#include <stdbool.h>
+
 #include <Carbon/Carbon.h>
 
 //--------------------
@@ -36,20 +38,20 @@ typedef struct
 	
 	// Game Options
 	short		goMsgLength;			// 0 - normal, 1 - brief
-	Boolean		goPopupLabels;
-	Boolean		goOnScreenHelp;
+	bool		goPopupLabels;
+	bool		goOnScreenHelp;
 	short		goLanguage;				// 0 - English
 	
 	// Sound Options
-	Boolean		soBackMusic;
-	Boolean		soSoundFX;
+	bool		soBackMusic;
+	bool		soSoundFX;
 	short		soMusicVolume;
 	
 	// Display Options
 	short		doResolution;			// 0 - High, 1 - Low
 	short		doDetail;				// 0 - Min, 1-Low, 2-High, 3-Max
 	short		doGamma;
-	Boolean	doUseQD;
+	bool	doUseQD;
 	
 } ShockPrefs;
 

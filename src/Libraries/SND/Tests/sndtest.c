@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "kb.h"
 #include "lgsndx.h"
 
-bool	gShowCallback = FALSE;
-bool	gCallbackFlag = FALSE;
+bool	gShowCallback = false;
+bool	gCallbackFlag = false;
 Handle	sndHdl[9];
 
 void parm_move(uchar *parm, int dir);
@@ -39,7 +39,7 @@ void DoMouseSndTest(void);
 void test_snd_callback(snd_digi_parms *p)
 {
 	if (gShowCallback)
-		gCallbackFlag = TRUE;
+		gCallbackFlag = true;
 //		printf("Call-back!   loops:%d, pan:%x, vol:%x, sample:%x\n",
 //				p->loops, p->pan, p->vol, p->sample);
 }
@@ -70,7 +70,7 @@ Handle LoadSound(short resID)
 
 void main(int argc, char *argv[])
 {
-   uchar 	inloop = TRUE;
+   uchar 	inloop = true;
    int 		dres;
 //   int		mres;
 //   int		msc[8][2];
@@ -126,7 +126,7 @@ void main(int argc, char *argv[])
 	   		if (gCallbackFlag)
 	   		{
 	   			printf("Callback!\n");
-	   			gCallbackFlag = FALSE;
+	   			gCallbackFlag = false;
 	   		}
 	   		
       		 event = kb_next();
@@ -134,7 +134,7 @@ void main(int argc, char *argv[])
 				 switch (event.ascii)
 		         {
 		            case 'q':
-		            	inloop=FALSE;
+		            	inloop=false;
 		            	break;
 		            case 'k':
 		            	snd_kill_all_samples();

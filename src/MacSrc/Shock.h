@@ -24,6 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
+#include <stdbool.h>
+#include <stdio.h>
+
 #include <sdl.h>
 
 //--------------------
@@ -123,8 +126,8 @@ void main(void);
 void HandleEvents(void);
 void UpdateWindow(WindowPtr wind);
 void DoCommand(unsigned long mResult);
-Boolean DoSaveGame(void);
-Boolean DoSaveGameAs(void);
+bool DoSaveGame(void);
+bool DoSaveGameAs(void);
 void DoQuit(void);
 void HandleAEOpenGame(FSSpec *openSpec);
 void ScrollCredits(void);
@@ -162,7 +165,7 @@ extern short				gActiveWide, gActiveHigh;
 extern short				gActiveLeft, gActiveTop;
 extern Rect				gActiveArea, gOffActiveArea;
 
-extern Boolean			gIsPowerPC;
+extern bool			gIsPowerPC;
 
 extern long					gDataDirID;
 extern short				gDataVref;

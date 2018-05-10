@@ -83,7 +83,7 @@ void main(void)
 	SetupOffscreenBitmaps();			
 
 	gr_init();
-	gr_set_mode (GRM_640x480x8, TRUE);
+	gr_set_mode (GRM_640x480x8, true);
 	screen = gr_alloc_screen (grd_cap->w, grd_cap->h);
 	gr_set_screen (screen);
 
@@ -92,7 +92,7 @@ void main(void)
 	numFrames = 32767;
 	outWidth = 0;
 	outHeight = 0;
-	depth16 = FALSE;
+	depth16 = false;
 
 //	Open input anim file
 

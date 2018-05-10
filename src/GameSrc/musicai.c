@@ -82,9 +82,9 @@ char tmode_time = 0;
 int actual_score = 0;
 uchar decon_count = 0;
 uchar decon_time = 8;
-uchar in_deconst = FALSE, old_deconst = FALSE;
-uchar in_peril = FALSE;
-uchar just_started = TRUE;
+uchar in_deconst = false, old_deconst = false;
+uchar in_peril = false;
+uchar just_started = true;
 int score_playing = 0;
 short curr_ramp_time, curr_ramp;
 char curr_prioritize, curr_crossfade;
@@ -114,7 +114,7 @@ int mai_damage_sum = 0;
 // How long an attack keeps us in combat music mode
 int mai_combat_length = 1000;
 
-uchar bad_digifx = FALSE;
+uchar bad_digifx = false;
 
 //KLC - no longer need this   Datapath music_dpath;
 
@@ -227,7 +227,7 @@ void mlimbs_do_ai()
 			{
 				musicai_shutdown();															// stop playing current tune
 				make_request(0, play_me);												// setup new tune
-				musicai_reset(FALSE);														// reset MLIMBS and
+				musicai_reset(false);														// reset MLIMBS and
 				MacTuneStartCurrentTheme();												// start playing the new tune.
 			}
 			else
@@ -243,13 +243,13 @@ void mlimbs_do_ai()
 		if (gReadyToQueue)
 		{
 			if (!global_fullmap->cyber)
-				check_asynch_ai(TRUE);
+				check_asynch_ai(true);
 			int	pid = current_request[0].pieceID;
 			if (pid != 255)										// If there is a theme to play,
 			{
 				MacTuneQueueTune(pid);						// Queue it up.
 				mlimbs_counter++;							// Tell mlimbs we've queued another tune.
-				gReadyToQueue = FALSE;
+				gReadyToQueue = false;
 			}
 		}
 		
@@ -258,7 +258,7 @@ void mlimbs_do_ai()
 		if (gTuneDone)
 		{
 			MacTunePrimeTimer();
-			gTuneDone = FALSE;
+			gTuneDone = false;
 		}
    }
 }
@@ -274,7 +274,7 @@ void mlimbs_do_credits_ai()
       ai_cycle = 0;
       grind_credits_music_ai();
       mlimbs_preload_requested_timbres();
-      mlimbs_semaphore = FALSE;
+      mlimbs_semaphore = false;
    }
 }
 
@@ -339,7 +339,7 @@ errtype mai_player_death()
       mlimbs_combat = 0;
       musicai_shutdown();
       make_request(0, transition_table[TRANS_DEATH]);
-      musicai_reset(FALSE);
+      musicai_reset(false);
       MacTuneStartCurrentTheme();
    }
    return(OK);
@@ -350,7 +350,7 @@ errtype mlimbs_AI_init(void)
    mlimbs_boredom = 0;
    old_bore = 0;
    mlimbs_monster = NO_MONSTER;
-   wait_flag = FALSE;
+   wait_flag = false;
    random_flag = 0;
    boring_count = 0;
    ai_cycle = 0;
@@ -515,7 +515,7 @@ message_info(temp);
 	musicai_shutdown();
 	rv = MacTuneLoadTheme(&themeSpec, score_playing);
 	if (rv == 1)
-		musicai_reset(TRUE);
+		musicai_reset(true);
 	else  // handle this a better way.
 		DebugString("Load theme failed!");
 }
@@ -604,7 +604,7 @@ static char def_sound_path[]="sound";
 #ifdef SECRET_SUPPORT
 FILE *secret_fp=NULL;
 char secret_dc_buf[10000];
-volatile char secret_update=FALSE;
+volatile char secret_update=false;
 void secret_closedown(void)
 {
    if (secret_fp!=NULL)
@@ -775,20 +775,20 @@ errtype music_init()
 //	{
          		if (MacTuneInit() == 0)						// If no error, go ahead and start up.
          		{
-				music_on = mlimbs_on = TRUE;
+				music_on = mlimbs_on = true;
 				mlimbs_AI_init();
 			}
 			else													// else turn off the music globals and prefs
 			{
-				gShockPrefs.soBackMusic = FALSE;
+				gShockPrefs.soBackMusic = false;
 				SavePrefs(kPrefsResID);
-				music_on = mlimbs_on = FALSE;
+				music_on = mlimbs_on = false;
 			}
 //	}
 		}
 		else
 		{
-			music_on = mlimbs_on = FALSE;
+			music_on = mlimbs_on = false;
 		}
 	return(OK);
 }

@@ -24,10 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #define __TFDIRECT_SRC
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
 // pretty cool set of header files, eh?
+#include "fix.h"
 #include "tfdirect.h"			// ditto, yep yep yep
 #include "ss_flet.h"			// for everything, basically, constants mostly
 #include "map.h"				// for MAP_HEIGHTS, must be'fore frintern for fdt_mptr
@@ -148,7 +150,7 @@ int   tf_talk=DEFAULT_TALK, tf_tmp;
 #else
 #define tf_talk_setup() 
 #define tf_turn_on(flg)
-#define tf_talk_check(flg)  FALSE
+#define tf_talk_check(flg)  false
 #define tf_undo_set(flg)
 #define do_tf_Spew(flg,dat)
 #define tf_Spew(flg,dat)
@@ -173,7 +175,7 @@ uchar _tf_set_flet(int flags, fix att, fix dist, fix *norm)
 
    tf_Spew(FletSet,("Set %d.. vals %x %x %x, norm %x %x %x\n",ss_edms_facelet_cnt-1,flags,att,dist,norm!=NULL?norm[0]:0xb,norm!=NULL?norm[1]:0xa,norm!=NULL?norm[2]:0xd));
    if (ss_edms_facelet_cnt>=SS_MAX_FACELETS)
-      return FALSE;
+      return false;
    cur_fc->flags=flags;
    cur_fc->att=att;
    cur_fc->comp=tf_rad-dist;
@@ -184,7 +186,7 @@ uchar _tf_set_flet(int flags, fix att, fix dist, fix *norm)
 #ifdef USE_OLD_PASSING
       goto i_hate_everyone;
 #endif
-      return TRUE;
+      return true;
    case SS_BCD_PRIM_XAXIS:
       pv=0;
       break;
@@ -213,7 +215,7 @@ i_hate_everyone:
 #endif
 //   if (ss_edms_bcd_flags&SS_BCD_MISC_CLIMB)
 //      tf_talk|=Ret|FletList;
-   return TRUE;
+   return true;
 }
 
 // tf_internal_chk...
@@ -498,7 +500,7 @@ int _stair_check(fix walls[4][2], int flags)
 uchar tf_solve_aligned_face(fix pt[3], fix walls[4][2], int flags, fix *norm)
 {
    fix att;
-   uchar rv=FALSE;
+   uchar rv=false;
 //   if (norm!=NULL)
 //      tf_turn_on(0xffff);
    tf_Spew(AlignFce,("tfd:aligned walls %x %x %x %x %x %x %x %x, pt %x %x %x, flg %x, nrm %x %x %x\n",
@@ -515,7 +517,7 @@ uchar tf_solve_aligned_face(fix pt[3], fix walls[4][2], int flags, fix *norm)
          if (flags&SS_BCD_TYPE_WALL)
 	         flags=_stair_check(walls,flags);
 		   _tf_set_flet(flags,att,pt[2],norm);
-         rv=TRUE;
+         rv=true;
       }
    }
 //   if (norm!=NULL)
@@ -526,7 +528,7 @@ uchar tf_solve_aligned_face(fix pt[3], fix walls[4][2], int flags, fix *norm)
 uchar tf_solve_remetriced_face(fix pt[3], fix walls[4][2], int flags, fix norm[3], fix metric)
 {
    fix att;
-   uchar rv=FALSE;
+   uchar rv=false;
 //   tf_turn_on(0xffff);
    tf_Spew(RemetFce,("tfd:remetric walls %x %x %x %x %x %x %x %x, pt %x %x %x, nrm %x %x %x, flg %x, metric %x\n",
       walls[0][0],walls[0][1],walls[1][0],walls[1][1],walls[2][0],walls[2][1],walls[3][0],walls[3][1],pt[0],pt[1],pt[2],norm[0],norm[1],norm[2],flags,metric));
@@ -543,7 +545,7 @@ uchar tf_solve_remetriced_face(fix pt[3], fix walls[4][2], int flags, fix norm[3
          if (flags&SS_BCD_TYPE_WALL)
             flags=_stair_check(walls,flags);
 		   _tf_set_flet(flags,att,cdist,norm);
-         rv=TRUE;
+         rv=true;
 	   }
    }
 //   tf_undo_set(Ret|FletList);
@@ -555,7 +557,7 @@ uchar tf_solve_remetriced_face(fix pt[3], fix walls[4][2], int flags, fix norm[3
 // BUT WE HAVE TO CUT FINAL IN 20 MINUTES, SO WE ARENT GOING TO CHANGE IT
 uchar tf_solve_cylinder(fix pt[3], fix irad, fix height)
 {
-   uchar rv=FALSE, slv=FALSE;
+   uchar rv=false, slv=false;
    int flags;
    fix dist_sqrd, r_dist, rad=abs(irad), urad;
    // first check height
@@ -584,7 +586,7 @@ uchar tf_solve_cylinder(fix pt[3], fix irad, fix height)
 	  	         else           flags=SS_BCD_PRIM_NEG_Z|SS_BCD_TYPE_CEIL;
 	            _tf_set_flet(flags,att,cdist,nrm);
 	            tf_Spew(Cylinder,("OverCyl"));
-	            slv=TRUE;
+	            slv=true;
             }
          }
          if (!slv)        // unitize normal, call us done
@@ -603,7 +605,7 @@ uchar tf_solve_cylinder(fix pt[3], fix irad, fix height)
                tf_Spew(Cylinder,("FullyInCyl"));
             }
          }
-         rv=TRUE;
+         rv=true;
 //         tf_turn_on(Ret|FletList);
       }
    }
@@ -658,7 +660,7 @@ uchar tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type)
       if (mb!=-1)
          ss_edms_bcd_flags|=((uint)v_to_cur[mb])<<SS_BCD_CURR_SHF;
    }
-   if (tf_type==TFD_BCD) return FALSE;
+   if (tf_type==TFD_BCD) return false;
 
    ObjsClearDealt();
    tf_talk_setup();
@@ -709,7 +711,7 @@ uchar tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type)
          {
             terrfunc_one_map_square(((*xmsk_now)<<1)|(*ymsk_now)|FACELET_MASK_I);
             tf_Stat(multi);
-            if ((tf_type==TFD_RCAST)&&ss_edms_facelet_cnt) return TRUE;
+            if ((tf_type==TFD_RCAST)&&ss_edms_facelet_cnt) return true;
          }
    }
    if (tf_type==TFD_FULL)

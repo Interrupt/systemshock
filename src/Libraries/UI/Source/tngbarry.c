@@ -46,7 +46,7 @@ uchar tng_buttonarray_hscroll_changed(void *ui_data, void *user_data)
    TNG_BA_OFFSET(ptng).x = TNG_SL(scroll_tng)->value;
    TNG_DRAWPART(ptng, TNG_ALLPARTS);
    ptng->signal(ptng, TNG_SIGNAL_CHANGED);
-   return(FALSE);
+   return(false);
 }
 
 uchar tng_buttonarray_vscroll_changed(void *ui_data, void *user_data)
@@ -60,7 +60,7 @@ uchar tng_buttonarray_vscroll_changed(void *ui_data, void *user_data)
    TNG_BA_OFFSET(ptng).y = TNG_SL(scroll_tng)->max - TNG_SL(scroll_tng)->value;
    TNG_DRAWPART(ptng, TNG_ALLPARTS);
    ptng->signal(ptng, TNG_SIGNAL_CHANGED);
-   return(FALSE);
+   return(false);
 }
 
 errtype tng_buttonarray_destroy(TNG *ptng)
@@ -134,7 +134,7 @@ errtype tng_buttonarray_init(void *ui_data, TNG *ptng, TNGStyle *sty, ushort opt
       {
          pbatng->matrix[i + (j * msize.x)].type = NULL_TYPE;
          pbatng->matrix[i + (j * msize.x)].disp_data = NULL;
-         pbatng->selected[i + (j * msize.x)] = FALSE;
+         pbatng->selected[i + (j * msize.x)] = false;
       }
    }
    return(OK);
@@ -338,7 +338,7 @@ int tng_buttonarray_getvalue(TNG *ptng)
 uchar tng_buttonarray_keycooked(TNG *ptng, ushort key)
 {
    ushort code = key ^ KB_FLAG_DOWN;
-   uchar retval = FALSE;
+   uchar retval = false;
 
    code = key & 0xff;
 //   Spew(DSRC_UI_Buttonarray, ("code = %x\n",code));
@@ -360,7 +360,7 @@ uchar tng_buttonarray_keycooked(TNG *ptng, ushort key)
       case TNG_BA_LEFT_KEY:
       case TNG_BA_RIGHT_KEY:
          tng_buttonarray_move(ptng, code);
-         retval = TRUE;
+         retval = true;
          break;
       case TNG_BA_SCROLL_UP_KEY:
       case TNG_BA_SCROLL_DOWN_KEY:
@@ -382,7 +382,7 @@ uchar tng_buttonarray_mousebutt(TNG *ptng, uchar type, LGPoint loc)
    TNG_buttonarray *pbatng;
    int i,j;
    int a,b;
-   uchar retval = FALSE;
+   uchar retval = false;
 
    if (type & TNG_MOUSE_LDOWN)
    {
@@ -421,21 +421,21 @@ uchar tng_buttonarray_mousebutt(TNG *ptng, uchar type, LGPoint loc)
       }
    }
    IF_SET_RV(tng_cb_mousebutt(ptng,type,loc));
-   retval = TRUE;
+   retval = true;
    return(retval);
 }
 
 // Handle incoming signals
 uchar tng_buttonarray_signal(TNG *ptng, ushort signal)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    //Spew(DSRC_UI_Buttonarray, ("Buttonarray Received signal: %x\n",signal));
    if (signal & TNG_SIGNAL_SELECT)
       tng_buttonarray_select(ptng);
    if (signal & TNG_SIGNAL_SCROLL)
       tng_buttonarray_scroll(ptng);
    IF_SET_RV(tng_cb_signal(ptng, signal));
-   retval = TRUE;
+   retval = true;
    return(retval);
 }
 // -----------------------------
@@ -459,9 +459,9 @@ errtype tng_buttonarray_select(TNG *ptng)
             totnum++;
       }
    }
-   if (TNG_BA_SELECTED(ptng,a,b) == TRUE)
+   if (TNG_BA_SELECTED(ptng,a,b) == true)
    {
-      TNG_BA_SELECTED(ptng,a,b) = FALSE;
+      TNG_BA_SELECTED(ptng,a,b) = false;
       TNG_IF_FOREIGN_UNOBSCURED(ptng)
       {
          tng_buttonarray_draw_button(ptng,TNG_BA_LSEL(ptng).x,TNG_BA_LSEL(ptng).y);
@@ -481,7 +481,7 @@ errtype tng_buttonarray_select(TNG *ptng)
             {
                if (TNG_BA_SELECTED(ptng,i,j))
                {
-                  TNG_BA_SELECTED(ptng,i,j) = FALSE;
+                  TNG_BA_SELECTED(ptng,i,j) = false;
                   i2 = i - TNG_BA_OFFSET(ptng).x;
                   j2 = j - TNG_BA_OFFSET(ptng).y;
                   if ((i2 >=0) && (i2 <= TNG_BA_WSIZE(ptng).x) &&
@@ -496,7 +496,7 @@ errtype tng_buttonarray_select(TNG *ptng)
             }
          }
       }
-      TNG_BA_SELECTED(ptng,a,b) = TRUE;
+      TNG_BA_SELECTED(ptng,a,b) = true;
       TNG_IF_FOREIGN_UNOBSCURED(ptng)
       {
          tng_buttonarray_draw_button(ptng,TNG_BA_LSEL(ptng).x,TNG_BA_LSEL(ptng).y);

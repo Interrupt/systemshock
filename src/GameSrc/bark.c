@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Includes for example mfd.
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "bark.h"
@@ -97,7 +98,7 @@ void mfd_bark_expose(MFD* mfd, ubyte control)
          else
 #endif
             full_visible |= visible_mask(mfd->id);
-         mfd_notify_func(MFD_BARK_FUNC,MFD_INFO_SLOT,FALSE,MFD_ACTIVE,TRUE);
+         mfd_notify_func(MFD_BARK_FUNC,MFD_INFO_SLOT,false,MFD_ACTIVE,true);
       }
 
       if (full && mfd_bark_string != REF_STR_Null)
@@ -163,7 +164,7 @@ void long_bark(ObjID speaker_id, uchar mug_id, int string_id, ubyte color)
    if ((alog_rv != OK) || (audiolog_setting == 2))
 #endif
    {
-      mfd_notify_func(MFD_BARK_FUNC,MFD_INFO_SLOT,TRUE,MFD_ACTIVE,TRUE);
+      mfd_notify_func(MFD_BARK_FUNC,MFD_INFO_SLOT,true,MFD_ACTIVE,true);
       if (speaker_id>0)
       {
          save_mfd_slot(mfd_id);

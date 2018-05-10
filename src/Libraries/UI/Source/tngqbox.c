@@ -114,12 +114,12 @@ errtype tng_increm_slot(TNG *ptng, int quan)
    {
       val_b = (uchar *)(pqs->var);
       if (*val_b)
-         *val_b = FALSE;
+         *val_b = false;
       else
-         *val_b = TRUE;
+         *val_b = true;
    }
    pqs->tng->signal(pqs->tng,TNG_SIGNAL_CHANGED);
-   gad_qbox_display_slot(pqs, TRUE);
+   gad_qbox_display_slot(pqs, true);
    return(OK);
 }
 
@@ -183,12 +183,12 @@ errtype tng_decrem_slot(TNG *ptng, int quan)
    {
       val_b = (uchar *)(pqs->var);
       if (*val_b)
-         *val_b = FALSE;
+         *val_b = false;
       else
-         *val_b = TRUE;
+         *val_b = true;
    }
    pqs->tng->signal(pqs->tng,TNG_SIGNAL_CHANGED);
-   gad_qbox_display_slot(pqs, TRUE);
+   gad_qbox_display_slot(pqs, true);
    return(OK);
 }
 
@@ -212,15 +212,15 @@ uchar tng_quickbox_scroll_changed(void *ui_data, void *user_data)
    else if (qbs->vartype == QB_BYTE_SLOT)
       *((ubyte *)(qbs->var)) = (ubyte)TNG_SL(qbs->aux_tng)->value;
    ptng->signal(ptng,TNG_SIGNAL_CHANGED);
-   gad_qbox_display_slot(qbs, TRUE);
-   return(FALSE);
+   gad_qbox_display_slot(qbs, true);
+   return(false);
 }
 
 uchar quickbox_fix_text_changed(QuickboxSlot *qbs)
 {
    char* stringval = TNG_TX_GETLINE(qbs->aux_tng,0);
    *((fix *)(qbs->var)) = fix_from_float(atof(stringval));
-   return TRUE;
+   return true;
 }
 
 uchar quickbox_uint_text_changed(QuickboxSlot *qbs)
@@ -237,7 +237,7 @@ uchar quickbox_uint_text_changed(QuickboxSlot *qbs)
    if (qbs->options & QB_BINARY) {   base = 2; cap = 2; }
    convstring = TNG_TX_GETLINE(qbs->aux_tng, 0);
    atoival = 0;
-   okay = TRUE;
+   okay = true;
    for (i=0; i<strlen(convstring); i++)
    {
       convstring[i] = toupper(convstring[i]);
@@ -245,15 +245,15 @@ uchar quickbox_uint_text_changed(QuickboxSlot *qbs)
       {
          case 16:
             if ((convstring[i] < '0') || ((convstring[i] > '9') && (convstring[i] < 'A')) || (convstring[i] > 'F'))
-               okay = FALSE;
+               okay = false;
             break;
          case 8:
             if ((convstring[i] < '0') || (convstring[i] > '7'))
-               okay = FALSE;
+               okay = false;
             break;
          case 2:
             if ((convstring[i] < '0') || (convstring [i] > '1'))
-               okay = FALSE;
+               okay = false;
             break;
       }
    }
@@ -283,7 +283,7 @@ uchar quickbox_uint_text_changed(QuickboxSlot *qbs)
       atoival = 0;
    *((uint *)(qbs->var)) = atoival; 
 
-   return TRUE;
+   return true;
 }
 
 uchar tng_quickbox_text_changed(void *ui_data, void *user_data)
@@ -325,7 +325,7 @@ uchar tng_quickbox_text_changed(void *ui_data, void *user_data)
       else
       {
          atoival = 0;
-         okay = TRUE;
+         okay = true;
          for (i=0; i<strlen(convstring); i++)
          {
             convstring[i] = toupper(convstring[i]);
@@ -333,15 +333,15 @@ uchar tng_quickbox_text_changed(void *ui_data, void *user_data)
             {
                case 16:
                   if ((convstring[i] < '0') || ((convstring[i] > '9') && (convstring[i] < 'A')) || (convstring[i] > 'F'))
-                     okay = FALSE;
+                     okay = false;
                   break;
                case 8:
                   if ((convstring[i] < '0') || (convstring[i] > '7'))
-                     okay = FALSE;
+                     okay = false;
                   break;
                case 2:
                   if ((convstring[i] < '0') || (convstring [i] > '1'))
-                     okay = FALSE;
+                     okay = false;
                   break;
             }
          }
@@ -388,8 +388,8 @@ uchar tng_quickbox_text_changed(void *ui_data, void *user_data)
       //Spew(DSRC_UI_Quickbox, ("2:atoival = %d(%u)\n",*((ubyte *)(qbs->var)), *((ubyte *)(qbs->var))));
    }
    ptng->signal(ptng,TNG_SIGNAL_CHANGED);
-   gad_qbox_display_slot(qbs, TRUE);
-   return(FALSE);
+   gad_qbox_display_slot(qbs, true);
+   return(false);
 }
 
 // Initializes the TNG 
@@ -786,7 +786,7 @@ errtype tng_quickbox_2d_draw(TNG *ptng, ushort us, LGPoint loc)
    curp = QB_SLOTS(ptng);
    while (curp != NULL)
    {
-      gad_qbox_display_slot(curp, FALSE);
+      gad_qbox_display_slot(curp, false);
       curp = curp->next;
    }
 
@@ -822,7 +822,7 @@ int tng_quickbox_getvalue(TNG *ptng)
 uchar tng_quickbox_keycooked(TNG *ptng, ushort key)
 {
    int code = key & 0xff;
-   uchar retval =FALSE;
+   uchar retval =false;
    QuickboxSlot *qbs, *prevp, *curp;
 
    qbs = QB_CURRENT(ptng);
@@ -846,8 +846,8 @@ uchar tng_quickbox_keycooked(TNG *ptng, ushort key)
       {
          QB_CURRENT(ptng) = QB_SLOTS(ptng);
       }
-      gad_qbox_display_slot(qbs, TRUE);
-      gad_qbox_display_slot(QB_CURRENT(ptng), TRUE);
+      gad_qbox_display_slot(qbs, true);
+      gad_qbox_display_slot(QB_CURRENT(ptng), true);
    }
    if (code == QB_UP_KEY)
    {
@@ -869,12 +869,12 @@ uchar tng_quickbox_keycooked(TNG *ptng, ushort key)
       {
          QB_CURRENT(ptng) = prevp;
       }
-      gad_qbox_display_slot(qbs, TRUE);
-      gad_qbox_display_slot(QB_CURRENT(ptng),TRUE);
+      gad_qbox_display_slot(qbs, true);
+      gad_qbox_display_slot(QB_CURRENT(ptng),true);
    }
    IF_SET_RV(tng_cb_keycooked(ptng, key));
    if ((code == QB_UP_KEY) || (code == QB_DOWN_KEY) || (code == QB_LEFT_KEY) || (code == QB_RIGHT_KEY))
-      retval = TRUE;
+      retval = true;
    return(retval);
 }
 
@@ -885,7 +885,7 @@ uchar tng_quickbox_mousebutt(TNG *ptng, uchar type, LGPoint loc)
    int slotcount = 0;
    TNG_quickbox *pqbtng;
    QuickboxSlot *oldcur, *curp;
-   uchar retval = FALSE;
+   uchar retval = false;
 
    if ((type == TNG_MOUSE_LDOWN) || (type == TNG_MOUSE_RDOWN))
    {
@@ -904,8 +904,8 @@ uchar tng_quickbox_mousebutt(TNG *ptng, uchar type, LGPoint loc)
          {
             oldcur = QB_CURRENT(ptng);
             QB_CURRENT(ptng) = curp;
-            gad_qbox_display_slot(oldcur, TRUE);
-            gad_qbox_display_slot(curp, TRUE);
+            gad_qbox_display_slot(oldcur, true);
+            gad_qbox_display_slot(curp, true);
          }
          if (curp->options & QB_ARROWS)
          {
@@ -961,7 +961,7 @@ uchar tng_quickbox_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 // Handle incoming signals
 uchar tng_quickbox_signal(TNG *ptng, ushort signal)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    if (signal & TNG_SIGNAL_INCREMENT)
       tng_increm_slot(ptng, 1);
    if (signal & TNG_SIGNAL_DECREMENT)
@@ -969,7 +969,7 @@ uchar tng_quickbox_signal(TNG *ptng, ushort signal)
 //   if (signal & TNG_SIGNAL_CHANGED)
 //      TNG_DRAW(ptng);
    IF_SET_RV(tng_cb_signal(ptng,signal));
-   retval = TRUE;
+   retval = true;
    return(retval);
 }
 

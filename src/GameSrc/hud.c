@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __HUD_SRC
 
 #include <string.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 #include "hud.h"
@@ -142,7 +143,7 @@ HudLine hud_lines[] =
 
 #define HUDLINE_BUFFER(i) (hudline_text[HUDLINE_TEXT(&hud_lines[i])])
 
-extern Boolean	DoubleSize;
+extern bool DoubleSize;
 
 
 // --------------
@@ -163,7 +164,7 @@ void hud_shutdown_lines(void);
 uchar hud_color_bank_cycle(short keycode, ulong context, void* data)
 {
    hud_color_bank=(hud_color_bank+1)%HUD_COLOR_BANKS;
-   return TRUE;
+   return true;
 }
 
 void hud_free_line(int i)
@@ -280,7 +281,7 @@ void hud_update_lines(short x, short* y, short unused1, short unused2)
    for (i = 0; i < HUD_LINES; i++)
       if (hud_lines[i].mask & player_struct.hud_modes)
       {
-         uchar compute_text = FALSE;
+         uchar compute_text = false;
          if ((hud_lines[i].time != 0) && (hud_lines[i].time < player_struct.game_time))
          {
             hud_unset(hud_lines[i].mask);
@@ -299,7 +300,7 @@ void hud_update_lines(short x, short* y, short unused1, short unused2)
                if (hudline_text[j][0] == '\0')
                {
                   HUDLINE_SET_TEXT(&hud_lines[i],j);
-                  compute_text = TRUE;
+                  compute_text = true;
                   break;
                }
             if (j >= NUM_HUDLINE_BUFFERS)
@@ -310,7 +311,7 @@ void hud_update_lines(short x, short* y, short unused1, short unused2)
 
          }
          else if (hud_lines[i].hudvar_id != 0)
-            compute_text = TRUE;
+            compute_text = true;
          if (compute_text)
          {
             get_string(hud_lines[i].strid, HUDLINE_BUFFER(i), HUD_STRING_SIZE);
@@ -344,7 +345,7 @@ void hud_update_lines(short x, short* y, short unused1, short unused2)
                use_x = 12;
             ss_set_hack_mode(2,&temp);
 #endif
-            res_draw_text_shadowed(RES_tinyTechFont, HUDLINE_BUFFER(i),use_x,use_y,TRUE);
+            res_draw_text_shadowed(RES_tinyTechFont, HUDLINE_BUFFER(i),use_x,use_y,true);
 #ifdef STEREO_SUPPORT
             ss_set_hack_mode(0, &temp);
          }
@@ -384,7 +385,7 @@ void hud_update_compass(short* y,short xmin, short xwid)
          get_string(REF_STR_DirectionAbbrev+ang/HUD_COMPASS_OCT, s, 4);
          gr_string_size(s,&w,&h);
          gr_set_fcolor(hud_colors[hud_color_bank][COMPASS_COLOR]);
-         draw_shadowed_string(s,x-w/2+xmin,*y,TRUE);
+         draw_shadowed_string(s,x-w/2+xmin,*y,true);
       }
       else if(ver>1)
       {
@@ -452,7 +453,7 @@ void hud_report_damage(ObjID target, byte dmglvl)
          best_tstamp = hud_critters[i].tstamp;
       }
    }
-   hudobj_set_id(target,TRUE);
+   hudobj_set_id(target,true);
    hud_critters[best].tstamp = player_struct.game_time;
    hud_critters[best].id = target;
    hud_critters[best].damage = dmglvl;
@@ -496,7 +497,7 @@ void update_damage_report(struct _hudobj_data* dat,uchar reverse)
             rpt->id = OBJ_NULL;
             if (dat->id != player_struct.curr_target)
             {
-               hudobj_set_id(dat->id,FALSE);
+               hudobj_set_id(dat->id,false);
                dat->id = OBJ_NULL;
             }
          }
@@ -530,14 +531,14 @@ void update_damage_report(struct _hudobj_data* dat,uchar reverse)
 #ifdef SVGA_SUPPORT
             extern uchar shadow_scale;
             uchar old_scale = shadow_scale;
-            shadow_scale = FALSE;
+            shadow_scale = false;
 #endif
             if (DoubleSize)
             {
                x *= 2;
                y = 2*y + 1;		// Text needed to come down a bit.
             }
-            draw_shadowed_string(buf,x,y,TRUE);
+            draw_shadowed_string(buf,x,y,true);
 #ifdef SVGA_SUPPORT
             shadow_scale =old_scale;
 #endif
@@ -596,7 +597,7 @@ void hud_do_objs(short xtop, short ytop, short unused1, short unused2, uchar rev
    }
    current_num_hudobjs = 0;
    if (player_struct.curr_target != OBJ_NULL)
-      hudobj_set_id(player_struct.curr_target,TRUE);
+      hudobj_set_id(player_struct.curr_target,true);
    ResUnlock(RES_tinyTechFont);
 //KLC   RESTORE_CLIP(a,b,c,d);
 }
@@ -673,7 +674,7 @@ if (msg[0])
 
    if (olh_active)
       olh_do_hudobjs(fc->xtop,fc->ytop);
-   hud_do_objs(fc->xtop,fc->ytop,fc->xwid,fc->ywid,FALSE);
+   hud_do_objs(fc->xtop,fc->ytop,fc->xwid,fc->ywid,false);
 
    ResUnlock(RES_tinyTechFont);
    RESTORE_CLIP(a,b,c,d);

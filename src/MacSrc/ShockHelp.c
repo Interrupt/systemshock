@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //-----------------
 //  PROTOTYPES
 //-----------------
-Boolean GetHelpMgr(void);
+bool GetHelpMgr(void);
 pascal void DrawHelp(WindowPtr, int);
 
 //-----------------
@@ -190,17 +190,17 @@ void ShowShockHelp(void)
 //--------------------------------------------------------------------
 //	  Returns TRUE if the Help Manager is installed.
 //--------------------------------------------------------------------
-Boolean GetHelpMgr(void)
+bool GetHelpMgr(void)
  {
 	long	result;
 	
 	if (!Gestalt(gestaltHelpMgrAttr, &result)) 
 	 {
 		if (result & 1L)
-			return (TRUE);
+			return (true);
 	 }
 	
-	return(FALSE);
+	return(false);
  }
 
 /*

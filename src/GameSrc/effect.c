@@ -26,14 +26,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define _EFFECT_SRC
 
+#include <stdbool.h>
 #include <string.h>
 
 #include "objgame.h"
+#include "edms.h"
 #include "effect.h"
 #include "weapons.h"  // for handart stuff
 #include "objprop.h"
 #include "objwpn.h"
 #include "objsim.h"
+#include "res.h"
 #include "faketime.h"
 #include "gametime.h"
 #include "damage.h"
@@ -142,7 +145,7 @@ ObjID do_special_effect_location(ObjID owner, ubyte effect, ubyte start, ObjLoc 
          return(OBJ_NULL);
       }
       osid = objs[new_id].specID;
-	   obj_move_to(new_id, loc, TRUE);
+	   obj_move_to(new_id, loc, true);
 	   if (start == 0xFF)
 	      start = START_FRAME(objAnimatings[osid].start_frame);
       objAnimatings[osid].owner = owner;
@@ -393,7 +396,7 @@ errtype increment_anim(ulong num_units)
          }
          lamp_change_setting(light_val);
          _frp_light_bits_set(LIGHT_BITS_CAM);
-         handart_flash = FALSE;
+         handart_flash = false;
       }
    }
 
@@ -470,7 +473,7 @@ errtype increment_anim(ulong num_units)
 	               ADD_DESTROYED_OBJECT(id);
                     if (id == beam_effect_id)
                     {
-                       hudobj_set_id(id,FALSE);
+                       hudobj_set_id(id,false);
                        beam_effect_id = OBJ_NULL;
                     }
 	               break;
@@ -500,7 +503,7 @@ errtype increment_anim(ulong num_units)
             case CLASS_DOOR:
                if ((objs[id].info.current_frame - interval < DOOR_OPEN_FRAME) && (objs[id].info.current_frame >= DOOR_OPEN_FRAME))
                {
-                  obj_physics_refresh_area(OBJ_LOC_BIN_X(objs[id].loc), OBJ_LOC_BIN_Y(objs[id].loc),TRUE);
+                  obj_physics_refresh_area(OBJ_LOC_BIN_X(objs[id].loc), OBJ_LOC_BIN_Y(objs[id].loc),true);
                }
                break;
          }
@@ -546,7 +549,7 @@ errtype increment_anim(ulong num_units)
                if (((objs[id].loc.p != 0) || (objs[id].loc.b != 0)) && 
                   (objs[id].info.current_frame < DOOR_OPEN_FRAME) && (objs[id].info.current_frame + interval >= DOOR_OPEN_FRAME))
                {
-                  obj_physics_refresh_area(OBJ_LOC_BIN_X(objs[id].loc), OBJ_LOC_BIN_Y(objs[id].loc),TRUE);
+                  obj_physics_refresh_area(OBJ_LOC_BIN_X(objs[id].loc), OBJ_LOC_BIN_Y(objs[id].loc),true);
                }
                break;
          }
@@ -781,17 +784,17 @@ uchar anim_data_from_id(ObjID id, bool* reverse, bool* cycle)
             *reverse=(animlist[i].flags & ANIMFLAG_REVERSE)!=0;
          if(cycle)
             *cycle=(animlist[i].flags & ANIMFLAG_CYCLE)!=0;
-         return TRUE;
+         return true;
       }
    }
-   return FALSE;
+   return false;
 }
 
 #define CHECK_ANIM_SPEED
 errtype add_obj_to_animlist(ObjID id, uchar repeat, uchar reverse, uchar cycle, short speed, int cb_id, void *user_data, short cbtype)
 {
    int i=0;
-   uchar replace_me = FALSE;
+   uchar replace_me = false;
    int use_counter = anim_counter;
 #ifdef CHECK_ANIM_SPEED
    char count=0;
@@ -807,7 +810,7 @@ errtype add_obj_to_animlist(ObjID id, uchar repeat, uchar reverse, uchar cycle, 
    {
       if (animlist[i].id == id)
       {
-   	   replace_me = TRUE;
+   	   replace_me = true;
    	   use_counter = i;
       }
    }

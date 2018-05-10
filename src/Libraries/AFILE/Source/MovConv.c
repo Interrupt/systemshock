@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //		Also, add the sound track.
 //	==============================================================
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -74,34 +75,34 @@ long				gNumFrames;
 long				gFakeIndex;
 QT_ChunkInfo chunkInfo[] =
 {
-	QT_CLIP,FALSE,
-	QT_CRGN,TRUE,
-	QT_DINF,FALSE,
-	QT_DREF,TRUE,
-	QT_EDTS,FALSE,
-	QT_ELST,TRUE,
-	QT_HDLR,TRUE,
-	QT_KMAT,TRUE,
-	QT_MATT,FALSE,
-	QT_MDAT,TRUE,
-	QT_MDIA,FALSE,
-	QT_MDHD,TRUE,
-	QT_MINF,FALSE,
-	QT_MOOV,FALSE,
-	QT_MVHD,TRUE,
-	QT_SMHD,TRUE,
-	QT_STBL,FALSE,
-	QT_STCO,TRUE,
-	QT_STSC,TRUE,
-	QT_STSD,TRUE,
-	QT_STSH,TRUE,
-	QT_STSS,TRUE,
-	QT_STSZ,TRUE,
-	QT_STTS,TRUE,
-	QT_TKHD,TRUE,
-	QT_TRAK,FALSE,
-	QT_UDTA,FALSE,
-	QT_VMHD,TRUE,
+	QT_CLIP,false,
+	QT_CRGN,true,
+	QT_DINF,false,
+	QT_DREF,true,
+	QT_EDTS,false,
+	QT_ELST,true,
+	QT_HDLR,true,
+	QT_KMAT,true,
+	QT_MATT,false,
+	QT_MDAT,true,
+	QT_MDIA,false,
+	QT_MDHD,true,
+	QT_MINF,false,
+	QT_MOOV,false,
+	QT_MVHD,true,
+	QT_SMHD,true,
+	QT_STBL,false,
+	QT_STCO,true,
+	QT_STSC,true,
+	QT_STSD,true,
+	QT_STSH,true,
+	QT_STSS,true,
+	QT_STSZ,true,
+	QT_STTS,true,
+	QT_TKHD,true,
+	QT_TRAK,false,
+	QT_UDTA,false,
+	QT_VMHD,true,
 	0,0
 };
 TrackType currTrackType;
@@ -166,7 +167,7 @@ void main(void)
 	long				compressedFrameSize;				/* Size of current compressed frame */
 	Handle			compressedFrameBitsH = 0L;			/* Buffer for the compressed data	*/
 #ifdef INSERT_BLANK_PALCHG_FRAME
-	Boolean 			lastInSeq = FALSE;
+	bool 			lastInSeq = false;
 #endif
 
 	//---------------------
@@ -179,7 +180,7 @@ void main(void)
 	SetupOffscreenBitmaps();			
 
 	gr_init();
-	gr_set_mode (GRM_640x480x8, TRUE);
+	gr_set_mode (GRM_640x480x8, true);
 	screen = gr_alloc_screen (grd_cap->w, grd_cap->h);
 	gr_set_screen (screen);
  	SetRect(&movieRect,0,0,600,300);
@@ -299,7 +300,7 @@ void main(void)
 	//-----------------------------------
 	//	Get the Chunk Offset and Sample-to-Time tables.
 	//-----------------------------------
-	while (TRUE)
+	while (true)
 	{
 		if (!QuikReadChunkHdr(fp, &chunkHdr))
 			break;
@@ -361,7 +362,7 @@ void main(void)
 		char		buff[64];
 		PalChange	*pc;
 		ulong		sampTime;
-		Boolean		subColor;
+		bool		subColor;
  		Handle		compHdl;
  		long			compSize;
  		short		notSyncFlag;
@@ -377,14 +378,14 @@ void main(void)
 			fread(frameBuff, 600 * 300, 1, fp);
 			
 			// See if there's an 0xFF anywhere in this screen.
-			subColor = FALSE;
+			subColor = false;
 			pp = (uchar *)frameBuff;
 			for (int pix = 0; pix < 600*300; pix++)
 			{
 				if (*pp == 0xFF)
 				{
 					*pp = (uchar)gFakeIndex;
-					subColor = TRUE;
+					subColor = true;
 				}
 				pp++;
 			}
@@ -398,7 +399,7 @@ void main(void)
 				if (pc->frameNum-1 == f)				// If this is the last frame before a palette
 				{										// change, then reduce the time for this
 					gSampleTimes[f]--;					// frame by one (to allow for blank frame)
-					lastInSeq = TRUE;					// we insert afterwards.
+					lastInSeq = true;					// we insert afterwards.
 					break;
 				}
 				else
@@ -444,7 +445,7 @@ void main(void)
 			// parameters for the output movie and begin a compression sequence.
 			if (f == 0)
 			{
-				result = SCDefaultPixMapSettings(ci, ((CGrafPort *)(gMainWindow))->portPixMap, TRUE);
+				result = SCDefaultPixMapSettings(ci, ((CGrafPort *)(gMainWindow))->portPixMap, true);
 			 	result = SCRequestSequenceSettings(ci);
 			 	if (result == scUserCancelled)
 			 	{
@@ -535,7 +536,7 @@ void main(void)
 				
 				qpalCurrTime++;					// Adjust the cumulative time.
 				
-				lastInSeq = FALSE;
+				lastInSeq = false;
 			}
 #endif
 		}

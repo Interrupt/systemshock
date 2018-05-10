@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __TEXTMAPS_SRC
 
+#include <stdio.h>
 #include <string.h>
 
 #include "ShockDialogs.h"
@@ -49,13 +50,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <_system.h>
 //#include <_lg.h>
 
-uchar textures_loaded = FALSE;
+uchar textures_loaded = false;
 
 #define READ(fd,x) read(fd,(char*)&(x),sizeof(x))
 
 Id tmap_ids[NUM_TEXTURE_SIZES] = { TEXTURE_128_ID, TEXTURE_64_ID, TEXTURE_32_ID, TEXTURE_16_ID};
 ushort tmap_sizes[NUM_TEXTURE_SIZES] = { 128, 64, 32, 16 };
-uchar all_textures=TRUE;
+uchar all_textures=true;
 
 extern uchar tmap_big_buffer[];
 
@@ -88,11 +89,11 @@ uchar set_animations(short start,short frames, uchar *anim_used)
    if ((start<0)||(start+frames>MAX_SMALL_TMAPS))
    {
 //      mprintf("PAIN SUFFERING SET ANIM DEATH %d %d\n",start,frames);
-      return FALSE;
+      return false;
    }
    for (loop = start; loop < start + frames; loop++)
       SET_ANIM_USED(loop);
-   return TRUE;
+   return true;
 }
 
 errtype load_small_texturemaps(void)
@@ -165,7 +166,7 @@ extern uchar      *tmap_dynamic_mem=NULL;
 #define get_tmap_16x16(i)   ((uchar *)&tmap_static_mem[(i*SIZE_STATIC_TMAP)+(64*64)+(32*32)])
 
 // have we built the tables, do we have the extra memory, so on
-static uchar tmaps_setup=FALSE;
+static uchar tmaps_setup=false;
 
 
 static grs_bitmap tmap_bitmaps[NUM_TEXTURE_SIZES];
@@ -226,7 +227,7 @@ void load_textures(void)
          tmap_dynamic_mem = tmap_big_buffer;
 
       setup_tmap_bitmaps();
-      tmaps_setup=TRUE;
+      tmaps_setup=true;
    }
 
    for (c=0; c< NUM_LOADED_TEXTURES; c++)
@@ -252,7 +253,7 @@ void load_textures(void)
             {
                if (ResInUse(tmap_ids[n] + i))
                {
-                  retval = load_res_bitmap(cur_bm, MKREF(tmap_ids[n] + i,0), FALSE);
+                  retval = load_res_bitmap(cur_bm, MKREF(tmap_ids[n] + i,0), false);
                   cur_bm->flags = 0;
                }
                else
@@ -263,7 +264,7 @@ void load_textures(void)
             }
             else
             {
-               retval = load_res_bitmap(cur_bm, MKREF(tmap_ids[n],i), FALSE);
+               retval = load_res_bitmap(cur_bm, MKREF(tmap_ids[n],i), false);
                cur_bm->flags = 0;
             }
             if ((cur_bm->w != tmap_sizes[n]) || (cur_bm->h != tmap_sizes[n]))
@@ -293,7 +294,7 @@ void load_textures(void)
    
    // Get rid of the big set
    unload_master_texture_properties();
-   textures_loaded = TRUE;
+   textures_loaded = true;
    game_fr_reparam(all_textures,-1,-1);
    AdvanceProgress();
 }
@@ -304,7 +305,7 @@ void free_textures(void)
    if (all_textures&&(tmap_dynamic_mem==NULL))
       free(tmap_dynamic_mem);
 #endif
-   tmaps_setup=FALSE;
+   tmaps_setup=false;
 }
 
 errtype bitmap_array_unload(int *num_bitmaps, grs_bitmap *arr[])
@@ -330,8 +331,8 @@ uchar empty_bitmap(grs_bitmap *bmp)
    uchar *cur=&bmp->bits[0], *targ=cur+(bmp->w*bmp->h);
    while (cur<targ)
       if (*cur++!=0)
-         return FALSE;
-   return TRUE;
+         return false;
+   return true;
 }
 
 errtype Init_Lighting(void)
@@ -700,20 +701,20 @@ uchar texture_annihilate_func(short keycode, ulong context, void* data)
    if (texture_fnum == 0)
    {
       //Warning(("HEY, TEXTURE_FNUM is %d!\n",texture_fnum));
-      return(TRUE);
+      return(true);
    }
 
    ResCloseFile(texture_fnum);
 
-   fn = ResEditFile("texture.res", FALSE);
+   fn = ResEditFile("texture.res", false);
 
    for (i=0; i < GAME_TEXTURES; i++)
-      salvation_list[i] = FALSE;
+      salvation_list[i] = false;
 
    // Determine which textures are fine and happy
    for (i=0; i < NUM_DEMO_TEXTURES; i++)
    {
-      salvation_list[loved_textures[i]] = TRUE;
+      salvation_list[loved_textures[i]] = true;
    }
 
    // Annhiliate all that do not conform... except for 16x16s which are in
@@ -739,7 +740,7 @@ uchar texture_annihilate_func(short keycode, ulong context, void* data)
 
    texture_fnum = ResOpenFile("texture.res");
 
-   return(TRUE);
+   return(true);
 }
 #pragma enable_message(202)
 #endif

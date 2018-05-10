@@ -94,7 +94,7 @@ int gri_spoly_loop (grs_tmap_loop_info *ti)
 	        break;
 	     }
 	  } else if (d<0) {
-	     return TRUE;
+	     return true;
 	  }
 	  /* update span extrema and destination. */
 	  ti_d+=grd_bm.row;
@@ -110,7 +110,7 @@ int gri_spoly_loop (grs_tmap_loop_info *ti)
 	ti->left.i = ti_li;
 	ti->right.i = ti_ri;
 
-	return FALSE;
+	return false;
 }
 
 void gri_spoly_init (grs_tmap_loop_info *ti)

@@ -61,8 +61,8 @@ uchar vx_init(int max_depth)
    vxd_maxd = max_depth;
    #endif
 
-   if (zdxdz == NULL) return FALSE;
-   return TRUE;
+   if (zdxdz == NULL) return false;
+   return true;
 }
 
 void vx_close()

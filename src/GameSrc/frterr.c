@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *  physics interaction?
  */
 
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -37,6 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "map.h"
 #include "mapflags.h"
 #include "objects.h"    // for ClearDealt
+#include "fix.h"
 #include "frintern.h"
 #include "frtables.h"
 #include "tilename.h"
@@ -1113,13 +1115,13 @@ int merge_walls(fix *dst_wall,fix *i_wall,int i_cnt,fix *o_wall,int o_cnt)
    int cur_i=0, cur_o=0, f_cnt=0, tmp1, tmp2;
    int sgn0,sgn1,sgn2,sgn3;
 
-   f_is_i=TRUE;
+   f_is_i=true;
    while (cur_i<i_cnt)
    {
       while (io_wall_cmp(0,<=,3)&&io_wall_cmp(1,<=,2))   // skip to next outer wall, this one is above our gap
        { o_wall+=8; if (++cur_o>=o_cnt) return f_cnt; }  
       if (io_wall_cmp(3,>=,0)&&io_wall_cmp(2,>=,1))      // if gap bottom above current outer wall, skip to next gap
-       { i_wall+=8; f_is_i=FALSE; if (++cur_i>=i_cnt) return f_cnt; else continue; }
+       { i_wall+=8; f_is_i=false; if (++cur_i>=i_cnt) return f_cnt; else continue; }
       f_cnt++;
       if ((sgn0=io_wall_sgn(0,0))!=(sgn1=io_wall_sgn(1,1)))   // tmp is gap top below outer wall top
       {
@@ -1451,14 +1453,14 @@ void fr_terr_frame_start(void)
    g3_alloc_list(FDT_TMPPTCNT,_fdt_tmppts);
 
    last_csp_fr=0; // initially no filled mode
-   _fdt_terr=TRUE;
+   _fdt_terr=true;
 }
 
 void fr_terr_frame_end(void)
 {
    void fr_tfunc_grab_start(void); 
    fr_tfunc_grab_start();     // set up the physics facelet indirections...
-   _fdt_terr=FALSE;
+   _fdt_terr=false;
    g3_free_list(FDT_TMPPTCNT,_fdt_tmppts);
 }
 
@@ -1776,8 +1778,8 @@ void fr_tfunc_grab_fast(int mask)
 #define CheckRendWallBt(btid) ((me_bits_rend4(c_t)&btid)==0)
 #define CheckRendOthBt(btid)  ((me_bits_rend3(c_t)&btid)==0)
 #else
-#define CheckRendWallBt(btid) (TRUE)
-#define CheckRendOthBt(btid)  (TRUE)
+#define CheckRendWallBt(btid) (true)
+#define CheckRendOthBt(btid)  (true)
 #endif
 
 #endif
@@ -1800,7 +1802,7 @@ uchar edge_get_fandc(MapElem *mp, int c_edge, char *e_list)
    {
   	   e_list[0]=e_list[1]=MAX_HGT;
   	   e_list[2]=e_list[3]=MAX_HGT;
-      return FALSE;
+      return false;
    }
    else if (p==0)
    {
@@ -1819,7 +1821,7 @@ uchar edge_get_fandc(MapElem *mp, int c_edge, char *e_list)
   	   if (fo&FO_L_PARM) e_list[2]-=p;
       if (fo&FO_R_PARM) e_list[3]-=p;
    }
-   return TRUE;
+   return true;
 }
 
 char edge_vals[3];

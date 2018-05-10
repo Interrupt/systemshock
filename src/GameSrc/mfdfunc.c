@@ -29,12 +29,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // This file is for callbacks only, actual infrastructure belongs
 // in newmfd.c
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "objprop.h" // temp
 #include "tools.h"
 #include "colors.h"
+#include "event.h"
 #include "mainloop.h"
 #include "gameloop.h"
 #include "mfdart.h"
@@ -90,7 +92,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SETTING_TEXT 46
 #define ENERGY_TEXT_LEN 40
 
-static uchar in_or_out = FALSE;
+static uchar in_or_out = false;
 
 extern void mouse_unconstrain(void);
 extern void mfd_ammo_expose(ubyte control);
@@ -351,14 +353,14 @@ void mfd_weapon_expose(MFD *m, ubyte control)
    char        buf[50];
    int         triple;
    uchar        punt = player_struct.actives[ACTIVE_WEAPON] == EMPTY_WEAPON_SLOT;
-   uchar        Redraw = FALSE;
-   uchar        RedrawAmmoArea = TRUE;
+   uchar        Redraw = false;
+   uchar        RedrawAmmoArea = true;
    extern uchar full_game_3d;
 
    if (control == 0)
    {
       uiCursorStack* cs;
-      weapon_mfd_temp = FALSE;
+      weapon_mfd_temp = false;
       
       uiGetRegionCursorStack(MFD_REGION(m),&cs);
       uiPopCursorEvery(cs,&slider_cursor);
@@ -376,7 +378,7 @@ void mfd_weapon_expose(MFD *m, ubyte control)
    // Get the triple for the current weapon
 
    if (!punt) ws = &player_struct.weapons[player_struct.actives[ACTIVE_WEAPON]];
-   if (ws->type == EMPTY_WEAPON_SLOT) punt = TRUE;
+   if (ws->type == EMPTY_WEAPON_SLOT) punt = true;
    if (punt)
    {
       mfd_expose_blank(m,control);
@@ -390,13 +392,13 @@ void mfd_weapon_expose(MFD *m, ubyte control)
       PUSH_CANVAS(pmfd_canvas);
       mfd_clear_rects();
 
-      if (control & MFD_EXPOSE_FULL) Redraw = TRUE;
+      if (control & MFD_EXPOSE_FULL) Redraw = true;
       if (MFD_Access(m->id,MFDLastWeapon)!=player_struct.actives[ACTIVE_WEAPON])
       {
-         Redraw = TRUE;
+         Redraw = true;
          MFD_Access(m->id,MFDLastWeapon)=player_struct.actives[ACTIVE_WEAPON];
          MFD_Access(m->id,MFDAmmo)=0xFF;
-         weapon_mfd_temp = FALSE;
+         weapon_mfd_temp = false;
       }
 
       ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
@@ -423,7 +425,7 @@ void mfd_weapon_expose(MFD *m, ubyte control)
 
          // Print name of gun in top line of mfd
          get_weapon_long_name(ws->type, ws->subtype, buf);
-         mfd_draw_string(buf, X_MARGIN, y, GOOD_RED, TRUE);
+         mfd_draw_string(buf, X_MARGIN, y, GOOD_RED, true);
          gr_string_size(buf,&w,&h);
          y += h;
 
@@ -460,16 +462,16 @@ uchar mfd_weapon_expose_projectile(MFD *m, weapon_slot *ws, ubyte control)
    int         num_ammo_buttons;
    int         ammo_subclass;
    ubyte       ammo_types[3];
-   uchar        RedrawAmmoFlag = FALSE;
+   uchar        RedrawAmmoFlag = false;
     
    // Get the ammo data for the current weapon
    get_available_ammo_type(ws->type, ws->subtype, &num_ammo_buttons,
       ammo_types, &ammo_subclass);
 
    if ((control & MFD_EXPOSE_FULL) || (ws->ammo == 0))
-      RedrawAmmoFlag = TRUE;
+      RedrawAmmoFlag = true;
    else if (MFD_Access(m->id,MFDAmmo)!=ws->ammo)
-    { RedrawAmmoFlag = TRUE; MFD_Access(m->id,MFDAmmo)=ws->ammo; }
+    { RedrawAmmoFlag = true; MFD_Access(m->id,MFDAmmo)=ws->ammo; }
 
    // Redraw ammo buttons if neccessary
    if (RedrawAmmoFlag)
@@ -532,7 +534,7 @@ void mfd_weapon_draw_ammo_buttons(int num_ammo_buttons, int ammo_subclass,
          draw_ammo_button(triple,x,AMMO_BUTTON_Y);
       }
       if (num_ammo_buttons > 0) 
-         mfd_draw_string(get_temp_string(REF_STR_ClickToLoad),1,AMMO_STRING_Y,GREEN_YELLOW_BASE,TRUE);
+         mfd_draw_string(get_temp_string(REF_STR_ClickToLoad),1,AMMO_STRING_Y,GREEN_YELLOW_BASE,true);
    }
    else
    {
@@ -543,12 +545,12 @@ void mfd_weapon_draw_ammo_buttons(int num_ammo_buttons, int ammo_subclass,
       //numtostring(ammo_count, buf);  //KLC  itoa(ammo_count,buf,10);
       gr_set_font((grs_font*)ResGet(RES_mediumLEDFont));
       mfd_string_shadow = MFD_SHADOW_NEVER;
-      mfd_draw_font_string(buf,MFD_VIEW_WID-gr_string_width(buf)-2, AMMO_BUTTON_Y+2, GOOD_RED,RES_mediumLEDFont,TRUE);
+      mfd_draw_font_string(buf,MFD_VIEW_WID-gr_string_width(buf)-2, AMMO_BUTTON_Y+2, GOOD_RED,RES_mediumLEDFont,true);
       mfd_string_shadow = MFD_SHADOW_FULLSCREEN; // default
 
       get_object_short_name(triple,buf2,50);
       gr_set_font((grs_font*)ResGet(MFD_FONT));
-      mfd_draw_string(buf2, MFD_VIEW_WID -gr_string_width(buf2)-2, AMMO_NAME_Y, GREEN_YELLOW_BASE, TRUE);
+      mfd_draw_string(buf2, MFD_VIEW_WID -gr_string_width(buf2)-2, AMMO_NAME_Y, GREEN_YELLOW_BASE, true);
 
       draw_ammo_button(triple,0,AMMO_BUTTON_Y);
       draw_res_bm(REF_IMG_BullRightArrow,AMMO_BUTTON_W,AMMO_BUTTON_Y);
@@ -638,20 +640,20 @@ void mfd_weapon_draw_beam_status_bar(int amt, int setting, uchar does_overload)
 void mfd_weapon_expose_beam(weapon_slot *ws, ubyte id, uchar Redraw)
 {
    char buf[ENERGY_TEXT_LEN];
-   uchar does_overload = FALSE;
+   uchar does_overload = false;
    extern uchar does_weapon_overload(int type, int subtype);
 
    ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
    if (id == MFD_LEFT)
    {
       if (MFDGetLastLeftBeamHeat > ws->ammo)
-         Redraw = TRUE;
+         Redraw = true;
       MFDSetLastLeftBeamHeat(ws->ammo);
    }
    if (id == MFD_RIGHT)
    {
       if (MFDGetLastRightBeamHeat > ws->ammo)
-         Redraw = TRUE;
+         Redraw = true;
       MFDSetLastRightBeamHeat(ws->ammo);
    }
 
@@ -667,7 +669,7 @@ void mfd_weapon_expose_beam(weapon_slot *ws, ubyte id, uchar Redraw)
          mfd_add_rect(1,OVERLOAD_BUTTON_Y,1+w,MFD_VIEW_HGT);
 
          get_string(REF_STR_Overload,buf,ENERGY_TEXT_LEN);
-         mfd_draw_string(buf, 1, SETTING_TEXT, MFD_BEAM_HOT, TRUE);
+         mfd_draw_string(buf, 1, SETTING_TEXT, MFD_BEAM_HOT, true);
       }
       else
       {
@@ -680,15 +682,15 @@ void mfd_weapon_expose_beam(weapon_slot *ws, ubyte id, uchar Redraw)
                draw_raw_resource_bm(REF_IMG_BeamOverloadOff,1,OVERLOAD_BUTTON_Y);
             mfd_add_rect(1,OVERLOAD_BUTTON_Y,1+w,MFD_VIEW_HGT);
             get_string(REF_STR_EnergySetting,buf,ENERGY_TEXT_LEN);
-            mfd_draw_string(buf, 1, SETTING_TEXT, MFD_BEAM_READY, TRUE);
+            mfd_draw_string(buf, 1, SETTING_TEXT, MFD_BEAM_READY, true);
          }
       }
    }
 
    get_string(REF_STR_LowSetting,buf,ENERGY_TEXT_LEN);
-   mfd_draw_string(buf, 2, MFD_BEAM_RECT_Y1 - 1, MFD_BEAM_READY, TRUE);
+   mfd_draw_string(buf, 2, MFD_BEAM_RECT_Y1 - 1, MFD_BEAM_READY, true);
    get_string(REF_STR_HighSetting,buf,ENERGY_TEXT_LEN);
-   mfd_draw_string(buf, 57, MFD_BEAM_RECT_Y1 - 1, MFD_BEAM_READY, TRUE);
+   mfd_draw_string(buf, 57, MFD_BEAM_RECT_Y1 - 1, MFD_BEAM_READY, true);
 
    draw_raw_resource_bm(REF_IMG_BeamTemperature, TEMPR_X, TEMPR_Y);
 
@@ -728,13 +730,13 @@ uchar mfd_weapon_handler(MFD *m, uiEvent *e)
       case GUN_SUBCLASS_PISTOL:
       case GUN_SUBCLASS_AUTO:
       case GUN_SUBCLASS_SPECIAL:
-         if (mouse->action == MOUSE_MOTION) return FALSE;
+         if (mouse->action == MOUSE_MOTION) return false;
          return mfd_weapon_projectile_handler(m,e,ws);
          break;
       default:                 
          break;
    }
-   return FALSE;
+   return false;
 }
 
 ubyte old_energy_setting = 0xFF;
@@ -748,7 +750,7 @@ extern uchar does_weapon_overload(int type, int subtype);
 
 uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e)
 {
-   uchar retval = TRUE;
+   uchar retval = true;
    LGRect r;
    ubyte setting, setting_x;
    uiMouseEvent *mouse;
@@ -764,7 +766,7 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e)
 
    // We're interested in this event iff its a mouse up,down,action event
    // in the beam status bar.
-   if (!(mouse->action & (MOUSE_LUP|MOUSE_LDOWN|MOUSE_MOTION))) { return FALSE; }
+   if (!(mouse->action & (MOUSE_LUP|MOUSE_LDOWN|MOUSE_MOTION))) { return false; }
 
    if (overld)
    {
@@ -788,7 +790,7 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e)
                chg_set_flg(INVENTORY_UPDATE);
                OVERLOAD_VALUE(ws->setting) ? OVERLOAD_RESET(ws->setting) : OVERLOAD_SET(ws->setting);
                mfd_force_update();              // make sure it redraws the mfd
-               return TRUE;      
+               return true;
             }
          }
       }
@@ -802,7 +804,7 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e)
 
       uiGetRegionCursorStack(MFD_REGION(m),&cs);
       uiPopCursorEvery(cs,&slider_cursor);
-      mfd_notify_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT,FALSE,MFD_ACTIVE,FALSE);
+      mfd_notify_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT,false,MFD_ACTIVE,false);
       if (!in_or_out) return retval;
    }
    if (!in_or_out && (mouse->buttons == 0)) return retval;
@@ -811,7 +813,7 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e)
    // the beam status bar, and change the cursor appropriately
    if (mouse->action & MOUSE_LDOWN) {
 
-      in_or_out = TRUE;
+      in_or_out = true;
 
       // Constrain the mouse to a 1-pixel y
       slider_cursor.hotspot.x=slider_cursor_bmap.w/2;
@@ -825,7 +827,7 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e)
    LG_memcpy(backup[20],f->bm.bits,f->bm.w * f->bm.h);
       gr_init_bm(&backup_mfd_cursor,backup[14],BMT_FLAT8, 0, mfd_cursor.w,mfd_cursor.h);
 #endif
-      retval = TRUE;
+      retval = true;
    }
 
    // If the left button was released, unconstrain the mouse and reset
@@ -833,7 +835,7 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e)
    // an up and down event might happen "simultaneously"
    if (mouse->action & MOUSE_LUP) {
 
-      in_or_out = FALSE;
+      in_or_out = false;
 
       // Let the mouse run free
       // note that we are NOT using the UI here since we're already looking at grd_cap
@@ -841,10 +843,10 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e)
       beam_constrain = NO_CONSTRAIN;
       
       uiPopRegionCursor(MFD_REGION(m));
-      mfd_notify_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT,FALSE,MFD_ACTIVE,TRUE);
+      mfd_notify_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT,false,MFD_ACTIVE,true);
 
 
-      retval = TRUE;
+      retval = true;
    }
 
    // Calculate the max charge setting based on mouse position (making goofy
@@ -866,7 +868,7 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e)
    set_beam_weapon_max_charge(player_struct.actives[ACTIVE_WEAPON],setting);
 //      min(MAX_HEAT,setting));
 
-   return TRUE;
+   return true;
 }
 
 // ---------------------------------------------------------------------------
@@ -886,11 +888,11 @@ uchar mfd_weapon_projectile_handler(MFD *m, uiEvent *e, weapon_slot *ws)
    mouse = (uiMouseEvent *) e;
 
    if (pos.y < AMMO_BUTTON_Y)
-      return FALSE;
+      return false;
    // If we're already loaded, check for double click.  
    if (ws->ammo > 0)
    {
-      uchar retval = FALSE;
+      uchar retval = false;
       if (mouse->action & UI_MOUSE_LDOUBLE)
       {
          extern void unload_current_weapon(void);
@@ -898,20 +900,20 @@ uchar mfd_weapon_projectile_handler(MFD *m, uiEvent *e, weapon_slot *ws)
          unload_current_weapon();
          MFDSetLeftAmmo(0xFF);
          MFDSetRightAmmo(0xFF);
-         mfd_notify_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT,FALSE,MFD_ACTIVE,FALSE);
-         mfd_notify_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,FALSE);
-         retval = TRUE;
+         mfd_notify_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT,false,MFD_ACTIVE,false);
+         mfd_notify_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,false);
+         retval = true;
       }
       else if (mouse->action & MOUSE_LDOWN)
       {
          string_message_info(REF_STR_DClickToUnload);
-         retval = TRUE;
+         retval = true;
       }
       return retval;
    }
 
    // If it wasn't a left-mouse-button down event, throw it away.         
-   if (!(mouse->action & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE))) return FALSE;
+   if (!(mouse->action & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE))) return false;
 
    // Get the ammo data for the current weapon
    get_available_ammo_type(ws->type, ws->subtype, &num_ammo_buttons,
@@ -929,18 +931,18 @@ uchar mfd_weapon_projectile_handler(MFD *m, uiEvent *e, weapon_slot *ws)
                   if(player_struct.mfd_current_slots[mfd]==MFD_WEAPON_SLOT)
                      restore_mfd_slot(mfd);
                }
-               weapon_mfd_temp=FALSE;
+               weapon_mfd_temp=false;
             }
             MFDSetLeftAmmo(0xFF);
             MFDSetRightAmmo(0xFF);
-            mfd_notify_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT,FALSE,MFD_ACTIVE,FALSE);
-            mfd_notify_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,FALSE);
+            mfd_notify_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT,false,MFD_ACTIVE,false);
+            mfd_notify_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,false);
             break;
          }
       }
    }
 
-   return TRUE;
+   return true;
 }
 
 void weapon_mfd_for_reload(void)
@@ -956,7 +958,7 @@ void weapon_mfd_for_reload(void)
    take_mfd=mfd_choose_func(MFD_WEAPON_FUNC,MFD_WEAPON_SLOT);
    if(player_struct.mfd_current_slots[take_mfd]!=MFD_WEAPON_SLOT) {
       save_mfd_slot(take_mfd);
-      weapon_mfd_temp=TRUE;
+      weapon_mfd_temp=true;
    }
    mfd_change_slot(take_mfd,MFD_WEAPON_SLOT);
    mfd_funcs[MFD_TARGET_FUNC].priority = target_pri;
@@ -1046,7 +1048,7 @@ void mfd_item_micro_expose(uchar full, int triple)
       ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
 
       get_object_long_name(triple,buf,LNAME_BUFSIZE);
-      siz = mfd_draw_string(buf, X_MARGIN, y, GREEN_YELLOW_BASE, TRUE);
+      siz = mfd_draw_string(buf, X_MARGIN, y, GREEN_YELLOW_BASE, true);
       y+= siz.y +2;
 
       // Draw the appropriate weapon art
@@ -1080,7 +1082,7 @@ void mfd_item_micro_hires_expose(uchar full, int triple)
 		ss_safe_set_cliprect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
 		
 		get_object_long_name(triple,buf,LNAME_BUFSIZE);
-		siz = mfd_draw_string(buf, X_MARGIN, y, GREEN_YELLOW_BASE, TRUE);
+		siz = mfd_draw_string(buf, X_MARGIN, y, GREEN_YELLOW_BASE, true);
 		y+= siz.y +2;
 		
 		id = mfd_bmap_id(triple);
@@ -1187,7 +1189,7 @@ void mfd_general_inv_expose(MFD *mfd, ubyte control, ObjID id, uchar full)
 uchar mfd_general_inv_handler(MFD* m, uiEvent* ev, int row)
 {
    ObjID id = player_struct.inventory[row];
-   if (ev->type != UI_EVENT_MOUSE || !(ev->subtype & MOUSE_LDOWN)) return FALSE;
+   if (ev->type != UI_EVENT_MOUSE || !(ev->subtype & MOUSE_LDOWN)) return false;
    if (!(ObjProps[OPNUM(id)].flags & INVENTORY_GENERAL))
    {
       LGPoint pos = MakePoint(ev->pos.x - m->rect.ul.x,ev->pos.y - m->rect.ul.y);
@@ -1205,12 +1207,12 @@ uchar mfd_general_inv_handler(MFD* m, uiEvent* ev, int row)
             player_struct.inventory[i-1] = player_struct.inventory[i];
          player_struct.inventory[NUM_GENERAL_SLOTS-1] = OBJ_NULL;
          drain_energy(1);
-         mfd_notify_func(MFD_EMPTY_FUNC,MFD_ITEM_SLOT,TRUE,MFD_EMPTY,FALSE);
+         mfd_notify_func(MFD_EMPTY_FUNC,MFD_ITEM_SLOT,true,MFD_EMPTY,false);
          chg_set_flg(INVENTORY_UPDATE);
       }
 
    }
-   return TRUE;
+   return true;
 
 }
 
@@ -1238,8 +1240,8 @@ void draw_mfd_item_spew(Ref id, int n)
    gr_string_size(buf,&w,&h);
    x = (MFD_VIEW_WID-w)/2;
    y = (MFD_VIEW_HGT-h-SPEW_VERT_MARGIN)/2 + SPEW_VERT_MARGIN;
-   mfd_string_wrap = FALSE;
-   mfd_full_draw_string(buf,x,y,GREEN_YELLOW_BASE,MFD_FONT,TRUE,TRUE);
+   mfd_string_wrap = false;
+   mfd_full_draw_string(buf,x,y,GREEN_YELLOW_BASE,MFD_FONT,true,true);
    mfd_string_wrap = oldwrap;
    ResUnlock(MFD_FONT); 
 }
@@ -1248,7 +1250,7 @@ void draw_mfd_item_spew(Ref id, int n)
 void mfd_item_expose(MFD *m, ubyte control)
 {
    ubyte lastclass, currclass, lasttype, currtype = MFD_INV_NOTYPE;
-   uchar FullRedraw = FALSE;
+   uchar FullRedraw = false;
    int triple;
 
    currclass = MFDGetCurrItemClass(m->id);
@@ -1267,7 +1269,7 @@ void mfd_item_expose(MFD *m, ubyte control)
 
       if ((control & MFD_EXPOSE_FULL) ||
           (currclass != lastclass) || (currtype != lasttype))
-         FullRedraw = TRUE;
+         FullRedraw = true;
 
       // If there is no currently selected member of the current class,
       // draw the blank screen thingie
@@ -1386,7 +1388,7 @@ void mfd_item_expose(MFD *m, ubyte control)
 
 uchar mfd_item_handler(MFD *m, uiEvent *e)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    uiMouseEvent *mickey;
 
    mickey = (uiMouseEvent *) e;
@@ -1424,7 +1426,7 @@ uchar mfd_item_handler(MFD *m, uiEvent *e)
                      player_struct.grenades_time_setting[MFDGetCurrItemType(m->id)]++;
                }
 
-               mfd_notify_func(MFD_ITEM_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
+               mfd_notify_func(MFD_ITEM_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
             }
          }
       }
@@ -1437,8 +1439,8 @@ uchar mfd_item_handler(MFD *m, uiEvent *e)
             if (RECT_TEST_PT(&r,e->pos))
             {
                use_ware(WARE_HARD,player_struct.actives[ACTIVE_HARDWARE]);
-               mfd_notify_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,FALSE);
-               retval = TRUE;
+               mfd_notify_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,false);
+               retval = true;
             }
          }
          break;
@@ -1449,8 +1451,8 @@ uchar mfd_item_handler(MFD *m, uiEvent *e)
             if (RECT_TEST_PT(&r,e->pos))
             {
                use_ware(WARE_SOFT_MISC,player_struct.actives[ACTIVE_MISC_SOFT]);
-               mfd_notify_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,FALSE);
-               retval = TRUE;
+               mfd_notify_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,false);
+               retval = true;
             }
          }
          break;
@@ -1462,8 +1464,8 @@ uchar mfd_item_handler(MFD *m, uiEvent *e)
             if (RECT_TEST_PT(&r,e->pos))
             {
                drug_use(player_struct.actives[ACTIVE_DRUG]);
-               mfd_notify_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,FALSE);
-               retval = TRUE;
+               mfd_notify_func(MFD_ITEM_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,false);
+               retval = true;
             }
          }
          break;
@@ -1503,14 +1505,14 @@ uchar mfd_lantern_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data
    void mfd_lantern_setting(int setting);
 
    if (bttn.x >= player_struct.hardwarez[n] || !(ev->subtype & MOUSE_LDOWN))
-      return FALSE; // Version too high
+      return false; // Version too high
    if (bttn.x == LAMP_SETTING(s))
    {
       use_ware(WARE_HARD,n);
-      return TRUE;
+      return true;
    }
    mfd_lantern_setting(bttn.x);
-   return TRUE;
+   return true;
 }
 
 void mfd_lantern_setting(int setting)
@@ -1529,7 +1531,7 @@ void mfd_lantern_setting(int setting)
    }
    if (player_struct.hardwarez_status[n] & WARE_ON)
       set_player_energy_spend(min(MAX_ENERGY,(int)player_struct.energy_spend + energy_cost(n)));
-   mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
+   mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
 }
 
 errtype mfd_lanternware_init(MFD_Func* f)
@@ -1621,21 +1623,21 @@ void mfd_shieldware_expose(MFD* mfd, ubyte control);
 
 uchar mfd_shield_handler(MFD* m, uiEvent* e)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    LGPoint pos = e->pos;
    ubyte n = CPTRIP(SHIELD_HARD_TRIPLE);
    ubyte v = player_struct.hardwarez[n];
    if (v != SHIELD_VERSIONS) // are we at max version
-      return FALSE;
+      return false;
    if (!(e->subtype & MOUSE_LDOWN))
-      return FALSE;
+      return false;
    pos.x -= m->rect.ul.x - SHIELD_BARRAY_X;
    pos.y -= m->rect.ul.y - SHIELD_BARRAY_Y;
    if (pos.x > 0 && pos.x < SHIELD_BARRAY_WD && pos.y > 0)
    {
       use_ware(WARE_HARD,n);
       mfd_shield_setting(v-1);
-      retval = TRUE;
+      retval = true;
    }
    return retval;
 }
@@ -1646,14 +1648,14 @@ uchar mfd_shield_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
    int s = player_struct.hardwarez_status[n];
 
    if (bttn.x >= player_struct.hardwarez[n] || !(ev->subtype & MOUSE_LDOWN))
-      return FALSE; // Version too high
+      return false; // Version too high
    if (SHIELD_SETTING(s) == bttn.x)
    {
       use_ware(WARE_HARD,n);
-      return TRUE;
+      return true;
    }
    mfd_shield_setting(bttn.x);
-   return TRUE;
+   return true;
 }
 
 void mfd_shield_setting(int setting)
@@ -1671,7 +1673,7 @@ void mfd_shield_setting(int setting)
       shield_set_absorb();
       set_player_energy_spend(min(MAX_ENERGY,(int)player_struct.energy_spend + energy_cost(n)));
    }
-   mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
+   mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
 }
 
 errtype mfd_shield_init(MFD_Func* f)
@@ -1773,11 +1775,11 @@ uchar mfd_motion_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
    int s = player_struct.hardwarez_status[n];
 //   if (bttn.x >= player_struct.hardwarez[n] || 
    if (!(ev->subtype & MOUSE_LDOWN))
-      return FALSE; 
+      return false;
    if (MOTION_SETTING(s) == bttn.x)
    {
       use_ware(WARE_HARD,n);
-      return TRUE;
+      return true;
    }
    if (s & WARE_ON)
       set_player_energy_spend(player_struct.energy_spend - energy_cost(n));
@@ -1792,8 +1794,8 @@ uchar mfd_motion_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
       motionware_mode = bttn.x + 1;
       set_player_energy_spend(min(MAX_ENERGY,(int)player_struct.energy_spend + energy_cost(n)));
    }
-   mfd_notify_func(MFD_MOTION_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
-   return TRUE;
+   mfd_notify_func(MFD_MOTION_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
+   return true;
 }
 
 errtype mfd_motion_init(MFD_Func* f)
@@ -1930,11 +1932,11 @@ uchar mfd_grenade_slider_handler(MFD* m,short val, uiEvent* ev, void* data)
       {
          mouse_unconstrain();
          GRENADE_MOUSE_CONSTRAINED = 0;
-         mfd_notify_func(MFD_GRENADE_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,TRUE);
+         mfd_notify_func(MFD_GRENADE_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,true);
       }
    }
-   mfd_notify_func(MFD_GRENADE_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,FALSE);
-   return TRUE;
+   mfd_notify_func(MFD_GRENADE_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,false);
+   return true;
 }
 
 
@@ -1947,9 +1949,9 @@ uchar mfd_grenade_handler(MFD* m, uiEvent* ev)
       uiCursorStack* cs;
       uiGetRegionCursorStack(MFD_REGION(m),&cs);
       uiPopCursorEvery(cs,&slider_cursor);
-      mfd_notify_func(MFD_GRENADE_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,FALSE);
+      mfd_notify_func(MFD_GRENADE_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,false);
    }
-   return FALSE;
+   return false;
 }
 
         
@@ -2050,7 +2052,7 @@ void mfd_grenade_expose(MFD* mfd, ubyte control)
          LGRect r = { {GRENADE_SLIDER_X, TIME_TEXT_Y} ,{ MFD_VIEW_WID, GRENADE_SLIDER_Y-1} };
          mfd_partial_clear(&r);
       }
-      mfd_draw_string(buf,GRENADE_SLIDER_X,TIME_TEXT_Y,GRENADE_SLIDER_BORDER,TRUE);
+      mfd_draw_string(buf,GRENADE_SLIDER_X,TIME_TEXT_Y,GRENADE_SLIDER_BORDER,true);
       LAST_GRENADE_SETTING(mfd->id) = setting;
    }
    POP_CANVAS();
@@ -2107,7 +2109,7 @@ void mfd_bioware_expose(MFD *m, ubyte control)
          ubyte slot = player_struct.mfd_current_slots[i];
          ubyte func = mfd_get_func(i,slot);
          if (func == MFD_BIOWARE_FUNC && (control != 0 || m->id != i))
-            on = TRUE;
+            on = true;
       }
       if (on == !(player_struct.hardwarez_status[HARDWARE_BIOWARE] & WARE_ON))
       {
@@ -2142,7 +2144,7 @@ void mfd_bioware_expose(MFD *m, ubyte control)
       if (full)
       {
          s = get_temp_string(REF_STR_BiowareTitle);
-         mfd_draw_string(s, BIO_TEXT_X, y, GREEN_YELLOW_BASE, TRUE);
+         mfd_draw_string(s, BIO_TEXT_X, y, GREEN_YELLOW_BASE, true);
       }
       y += Y_STEP;
  #endif
@@ -2154,7 +2156,7 @@ void mfd_bioware_expose(MFD *m, ubyte control)
          s = get_temp_string(REF_STR_BiowareHealth);
          x = BIO_TEXT_X + gr_string_width(s);
          if (full)
-            mfd_draw_string(s, BIO_TEXT_X, y, GREEN_YELLOW_BASE, TRUE);
+            mfd_draw_string(s, BIO_TEXT_X, y, GREEN_YELLOW_BASE, true);
          hp=(100*player_struct.hit_points+(MAX_HP/2))/MAX_HP;
          if(hp==0 && player_struct.hit_points>0) hp=1;
          sprintf(buf2, "%d", hp);
@@ -2164,9 +2166,9 @@ void mfd_bioware_expose(MFD *m, ubyte control)
          // that "I" is narrower.
          string_replace_char(buf2,'1','I');
 
-         mfd_draw_string(buf2, x, y, GREEN_YELLOW_BASE, TRUE);
+         mfd_draw_string(buf2, x, y, GREEN_YELLOW_BASE, true);
          x += gr_string_width(buf2);
-         mfd_draw_string(pct,x,y,GREEN_YELLOW_BASE, TRUE);
+         mfd_draw_string(pct,x,y,GREEN_YELLOW_BASE, true);
          x += gr_string_width(pct);
          rest.ul.x=x; rest.ul.y=y;
          rest.lr.x=MFD_VIEW_WID; rest.lr.y=y+Y_STEP;
@@ -2183,11 +2185,11 @@ void mfd_bioware_expose(MFD *m, ubyte control)
          s = get_temp_string(REF_STR_BiowareFatigue);
          x = BIO_TEXT_X + gr_string_width(s);
          if (full)
-            mfd_draw_string(s, BIO_TEXT_X, y, GREEN_YELLOW_BASE, TRUE);
+            mfd_draw_string(s, BIO_TEXT_X, y, GREEN_YELLOW_BASE, true);
          if (stam)
          {
             strcpy(buf2,"--");
-            mfd_draw_string(buf2, x , y, GREEN_YELLOW_BASE,TRUE);
+            mfd_draw_string(buf2, x , y, GREEN_YELLOW_BASE,true);
             x+= gr_string_width(buf2);
          }
          else
@@ -2198,9 +2200,9 @@ void mfd_bioware_expose(MFD *m, ubyte control)
             // hack to save space in display.  Use "I" for "1", knowing
             // that "I" is narrower.
             string_replace_char(buf2,'1','I');
-            mfd_draw_string(buf2, x, y, GREEN_YELLOW_BASE, TRUE);
+            mfd_draw_string(buf2, x, y, GREEN_YELLOW_BASE, true);
             x += gr_string_width(buf2);
-            mfd_draw_string(pct,x,y,GREEN_YELLOW_BASE, TRUE);
+            mfd_draw_string(pct,x,y,GREEN_YELLOW_BASE, true);
             x += gr_string_width(pct);
          }
       
@@ -2235,7 +2237,7 @@ void mfd_bioware_expose(MFD *m, ubyte control)
                   ubyte color = (drugged == BIO_DRUG_UP) ? GREEN_BASE + 3 : GOOD_RED;
                   triple = drug2triple(i);
                   get_object_short_name(triple,buf2,sizeof(buf2));
-                  mfd_draw_string(buf2,BIO_TEXT_X,y,color,TRUE);
+                  mfd_draw_string(buf2,BIO_TEXT_X,y,color,true);
                   y+=Y_STEP;
                }
             }
@@ -2294,13 +2296,13 @@ void mfd_anim_expose(MFD *m, ubyte control)
 
       anim[m->id] = AnimPlayRegion(REF_ANIM_space4, &(m->reg), m->rect.ul, 0);
       chg_set_sta(ANIM_UPDATE);
-      AnimOn[m->id] = TRUE;
+      AnimOn[m->id] = true;
    }
    else {
 
       AnimKill((anim[m->id]));
-      AnimOn[m->id] = FALSE;
-      if ((AnimOn[0] == FALSE) && (AnimOn[1] == FALSE))
+      AnimOn[m->id] = false;
+      if ((AnimOn[0] == false) && (AnimOn[1] == false))
          chg_unset_sta(ANIM_UPDATE);
    }
 #endif
@@ -2325,7 +2327,7 @@ errtype draw_shodan_influence(MFD *mfd, uchar amt)
 
    gr_set_font((grs_font*)ResLock(MFD_FONT));
    wrap_text(s,MFD_VIEW_WID);
-   mfd_draw_string(s,2,2,SHODAN_COLOR,TRUE);
+   mfd_draw_string(s,2,2,SHODAN_COLOR,true);
    ResUnlock(MFD_FONT);
    unwrap_text(s);
 
@@ -2381,7 +2383,7 @@ void mfd_elevator_expose(MFD* mfd, ubyte control);
 errtype mfd_elevator_setlev(MFD *mfd, short lev, elev_data_type *elev_data)
 {
    elev_data->stat.currlev = lev;
-   mfd_notify_func(MFD_ELEV_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, TRUE);
+   mfd_notify_func(MFD_ELEV_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, true);
    mfd_update_current_slot(mfd->id,MFD_CHANGEBIT_FULL,0);
    return(OK);
 }
@@ -2397,13 +2399,13 @@ uchar mfd_elevator_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* dat
    uiMouseEvent* mort=(uiMouseEvent*)ev;
 
    if(!(mort->action & MOUSE_LDOWN))
-      return FALSE;
+      return false;
 
    // If SHODAN has defeated us, indicate this for our expose func   
    if (curr_elev_special)
    {
       elev_data->mfd_last[mfd->id].currlev = 0xF;
-      mfd_notify_func(MFD_ELEV_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, TRUE);
+      mfd_notify_func(MFD_ELEV_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, true);
       mfd_update_current_slot(mfd->id,MFD_CHANGEBIT_FULL,0);
       return(OK);
    }
@@ -2418,7 +2420,7 @@ uchar mfd_elevator_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* dat
          if (c > b) break;
       }
    }
-   if (l >= NUM_ELEV_LVLS) return TRUE;
+   if (l >= NUM_ELEV_LVLS) return true;
    elev_data->stat.selected = b;
 #ifdef PLAYTEST
    mprintf("Pushing button %d\n",b);
@@ -2443,7 +2445,7 @@ uchar mfd_elevator_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* dat
             mfd_elevator_setlev(mfd, oldlev, elev_data);
       }
    }
-   return TRUE;
+   return true;
 }
  
 #define TEST_ELEVPANEL
@@ -2479,7 +2481,7 @@ void mfd_setup_elevator(ushort levmask, ushort reachmask, ushort curlevel, uchar
    elev_data->stat.currlev = curlevel;
    elev_data->stat.selected = 0xFF;
    curr_elev_special = special;
-   mfd_notify_func(MFD_ELEV_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
+   mfd_notify_func(MFD_ELEV_FUNC, MFD_INFO_SLOT, true, MFD_ACTIVE, true);
 
 }
 
@@ -2517,7 +2519,7 @@ char *level_to_floor(int lev_num, char *buf)
 //
 ObjID panel_ref_unexpose(int mfdid, int func)
 {
-   uchar found = FALSE;
+   uchar found = false;
    int id = NUM_MFDS;
    ObjID pr=player_struct.panel_ref;
 
@@ -2525,10 +2527,10 @@ ObjID panel_ref_unexpose(int mfdid, int func)
       if (id != mfdid)
          return OBJ_NULL;
       else
-         found = TRUE;
+         found = true;
 
    if (found)
-      check_panel_ref(TRUE);
+      check_panel_ref(true);
    else player_struct.panel_ref = OBJ_NULL;
    return pr;
 }
@@ -2560,7 +2562,7 @@ void mfd_elevator_expose(MFD* mfd, ubyte control)
          gr_set_font((grs_font*)ResLock(ELEV_STATUS_FONT));
          level_to_floor(lev, buf);
          gr_string_size(buf,&w,&h);
-         mfd_draw_font_string(buf,ELEV_STATUS_X-w,ELEV_STATUS_Y,ELEV_STATUS_COLOR,ELEV_STATUS_FONT,TRUE);
+         mfd_draw_font_string(buf,ELEV_STATUS_X-w,ELEV_STATUS_Y,ELEV_STATUS_COLOR,ELEV_STATUS_FONT,true);
          elev_data->mfd_last[mfd->id].currlev = lev;
          ResUnlock(ELEV_STATUS_FONT);
       }
@@ -2597,7 +2599,7 @@ void mfd_elevator_expose(MFD* mfd, ubyte control)
             ss_box(bttn.x-1,bttn.y-1,bttn.x+ELEV_BTTN_WD+1,bttn.y+ELEV_BTTN_HT+1);
             level_to_floor(l, buf);
             gr_string_size(buf,&w,&h);
-            mfd_draw_string(buf,bttn.x+(ELEV_BTTN_WD-w)/2+1,bttn.y+1,clr,TRUE);
+            mfd_draw_string(buf,bttn.x+(ELEV_BTTN_WD-w)/2+1,bttn.y+1,clr,true);
          }
          elev_data->mfd_last[mfd->id].selected = elev_data->stat.selected;
          mfd_add_rect(ELEV_BTTNS_X,ELEV_BTTNS_Y,ELEV_BTTNS_X+ELEV_BTTNS_WD,ELEV_BTTNS_Y+ELEV_BTTNS_HT);
@@ -2633,7 +2635,7 @@ void mfd_elevator_expose(MFD* mfd, ubyte control)
 #define KEYPAD_STATUS_COLOR (GOOD_RED)
 
 
-Boolean	gKeypadOverride = FALSE;			// When this is true, don't move the player.
+bool gKeypadOverride = false;			// When this is true, don't move the player.
 
 typedef struct _keypad_data
 {
@@ -2738,7 +2740,7 @@ errtype mfd_keypad_input(MFD * mfd, char b_num)
    {
       keypad_trigger(player_struct.panel_ref, keypad_data->digits);
    }
-   mfd_notify_func(MFD_KEYPAD_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, TRUE);
+   mfd_notify_func(MFD_KEYPAD_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, true);
    return(OK);
 }
 
@@ -2750,9 +2752,9 @@ uchar keypad_hotkey_func(short keycode, ulong context, void* data)
    while(mfd_yield_func(MFD_KEYPAD_FUNC,&m))
    {
       mfd_keypad_input(&mfd[m],digit);
-      return TRUE;
+      return true;
    }
-   return FALSE;
+   return false;
 }
 
 void install_keypad_hotkeys(void)
@@ -2766,19 +2768,19 @@ void install_keypad_hotkeys(void)
 
 uchar mfd_keypad_handler(MFD* m, uiEvent* ev)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    char n;
    uiCookedKeyEvent *e = (uiCookedKeyEvent *)ev;
 
    if (e->type != UI_EVENT_KBD_COOKED)
-      return(FALSE);
+      return(false);
    if (!(e->code & KB_FLAG_DOWN))
-      return(FALSE);
+      return(false);
    n = (e->code & 0xFF) - '0';
    if ((n < 0) || (n > 9))
-      return(FALSE);
+      return(false);
    mfd_keypad_input(m, n);
-   return(FALSE);
+   return(false);
 }
 
 uchar mfd_keypad_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
@@ -2787,9 +2789,9 @@ uchar mfd_keypad_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
 
    // Filter out anything that isn't a left-click down at all
    if ((ev->subtype&(MOUSE_LDOWN|UI_MOUSE_LDOUBLE))==0)
-      return(FALSE);
+      return(false);
    mfd_keypad_input(mfd, keypad_num(b));
-   return TRUE;
+   return true;
 }
  
 errtype mfd_keypad_init(MFD_Func* f)
@@ -2816,7 +2818,7 @@ void mfd_setup_keypad(char special)
    for (i=0; i < MAX_KEYPAD_DIGITS; i++)
       keypad_data->digits[i] = 0;
    keypad_data->special = special;
-   mfd_notify_func(MFD_KEYPAD_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
+   mfd_notify_func(MFD_KEYPAD_FUNC, MFD_INFO_SLOT, true, MFD_ACTIVE, true);
 }
 
 #define NUMBER_BUFSZ 3
@@ -2831,7 +2833,7 @@ void mfd_keypad_expose(MFD* mfd, ubyte control)
       ObjID pr;
       pr=panel_ref_unexpose(mfd->id,MFD_KEYPAD_FUNC);
       if(pr) objs[pr].info.current_frame=0;
-      gKeypadOverride = FALSE;
+      gKeypadOverride = false;
       return;
    }
    mfd_clear_rects();
@@ -2852,7 +2854,7 @@ void mfd_keypad_expose(MFD* mfd, ubyte control)
          gr_set_font((grs_font*)ResLock(KEYPAD_STATUS_FONT));
          mfd_keypad_assemble(keypad_data, buf);
          gr_string_size(buf,&w,&h);
-         mfd_draw_font_string(buf,KEYPAD_STATUS_X-w,KEYPAD_STATUS_Y,KEYPAD_STATUS_COLOR,KEYPAD_STATUS_FONT,TRUE);
+         mfd_draw_font_string(buf,KEYPAD_STATUS_X-w,KEYPAD_STATUS_Y,KEYPAD_STATUS_COLOR,KEYPAD_STATUS_FONT,true);
          keypad_data->last_digit = keypad_data->curr_digit;
          ResUnlock(KEYPAD_STATUS_FONT);
 
@@ -2876,7 +2878,7 @@ void mfd_keypad_expose(MFD* mfd, ubyte control)
             ss_box(bttn.x-1,bttn.y-1,bttn.x+KEYPAD_BTTN_WD+1,bttn.y+KEYPAD_BTTN_HT+1);
             keypad_name(keypad_num(i),buf);
             gr_string_size(buf,&w,&h);
-            mfd_draw_string(buf,bttn.x+(KEYPAD_BTTN_WD-w)/2+1,bttn.y+1,clr,TRUE);
+            mfd_draw_string(buf,bttn.x+(KEYPAD_BTTN_WD-w)/2+1,bttn.y+1,clr,true);
          }
          mfd_add_rect(KEYPAD_BTTNS_X,KEYPAD_BTTNS_Y,
             KEYPAD_BTTNS_X+KEYPAD_BTTNS_WD,KEYPAD_BTTNS_Y+KEYPAD_BTTNS_HT);
@@ -3053,7 +3055,7 @@ void severed_head_expose(MFD* mfd, ubyte control)
       //gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
        
       // draw the name
-      mfd_draw_string(get_object_long_name(ID2TRIP(head),NULL,0), X_MARGIN, 2, GREEN_YELLOW_BASE, TRUE);
+      mfd_draw_string(get_object_long_name(ID2TRIP(head),NULL,0), X_MARGIN, 2, GREEN_YELLOW_BASE, true);
       mfd_add_rect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
 
       // Pop the canvas
@@ -3166,7 +3168,7 @@ void set_inventory_mfd(ubyte obclass, ubyte type, uchar grab)
    ubyte func = MFD_EMPTY_FUNC;
    ubyte slot;
    MFD_Status stat;
-   uchar classhit = FALSE;
+   uchar classhit = false;
 
    switch(obclass) {
 
@@ -3193,7 +3195,7 @@ void set_inventory_mfd(ubyte obclass, ubyte type, uchar grab)
          for (i = 0; i < NUM_MFDS; i++)
          {
             if (MFDGetCurrItemClass(i) == obclass)
-               classhit = TRUE;               
+               classhit = true;
             if (type != MFD_INV_NOTYPE)
                MFDSetCurrItemClass(i,obclass);
          }
@@ -3202,13 +3204,13 @@ void set_inventory_mfd(ubyte obclass, ubyte type, uchar grab)
          {
             if (classhit)
             {
-               mfd_notify_func(MFD_EMPTY_FUNC,MFD_ITEM_SLOT,TRUE,MFD_EMPTY,TRUE);
+               mfd_notify_func(MFD_EMPTY_FUNC,MFD_ITEM_SLOT,true,MFD_EMPTY,true);
                player_struct.actives[catactives[obclass]] = 0;
             }
          }
          else if (obclass == MFD_INV_GENINV && player_struct.inventory[type] == OBJ_NULL)
          {
-            mfd_notify_func(MFD_EMPTY_FUNC, MFD_ITEM_SLOT, grab, MFD_EMPTY, TRUE);
+            mfd_notify_func(MFD_EMPTY_FUNC, MFD_ITEM_SLOT, grab, MFD_EMPTY, true);
          }
          else 
          {
@@ -3222,7 +3224,7 @@ void set_inventory_mfd(ubyte obclass, ubyte type, uchar grab)
    }
    if (func != MFD_EMPTY_FUNC)
    {
-      mfd_notify_func(func, slot, grab, stat, TRUE);
+      mfd_notify_func(func, slot, grab, stat, true);
 #ifdef RAISE_ON_SELECT
       if (full_game_3d)
       {
@@ -3256,7 +3258,7 @@ void set_inventory_mfd(ubyte obclass, ubyte type, uchar grab)
             case HARDWARE_BIOWARE:
 
                if (WareActive(player_struct.hardwarez_status[HARDWARE_BIOWARE]))
-                  mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
+                  mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, true, MFD_ACTIVE, true);
 
                break;
 
@@ -3282,7 +3284,7 @@ void update_item_mfd(void)
       int func = ObjProps[opnum].mfd_id;
       if (func != MFD_EMPTY_FUNC)
       {
-         mfd_notify_func(func,MFD_ITEM_FUNC,TRUE,MFD_ACTIVE,TRUE);
+         mfd_notify_func(func,MFD_ITEM_FUNC,true,MFD_ACTIVE,true);
       }
    }
 }
@@ -3298,9 +3300,9 @@ uchar mfd_distance_remove(ubyte slot_func)
       case MFD_ACCESSPANEL_FUNC:
       case MFD_GUMP_FUNC:
       case MFD_GRIDPANEL_FUNC:
-         return TRUE;
+         return true;
    }
-   return FALSE;
+   return false;
 }
 
 // -------

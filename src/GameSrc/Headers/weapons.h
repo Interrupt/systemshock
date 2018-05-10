@@ -72,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef __WEAPONS_SRC
 ubyte handart_show = 0;
 ubyte handart_remainder = 0;
-uchar handart_fire = FALSE;
+uchar handart_fire = false;
 #else
 extern ubyte handart_show;
 extern ubyte handart_remainder;

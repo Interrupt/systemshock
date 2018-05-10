@@ -152,9 +152,9 @@ uchar ff_raycast (Q x, Q y, Q z, Q vec[3], Q range, Q where_hit[3], terrain_ff* 
    return FF_raycast (x.to_fix(), y.to_fix(), z.to_fix(), (fix *) vec, range.to_fix(), (fix *) where_hit, FFT);
 }
 
-uchar FF_terrain( fix X, fix Y, fix Z, uchar fast, terrain_ff* TFF )  { return(TRUE); }
+uchar FF_terrain( fix X, fix Y, fix Z, uchar fast, terrain_ff* TFF )  { return(true); }
 
-uchar FF_raycast (fix x, fix y, fix z, fix vec[3], fix range, fix where_hit[3], terrain_ff *tff) { return (TRUE);}
+uchar FF_raycast (fix x, fix y, fix z, fix vec[3], fix range, fix where_hit[3], terrain_ff *tff) { return (true);}
 
 
 //	We need to link to c...

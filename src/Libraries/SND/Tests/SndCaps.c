@@ -117,7 +117,7 @@ void main(void)
 		
 		for (i = 0; i < gNumSC; i++)
 		{
-			myErr = SndPlay(gSCPtr[i], (SndListHandle)sndHdl, TRUE);		// Play the sound
+			myErr = SndPlay(gSCPtr[i], (SndListHandle)sndHdl, true);		// Play the sound
 			if (myErr != noErr)
 				printf("Couldn't play a sound for channel %d: %d\n", i, myErr);
 
@@ -141,7 +141,7 @@ void main(void)
 	
 	for (i = 0; i < gNumSC; i++)
 	{
-		myErr = SndDisposeChannel(gSCPtr[i], TRUE);
+		myErr = SndDisposeChannel(gSCPtr[i], true);
 		if (myErr != noErr)
 			printf("Error in SndDisposeChannel call for channel %d: %d\n", i, myErr);
 		free(gSCPtr[i]);

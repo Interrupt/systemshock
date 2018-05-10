@@ -94,7 +94,7 @@ void deadly_idof( int object )
 	ff_terrain( A[object][0][0],
 		    A[object][1][0],
 		    A[object][2][0],
-          FALSE,
+          false,
 		    &TFF );
 
 

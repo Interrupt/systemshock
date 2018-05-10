@@ -23,10 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/14 03:30:50 $
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 
+#include "event.h"
 #include "input.h"
 #include "mfdpanel.h"
 #include "mfdint.h"
@@ -167,7 +169,7 @@ int mfd_slot_primary(int slot)
 static void draw_help_text( char* str, uchar wire, void* puzzle )
 {
    short sw,sh,bw=0,bh=0,x,y;
-   uchar save_w = mfd_string_wrap, bmap=FALSE;
+   uchar save_w = mfd_string_wrap, bmap=false;
    grs_bitmap foot;
    uchar bcolor;
 
@@ -177,14 +179,14 @@ static void draw_help_text( char* str, uchar wire, void* puzzle )
    // special annointed string gets illustrative bitmap.
    if(!wire && !(((gridFlowPuzzle*)puzzle)->gfLayout.have_won)) {
       foot.bits=MFDPANEL_MEMORY_BAG;
-      bmap=(OK==load_res_bitmap(&foot,REF_IMG_GridHelpSwitch,FALSE));
+      bmap=(OK==load_res_bitmap(&foot,REF_IMG_GridHelpSwitch,false));
       bw=foot.w;
       bh=foot.h;
    }
    x=(MFD_VIEW_WID-sw)/2;
    y=(MFD_VIEW_HGT-sh-bh)/2;
-   mfd_string_wrap = FALSE;
-   mfd_draw_string(str,x,y,GREEN_YELLOW_BASE+3,TRUE);
+   mfd_string_wrap = false;
+   mfd_draw_string(str,x,y,GREEN_YELLOW_BASE+3,true);
    unwrap_text(str);
    mfd_string_wrap=save_w;
    if(bmap) {
@@ -307,7 +309,7 @@ uchar wirepos_3int_init(wirePosPuzzle *wppz, int a1, int a2, int a3)
    wppz->wire_in_motion=0xff;
    wppz->wim_tick=wppz->wim_shown=0;
    access_primary_mfd=-1;
-   return TRUE;
+   return true;
 }
 
 #define WIN_MASK 0x0F00000
@@ -362,7 +364,7 @@ uchar wirepos_moveto(wirePosPuzzle *wppz, int wim_code)
       loc=wirepos_iswire(wppz,wppz->wire_in_motion);
       if (loc==-1)
       {
-       	  retv=FALSE; 
+       	  retv=false;
       }
       else
       {
@@ -385,9 +387,9 @@ uchar wirepos_moveto(wirePosPuzzle *wppz, int wim_code)
              { wppz->left_tap=wim_tap; wppz->wires[loc].cur.lpos=twire; }
          }
       }
-      retv=TRUE;
+      retv=true;
    }
-   else retv=FALSE;
+   else retv=false;
    wppz->wire_in_motion=NO_WIRE_IN_MOTION;
    return retv;
 }
@@ -412,13 +414,13 @@ uchar mfd_accesspanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* 
    int wim_code;
 
    if(mfd->id != access_primary_mfd)
-      return TRUE;
+      return true;
 
    if ((ev->subtype&(MOUSE_LDOWN|UI_MOUSE_LDOUBLE))==0)
-      return TRUE;
+      return true;
 
    if (wppz->have_won)
-      return TRUE;
+      return true;
 
    wppz->wires_moved=1;
 
@@ -440,9 +442,9 @@ uchar mfd_accesspanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* 
       }
    }
 //   wirepos_spew(wppz,53);
-   mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+   mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
    wirepos_3int_update(wppz);
-   return TRUE;
+   return true;
 }
 
 char mfd_type_accesspanel(ObjID id)
@@ -517,7 +519,7 @@ void mfd_setup_wirepanel(uchar special, ObjID id)
    wppz->special=special;
    wppz->our_id=id;
    wirepos_3int_init(wppz,p2,p3,p4);
-   mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
+   mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, true, MFD_ACTIVE, true);
 }
 
 uchar mfd_solve_wirepanel()
@@ -581,7 +583,7 @@ uchar mfd_solve_wirepanel()
    }
 #endif
 
-   mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+   mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
    // always return success: if we've gotten to this point without solving
    // the puzzle, it should be because of randomness in rescore_n_check
    return(EPICK_SOLVED);
@@ -628,11 +630,11 @@ uchar mfd_accesspanel_handler(MFD *m, uiEvent *e)
 #ifdef EPICK_ON_CURSOR_TRY
    extern uchar try_use_epick(ObjID panel, ObjID cursor_obj);
 
-   if (ev->type != UI_EVENT_MOUSE || !(ev->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE))) return FALSE;
+   if (ev->type != UI_EVENT_MOUSE || !(ev->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE))) return false;
 
    return(try_use_epick(player_struct.panel_ref, object_on_cursor));
 #else
-   return(FALSE);
+   return(false);
 #endif
 }
 
@@ -655,7 +657,7 @@ void mfd_accesspanel_expose(MFD* mfd, ubyte control)
       uchar primary;
 
       if((full && access_primary_mfd<0) || player_struct.mfd_current_slots[access_primary_mfd]!=MFD_INFO_SLOT) {
-         full = TRUE;
+         full = true;
          access_primary_mfd = mfd->id;
       }
 
@@ -663,7 +665,7 @@ void mfd_accesspanel_expose(MFD* mfd, ubyte control)
 
       if(primary) {
          if ((cscore=wirepos_rescore_n_check(wppz))<0)
-         { mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE); cscore=-cscore; }
+         { mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false); cscore=-cscore; }
          cscore=wirepos_curscore(wppz); if (cscore<0) cscore=-cscore; if (cscore>255) cscore=255;
       }
       mfd_clear_rects();
@@ -680,7 +682,7 @@ void mfd_accesspanel_expose(MFD* mfd, ubyte control)
          if(full || last_access_help_string!=prev) {
             mfd_clear_view();
             get_string(last_access_help_string, buf, 80);
-            draw_help_text( buf, TRUE, wppz );
+            draw_help_text( buf, true, wppz );
          }
          gr_pop_canvas();
          mfd_update_rects(mfd);
@@ -800,7 +802,7 @@ void mfd_accesspanel_expose(MFD* mfd, ubyte control)
       // updated mfd to screen
       mfd_update_rects(mfd);
 #ifndef WORKING_INC_MFDS
-      mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+      mfd_notify_func(MFD_ACCESSPANEL_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
 #endif
    }
    else
@@ -1003,7 +1005,7 @@ void gpz_add_gate(gridFlowPuzzle *gfpz, ObjID me)
          if(count>=3) {
             tmp=gpz_get_grid_state(gfpz,r,c);
             gpz_set_grid_state(gfpz,r,c,GPZ_GATE);
-            if(find_winning_move(gfpz,NULL,gpz_search_depth(gfpz),NULL,FALSE,timeout)) {
+            if(find_winning_move(gfpz,NULL,gpz_search_depth(gfpz),NULL,false,timeout)) {
                // it's solvable.  Keep the change.
                return;
             }
@@ -1042,11 +1044,11 @@ uchar mfd_solve_gridpanel()
 
    search_depth=gpz_search_depth(gfpz);
 
-   found = find_winning_move(gfpz,&solved,search_depth,NULL,FALSE,logic_probe_timeout);
+   found = find_winning_move(gfpz,&solved,search_depth,NULL,false,logic_probe_timeout);
    if(found && solved.gfLayout.have_won) {
       *gfpz=solved;
       gpz_4int_update(gfpz);
-      mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+      mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
    }
    else if(shadow)
       memcpy(player_struct.mfd_access_puzzles,temp,sizeof(player_struct.mfd_access_puzzles));
@@ -1194,7 +1196,7 @@ uchar gpz_propogate_charge_n_check(gridFlowPuzzle *gfpz)
    // 'cause we only set "flow" when we charge a node, and eventually we
    // will run out of nodes to charge.
    do {
-      flow=FALSE;
+      flow=false;
 
       for(r=0;r<gfpz->gfLayout.rows;r++)
       {
@@ -1217,7 +1219,7 @@ uchar gpz_propogate_charge_n_check(gridFlowPuzzle *gfpz)
                		if (sum >= 2)
                		{
 	                     gpz_set_grid_state(gfpz,r,c,gpz_charge_state(s));
-	                     flow=TRUE;
+	                     flow=true;
 	                  }
                	}
                	else
@@ -1225,7 +1227,7 @@ uchar gpz_propogate_charge_n_check(gridFlowPuzzle *gfpz)
                		if (sum > 0)
                		{
 	                     gpz_set_grid_state(gfpz,r,c,gpz_charge_state(s));
-	                     flow=TRUE;
+	                     flow=true;
 	                  }
                	}
                   break;
@@ -1284,9 +1286,9 @@ uchar find_winning_move_from(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, LGPoi
       c0=real_c0;
       for(r=r0;r<gfpz->gfLayout.rows && dep>0;r++) {
          for(c=c0;c<gfpz->gfLayout.cols && dep>0;c++) {
-            tight_loop(FALSE);
+            tight_loop(false);
             if(timeout!=0 && *tmd_ticks>timeout) {
-               return(FALSE);
+               return(false);
             }
             s = gpz_uncharge_state(gpz_get_grid_state(&copy,r,c));
             if(s==pass) {
@@ -1298,9 +1300,9 @@ uchar find_winning_move_from(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, LGPoi
                   if(move) *move=try_it;
                   if(solved) {
                      *solved=copy;
-                     solved->gfLayout.have_won=TRUE;
+                     solved->gfLayout.have_won=true;
                   }
-                  return TRUE;
+                  return true;
                }
                if(gfpz->gfLayout.control_alg==GPZ_SIMPLE) {
                   dep--;
@@ -1313,7 +1315,7 @@ uchar find_winning_move_from(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, LGPoi
                      new_r0++;
                   }
                   if(new_r0<gfpz->gfLayout.rows && find_winning_move_from(&copy,solved,move,new_r0,new_c0,dep-1,timeout)) {
-                     return TRUE;
+                     return true;
                   }
                   else {
                      // undo this move and try another.
@@ -1339,7 +1341,7 @@ uchar find_winning_move_from(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, LGPoi
       else
          pass=GPZ_EMPTY; // in other words, stop.
    }
-   return FALSE;
+   return false;
 }
 
 
@@ -1355,8 +1357,8 @@ uchar find_winning_move(gridFlowPuzzle *gfpz, gridFlowPuzzle *solved, int depth,
       // depth first searches.
       for(d=1;d<=depth;d++)
          if(find_winning_move_from(gfpz, solved, move, 0, 0, d, timeout))
-            return TRUE;
-      return FALSE;
+            return true;
+      return false;
    }
    else {
       return(find_winning_move_from(gfpz, solved, move, 0, 0, depth, timeout));
@@ -1408,7 +1410,7 @@ void gpz_4int_init(gridFlowPuzzle *gfpz,uint p1,uint p2,uint p3,uint p4)
    gfpz->gfLayout.control_alg = p3&0xF;
 
    gfpz->gfLayout.winmove_f = 0;
-   mfd_gridpanel_set_winmove(FALSE);
+   mfd_gridpanel_set_winmove(false);
 
 #ifdef GRIDP_AUTO_SOLVE
    gfpz->gfLayout.solve_me = 0;
@@ -1549,7 +1551,7 @@ void mfd_gridpanel_set_winmove(uchar check)
       else
          diff=(PUZZLE_DIFFICULTY==MAX_DIFFICULTY)?2:3;
 
-      gotone=find_winning_move(gfpz,NULL,diff,&winner, TRUE, *tmd_ticks+EPICK_TIMEOUT);
+      gotone=find_winning_move(gfpz,NULL,diff,&winner, true, *tmd_ticks+EPICK_TIMEOUT);
 
       if(gotone) {
          gfpz->gfLayout.winmove_c=winner.x;
@@ -1557,7 +1559,7 @@ void mfd_gridpanel_set_winmove(uchar check)
       }
       gfpz->gfLayout.winmove_f=gotone;
 
-      mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+      mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
    }
 }
 
@@ -1567,17 +1569,17 @@ uchar mfd_gridpanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* da
    gpz_state s;
 
    if(mfd->id != grid_primary_mfd)
-      return TRUE;
+      return true;
 
    if ((ev->subtype&(MOUSE_LDOWN|UI_MOUSE_LDOUBLE))==0)
-      return TRUE;
+      return true;
 
    if (gfpz->gfLayout.have_won)
-      return TRUE;
+      return true;
 
 #ifdef GRIDP_AUTO_SOLVE
    if(!gfpz->gfLayout.solve_me)
-      gfpz->gfLayout.solve_me=TRUE;
+      gfpz->gfLayout.solve_me=true;
 #endif
 
    gfpz->gfLayout.winmove_f=0;
@@ -1585,17 +1587,17 @@ uchar mfd_gridpanel_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* da
    s=gpz_uncharge_state(s);
 
 #ifdef GRIDP_AUTO_SOLVE
-   mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+   mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
 #endif
 
    if(s==GPZ_OPEN || s==GPZ_CLOSED) {
       gpz_4int_update(gfpz);
-      mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+      mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
    }
 
-   mfd_gridpanel_set_winmove(FALSE);
+   mfd_gridpanel_set_winmove(false);
 
-   return TRUE;
+   return true;
 }
 
 // Does every thing but set the slot..
@@ -1610,7 +1612,7 @@ void mfd_setup_gridpanel(ObjID id)
    
    gfpz->gfLayout.our_id=id;
    gpz_4int_init(gfpz,p1,p2,p3,p4);
-   mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
+   mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, true, MFD_ACTIVE, true);
 }
 
 
@@ -1640,11 +1642,11 @@ uchar mfd_gridpanel_handler(MFD* m, uiEvent* ev)
 #ifdef EPICK_ON_CURSOR_TRY
    extern uchar try_use_epick(ObjID panel, ObjID cursor_obj);
 
-   if (ev->type != UI_EVENT_MOUSE || !(ev->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE))) return FALSE;
+   if (ev->type != UI_EVENT_MOUSE || !(ev->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE))) return false;
 
    return(try_use_epick(player_struct.panel_ref, object_on_cursor));
 #else
-   return(FALSE);
+   return(false);
 #endif
 
 
@@ -1724,7 +1726,7 @@ void mfd_gridpanel_expose(MFD* mfd, ubyte control)
 #ifdef SVGA_SUPPORT
    // Whatta hack!
    if (convert_use_mode)
-      full = TRUE;
+      full = true;
 #endif
 
    rr=gfpz->gfLayout.rows;
@@ -1744,14 +1746,14 @@ void mfd_gridpanel_expose(MFD* mfd, ubyte control)
    if (control & MFD_EXPOSE) // Time to draw stuff
    {
       short dr, dc;
-      uchar win, primary, winblink=FALSE;
+      uchar win, primary, winblink=false;
 
       if(gfpz->gfLayout.winmove_f) {
-         mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
+         mfd_notify_func(MFD_GRIDPANEL_FUNC, MFD_INFO_SLOT, false, MFD_ACTIVE, false);
       }
 
       if((full && grid_primary_mfd<0) || player_struct.mfd_current_slots[grid_primary_mfd]!=MFD_INFO_SLOT) {
-         full = TRUE; // if we weren't full exposing before, we are now
+         full = true; // if we weren't full exposing before, we are now
          grid_primary_mfd = mfd->id;
       }
 
@@ -1779,7 +1781,7 @@ void mfd_gridpanel_expose(MFD* mfd, ubyte control)
          char buf[120];
          grid_help_string(gfpz,buf,120);
          mfd_clear_view();
-         draw_help_text( buf, FALSE, gfpz );
+         draw_help_text( buf, false, gfpz );
          gr_pop_canvas();
          mfd_update_rects(mfd);
          return;
@@ -1796,11 +1798,11 @@ void mfd_gridpanel_expose(MFD* mfd, ubyte control)
       bcolor=gpz_base_colors[gfpz->gfLayout.control_alg];
 #endif
      
-      if(gfpz->gfLayout.have_won) full=TRUE;
+      if(gfpz->gfLayout.have_won) full=true;
       lry=uly+rr*GRIDP_BTN_HGT;
 
       if(full) {
-         load_res_bitmap_cursor(&gridCursor,&gridCursorbm,REF_IMG_RookSymbol+gfpz->gfLayout.control_alg,FALSE);
+         load_res_bitmap_cursor(&gridCursor,&gridCursorbm,REF_IMG_RookSymbol+gfpz->gfLayout.control_alg,false);
          mfd_clear_view();
       }
 

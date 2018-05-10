@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 #include "combat.h"
+#include "edms.h"
 #include "objsim.h"
 #include "objprop.h"
 #include "damage.h"
@@ -49,7 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "physunit.h"
 
 
-uchar bullet_debug = FALSE;
+uchar bullet_debug = false;
 ObjID terrain_hit_obj = OBJ_NULL;
 ObjID terrain_hit_exclusion = OBJ_NULL;
 

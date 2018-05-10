@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "Shock.h"
@@ -26,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "objart.h"
 #include "objbit.h"
+#include "res.h"
 #include "citres.h"
 #include "treasure.h"
 #include "otrip.h"
@@ -167,7 +170,7 @@ ulong objart_loadsize = 0;
 
 #define APPROX_REF_TAB_SIZE 7000
 
-static uchar bitmap_zero_loaded = FALSE;
+static uchar bitmap_zero_loaded = false;
 
 errtype obj_load_art(uchar flush_all)
 {
@@ -178,7 +181,7 @@ errtype obj_load_art(uchar flush_all)
    RefTable *prt;
    short i,f;
    extern uchar empty_bitmap(grs_bitmap *bmp);
-   uchar ref_buffer_used = TRUE;
+   uchar ref_buffer_used = true;
 
    printf("obj_load_art!\n");
 
@@ -192,17 +195,17 @@ errtype obj_load_art(uchar flush_all)
    // If no, punt out now, duh.
    if ((!flush_all) && (start_mem < BIG_CACHE_THRESHOLD))
    {
-      uchar different = FALSE;
+      uchar different = false;
       for (i=0; (i < NUM_OBJECT) && !different; i++)
       {
          if ((ObjLoadMeCheck(i) && (bitmaps_2d[i] == NULL)) ||
              (!ObjLoadMeCheck(i) && (bitmaps_2d[i] != NULL)))
          {
-            different = TRUE;
+            different = true;
          }
       }
       if (different)
-         obj_load_art(TRUE);
+         obj_load_art(true);
       else
          return(OK);
    }
@@ -227,15 +230,15 @@ errtype obj_load_art(uchar flush_all)
 */
 		prt = ResReadRefTable(OBJECT_ART_BASE);
 		if (prt)
-			ref_buffer_used=FALSE;
+			ref_buffer_used=false;
 
 		// Read out the infamous bitmap zero
 		if (!bitmap_zero_loaded)
 		{
          printf("Read Bitmap Zero\n");
 			bitmaps_3d[count_3d] = get_objbitmap_from_pool(count_3d,1);	// KLC - added here.
-			load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, prt, TRUE, &dummy_anchor, NULL);
-			bitmap_zero_loaded = TRUE;
+			load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, prt, true, &dummy_anchor, NULL);
+			bitmap_zero_loaded = true;
 			objart_loadsize += bitmaps_3d[count_3d]->w * bitmaps_3d[count_3d]->h;
 			anchors_3d[count_3d] = dummy_anchor.ul;
 		}
@@ -259,22 +262,22 @@ errtype obj_load_art(uchar flush_all)
          if (bitmaps_2d[i] == NULL)
          {
             bitmaps_2d[i] = get_objbitmap_from_pool(i,0);
-            load_bitmap_from_res(bitmaps_2d[i], OBJECT_ART_BASE, objart_count++, prt, TRUE, &dummy_anchor, NULL);
+            load_bitmap_from_res(bitmaps_2d[i], OBJECT_ART_BASE, objart_count++, prt, true, &dummy_anchor, NULL);
             objart_loadsize += bitmaps_2d[i]->w * bitmaps_2d[i]->h;
 			   ObjProps[i].bitmap_3d = ObjProps[i].bitmap_3d | count_3d;
             for (f=0; f < (FRAME_NUM_3D(ObjProps[i].bitmap_3d) + 1); f++)
             {
-               uchar  not_using_2d = FALSE;
+               uchar  not_using_2d = false;
 
                if ((f == 0) && (empty_bitmap(bitmaps_2d[i])))
                {
                   objart_loadsize -= bitmaps_2d[i]->w * bitmaps_2d[i]->h;
                   free(bitmaps_2d[i]->bits);
-                  not_using_2d = TRUE;
+                  not_using_2d = true;
                }
 
                bitmaps_3d[count_3d] = get_objbitmap_from_pool(count_3d,1);
-               load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, prt, TRUE, &dummy_anchor, NULL);
+               load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, prt, true, &dummy_anchor, NULL);
                objart_loadsize += bitmaps_3d[count_3d]->w * bitmaps_3d[count_3d]->h;
                anchors_3d[count_3d] = dummy_anchor.ul;
                if (not_using_2d)

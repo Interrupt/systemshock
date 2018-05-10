@@ -18,10 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // simple test code for 2d library 
 
-#include <2d.h>
+#include <stdbool.h>
+#include <stdio.h>
+
+#include "2d.h"
 #include "fix.h"
 #include "lg.h"
-#include <stdio.h>
 
 //#include <SDL2/SDL.h>
 #include <sdl.h>
@@ -103,7 +105,7 @@ int main(void)
 	gScreenAddress = drawSurface->pixels;
 
 	gr_init();
-	gr_set_mode (GRM_640x480x8, TRUE);
+	gr_set_mode (GRM_640x480x8, true);
 	screen = gr_alloc_screen (drawSurface->w, drawSurface->h);
 	gr_set_screen (screen);
 
