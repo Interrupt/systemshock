@@ -1332,8 +1332,6 @@ errtype physics_init()
 {
 	EDMS_data init_data;
 
-   printf("physics_init %i\n", MAP_XSIZE);
-
    // Start EDMS
 	init_data.playfield_size = fix_make(MAP_XSIZE + 4,0);  // note assumption that X and Y sizes are same
 	init_data.min_physics_handle = 0;
@@ -1522,22 +1520,18 @@ uchar get_phys_info(int ph, fix *list, int cnt)
             cnt=4;
    }
 
-   printf("new_state: %f %f %f\n", fix_float(new_state.X), fix_float(new_state.Y), fix_float(new_state.Z));
+   printf("get_phys_info %i %i\n", ph, cnt);
 
-   for(int i = 0; i < cnt; i++) {
-      printf("get_phys_info %i %i\n", ph, i);
-      switch (i)
-      {
-         default: if (i<=0) return FALSE;
-         case 5:  list[5]=fixrad_to_fixang(new_state.gamma);
-         case 4:  list[4]=fixrad_to_fixang(-new_state.beta);
-         case 3:  list[3]=fixang_from_phys_angle(new_state.alpha);
-         case 2:  list[2]=new_state.Z;
-         case 1:  list[1]=new_state.Y;
-         case 0:  list[0]=new_state.X;
-      }
-   }
-
+   switch (cnt-1)
+   {
+      default: if (cnt<=0) return FALSE;
+      case 5:  list[5]=fixrad_to_fixang(new_state.gamma);
+      case 4:  list[4]=fixrad_to_fixang(-new_state.beta);
+      case 3:  list[3]=fixang_from_phys_angle(new_state.alpha);
+      case 2:  list[2]=new_state.Z;
+      case 1:  list[1]=new_state.Y;
+      case 0:  list[0]=new_state.X;
+	}
    return TRUE;
 }
 
@@ -1723,8 +1717,6 @@ errtype collide_objects(ObjID collision, ObjID victim, int bad)
 
 void terrain_object_collide(physics_handle src, ObjID target)
 {
-   printf("terrain_object_collide\n");
-
    ObjID hit_obj = physics_handle_to_id(src);
    if (is_obj_destroyed(hit_obj) || is_obj_destroyed(target))
       return;
@@ -1735,8 +1727,6 @@ void cit_collision_callback(physics_handle C, physics_handle V, int bad, long DA
 {
    ObjID    collision;
    ObjID    victim;
-
-   printf("cit_collision_callback\n");
 
    collision = physics_handle_to_id(C);
    if (is_obj_destroyed(collision))
@@ -1751,12 +1741,8 @@ void cit_awol_callback(physics_handle caller)
 {
    State s;
 
-   printf("cit_awol_callback\n");
-
-   if (caller != -1) {
+   if (caller != -1)
       get_phys_state(caller, &s, OBJ_NULL);
-      printf("get_phys_state a %f %f %f\n", fix_float(s.X), fix_float(s.Y), fix_float(s.Z));
-   }
    else
    {
       return;
@@ -1766,7 +1752,6 @@ void cit_awol_callback(physics_handle caller)
    {
       if (caller != -1)
       {
-         printf("ADD_DESTROYED_OBJECT\n");
          ADD_DESTROYED_OBJECT(physics_handle_to_id(caller));
       }
    }
@@ -1809,12 +1794,10 @@ uchar robot_antisocial = FALSE;
 // data into the object and do appropriate bookkeeping
 errtype assemble_physics_object(ObjID id, State *pnew_state)
 {
-   printf("assemble_physics_object %i\n", id);
 	switch(ObjProps[OPNUM(id)].physics_model)
 	{
 		case EDMS_ROBOT:
 		{
-         printf(" robot\n");
 			Obj	*pObj = &objs[id];
 
 			Robot new_robot;
@@ -1836,8 +1819,6 @@ errtype assemble_physics_object(ObjID id, State *pnew_state)
 
 		case EDMS_PELVIS:
 		{
-         printf(" pelvis\n");
-
 			Pelvis new_pelvis;
 			instantiate_pelvis(ID2TRIP(id),&new_pelvis);
 			objs[id].info.ph = EDMS_make_pelvis(&new_pelvis, pnew_state);
@@ -1846,8 +1827,6 @@ errtype assemble_physics_object(ObjID id, State *pnew_state)
 		}
 	   case EDMS_DIRAC:
 	   {
-         printf(" dirac\n");
-
 	      Dirac_frame new_dirac;
 	      instantiate_dirac(ID2TRIP(id),&new_dirac);
 	      objs[id].info.ph = EDMS_make_Dirac_frame(&new_dirac, pnew_state);
@@ -1855,13 +1834,8 @@ errtype assemble_physics_object(ObjID id, State *pnew_state)
 	      break;
 	   }
    }
-
    if ((CHECK_OBJ_PH(id)) && (objs[id].info.ph>physics_handle_max))
       physics_handle_max=objs[id].info.ph;
-
-   printf("physics_handle_max %i\n", physics_handle_max);
-   printf("objs[id].info.ph %i\n", objs[id].info.ph);
-
    return(OK);
 }
 

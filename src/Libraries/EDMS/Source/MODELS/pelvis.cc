@@ -149,8 +149,6 @@ extern void	shall_we_dance( int object, Q& result0, Q& result1, Q& result2 );
 
                 EDMS_pelvis_is_climbing = 0;
 
-        printf("shall_we_dance\n");
-
 		indoor_terrain( A[object][0][0],			//Get the info...
 										A[object][1][0],
 										A[object][2][0],
@@ -220,8 +218,6 @@ Q		mag = i_object[18]*i_object[18] + i_object[19]*i_object[19];
 
 //		CONTROL...
 //		==========
-
-		printf("head motion\n");
 
 //		Head motion for fucking hacking...
 //		----------------------------------
@@ -489,8 +485,6 @@ Q   Head_tau_beta =  -.1*i_object[0]*sin_beta*(  head_kappa[2] - head_delta[2] )
                                   - i_object[1]*A[object][5][0]	  /**(1-.5*(i_object[10]==1))*/
                                   - .8*i_object[2]*A[object][5][1] /**(1-.5*(i_object[10]==1))*/	  
                                   + i_object[15] );
-
-  printf("Done!\n");
 
 
 //	That's all, folks...
@@ -820,8 +814,6 @@ extern void	null_function( int );
 //	==============================================================================
 	if ( object_number < MAX_OBJ ) {
 
-		printf("make_pelvis\n");
-
 //		Now we can create the pelvis:  first dump the initial state vector...
 //		=====================================================================
 		for ( int coord = 0; coord < 6; coord++ ) {
@@ -935,8 +927,6 @@ void    EDMS_lean_o_meter( physics_handle ph, fix& lean, fix& crouch ) {
         if (ph > -1) {
 
 int             on = ph2on[ph];
-
-				printf("EDMS_lean_o_meter: %i\n", on);
 
 //              Are you a pelvis...
 //              -------------------
