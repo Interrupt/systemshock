@@ -168,6 +168,24 @@ void flat8_flat8_smooth_hv_double_ubitmap(grs_bitmap *src, grs_bitmap *dst)
  	uchar		*srcPtr,*dstPtr;
  	uchar		*shvd_read_row1, *shvd_write, *shvd_read_row2, *shvd_read_blend;
  	ushort	tempc;
+
+ 	dstPtr = dst->bits;
+ 	srcPtr = src->bits;
+
+ 	// HAX HAX HAX no smooth doubling for now!
+ 	for(int y = 0; y < src->h; y++) {
+ 		for(int x = 0; x < src->w; x++) {
+ 			*(dstPtr) = *srcPtr;
+ 			*(dstPtr+1) = *srcPtr;
+ 			*(dstPtr+src->w * 2) = *srcPtr;
+ 			*((dstPtr+src->w * 2) + 1) = *srcPtr;
+ 			dstPtr += 2;
+ 			srcPtr++;
+ 		}
+ 		dstPtr += src->w*2;
+ 	}
+
+ 	return;
  	
  	
  	dst->row <<= 1;
