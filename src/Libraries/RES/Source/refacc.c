@@ -54,46 +54,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  return ptr.
 
 void *RefLock(Ref ref) {
+  Id id;
   ResDesc *prd;
   RefTable *prt;
   RefIndex index;
 
-  //	Check for valid ref
+  id = REFID(ref);
+  prd = RESDESC(id);
 
-  //	DBG(DSRC_RES_ChkIdRef, {if (!RefCheckRef(ref)) return NULL;});
+  // Check for valid ref
+  // DBG(DSRC_RES_ChkIdRef, {
+  if (!RefCheckRef(ref))
+    return NULL;
+  //});
 
-  //	Add to cumulative stats
+  // Add to cumulative stats
+  // CUMSTATS(REFID(ref),numLocks);
 
-  //	CUMSTATS(REFID(ref),numLocks);
+  // Load block if not in RAM
+  if (prd->ptr == NULL) {
+    if (ResLoadResource(REFID(ref)) == NULL)
+      return (NULL);
+  } else if (prd->lock == 0)
+    ResRemoveFromLRU(prd);
 
-  //	Load block if not in RAM
+  ResRetrieve(id, prd->ptr);
 
-  prd = RESDESC(REFID(ref));
-  if (ResLoadResource(REFID(ref)) == NULL)
-    return (NULL);
-  //	if (prd->lock == 0)
-  //		ResRemoveFromLRU(prd);
+  // Tally stats
+  // DBG(DSRC_RES_Stat, {if (prd->lock == 0) resStat.numLocked++;});
 
-  //	Tally stats
-
-  //	DBG(DSRC_RES_Stat, {if (prd->lock == 0) resStat.numLocked++;});
-
-  //	Bump lock count
-
-  //	DBG(DSRC_RES_ChkLock, {if (prd->lock == RES_MAXLOCK) prd->lock--;});
+  // Bump lock count
+  // DBG(DSRC_RES_ChkLock, {
+  if (prd->lock == RES_MAXLOCK)
+    prd->lock--;
+  //});
   prd->lock++;
 
-  //	Index into ref table
-
-  // if (prd->lock == 1)
-  //  HLock(prd->filenum);
+  // Index into ref table
   prt = (RefTable *)prd->ptr;
   index = REFINDEX(ref);
-  //	DBG(DSRC_RES_ChkIdRef, {if (!RefIndexValid(prt,index)) \
-//		Warning(("RefLock: reference: $%x bad, index out of range\n", ref));});
+  // DBG(DSRC_RES_ChkIdRef, {if (!RefIndexValid(prt,index)) \
+  // Warning(("RefLock: reference: $%x bad, index out of range\n", ref));});
 
-  //	Return ptr
-
+  // Return ptr
   if (!RefIndexValid(prt, index))
     return (NULL);
   else
