@@ -261,7 +261,7 @@ void main(void)
 					
 					gNumFrames = p->numEntries;
 					gChunkOffsets = (ulong *)malloc(p->numEntries * sizeof(ulong));
-					BlockMove(p->offset, gChunkOffsets, p->numEntries * sizeof(ulong));
+					memmove(gChunkOffsets, p->offset, p->numEntries * sizeof(ulong));
 				}
 			}
 			else
@@ -311,7 +311,7 @@ void main(void)
 			scrp = gScreenAddress;
 			for (line = 0; line < 300; line++)
 			{
-				BlockMove(imgp, scrp, 600);
+				memmove(scrp, imgp, 600);
 				imgp += 600;
 				scrp += gScreenRowbytes;
 			}

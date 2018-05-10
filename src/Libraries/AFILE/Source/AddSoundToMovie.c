@@ -107,7 +107,7 @@ void main(void)
 	
 	// Setup an FSSpec for the output file.
 	outSpec = reply.sfFile;
-	BlockMove("Output Movie", outSpec.name, 20);
+	memmove(outSpec.name, "Output Movie", 20);
 	
 	//----------------------
 	//	Open the input Sound file.

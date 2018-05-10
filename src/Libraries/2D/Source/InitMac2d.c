@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
+#include <string.h>
+
 #include <Palettes.h>
 #include <GestaltEqu.h>
 #include <Movies.h>
@@ -130,7 +132,7 @@ void CheckConfig(void)
 		// and switch to it if we can.  Also save the original color depth.
 		
 		if (depth == 8)
-			BlockMove((**((*pmhan)->pmTable)).ctTable, gOriginalColors, 256*sizeof(ColorSpec));
+			memmove(gOriginalColors, (**((*pmhan)->pmTable)).ctTable, 256*sizeof(ColorSpec));
 		else
 		{
 			if (HasDepth(devhandle,8,0,0))

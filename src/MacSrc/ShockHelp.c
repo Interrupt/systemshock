@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //=====================================================================
 
+#include <string.h>
+
 #include <GestaltEqu.h>
 #include "DialogHelpers.h"
 #include "ShockHelp.h"
@@ -50,7 +52,7 @@ void AddHelpMenu(void)
  	MenuHandle	mh;
 	Str255			str;
 	
-	BlockMove("System Shock HelpÉ",str,32L);
+	memmove(str, "System Shock HelpÉ", 32L);
 		
 	if (GetHelpMgr())													// If Help Mgr is available, stick Help
 	{																			// menu item in the Help menu

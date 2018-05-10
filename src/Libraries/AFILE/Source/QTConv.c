@@ -261,7 +261,7 @@ void main(void)
 					dbuff = (uchar *)realloc(dbuff, dbuffLen);
 				}
 				//fread(dbuff, chunkHdr.length - sizeof(QT_ChunkHdr), 1, fp);
-				BlockMove(mp, dbuff, chunkHdr.length - sizeof(QT_ChunkHdr));
+				memmove(dbuff, mp, chunkHdr.length - sizeof(QT_ChunkHdr));
 				mp += chunkHdr.length - sizeof(QT_ChunkHdr);
 				
 				// For the sample-to-time table, create our own table giving a time
@@ -285,7 +285,7 @@ void main(void)
 					
 					gNumFrames = p->numEntries;
 					gChunkOffsets = (ulong *)malloc(p->numEntries * sizeof(ulong));
-					BlockMove(p->offset, gChunkOffsets, p->numEntries * sizeof(ulong));
+					memmove(gChunkOffsets, p->offset, p->numEntries * sizeof(ulong));
 				}
 			}
 			else
@@ -344,7 +344,7 @@ void main(void)
 			scrp = gScreenAddress;
 			for (line = 0; line < movieRect.bottom; line++)
 			{
-				BlockMove(imgp, scrp, movieRect.right);
+				memmove(scrp, imgp, movieRect.right);
 				imgp += movieRect.right;
 				scrp += gScreenRowbytes;
 			}
@@ -369,7 +369,7 @@ void main(void)
 				scrp = gScreenAddress;
 				for (line = 0; line < movieRect.bottom; line++)
 				{
-					BlockMove(imgp, scrp, movieRect.right);
+					memmove(scrp, imgp, movieRect.right);
 					imgp += movieRect.right;
 					scrp += gScreenRowbytes;
 				}
@@ -463,7 +463,7 @@ void	 CheckError(OSErr error, Str255 displayString)
 uchar QuikReadChunkHdr(Ptr &p, QT_ChunkHdr *phdr)
 {
 //	fread(phdr, sizeof(QT_ChunkHdr), 1, fp);
-	BlockMove(p, phdr, sizeof(QT_ChunkHdr));
+	memmove(phdr, p, sizeof(QT_ChunkHdr));
 	p += sizeof(QT_ChunkHdr);
 	
 	switch (phdr->ctype)

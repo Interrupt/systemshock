@@ -109,7 +109,7 @@ errtype init_player(Player *pplr)
    LG_memset(pplr, 0, sizeof(Player));
 
    LG_memcpy(pplr->name,tmp,sizeof(pplr->name));	// Now restore them.
-   BlockMoveData(&tmpdiff, pplr->difficulty, 4);
+   memmove(pplr->difficulty, &tmpdiff, 4);
    
    // Set appropriate non-zero things.
    pplr->detail_level = _fr_global_detail;

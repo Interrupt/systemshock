@@ -162,7 +162,7 @@ static char *tableNames[] = {
 		printf("Writing palette from header: %d\n\n", resID);
 		Handle	palHdl = NewHandle(768);
 		HLock(palHdl);
-		BlockMove(mh.palette, *palHdl, 768);
+		memmove(*palHdl, mh.palette, 768);
 		HUnlock(palHdl);
 
 		AddResource(palHdl, 'mpal', resID++, "pal");
@@ -220,7 +220,7 @@ static char *tableNames[] = {
 						
 						Handle	palHdl = NewHandle(768);		// Add to output file
 						HLock(palHdl);
-						BlockMove(buff, *palHdl, 768);
+						memmove(*palHdl, buff, 768);
 						HUnlock(palHdl);
 						
 						AddResource(palHdl, 'mpal', resID++, "pal");

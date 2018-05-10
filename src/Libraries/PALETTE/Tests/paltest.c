@@ -58,7 +58,7 @@ void main ()
 	// Get our default palette.
 	
 	pal = GetResource('pal ',1000);
-	BlockMove(*pal, Save_Palette, 768L);
+	memmove(Save_Palette, *pal, 768L);
     gr_set_pal(0, 256, Save_Palette);
 
 	// Draw the whole dang palette.

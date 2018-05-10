@@ -1480,7 +1480,7 @@ errtype obj_load_properties()
    //-------------
    // GUNS
    //-------------
-   BlockMoveData(cp, GunProps, sizeof(GunProps));
+   memmove(GunProps, cp, sizeof(GunProps));
    cp += sizeof(GunProps);
    
    //BlockMoveData(cp, PistolGunProps, NUM_PISTOL_GUN);     Dummies
@@ -1639,11 +1639,11 @@ errtype obj_load_properties()
 	{
 		TracerPhysicsProp *tpp = &TracerPhysicsProps[i];
 		
-		BlockMoveData(cp, tpp->xcoords, 4*2);
+		memmove(tpp->xcoords, cp, 4*2);
 		cp += 4*2;
-		BlockMoveData(cp, tpp->ycoords, 4*2);
+		memmove(tpp->ycoords, cp, 4*2);
 		cp += 4*2;
-		BlockMoveData(cp, tpp->zcoords, 4);
+		memmove(tpp->zcoords, cp, 4);
 		cp += 4;
 		
 		for (j = 0; j < 4; j++)
@@ -1653,7 +1653,7 @@ errtype obj_load_properties()
 		}
 	}
 
-	BlockMoveData(cp, SlowPhysicsProps, sizeof(SlowPhysicsProps));
+	memmove(SlowPhysicsProps, cp, sizeof(SlowPhysicsProps));
 	cp += sizeof(SlowPhysicsProps);
 
 	//BlockMoveData(cp, CameraPhysicsProps, NUM_CAMERA_PHYSICS);			Dummies
@@ -1767,7 +1767,7 @@ errtype obj_load_properties()
 	cp += NUM_GEAR_SMALLSTUFF;
 	cp += NUM_CARDS_SMALLSTUFF;
 	
-	BlockMoveData(cp, CyberSmallstuffProps, sizeof(CyberSmallstuffProps));
+	memove(CyberSmallstuffProps, cp, sizeof(CyberSmallstuffProps));
 	cp += sizeof(CyberSmallstuffProps);
 
 	cp += NUM_ONTHEWALL_SMALLSTUFF;
@@ -1810,7 +1810,7 @@ errtype obj_load_properties()
 	//  ANIMATING OBJECTS
 	//----------------
 	
-	BlockMoveData(cp, AnimatingProps, sizeof(AnimatingProps));
+	memmove(AnimatingProps, cp, sizeof(AnimatingProps));
 	cp += sizeof(AnimatingProps);
 
 	cp += NUM_OBJECT_ANIMATING;
@@ -1898,10 +1898,10 @@ errtype obj_load_properties()
 
 	cp += NUM_MUTANT_CRITTER;
 
-	BlockMoveData(cp, RobotCritterProps, sizeof(RobotCritterProps));
+	memmove(RobotCritterProps, cp, sizeof(RobotCritterProps));
 	cp += sizeof(RobotCritterProps);
 
-	BlockMoveData(cp, CyborgCritterProps, sizeof(CyborgCritterProps));
+	memmove(CyborgCritterProps, cp, sizeof(CyborgCritterProps));
 	cp += sizeof(CyborgCritterProps);
 	for (i = 0; i < NUM_CYBORG_CRITTER; i++)
 		//SwapShortBytes(&CyborgCritterProps[i].shield_energy);
@@ -1926,7 +1926,7 @@ errtype obj_load_properties()
 	{
 		ObjProp *op = &ObjProps[i];
 		
-		BlockMoveData(cp, op, 27);
+		memmove(op, cp, 27);
 		cp += 27;
 
 		//SwapLongBytes(&op->mass);

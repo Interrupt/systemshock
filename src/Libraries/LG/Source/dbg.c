@@ -438,7 +438,7 @@ void DoWarningMsg(char *msg)
 	Str255	message;
 	
 	InitCursor();
-	BlockMove(msg, message+1, 255);
+	memmove(message+1, msg, 255);
 	message[0] = strlen(msg);
 	ParamText(message, "", "", "");
 	

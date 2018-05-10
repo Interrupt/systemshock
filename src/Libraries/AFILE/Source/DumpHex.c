@@ -160,7 +160,7 @@ static char *tableNames[] = {
 	{
 		Handle	palHdl = NewHandle(768);
 		HLock(palHdl);
-		BlockMove(mh.palette, *palHdl, 768);
+		memmove(*palHdl, mh.palette, 768);
 		HUnlock(palHdl);
 
 		AddResource(palHdl, 'mpal', resID++, "n");

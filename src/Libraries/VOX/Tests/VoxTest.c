@@ -87,7 +87,7 @@ void main (void)
 	off_canvas = gr_alloc_canvas(BMT_FLAT8,512,480);
 
 	pal = GetResource('pal ',1001);
-	BlockMove(*pal, pal_buf, 768L);
+	memmove(pal_buf, *pal, 768L);
   gr_set_pal(0, 256, pal_buf);
   
   HideCursor();

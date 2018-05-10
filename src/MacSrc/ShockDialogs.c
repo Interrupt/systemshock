@@ -736,6 +736,6 @@ void Pstrcat(StringPtr dest, ConstStr255Param src)
 {
 	long	sLen = min(*src, 255 - *dest);
 	
-	BlockMove(src+1, dest + *dest + 1, sLen);
+	memmove(dest + *dest + 1, src + 1, sLen);
 	*dest += sLen;
 }

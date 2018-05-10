@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Polygon drawers
 //
 
+#include <string.h>
+
 #include "lg.h"
 #include "3d.h"
 #include "GlobalV.h"
@@ -277,7 +279,7 @@ draw_poly_common_raw:
 	p = old_p;
 	
 // copy to temp buffer for clipping
-	BlockMove(p,vbuf,n_verts<<2);
+	memmove(vbuf, p, n_verts<<2);
 	
 	n_verts = g3_clip_polygon(n_verts,vbuf,_vbuf2);
 	if (!n_verts)
