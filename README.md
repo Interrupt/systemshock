@@ -7,7 +7,7 @@ GENERAL NOTES
 
 This is my attempt to get System Shock running on modern OSX. Once this runs well here, it should be much easier to port forward to other systems like Linux.
 
-![work so far](https://i.imgur.com/DvpKrg5.mp4)
+![work so far](https://i.imgur.com/PWdEo9J.gif)
 
 # Working so far:
 - Loads original resource files
