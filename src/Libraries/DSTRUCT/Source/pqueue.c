@@ -168,7 +168,7 @@ errtype pqueue_insert(PQueue* q, void* elem)
       if (newp == NULL)
       	return ERR_NOMEM;
       memmove(newp, q->vec, q->size * q->elemsize);
-      DisposePtr(q->vec);
+      free(q->vec);
       q->vec = newp;
       q->size*=2;
    }
