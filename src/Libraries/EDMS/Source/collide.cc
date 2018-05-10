@@ -57,11 +57,6 @@ void generic_write_object (int object, EDMS_Argblock_Pointer state)
 {
    extern void	( *EDMS_off_playfield )( physics_handle caller );
 
-   printf("hash_scale %f\n", fix_float(hash_scale.to_fix()));
-   printf("collision_max %i\n", collision_max);
-   printf("DOF_X %f\n", fix_float(state[object][DOF_X][0].to_fix()));
-   printf("DOF_Y %f\n", fix_float(state[object][DOF_Y][0].to_fix()));
-
    Q q_hash_x = hash_scale*state[object][DOF_X][0];
    Q q_hash_y = hash_scale*state[object][DOF_Y][0];
 
@@ -69,8 +64,6 @@ void generic_write_object (int object, EDMS_Argblock_Pointer state)
 
    int hash_x = (q_hash_x).to_int();	     		//The floor should be a function
 	int hash_y = (q_hash_y).to_int();	     		//that returns the edges of the ref. squares...
-
-   printf("hash_x: %i hash_y: %i\n", hash_x, hash_y);
 
 	if ((hash_x > 1) && (hash_y > 1) &&
        (hash_x < collision_max) && (hash_y < collision_max ))
@@ -91,7 +84,6 @@ void generic_write_object (int object, EDMS_Argblock_Pointer state)
       //	End of slowness, and inform the world that something stinks in Denmark...
       //	-------------------------------------------------------------------------
 //      mout << "Collide...\n";
-      printf("EDMS_off_playfield in collide.cc!\n");
       EDMS_off_playfield( on2ph[object] );
    }						    
 }
@@ -99,14 +91,12 @@ void generic_write_object (int object, EDMS_Argblock_Pointer state)
 void write_object (int object)
 {
 //   mout << "Write A\n";
-   printf("Write A\n");
    generic_write_object (object, A);
 }
 
 void state_write_object (int object)
 {
 //   mout << "Write S\n";
-   printf("Write S\n");
    generic_write_object (object, S);
 }
 
@@ -152,7 +142,6 @@ void generic_delete_object (int object, EDMS_Argblock_Pointer state)
       //	End of slowness, and inform the world that something stinks in Denmark...
       //	-------------------------------------------------------------------------
 //        mout << "collide2...\n";
-      printf("generic_delete_object\n");
    	EDMS_off_playfield( on2ph[object] );
 //      Spew (DSRC_EDMS_Collide, ("Bounds on %d ph %d hash [%d %d]\n", object, on2ph[object], hash_x, hash_y));
 //      Spew (DSRC_EDMS_Collide, ("state x = %8x y = %8x\n", state[object][DOF_X][0], state[object][DOF_Y][0]));
@@ -182,8 +171,6 @@ uchar object_check_hash (int object, int hx, int hy)
 {
    // We use A if we are in the middle of integrating, and the object
    // is not asleep.
-
-   printf("object_check_hash %i %i\n", hx, hy);
 
    EDMS_Argblock_Pointer state = (A_is_active && no_no_not_me[object]) ? A : S;
 

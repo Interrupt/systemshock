@@ -321,7 +321,6 @@ errtype compare_locs(void)
       // Abort physics if bad karma
       if (physics_running && time_passes && (me_tiletype(newElem) == TILE_SOLID))
       {
-         printf("TURNING OFF PHYSICS tried to move player into a solid tile!\n");
          physics_running = FALSE;
          critical_error(CRITERR_EXEC|2);
       }
@@ -459,8 +458,6 @@ errtype physics_run(void)
 #ifdef EDMS_SAFETY_NET
    uchar allow_move=TRUE;
 #endif
-
-   printf("physics_run %i %i\n", time_passes, physics_running);
 
    // Here we are computing the values of the player's controls
    // from the values of the original control banks.  The value
@@ -658,12 +655,12 @@ errtype physics_run(void)
 #ifdef DIRAC_EDMS
       if (global_fullmap->cyber)
       {
-         printf("EDMS_control_Dirac_frame\n");
+         //printf("EDMS_control_Dirac_frame\n");
          EDMS_control_Dirac_frame(PLAYER_PHYSICS, plr_z, plr_alpha, plr_y,plr_side);
       }
       else
 #endif
-         printf("EDMS_control_pelvis %i %i %i %i %i %i %i\n", PLAYER_PHYSICS, plr_y, plr_alpha, plr_side, plr_lean, plr_z, crouch_controls[player_struct.posture]);
+         //printf("EDMS_control_pelvis %i %i %i %i %i %i %i\n", PLAYER_PHYSICS, plr_y, plr_alpha, plr_side, plr_lean, plr_z, crouch_controls[player_struct.posture]);
          EDMS_control_pelvis(PLAYER_PHYSICS,plr_y,plr_alpha,plr_side,plr_lean,plr_z,crouch_controls[player_struct.posture]);
 
 #ifdef SOLITON_HACK_REFLEX
@@ -678,11 +675,8 @@ errtype physics_run(void)
       if (--safety_fail_count==0) safety_fail_oid=-1;
       for (i=0; i<=physics_handle_max; i++)  // all ph
       {
-         printf("Physics for %i\n", i);
-         printf(" %x\n", physics_handle_to_id(i));
          if ((oid=physics_handle_to_id(i))!=OBJ_NULL)  // valid ph, get oid
          {
-            printf(" Valid physics handle.\n");
             ObjLoc newloc;
 
             newloc = objs[oid].loc;
@@ -690,12 +684,8 @@ errtype physics_run(void)
             EDMS_get_state(objs[oid].info.ph, &new_state);
             state_to_objloc(&new_state, &newloc);
 
-            printf("loc:    %f %f %f\n", fix_float(objs[oid].loc.x), fix_float(objs[oid].loc.y), fix_float(objs[oid].loc.z));
-            printf("newLoc: %f %f %f\n", fix_float(newloc.x), fix_float(newloc.y), fix_float(newloc.z));
-
             if ((oid == PLAYER_OBJ) && global_fullmap->cyber)
             {
-               printf("IN CYBERSPACE oooeeooo\n");
                ubyte new_head,new_pitch;//, new_bank;
                short new_deltah, new_deltap;
                State cyber_state;
@@ -741,23 +731,19 @@ errtype physics_run(void)
             if (safety_net_on)
 #endif
             {
-               printf("Safety net starting\n");
                if (me_tiletype(MAP_GET_XY(OBJ_LOC_BIN_X(newloc), OBJ_LOC_BIN_Y(newloc))) == TILE_SOLID)
                {
-                  printf("In a solid tile, backing up.\n");
                   safety_net_wont_you_back_me_up(oid);
                   allow_move=FALSE;
                }
                else if (new_state.Z < fix_from_map_height(me_height_flr(MAP_GET_XY(OBJ_LOC_BIN_X(newloc), OBJ_LOC_BIN_Y(newloc)))))
                {
-                  printf("Under the floor, backing up.\n");
 	               if (safety_net_wont_you_back_me_up(oid))
                      allow_move=FALSE;
                   else
                   {
                      if (objs[oid].obclass==CLASS_CRITTER)
                      {
-                        printf(" Move up out of floor.\n");
 	                     newloc=objs[oid].loc;
 	                     newloc.z+=3;
 	                     safety_fail_oid=-1;
@@ -771,10 +757,6 @@ errtype physics_run(void)
                   }
                }
             }
-
-            printf("new_state %f %f %f\n", fix_float(new_state.X), fix_float(new_state.Y), fix_float(new_state.Z));
-
-            printf("allow_move? %i\n", allow_move);
 
             if (allow_move)
                obj_move_to(oid, &newloc, FALSE);
@@ -1519,8 +1501,6 @@ uchar get_phys_info(int ph, fix *list, int cnt)
          if (cnt>4)
             cnt=4;
    }
-
-   printf("get_phys_info %i %i\n", ph, cnt);
 
    switch (cnt-1)
    {

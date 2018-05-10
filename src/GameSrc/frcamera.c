@@ -193,15 +193,12 @@ void    fr_camera_getobjloc (int oid, fix *store)
 {
    Obj *cobj=&objs[oid];
 
-   printf("fr_camera_getobjloc: HAX can't get physics obj state!\n");
-
    if (cobj->info.ph!=-1)
    {
 #ifndef __RENDTEST__
       extern uchar get_phys_info(int ph, fix *targ_array, int cnt);
 #endif
 
-      printf("fr_camera_getobjloc\n");
      get_phys_info(cobj->info.ph,store,6);
    }
    else

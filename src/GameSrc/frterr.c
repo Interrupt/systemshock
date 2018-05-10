@@ -335,7 +335,6 @@ int _fr_do_light(g3s_phandle wrk, int which)
    _lgt_y=_fdt_y+y_mod[_fdt_pbase];
    dval=fix_fast_pyth_dist(fix_fast_pyth_dist((_lgt_x<<16)-fr_camera_last[0],(_lgt_y<<16)-fr_camera_last[1]),fr_camera_last[2]-_fdt_hgt_val);
    wrk->i=_fr_do_light_val(which,dval);
-//mprintf("f %x d %x from %x %x %x,%x %x %x\n",wrk->i,dval,_lgt_x,_lgt_y,_fdt_hgt_val,fr_camera_last[0],fr_camera_last[1],fr_camera_last[2]);
    return wrk->i;
 }
 
@@ -1286,12 +1285,10 @@ void fr_draw_tile(void)
    if ((_fdt_tt=me_tiletype(_fdt_mptr))==TILE_SOLID)    // really, clip should deal
    {
       me_subclip_set(_fdt_mptr,SUBCLIP_OUT_OF_CONE);    // sure, deal with it...
-      printf(" TILE_SOLID, skipping\n"); 
       return;                                           // so make this a warn later
    }
    if (me_subclip(_fdt_mptr)==SUBCLIP_OUT_OF_CONE)
    {
-      printf(" SUBCLIP_OUT_OF_CONE, skipping\n"); 
       return;                                           
    }
 
@@ -1498,7 +1495,6 @@ uchar wall_pc[]=
 // then we just pass it on to facelet_solve, none the worse for wear...
 static void _render_tfunc_walls(int which, int cnt)
 {  
-   printf("_render_tfunc_walls\n");
    // fuck it, ext_walls are always ext, so punt generality, lets go
    fix pt[3];
    int pc=wall_pc[which];

@@ -98,7 +98,7 @@ Q terrain( Q X, Q Y, int deriv )
 {
 	Q	ans;
 
-	printf("FIXME: disabled terrain!\n");
+	printf("There is no terrain in space!\n");
 	//ans.fix_to( Terrain( X.to_fix(), Y.to_fix(), deriv ) );
 	return ans;
 }
@@ -110,7 +110,6 @@ void indoor_terrain( Q X, Q Y, Q Z, Q R, physics_handle ph )
 {
 	if ( (X > 1)  &&  (Y > 1)  &&   (X < 64) &&  (Y < 64 ) )
    {
-   	printf("Indoor terrain check for %f %f %f!\n", fix_float(X.to_fix()), fix_float(Y.to_fix()), fix_float(Z.to_fix()));
       Indoor_Terrain( X.to_fix(), Y.to_fix(), Z.to_fix(), R.to_fix(), ph );
 	}
    else
@@ -130,7 +129,6 @@ void indoor_terrain( Q X, Q Y, Q Z, Q R, physics_handle ph )
 //         mout << "!EDMS: Calling AWOL callback...\n";
 //         mout << "Awol in interfac.cc\n";
 
-         printf("EDMS_off_playfield in interfac.cc!\n");
          EDMS_off_playfield( ph ); 
          no_no_not_me[on] = 0;  //Safety!!!
       }
@@ -350,7 +348,6 @@ void EDMS_holistic_teleport( physics_handle ph, State *s )
 
      	//	Restart collisions on it...
       	//	===========================
-      	printf("Teleport!\n");
 	   	state_write_object( on );
 	  
 	//	Gee, I hope that that is a good location, sunny, and free of solid objects...
