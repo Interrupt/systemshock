@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "fixpp.h"
-#include "EDMS_int.h"
+#include "edms_int.h"
 #include "idof.h"
 
 #pragma require_prototypes off			// Added by KC for this file for Mac version.

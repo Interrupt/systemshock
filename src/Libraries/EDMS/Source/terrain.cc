@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
-#include "EDMS_mod.h"
+#include "edms_mod.h"
 
 
 

@@ -26,15 +26,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
 //#include <conio.h>
-#include "EDMS_Int.h"				//This is the object type library. It is universal.
-#include "EDMS_vt.h"
+#include "edms_int.h"				//This is the object type library. It is universal.
+#include "edms_vt.h"
 
 //#ifdef EDMS_SHIPPABLE
 ////#include <mout.h>
 //#endif
 
 
-#include "EDMS_chk.h"
+#include "edms_chk.h"
 
 //extern "C" {
 //#include <i86.h>   

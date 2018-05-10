@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 //#include <iostream>
-#include "EDMS_int.h"				//Object types, END conventions, etc.
+#include "edms_int.h"				//Object types, END conventions, etc.
 
 #include "physhand.h"
 #include "lg.h"

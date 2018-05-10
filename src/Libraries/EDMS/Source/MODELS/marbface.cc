@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Marble interface
 
 #include "fixpp.h"
-#include "EDMS_int.h"
+#include "edms_int.h"
 #include "idof.h"
 #include "marble.h"
 
