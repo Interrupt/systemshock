@@ -200,12 +200,14 @@ void compute_hud_var(HudLine* hl)
       case 2:
          {
             short use_perc = min(shield_absorb_perc, 95);
-            numtostring(use_perc, s);
+            sprintf(s, "%d", use_perc);
+            //numtostring(use_perc, s);
             strcat(s, " %");
          }
          break;
       case 3:
-         numtostring(level_gamedata.hazard.bio * 100 / 4, s);
+         sprintf(s, "%d", level_gamedata.hazard.bio * 100 / 4);
+         //numtostring(level_gamedata.hazard.bio * 100 / 4, s);
          len += strlen(s); s+= strlen(s);
          get_string(REF_STR_AbnormalGravity2, s, HUD_STRING_SIZE - len);
          break;
@@ -234,7 +236,8 @@ void compute_hud_var(HudLine* hl)
       case 7: // energy usage hud
       {
          extern short enviro_edrain_rate;
-         numtostring(player_struct.energy_spend+enviro_edrain_rate,s);
+         sprintf(s, "%d", player_struct.energy_spend+enviro_edrain_rate);
+         //numtostring(player_struct.energy_spend+enviro_edrain_rate,s);
          len+=strlen(s); s+=strlen(s);
          get_string(REF_STR_EnergyUnit,s,HUD_STRING_SIZE-len);
          break;
@@ -259,8 +262,9 @@ void compute_hud_var(HudLine* hl)
       case 19:
       case 23:
          {
-            int lvl = player_struct.hit_points_lost[hl->hudvar_id - 16] >> 1; 
-            numtostring(lvl,s);
+            int lvl = player_struct.hit_points_lost[hl->hudvar_id - 16] >> 1;
+            sprintf(s, "%d", lvl);
+            //numtostring(lvl,s);
             len += strlen(s); s+= strlen(s);
             get_string(REF_STR_ExposureUnit,s,HUD_STRING_SIZE - len);
          }

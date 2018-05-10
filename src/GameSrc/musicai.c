@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __MUSICAI_SRC
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -499,7 +500,8 @@ void load_score_guts(char score_playing)
 	FSSpec	themeSpec;
 	
 	strcpy(base, "Theme");							// Get the theme file name.
-	numtostring(score_playing, temp);
+	sprintf(temp, "%d", score_playing);
+	//numtostring(score_playing, temp);
 	strcat(base, temp);
 
 // temp

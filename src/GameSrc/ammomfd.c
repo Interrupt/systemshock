@@ -60,6 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "mfdint.h"
@@ -177,7 +178,8 @@ void mfd_ammo_expose(ubyte control)
                      ammonum = get_nth_from_triple(MAKETRIP(CLASS_AMMO,subc,type));
                      count=player_struct.cartridges[ammonum];
                      gotammo = gotammo || count;
-                     numtostring(count,ammoline+strlen(ammoline));
+                     sprintf(ammoline+strlen(ammoline), "%d", count);
+                     //numtostring(count,ammoline+strlen(ammoline));
                      minibuf[0]=AMMO_TYPE_LETTER(ammonum);
                      strcat(ammoline,minibuf[0]==' '?minibuf+1:minibuf);
                   }

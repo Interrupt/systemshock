@@ -175,7 +175,8 @@ void mfd_target_expose(MFD *m, ubyte control)
 #else
             strcpy(buf,"Kills: ");
 #endif
-            numtostring(player_struct.num_victories,buf+strlen(buf));
+            sprintf(buf + strlen(buf), "%d", player_struct.num_victories);
+            //numtostring(player_struct.num_victories,buf+strlen(buf));
             mfd_string_wrap = FALSE;
             gr_string_size(buf,&w,&h);
             mfd_full_draw_string(buf, (MFD_VIEW_WID - w)/2, MFD_VIEW_HGT/2, TEXT_COLOR, TARGET_FONT, TRUE, TRUE);
@@ -233,7 +234,8 @@ void mfd_target_expose(MFD *m, ubyte control)
             // it's edward - do him as cyborg 1
             if(sc==CRITTER_SUBCLASS_ROBOBABE)
             {
-               numtostring(objs[player_struct.curr_target].info.type,small_buf);
+               sprintf(small_buf, "%d", objs[player_struct.curr_target].info.type);
+               //numtostring(objs[player_struct.curr_target].info.type,small_buf);
                right_justify_num(small_buf, 5);
                strcpy(buf+len+1, small_buf);
             }
@@ -245,7 +247,8 @@ void mfd_target_expose(MFD *m, ubyte control)
                // add the subclass
                *(buf+len+3) = sc + '0';
                // and lastly, add the SpecID
-               numtostring(target+1,small_buf);
+               sprintf(small_buf, "%d", target + 1);
+               //numtostring(target+1,small_buf);
                right_justify_num(small_buf, 2);
                strcpy(buf+len+4, small_buf);
             }

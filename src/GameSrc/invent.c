@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Source code for inventory manipulation / display
 
+#include <stdio.h>
 #include <string.h>
 
 #include "invent.h"
@@ -747,7 +748,8 @@ char* weapon_quant_func(int num, char* buf)
       if(ammo==0 && num_ammo_types>0)
          get_string(REF_STR_AmmoLoad,buf,BUFSZ);
       else
-      	numtostring(ammo, buf+i);
+         sprintf(buf+i, "%d", ammo);
+      	//numtostring(ammo, buf+i);
          //itoa(ammo,buf+i,10);
    }
    else
@@ -1039,7 +1041,8 @@ static char* generic_quant_func(inv_display* dp, int n, int q, char* buf)
    dummy = n + (int)dp;
 #endif //NO_DUMMIES
  //  itoa(q,buf,10);
-   numtostring(q, buf);
+   sprintf(buf, "%d", q);
+   //numtostring(q, buf);
    return buf;
 }
 

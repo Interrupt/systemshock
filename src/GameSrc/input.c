@@ -2268,7 +2268,8 @@ char *get_object_lookname(ObjID id,char use_string[], int sz)
          get_object_long_name(ID2TRIP(id),use_string, sz);
          strcat(use_string," v");
 //KLC         itoa(objHardwares[objs[id].specID].version,use_string+strlen(use_string),10);
-         numtostring(objHardwares[objs[id].specID].version, use_string+strlen(use_string));
+         sprintf(use_string+strlen(use_string), "%d", objHardwares[objs[id].specID].version);
+         //numtostring(objHardwares[objs[id].specID].version, use_string+strlen(use_string));
          return(use_string);
       }
    case CLASS_CRITTER:

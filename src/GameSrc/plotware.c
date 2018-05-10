@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "mfdint.h"
@@ -129,7 +130,8 @@ void fill_time(short val, char* vbuf)
       strcpy(vbuf,"-:--:--");
       return;
    }
-   numtostring(val/3600,vbuf);
+   sprintf(vbuf, "%d", val/3600);
+   //numtostring(val/3600,vbuf);
    val%=3600;
    vbuf += strlen(vbuf);
    *(vbuf++) = ':';
@@ -163,7 +165,8 @@ uchar do_plotware_hack(int hack_num, char* vbuf)
       case 0:
          if (qdata_get(MAIN_PROGRAM_QDATA) != DOWNLOAD_PROGNUM)
             return FALSE;
-         numtostring(player_struct.time2comp*100/DOWNLOAD_TIME,vbuf);
+         sprintf(vbuf, "%d", player_struct.time2comp*100/DOWNLOAD_TIME);
+         //numtostring(player_struct.time2comp*100/DOWNLOAD_TIME,vbuf);
          strcat(vbuf,"%");
          return TRUE;
          break;
@@ -179,7 +182,8 @@ uchar do_plotware_hack(int hack_num, char* vbuf)
          else 
          {
             short val = QUESTVAR_GET(0x10 + player_struct.level) * 100 / player_struct.initial_shodan_vals[player_struct.level];
-            numtostring(val,vbuf);
+            sprintf(vbuf, "%d", val);
+            //numtostring(val,vbuf);
             strcat(vbuf,"%");
             return TRUE;
          }
@@ -200,7 +204,8 @@ uchar do_plotware_hack(int hack_num, char* vbuf)
          return TRUE;
          break;
       case 6:
-         numtostring(TOTAL_NODES-qdata_get(NODES_QDATA),vbuf);
+         sprintf(vbuf, "%d", TOTAL_NODES-qdata_get(NODES_QDATA));
+         //numtostring(TOTAL_NODES-qdata_get(NODES_QDATA),vbuf);
          return TRUE;
          break;
       case 7:
@@ -286,7 +291,8 @@ void mfd_plotware_expose(MFD* mfd, ubyte control)
          {
          case INT_TYPE:
             val = qdata_get(dp->questvar);
-            numtostring(val,vbuf);
+            sprintf(buf, "%d", val);
+            //numtostring(val,vbuf);
             break;
          case COUNTDOWN_TYPE:
             val = *(short*)(((char*)&player_struct)+dp->questvar);

@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdio.h>
 #include <string.h>
 //#include <TextUtils.h>
 
@@ -174,7 +175,8 @@ void make_email_cursor(LGCursor* c, grs_bitmap* bm, uchar page, uchar init)
    len=strlen(s);
    s[len]=' ';
 //   itoa(page,s+len+1,10);
-   numtostring(page, s+len+1);
+    sprintf(s + len +1, "%d", page);
+    //numtostring(page, s+len+1);
    MouseLock++;
    if (sizeof(cursor_buf) < w*h)
       critical_error(CRITERR_MEM|7);

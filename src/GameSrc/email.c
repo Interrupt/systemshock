@@ -265,7 +265,8 @@ void apply_email_macros(char *text, char *newval)
             // number of kills
             case 'K':
             case 'k':
-               numtostring(player_struct.num_victories,buf);
+               sprintf(buf, "%d", player_struct.num_victories);
+                 //numtostring(player_struct.num_victories,buf);
                strcpy(newval+cnew, buf);
                cnew += strlen(buf);
                break;
@@ -279,7 +280,8 @@ void apply_email_macros(char *text, char *newval)
             // number of revivals
             case 'D':
             case 'd':
-               numtostring(player_struct.num_deaths,buf);
+               sprintf(buf, "%d", player_struct.num_deaths);
+               //numtostring(player_struct.num_deaths,buf);
                strcpy(newval+cnew, buf);
                cnew += strlen(buf);
                break;
@@ -289,7 +291,8 @@ void apply_email_macros(char *text, char *newval)
                stupid = 0;
                for (i=0; i < 4; i++)
                   stupid += (player_struct.difficulty[i] * player_struct.difficulty[i]);
-               numtostring(stupid,buf);
+               sprintf(buf, "%d", stupid);
+               //numtostring(stupid,buf);
                strcpy(newval+cnew, buf);
                cnew += strlen(buf);
                break;
@@ -306,7 +309,8 @@ void apply_email_macros(char *text, char *newval)
                score = score * (stupid + 1) / 37;  // 9 * 4 + 1 is best difficulty factor
                if (stupid == 36)
                   score += 2222222; // secret kevin bonus
-               numtostring(score,buf);
+               sprintf(buf, "%d", score);
+               //numtostring(score,buf);
                strcpy(newval+cnew, buf);
                cnew += strlen(buf);
                break;
@@ -469,7 +473,8 @@ void draw_more_string(int x, int y, uchar footermask)
       get_email_string(REF_STR_WordPage,pagen,PAGE_STR_BUFSIZE);
       len=strlen(pagen);
       pagen[len++]=' ';
-      numtostring(email_curr_page,pagen+len);
+      sprintf(pagen+len, "%d", email_curr_page);
+      //numtostring(email_curr_page,pagen+len);
       gr_string_size(pagen,&w,&h);
       draw_shadowed_string(pagen,INVENTORY_PANEL_WIDTH-w-2,y+MESSAGE_Y,full_game_3d);
    }

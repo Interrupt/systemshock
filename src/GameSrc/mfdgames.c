@@ -1941,7 +1941,8 @@ void games_expose_15(MFD *m, ubyte control)
 	    // draw number
 	    if(nums) {
 	       gr_set_fcolor(p15_styles[st->style].fcolor);
-	       numtostring(t, buf);
+	       sprintf(buf, "%d", t);
+	       //numtostring(t, buf);
 	       gr_string_size(buf,&sw,&sh);
 	       sw--;  // assume blank pixel of kerning.
 	       sh--;  // assume pixel descender.
