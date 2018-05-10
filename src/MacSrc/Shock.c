@@ -88,7 +88,7 @@ long					gGameSavedTime;
 Boolean				gDeadPlayerQuit;
 Boolean				gGameCompletedQuit;
 
-grs_screen  *cit_screen; // unused?
+grs_screen  *cit_screen;
 SDL_Window* window;
 
 extern grs_screen *svga_screen;
@@ -1271,7 +1271,7 @@ void InitSDL()
 
     printf("Setting up screen and render contexts\n");
 
-    svga_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
+    svga_screen = cit_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
     gr_set_screen(svga_screen);
 
     svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels,
