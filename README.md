@@ -17,19 +17,24 @@ This is my attempt to get System Shock running on modern OSX. Once this runs wel
 - Starting a new game
 - Some HUD rendering
 - 3D rendering
+- AI
+- Physics
 
 # Not working:
-- Keyboard Input / Mouse Clicks
-  - polling should be switched to SDL
-- Physics
-  - player controller is acting weird
-- Object loading
-  - no objects in levels, need to actually load their properties
+- Still a few references to Mac libs left
+  - Could be made cross platform by removing
+- HUD clipping weirdness
+  - something in the switch back to the old inventory / HUD assets has things not drawing properly
+- Keyboard Input
+  - should be switched to SDL2, like rendering and mouse input
+- Saving / Loading
+  - save and load system needs to be reimplemented
 - Main Menu
-  - can be turned back on when input works
+  - the original main menu should be revived, instead of the old Mac version
 - Sound & Music
+  - SDL2 should be able to play the VOC and MIDI files used for sfx and music
 - Video Files
-- Saving
+  - ???
 
 Compiling / Running
 ============
