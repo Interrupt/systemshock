@@ -764,6 +764,12 @@ MouseLock = 0;
 errtype uiMakeBitmapCursor(LGCursor* c,grs_bitmap* bm, LGPoint hotspot)
 {
    // Spew(DSRC_UI_Cursors,("uiMakeBitmapCursor(%x,%x,<%d %d>)\n",c,bm,hotspot.x,hotspot.y));
+
+   if(c == NULL) {
+      printf("FIXME uiMakeBitmapCursor tried to make a null cursor!\n");
+      return ERR_NOEFFECT;
+   }
+   
    grow_save_under(bm->w,bm->h);
    c->func = bitmap_cursor_drawfunc;
    c->state = bm;
