@@ -103,9 +103,6 @@ void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* s, uint tmplt,uchar al
 	gr_make_canvas(bm,&gc);
 	gr_push_canvas(&gc);
 
-   // HAX HAX HAX: why is this needed to reset the view?
-   ss_safe_set_cliprect(0,0,640,480);
-
 	gr_clear(0);
 	gr_bitmap(pbm,0,0);
 	gr_set_font((grs_font*)ResLock(RES_tinyTechFont));

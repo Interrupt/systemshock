@@ -191,6 +191,16 @@ static errtype grow_save_under(short x, short y)
 	int sz = MAPSIZE(x,y);
 	if (SaveUnder.mapsize >= sz) return ERR_NOEFFECT;
 
+   // Clear out old SaveUnder
+   if(SaveUnder.mapsize > 0) {
+      free(SaveUnder.bm.bits);
+   }
+
+   // Grow bigger than we actually need
+   int newsize = sz;
+   SaveUnder.bm.bits = (uchar *)malloc(newsize * 2);
+   SaveUnder.mapsize = newsize;
+
 	DebugString("SaveUnder needs to be increased!");	//¥¥¥
 	return OK;
 }
@@ -390,10 +400,10 @@ errtype ui_init_cursors(void)
 {
    errtype err;
    // Spew(DSRC_UI_Cursors ,("ui_init_cursors()\n"));
-   // KLC grow_save_under(STARTING_SAVEUNDER_WD,STARTING_SAVEUNDER_HT);
+   grow_save_under(STARTING_SAVEUNDER_WD,STARTING_SAVEUNDER_HT);
    // KLC - just initalize it to a sizeable bitmap, and leave it that way.
-   SaveUnder.bm.bits = (uchar *)malloc(6144);
-   SaveUnder.mapsize = 6144;
+   //SaveUnder.bm.bits = (uchar *)malloc(6144);
+   //SaveUnder.mapsize = 6144;
 
    LastCursor = NULL;
    MouseLock = 0;
@@ -770,6 +780,7 @@ errtype uiMakeBitmapCursor(LGCursor* c,grs_bitmap* bm, LGPoint hotspot)
       return ERR_NOEFFECT;
    }
    
+   printf("uiMakeBitmapCursor %i %i\n", bm->w, bm->h);
    grow_save_under(bm->w,bm->h);
    c->func = bitmap_cursor_drawfunc;
    c->state = bm;
