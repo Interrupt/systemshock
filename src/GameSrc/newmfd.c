@@ -310,8 +310,7 @@ void screen_init_mfd(uchar fullscrn)
       // Pull in the background bitmap
       f = (FrameDesc*)RefLock(REF_IMG_bmBlankMFD);
       mfd_background = f->bm;
-//KLC      mfd_background.bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID)*MAX_HT(MFD_VIEW_HGT));
-      mfd_background.bits = (uchar *)malloc(f->bm.w * f->bm.h);
+      mfd_background.bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID)*MAX_HT(MFD_VIEW_HGT));
       LG_memcpy(mfd_background.bits,(f+1),f->bm.w * f->bm.h);
       RefUnlock(REF_IMG_bmBlankMFD);
 
