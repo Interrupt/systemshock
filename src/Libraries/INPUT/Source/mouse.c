@@ -472,19 +472,12 @@ errtype mouse_get_xy(short* x, short* y)
 errtype mouse_put_xy(short x, short y)
 {
 	// thanks to Mark for the help! - phs, 8/1/95
-<<<<<<< HEAD
 
 	// HAX HAX HAX Can't do this yet!
+	STUB_ONCE("TODO: Implement with SDL_WarpMouseInWindow()")
 	return OK;
 
-	/*Point *MTemp;
-=======
-#if 1
-	STUB_ONCE("TODO: Implement with SDL_WarpMouseInWindow()")
-#else
-	Point *MTemp;
->>>>>>> 60103891265e15e93765f091c5aa175999862733
-	Point *RawMouse;
+	/*Point *RawMouse;
 	char *CrsrNew;
 
 	Point pt;

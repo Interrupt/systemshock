@@ -472,8 +472,8 @@ void InstallShockTimers(void)
 //------------------------------------------------------------------------------------
 void RemoveShockTimers(void)
 {
-	RmvTime((QElemPtr)&pShockTicksTask);					// Stop the Shock ticks task
-	DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP
+	//RmvTime((QElemPtr)&pShockTicksTask);					// Stop the Shock ticks task
+	//DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP
 }
 
 //------------------------------------------------------------------------------------
@@ -635,10 +635,10 @@ void CleanupAndExit(void)
 // of MacsBug.
 //------------------------------------------------------------------------------------
 
-static UniversalProcPtr	sOldETSRoutine;
-static UniversalProcPtr	sNewETSRoutine;
+//static UniversalProcPtr	sOldETSRoutine;
+//static UniversalProcPtr	sNewETSRoutine;
 
-enum { kExitToShellProcInfo = kPascalStackBased };
+//enum { kExitToShellProcInfo = kPascalStackBased };
 
 pascal void ETSPatch ()
 {

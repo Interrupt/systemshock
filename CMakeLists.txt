@@ -17,15 +17,13 @@ add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-if(NOT APPLE)
-	# HACK: make carbon an empty list or sth
-	set(CARBON  )
+# HACK: make carbon an empty list or sth
+set(CARBON  )
 
-	# for now I'll put a Carbon/Carbon.h into src/stubs/
-	# that defines Mac-specific types and provides stubs for used functions
-	# like GetResource()
-	include_directories(src/stubs/)
-endif()
+# for now I'll put a Carbon/Carbon.h into src/stubs/
+# that defines Mac-specific types and provides stubs for used functions
+# like GetResource()
+include_directories(src/stubs/)
 
 add_subdirectory(src/Libraries/)
 
@@ -37,7 +35,7 @@ set(MAC_SRC
 	src/MacSrc/Shock.c
 	src/MacSrc/Prefs.c
 	src/MacSrc/MacTune.c
-	src/MacSrc/Tests.c
+#	src/MacSrc/Tests.c
 )
 
 if(NOT APPLE)
