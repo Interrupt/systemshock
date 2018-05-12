@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
 /*
+ * DG 2018-05-12: renamed to init_2D.h to avoid confusion with other init.h
+ *
  * $Source: r:/prj/lib/src/2d/RCS/init.h $
  * $Revision: 1.2 $
  * $Author: kevin $

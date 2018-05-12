@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
 /*
+ * DG: 2018-05-12 renamed this to status_2D.h to avoid confusion with GameSrc/Headers/status.h
+ *
  * $Source: n:/project/lib/src/2d/RCS/status.h $
  * $Revision: 1.1 $
  * $Author: kaboom $

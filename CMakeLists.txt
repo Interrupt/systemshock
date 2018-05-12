@@ -11,9 +11,21 @@ set(CMAKE_CXX_FLAGS -m32)
 # HAAAAX!!
 add_definitions(-Dpowerc -DSVGA_SUPPORT)
 
+add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
+
 # Find SDL
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
+
+if(NOT APPLE)
+	# HACK: make carbon an empty list or sth
+	set(CARBON  )
+
+	# for now I'll put a Carbon/Carbon.h into src/stubs/
+	# that defines Mac-specific types and provides stubs for used functions
+	# like GetResource()
+	include_directories(src/stubs/)
+endif()
 
 add_subdirectory(src/Libraries/)
 
@@ -27,6 +39,10 @@ set(MAC_SRC
 	src/MacSrc/MacTune.c
 	src/MacSrc/Tests.c
 )
+
+if(NOT APPLE)
+	set(MAC_SRC ${MAC_SRC} src/stubs/Carbon/carbon_stubs.c)
+endif()
 
 set(GAME_SRC
 	src/GameSrc/ai.c
@@ -228,8 +244,10 @@ target_link_libraries(FixPPTest
 	LG_LIB
 )
 
+if(APPLE)
 # Find Carbon
 find_library(CARBON NAMES Carbon)
+endif()
 
 # Include magic header file, set struct packing size
 add_definitions(
