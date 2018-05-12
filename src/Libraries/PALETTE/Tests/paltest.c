@@ -51,14 +51,14 @@ void main ()
 	SetupOffscreenBitmaps();
 
 	gr_init();
-	gr_set_mode( GRM_640x480x8, TRUE );
+	gr_set_mode( GRM_640x480x8, true );
 	screen = gr_alloc_screen( grd_cap->w, grd_cap->h );
 	gr_set_screen( screen );
 	
 	// Get our default palette.
 	
 	pal = GetResource('pal ',1000);
-	BlockMove(*pal, Save_Palette, 768L);
+	memmove(Save_Palette, *pal, 768L);
     gr_set_pal(0, 256, Save_Palette);
 
 	// Draw the whole dang palette.

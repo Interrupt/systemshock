@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -65,8 +66,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //          ON-LINE HELP FOR SYSTEM SHOCK
 // -------------------------------------------------
 
-uchar olh_active = TRUE;
-uchar olh_overlay_on = FALSE;
+uchar olh_active = true;
+uchar olh_overlay_on = false;
 olh_data olh_object = { OBJ_NULL, { 0, 0} };
 
 
@@ -91,28 +92,28 @@ void olh_do_cursor(short xl, short yl);
 
 uchar olh_candidate(ObjID obj)
 {
-   uchar check_dist = FALSE;
-   uchar retval = FALSE;
+   uchar check_dist = false;
+   uchar retval = false;
 
    if (objs[obj].info.inst_flags & OLH_INST_FLAG)
-      return FALSE;
+      return false;
    switch(ID2TRIP(obj))
    {
       case CAMERA_TRIPLE:
       case LARGCPU_TRIPLE:
-         check_dist = FALSE;
-         retval = TRUE;
+         check_dist = false;
+         retval = true;
          break;
       default:
-         if(USE_MODE(obj)==NULL_USE_MODE) return FALSE;
+         if(USE_MODE(obj)==NULL_USE_MODE) return false;
          break;
    }
    switch (objs[obj].obclass)
    {
    case CLASS_DOOR:
       if ((ID2TRIP(obj) == LABFORCE_TRIPLE) || (ID2TRIP(obj) == RESFORCE_TRIPLE))
-         return FALSE;
-      check_dist = !door_locked(obj) && !door_moving(obj,FALSE) 
+         return false;
+      check_dist = !door_locked(obj) && !door_moving(obj,false)
                && DOOR_REALLY_CLOSED(obj);
       break;
    case CLASS_BIGSTUFF:
@@ -125,38 +126,38 @@ uchar olh_candidate(ObjID obj)
          if ((v >= FIRST_CAMERA_TMAP) && (v <= FIRST_CAMERA_TMAP + NUM_HACK_CAMERAS))
          {
             if (camera_map[NUM_HACK_CAMERAS] && hack_cam_objs[v - FIRST_CAMERA_TMAP])
-               check_dist = TRUE;
+               check_dist = true;
          }
          break;
       }
       if (ID2TRIP(obj) == SURG_MACH_TRIPLE)
       {
-         check_dist = TRUE;
+         check_dist = true;
          break;
       }
       if (((ObjProps[OPNUM(obj)].flags & CLASS_FLAGS) >> CLASS_FLAGS_SHF) == STUFF_OBJUSE_FLAG)
       {
          if (objBigstuffs[objs[obj].specID].data1 != 0)
-            check_dist = TRUE;
+            check_dist = true;
          break;
       }
    case CLASS_SMALLSTUFF:
       if (USE_MODE(obj) == USE_USE_MODE)
       {
-         check_dist = TRUE;
+         check_dist = true;
          break;
       }
       if (USE_MODE(obj) == PICKUP_USE_MODE)
       {
          if (ObjProps[OPNUM(obj)].flags & INVENTORY_GENERAL)
-            check_dist = TRUE;
+            check_dist = true;
          break;
       }
       // smallstuff falls through to default. 
    default:
       if (USE_MODE(obj) == PICKUP_USE_MODE
          || USE_MODE(obj) == USE_USE_MODE)
-         check_dist = TRUE;
+         check_dist = true;
       break;
 
    }
@@ -167,7 +168,7 @@ uchar olh_candidate(ObjID obj)
       fix crit = (mode == PICKUP_USE_MODE) ? MAX_PICKUP_DIST : MAX_USE_DIST;
 
       if (check_object_dist(obj,PLAYER_OBJ,crit))
-         retval = TRUE;
+         retval = true;
    }
    return retval;
 }
@@ -260,7 +261,7 @@ got_id:
 // ---------
 // EXTERNALS
 // ---------
-extern Boolean	DoubleSize;
+extern bool DoubleSize;
 
 //-----------------------------
 // olh_scan_objects()
@@ -292,7 +293,7 @@ void olh_scan_objects(void)
 #ifdef SET_HUDOBJ
    if (hudobj_rect_capable(olh_object.obj))
    {
-      hudobj_set_id(olh_object.obj,TRUE);
+      hudobj_set_id(olh_object.obj,true);
    }
 #endif // SET_HUDOBJ
 }
@@ -308,7 +309,7 @@ LGPoint draw_olh_string(char* s, short xl, short yl)
    gr_set_fcolor(hud_colors[hud_color_bank][2]);
    wrap_text(s,OLH_WRAP_WID);
    gr_string_size(s,&w,&h);
-   ss_point_convert(&xl,&yl,TRUE);
+   ss_point_convert(&xl,&yl,true);
    if (DoubleSize)
    {
       xl *= 2;
@@ -316,7 +317,7 @@ LGPoint draw_olh_string(char* s, short xl, short yl)
    }
    x = SCREEN_VIEW_X - xl + SCREEN_VIEW_WIDTH - w - 1;
    y = SCREEN_VIEW_Y - yl + SCREEN_VIEW_HEIGHT - h - 1;
-   draw_shadowed_string(s,x,y,TRUE);
+   draw_shadowed_string(s,x,y,true);
    return MakePoint(x-1, y+(h/2));
 }
 
@@ -395,7 +396,7 @@ void olh_do_callout(short xl, short yl)
       /* perhaps in studlier versions we'll do computations
          to decide whether we're no longer a candidate, 
          rather than just blow away its candidacy */
-      hudobj_set_id(obj,FALSE);
+      hudobj_set_id(obj,false);
       if (best_rect == -1)
          olh_object.obj = OBJ_NULL;
    }
@@ -431,19 +432,19 @@ void olh_do_callout(short xl, short yl)
 uchar is_compound_use_obj(ObjID obj)
 {
    if (objs[obj].obclass != CLASS_SMALLSTUFF)
-      return FALSE;
+      return false;
    if (objs[obj].subclass == SMALLSTUFF_SUBCLASS_PLOT)
-      return TRUE;
+      return true;
    switch(ID2TRIP(obj))
    {
       case EPICK_TRIPLE:
       case HEAD_TRIPLE:
       case HEAD2_TRIPLE:
-         return TRUE;
+         return true;
       default:
          break;
    }
-   return FALSE;
+   return false;
 }
 
 void olh_do_cursor(short xl, short yl)
@@ -525,7 +526,7 @@ void olh_overlay(void)
 {
    extern LGCursor globcursor;
    extern char which_lang;
-   uchar done = FALSE;
+   uchar done = false;
 
    status_bio_end();
    uiPushGlobalCursor(&globcursor);
@@ -541,11 +542,11 @@ void olh_overlay(void)
       ushort 				key;
       mouse_event		me;
       
-      tight_loop(FALSE);
+      tight_loop(false);
       if (mouse_next(&me) == OK)
       {
       	if (me.type == MOUSE_LDOWN)
-      		done = TRUE;
+      		done = true;
       }
       if (kb_get_cooked(&key))
       {
@@ -553,7 +554,7 @@ void olh_overlay(void)
          for(i = 0; i < NUM_OVERLAY_KEYS; i++)
             if (_olh_overlay_keys[i] == key)
             {
-               done = TRUE;
+               done = true;
                if (i != 0)
                   hotkey_dispatch(key);
             }
@@ -564,7 +565,7 @@ void olh_overlay(void)
 
    uiPopGlobalCursor();
    uiFlush();
-   olh_overlay_on = FALSE;
+   olh_overlay_on = false;
    screen_draw();
    status_bio_start();
 }
@@ -574,17 +575,17 @@ uchar toggle_olh_func(short keycode, ulong context, void* data)
    if (!olh_active)
    {
       string_message_info(REF_STR_helpOn);
-      olh_active = TRUE;
+      olh_active = true;
    }
    else
    {
       string_message_info(REF_STR_helpOff);
-      olh_active = FALSE;
+      olh_active = false;
       ResUnlock(RES_olh_strings);					// KLC - added to free strings.
    }
    gShockPrefs.goOnScreenHelp = olh_active;	// KLC - Yeah, got to update this one too and
    SavePrefs(kPrefsResID);							// KLC - save the prefs out to disk.
-   return TRUE;
+   return true;
 }
 
 
@@ -593,13 +594,13 @@ uchar olh_overlay_func(short keycode, ulong context, void* data)
    if (global_fullmap->cyber)
    {
       string_message_info(REF_STR_NotAvailCspace);
-      return TRUE;
+      return true;
    }
    if (full_game_3d)
    {
       change_mode_func(keycode,context,GAME_LOOP);
    }
-   olh_overlay_on = TRUE;
-   return TRUE;
+   olh_overlay_on = true;
+   return true;
 }
 

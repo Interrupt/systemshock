@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __TOOLS_SRC
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -97,7 +98,7 @@ void strtoupper(char *text)
 }
 
 #ifdef SVGA_SUPPORT
-uchar shadow_scale = TRUE;
+uchar shadow_scale = true;
 #endif
 void draw_shadowed_string(char* s, short x, short y, uchar shadow)
 {
@@ -114,7 +115,7 @@ void draw_shadowed_string(char* s, short x, short y, uchar shadow)
       if ((convert_use_mode > 0) && (perform_svga_conversion(OVERRIDE_FONT)))
       {
          if (shadow_scale)
-            ss_point_convert(&(npt.x),&(npt.y),FALSE);
+            ss_point_convert(&(npt.x),&(npt.y),false);
          gr_set_fcolor(shadow);
          ss_scale_string(s,npt.x-1,npt.y-1);
          ss_scale_string(s,npt.x,npt.y-1);
@@ -222,7 +223,7 @@ errtype draw_res_bm_core(Ref id, int x, int y, uchar scale)
 
 errtype draw_res_bm(Ref id, int x, int y)
 {
-   return(draw_res_bm_core(id,x,y,TRUE));
+   return(draw_res_bm_core(id,x,y,true));
 }
 
 // Note, does no mouse code!
@@ -391,7 +392,7 @@ uchar gifdump_func(short keycode, ulong context, void* data)
       strcat(harold," saved");
       message_info(harold);
    }
-   return(TRUE);
+   return(true);
 }
 #pragma enable_message(202)
 
@@ -435,7 +436,7 @@ LGRect msg_rect[2]=
    {FULLSCREEN_MESSAGE_X,FULLSCREEN_MESSAGE_Y,FULLSCREEN_MESSAGE_X+GAME_MESSAGE_W,FULLSCREEN_MESSAGE_Y+GAME_MESSAGE_H}
 };
 
-uchar message_resend = FALSE;
+uchar message_resend = false;
 extern uchar game_paused;
 extern uchar view360_message_obscured;
 void strip_newlines(char* buf);
@@ -499,13 +500,13 @@ errtype message_info(char *info_text)
       }
       if (!message_resend && info_text != last_message && strcmp(last_message,info_text) == 0)
       {
-         message_resend = TRUE;
+         message_resend = true;
          message_clear_time = *tmd_ticks + CIT_CYCLE/10;
          hud_unset(HUD_MSGLINE);
       }
       else
       {
-         message_resend = FALSE;
+         message_resend = false;
          if (!full_game_3d  && !view360_message_obscured 
             || game_paused)
          {
@@ -534,7 +535,7 @@ errtype message_info(char *info_text)
 }
 
 
-uchar message_clear_on = TRUE;
+uchar message_clear_on = true;
 
 errtype message_clear_check()
 {
@@ -566,7 +567,7 @@ errtype message_box(char *box_text)
 #pragma disable_message(202)
 uchar confirm_box(char *confirm_text)
 {
-   return(TRUE);
+   return(true);
 }
 #pragma enable_message(202)
 

@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/19 20:35:27 $
  */
  //	Mac version by Ken Cobb,  2/9/95
- 
 
+#include <stdbool.h>
 #include <stdio.h>
 //#include <Movies.h>		// QuickTime header
 
@@ -201,8 +201,8 @@ errtype audiolog_play(int email_id)
 }
 
 char secret_pending_hack;
-extern Boolean	gDeadPlayerQuit;
-extern Boolean	gPlayingGame;
+extern bool	gDeadPlayerQuit;
+extern bool	gPlayingGame;
 
 //-------------------------------------------------------------
 //  Stop a current audiolog from playing.
@@ -235,8 +235,8 @@ void audiolog_stop()
 	if (secret_pending_hack)
 	{
 		secret_pending_hack = 0;
-     	gDeadPlayerQuit = TRUE;					// The player is dead.
-		gPlayingGame = FALSE;					// Hop out of the game loop.
+     	gDeadPlayerQuit = true;					// The player is dead.
+		gPlayingGame = false;					// Hop out of the game loop.
 	}
 }
 
@@ -308,5 +308,5 @@ errtype audiolog_bark_play(int bark_id)
 uchar audiolog_cancel_func(short s, ulong l, void* v)
 {
 	audiolog_stop();
-	return(TRUE);
+	return(true);
 }

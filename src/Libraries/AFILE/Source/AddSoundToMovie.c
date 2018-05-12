@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	==============================================================
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -96,7 +97,7 @@ void main(void)
 	{
 		short 		movieResID = 0;		// get first movie
 		Str255 		movieName;
-		Boolean 		wasChanged;
+		bool 		wasChanged;
 	
 		err = NewMovieFromFile(&gMovie, resRefNum, &movieResID,
 						movieName, newMovieActive, &wasChanged);
@@ -107,7 +108,7 @@ void main(void)
 	
 	// Setup an FSSpec for the output file.
 	outSpec = reply.sfFile;
-	BlockMove("Output Movie", outSpec.name, 20);
+	memmove(outSpec.name, "Output Movie", 20);
 	
 	//----------------------
 	//	Open the input Sound file.

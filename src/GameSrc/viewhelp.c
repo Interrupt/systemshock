@@ -23,6 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/20 05:36:11 $
  *
  */
+
+#include <stdbool.h>
+
+#include "event.h"
 #include "mfdint.h"
 #include "mfdext.h"
 #include "mfddims.h"
@@ -103,7 +107,7 @@ errtype mfd_viewhelp_init(MFD_Func* f);
 
 #define BAR_SINISTER REF_IMG_BioIconNot
 
-uchar map_notes_on = TRUE;
+uchar map_notes_on = true;
 extern uchar fullscrn_vitals;
 extern uchar fullscrn_icons;
 
@@ -114,9 +118,9 @@ struct _field_data
    int qvar;
 } checkbox_fields []  =
 {
-   { &fullscrn_vitals, TRUE, FULLSCRN_VITAL_QVAR },
-   { &fullscrn_icons, TRUE, FULLSCRN_ICON_QVAR},
-   { &map_notes_on, FALSE, AMAP_NOTES_QVAR},  
+   { &fullscrn_vitals, true, FULLSCRN_VITAL_QVAR },
+   { &fullscrn_icons, true, FULLSCRN_ICON_QVAR},
+   { &map_notes_on, false, AMAP_NOTES_QVAR},
 };
 
 #define NUM_CHECKBOX_FIELDS (sizeof(checkbox_fields)/sizeof(struct _field_data))
@@ -176,11 +180,11 @@ void mfd_viewhelp_expose(MFD* mfd, ubyte control)
             y += (BUTTON_HGT-h)/2;
             if (checkbox_fields[i].fullscrn && !full_game_3d)
                clr = DULL_ITEM_COLOR;
-            mfd_draw_string(buf, x, y, clr, TRUE);
+            mfd_draw_string(buf, x, y, clr, true);
             ResUnlock(MFD_FONT);
 
          }
-         mfd_draw_string(get_temp_string(REF_STR_HudColorsTitle),COLORS_X, COLOR_TITLE_Y, ITEM_COLOR, TRUE);
+         mfd_draw_string(get_temp_string(REF_STR_HudColorsTitle),COLORS_X, COLOR_TITLE_Y, ITEM_COLOR, true);
          for (i = 0; i < HUD_COLOR_BANKS; i++)
          {
             short x = COLORS_X + (COLORS_WID-COLORS_BWID)*i/(HUD_COLOR_BANKS-1);
@@ -224,22 +228,22 @@ uchar mfd_viewhelp_button_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data)
    int track = -1;
    int i = bttn.y;
    if (!(ev->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE)))
-      return FALSE;
+      return false;
    *checkbox_fields[i].var = !*checkbox_fields[i].var;
    QUESTVAR_SET(checkbox_fields[i].qvar, *checkbox_fields[i].var);
    string_message_info((*checkbox_fields[i].var)? BOOL_FIELD_ON_MSG(i) : BOOL_FIELD_OFF_MSG(i));
-   mfd_notify_func(MFD_VIEWHELP_FUNC,MFD_INFO_SLOT,FALSE,MFD_ACTIVE,FALSE);
-   return TRUE;
+   mfd_notify_func(MFD_VIEWHELP_FUNC,MFD_INFO_SLOT,false,MFD_ACTIVE,false);
+   return true;
 }
 
 uchar mfd_viewhelp_color_handler(MFD* m, LGPoint bttn, uiEvent* ev, void* data)
 {
    if (!(ev->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE)))
-      return FALSE;
+      return false;
    hud_color_bank = bttn.x;
    QUESTVAR_SET(HUDCOLOR_QVAR, hud_color_bank);
-   mfd_notify_func(MFD_VIEWHELP_FUNC,MFD_INFO_SLOT,FALSE,MFD_ACTIVE,FALSE);
-   return TRUE;
+   mfd_notify_func(MFD_VIEWHELP_FUNC,MFD_INFO_SLOT,false,MFD_ACTIVE,false);
+   return true;
 }
 
 errtype install_color_handler(MFD_Func* f)

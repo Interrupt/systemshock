@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //==============================================================================
 
+#include <stdbool.h>
 
 #include "MacTune.h"
 #include "musicai.h"
@@ -32,20 +33,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //-----------------
 //  GLOBALS
 //-----------------
-uchar		mlimbs_on = FALSE;
+bool		mlimbs_on = false;
 char		mlimbs_status = 0;
 
 mlimbs_request_info current_request[MLIMBS_MAX_SEQUENCES - 1]; // Request information
 
 ulong		mlimbs_counter = 0;
 long		mlimbs_error;
-uchar		mlimbs_semaphore = FALSE;
+bool		mlimbs_semaphore = false;
 
 Handle			gHeaderHdl, gTuneHdl, gOfsHdl;			// Holds the tune-related data for the current theme file.
 long			*gOffsets;										// Array of offsets for the beginning of each tune.
 //TunePlayer	gPlayer;										// The Tune Player.
-Boolean			gTuneDone;										// True when a sequence has finished playing (set by CB proc).
-Boolean			gReadyToQueue;								// True when it's time to queue up a new sequence.
+bool			gTuneDone;										// True when a sequence has finished playing (set by CB proc).
+bool			gReadyToQueue;								// True when it's time to queue up a new sequence.
 int				gOverlayTime;								// Amount of time (in millisecs) to wait for overlays.
 int				gQueueTime;									// Amount of time (in millisecs) to wait to queue next tune.
 
@@ -83,7 +84,7 @@ pascal void CalcTuneProc(void)
 	//long					curA5 = SetA5(tmTaskPtr->appA5);		// save and set value of A5
 #endif
 	
-	gReadyToQueue = TRUE;								// It's time to queue up another tune.
+	gReadyToQueue = true;								// It's time to queue up another tune.
 	
 #ifndef __powerc
 	//SetA5(curA5);											// restore A5
@@ -165,7 +166,7 @@ void MacTuneShutdown(void)
 //--------------------------------------------------------------------------
 /*pascal void TuneEndCB(const TuneStatus *s, long refCon)
 {
-	gTuneDone = TRUE;
+	gTuneDone = true;
 }*/
 
 //------------------------------------------------------------------------------
@@ -254,8 +255,8 @@ Debugger();	//¥¥¥
 	gOffsets = (long *)*gOfsHdl;
 	
 	// Initialize our playtime globals.
-	gTuneDone = FALSE;
-	gReadyToQueue = FALSE;
+	gTuneDone = false;
+	gReadyToQueue = false;
 
 	// Here's a big hack.  If we're loading theme 0 (machine sounds only), then don't do an
 	// intro transition.
@@ -278,7 +279,7 @@ void MacTuneStartCurrentTheme(void)
 			MacTunePlayTune(pid);						// play it right now.
 		}
 		else
-			gTuneDone = TRUE;								// else make sure we check again soon.
+			gTuneDone = true;								// else make sure we check again soon.
 
 	}*/
 }
@@ -296,7 +297,7 @@ void MacTuneKillCurrentTheme(void)
 		TuneStop(gPlayer, kStopTuneFade);				// Stop the current tune (if any).
 		TuneFlush(gPlayer);									// Flush the queue.
 		
-		gReadyToQueue = FALSE;
+		gReadyToQueue = false;
 	}*/
 }
 
@@ -362,7 +363,7 @@ void MacTunePlayTune(int tune)
 	
 	// If there was no tune to play this time, set a flag so it will prime the timer again.
 	else
-		gTuneDone = TRUE;*/
+		gTuneDone = true;*/
 }
 
 //------------------------------------------------------------------------------
@@ -389,7 +390,7 @@ void MacTuneQueueTune(int tune)
 	
 	// If there was no tune to queue this time, set a flag so it will prime the timer again.
 	else
-		gTuneDone = TRUE;*/
+		gTuneDone = true;*/
 }
 
 //------------------------------------------------------------------------------

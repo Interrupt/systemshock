@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __INIT_SRC
 
+#include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -124,7 +125,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TITLE_DISPLAY_TIME   (60*3)
 #define MIN_WAIT_TIME        (60)
 
-void DrawSplashScreen(short id, Boolean fadeIn);
+void DrawSplashScreen(short id, bool fadeIn);
 void PreloadGameResources(void);
 errtype init_gamesys();
 errtype free_gamesys(void);
@@ -158,9 +159,9 @@ errtype object_data_load(void);
 int   global_timer_id;
 extern int mlimbs_peril;
 */
-uchar init_done = FALSE;
-uchar clear_player_data = TRUE;
-uchar objdata_loaded = FALSE;
+uchar init_done = false;
+uchar clear_player_data = true;
+uchar objdata_loaded = false;
 
 /*
 extern void (*enter_modes[])(void);
@@ -190,7 +191,7 @@ MemStack temp_memstack;
 
 uchar pause_for_input(ulong wait_time)
 {
-	Boolean	gotInput = FALSE;
+	bool gotInput = false;
 	while (!gotInput && ((ulong)TickCount() < wait_time))
 	{
 		/*long		theKeys[4];
@@ -246,7 +247,7 @@ void init_all(void)
    extern Datapath savegame_dpath; */
 	ulong		pause_time;
 	int		i;
-	bool		speed_splash = FALSE;
+	bool		speed_splash = false;
 /*
 
    uchar        dofault = TRUE;
@@ -425,7 +426,7 @@ void init_all(void)
    init_hack_cameras();
 
    printf("-End Sequence\n");
-	region_end_sequence(FALSE);
+	region_end_sequence(false);
 
 	printf("-Lighting startup\n");
 	Init_Lighting();
@@ -501,7 +502,7 @@ void init_all(void)
    }
 
 	uiFlush();
-	init_done = TRUE;
+	init_done = true;
 
 	printf("Finished Initializing!\n");
 }
@@ -509,7 +510,7 @@ void init_all(void)
 //-----------------------------------------------------------
 //  Draw a splash screen in its associated color table.
 //-----------------------------------------------------------
-void DrawSplashScreen(short id, Boolean fadeIn)
+void DrawSplashScreen(short id, bool fadeIn)
 {
 	byte  				pal_id;
 	uchar 			savep[768];
@@ -587,7 +588,7 @@ void object_data_flush(void)
       return;
 
    free_dynamic_memory(DYNMEM_ALL);
-   objdata_loaded = FALSE;
+   objdata_loaded = false;
    obj_shutdown();
 }
 
@@ -623,7 +624,7 @@ errtype object_data_load(void)
 	printf("Initialize player\n");
 	if (clear_player_data) 
 		init_player(&player_struct);
-	clear_player_data = TRUE;
+	clear_player_data = true;
 	AdvanceProgress();
 
 
@@ -642,7 +643,7 @@ errtype object_data_load(void)
    bounds.lr.y = global_fullmap->y_size;
 
    printf("process tilemap\n");
-   rendedit_process_tilemap(global_fullmap,&bounds,TRUE);
+   rendedit_process_tilemap(global_fullmap,&bounds,true);
    AdvanceProgress();
 
    // Make the objmode camera....
@@ -651,7 +652,7 @@ errtype object_data_load(void)
    AdvanceProgress();
 
    printf("load_dynamic_memory\n");
-   objdata_loaded = TRUE;
+   objdata_loaded = true;
    load_dynamic_memory(DYNMEM_ALL);
 
 //KLC   end_wait();

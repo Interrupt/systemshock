@@ -96,7 +96,7 @@ void main(void)
 	long        i,j;
 
 	gr_init();
-	gr_set_mode (GRM_640x480x8, TRUE);
+	gr_set_mode (GRM_640x480x8, true);
 	screen = gr_alloc_screen (grd_cap->w, grd_cap->h);
 	gr_set_screen (screen);
 
@@ -104,8 +104,8 @@ void main(void)
 	fread (bitmap_buf, 1, 16412, fp);
 	fclose (fp);
 	
-	BlockMove(bitmap_buf,bitmap_buf2,17000);
-	BlockMove(bitmap_buf,bitmap_buf3,17000);
+	memmove(bitmap_buf2, bitmap_buf, 17000);
+	memmove(bitmap_buf3, bitmap_buf, 17000);
 
 	bm = * (grs_bitmap *) bitmap_buf;
 	bm.bits = bitmap_buf+28;

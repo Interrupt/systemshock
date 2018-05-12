@@ -164,7 +164,7 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
             }
             break;
          }
-      } else if (d<0) return TRUE; /* punt this tmap */
+      } else if (d<0) return true; /* punt this tmap */
       u=(tli->left.u+=tli->left.du);
       tli->right.u+=tli->right.du;
       du=tli->right.u-u;
@@ -176,7 +176,7 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
       dx=tli->right.x-tli->left.x;
       tli->d+=grd_bm.row;
    } while (--(tli->n) > 0);
-   return FALSE; /* tmap OK */
+   return false; /* tmap OK */
 }
 
 void gri_tluc8_trans_lin_umap_init(grs_tmap_loop_info *tli) {

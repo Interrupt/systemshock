@@ -1,6 +1,9 @@
 
 #include <Carbon/Carbon.h>
 
+#include <stdbool.h>
+
+#include "lg_types.h"
 // Stub out all of the functions that we haven't implemented yet!
 
 
@@ -9,7 +12,7 @@ typedef struct {
 
 } snd_digi_parms;
 
-Boolean				gTuneDone;
+bool				gTuneDone;
 
 void snd_kill_all_samples(void) { }
 void snd_sample_reload_parms(snd_digi_parms *sdp) { }
@@ -27,7 +30,7 @@ snd_digi_parms *snd_sample_parms(int hnd_id)
 
 void StopMovie(void) { }
 void StartMovie(void * m) { }
-Boolean IsMovieDone(void) { return true; }
+bool IsMovieDone(void) { return true; }
 
 void HideCursor(void) { }
 void ShowCursor(void) { }
@@ -36,7 +39,7 @@ ushort GetOSEvent(short eventMask,EventRecord *theEvent) { return false; }
 void AdvanceProgress(void) { }
 void EndProgressDlg(void) { }
 
-Boolean ShockAlertFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit) { return false; }
+bool ShockAlertFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit) { return false; }
 
 
 MoviesTask(void *m, int n) { }

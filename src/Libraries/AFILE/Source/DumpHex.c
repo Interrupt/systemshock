@@ -63,7 +63,7 @@ static char *tableNames[] = {
 	short	outResNum;
 	short	resID = 128;
 
-	dumpChunkHdrs = TRUE;
+	dumpChunkHdrs = true;
 
 // Prompt for input file
 
@@ -160,7 +160,7 @@ static char *tableNames[] = {
 	{
 		Handle	palHdl = NewHandle(768);
 		HLock(palHdl);
-		BlockMove(mh.palette, *palHdl, 768);
+		memmove(*palHdl, mh.palette, 768);
 		HUnlock(palHdl);
 
 		AddResource(palHdl, 'mpal', resID++, "n");
@@ -175,7 +175,7 @@ static char *tableNames[] = {
 		pmc = (MovieChunk *)malloc(mh.sizeChunks);
 		fread(pmc, mh.sizeChunks, 1, fpi);
       	pmcBase = pmc;
-		while (TRUE)
+		while (true)
 		{
 			uchar	s1, s2;
 			

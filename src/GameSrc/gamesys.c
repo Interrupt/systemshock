@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
 #include <stdlib.h>                      
 
 #include "ai.h"
@@ -97,7 +98,7 @@ int run_fatigue_rate = 5;
 extern short fr_solidfr_time;
 extern short fr_sfx_time;
 ulong fr_shake_time;
-uchar gamesys_on = TRUE;
+uchar gamesys_on = true;
 
 // hud vars
 short enviro_edrain_rate = 0;
@@ -124,7 +125,7 @@ void expose_player(byte damage, ubyte type, ushort tsecs);
 
 void game_sched_init(void)
 {
-   schedule_init(&game_seconds_schedule,GAME_SCHEDULE_SIZE,FALSE);
+   schedule_init(&game_seconds_schedule,GAME_SCHEDULE_SIZE,false);
 }
 
 void game_sched_free(void)
@@ -151,7 +152,7 @@ void unshodanizing_callback(ObjID id, void *user_data)
       objs[id].info.current_frame = 0;
    }
    else
-      add_obj_to_animlist(id, FALSE, TRUE, FALSE, 0, 3, (void *)TRUE, ANIMCB_REMOVE);
+      add_obj_to_animlist(id, false, true, false, 0, 3, (void *)true, ANIMCB_REMOVE);
 }
 
 #define STOCHASTIC_SHODAN_MASK   0xF
@@ -230,7 +231,7 @@ void check_nearby_objects()
                               pf_id = -1;
                               if (pf_id != -1)
                               {
-                                 check_requests(TRUE);
+                                 check_requests(true);
                                  if ((paths[pf_id].num_steps != 0) && (paths[pf_id].num_steps <= MONSTER_THEME_PATH_LENGTH))
                                  {
                                     delete_path(pf_id);
@@ -318,7 +319,7 @@ void check_nearby_objects()
                               objBigstuffs[objs[id].specID].cosmetic_value = NUM_SHODAN_FRAMES;
                               objs[id].info.current_frame = 0;
                               // animate me:  cycle, but don't repeat   
-                              add_obj_to_animlist(id, FALSE, FALSE, FALSE, 0, 3, (void *)0, ANIMCB_REMOVE);
+                              add_obj_to_animlist(id, false, false, false, 0, 3, (void *)0, ANIMCB_REMOVE);
                            }
                         }
                         break;
@@ -367,7 +368,7 @@ void reload_fatigue_parms()
 uchar fatigue_warning;
 #define fatigue_val(x) (((x) > SPRINT_CONTROL_THRESHOLD) ? ((int)(x) - SPRINT_CONTROL_THRESHOLD): 0)
 #define FATIGUE_DENOM  (CONTROL_MAX_VAL - SPRINT_CONTROL_THRESHOLD)
-uchar gamesys_fatigue = TRUE;
+uchar gamesys_fatigue = true;
 
 #define SKATE_MOD 8
 
@@ -400,24 +401,24 @@ void fatigue_player(void)
          if (!fatigue_warning)
          {
             hud_set(HUD_FATIGUE);
-            fatigue_warning = TRUE;
+            fatigue_warning = true;
          }
       }
       else if (fatigue_warning)
       {
          hud_unset(HUD_FATIGUE);
-         fatigue_warning = FALSE;
+         fatigue_warning = false;
       }
    }
 }
 
 
 
-uchar gamesys_render_fx = TRUE;
-uchar gamesys_restore_health = TRUE;
-uchar gamesys_slow_proj = TRUE;
-uchar gamesys_beam_wpns = TRUE;
-uchar gamesys_drugs = TRUE;
+uchar gamesys_render_fx = true;
+uchar gamesys_restore_health = true;
+uchar gamesys_slow_proj = true;
+uchar gamesys_beam_wpns = true;
+uchar gamesys_drugs = true;
 
 ulong next_contin_trig;
 
@@ -471,9 +472,9 @@ uchar shodan_phase_in(uchar *bitmask, short x, short y, short w, short h, short 
    }
    if (thresh_fail > MAX_SHODAN_FAILURES)
    {
-      return(TRUE);
+      return(true);
    }
-   return(FALSE);
+   return(false);
 }
 
 
@@ -562,7 +563,7 @@ errtype gamesys_run(void)
          {
             errtype trap_hack_func(int p1, int p2, int p3, int p4);
             extern void begin_shodan_conquer_fx(uchar begin);
-            begin_shodan_conquer_fx(FALSE);
+            begin_shodan_conquer_fx(false);
             shodan_bitmask = NULL;
             trap_hack_func(GAME_OVER_HACK, 0, 0, 0);
             palfx_fade_down();
@@ -572,9 +573,9 @@ errtype gamesys_run(void)
             for (i=0; i < NUM_SHODAN_REGIONS; i++)
             {
                shodan_phase_in(shodan_bitmask, shodan_region_full_x[i], shodan_region_full_y[i], 
-                  shodan_region_full_width[i], shodan_region_full_height[i],QUESTVAR_GET(CYBER_DIFF_QVAR) + 1,TRUE);
+                  shodan_region_full_width[i], shodan_region_full_height[i],QUESTVAR_GET(CYBER_DIFF_QVAR) + 1,true);
                shodan_phase_in(shodan_bitmask, 0, 0, FULL_VIEW_WIDTH, FULL_VIEW_HEIGHT, 
-                  (3 * QUESTVAR_GET(CYBER_DIFF_QVAR)) + 1,TRUE);
+                  (3 * QUESTVAR_GET(CYBER_DIFF_QVAR)) + 1,true);
             }
          }
          if (thresh_fail)
@@ -714,9 +715,9 @@ uchar panel_ref_sanity(ObjID obj)
 	
 	      // hmmm?
 	      if(delt>FIXANG_PI)
-	         return FALSE;
+	         return false;
 	   }
-   return TRUE;
+   return true;
 }
 
 // -------------------------------------
@@ -753,7 +754,7 @@ void check_panel_ref(uchar puntme)
          }
          if (punting)
          {
-               mfd_notify_func(MFD_EMPTY_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
+               mfd_notify_func(MFD_EMPTY_FUNC, MFD_INFO_SLOT, true, MFD_ACTIVE, true);
          }
          for(mfd_id=0;mfd_id<NUM_MFDS;mfd_id++) {
             if(punt_mfd[mfd_id] && player_struct.mfd_current_slots[mfd_id]==MFD_INFO_SLOT) {
@@ -828,8 +829,8 @@ extern ObjID shodan_avatar_id;
 #define REALSPACE_HUDS    (HUD_RADPOISON|HUD_BIOPOISON|HUD_FATIGUE|HUD_BIOHAZARD|HUD_RADIATION|HUD_ZEROGRAV|HUD_ENVIROUSE)
 
 
-extern Boolean	gPlayingGame;
-extern Boolean	gDeadPlayerQuit;
+extern bool gPlayingGame;
+extern bool gDeadPlayerQuit;
 
 void do_stuff_every_second()
 {
@@ -855,7 +856,7 @@ void do_stuff_every_second()
             {
                cspace_effect_times[i] = 0;
                if (cspace_effect_turnoff[i] != NULL)
-                  cspace_effect_turnoff[i](TRUE,TRUE);
+                  cspace_effect_turnoff[i](true,true);
             }
 
          if ((time_until_shodan_avatar != 0) && (player_struct.game_time > time_until_shodan_avatar) && 
@@ -913,13 +914,13 @@ void do_stuff_every_second()
             {
                string_message_info(REF_STR_PowerRanOut);
                play_digi_fx(SFX_POWER_OUT,1);
-               player_struct.energy_out = TRUE;
+               player_struct.energy_out = true;
             }
             hardware_power_outage();
             gear_power_outage();
          }
          else
-            player_struct.energy_out = FALSE;
+            player_struct.energy_out = false;
          if (player_struct.hit_points < PLAYER_MAX_HP
             && player_struct.hit_points_regen != 0)
          {
@@ -927,7 +928,7 @@ void do_stuff_every_second()
             int num = player_struct.hit_points_regen;
             player_struct.hit_points =
                apply_rate(player_struct.hit_points,num,last,next,0,PLAYER_MAX_HP);
-            mfd_notify_func(MFD_BIOWARE_FUNC,MFD_INFO_SLOT,FALSE,MFD_ACTIVE,FALSE);
+            mfd_notify_func(MFD_BIOWARE_FUNC,MFD_INFO_SLOT,false,MFD_ACTIVE,false);
 
          }
          if (player_struct.hit_points > 0)
@@ -968,7 +969,7 @@ void do_stuff_every_second()
          }
          if (newf != player_struct.fatigue)
          {
-            mfd_notify_func(MFD_BIOWARE_FUNC,MFD_INFO_SLOT,FALSE,MFD_ACTIVE,FALSE);
+            mfd_notify_func(MFD_BIOWARE_FUNC,MFD_INFO_SLOT,false,MFD_ACTIVE,false);
             player_struct.fatigue = newf;
          }
       }
@@ -985,8 +986,8 @@ void do_stuff_every_second()
 		{
 			secret_render_fx=0;
 //KLC            play_cutscene(ENDGAME_CUTSCENE,TRUE);
-			gDeadPlayerQuit = TRUE;											// Pretend the player is dead.
-			gPlayingGame = FALSE;											// Hop out of the game loop.
+			gDeadPlayerQuit = true;											// Pretend the player is dead.
+			gPlayingGame = false;											// Hop out of the game loop.
 		}
 	}
 
@@ -999,7 +1000,7 @@ void do_stuff_every_second()
       else bio_absorb = 0;
 
       check_hazard_regions(MAP_GET_XY(PLAYER_BIN_X,PLAYER_BIN_Y));
-      check_panel_ref(FALSE);
+      check_panel_ref(false);
    }
    return;
 }

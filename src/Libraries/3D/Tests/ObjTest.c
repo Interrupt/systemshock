@@ -88,7 +88,7 @@ void test_3d(void)
 	 }
 	
 	gr_init();
-	gr_set_mode(GRM_640x480x8, TRUE);
+	gr_set_mode(GRM_640x480x8, true);
 	screen = gr_alloc_screen(640,480);
 	gr_set_screen (screen);
 	

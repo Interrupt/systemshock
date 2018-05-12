@@ -25,12 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __FAUXREND_SRC
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "2d.h"
-#include "2dRes.h"
+#include "2dres.h"
 #include "3d.h"
 #include "lg.h"
 
@@ -282,7 +283,7 @@ void test_3d(void)
    		gr_init_bm(&bm[i], (uchar *) bitmap_buf+28, BMT_FLAT8, 0, 128, 128);
    	}
 
-	gr_set_mode(GRM_640x480x8, TRUE);
+	gr_set_mode(GRM_640x480x8, true);
 	screen = gr_alloc_screen(640,480);
 	gr_set_screen (screen);
 
@@ -321,7 +322,7 @@ void test_3d(void)
 	
 	frames = 0;
 	time = 1;
-	uint8* keyboard;
+	uint8_t *keyboard;
 	do
 	 {	 	
 	 	time++;

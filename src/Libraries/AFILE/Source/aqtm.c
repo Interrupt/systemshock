@@ -204,7 +204,7 @@ int AqtmWriteBegin(Afile *paf)
 
 //	We don't need no stinkin' rsd!
 
-	paf->writerWantsRsd = FALSE;
+	paf->writerWantsRsd = false;
 
 //	Return
 

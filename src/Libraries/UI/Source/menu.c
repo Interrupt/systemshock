@@ -78,7 +78,7 @@ void gad_menu_up(TNG *ptng)
       REG_USER_CONTROLLED | AUTOMANAGE_FLAG | STENCIL_CLIPPING | OBSCURATION_CHECK,
       fn, NULL, NULL, gd);
 
-   TNG_MN(ptng)->popped_up = TRUE;
+   TNG_MN(ptng)->popped_up = true;
 
    // Install the general pushbutton handler
    uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE, &gadget_tng_mouse_handler, retgad, &(retgad->handler_id));
@@ -100,9 +100,9 @@ void gad_menu_down(TNG *ptng)
    g = (Gadget *)ptng->ui_data;
    //Spew(DSRC_UI_Menu, ("About to destroy menu!\n"));
    uiReleaseFocus(g->rep, UI_EVENT_KBD_COOKED);
-   region_destroy(g->rep,TRUE);
+   region_destroy(g->rep,true);
    g->rep = NULL;
-   TNG_MN(ptng)->popped_up = FALSE;
+   TNG_MN(ptng)->popped_up = false;
 }
 
 Gadget *gad_menu_create(Gadget *parent, LGPoint *coord, int z, TNGStyle *sty, int width, char *name)

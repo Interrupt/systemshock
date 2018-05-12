@@ -167,7 +167,7 @@ static char *tableNames[] = {
 	pmc = (MovieChunk *)malloc(mh.sizeChunks);
 	fread(pmc, mh.sizeChunks, 1, fpi);
   	pmcBase = pmc;
-	while (TRUE)
+	while (true)
 	{
 		uchar	s1, s2;
 		
@@ -209,7 +209,7 @@ static char *tableNames[] = {
 						subPtr->language = 2;
 					subPtr->startingTime = (fix_int(pmc->time) * 600)
 										 	+ fix_rint(fix_mul(fix_frac(pmc->time),fix_make(600, 0)));
-					BlockMove((char *)mti + mti->offset, subPtr->subtitle, 255);
+					memmove(subPtr->subtitle, (char *)mti + mti->offset, 255);
 					
 					// Replace any linefeeds (0x0A) with carriage returns (0x0D)
 					cp = (char *)subPtr->subtitle;

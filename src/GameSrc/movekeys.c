@@ -24,9 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 
+#include "event.h"
 #include "input.h"
+#include "kbcook.h"
 #include "player.h"
 #include "physics.h"
 #include "gamesys.h" 
@@ -305,17 +308,17 @@ uchar parse_motion_key(ushort keycode, short* cnum, short* cval)
    LEANUP_CASES
       *cnum = LEAN_CONTROL_NUM;
       *cval = 0;
-      physics_set_relax(*cnum,TRUE);
+      physics_set_relax(*cnum,true);
       break;
    LEANL_CASES
       *cval = -CONTROL_MAX_VAL;
       *cnum = LEAN_CONTROL_NUM;
-      physics_set_relax(*cnum,TRUE);
+      physics_set_relax(*cnum,true);
       break;
    LEANR_CASES
 	   *cval = CONTROL_MAX_VAL;
       *cnum = LEAN_CONTROL_NUM;
-      physics_set_relax(*cnum,TRUE);
+      physics_set_relax(*cnum,true);
    	break;
    EYEUP_CASES
       *cnum = EYE_CONTROL_NUM;
@@ -442,7 +445,7 @@ void process_motion_keys(void)
 }
 
 
-extern Boolean	gKeypadOverride;
+extern bool gKeypadOverride;
 
 uchar motion_keycheck_handler(uiEvent* ev, LGRegion* r, void* data)
 {
@@ -453,7 +456,7 @@ uchar motion_keycheck_handler(uiEvent* ev, LGRegion* r, void* data)
 
 	short cnum,cval;
 	
-	int	moveOK = TRUE;
+	int	moveOK = true;
 	
 /* KLC - this doesn't appear to help any
 	// Check for firing weapon first (if it hasn't fired already).	
@@ -475,7 +478,7 @@ uchar motion_keycheck_handler(uiEvent* ev, LGRegion* r, void* data)
 	if (gKeypadOverride)														// if a keypad is showing
 	{
 		if (ke->scancode >= 0x52 && ke->scancode <= 0x5C)		// and a keypad number was entered,
-			moveOK = FALSE;													// don't move.
+			moveOK = false;													// don't move.
 	}
 	
 	if (moveOK)
@@ -487,7 +490,7 @@ uchar motion_keycheck_handler(uiEvent* ev, LGRegion* r, void* data)
 				poll_controls[cnum] = cval;
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 

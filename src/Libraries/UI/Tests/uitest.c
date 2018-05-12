@@ -106,13 +106,13 @@ uchar qbox_test(short keycode, ulong context, void *data)
 uchar menu_test1(short keycode, ulong context, void *data)
 {
 //   mprintf("Hey, test 1: %s\n",(char *)data);
-   return(TRUE);
+   return(true);
 }
 
 uchar menu_test2(short keycode, ulong context, void *data)
 {
 //   mprintf("THIS IS TEST TWO!! BAHAHAHAHAHAH!\n");
-   return(TRUE);
+   return(true);
 }
 
 uchar view_gadget_draw(void *vg, void *ud)
@@ -123,7 +123,7 @@ uchar view_gadget_draw(void *vg, void *ud)
    region_abs_rect(g->rep,g->rep->r,&r);   
    gr_set_fcolor(100);
    gr_rect(r.ul.x, r.ul.y, r.lr.x - 1, r.lr.y - 1);
-   return(FALSE);
+   return(false);
 }
 
 
@@ -155,7 +155,7 @@ uchar test_callback(void *uid_g, void *ud)
 		RGBForeColor(&black);
 	}
 
-   return(TRUE);
+   return(true);
 }
 
 
@@ -196,7 +196,7 @@ uchar barry_callback(void *uid_g, void *ud)
          }
       }
    }
-   return(FALSE);
+   return(false);
 }
 
 int test_pb_CB(Gadget *g, void *ud)
@@ -235,7 +235,7 @@ uchar quit_callback(void *uid_g, void *ud)
    dummy = ud;
    dummy2 = (Gadget *)uid_g;
    done = 1;
-   return(TRUE);
+   return(true);
 }
 
 /*
@@ -277,17 +277,17 @@ uchar goofy_key_callback(uiEvent* h, LGRegion* r, void* state)
    if (h->type != UI_EVENT_KBD_COOKED)
    {
      DebugString("Key's not cooked!");
-     return FALSE;
+     return false;
    }
    if (inkey & KB_FLAG_SPECIAL)
    {
      DebugString("Isn't that special!");
-     return FALSE;
+     return false;
    }
    if (!(inkey & KB_FLAG_DOWN))
    {
      DebugString("Key's not down!");
-     return FALSE;
+     return false;
    }
 
    switch(inkey & 0xFF)
@@ -326,7 +326,7 @@ uchar goofy_key_callback(uiEvent* h, LGRegion* r, void* state)
       */
    }
    hotkey_dispatch(h->subtype);
-   return TRUE;
+   return true;
 }
 
 char *test_strings[4] = { "Alpha", "Beta", "Gamma", "Delta" };
@@ -534,7 +534,7 @@ extern short gMainVRef;
    gadget_display(p[2], NULL);
 */
 //   mprintf("Before region end\n");
-   region_end_sequence(TRUE);
+   region_end_sequence(true);
 
 //   gadget_display(mn,NULL);
 

@@ -269,7 +269,7 @@ errtype tng_uninstall_callback(TNG *ptng, int id)
 uchar tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
    TNG_CB *tngcb;
-   uchar retval = FALSE;
+   uchar retval = false;
    uchar newret;
 
    tngcb = ptng->pcb;
@@ -278,7 +278,7 @@ uchar tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 //      Spew(DSRC_TNG_Callback, ("In while part of tng_cb_mousebutt...\n"));
       if (tngcb->event_type == TNG_EVENT_MOUSE)
       {
-         newret = FALSE;
+         newret = false;
          if (type & tngcb->condition)
          {
             ptng->cb_data = &loc;
@@ -295,7 +295,7 @@ uchar tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 uchar tng_cb_keycooked(TNG *ptng, ushort key)
 {
    TNG_CB *tngcb;
-   uchar retval = FALSE;
+   uchar retval = false;
    uchar newret;
 
    tngcb = ptng->pcb;
@@ -303,7 +303,7 @@ uchar tng_cb_keycooked(TNG *ptng, ushort key)
    {
       if (tngcb->event_type == TNG_EVENT_KBD_COOKED)
       {
-         newret = FALSE;
+         newret = false;
          if (key == tngcb->condition)
          {
             ptng->cb_data = (void *)key;
@@ -320,7 +320,7 @@ uchar tng_cb_keycooked(TNG *ptng, ushort key)
 uchar tng_cb_signal(TNG *ptng, ushort signal)
 {
    TNG_CB *tngcb;
-   uchar retval = FALSE;
+   uchar retval = false;
    uchar newret;
 
    tngcb = ptng->pcb;
@@ -328,7 +328,7 @@ uchar tng_cb_signal(TNG *ptng, ushort signal)
    {
       if (tngcb->event_type == TNG_EVENT_SIGNAL)
       {
-         newret = FALSE;
+         newret = false;
          if (signal & tngcb->condition)
          {
             ptng->cb_data = (void *)signal;
@@ -345,7 +345,7 @@ uchar tng_cb_signal(TNG *ptng, ushort signal)
 uchar tng_cb_keyscan(TNG *ptng, ushort scan)
 {
    TNG_CB *tngcb;
-   uchar retval = FALSE;
+   uchar retval = false;
    uchar newret;
 
    tngcb = ptng->pcb;
@@ -353,7 +353,7 @@ uchar tng_cb_keyscan(TNG *ptng, ushort scan)
    {
       if (tngcb->event_type == TNG_EVENT_KBD_RAW)
       {
-         newret = FALSE;
+         newret = false;
          if (scan == tngcb->condition)
          {
             ptng->cb_data = (void *)scan;
@@ -370,7 +370,7 @@ uchar tng_cb_keyscan(TNG *ptng, ushort scan)
 uchar tng_cb_mousemove(TNG *ptng, LGPoint loc)
 {
    TNG_CB *tngcb;
-   uchar retval = FALSE;
+   uchar retval = false;
    uchar newret;
    LGPoint dummy;
    dummy = loc;

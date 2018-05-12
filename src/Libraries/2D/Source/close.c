@@ -46,6 +46,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision
  */
 
+#include <stdbool.h>
+
 #include "grd.h"
 #include "grdev.h"
 #include "state.h"
@@ -58,7 +60,7 @@ int gr_close(void)
 {
    if (grd_active == 0)
       return 0;
-   gr_pop_video_state (TRUE);
+   gr_pop_video_state (true);
    gr_close_device (&grd_info);
    grd_active = 0;
    return 0;

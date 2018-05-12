@@ -81,12 +81,12 @@ RgnHandle			gCursorRgn;
 short				gCursorSet;
 bool				gDone = false;
 bool				gInForeground = true;
-Boolean				gPlayingGame;		//¥¥¥ Temp
+bool				gPlayingGame;		//¥¥¥ Temp
 bool				gIsNewGame;
 FSSpec				gSavedGameFile;
 long					gGameSavedTime;
-Boolean				gDeadPlayerQuit;
-Boolean				gGameCompletedQuit;
+bool				gDeadPlayerQuit;
+bool				gGameCompletedQuit;
 
 grs_screen  *cit_screen;
 SDL_Window* window;
@@ -100,7 +100,7 @@ extern 	frc *svga_render_context;
 extern void init_all(void);
 extern void inv_change_fullscreen(uchar on);
 extern void object_data_flush(void);
-//extern Boolean IsFullscreenWareOn(void);
+//extern bool IsFullscreenWareOn(void);
 extern errtype load_da_palette(void);
 
 void SetupTitleMenus(void);
@@ -358,7 +358,7 @@ void DoCommand(unsigned long mResult)
 {
 	/*short					theItem;
 	Str255				name;
-	Boolean				savedOK;
+	bool				savedOK;
 	ModalFilterUPP	stdFilterProcPtr;
 
 	theItem = LoWord(mResult);
@@ -658,7 +658,7 @@ void HandleNewGame()
 		UpdateWindow(gMainWindow);
 		EndUpdate(gMainWindow);
 		
-		gIsNewGame = TRUE;									// It's a whole new ballgame.
+		gIsNewGame = true;									// It's a whole new ballgame.
 		gGameSavedTime = *tmd_ticks;
 		
 		GetIndString(titleStr, kProgressTitles, 1);	// Get appropriate title string
@@ -688,7 +688,7 @@ void HandleNewGame()
 	//gr_clear(0x0);
 
 	printf("Starting Game\n");
-	gIsNewGame = TRUE;									// It's a whole new ballgame.
+	gIsNewGame = true;									// It's a whole new ballgame.
 	gGameSavedTime = *tmd_ticks;
 	go_and_start_the_game_already();				// Load up everything for a new game
 	SDLDraw();
@@ -726,7 +726,7 @@ void HandleNewGame()
 	objs[PLAYER_OBJ].info.ph = ph = EDMS_make_pelvis(&player_pelvis, &new_state);
 	physics_handle_id[ph] = PLAYER_OBJ;
 
-	physics_running = TRUE;
+	physics_running = true;
 	//EDMS_settle_object( ph );
 
 	ShockGameLoop();*/
@@ -749,7 +749,7 @@ void HandleOpenGame(void)
 		if (gPlayingGame)										// If we were in the middle of playing a game,
 		{																// shutdown the game before loading new one.
 			loopmode_exit(_current_loop);
-	     	closedown_game(TRUE);
+	     	closedown_game(true);
 			StopShockTimer();
 		}
 
@@ -839,9 +839,9 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 void ShockGameLoop(void)
 {
-	gPlayingGame = TRUE;
-	gDeadPlayerQuit = FALSE;
-	gGameCompletedQuit = FALSE;
+	gPlayingGame = true;
+	gDeadPlayerQuit = false;
+	gGameCompletedQuit = false;
 
 	gr_clear(0x0);
 	load_da_palette();		// KLC - added here.  Used to be in setup_start().
@@ -893,7 +893,7 @@ void ShockGameLoop(void)
 	/*Size		dummy;
 	FSSpec	fSpec;
 
-	gPlayingGame = TRUE;
+	gPlayingGame = true;
 	gDeadPlayerQuit = FALSE;
 	gGameCompletedQuit = FALSE;
 	
@@ -969,14 +969,14 @@ void ShockGameLoop(void)
 	if (gDeadPlayerQuit)									// If we quit because the player was killed, show
 	{																// the death movie.
 		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Death", &fSpec);
-		PlayCutScene(&fSpec, TRUE, TRUE);		
+		PlayCutScene(&fSpec, true, true);		
 		gDeadPlayerQuit = FALSE;
 	}
 
 	if (gGameCompletedQuit)								// If we quit because the game was completed, show
 	{																// the endgame movie.
 		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Endgame", &fSpec);		
-		PlayCutScene(&fSpec, TRUE, TRUE);
+		PlayCutScene(&fSpec, true, true);
 		gGameCompletedQuit = FALSE;
 
 		PaintRect(&gMainWindow->portRect);
@@ -984,7 +984,7 @@ void ShockGameLoop(void)
 		DoEndgameDlg();
 	}
 		
-     closedown_game(TRUE);
+     closedown_game(true);
 
 	MaxMem(&dummy);									// Compact heap after quitting the game.
 
@@ -1141,7 +1141,7 @@ void RestoreTitleScreen(void)
 //------------------------------------------------------------------------------------
 //  "Save As" the current game (always ask for file name).
 //------------------------------------------------------------------------------------
-Boolean DoSaveGameAs(void)
+bool DoSaveGameAs(void)
 {
 	/*StandardFileReply	reply;
 	Str255					titleStr, temp;
@@ -1182,14 +1182,14 @@ Boolean DoSaveGameAs(void)
 	gSavedGameFile = reply.sfFile;
 	gGameSavedTime = *tmd_ticks;*/	
 
-	return (TRUE);
+	return (true);
 }
 
 
 //------------------------------------------------------------------------------------
 //  Save the current game (don't prompt for file name, just do it).
 //------------------------------------------------------------------------------------
-Boolean DoSaveGame(void)
+bool DoSaveGame(void)
 {
 	/*Str255					titleStr, temp;
 	
@@ -1212,7 +1212,7 @@ Boolean DoSaveGame(void)
 	
 	gGameSavedTime = *tmd_ticks;*/		
 
-	return (TRUE);
+	return (true);
 }
 
 
@@ -1262,7 +1262,7 @@ void InitSDL()
 
 	gr_init();
 
-    gr_set_mode(GRM_640x480x8, TRUE);
+    gr_set_mode(GRM_640x480x8, true);
 
     printf("Setting up screen and render contexts\n");
 

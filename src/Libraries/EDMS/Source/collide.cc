@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	==============================================
 
 
-#include "EDMS_int.h"
+#include "edms_int.h"
 #include "idof.h"
 #include "lg.h"
 

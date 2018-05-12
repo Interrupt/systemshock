@@ -318,10 +318,10 @@ errtype uiReleaseFocus(LGRegion* r, ulong evmask)
 
 ushort uiDoubleClickTime = DEFAULT_DBLCLICKTIME;
 ushort uiDoubleClickDelay = DEFAULT_DBLCLICKDELAY;
-uchar   uiDoubleClicksOn[NUM_MOUSE_BTNS] = { FALSE, FALSE, FALSE } ;
-uchar   uiAltDoubleClick = FALSE;
+uchar   uiDoubleClicksOn[NUM_MOUSE_BTNS] = { false, false, false } ;
+uchar   uiAltDoubleClick = false;
 ushort uiDoubleClickTolerance = 5;
-static uchar   poll_mouse_motion = FALSE;
+static uchar   poll_mouse_motion = false;
 static uiMouseEvent last_down_events[NUM_MOUSE_BTNS];
 static uiMouseEvent last_up_events[NUM_MOUSE_BTNS];
 
@@ -361,9 +361,9 @@ uchar event_queue_next(uiEvent** e)
       *e = &EventQueue.vec[EventQueue.out++];
       if (EventQueue.out >= EventQueue.size)
          EventQueue.out = 0;
-      return TRUE;
+      return true;
    }
-   return FALSE;
+   return false;
 }
 
 
@@ -381,7 +381,7 @@ uchar event_dispatch_callback(LGRegion* reg, LGRect* rect, void* v)
 
    if(ch == NULL) {
       printf("WARNING! handler_chain is NULL in event_dispatch_callback\n");
-      return FALSE;
+      return false;
    }
    
    uiEventHandler* handlers = (uiEventHandler*)(ch->chain.vec);
@@ -398,7 +398,7 @@ if (ev->type == UI_EVENT_KBD_COOKED)
    if (ch == NULL || handlers ==  NULL)
    {
       // Spew(DSRC_UI_Dispatch,("event_dispatch_callback(): no handler chain ch = %x handlers = %d\n",ch,handlers));
-      return FALSE;
+      return false;
    }
    for (i = ch->front; i != CHAIN_END; i = next)
    {
@@ -407,11 +407,11 @@ if (ev->type == UI_EVENT_KBD_COOKED)
             && (handlers[i].proc)(ev,reg,handlers[i].state))
       {
          // Spew(DSRC_UI_Dispatch,("Caught by handler %d\n",i));
-         return TRUE;
+         return true;
       }
    }
    // Spew(DSRC_UI_Dispatch,("Event Rejected\n"));
-   return FALSE;
+   return false;
 }
 
 // ui_traverse_point return values: 
@@ -495,7 +495,7 @@ uchar uiDispatchEventToRegion(uiEvent* ev, LGRegion* reg)
    LGPoint pos;
    uiEvent nev = *ev;
    
-   ui_mouse_do_conversion(&(nev.pos.x),&(nev.pos.y),TRUE);
+   ui_mouse_do_conversion(&(nev.pos.x),&(nev.pos.y),true);
    pos = nev.pos;
    pos.x += reg->r->ul.x - reg->abs_x;
    pos.y += reg->r->ul.y - reg->abs_y;
@@ -516,14 +516,14 @@ uchar uiDispatchEvent(uiEvent* ev)
 {
    int i;
    // Spew(DSRC_UI_Dispatch,("dispatch_event(%x), CurFocus = %d\n",ev,CurFocus));
-   if (!(ev->type & uiGlobalEventMask)) return FALSE;
+   if (!(ev->type & uiGlobalEventMask)) return false;
    for (i = CurFocus; i != CHAIN_END; i = FCHAIN[i].next)
    {
       // Spew(DSRC_UI_Dispatch,("dispatch_event(): checking focus chain element %d\n",i));
       if (FCHAIN[i].evmask & ev->type)
-         if (uiDispatchEventToRegion(ev,FCHAIN[i].reg)) return TRUE;
+         if (uiDispatchEventToRegion(ev,FCHAIN[i].reg)) return true;
    }
-   return FALSE;                                                                           
+   return false;
 }
 
 errtype uiQueueEvent(uiEvent* ev)
@@ -640,7 +640,7 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
 void ui_dispatch_mouse_event(uiMouseEvent* mout)
 {
    int i;
-   uchar eaten = FALSE;
+   uchar eaten = false;
 
    printf("----- ui_dispatch_mouse_event -----\n");
 //   ui_mouse_do_conversion(&(mout->pos.x),&(mout->pos.y),TRUE);
@@ -679,7 +679,7 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
             printf("Setting up event\n");
             // Spew(DSRC_UI_Polling,("up in time %d\n",mout->tstamp - last_down_events[i].tstamp));
             last_up_events[i] = *mout;
-            eaten = TRUE;
+            eaten = true;
          }
       }
       else if (mout->action & MOUSE_BTN2DOWN(i))
@@ -687,7 +687,7 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
          printf("Saving last down event at %i\n", mout->tstamp);
          // Spew(DSRC_UI_Polling,("saving the down\n"));
          last_down_events[i] = *mout;
-         eaten = TRUE;
+         eaten = true;
       }
    }
    if (!eaten)
@@ -713,7 +713,7 @@ void ui_poll_keyboard(void)
 {
 	extern uchar	pKbdGetKeys[16];
 	long			*keys = (long *)pKbdGetKeys;
-	GetKeys((UInt32 *)keys);
+	GetKeys((uint32_t *)keys);
 
 	uchar *key;
 	for (key = ui_poll_keys; *key != KBC_NONE; key++)
@@ -777,8 +777,8 @@ errtype uiPoll(void)
    static LGPoint last_mouse = { -1, -1 };
    errtype err;
    uiEvent out,*ev;
-   uchar kbdone = FALSE;
-   uchar msdone = FALSE;
+   uchar kbdone = false;
+   uchar msdone = false;
    LGPoint mousepos = last_mouse;
    extern LGPoint LastCursorPos;
    extern struct _cursor* LastCursor;
@@ -789,7 +789,7 @@ errtype uiPoll(void)
    // burn through queue
    while(event_queue_next(&ev))
    {
-      uchar result = TRUE;
+      uchar result = true;
 //      ui_mouse_do_conversion(&(ev->pos.x),&(ev->pos.y),TRUE);
       if (ev->type == UI_EVENT_MOUSE)
          ui_dispatch_mouse_event((uiMouseEvent*)ev);
@@ -851,7 +851,7 @@ errtype uiPoll(void)
 //               kb_clear_state(kbe.code,KBA_STATE);
 //            }
          }
-         else kbdone = TRUE;
+         else kbdone = true;
       }
       if (!msdone)
       {
@@ -878,7 +878,7 @@ errtype uiPoll(void)
             ui_dispatch_mouse_event(mout);
 //            uiDispatchEvent((uiEvent*)mout);
          }
-         else msdone = TRUE;
+         else msdone = true;
       }
    }
 
@@ -940,7 +940,7 @@ uchar uiCheckInput(void)
       if (kbe.state == KBS_DOWN)
       {
          ui_pop_up_keys();
-         return TRUE;
+         return true;
       }
    }
    if (mouse_next(&mse) == OK)
@@ -949,10 +949,10 @@ uchar uiCheckInput(void)
       for (i = 0; i < NUM_MOUSE_BTNS; i++)
       {
          if ((mse.type & MOUSE_BTN2DOWN(i) ) != 0)
-            return TRUE;
+            return true;
       }
    }
-   return FALSE;
+   return false;
 }
 
 // ---------------------------

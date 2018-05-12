@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/28 08:38:42 $
  */
 
+#include <stdbool.h>
+
 #include "criterr.h"
 #include "objects.h"
 #include "player.h"
@@ -202,7 +204,7 @@ uchar set_sample_pan_gain(snd_digi_parms *sdp)
          if ((h.x == (x >> 8)) && (h.y == (y >> 8)) && (h.inuse == 1))
          {
             h.inuse--;
-            return(TRUE);
+            return(true);
          }
       }
       temp_vol = compute_sfx_vol(x, y, objs[PLAYER_OBJ].loc.x, objs[PLAYER_OBJ].loc.y);
@@ -222,7 +224,7 @@ uchar set_sample_pan_gain(snd_digi_parms *sdp)
 // following is temp      sdp->vol=curr_alog_vol;
       sdp->vol = 100;
       snd_sample_reload_parms(sdp);
-      return(FALSE);
+      return(false);
    }
    else
    {
@@ -236,7 +238,7 @@ uchar set_sample_pan_gain(snd_digi_parms *sdp)
    sdp->vol = vol * temp_vol / VOL_FULL;
    sdp->vol = 127;  // for now
    snd_sample_reload_parms(sdp);
-   return(FALSE);
+   return(false);
 }
 
 #ifdef NOT_YET //
@@ -388,5 +390,5 @@ uchar digi_fx_playing(int fx_id, int *handle_ptr)
 			}
 		}
 	}*/
-	return FALSE;
+	return false;
 }

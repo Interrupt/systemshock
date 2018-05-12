@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
-#include "EDMS_int.h"
+#include "edms_int.h"
 #include "idof.h"
 
 //#ifdef EDMS_SHIPPABLE
@@ -212,7 +212,7 @@ uchar do_work( int object, int other_object, Q my_rad, Q your_rad,
 
    if (dx >= cm_radius || dy >= cm_radius || dz >= cm_radius)
    {
-      return FALSE;                          // couldn't possibly collide
+      return false;                          // couldn't possibly collide
    }
 
 //	Test for primary collision...
@@ -266,10 +266,10 @@ uchar do_work( int object, int other_object, Q my_rad, Q your_rad,
                 alarm_clock[other_object] = 1;
 		}		
 
-      return TRUE;                     // collision
+      return true;                     // collision
 	}	//End of radius check...
    else
    {
-      return FALSE;
+      return false;
    }
 }

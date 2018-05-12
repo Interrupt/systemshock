@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cyber.h"
 #include "cybmem.h"
 #include "dynmem.h"
+#include "edms.h"
 #include "effect.h"
 #include "frflags.h"
 #include "frprotox.h"
@@ -110,8 +111,8 @@ errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags
 #define SAVE_AUTOMAP_STRINGS
 
 char saveload_string[30];
-uchar display_saveload_checkpoints = FALSE;
-uchar saveload_static = FALSE;
+uchar display_saveload_checkpoints = false;
+uchar saveload_static = false;
 uint dynmem_mask = DYNMEM_ALL;
 
 extern ObjID hack_cam_objs[NUM_HACK_CAMERAS];
@@ -150,7 +151,7 @@ void store_objects(char** buf, ObjID *obj_array, char obj_count)
       else
       {
 
-         ((Obj*)s)->active = FALSE;
+         ((Obj*)s)->active = false;
          s+= sizeof(Obj);
       }
    }
@@ -200,7 +201,7 @@ uchar go_to_different_level(int targlevel)
    extern void update_level_gametime(void);
    extern errtype do_level_entry_triggers();
    uchar in_cyber = global_fullmap->cyber;
-   uchar retval = FALSE;
+   uchar retval = false;
    errtype rv;
 
    dynmem_mask = DYNMEM_ALL;
@@ -209,17 +210,17 @@ uchar go_to_different_level(int targlevel)
       if (!in_cyber)
       {
          // indicate static
-         saveload_static = TRUE;
+         saveload_static = true;
 
          // force to fullscreen
 
          enter_cyberspace_stuff(targlevel);
-         retval = TRUE;
+         retval = true;
       }
    }
    else if (in_cyber)
    {
-      saveload_static = TRUE;
+      saveload_static = true;
    }
    if (saveload_static)
    {
@@ -269,14 +270,14 @@ uchar go_to_different_level(int targlevel)
       early_exit_cyberspace_stuff();
    }
       
-   rv = write_level_to_disk(ResIdFromLevel(player_struct.level), TRUE);
+   rv = write_level_to_disk(ResIdFromLevel(player_struct.level), true);
    if (rv)
       critical_error(CRITERR_FILE|4);
    
    rv = load_level_from_file(targlevel);
    // Hmm, should we criterr out on this case?
    restore_objects(buf,player_struct.inventory, NUM_GENERAL_SLOTS);
-   obj_load_art(FALSE);
+   obj_load_art(false);
    
    // reset renderer data
    game_fr_reparam(-1,-1,-1);
@@ -302,7 +303,7 @@ uchar go_to_different_level(int targlevel)
    {
       extern void clear_digi_fx();
       extern void stop_asynch_digi_fx();
-      saveload_static = FALSE;
+      saveload_static = false;
       fr_global_mod_flag(0,FR_SOLIDFR_MASK);
       if (music_on)
       	start_music();
@@ -352,14 +353,14 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
    int ovnum = OBJECT_VERSION_NUMBER;
    int mvnum = MISC_SAVELOAD_VERSION_NUMBER;
    ObjLoc plr_loc;
-   uchar make_player = FALSE;
+   uchar make_player = false;
    State player_edms;
    int verify_cookie = 0;
 
 //KLC - Mac cursor showing at this time   begin_wait();
 
    // make pathfinding state stable by fulfilling PF requests
-   check_requests(FALSE);
+   check_requests(false);
 
 /* KLC - not needed for game
    if (id_num - LEVEL_ID_NUM < ANOTHER_DEFINE_FOR_NUM_LEVELS)
@@ -369,7 +370,7 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
 */
 
    // do not ecology while player is being destroyed and created.
-   trigger_check=FALSE;
+   trigger_check=false;
 
    // save off physics stuff
    EDMS_get_state(objs[PLAYER_OBJ].info.ph, &player_edms);
@@ -377,7 +378,7 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
    {
       plr_loc = objs[PLAYER_OBJ].loc;
       obj_destroy(PLAYER_OBJ);
-      make_player = TRUE;
+      make_player = true;
    }
 
    // Read appropriate state modifiers
@@ -386,7 +387,7 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
    AdvanceProgress();
 
    // Open the file we're going to save into.
-   fd = ResEditFile(fSpec,TRUE);
+   fd = ResEditFile(fSpec,true);
    if (fd < 0)
    {
 //KLC      end_wait();
@@ -491,7 +492,7 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
    
    if (make_player)
       obj_create_player(&plr_loc);
-   trigger_check=TRUE;
+   trigger_check=true;
 //   if (flush_mem)
 //      load_dynamic_memory(DYNMEM_PARTIAL);
    EDMS_holistic_teleport(objs[PLAYER_OBJ].info.ph, &player_edms);
@@ -787,14 +788,14 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    int         i, idx = 0, fd, version;
    LGRect      bounds;
    errtype     retval = OK;
-   bool        make_player = FALSE;
+   bool        make_player = false;
    ObjLoc      plr_loc;
    ObjID       oid;
    char        *schedvec;        //KLC - don't need an array.  Only one in map.
 // State          player_edms;
    curAMap  saveAMaps[NUM_O_AMAP];
    uchar       savedMaps;
-   bool        do_anims = FALSE;
+   bool        do_anims = false;
 
    // HAX HAX HAX force level number
    //id_num = 0x1006;
@@ -803,12 +804,12 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 
 //KLC - Mac cursor showing at this time   begin_wait();
    free_dynamic_memory(dynmem_mask);
-   trigger_check = FALSE;
+   trigger_check = false;
    if (PLAYER_OBJ != OBJ_NULL)
    {
       plr_loc = objs[PLAYER_OBJ].loc;
       obj_destroy(PLAYER_OBJ);
-      make_player = TRUE;
+      make_player = true;
    }
    AdvanceProgress();
 
@@ -825,7 +826,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
       printf("Could not load map file %d\n",retval);
       if (make_player)
          obj_create_player(&plr_loc);
-      trigger_check=TRUE;
+      trigger_check=true;
       load_dynamic_memory(dynmem_mask);
 //KLC    end_wait();
 
@@ -862,7 +863,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    physics_init();   
 
    // Read in the global fullmap (without disrupting schedule vec ptr)
-   schedule_init(&global_fullmap->sched[0],400,FALSE);
+   schedule_init(&global_fullmap->sched[0],400,false);
    schedvec = global_fullmap->sched[0].queue.vec;     // KLC - Only one schedule, so just save it.
    
    // convert_from is the version we are coming from.
@@ -882,7 +883,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    if (global_fullmap->sched[0].queue.fullness > 0)      // KLC - no need to read in vec if none there.
    {
       // HAX HAX HAX will there ever be more than 400 schedules?
-      schedule_init(&global_fullmap->sched[0],400,FALSE);
+      schedule_init(&global_fullmap->sched[0],400,false);
       schedvec = malloc(400 * sizeof(SchedEvent));
       REF_READ(id_num, idx++, *schedvec);
       global_fullmap->sched[0].queue.vec = schedvec;
@@ -892,7 +893,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
       idx++;
 
    //KLC��� Big hack!  Force the schedule to growable.
-   global_fullmap->sched[0].queue.grow = TRUE;
+   global_fullmap->sched[0].queue.grow = true;
 
    REF_READ(id_num, idx++, loved_textures);
 /*
@@ -1478,14 +1479,14 @@ obj_out:
    bounds.lr.x = global_fullmap->x_size;
    bounds.lr.y = global_fullmap->y_size;
 
-   rendedit_process_tilemap(global_fullmap, &bounds, TRUE);
+   rendedit_process_tilemap(global_fullmap, &bounds, true);
 
    for (i=0;i<MAX_OBJ;i++)
       physics_handle_id[i]=OBJ_NULL;
    physics_handle_max=-1;
 
    if (anim_counter == 0)
-      do_anims = TRUE;
+      do_anims = true;
 
    FORALLOBJS(oid)
    {
@@ -1506,14 +1507,14 @@ obj_out:
                obj_screen_animate(oid);
                break;
             default:
-               add_obj_to_animlist(oid, REPEAT_3D(ObjProps[OPNUM(oid)].bitmap_3d),FALSE,FALSE,0,NULL,NULL,0);
+               add_obj_to_animlist(oid, REPEAT_3D(ObjProps[OPNUM(oid)].bitmap_3d),false,false,0,NULL,NULL,0);
                break;
          }
       }
 
       objs[oid].info.ph = -1;
       if (objs[oid].loc.x != 0xFFFF) {
-         obj_move_to(oid, &objs[oid].loc,TRUE);
+         obj_move_to(oid, &objs[oid].loc,true);
       }
       
       // sleep the object (this may become "settle" the object)
@@ -1549,7 +1550,7 @@ out:
    reset_pathfinding();
    old_bits = -1;
 
-   trigger_check = TRUE;
+   trigger_check = true;
 
    printf("load_dynamic_memory\n");
    load_dynamic_memory(dynmem_mask);

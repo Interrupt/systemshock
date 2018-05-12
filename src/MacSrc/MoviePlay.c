@@ -56,7 +56,7 @@ Rect 				gMovieBox;						// Rectangle of the movie box.
 CTabHandle		gCTab[16];						// Color tables for the movie.
 long				gChgTime[16];					// When to change colors.
 long				gPalIndex;							// Which palette to change to.
-Boolean			gShowSubs;
+bool			gShowSubs;
 SubtitleEntry	*gCurrSub;
 
 //--------------------
@@ -71,7 +71,7 @@ void GetNextSubtitle(void);
 //------------------------------------------------------------------------------------
 //		Play a movie with palette changes, either cut-scenes or v-mail.
 //------------------------------------------------------------------------------------
-void PlayCutScene(FSSpec *movieSpec, Boolean showSubs, Boolean allowHalt)
+void PlayCutScene(FSSpec *movieSpec, bool showSubs, bool allowHalt)
 {
 	/*RGBColor			black = {0, 0, 0};
 	RGBColor			white = {0xffff, 0xffff, 0xffff};
@@ -113,7 +113,7 @@ void PlayCutScene(FSSpec *movieSpec, Boolean showSubs, Boolean allowHalt)
 	{
 		short 		movieResID = 0;
 		Str255 		movieName;
-		Boolean 		wasChanged;
+		bool 		wasChanged;
 																			// Load the 'moov' resource.
 		err = NewMovieFromFile(&theMovie, movieResFile, &movieResID,
 						movieName, newMovieActive, &wasChanged);
@@ -348,7 +348,7 @@ void PlayVMail(FSSpec *movieSpec, short orgx, short orgy)
 		{
 			short 		movieResID = 0;
 			Str255 		movieName;
-			Boolean 		wasChanged;
+			bool 		wasChanged;
 																				// Load the 'moov' resource.
 			err = NewMovieFromFile(&theMovie[i], movieResFile, &movieResID,
 							movieName, newMovieActive, &wasChanged);
@@ -446,7 +446,7 @@ void PlayStartupMovie(FSSpec *movieSpec, short orgx, short orgy)
 	{
 		short 		movieResID = 0;
 		Str255 		movieName;
-		Boolean 		wasChanged;
+		bool 		wasChanged;
 																			// Load the 'moov' resource.
 		err = NewMovieFromFile(&theMovie, movieResFile, &movieResID,
 						movieName, newMovieActive, &wasChanged);

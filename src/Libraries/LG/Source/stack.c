@@ -96,10 +96,10 @@ uchar MemStackFree (MemStack *ms, void *ptr)
    if (ms->topptr < ptr)
    {
       Warning (("MemStackFree: freed in wrong order\n"));
-      return FALSE;
+      return false;
    }
 
    // Return ms->topptr to where it was when we allocated ptr: namely, ptr
    ms->topptr = ptr;
-   return TRUE;
+   return true;
 }

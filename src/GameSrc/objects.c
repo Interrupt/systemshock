@@ -59,6 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //////////////////////////////
 
+#include <stdbool.h>
 #include <string.h>
 
 #include "objects.h"
@@ -198,11 +199,11 @@ uchar ObjAndSpecGrab (ObjClass obclass, ObjID *id, ObjSpecID *specid)
 
 //	SpewReport (("ObjAndSpecGrab (class %d)\n", obclass));
 
-	if ((*id = ObjGrab ()) == OBJ_NULL) return FALSE;
+	if ((*id = ObjGrab ()) == OBJ_NULL) return false;
 	if ((*specid = ObjSpecGrab (obclass)) == OBJ_SPEC_NULL)
 	{
 		ObjFree (*id);
-		return FALSE;
+		return false;
 	}
 	objs[*id].obclass = obclass;
 	objs[*id].specID = *specid;
@@ -213,7 +214,7 @@ uchar ObjAndSpecGrab (ObjClass obclass, ObjID *id, ObjSpecID *specid)
 //	if (!ObjSysOkay())
 //		DebugString("Obj Sys bad after ObjAndSpecGrab");
 
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////
@@ -234,7 +235,7 @@ uchar ObjPlace (ObjID id, ObjLoc *loc)
 //	if (!ObjSysOkay())
 //		DebugString("Obj Sys bad after ObjPlace");
 
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////
@@ -252,7 +253,7 @@ ObjID ObjRefDel (ObjRefID ref)
 //	SpewReport (("ObjRefDel (ref %d)\n", ref));
 
 	ObjRefRem (ref);
-	tmp = ObjRefFree (ref, TRUE);
+	tmp = ObjRefFree (ref, true);
 
 // temp
 //	if (!ObjSysOkay())
@@ -348,7 +349,7 @@ uchar ObjDel (ObjID obj)
 //	if (!ObjSysOkay())
 //		DebugString("Obj Sys bad after ObjDel");
 
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////
@@ -456,13 +457,13 @@ found_bin_in_out: ;
 
 	for (i = 0; i < incount; i++)
 		if (!ObjRefMake (obj, in[i]))
-			return FALSE;
+			return false;
 
 // temp
 //	if (!ObjSysOkay())
 //		DebugString("Obj Sys bad after ObjUpdateLocs");
 
-	return TRUE;
+	return true;
 }
 
 
@@ -601,7 +602,7 @@ uchar ObjDeleteHashElem (ObjRefStateBin bin)
 	ObjHashElemID firstentry = OBJ_HASH_FUNC(bin);
 	ObjHashElemID entry, nextentry;
 
-	if (objHashTable[firstentry].ref == OBJ_REF_NULL) return FALSE;
+	if (objHashTable[firstentry].ref == OBJ_REF_NULL) return false;
 
 	// This should be true if we always move to the front of the list like above
 	if (ObjRefStateBinEqual(objRefs[objHashTable[firstentry].ref].state.bin, bin))
@@ -610,12 +611,12 @@ uchar ObjDeleteHashElem (ObjRefStateBin bin)
 		{
 			// This was the only one
 			objHashTable[firstentry].ref = OBJ_REF_NULL;
-			return TRUE;
+			return true;
 		}
 		objHashTable[firstentry].ref = objHashTable[nextentry].ref;
 		objHashTable[firstentry].next = objHashTable[nextentry].next;
 		ObjFreeHashEntry (nextentry);
-		return TRUE;
+		return true;
 	}
 
 	entry = firstentry;
@@ -626,12 +627,12 @@ uchar ObjDeleteHashElem (ObjRefStateBin bin)
 		{
 			objHashTable[entry].next = objHashTable[nextentry].next;
 			ObjFreeHashEntry (nextentry);
-			return TRUE;
+			return true;
 		}
 		entry = nextentry;
 		nextentry = objHashTable[entry].next;
 	}
-	return FALSE;
+	return false;
 }
 
 static int hash_i;
@@ -644,9 +645,9 @@ void ObjHashIteratorInit (void)
 uchar ObjHashIterator (ObjRefID *ref)
 {
 	while (hash_i < OBJ_HASH_ENTRIES && objHashTable[hash_i].ref == 0) hash_i++;
-	if (hash_i == OBJ_HASH_ENTRIES) return FALSE;
+	if (hash_i == OBJ_HASH_ENTRIES) return false;
 	*ref = objHashTable[hash_i++].ref;
-	return TRUE;
+	return true;
 }
 
 #define MAX_CHAIN_LENGTH 10 				// let's hope it gets no higher
@@ -719,19 +720,19 @@ uchar ObjSysOkay (void)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
 			DebugString("Invalid ID in free chain");		// cur
-			return FALSE;
+			return false;
 		}
 		if (objs[cur].active)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
 			DebugString("Active Obj in free chain");		// objs[cur]
-			return FALSE;
+			return false;
 		}
 		if (usedObj[cur] == OBJ_FREE)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
 			DebugString("Obj is free more than once");	// usedObj[cur]
-			return FALSE;
+			return false;
 		}
 		usedObj[cur] = OBJ_FREE;
 		cur = objs[cur].next;
@@ -749,19 +750,19 @@ uchar ObjSysOkay (void)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
 			DebugString("Invalid ID in Obj used chain");		// cur
-			return FALSE;
+			return false;
 		}
 		if (usedObj[cur] == OBJ_FREE)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
 			DebugString("Obj is free and used chain");		// cur
-			return FALSE;
+			return false;
 		}
 		if (usedObj[cur] == OBJ_USED)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
 			DebugString("Obj is used twice");		// cur
-			return FALSE;
+			return false;
 		}
 		usedObj[cur] = OBJ_USED;
 		cur = objs[cur].next;
@@ -773,7 +774,7 @@ uchar ObjSysOkay (void)
 		if (usedObj[cur] == 0)
 		{
 			DebugString("Obj is neither free nor used");		// cur
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -793,13 +794,13 @@ uchar ObjSysOkay (void)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
 			DebugString("Invalid ID in ObjRef free chain");		// cur
-			return FALSE;
+			return false;
 		}
 		if (usedRef[cur] == OBJ_FREE)
 		{
 //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
 			DebugString("ObjRef is free more than once");		// cur
-			return FALSE;
+			return false;
 		}
 		usedRef[cur] = OBJ_FREE;
 		cur = objRefs[cur].next;
@@ -819,12 +820,12 @@ uchar ObjSysOkay (void)
 			if (cur < 0 || cur >= head->size)
 			{
 				DebugString("Invalid ID (cur) in Class (i) free chain");		//
-				return FALSE;
+				return false;
 			}
 			if (usedObj[cur] == OBJ_FREE)
 			{
 				DebugString("Class (i) ObjSpec (cur) is free more than once");		//
-				return FALSE;
+				return false;
 			}
 			usedObj[cur] = OBJ_FREE;
 			cur = ((ObjSpec *) (head->data + cur * head->struct_size))->next;
@@ -835,17 +836,17 @@ uchar ObjSysOkay (void)
 			if (cur < 0 || cur >= head->size)
 			{
 				DebugString("Invalid ID (cur) in Class (i) used chain");		//
-				return FALSE;
+				return false;
 			}
 			if (usedObj[cur] == OBJ_FREE)
 			{
 				DebugString("Class (i) ObjSpec (cur) is free and used");		//
-				return FALSE;
+				return false;
 			}
 			if (usedObj[cur] == OBJ_USED)
 			{
 				DebugString("Class (i) ObjSpec (cur) is used twice");		//
-				return FALSE;
+				return false;
 			}
 			usedObj[cur] = OBJ_USED;
 			cur = ((ObjSpec *) (head->data + cur * head->struct_size))->next;
@@ -855,7 +856,7 @@ uchar ObjSysOkay (void)
 			if (usedObj[cur] == 0)
 			{
 				DebugString("Class (i) ObjSpec (cur) is neither free nor used");		//
-				return FALSE;
+				return false;
 			}
 		}
 	}
@@ -907,14 +908,14 @@ uchar ObjSysOkay (void)
 			{
 				ObjRefStateBinSprint (str, refbin);
 				DebugString("ObjRef (ref) is free and in map bin (str)");		//
-				return FALSE;
+				return false;
 			}
 
 			if (usedRef[ref] & OBJ_IN_MAP)
 			{
 				ObjRefStateBinSprint (str, refbin);
 				DebugString("ObjRef (ref) exists in two bins (one is str)");		//
-				return FALSE;
+				return false;
 			}
 
 			if (!ObjRefStateBinEqual (objRefs[ref].state.bin, refbin))
@@ -922,14 +923,14 @@ uchar ObjSysOkay (void)
 				ObjRefStateBinSprint (str, refbin);
 				ObjRefStateBinSprint (str2, objRefs[ref].state.bin);
 				DebugString("ObjRef (ref) thinks it is in (str2) but is in (str)");		//
-				return FALSE;
+				return false;
 			}
 
 			if (objRefs[ref].obj == OBJ_NULL)
 			{
 				ObjRefStateBinSprint (str, refbin);
 				DebugString("ObjRef (ref) in (str) points to null Obj");		//
-				return FALSE;
+				return false;
 			}
 
 			usedRef[ref] |= OBJ_IN_MAP;
@@ -960,18 +961,18 @@ uchar ObjSysOkay (void)
 			if (i == MAX_REFS_PER_OBJ)
 			{
 				DebugString("Too many ObjRefs refer to Obj (cur)");		//
-				return FALSE;
+				return false;
 			}
 
 			if (objRefs[ref].obj != cur)
 			{
 				DebugString("Obj (cur) points to ObjRef (ref) but not vice versa");		//
-				return FALSE;
+				return false;
 			}
 
 			for (j = 0; j < i; j++)
 				if (ObjRefStateBinEqual (refbins[j], objRefs[ref].state.bin))
-					return FALSE;
+					return false;
 
 			refbins[i++] = objRefs[ref].state.bin;
 			ref = objRefs[ref].nextref;
@@ -988,17 +989,17 @@ done_checking_refs:
 			if (objs[cur].obclass < 0 || objs[cur].obclass >= NUM_CLASSES)
 			{
 				DebugString("Obj (cur) has invalid obclass (objs[cur].obclass)");		//
-				return FALSE;
+				return false;
 			}
 
 			head = &objSpecHeaders[objs[cur].obclass];
 			data = head->data;
 
 			if (((ObjSpec *) (data + head->struct_size * objs[cur].specID))->bits.id != cur ||
-				 ((ObjSpec *) (data + head->struct_size * objs[cur].specID))->bits.tile == TRUE)
+				 ((ObjSpec *) (data + head->struct_size * objs[cur].specID))->bits.tile == true)
 			{
 				DebugString("Obj (cur) obclass-specific data does not point back to it");		//
-				return FALSE;
+				return false;
 			}
 		}
 	
@@ -1012,7 +1013,7 @@ done_checking_obj:
 #endif
 
 
-	return TRUE;
+	return true;
 }
 
 
@@ -1085,7 +1086,7 @@ uchar ObjFree (ObjID obj)
 //	}
 //})
 
-	objs[obj].active = FALSE;
+	objs[obj].active = false;
 
 	// take obj out of the used chain
 	if (objs[obj].prev == OBJ_NULL)
@@ -1100,7 +1101,7 @@ uchar ObjFree (ObjID obj)
 	objs[obj].next = objs[OBJ_NULL].next;
 	objs[OBJ_NULL].next = obj;
 
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////
@@ -1278,7 +1279,7 @@ uchar ObjSpecFree (ObjClass obclass, ObjSpecID id)
 	thisspec->next = spec0->headfree;
 	spec0->headfree = id;
 
-	return TRUE;
+	return true;
 }
 
 #ifdef COMPRESS_OBJSPECS
@@ -1293,7 +1294,7 @@ DBG_Check ({
 	if (obclass >= NUM_CLASSES)
 	{
 		Warning (("Invalid obclass %d in ObjSpecFree\n", obclass));
-		return FALSE;
+		return false;
 	}
 })
 
@@ -1314,7 +1315,7 @@ DBG_Check ({
 	thisspec->next = spec0->headfree;
 	spec0->headfree = id;
 
-	return TRUE;
+	return true;
 }
 #endif
 
@@ -1333,7 +1334,7 @@ DBG_Check ({
 	if (cls >= NUM_CLASSES)
 	{
 		Warning (("Invalid obclass %d in ObjSpecCopy\n", cls));
-		return FALSE;
+		return false;
 	}
 })
 
@@ -1348,7 +1349,7 @@ DBG_Check ({
 		LG_memcpy (data + head->struct_size * new + sizeof(ObjSpec),
 				  data + head->struct_size * old + sizeof(ObjSpec), size);
 	}
-	return TRUE;
+	return true;
 }
 #endif
 
@@ -1367,7 +1368,7 @@ void ObjRefRem (ObjRefID ref)
 //	SpewReport (("ObjRefRem (ref %d)\n", ref));
 
 #ifdef HASH_OBJECTS
-	if ((hash_entry = ObjGetHashElem (objRefs[ref].state.bin, FALSE)) == 0)
+	if ((hash_entry = ObjGetHashElem (objRefs[ref].state.bin, false)) == 0)
 	{
 		Warning (("Tried to remove ref %d not in hash table in ObjRefRem\n", ref));
 		return;
@@ -1445,7 +1446,7 @@ uchar ObjLinkMake (ObjRefID ref, ObjID obj)
 
 	// add the reference
 	objRefs[ref].obj = obj;
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////
@@ -1527,12 +1528,12 @@ uchar ObjRefAdd (ObjRefID ref, ObjRefState refstate)
 //})
 
 #ifdef HASH_OBJECTS
-   if ((hash_entry = ObjGetHashElem (refstate.bin, TRUE)) == 0)
+   if ((hash_entry = ObjGetHashElem (refstate.bin, true)) == 0)
 	{
 		char str[80];
 		ObjRefStateBinSprint (str, refstate.bin);
 		Warning (("Could not create hash entry at %s in ObjRefAdd\n", str));
-		return FALSE;
+		return false;
 	}
 	refhead = &objHashTable[hash_entry].ref;
 #else
@@ -1547,7 +1548,7 @@ uchar ObjRefAdd (ObjRefID ref, ObjRefState refstate)
 	ObjRefStateInfoCopy (refstate.info, objRefs[ref].state.info);
 #endif
 
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////
@@ -1576,20 +1577,20 @@ uchar ObjDelRefs (ObjID obj)
 
 	ref = objs[obj].ref;
 	if (ref == OBJ_REF_NULL)
-		return TRUE;
+		return true;
 
-	while (TRUE)
+	while (true)
 	{
 		nextref = objRefs[ref].nextref;
 		ObjRefRem (ref);
 //		objRefs[ref].obj = OBJ_NULL;
-		ObjRefFree (ref, TRUE);
+		ObjRefFree (ref, true);
 		if (ref == nextref) break;
 		ref = nextref;
 	}
 
 	objs[obj].ref = OBJ_REF_NULL;
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////
@@ -1633,5 +1634,5 @@ uchar ObjAndSpecFree (ObjID obj)
 //	}
 //})	
 
-	return TRUE;
+	return true;
 }

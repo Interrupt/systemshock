@@ -77,8 +77,8 @@ errtype play_vmail(byte vmail_no)
 		render_run();
 	
 	suspend_game_time();
-	time_passes = FALSE;
-	game_paused = TRUE;
+	time_passes = false;
+	game_paused = true;
 	
 	// Play the appropriate V-Mail.
 	{
@@ -119,11 +119,11 @@ errtype play_vmail(byte vmail_no)
 	inventory_draw_new_page(old_invent_page);
 	
 	resume_game_time();
-	game_paused = FALSE;
+	game_paused = false;
 	
 	// let the player wait before firing auto fire weapon
 	player_struct.auto_fire_click = player_struct.game_time + 60;
-	time_passes = TRUE;
+	time_passes = true;
 	
 	chg_set_flg(DEMOVIEW_UPDATE);
 	

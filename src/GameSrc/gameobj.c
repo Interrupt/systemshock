@@ -23,12 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/25 16:58:15 $
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h> // for memset
 
 #include "frcamera.h"
 #include "gameobj.h"
 
+#include "fix.h"
 #include "fr3d.h"
 #include "frintern.h"
 #include "frtables.h"
@@ -36,6 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "hud.h"
 #include "player.h"
+#include "res.h"
 #include "colors.h"
 #include "tilemap.h"
 #include "map.h"
@@ -626,10 +629,10 @@ void show_obj(ObjID cobjid)
 #endif
    char scale = 0;
    uchar type = 0xFF;
-   uchar use_cache = FALSE;
+   uchar use_cache = false;
    Ref ref = 0;
    int obj_type, tluc_val=0xFF, index=0, loc_h;
-   uchar light_me = TRUE;
+   uchar light_me = true;
    extern cams objmode_cam;
    extern uchar obj_too_smart(ObjID id);
    extern void check_up(int num);
@@ -907,7 +910,7 @@ void show_obj(ObjID cobjid)
                      trgp=tpdata->bits+tele_bm.h*tele_bm.w;
                      LG_memcpy(dstp,srcp,trgp-srcp);
 
-                     _fr_draw_bitmap(&tele_bm,_fdt_dist,FALSE,anch.ul.x,anch.ul.y);
+                     _fr_draw_bitmap(&tele_bm,_fdt_dist,false,anch.ul.x,anch.ul.y);
                      release_critter_bitmap_fast(ref);
                      return;
                   }
@@ -980,7 +983,7 @@ void show_obj(ObjID cobjid)
                   default:
          		      tpdata=bitmap_from_tpoly_data(o3drep, (ubyte *) &scale, &index, &type, &ref);
                      if (ref != 0)
-                        use_cache = TRUE;
+                        use_cache = true;
                      break;
                }
                switch (ID2TRIP(cobjid))
@@ -996,7 +999,7 @@ void show_obj(ObjID cobjid)
                   case SUPERSCREEN_TRIPLE:
                   case BIGSCREEN_TRIPLE:
                      if ((!curr_clut_table) && (objBigstuffs[_fr_cobj->specID].data2 != DESTROYED_SCREEN_ANIM_BASE + 3))
-                        light_me = FALSE;
+                        light_me = false;
                      break;
                }
 	         break;
@@ -1032,7 +1035,7 @@ void show_obj(ObjID cobjid)
 		      if (ref == 0)
                tpdata = bitmaps_3d[o3drep];
             else if (ref != 0xFFFFFFFF)
-               use_cache = TRUE;
+               use_cache = true;
             break;
    	   }
          // scale us

@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __RENDTOOL_SRC
 
+#include <stdbool.h>
+
 #include "map.h"
 #include "frintern.h"
 
@@ -111,9 +113,9 @@ void free_model_vtexts(char model_num);
 // It just works.  Note its simplistic beauty.	I love this job.
 void rend_mouse_hide(void)
 {
-	extern Boolean		DoubleSize;
+	extern bool DoubleSize;
 	extern grs_canvas	gDoubleSizeOffCanvas;
-	extern Boolean		view360_is_rendering;
+	extern bool view360_is_rendering;
 		
 	MouseLock++;
 	if (MouseLock==1 && CurrentCursor != NULL)
@@ -196,16 +198,16 @@ uchar game_obj_block_home(void *vmptr, uchar *_sclip, int *loc)
 			  if (_sclip[1]==FMK_INT_WW)
 			  {
 			     if (cobj->loc.x<(fr_camera_last[0]>>8))
-			      { _me_subclip(mptr)|=_sclip[1]; return TRUE; }
+			      { _me_subclip(mptr)|=_sclip[1]; return true; }
 			  }
 			  else
 			     if (cobj->loc.x>(fr_camera_last[0]>>8))
-				   { _me_subclip(mptr)|=_sclip[1]; return TRUE; }
+				   { _me_subclip(mptr)|=_sclip[1]; return true; }
 //		    mprintf("Guess not\n");
-			  return FALSE;
+			  return false;
 		  }
 		  else
-		   { _me_subclip(mptr)|=_sclip[1]; /* mprintf("xsubclip standard..."); */ return TRUE; }
+		   { _me_subclip(mptr)|=_sclip[1]; /* mprintf("xsubclip standard..."); */ return true; }
 	       }
 	       else
 	       {
@@ -223,13 +225,13 @@ uchar game_obj_block_home(void *vmptr, uchar *_sclip, int *loc)
 		  }
 		  else
 		   { _me_subclip(mptr)|=_sclip[0]; } // mprintf("ysubclip standard results.."); }
-		  return FALSE;     // y direction
+		  return false;     // y direction
 	       }
 	    }
       }
       curORef = objRefs[curORef].next;
    }
-   return FALSE;     // for now, no blockage in home square
+   return false;     // for now, no blockage in home square
 }
 
 uchar game_obj_block(void *vmptr, uchar *_sclip, int *loc)
@@ -258,20 +260,20 @@ uchar game_obj_block(void *vmptr, uchar *_sclip, int *loc)
 	       if ((cobj->loc.h+0x20)&0x40)
 	       {
 		       _me_subclip(mptr)|=_sclip[1];
-		       return TRUE;	 // x direction
+		       return true;	 // x direction
 	       }
 	       else
 	       {
 		  _me_subclip(mptr)|=_sclip[0];
 //		    mprintf("Set %d %d to %x from sclip %x\n",
 //			     objRefs[curORef].state.bin.sq.x,objRefs[curORef].state.bin.sq.y,me_subclip(mptr),_sclip[0]);
-		  return FALSE;     // y direction
+		  return false;     // y direction
 	       }
 	    }
       }
       curORef = objRefs[curORef].next;
    }
-   return FALSE;
+   return false;
 }
 
 
@@ -304,17 +306,17 @@ uchar draw_tmap_p(int ptcnt)
        {
 		 // texture map, don't draw, just eval
 		 star_empty(ptcnt,_fdt_tmppts);
-		 return TRUE;
+		 return true;
        } 
       else 
        {
 		 star_poly(ptcnt,_fdt_tmppts);
-		 return FALSE;
+		 return false;
 		 //g3_draw_poly(152,ptcnt,_fdt_tmppts);
       }
    }
 
-   return TRUE;
+   return true;
 }
 
 
@@ -519,7 +521,7 @@ void rendedit_process_tilemap(FullMap* fmap, LGRect* r, uchar newMap)
       fmap=global_fullmap;
    if (newMap)
       fr_compile_restart(fmap);
-   fr_compile_rect(fmap,r->ul.x,r->ul.y,r->lr.x,r->lr.y,FALSE);
+   fr_compile_rect(fmap,r->ul.x,r->ul.y,r->lr.x,r->lr.y,false);
 }
 
 // lets move this to the tilemap, eh?
@@ -528,7 +530,7 @@ void fauxrend_camera_setfunc(TileCamera* tc)
    tc->x = last_coor(EYE_X);
    tc->y = last_coor(EYE_Y);
    tc->theta = last_ang(EYE_H)-FIXANG_PI/2;
-   tc->show = TRUE;
+   tc->show = true;
 }
 
 

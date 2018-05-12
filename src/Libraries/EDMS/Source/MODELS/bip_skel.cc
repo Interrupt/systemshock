@@ -28,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////#include <mout.h>
 #endif
 
-#include "EDMS_int.h"
-#include "EDMS_vt.h"
+#include "edms_int.h"
+#include "edms_vt.h"
 
 
 

@@ -24,6 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
+
+#include "event.h"
 #include "mfdint.h"
 #include "mfdext.h"
 #include "mfddims.h"
@@ -73,7 +76,7 @@ uchar gear_active(ObjID obj)
          return (objs[obj].info.inst_flags & CLASS_INST_FLAG) != 0;
          break;
    }
-   return TRUE;
+   return true;
 }
 
 #define GEAR_BUTTON_H 13
@@ -117,14 +120,14 @@ void mfd_gear_expose(MFD* mfd, ubyte control)
 
       if (active < 0 || active >= NUM_GENERAL_SLOTS)
       {
-         mfd_notify_func(MFD_EMPTY_FUNC,MFD_ITEM_SLOT,TRUE,MFD_EMPTY,FALSE);
+         mfd_notify_func(MFD_EMPTY_FUNC,MFD_ITEM_SLOT,true,MFD_EMPTY,false);
          goto cleanup_et_return;
       }
       obj = player_struct.inventory[active];
 
       if (obj == OBJ_NULL)
       {
-         mfd_notify_func(MFD_EMPTY_FUNC,MFD_ITEM_SLOT,TRUE,MFD_EMPTY,FALSE);
+         mfd_notify_func(MFD_EMPTY_FUNC,MFD_ITEM_SLOT,true,MFD_EMPTY,false);
          goto cleanup_et_return;
       }
       else
@@ -161,12 +164,12 @@ cleanup_et_return:
 
 uchar mfd_gear_handler(MFD *m, uiEvent *e)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    int active = player_struct.actives[ACTIVE_GENERAL];
    LGRect r = { {0, GEAR_BUTTON_Y},{MFD_VIEW_WID, GEAR_BUTTON_Y+GEAR_BUTTON_H}};
    
    if ((e->subtype & (MOUSE_LDOWN|UI_MOUSE_LDOUBLE)) == 0)
-      return FALSE;
+      return false;
    if (active >= 0 && active < NUM_GENERAL_SLOTS)
    {
       ObjID obj = player_struct.inventory[active];
@@ -177,8 +180,8 @@ uchar mfd_gear_handler(MFD *m, uiEvent *e)
       RECT_OFFSETTED_RECT(&r,m->rect.ul,&r);
       if (RECT_TEST_PT(&r,e->pos))
       {
-         object_use(obj,TRUE,OBJ_NULL);
-         retval = TRUE;
+         object_use(obj,true,OBJ_NULL);
+         retval = true;
       }
    }
    return retval;

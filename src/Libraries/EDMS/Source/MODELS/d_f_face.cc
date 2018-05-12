@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "fixpp.h"
-#include "EDMS_int.h"
+#include "edms_int.h"
 
 
 
@@ -39,7 +39,7 @@ fix     EDMS_Dirac_basis[9];
 
 //	Data...
 //	=======
-#include "EDMS_mod.h"
+#include "edms_mod.h"
 
 
 //	Structs...

@@ -47,13 +47,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Externs
 //--------------------
-extern Boolean	gPlayingGame;
+extern bool	gPlayingGame;
 extern char		which_lang;
 extern int 			_fr_global_detail;
 extern frc 			*svga_render_context;
 extern uchar 		sfx_on;
-extern Boolean	DoubleSize;
-extern Boolean	SkipLines;
+extern bool	DoubleSize;
+extern bool	SkipLines;
 
 void start_music(void);
 void stop_music(void);
@@ -233,7 +233,7 @@ void DoSoundOptionsDlg(void)
 	
 	if (itemhit == kBtnOK)																// If user clicked OK, then
 	{
-		Boolean	musicChanged = (gShockPrefs.soBackMusic != localPrefs.soBackMusic);
+		bool	musicChanged = (gShockPrefs.soBackMusic != localPrefs.soBackMusic);
 		
 		gShockPrefs = localPrefs;														// Save changes in global prefs struct
 
@@ -249,7 +249,7 @@ void DoSoundOptionsDlg(void)
 					if (mlimbs_status == 0)													// If not enough memory
 					{
 						StringAlert(17);														// tell the user
-						gShockPrefs.soBackMusic = FALSE;								// and reset the music back off
+						gShockPrefs.soBackMusic = false;								// and reset the music back off
 					}
 					else
 						MacTuneKillCurrentTheme();										// but don't start playing just yet.
@@ -262,7 +262,7 @@ void DoSoundOptionsDlg(void)
 				if (MacTuneInit() != 0)														// If not enough memory to start music
 				{
 					StringAlert(17);															// tell the user
-					gShockPrefs.soBackMusic = FALSE;									// and reset the music back off
+					gShockPrefs.soBackMusic = false;									// and reset the music back off
 				}
 				MacTuneShutdown();
 			}
@@ -326,7 +326,7 @@ void DoGraphicsOptionsDlg(void)
 	GetDItem(dlog, kPopDetail, &itype, &hand, &r);
 	SetDItem(dlog, kPopDetail, itype, (Handle)popMenuProcPtr, &r);
 	
-	gSliderDimmed = FALSE;
+	gSliderDimmed = false;
 	gSliderLastPos = localPrefs.doGamma;
 	SetupSlider();
 	sliderProcPtr = NewUserItemProc(DrawSlider);							// Set up the "Gamma" slider
@@ -365,7 +365,7 @@ void DoGraphicsOptionsDlg(void)
 			GetDItem(dlog, kChkSkipLines, &itype, &hand, &r);					// Adjust "Skip even lines" checkbox
 			if (localPrefs.doResolution == 0 && localPrefs.doUseQD)				// If switched to Hires and skip was on,
 			{
-				localPrefs.doUseQD = FALSE;												// turn skipping off,
+				localPrefs.doUseQD = false;												// turn skipping off,
 				SetCtlValue((ControlHandle)hand, 0);									// and update the checkbox.
 			}
 			HiliteControl((ControlHandle)hand, 											// Enable/disable the checkbox
@@ -401,7 +401,7 @@ void DoGraphicsOptionsDlg(void)
 		
 	if (itemhit == kBtnOK)																// If user clicked OK, then
 	{
-		Boolean	resChanged = (gShockPrefs.doResolution != localPrefs.doResolution);
+		bool	resChanged = (gShockPrefs.doResolution != localPrefs.doResolution);
 
 		gShockPrefs = localPrefs;														// Save changes in global prefs struct
 		SavePrefs(kPrefsResID);														// and save to prefs file
@@ -439,7 +439,7 @@ void DoGraphicsOptionsDlg(void)
 //------------------------------------------------------------------------------------
 //  Show and handle the New Game dialog.
 //------------------------------------------------------------------------------------
-Boolean DoNewGameDlg(void)
+bool DoNewGameDlg(void)
 {
 	GrafPtr				savePort;
 	DialogPtr			dlog;
@@ -451,7 +451,7 @@ Boolean DoNewGameDlg(void)
 	short					itype, itemhit;
 	Point					tempP;
 	short					sel, cursel;
-	Boolean				ret = FALSE;
+	bool				ret = false;
 	ModalFilterUPP	stdFilterProcPtr;
 	Str255				name;
 	int					 i;
@@ -535,7 +535,7 @@ Boolean DoNewGameDlg(void)
 		for (i = 0; i < 4; i++)																// save the difficulty settings,
 			player_struct.difficulty[i] = gNewGameSel[i]-1;
 		strcpy(player_struct.name, p2cstr(name));								// and the player name,
-		ret = TRUE;																			// and tell it's ok to go on.
+		ret = true;																			// and tell it's ok to go on.
 	}
 		
 	DisposeRoutineDescriptor(stdFilterProcPtr);								// Dispose of user item UPPs
@@ -736,6 +736,6 @@ void Pstrcat(StringPtr dest, ConstStr255Param src)
 {
 	long	sLen = min(*src, 255 - *dest);
 	
-	BlockMove(src+1, dest + *dest + 1, sLen);
+	memmove(dest + *dest + 1, src + 1, sLen);
 	*dest += sLen;
 }

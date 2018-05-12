@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
 //#include <dos.h>
-#include "EDMS_Int.h"					//This is the model type library. It is universal.
+#include "edms_int.h"					//This is the model type library. It is universal.
 #include "idof.h"
 
 //#ifdef EDMS_SHIPPABLE
@@ -94,7 +94,7 @@ void deadly_idof( int object )
 	ff_terrain( A[object][0][0],
 		    A[object][1][0],
 		    A[object][2][0],
-          FALSE,
+          false,
 		    &TFF );
 
 

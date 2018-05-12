@@ -187,7 +187,7 @@ void critical_error(short code)
 	
 	sprintf(buf, "A fatal error has occurred in System Shock.  Error code %d.", code);
 	len = strlen(buf);																	// Convert to p-string.
-	BlockMove(buf, buf+1, 255);
+	memmove(buf+1, buf, 255);
 	buf[0] = len;
 	
 	s = criterr_type_messages[CLASS(code)];									// Specific error message.
@@ -197,7 +197,7 @@ void critical_error(short code)
 		if (code_messages[i].code == code)
 			strcat(explain, code_messages[i].message);
 	len = strlen(explain);																// Convert to p-string.
-	BlockMove(explain, explain+1, 255);
+	memmove(explain+1, explain, 255);
 	explain[0] = len;
 	
 	ParamText((uchar *)buf, (uchar *)explain, "", "");			// Show the error.

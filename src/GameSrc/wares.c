@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
 #include <string.h>
 
 #include "wares.h"
@@ -209,7 +210,7 @@ void use_ware(int waretype, int num)
       if(waretype==WARE_HARD)
          ecost=energy_cost(num);
 
-      if (wares[num].turnoff) wares[num].turnoff(TRUE,TRUE);
+      if (wares[num].turnoff) wares[num].turnoff(true,true);
       switch (num)
       {
          case HARDWARE_360:
@@ -227,7 +228,7 @@ void use_ware(int waretype, int num)
    else {                                   // we're turning a ware on
 
       // Turn on the durned thing
-      if (wares[num].turnon) wares[num].turnon(TRUE,TRUE);
+      if (wares[num].turnon) wares[num].turnon(true,true);
 
       // note that the energy_cost function may use state which is
       // dependent on the ware being on to figure out the correct
@@ -283,7 +284,7 @@ void use_ware(int waretype, int num)
    }
    if (_current_loop <= FULLSCREEN_LOOP) 
       chg_set_flg(INVENTORY_UPDATE);
-   mfd_notify_func(NOTIFY_ANY_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,TRUE);
+   mfd_notify_func(NOTIFY_ANY_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,true);
    return;
 }
 
@@ -297,7 +298,7 @@ void hardware_closedown(uchar visible)
 //      if (i != HARDWARE_FULLSCREEN)
          if (WareActive(player_struct.hardwarez_status[i]))
             if (HardWare[i].turnoff != NULL)
-               HardWare[i].turnoff(visible,FALSE);
+               HardWare[i].turnoff(visible,false);
    }
 }
 
@@ -309,7 +310,7 @@ void hardware_startup(uchar visible)
 //      if (i != HARDWARE_FULLSCREEN)
          if (WareActive(player_struct.hardwarez_status[i]))
             if (HardWare[i].turnon != NULL)
-               HardWare[i].turnon(visible,FALSE);
+               HardWare[i].turnon(visible,false);
    }
 }
 
@@ -483,7 +484,7 @@ void bioware_turnon(uchar visible, uchar real_s)
    int i;
    if (visible)
    {
-      mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, TRUE, MFD_FLASH, TRUE);
+      mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, true, MFD_FLASH, true);
       i =  mfd_grab_func(MFD_BIOWARE_FUNC,MFD_INFO_SLOT);
       mfd_change_slot(i,MFD_INFO_SLOT);
    }
@@ -500,7 +501,7 @@ void bioware_turnon(uchar visible, uchar real_s)
 void bioware_turnoff(uchar visible, uchar real_stop)
 {
    if (real_stop && player_struct.mfd_all_slots[MFD_INFO_SLOT] == MFD_BIOWARE_FUNC)
-      mfd_notify_func(MFD_EMPTY_FUNC, MFD_INFO_SLOT, TRUE, MFD_EMPTY, TRUE);
+      mfd_notify_func(MFD_EMPTY_FUNC, MFD_INFO_SLOT, true, MFD_EMPTY, true);
 
    return;
 }
@@ -512,7 +513,7 @@ void bioware_turnoff(uchar visible, uchar real_stop)
 
 void bioware_effect(void)
 {
-   mfd_notify_func(MFD_BIOWARE_FUNC,MFD_INFO_SLOT,FALSE,MFD_ACTIVE,FALSE);
+   mfd_notify_func(MFD_BIOWARE_FUNC,MFD_INFO_SLOT,false,MFD_ACTIVE,false);
 }
 
 
@@ -673,7 +674,7 @@ void lamp_turnon(uchar visible, uchar real_s)
    if (visible)
    {
       _frp_light_bits_set(LIGHT_BITS_CAM);
-      mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
+      mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
    }
 }
 
@@ -690,7 +691,7 @@ void lamp_turnoff(uchar visible, uchar real_stop)
       _frp_light_bits_clear(LIGHT_BITS_CAM);
       chg_set_flg(_current_3d_flag);
       if (real_stop)
-         mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
+         mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
    }
 }
 
@@ -705,8 +706,8 @@ uchar lantern_change_setting_hkey(short key, ulong context, void* data)
    s=LAMP_SETTING(s);
    if(s==0 && on) {
       use_ware(WARE_HARD,n);
-      mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
-      return TRUE;
+      mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
+      return true;
    }
 
    s=(s+v-1)%v; // decrement current setting
@@ -714,9 +715,9 @@ uchar lantern_change_setting_hkey(short key, ulong context, void* data)
 
    if(!on)
       use_ware(WARE_HARD,n);
-   mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
+   mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
 
-   return TRUE;
+   return true;
 }
 
 //--------------------------
@@ -755,15 +756,15 @@ void shield_toggle(uchar visible, uchar real)
    {
       if (s & WARE_ON)
       {
-         set_shield_raisage(TRUE);
+         set_shield_raisage(true);
          play_digi_fx(SFX_SHIELD_UP,1);
       }
       else
       {
-         set_shield_raisage(FALSE);
+         set_shield_raisage(false);
          play_digi_fx(SFX_SHIELD_DOWN,1);
       }
-      mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
+      mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
    }
    shield_set_absorb();
 }
@@ -782,8 +783,8 @@ uchar shield_change_setting_hkey(short key, ulong context, void* data)
    s=LAMP_SETTING(s);
    if(s==0 && on) {
       use_ware(WARE_HARD,n);
-      mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
-      return TRUE;
+      mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
+      return true;
    }
 
    s=(s+v-1)%v; // decrement current setting
@@ -791,9 +792,9 @@ uchar shield_change_setting_hkey(short key, ulong context, void* data)
 
    if(!on)
       use_ware(WARE_HARD,n);
-   mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
+   mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, false);
 
-   return TRUE;
+   return true;
 }
 
 
@@ -840,7 +841,7 @@ void motionware_update(uchar visible, uchar real, uchar on)
    if (visible)
    {
       Pelvis elvis;
-      mfd_notify_func(MFD_MOTION_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, TRUE);
+      mfd_notify_func(MFD_MOTION_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, true);
       EDMS_get_pelvis_parameters(PLAYER_PHYSICS,&elvis);
       switch(motionware_mode)
       {
@@ -864,12 +865,12 @@ void motionware_update(uchar visible, uchar real, uchar on)
 
 void motionware_turnon(uchar visible, uchar real)
 {
-   motionware_update(visible, real, TRUE);
+   motionware_update(visible, real, true);
 }
 
 void motionware_turnoff(uchar visible, uchar real)
 {
-   motionware_update(visible, real, FALSE);
+   motionware_update(visible, real, false);
 }
 
 
@@ -881,7 +882,7 @@ void activate_jumpjets(fix* xcntl, fix* ycntl, fix* zcntl);
 static short jumpjet_controls[] = { -25, -50, -75};
 static fix   jumpjet_thrust_scales[] = { FIX_UNIT/64, FIX_UNIT/32, FIX_UNIT/16};
 
-uchar jumpjets_active = FALSE;
+uchar jumpjets_active = false;
 
 // modifies z control based on jumpject ware. 
 void activate_jumpjets(fix* xcntl, fix* ycntl, fix* zcntl)
@@ -893,7 +894,7 @@ void activate_jumpjets(fix* xcntl, fix* ycntl, fix* zcntl)
    ubyte v = player_struct.hardwarez[n];
    ubyte s = player_struct.hardwarez_status[n];
    
-   jumpjets_active = FALSE;
+   jumpjets_active = false;
    if ((s & WARE_ON) == 0 || player_struct.energy == 0)
       return;
    ecost = energy_cost_vec[n][v-1] * player_struct.deltat + player_struct.jumpjet_energy_fraction;
@@ -905,7 +906,7 @@ void activate_jumpjets(fix* xcntl, fix* ycntl, fix* zcntl)
       *zcntl = (*zcntl)*edrain/ecost;
    *ycntl = fix_mul(*ycntl,jumpjet_thrust_scales[v-1]);
    *xcntl = 0;
-   jumpjets_active = TRUE;
+   jumpjets_active = true;
 }
 
 //-----------------------
@@ -913,7 +914,7 @@ void activate_jumpjets(fix* xcntl, fix* ycntl, fix* zcntl)
 //-----------------------
 void fullscreen_turnon(uchar visible, uchar real_start);
 void fullscreen_turnoff(uchar visible, uchar real_start);
-extern Boolean	DoubleSize;
+extern bool DoubleSize;
 
 void fullscreen_turnon(uchar visible, uchar real_s)
 {
@@ -996,11 +997,11 @@ void decoy_turnon(uchar visible, uchar real_start)
    if (real_start)
    {
       if (cspace_decoy_obj != OBJ_NULL)
-         decoy_turnoff(TRUE,TRUE);
+         decoy_turnoff(true,true);
       cspace_decoy_obj = obj_create_base(TARGET_TRIPLE);
       if (cspace_decoy_obj != OBJ_NULL)
       {
-         obj_move_to(cspace_decoy_obj, &objs[PLAYER_OBJ].loc, FALSE);
+         obj_move_to(cspace_decoy_obj, &objs[PLAYER_OBJ].loc, false);
          cspace_effect_times[CS_DECOY_EFF] = player_struct.game_time + cspace_effect_durations[CS_DECOY_EFF];
          if (real_start)
          {
@@ -1033,7 +1034,7 @@ void recall_turnon(uchar visible, uchar real_start)
    if (visible && real_start)
    {
       player_struct.softs.misc[SOFTWARE_RECALL]--;
-      obj_move_to(PLAYER_OBJ, &recall_objloc, TRUE);
+      obj_move_to(PLAYER_OBJ, &recall_objloc, true);
       chg_set_flg(INVENTORY_UPDATE);
       play_digi_fx(SFX_RECALL,1);
    }

@@ -51,24 +51,24 @@ errtype render_run(void);
 extern LGRect* rendrect;
 
 #ifdef __RENDER_SRC
-uchar fr_texture           = TRUE;
-uchar fr_txt_walls         = TRUE;
-uchar fr_txt_floors        = TRUE;
-uchar fr_txt_ceilings      = TRUE;
-uchar fr_lights_out        = FALSE;
-uchar fr_lighting          = TRUE;
-uchar fr_play_lighting     = FALSE;
-uchar fr_normal_lights     = TRUE;
+uchar fr_texture           = true;
+uchar fr_txt_walls         = true;
+uchar fr_txt_floors        = true;
+uchar fr_txt_ceilings      = true;
+uchar fr_lights_out        = false;
+uchar fr_lighting          = true;
+uchar fr_play_lighting     = false;
+uchar fr_normal_lights     = true;
 int  fr_detail_value      = 100;
 int  fr_drop[TM_SIZE_CNT] ={1,4,10};
 int  fr_view_radius       = 10;
 int  fr_clear_color       = 0;
-uchar fr_show_tilecursor   = FALSE;
-uchar fr_cont_tilecursor   = FALSE;
-uchar fr_show_all          = TRUE;
+uchar fr_show_tilecursor   = false;
+uchar fr_cont_tilecursor   = false;
+uchar fr_show_all          = true;
 int  fr_qscale_obj        = 2;
 int  fr_qscale_crit       = 2;
-uchar fr_highlights        = FALSE;
+uchar fr_highlights        = false;
 int  fr_normal_shf        = 2;
 int  fr_lite_rad1         = 0,
      fr_lite_base1        = 10,

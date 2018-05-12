@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/10/27 04:55:24 $
  */
 
+#include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define __RENDER_SRC
@@ -77,7 +79,7 @@ ObjID hack_cam_surrogates[NUM_HACK_CAMERAS];
 uchar hack_cameras_needed = 0;
 char curr_hack_cam = 0;
 ulong hack_cam_fr_count = 0;
-uchar screen_static_drawn = FALSE;
+uchar screen_static_drawn = false;
 
 // -----------
 // PROTOTYPES
@@ -92,7 +94,7 @@ int hack_camera_draw_callback(grs_canvas* cvs, grs_bitmap* bm, int u1, int u2, i
 //   gr_push_canvas(&hack_cam_canvases[curr_hack_cam]);
 //   gr_bitmap(bm,0,0);
 //   gr_pop_canvas();
-   return(FALSE);
+   return(false);
 }
 
 typedef int (*frdraw)(void *dstc, void *dstbm, int x, int y, int flg);
@@ -208,7 +210,7 @@ errtype hack_camera_takeover(int hack_cam)
    extern LGPoint use_cursor_pos;
    LGPoint ucp;
    extern void zoom_rect(LGRect *start, LGRect *end);
-   extern Boolean DoubleSize;
+   extern bool DoubleSize;
    extern LGRect mainview_rect;
    extern LGRect fscrn_rect;
    cams *cam = fr_camera_getdef();
@@ -220,7 +222,7 @@ errtype hack_camera_takeover(int hack_cam)
    // do a wacky zoom thing
    ucp = use_cursor_pos;
    if (!DoubleSize)
-	   ss_point_convert(&(ucp.x),&(ucp.y),TRUE);
+	   ss_point_convert(&(ucp.x),&(ucp.y),true);
    RECT_MOVE(&start, ucp);
    zoom_rect(&start, (full_game_3d) ? &fscrn_rect : &mainview_rect);
 
@@ -341,7 +343,7 @@ errtype render_run(void)
 #endif
    {
       //printf("render_run_start\n");
-      screen_static_drawn = FALSE;
+      screen_static_drawn = false;
       current_num_hudobjs =0; //clear the hud objects
       rendrect = mainview_region->r;
 

@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __PHYSICS_SRC
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -39,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "damage.h"
 #include "diffq.h" 		// for time limit
 #include "drugs.h"
+#include "edms.h"
 #include "effect.h"
 #include "faketime.h"
 #include "framer8.h"
@@ -111,10 +113,10 @@ fix ID2radius(ObjID id);
 #define STANDARD_HEIGHT fix_make(0,0xbd00)
 
 Robot standard_robot = { STANDARD_MASS, DEFAULT_SIZE, STANDARD_HARDNESS,
-                         STANDARD_PEP, STANDARD_GRAVITY, FALSE};
+                         STANDARD_PEP, STANDARD_GRAVITY, false};
 
 Pelvis standard_pelvis = { STANDARD_MASS, DEFAULT_SIZE, STANDARD_HARDNESS,
-                         STANDARD_PEP, STANDARD_GRAVITY, STANDARD_HEIGHT, FALSE};
+                         STANDARD_PEP, STANDARD_GRAVITY, STANDARD_HEIGHT, false};
 
 fix standard_corner[4] = {0,0,0,0};
 Dirac_frame standard_dirac = { STANDARD_MASS, STANDARD_HARDNESS, STANDARD_ROUGHNESS,
@@ -163,18 +165,18 @@ uchar safety_fail_count=0;
 #define TOGGLEABLE_SNET
 #endif
 
-uchar safety_net_on = TRUE;
+uchar safety_net_on = true;
 short curr_edms_del = 0;
 short edms_delete_queue[MAX_EDMS_DELETE_OBJS];
 
 
 uchar safety_net_wont_you_back_me_up(ObjID oid)
 { 
-   obj_move_to(oid, &objs[oid].loc, TRUE);
+   obj_move_to(oid, &objs[oid].loc, true);
    if (safety_fail_oid==oid)
    {
       safety_fail_oid=-1;
-      return FALSE;
+      return false;
    }
    if (oid==PLAYER_OBJ)
 	   safety_fail_oid=oid;
@@ -182,21 +184,21 @@ uchar safety_net_wont_you_back_me_up(ObjID oid)
       if (safety_fail_oid==-1)
          safety_fail_oid=oid;
    safety_fail_count=3;
-   return TRUE;
+   return true;
 }
 
 void add_edms_delete(int ph)
 {
    int i=0;
-   uchar bad = FALSE;
+   uchar bad = false;
    extern char *get_object_lookname(ObjID id,char use_string[], int sz);
 
    for (i=0; i < curr_edms_del; i++)
       if (edms_delete_queue[i] == ph)
-         bad = TRUE;
+         bad = true;
 
    if (ph == -1)
-      bad = TRUE;
+      bad = true;
 
    if (!bad)
    {
@@ -321,7 +323,7 @@ errtype compare_locs(void)
       // Abort physics if bad karma
       if (physics_running && time_passes && (me_tiletype(newElem) == TILE_SOLID))
       {
-         physics_running = FALSE;
+         physics_running = false;
          critical_error(CRITERR_EXEC|2);
       }
 
@@ -446,17 +448,17 @@ errtype physics_run(void)
    extern int avail_memory(int debug_src);
    extern errtype TileMapUpdateCameras(struct _tilemap* );
 
-   uchar update = FALSE;
+   uchar update = false;
    int deltat = player_struct.deltat;
    fix plr_y, plr_z, time_diff;
    fix plr_alpha;
    State new_state;
-   uchar some_move = FALSE;
+   uchar some_move = false;
    extern int fire_kickback;
    extern uchar hack_takeover;
    static long kickback_time=0;        // i bet this static will someday bite our butts, like save/rest mid kickback?
 #ifdef EDMS_SAFETY_NET
-   uchar allow_move=TRUE;
+   uchar allow_move=true;
 #endif
 
    // Here we are computing the values of the player's controls
@@ -472,7 +474,7 @@ errtype physics_run(void)
           { control += player_controls[b][i]; n++; }
       if (n > 0)
       {
-         some_move = TRUE;    // should really do the n!=1 for 2 and 4 as shift too
+         some_move = true;    // should really do the n!=1 for 2 and 4 as shift too
          if (n > 1)
          {
             control /= n;
@@ -517,7 +519,7 @@ errtype physics_run(void)
       if (player_struct.foot_planted)
       {
          plr_y = plr_alpha = plr_side = 0;
-         physics_set_relax(CONTROL_XZROT,FALSE);
+         physics_set_relax(CONTROL_XZROT,false);
       }
       else
       {
@@ -611,7 +613,7 @@ errtype physics_run(void)
       {
          extern uchar jumpjets_active;
          plr_z     = fix_make(player_struct.controls[CONTROL_ZVEL],0);  /*  /3/damp; */
-         jumpjets_active = FALSE;
+         jumpjets_active = false;
       }
 
       if (global_fullmap->cyber) 
@@ -707,7 +709,7 @@ errtype physics_run(void)
                   last_deltah = last_deltap = 0;
 
                   if (new_cyber_orient)
-                     new_cyber_orient = FALSE;
+                     new_cyber_orient = false;
                }
                else
                {
@@ -734,12 +736,12 @@ errtype physics_run(void)
                if (me_tiletype(MAP_GET_XY(OBJ_LOC_BIN_X(newloc), OBJ_LOC_BIN_Y(newloc))) == TILE_SOLID)
                {
                   safety_net_wont_you_back_me_up(oid);
-                  allow_move=FALSE;
+                  allow_move=false;
                }
                else if (new_state.Z < fix_from_map_height(me_height_flr(MAP_GET_XY(OBJ_LOC_BIN_X(newloc), OBJ_LOC_BIN_Y(newloc)))))
                {
 	               if (safety_net_wont_you_back_me_up(oid))
-                     allow_move=FALSE;
+                     allow_move=false;
                   else
                   {
                      if (objs[oid].obclass==CLASS_CRITTER)
@@ -747,23 +749,23 @@ errtype physics_run(void)
 	                     newloc=objs[oid].loc;
 	                     newloc.z+=3;
 	                     safety_fail_oid=-1;
-	                     allow_move=TRUE;
+	                     allow_move=true;
                      }
                      else
                      {
 	                     add_edms_delete(objs[oid].info.ph);
-                        allow_move=FALSE;    // just plain sit here and lose, eh?
+                        allow_move=false;    // just plain sit here and lose, eh?
                      }
                   }
                }
             }
 
             if (allow_move)
-               obj_move_to(oid, &newloc, FALSE);
+               obj_move_to(oid, &newloc, false);
             else
-               allow_move=TRUE;
+               allow_move=true;
 #else
-            obj_move_to(oid, &newloc, FALSE);
+            obj_move_to(oid, &newloc, false);
 #endif
          }
       }
@@ -864,8 +866,8 @@ typedef fix pt3d[3];
 uchar vec_equal(fix* v1,fix *v2)    
 {
    if (*(v1++) == *(v2++) && *(v1++) == *(v2++) && *(v1++) == *(v2++))
-      return TRUE;
-   else return FALSE;
+      return true;
+   else return false;
 }
 
 
@@ -1262,8 +1264,8 @@ typedef fix pt3d[3];
 
 
 #pragma disable_message(202)
-uchar FF_terrain( fix X, fix Y, fix Z, uchar fast, void* TFF )  { return(TRUE); }
-uchar FF_raycast (fix x, fix y, fix z, fix vec[3], fix range, fix where_hit[3], terrain_ff *tff) { return (TRUE);}
+uchar FF_terrain( fix X, fix Y, fix Z, uchar fast, void* TFF )  { return(true); }
+uchar FF_raycast (fix x, fix y, fix z, fix vec[3], fix range, fix where_hit[3], terrain_ff *tff) { return (true);}
 #pragma disable_message(202)
 
 // ?????
@@ -1474,7 +1476,7 @@ uchar player_throw_object(ObjID proj_id,  int x, int y, int lastx, int lasty, fi
    g3_vec_normalize((g3s_vector*)&vector);
    g3_vec_scale((g3s_vector*)&vector,(g3s_vector*)&vector,fix_mul(vel,scale_mag));
 
-   obj_move_to_vel(proj_id, &loc, TRUE, vector.x, vector.y, vector.z);
+   obj_move_to_vel(proj_id, &loc, true, vector.x, vector.y, vector.z);
    // let's ignore the thrown object
    EDMS_ignore_collisions(objs[PLAYER_OBJ].info.ph, objs[proj_id].info.ph);
    if (objs[proj_id].obclass == CLASS_GRENADE)
@@ -1487,14 +1489,14 @@ uchar player_throw_object(ObjID proj_id,  int x, int y, int lastx, int lasty, fi
          reactivate_mine(proj_id);
    }
    chg_set_flg(INVENTORY_UPDATE);
-   return TRUE;
+   return true;
  }
 
 uchar get_phys_info(int ph, fix *list, int cnt)
 {
    ObjID id = physics_handle_id[ph];
    State new_state;
-   if (ph==-1) return FALSE;
+   if (ph==-1) return false;
    get_phys_state(ph, &new_state,id);
    if (ObjProps[OPNUM(id)].physics_model == EDMS_ROBOT)
    {
@@ -1504,7 +1506,7 @@ uchar get_phys_info(int ph, fix *list, int cnt)
 
    switch (cnt-1)
    {
-      default: if (cnt<=0) return FALSE;
+      default: if (cnt<=0) return false;
       case 5:  list[5]=fixrad_to_fixang(new_state.gamma);
       case 4:  list[4]=fixrad_to_fixang(-new_state.beta);
       case 3:  list[3]=fixang_from_phys_angle(new_state.alpha);
@@ -1512,7 +1514,7 @@ uchar get_phys_info(int ph, fix *list, int cnt)
       case 1:  list[1]=new_state.Y;
       case 0:  list[0]=new_state.X;
 	}
-   return TRUE;
+   return true;
 }
 
 
@@ -1557,7 +1559,7 @@ ubyte ice_damage_modifiers[] = { 10, 20, 40, 80};
 
 errtype collide_objects(ObjID collision, ObjID victim, int bad)
 {
-   uchar destroy_me = TRUE;
+   uchar destroy_me = true;
 
    if (objs[collision].obclass == CLASS_GRENADE)
    {
@@ -1571,7 +1573,7 @@ errtype collide_objects(ObjID collision, ObjID victim, int bad)
       ObjLoc   loc = objs[collision].loc;
       extern ObjID damage_sound_id;
       extern char damage_sound_fx;
-      uchar special_proj = FALSE;
+      uchar special_proj = false;
 
       // set that we've already collided this time
       if (objPhysicss[objs[collision].specID].p3.y)
@@ -1626,14 +1628,14 @@ errtype collide_objects(ObjID collision, ObjID victim, int bad)
                      DEICE(victim);
                   }
                }
-               special_proj = TRUE;
+               special_proj = true;
                break;
             case CYBERSLOW_TRIPLE:
                if (!(ICE_ICE_BABY(victim)))
                {
                   char soft_lvl = objPhysicss[objs[collision].specID].bullet_triple;
                   simple_damage_object(victim, PULSER_DAMAGE[soft_lvl-1], CYBER_PROJECTILE_TYPE, 0);
-                  special_proj = TRUE;
+                  special_proj = true;
                }
                break;
 #ifdef MANY_CYBERSPACE_WEAPONS
@@ -1641,19 +1643,19 @@ errtype collide_objects(ObjID collision, ObjID victim, int bad)
                {
                   char soft_lvl = objPhysicss[objs[collision].specID].bullet_triple;
                   simple_damage_object(victim, disc_damage[soft_lvl-1], CYBER_PROJECTILE_TYPE, 0);
-                  special_proj = TRUE;
+                  special_proj = true;
                }
                break;
             case SPEWSLOW_TRIPLE:
                {
                   char soft_lvl = objPhysicss[objs[collision].specID].bullet_triple;
                   simple_damage_object(victim, cyberspew_damage[soft_lvl-1], CYBER_PROJECTILE_TYPE, 0);
-                  special_proj = TRUE;
+                  special_proj = true;
                }
 #else
             case SPEWSLOW_TRIPLE:
             case DISCSLOW_TRIPLE:
-               special_proj = TRUE;
+               special_proj = true;
                break;
 #endif
                break;
@@ -1767,7 +1769,7 @@ void cit_autodestruct_callback(physics_handle h)
 {
 }
 
-uchar robot_antisocial = FALSE;
+uchar robot_antisocial = false;
 
 
 // Build the model given a state and object ID, and assign appropriate

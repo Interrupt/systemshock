@@ -91,6 +91,6 @@ main()
   DbgMonoConfig();
   err = hash_init(&TestHash,sizeof(HashElem),3,my_hash_func,my_equ_func);
   if (err != OK) printf("Error on init: %d\n",err);
-  while(TRUE) yyparse();
+  while(true) yyparse();
 }
 

@@ -60,8 +60,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
+#include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 
+#include "event.h"
 #include "mfdint.h"
 #include "mfdext.h"
 #include "mfddims.h"
@@ -151,10 +154,10 @@ void mfd_ammo_expose(ubyte control)
 
          if(full) {
             title=get_temp_string(REF_STR_AmmoMFDWeaps);
-            mfd_draw_string(title,AMMO_LIST_X,AMMO_LIST_Y+ypos,AMMO_TITLE_COLOR,TRUE);
+            mfd_draw_string(title,AMMO_LIST_X,AMMO_LIST_Y+ypos,AMMO_TITLE_COLOR,true);
             title=get_temp_string(REF_STR_AmmoMFDClips);
             gr_string_size(title,&w,&h);
-            mfd_draw_string(title,AMMO_COUNT_X-w,AMMO_LIST_Y+ypos,AMMO_TITLE_COLOR,TRUE);
+            mfd_draw_string(title,AMMO_COUNT_X-w,AMMO_LIST_Y+ypos,AMMO_TITLE_COLOR,true);
          }
          else {
             gr_string_size(minibuf,&w,&h);
@@ -170,14 +173,15 @@ void mfd_ammo_expose(ubyte control)
             typemask=AMMOTYPE_TYPE(typemask); // type type type
 
             if(typemask!=0) {
-               gotammo=FALSE;
+               gotammo=false;
                ammoline[0]='\0';
                for(type=0;typemask!=0;typemask=typemask>>1,type++) {
                   if(typemask & 0x1) { // that's 1 HEX, mind you
                      ammonum = get_nth_from_triple(MAKETRIP(CLASS_AMMO,subc,type));
                      count=player_struct.cartridges[ammonum];
                      gotammo = gotammo || count;
-                     numtostring(count,ammoline+strlen(ammoline));
+                     sprintf(ammoline+strlen(ammoline), "%d", count);
+                     //numtostring(count,ammoline+strlen(ammoline));
                      minibuf[0]=AMMO_TYPE_LETTER(ammonum);
                      strcat(ammoline,minibuf[0]==' '?minibuf+1:minibuf);
                   }
@@ -187,14 +191,14 @@ void mfd_ammo_expose(ubyte control)
                if(has||gotammo) {
                   get_object_short_name(guntrip,weapline,sizeof(weapline));
                   col=ammo_line_colors[has];
-                  mfd_draw_string(weapline,AMMO_LIST_X,AMMO_LIST_Y+ypos,col,TRUE);
+                  mfd_draw_string(weapline,AMMO_LIST_X,AMMO_LIST_Y+ypos,col,true);
 
                   // get rid of trailing slash
                   ammoline[strlen(ammoline)-1]='\0';
                   // shamefully, replace '1' with 'I' to save space onscreen
                   string_replace_char(ammoline,'1','I');
                   gr_string_size(ammoline,&w,&h);
-                  mfd_draw_string(ammoline,AMMO_COUNT_X-w,AMMO_LIST_Y+ypos,col,TRUE);
+                  mfd_draw_string(ammoline,AMMO_COUNT_X-w,AMMO_LIST_Y+ypos,col,true);
                   // glue together ammo rects so as not to
                   // run out of mfd rects, goddamnit.
                   mfd_add_rect(AMMO_COUNT_X-1,y_list,AMMO_COUNT_X,AMMO_LIST_Y+ypos);
@@ -221,21 +225,21 @@ uchar mfd_ammo_handler(MFD* m, uiEvent* ev)
    int guntrip;
    uchar has;
 
-   if(ev->type != UI_EVENT_MOUSE || !(ev->subtype & MOUSE_LDOWN)) return FALSE;
+   if(ev->type != UI_EVENT_MOUSE || !(ev->subtype & MOUSE_LDOWN)) return false;
 
    pos = MakePoint(ev->pos.x - m->rect.ul.x, ev->pos.y - m->rect.ul.y);
    gr_font_char_size((grs_font*)ResGet(MFD_FONT),'X',&w,&h);
 
    line=(pos.y-AMMO_LIST_Y)/h;
-   if(line<=0) return FALSE;
+   if(line<=0) return false;
    guntrip=get_triple_from_class_nth_item(CLASS_GUN,line-1);
-   if(guntrip<0) return FALSE;
+   if(guntrip<0) return false;
    has=player_has_weapon(guntrip);
    if(has==PLAYER_HAS_SELECTED) {
       mfd_change_slot(m->id,MFD_WEAPON_SLOT);
-      return TRUE;
+      return true;
    }
-   return FALSE;
+   return false;
 }
    
       

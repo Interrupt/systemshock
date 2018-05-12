@@ -123,10 +123,10 @@ int fnt_init(char *def_fname)
 // 
 uchar fnt_free(void)
 {
-   if (_fnt_count==-1) return FALSE;
+   if (_fnt_count==-1) return false;
    free(_fnt_lists);
    _fnt_count=-1;
-   return TRUE;
+   return true;
 }
 
 /*
@@ -187,9 +187,9 @@ uchar fnt_unload(int fnt_handle)
 // set the current font
 uchar fnt_select(int fnt_handle)
 {
-   if (fnt_handle>=_fnt_count) return FALSE;
+   if (fnt_handle>=_fnt_count) return false;
    _fnt_current=fnt_handle;
-   return TRUE;
+   return true;
 }
 
 #ifdef nOAG

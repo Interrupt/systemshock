@@ -124,7 +124,7 @@ asm fix fix_mul_16_32_20 (fix a, fix b)
 
 extern int gri_per_umap_setup(int n, grs_vertex **vpl, grs_per_setup *ps);
 
-uchar grd_enable_quad_blend=FALSE;
+uchar grd_enable_quad_blend=false;
 
 int per_map (grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti)
 {

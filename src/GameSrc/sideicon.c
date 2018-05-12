@@ -24,9 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "event.h"
 #include "input.h"
 #include "sideicon.h"
 #include "sideart.h"
@@ -204,7 +206,7 @@ void init_side_icon_popups(void)
 		LGPoint offset = {0, -1};
 		LGCursor* c = &icon_cursor[i];
 		grs_bitmap* bm = &icon_cursor_bm[i];
-		make_popup_cursor(c,bm,cursor_strings[i*NUM_SIDE_ICONS/2],i+POPUP_ICON_LEFT, TRUE, offset);
+		make_popup_cursor(c,bm,cursor_strings[i*NUM_SIDE_ICONS/2],i+POPUP_ICON_LEFT, true, offset);
 	}
 }
 
@@ -294,7 +296,7 @@ void zoom_side_icon_to_mfd(int icon,int waretype, int wnum)
 
    mfd = mfd_grab_func(MFD_EMPTY_FUNC,MFD_ITEM_SLOT);
    mfd_zoom_rect(&side_icons[icon].r,mfd);
-   set_inventory_mfd(waretype2invtype[waretype],wnum,TRUE);
+   set_inventory_mfd(waretype2invtype[waretype],wnum,true);
    mfd_change_slot(mfd,MFD_ITEM_SLOT);
 }
 
@@ -309,7 +311,7 @@ int last_side_icon = -1;
 uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata)
 {
    extern uchar fullscrn_icons;
-   uchar retval = FALSE;
+   uchar retval = false;
    uiMouseEvent *m;
    int i, type, num;
 
@@ -328,7 +330,7 @@ uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata)
       {
          uiSetRegionDefaultCursor(r,&globcursor);
          last_side_icon = -1;
-         return FALSE;
+         return false;
       }
 	 if (popup_cursors)
       {
@@ -340,7 +342,7 @@ uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata)
             LGPoint offset = {0, -1};
 
             free(bm->bits);
-            make_popup_cursor(c,bm,cursor_strings[i],side+POPUP_ICON_LEFT, TRUE, offset);
+            make_popup_cursor(c,bm,cursor_strings[i],side+POPUP_ICON_LEFT, true, offset);
             uiSetRegionDefaultCursor(r,c);
             last_side_icon = i;
          }
@@ -360,7 +362,7 @@ uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata)
    //      side_icons[i].real_num, side_icons[i].real_set);
 
       if (type >= 0) use_ware(type, num);
-      retval = TRUE;
+      retval = true;
    }
    if (global_fullmap->cyber || (full_game_3d && !fullscrn_icons) || !popup_cursors)
    {
@@ -380,7 +382,7 @@ uchar side_icon_hotkey_func(ushort keycode, ulong context, int i)
    {
       if (type >= 0) use_ware(type, num);
    }
-   return TRUE;
+   return true;
 }
 
 #ifdef PROGRAM_SIDEICON
@@ -393,7 +395,7 @@ uchar side_icon_progset_hotkey_func(ushort keycode, ulong context, int i)
    l=strlen(mess);
    get_object_short_name(icon_data[i].waretrip,mess+l,80-l);
    message_info(mess);
-   return TRUE;
+   return true;
 }
 
 uchar side_icon_prog_hotkey_func(ushort keycode, ulong context, void* notused)
@@ -561,14 +563,14 @@ errtype side_icon_load_bitmaps()
 //   if (file_handle < 0) critical_error(CRITERR_RES|6); 
    
    side_icon_rft = ResLock(RES_SideIconArt);
-   load_bitmap_from_res(&side_icon_background, RES_SideIconArt, 0, side_icon_rft, FALSE, NULL, NULL);
+   load_bitmap_from_res(&side_icon_background, RES_SideIconArt, 0, side_icon_rft, false, NULL, NULL);
 
    for (i = 0; i < NUM_SIDE_ICONS; i++) {
 
       for (j = 0; j < ICON_ART_ITEMS; j++) {
  
          index = (ICON_ART_ITEMS * i) + j + 1;
-         load_bitmap_from_res(&(side_icon_bms[i][j]), RES_SideIconArt, index, side_icon_rft, FALSE, NULL, NULL);
+         load_bitmap_from_res(&(side_icon_bms[i][j]), RES_SideIconArt, index, side_icon_rft, false, NULL, NULL);
       }
    }
    ResUnlock(RES_SideIconArt);

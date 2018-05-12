@@ -71,7 +71,7 @@ static char *tableNames[] = {
 	short	resID = 128;
 
 	long	frames = 0;
-	dumpChunkHdrs = TRUE;
+	dumpChunkHdrs = true;
 
 	Handle		changesHdl;
 	PalChange	*pcp;
@@ -162,7 +162,7 @@ static char *tableNames[] = {
 		printf("Writing palette from header: %d\n\n", resID);
 		Handle	palHdl = NewHandle(768);
 		HLock(palHdl);
-		BlockMove(mh.palette, *palHdl, 768);
+		memmove(*palHdl, mh.palette, 768);
 		HUnlock(palHdl);
 
 		AddResource(palHdl, 'mpal', resID++, "pal");
@@ -180,7 +180,7 @@ static char *tableNames[] = {
 		pmc = (MovieChunk *)malloc(mh.sizeChunks);
 		fread(pmc, mh.sizeChunks, 1, fpi);
       	pmcBase = pmc;
-		while (TRUE)
+		while (true)
 		{
 			uchar	s1, s2;
 			
@@ -220,7 +220,7 @@ static char *tableNames[] = {
 						
 						Handle	palHdl = NewHandle(768);		// Add to output file
 						HLock(palHdl);
-						BlockMove(buff, *palHdl, 768);
+						memmove(*palHdl, buff, 768);
 						HUnlock(palHdl);
 						
 						AddResource(palHdl, 'mpal', resID++, "pal");

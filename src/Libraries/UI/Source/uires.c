@@ -37,7 +37,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
 {
    Ref rid;
    FrameDesc *f;
-   uchar alloced_fdesc = FALSE;
+   uchar alloced_fdesc = false;
 //   extern int memcount;
 
    if(!RefIndexValid(rt,i)) {
@@ -51,7 +51,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
 
 //      Warning(("damn, we have to malloc...need %d, buffer = %d\n",RefSize(rt,i),uiResTempBuffer.size));
       f = (FrameDesc *)malloc(RefSize(rt,i));
-      alloced_fdesc = TRUE;
+      alloced_fdesc = true;
    }
    else
    {
@@ -85,7 +85,7 @@ errtype uiLoadRefBitmapCursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar alloc
    errtype retval = OK;  
    LGRect anchor;
 //   extern int memcount;
-   uchar buffer_snag = FALSE;
+   uchar buffer_snag = false;
 
    int numrefs = ResNumRefs(REFID(rid));
    int tsize = REFTABLESIZE(numrefs);
@@ -97,10 +97,10 @@ errtype uiLoadRefBitmapCursor(LGCursor* c, grs_bitmap* bmp, Ref rid, uchar alloc
       uiResTempBuffer.mem += tsize;
       uiResTempBuffer.size -= tsize;
       ResExtractRefTable(REFID(rid),rt,tsize);
-      buffer_snag = TRUE;
+      buffer_snag = true;
    }
    else rt = ResReadRefTable(REFID(rid));
-   retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, FALSE, &anchor,(alloc) ? NULL : bmp->bits);
+   retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, false, &anchor,(alloc) ? NULL : bmp->bits);
    if (buffer_snag)
    {
       uiResTempBuffer.mem = (char*)rt;

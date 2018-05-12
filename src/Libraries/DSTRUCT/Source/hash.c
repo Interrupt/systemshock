@@ -41,6 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include "hash.h" 
@@ -94,13 +95,13 @@ int expmod(int b, int e, uint m)
 uchar is_fermat_prime(uint n, uint numtests)
 {
    int i;
-   if (n < 3) return FALSE;
+   if (n < 3) return false;
    for (i = 0; i < numtests; i++)
    {
       int a = rand()%(n-2) + 2;
-      if (expmod(a,n,n) != a) return FALSE;
+      if (expmod(a,n,n) != a) return false;
    }
-   return TRUE;
+   return true;
 }
 
 errtype hash_init(Hashtable* h, int elemsize, int vecsize, Hashfunc hfunc, Equfunc efunc)
@@ -136,7 +137,7 @@ errtype hash_copy(Hashtable* t, Hashtable* s)
 
 static uchar find_elem(Hashtable* h, void* elem, int* idx)
 {
-   uchar found = FALSE;
+   uchar found = false;
    int hash = h->hfunc(elem);
    int index,j;
    //Spew(DSRC_DSTRUCT_Hash,("find_elem(%x,%x,%x) hash is %d\n",h,elem,idx,hash));
@@ -146,7 +147,7 @@ static uchar find_elem(Hashtable* h, void* elem, int* idx)
       void* myelem = (void*) ELEM(h,index);
       if (h->statvec[index] == HASH_FULL && h->efunc(elem,myelem) == 0)
       {
-         found = TRUE;
+         found = true;
          break;
       }
    }

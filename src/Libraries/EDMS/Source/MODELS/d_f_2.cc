@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <iostream>
-#include "EDMS_int.h"
-#include "EDMS_mod.h"					//State and such...
+#include "edms_int.h"
+#include "edms_mod.h"					//State and such...
 
 //      Auto-alignment...
 //      -----------------

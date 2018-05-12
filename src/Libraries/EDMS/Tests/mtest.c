@@ -102,7 +102,7 @@ void main(void)
 
 	fix dx, dy;
 	physics_handle m1, m2, m3;
-	uchar killed_m2 = FALSE;
+	uchar killed_m2 = false;
 
 	int i;
 

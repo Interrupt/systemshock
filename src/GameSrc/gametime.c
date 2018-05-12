@@ -49,7 +49,7 @@ void update_level_gametime(void);
 
 errtype update_state(uchar time_running)
 {
-   uchar update = TRUE;
+   uchar update = true;
    if (time_running)
    {
       ulong deltat;
@@ -68,7 +68,7 @@ errtype update_state(uchar time_running)
       if (deltat < MIN_DELTAT)
       {
          deltat = 0;
-         update = FALSE;
+         update = false;
       }
 
       // update game time.

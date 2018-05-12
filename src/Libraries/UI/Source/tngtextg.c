@@ -47,7 +47,7 @@ uchar tng_textgadget_hscroll_changed(void *ui_data, void *user_data)
 
    ptng = (TNG *)user_data;
    ptng->signal(ptng, TNG_SIGNAL_CHANGED);
-   return(FALSE);
+   return(false);
 }
 
 uchar tng_textgadget_vscroll_changed(void *ui_data, void *user_data)
@@ -58,7 +58,7 @@ uchar tng_textgadget_vscroll_changed(void *ui_data, void *user_data)
 
    ptng = (TNG *)user_data;
    ptng->signal(ptng, TNG_SIGNAL_CHANGED);
-   return(FALSE);
+   return(false);
 }
 #pragma require_prototypes on
 
@@ -75,7 +75,7 @@ errtype tng_textgadget_init(void *ui_data, TNG *ptng, TNGStyle *sty, ulong optio
    extern TTFontInfo TTTNGFontInfo;
    TTState TTs;
    TTRect TTr;
-   static uchar inited=FALSE;
+   static uchar inited=false;
 
    ptxtng = (TNG_textgadget *)GUI_MALLOC(ptng->ui_data, sizeof(TNG_textgadget));
 
@@ -213,7 +213,7 @@ int tng_textgadget_getvalue(TNG *ptng)
 uchar tng_textgadget_keycooked(TNG *ptng, ushort key)
 {
    short code;
-   uchar retval = FALSE;
+   uchar retval = false;
 /*¥¥¥
 
    code = key & 0xff;
@@ -248,14 +248,14 @@ uchar tng_textgadget_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 // Handle incoming signals
 uchar tng_textgadget_signal(TNG *ptng, ushort signal)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    //Spew(DSRC_UI_Textgadget, ("Textgadget Received signal: %x\n",signal));
    if (signal & TNG_SIGNAL_CHANGED)
       TNG_DRAWPART(ptng, TNG_ALLPARTS);
    if (signal & TNG_SIGNAL_SCROLL)
       tng_textgadget_scroll(ptng);
    IF_SET_RV(tng_cb_signal(ptng, signal));
-   retval = TRUE;
+   retval = true;
    return(retval);
 }
 // -----------------------------
@@ -306,6 +306,6 @@ errtype tng_textgadget_addstring(TNG *ptng, char *s)
 {
    region_begin_sequence();
    tt_parse_string(TNG_TG_TT(ptng), s);
-   region_end_sequence(TRUE);
+   region_end_sequence(true);
    return(OK);
 }

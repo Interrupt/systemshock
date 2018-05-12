@@ -44,7 +44,7 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 	// On the Mac, since modifiers by themselves don't produce an event,
 	// you always have a "cooked" result.
 	
-	*results = TRUE;
+	*results = true;
 	*cooked = ev.ascii;
 	
 	*cooked |= (short)ev.state << KB_DOWN_SHF; // Add in the key-down state.
@@ -59,7 +59,7 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 	{								// simulate an alt key.
 		Handle	kHdl;
 		long	tk;
-		UInt32	state = 0;
+		uint32_t	state = 0;
 		
 		// Unfortunately, option-key changes the character that was
 		// pressed.  So we need to find out what the unmodified
@@ -153,7 +153,7 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 
 uchar kb_get_cooked(ushort *key)
 {
-   uchar res = FALSE;
+   uchar res = false;
    kbs_event ev = kb_next();
    if (ev.code == KBC_NONE) return res;
    kb_cook(ev,key,&res);

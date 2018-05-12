@@ -122,6 +122,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
+#include <stdbool.h>
 #include <stdlib.h>  // I HATE THIS
 
 
@@ -159,13 +160,8 @@ void  (*fr_rend_start)(void);
 grs_bitmap *(*fr_get_tmap)(void);
 
 // Set by machine type 
-#if (defined(powerc) || defined(__powerc))	
-Boolean DoubleSize = false;
-Boolean SkipLines = false;
-#else
-Boolean DoubleSize = true;
-Boolean SkipLines = false;
-#endif
+bool DoubleSize = false;
+bool SkipLines = false;
 
 int   (*_fr_glob_draw_call)(void *dest_canvas, void *dest_bm, int x, int y, int flags)=NULL;
 void  (*_fr_glob_horizon_call)(void *dest_bm, int flags)=NULL;
@@ -260,7 +256,7 @@ grs_bitmap *fr_default_tmap(void)            {return &tmap_bm[fr_default_idx()%F
 #else
 grs_bitmap *fr_default_tmap(void)            {return NULL;}
 #endif
-uchar        fr_default_block(void * v, uchar * u, int * i) {return FALSE;}
+uchar        fr_default_block(void * v, uchar * u, int * i) {return false;}
 void        fr_default_clip_start(uchar u) {}
 void        fr_default_rend_start(void)      {}
 
@@ -769,21 +765,21 @@ int fr_start_view(void)
 #if _fr_defdbg(ALTCAM)
    _fr_sdbg(ALTCAM,{fr_camera_getpos(_fr->xtracam);_fr_altcamx=coor(EYE_X)>>(16);_fr_altcamy=coor(EYE_Y)>>(16);})
 #endif
-   return TRUE;
+   return true;
 }
 
 //#define JUST_SHOW_THE_THING
 
 /* send the actual frame out a here.... */
 // you're so kind when it serves you well
-uchar smooth_double=FALSE;
+uchar smooth_double=false;
 g3s_vector zvec = {0,0,0};
 
 extern uchar view360_is_rendering;
 
 int fr_send_view (void)
 {
-   uchar 	snd_frm=TRUE;
+   uchar 	snd_frm=true;
    bool	ok_to_double;
 
    //printf("fr_send_view\n");

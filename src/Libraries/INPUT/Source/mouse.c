@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ¥¥¥Note:  The mouse position will always be returned in *local* coordinates,
 // that is, local to the main game window.
 
+#include <stdio.h>
 #include <stdlib.h>
 //#include <Timer.h>
 
@@ -134,7 +135,7 @@ extern ulong mouseHandlerSize;
 TimerUPP		pMousePollPtr;
 MouseTask		pMousePollTask;
 extern short	gActiveLeft, gActiveTop;
-Boolean			gRBtnWasDown = TRUE;
+bool			gRBtnWasDown = true;
 extern uchar	pKbdGetKeys[16];
 
 //----------------
@@ -637,7 +638,7 @@ errtype mouse_next(mouse_event *res)
 {
 	short				eventMask;
 	EventRecord	theEvent;
-	Boolean			nowDown;
+	bool			nowDown;
 	uchar			rbType = 0;
 
 	int mouse_x;
@@ -656,7 +657,7 @@ errtype mouse_next(mouse_event *res)
 	if(mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
 		if(!btn_left) {
 			res->buttons = 1;
-			btn_left = TRUE;
+			btn_left = true;
 			res->type = MOUSE_LDOWN;
 			printf("MOUSE_LDOWN\n");
 			return OK;
@@ -664,7 +665,7 @@ errtype mouse_next(mouse_event *res)
 	}
 	else if(btn_left) {
 		res->buttons = 1;
-		btn_left = FALSE;
+		btn_left = false;
 		res->type = MOUSE_LUP;
 		printf("MOUSE_LUP\n");
 		return OK;
@@ -673,7 +674,7 @@ errtype mouse_next(mouse_event *res)
 	if(mouse_state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
 		if(!btn_right) {
 			res->buttons = 2;
-			btn_right = TRUE;
+			btn_right = true;
 			res->type = MOUSE_RDOWN;
 			printf("MOUSE_RDOWN\n");
 			return OK;
@@ -681,7 +682,7 @@ errtype mouse_next(mouse_event *res)
 	}
 	else if(btn_right) {
 		res->buttons = 2;
-		btn_right = FALSE;
+		btn_right = false;
 		res->type = MOUSE_RUP;
 		printf("MOUSE_RUP\n");
 		return OK;

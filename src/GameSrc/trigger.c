@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __TRIGGER_SRC
 
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -219,7 +221,7 @@ errtype qdata_set(short qdata, short new_val)
          QUESTBIT_OFF(qdata & 0xFFF);
    }
 
-   mfd_notify_func(MFD_PLOTWARE_FUNC,MFD_ITEM_SLOT,FALSE,MFD_ACTIVE,TRUE);
+   mfd_notify_func(MFD_PLOTWARE_FUNC,MFD_ITEM_SLOT,false,MFD_ACTIVE,true);
 
    return(OK);
 }
@@ -230,7 +232,7 @@ uchar comparator_check(int comparator, ObjID obj, uchar *special_code)
    short cval, compval;
    uchar fail_code;
    short fail_amt =0;
-   uchar truthval = FALSE;
+   uchar truthval = false;
    // shodo_qvar is the questvariable for the shodometer on the current levelle
    char shodo_qvar = SHODOMETER_QVAR_BASE + player_struct.level;
 
@@ -238,7 +240,7 @@ uchar comparator_check(int comparator, ObjID obj, uchar *special_code)
    fail_code = comparator >> 24;
    comparator = comparator & 0xFFFFFF;
    if (comparator == 0)
-      return(TRUE);
+      return(true);
    compval = comparator >> 16;
    if (comparator & 0x1000)
    {
@@ -379,7 +381,7 @@ errtype trap_transmogrify_func(int p1, int p2, int p3, int p4)
                objs[p1].info.current_frame = MAX_BRIDGE_FRAME;
                objBigstuffs[objs[p1].specID].cosmetic_value = MAX_BRIDGE_FRAME;
                // counting backwards from zero
-               add_obj_to_animlist(p1, FALSE, TRUE, FALSE, 16, NULL, NULL, 0);
+               add_obj_to_animlist(p1, false, true, false, 16, NULL, NULL, 0);
                if (source == NON_BRIDGE_TRIPLE)
                {
                   play_digi_fx_obj(SFX_FORCE_BRIDGE,1,p1);
@@ -394,13 +396,13 @@ errtype trap_transmogrify_func(int p1, int p2, int p3, int p4)
                remove_obj_from_animlist(p1);
                objs[p1].info.current_frame = 0;
                objBigstuffs[objs[p1].specID].cosmetic_value = MAX_BRIDGE_FRAME;
-               add_obj_to_animlist(p1, FALSE, FALSE, FALSE, 16, NULL, NULL, 0);
+               add_obj_to_animlist(p1, false, false, false, 16, NULL, NULL, 0);
             }
 #endif
       }
    }
    slam_posture_meter_state();
-   obj_physics_refresh_area(OBJ_LOC_BIN_X(objs[p1].loc), OBJ_LOC_BIN_Y(objs[p1].loc),FALSE);
+   obj_physics_refresh_area(OBJ_LOC_BIN_X(objs[p1].loc), OBJ_LOC_BIN_Y(objs[p1].loc),false);
    return(OK);
 }
 
@@ -429,18 +431,18 @@ uchar player_facing_square(LGPoint sq)
    sqh = fix_atan2(fix_make(sq.x - PLAYER_BIN_X,0),fix_make(sq.y - PLAYER_BIN_Y, 0));
    delta = sqh - plrh;
    if (fixang_abs(delta) < CONSERVATIVE_OCTANT_ARC)
-      return(TRUE);
+      return(true);
    // note that we're working in a left-handed, clockwise world
    if (view360_active_contexts[LEFT_CONTEXT] &&
        fixang_abs(delta + 0x4000) < CONSERVATIVE_OCTANT_ARC)
-      return(TRUE);
+      return(true);
    if (view360_active_contexts[RIGHT_CONTEXT] &&
        fixang_abs(delta - 0x4000) < CONSERVATIVE_OCTANT_ARC)
-      return(TRUE);
+      return(true);
    if (view360_active_contexts[MID_CONTEXT] &&
        fixang_abs(delta + 0x8000) < CONSERVATIVE_OCTANT_ARC)
-      return(TRUE);
-   return(FALSE);
+      return(true);
+   return(false);
 }
 
 // p1 = triple
@@ -454,7 +456,7 @@ errtype trap_monster_func(int p1, int p2, int p3, int p4)
    char minx,miny,sizex,sizey, quan, failures=0, num_gen = 0;
    LGPoint sq;
    extern errtype obj_load_art(uchar flush_all);
-   uchar okay = FALSE;
+   uchar okay = false;
    char monster_count;
    MapElem *pme;
 
@@ -482,13 +484,13 @@ errtype trap_monster_func(int p1, int p2, int p3, int p4)
          minx = OBJ_LOC_BIN_X(objs[current_trap].loc) - sizex;
          miny = OBJ_LOC_BIN_Y(objs[current_trap].loc) - sizey;
       }
-      okay = FALSE;
+      okay = false;
       monster_count = 0;
       while (!okay && (monster_count < 100))
       {
          int tiletype, room;
 
-         okay = TRUE;
+         okay = true;
          sq.x = minx + rand()%(sizex+1);
          sq.y = miny + rand()%(sizey+1);
          pme = MAP_GET_XY(sq.x,sq.y);
@@ -511,16 +513,16 @@ errtype trap_monster_func(int p1, int p2, int p3, int p4)
             {
                if (objs[objRefs[oref].obj].obclass == CLASS_CRITTER)
                {
-                  okay = FALSE;
+                  okay = false;
                }
                oref = objRefs[oref].next;
             }
          }
          else {
-            okay = FALSE;
+            okay = false;
             break;
          }
-         if(p4 & 0x8) okay=TRUE;
+         if(p4 & 0x8) okay=true;
          if (okay)
          {
             char d;
@@ -529,15 +531,15 @@ errtype trap_monster_func(int p1, int p2, int p3, int p4)
             // This should be in order of harshness
             if ((p4 & 0x2) && player_facing_square(sq) && (d < NOLOOK_MONSTER_DISTANCE))
             {
-               okay = FALSE;
+               okay = false;
             }
             if ((p4 & 0x1) && (d < MIN_MONSTER_DISTANCE))
             {
-               okay = FALSE;
+               okay = false;
             }
             if (!(p4 & 0x4) && (me_bits_music(pme) == ELEVATOR_ZONE))
             {
-               okay = FALSE;
+               okay = false;
             }
          }
          monster_count++;
@@ -571,7 +573,7 @@ errtype trap_monster_func(int p1, int p2, int p3, int p4)
       }
    }
    if (num_gen > 0)
-      obj_load_art(FALSE);
+      obj_load_art(false);
    return(OK);
 }
 
@@ -727,7 +729,7 @@ errtype trap_scheduler_func(int p1, int p2, int p3, int p4)
 
 errtype trap_alternating_splitter_func(int p1, int p2, int p3, int p4)
 {
-   uchar found_new = FALSE;
+   uchar found_new = false;
    char loop_count = 0;
    int n = p4;
    ObjID tr = current_trap;
@@ -736,9 +738,9 @@ errtype trap_alternating_splitter_func(int p1, int p2, int p3, int p4)
    {
       switch(n)
       {
-    case 0:  do_timed_multi_stuff(qdata_get(p1)); found_new = TRUE; break;
-    case 1:  do_timed_multi_stuff(qdata_get(p2)); found_new = TRUE; break;
-    case 2:  do_timed_multi_stuff(qdata_get(p3)); found_new = TRUE; break;
+    case 0:  do_timed_multi_stuff(qdata_get(p1)); found_new = true; break;
+    case 1:  do_timed_multi_stuff(qdata_get(p2)); found_new = true; break;
+    case 2:  do_timed_multi_stuff(qdata_get(p3)); found_new = true; break;
       }
       n += 1;
       set_trap_data(tr, 4, n);
@@ -749,7 +751,7 @@ errtype trap_alternating_splitter_func(int p1, int p2, int p3, int p4)
       loop_count++;
       if (loop_count > 10)
       {
-    found_new = TRUE;
+    found_new = true;
       }
    }
    return(OK);
@@ -765,9 +767,9 @@ errtype trap_main_light_func(int p1, int p2, int p3, int p4)
 {
    uint *p;
    if ((p3 & 0x10000) || (p3 & 0x20000))
-      trap_lighting_func(FALSE,p1,p2,p3&0xffff,p4);
+      trap_lighting_func(false,p1,p2,p3&0xffff,p4);
    if (!(p3 & 0x10000))
-      trap_lighting_func(TRUE, p1,p2,p3&0xffff,p4);
+      trap_lighting_func(true, p1,p2,p3&0xffff,p4);
 
    printf("trap_main_light_func\n");
 
@@ -1048,7 +1050,7 @@ errtype trap_damage_func(int p1, int p2, int p3, int p4)
    return(OK);
 }
 
-uchar fake_endgame = FALSE;
+uchar fake_endgame = false;
 #define ENDGAME_TICKS   CIT_CYCLE * 2
 
 errtype trap_sfx_func(int p1, int p2, int p3, int p4)
@@ -1189,8 +1191,8 @@ errtype trap_create_obj_func(int p1, int p2, int p3, int p4)
    {
       new_loc.z = qdata_get(p4);
    }
-   obj_move_to(new_id, &new_loc, TRUE);
-   obj_physics_refresh_area(OBJ_LOC_BIN_X(new_loc), OBJ_LOC_BIN_Y(new_loc),TRUE);
+   obj_move_to(new_id, &new_loc, true);
+   obj_physics_refresh_area(OBJ_LOC_BIN_X(new_loc), OBJ_LOC_BIN_Y(new_loc),true);
    return(OK);
 }
 
@@ -1208,9 +1210,9 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4)
    
    if (p1 == 0x2091)					// KLC - special hack for auto shutoff of on-line help.
    {
-       olh_active = FALSE;				// KLC - this is kept in a global now.
+       olh_active = false;				// KLC - this is kept in a global now.
        
-       gShockPrefs.goOnScreenHelp = FALSE;		// Yeah, got to update this one too and
+       gShockPrefs.goOnScreenHelp = false;		// Yeah, got to update this one too and
        SavePrefs(kPrefsResID);						// save the prefs out to disk.
        return (OK);
    }
@@ -1219,13 +1221,13 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4)
    {
       switch(qarg)
       {
-         case 0: qdata_set(p1,FALSE); break;
-         case 1: qdata_set(p1,TRUE); break;
+         case 0: qdata_set(p1,false); break;
+         case 1: qdata_set(p1,true); break;
          default:
             if (qdata_get(p1))
-               qdata_set(p1,FALSE);
+               qdata_set(p1,false);
             else
-               qdata_set(p1,TRUE);
+               qdata_set(p1,true);
             break;
       }
       if (((p1 & 0xFFF == REACTOR_BOOM_QB)) && (qdata_get(p1)))
@@ -1251,7 +1253,7 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4)
 #ifdef AUDIOLOGS
          audiolog_bark_play(qdata_get(p3));
 #endif
-         *trap_use_message = TRUE;
+         *trap_use_message = true;
       }
    }
    else
@@ -1262,7 +1264,7 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4)
 #ifdef AUDIOLOGS
          audiolog_bark_play(qdata_get(p4));
 #endif
-         *trap_use_message = TRUE;
+         *trap_use_message = true;
       }
    }
 
@@ -1271,17 +1273,17 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4)
 
 extern uchar alternate_death;
 
-extern Boolean	gPlayingGame;
-extern Boolean	gDeadPlayerQuit;
-extern Boolean	gGameCompletedQuit;
+extern bool gPlayingGame;
+extern bool gDeadPlayerQuit;
+extern bool gGameCompletedQuit;
 
 errtype trap_cutscene_func(int p1, int p2, int p3, int p4)
 {
 	short		cs = qdata_get(p1);
 //	if (qdata_get(p1) == 0)							// KLC - if we are to play the endgame cutscene
 //	{
-		gGameCompletedQuit = TRUE;
-		gPlayingGame = FALSE;													// Hop out of the game loop.
+		gGameCompletedQuit = true;
+		gPlayingGame = false;													// Hop out of the game loop.
 //KLC   play_cutscene(qdata_get(p1), qdata_get(p2));
 //	}
 	alternate_death = (qdata_get(p2) != 0);
@@ -1292,7 +1294,7 @@ errtype trap_terrain_func(int p1, int p2, int p3, int p4)
 {
    printf("trap_terrain_func\n");
    MapElem *pme;
-   uchar reprocess = FALSE;
+   uchar reprocess = false;
    extern void rendedit_process_tilemap(FullMap* map,LGRect* r,uchar newMap);
    LGRect bounds;
 
@@ -1302,20 +1304,20 @@ errtype trap_terrain_func(int p1, int p2, int p3, int p4)
    if (p3 < 0x4000)
    {
       me_tiletype_set(pme,qdata_get(p3));
-      reprocess =TRUE;
+      reprocess =true;
    }
    if (p4 < 0x4000)
    {
       me_param_set(pme,qdata_get(p4));
-      reprocess = TRUE;
+      reprocess = true;
    }
    if (reprocess)
    {
       bounds.ul.x = bounds.lr.x = qdata_get(p1);
       bounds.ul.y = bounds.lr.y = qdata_get(p2);
-      rendedit_process_tilemap(global_fullmap, &bounds, FALSE);
+      rendedit_process_tilemap(global_fullmap, &bounds, false);
    }
-   obj_physics_refresh_area(qdata_get(p1),qdata_get(p2),TRUE);
+   obj_physics_refresh_area(qdata_get(p1),qdata_get(p2),true);
    return(OK);
 }
 
@@ -1328,7 +1330,7 @@ errtype trap_height_func(int p1, int p2, int p3, int p4)
    uchar x,y;
    char steps;
    char ht;
-   uchar did_sfx = FALSE;
+   uchar did_sfx = false;
    extern uchar register_h_event(uchar x, uchar y, uchar floor, char* sem, char* key, uchar no_sfx);
 
    x = qdata_get(p1);
@@ -1347,8 +1349,8 @@ errtype trap_height_func(int p1, int p2, int p3, int p4)
          hse.steps_remaining = steps;
          hse.sfx_code = 0;
          if (p4 >> 16)
-            did_sfx = TRUE;
-         if(register_h_event(x,y,TRUE,&hse.semaphor,&hse.key,p4 >> 16)) {
+            did_sfx = true;
+         if(register_h_event(x,y,true,&hse.semaphor,&hse.key,p4 >> 16)) {
             schedule_event(&(global_fullmap->sched[MAP_SCHEDULE_GAMETIME]), (SchedEvent *)&hse);
          }
       }
@@ -1366,12 +1368,12 @@ errtype trap_height_func(int p1, int p2, int p3, int p4)
          steps = use_val - ht;
          hse.steps_remaining = steps;
          hse.sfx_code = p4 >> 16;
-         if(register_h_event(x,y,FALSE,&hse.semaphor,&hse.key,(did_sfx) ? FALSE : (p4 >> 16))) {
+         if(register_h_event(x,y,false,&hse.semaphor,&hse.key,(did_sfx) ? false : (p4 >> 16))) {
             schedule_event(&(global_fullmap->sched[MAP_SCHEDULE_GAMETIME]), (SchedEvent *)&hse);
          }
       }
    }
-   obj_physics_refresh_area(x, y,TRUE);
+   obj_physics_refresh_area(x, y,true);
    return(OK);
 }
 
@@ -1460,7 +1462,7 @@ errtype real_animate_func(ObjID id, int p2, int p3, int p4)
       real_instance_func(id,frames,-1,p3 & 0x7FFF);
       remove_obj_from_animlist(id);
       objs[id].info.current_frame = reverse?frames-1:0;
-      add_obj_to_animlist(id,TRUE,BIT_SET(p3,15),BIT_SET(p3,16), 0,NULL,NULL,0);
+      add_obj_to_animlist(id,true,BIT_SET(p3,15),BIT_SET(p3,16), 0,NULL,NULL,0);
    }
    else
    {
@@ -1469,9 +1471,9 @@ errtype real_animate_func(ObjID id, int p2, int p3, int p4)
       real_instance_func(id,frames,-1,p2 & 0x7FFF);
       objs[id].info.current_frame = reverse?frames-1:0;
       if (p3 != 0)
-         retval = add_obj_to_animlist(id,FALSE,BIT_SET(p2,15),BIT_SET(p2,16), 0,6,(void *)p3,ANIMCB_REMOVE);
+         retval = add_obj_to_animlist(id,false,BIT_SET(p2,15),BIT_SET(p2,16), 0,6,(void *)p3,ANIMCB_REMOVE);
       else
-         retval = add_obj_to_animlist(id,FALSE,BIT_SET(p2,15),BIT_SET(p2,16), 0,NULL,NULL,0);
+         retval = add_obj_to_animlist(id,false,BIT_SET(p2,15),BIT_SET(p2,16), 0,NULL,NULL,0);
    }
    return(retval);
 }
@@ -1499,12 +1501,12 @@ void hack_shodan_conquer_func(char c)
    LG_memset(shodan_bitmask, 0, SHODAN_BITMASK_SIZE / 8);
    shodan_draw_fs.bits = tmap_static_mem + (SHODAN_BITMASK_SIZE / 8);
    shodan_draw_normal.bits = shodan_draw_fs.bits + (320 * 200);
-   load_res_bitmap(&shodan_draw_fs, SHODAN_FULLSCRN_CONQUER_REF, FALSE);
-   load_res_bitmap(&shodan_draw_normal, SHODAN_CONQUER_REF, FALSE);
+   load_res_bitmap(&shodan_draw_fs, SHODAN_FULLSCRN_CONQUER_REF, false);
+   load_res_bitmap(&shodan_draw_normal, SHODAN_CONQUER_REF, false);
    thresh_fail = 0;
    time_until_shodan_avatar = player_struct.game_time + SHODAN_INTERVAL;
 
-   begin_shodan_conquer_fx(TRUE);
+   begin_shodan_conquer_fx(true);
 }
 
 void hack_armageddon_func(int otrip, int x0, int y0, int r)
@@ -1718,7 +1720,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4)
                   objs[oid].info.current_frame=nu_frame;
                oref=objRefs[oref].next;
             }
-            obj_physics_refresh(OBJ_LOC_BIN_X(where),OBJ_LOC_BIN_Y(where),FALSE);
+            obj_physics_refresh(OBJ_LOC_BIN_X(where),OBJ_LOC_BIN_Y(where),false);
          }
          break;
       case REACTOR_DIGIT_HACK:
@@ -1743,7 +1745,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4)
       case FIXTURE_FRAME_HACK:
          objs[p2].info.current_frame=p3;
          if(p4)
-            mfd_notify_func(MFD_FIXTURE_FUNC,MFD_INFO_SLOT,FALSE,MFD_ACTIVE,TRUE);
+            mfd_notify_func(MFD_FIXTURE_FUNC,MFD_INFO_SLOT,false,MFD_ACTIVE,true);
          break;
       case DOOR_HACK:
          if(objs[p2].obclass==CLASS_DOOR) {
@@ -1754,7 +1756,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4)
             // 0=null; 1=open; 2=close; 3=toggle; 4=disable autoclose
 
             if(p3<4) {
-               closed=door_moving(p2,TRUE)||DOOR_REALLY_CLOSED(p2);
+               closed=door_moving(p2,true)||DOOR_REALLY_CLOSED(p2);
 
                if(p3&&((p3==3)||((p3==1)==closed)))
                   do_multi_stuff(p2);
@@ -1774,8 +1776,8 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4)
             secret_pending_hack = 1;
          else
          {
-	     	gDeadPlayerQuit = TRUE;					// The player is dead.
-			gPlayingGame = FALSE;					// Hop out of the game loop.
+	     	gDeadPlayerQuit = true;					// The player is dead.
+			gPlayingGame = false;					// Hop out of the game loop.
 		}
          break;
       }
@@ -1835,7 +1837,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4)
          break;
       case PANEL_REF_HACK:
          if(player_struct.panel_ref==p2)
-            check_panel_ref(TRUE);
+            check_panel_ref(true);
          break;
       case EARTH_DESTROYED_HACK:
          email_slam_hack(0x01D);
@@ -1871,7 +1873,7 @@ errtype do_multi_stuff(ObjID id)
                }
                break;
          }
-         object_use(id, FALSE, OBJ_NULL);
+         object_use(id, false, OBJ_NULL);
       }
    }
    return(OK);
@@ -1935,7 +1937,7 @@ errtype trap_destroy_object_func(int p1, int p2, int p3, int p4)
 #ifdef AUDIOLOGS
       audiolog_bark_play(p4);
 #endif
-      *trap_use_message = TRUE;
+      *trap_use_message = true;
    }
    return(OK);
 }
@@ -1955,8 +1957,8 @@ errtype trap_email_func(int mung, int time, int p3, int p4)
 #endif
    if (time == 0)
    {
-      add_email_datamunge(mung,TRUE);
-      *trap_use_message = TRUE;
+      add_email_datamunge(mung,true);
+      *trap_use_message = true;
    }
    else
    {
@@ -2026,7 +2028,7 @@ errtype trap_teleport_func(int targ_x, int targ_y, int targ_z, int targlevel)
 {
    ObjLoc newloc;
    errtype errcode = OK;
-   uchar to_cyber = FALSE;
+   uchar to_cyber = false;
    
    if (targlevel >= 0x1000)
       targlevel = player_struct.level;
@@ -2054,7 +2056,7 @@ errtype trap_teleport_func(int targ_x, int targ_y, int targ_z, int targlevel)
          targ_z = qdata_get(targ_z);
           newloc.z = targ_z;
       }
-      obj_move_to(PLAYER_OBJ, &newloc, TRUE);
+      obj_move_to(PLAYER_OBJ, &newloc, true);
       if (to_cyber)
       {
          recall_objloc = newloc;
@@ -2177,7 +2179,7 @@ errtype grind_trap(char type, int p1, int p2, int p3, int p4, ubyte *destroy_cou
 
 uchar trap_activate(ObjID id, uchar *use_message)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    ubyte traptype;
    int comparator;
    int p1,p2,p3,p4;
@@ -2226,14 +2228,14 @@ uchar trap_activate(ObjID id, uchar *use_message)
       p4 = objFixtures[objs[id].specID].p4;
       break;
    default:
-      retval = FALSE;
+      retval = false;
       goto out;
    }
 
    if (comparator_check(comparator, id, &special))
    {
       grind_trap(traptype,p1,p2,p3,p4, destroy_count_ptr,id);
-      retval = TRUE;
+      retval = true;
    }
 out:
    *use_message = *trap_use_message;
@@ -2357,7 +2359,7 @@ errtype do_special_reactor_hack()
       }
       osid = objAnimatings[osid].next;
    }
-   obj_load_art(FALSE);
+   obj_load_art(false);
    return(OK);
 }
 
@@ -2441,10 +2443,10 @@ errtype do_ecology_triggers()
          }
          if (counter < quan)
          {
-            trigger_check = FALSE;
+            trigger_check = false;
             grind_trap(objTraps[osid].trap_type,objTraps[osid].p1,objTraps[osid].p2,objTraps[osid].p3,objTraps[osid].p4,
                &objTraps[osid].destroy_count,objTraps[osid].id);
-            trigger_check = TRUE;
+            trigger_check = true;
          }
       }
       osid = objTraps[osid].next;

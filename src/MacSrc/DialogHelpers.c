@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
+#include <stdbool.h>
+
 #include <Icons.h>
 #include "InitMac.h"
 #include "ShockBitmap.h"
@@ -36,11 +38,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Globals
 //--------------------
-Boolean			gGrayOK = false;
-Boolean			gIgnoreGray = false;
+bool			gGrayOK = false;
+bool			gIgnoreGray = false;
 
 Str255			gDimTitle;
-Boolean			gDimmed;
+bool			gDimmed;
 
 MenuHandle	gPopupMenuHdl;
 short				gPopupSel;
@@ -66,7 +68,7 @@ void FlashButton(WindowPtr dlog, short itemN)
 //------------------------------------------------------------------------------------
 //  Modal dialog filter proc to handle standard events.  So far, just handle "Esc" key.
 //------------------------------------------------------------------------------------
-pascal Boolean ShockFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit)
+pascal bool ShockFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit)
  {
 	char	key;
 	
@@ -94,7 +96,7 @@ pascal Boolean ShockFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit)
 //------------------------------------------------------------------------------------
 //  Modal alert filter proc to handle the "Save prompt" alert.
 //------------------------------------------------------------------------------------
-pascal Boolean ShockAlertFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit)
+pascal bool ShockAlertFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit)
  {
 	char	key;
 	
@@ -334,7 +336,7 @@ short				gSliderLastPos;
 Handle			gSliderThumbHdl = nil;		// Handle to small icon suite for the slider
 ShockBitmap	gSliderBack;						// Bitmap containing slider background
 ShockBitmap	gSliderAsm;						// Bitmap for assembling slider before blitting to screen
-Boolean			gSliderDimmed;					// TRUE if the slider should be drawn dimmed (and disabled)
+bool			gSliderDimmed;					// TRUE if the slider should be drawn dimmed (and disabled)
 
 //------------------------------------------------------------------------------------
 //  Allocate all bitmaps and do other initialization for the slider.
@@ -377,7 +379,7 @@ void SetSliderBitmaps(void)
 	
 	// Make a handle suite for the thumb icon.
 	if (gSliderThumbHdl)
-		DisposeIconSuite(gSliderThumbHdl, TRUE);
+		DisposeIconSuite(gSliderThumbHdl, true);
 	GetIconSuite(&gSliderThumbHdl, (gSliderDimmed) ? kThumbIconDim : kThumbIcon, svAllAvailableData);
 
 	// To initialize the assembly bitmap, copy the background and place the
@@ -486,7 +488,7 @@ short DoSliderTracking(WindowPtr dlog, short itemNum, SliderCallbackProcPtr cb)
 //------------------------------------------------------------------------------------
 void FreeSlider(void)
 {
-	DisposeIconSuite(gSliderThumbHdl, TRUE);
+	DisposeIconSuite(gSliderThumbHdl, true);
 	gSliderThumbHdl = NULL;
 	FreeShockBitmap(&gSliderAsm);
 	FreeShockBitmap(&gSliderBack);

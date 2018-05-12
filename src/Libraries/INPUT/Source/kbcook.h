@@ -31,6 +31,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __KBCOOK_H
 
 #include <ctype.h>
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "error.h"
 #include "kb.h"
 

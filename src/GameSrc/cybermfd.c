@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 
 // Includes for example mfd.
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "gr2ss.h"
@@ -85,8 +86,8 @@ void mfd_cspace_expose(MFD* mfd, ubyte control)
          ss_bitmap(&mfd_background,0,0);
 
       // INSERT GRAPHICS CODE HERE
-      mfd_draw_string("CYBERSPACE",5,3,GOOD_RED,TRUE);
-      mfd_draw_string("MFD",5,13,GOOD_RED,TRUE);
+      mfd_draw_string("CYBERSPACE",5,3,GOOD_RED,true);
+      mfd_draw_string("MFD",5,13,GOOD_RED,true);
       // on a full expose, make sure to draw everything
  
       if (full)

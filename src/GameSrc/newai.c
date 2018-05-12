@@ -24,10 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "ai.h"
 #include "cyber.h"
+#include "edms.h"
 #include "player.h"
 #include "pathfind.h"
 #include "otrip.h"
@@ -226,7 +228,7 @@ errtype run_evil_otto(ObjID id, int dist)
       newloc.y = obj_coord_from_fix(yvec + fix_from_obj_coord(newloc.y));
       newloc.z = objs[PLAYER_OBJ].loc.z;
 //      Warning(("AVATAR_SHODAN at 0x%x, 0x%x (dist = 0x%x)\n",newloc.x,newloc.y,dist));
-      obj_move_to(id,&newloc,FALSE);
+      obj_move_to(id,&newloc,false);
    }
    return(OK);
 }
@@ -257,7 +259,7 @@ uchar do_physics_stupidity(ObjID id, int big_dist)
 //         Spew(DSRC_PHYSICS_Sleeper, ("obj id %x, head = %x, spd = %x, urg = %x\n",id,objCritters[osid].des_heading,
 //            objCritters[osid].des_speed, objCritters[osid].urgency));
       }
-      return(TRUE);
+      return(true);
    }
 
    use_dist = ignore_distance[global_fullmap->cyber];
@@ -272,7 +274,7 @@ uchar do_physics_stupidity(ObjID id, int big_dist)
 //         Warning(("hey, trying to sleep id %x without no physics handle (ph = %x)!\n",id,objs[id].info.ph));
 //      if (EDMS_frere_jaques(objs[id].info.ph))
 //         Spew(DSRC_PHYSICS_Sleeper, ("obj id %x, ph = %d(0x%x) is too far but awake!\n",id,objs[id].info.ph,objs[id].info.ph));
-      return(FALSE);
+      return(false);
    }
 #endif
    if ((!EDMS_frere_jaques(objs[id].info.ph)) && (objCritters[osid].des_speed != 0))
@@ -281,7 +283,7 @@ uchar do_physics_stupidity(ObjID id, int big_dist)
 //      Spew(DSRC_PHYSICS_Sleeper, ("obj id %x, head = %x (vs %x), spd = %x, urg = %x\n",id,objCritters[osid].des_heading,
 //         objCritters[osid].des_speed, objCritters[osid].urgency));   
    }
-   return(TRUE);
+   return(true);
 }
 
 // If our current pathfind is greater than REPATHFIND_DIST away from reality,
@@ -293,7 +295,7 @@ errtype ai_spot_player(ObjID id, uchar *raycast_success)
    ObjCritter *pcrit = &objCritters[osid];
 
 	time_last_seen = player_struct.game_time;
-   *raycast_success = TRUE;
+   *raycast_success = true;
    ai_find_player(id);
 
    // If not friendly, trigger the combat music
@@ -353,7 +355,7 @@ errtype do_stealth_stuff(ObjID id, short base_vis, uchar *raycast_success, fix d
    if (cspace_decoy_obj)
    {
       time_last_seen = player_struct.game_time;
-      *raycast_success = TRUE;
+      *raycast_success = true;
       last_known_loc = objs[cspace_decoy_obj].loc;
    }
    else
@@ -520,7 +522,7 @@ errtype follow_pathfinding(ObjID id, ObjSpecID osid)
                pf_obj_doors(MAP_GET_XY(csq.x, csq.y), MAP_GET_XY(sq.x,sq.y), dir_table[sq.y - csq.y + 1][sq.x - csq.x + 1], &open_me); 
       //      Warning(("open_me = %x, dt = %d from (%x,%x) to (%x,%x)!\n",open_me,dir_table[sq.y - csq.y + 1][sq.x - csq.x + 1],
       //         csq.x,csq.y,sq.x,sq.y));
-            if ((open_me != OBJ_NULL) && (DOOR_CLOSED(open_me)) && !(door_moving(open_me,FALSE)))
+            if ((open_me != OBJ_NULL) && (DOOR_CLOSED(open_me)) && !(door_moving(open_me,false)))
             {
                uchar use_door(ObjID id, uchar in_inv, ObjID cursor_obj);
                use_door(open_me,0x2,OBJ_NULL);
@@ -631,7 +633,7 @@ void check_attitude_adjustment(ObjID id, ObjSpecID osid,int big_dist,uchar rayca
          if (raycast_success || 
             (ray_cast_objects(id, PLAYER_OBJ, VISIBLE_MASS, VISIBLE_SIZE, VISIBLE_SPEED, VISIBLE_RANGE) == PLAYER_OBJ))
          {
-            raycast_success = TRUE;
+            raycast_success = true;
             objCritters[osid].mood = AI_MOOD_ATTACKING;
 #ifdef ANNOYING_COMBAT_SPEW
             Spew(DSRC_AI_Combat, ("id %x Spotted player, attacking!\n"));
@@ -778,11 +780,11 @@ errtype run_combat_ai(ObjID id, uchar raycast_success)
             source.y = OBJ_LOC_BIN_Y(objs[id].loc);
             dest.x = OBJ_LOC_BIN_X(objs[PLAYER_OBJ].loc);
             dest.y = OBJ_LOC_BIN_Y(objs[PLAYER_OBJ].loc);
-            pcrit->path_id = request_pathfind(source,dest,objs[PLAYER_OBJ].loc.z,objs[id].loc.z,TRUE);
+            pcrit->path_id = request_pathfind(source,dest,objs[PLAYER_OBJ].loc.z,objs[id].loc.z,true);
    //         mprintf("combat id %x pathfind request = 0x%x!\n",id,pcrit->path_id);
 
             // if the path we want don't exist, stochastically go back to being neutral
-            check_requests(TRUE);
+            check_requests(true);
             if ((paths[pcrit->path_id].num_steps == 0) && ((rand() & 0xFF) < 0x30))
             {
                objCritters[osid].mood = AI_MOOD_NEUTRAL;
@@ -867,13 +869,13 @@ LGPoint ai_roam_func(ObjID id, ObjSpecID osid)
    objCritters[osid].x1 = 0;
 
    bd = objCritters[osid].y1 ? objCritters[osid].y1 : DEFAULT_BROWNIAN_DIST;
-   okay = FALSE;
+   okay = false;
    while (!okay && (tries < FIND_ROAM_TRIES))
    {
       dest.x = source.x + rand()%bd - (bd/2);
       dest.y = source.y + rand()%bd - (bd/2);
       if (me_tiletype(MAP_GET_XY(dest.x,dest.y)) == TILE_OPEN)
-         okay = TRUE;
+         okay = true;
       tries++;
    }
    return(dest);
@@ -904,7 +906,7 @@ errtype run_peaceful_ai(ObjID id, int big_dist)
 {
    ObjSpecID osid = objs[id].specID;
    LGPoint source,dest;
-   uchar do_path = TRUE;
+   uchar do_path = true;
 
    objCritters[osid].sidestep = 0;
    if (objCritters[osid].path_id != -1)
@@ -928,7 +930,7 @@ errtype run_peaceful_ai(ObjID id, int big_dist)
 //            Spew(DSRC_AI_Pathfind, ("punting roam path!\n"));
             delete_path(objCritters[osid].path_id);
             objCritters[osid].path_id = -1;
-            do_path = FALSE;
+            do_path = false;
          }
       }
       if (do_path)
@@ -947,7 +949,7 @@ errtype run_peaceful_ai(ObjID id, int big_dist)
             dest = ai_order_funcs[objCritters[osid].orders](id,osid);
             if (dest.x != -1)
             {
-               objCritters[osid].path_id = request_pathfind(source,dest,0,objs[id].loc.z,FALSE);
+               objCritters[osid].path_id = request_pathfind(source,dest,0,objs[id].loc.z,false);
 //               mprintf("peaceful id %x pathfind request = 0x%x!\n",id,objCritters[osid].path_id);
 //               Spew(DSRC_AI_Path, ("peace(%x): id %x getting new path (%d), from %x,%x to %x,%x\n",
 //                  big_dist,id,objCritters[osid].path_id,
@@ -991,7 +993,7 @@ errtype ai_run()
       return(OK);
 #endif
 
-   check_requests(FALSE);
+   check_requests(false);
 
    // Check ICE agitation
    if ((global_fullmap->cyber) && (run_ice_time < player_struct.game_time))
@@ -1000,7 +1002,7 @@ errtype ai_run()
    visibility = compute_base_visibility();
 
    // Cycle through all the critters
-   priority_check = FALSE;
+   priority_check = false;
    osid = objCritters[0].id;
    while (osid != OBJ_SPEC_NULL)
    {
@@ -1026,7 +1028,7 @@ errtype ai_run()
       id = objCritters[osid].id;
       if (id == PLAYER_OBJ)
          goto ai_loop_end;
-      raycast_success = FALSE;
+      raycast_success = false;
 
       dist = long_fast_pyth_dist(objs[id].loc.x - objs[PLAYER_OBJ].loc.x,
          objs[id].loc.y - objs[PLAYER_OBJ].loc.y);
@@ -1080,6 +1082,6 @@ ai_loop_end:
       osid = objCritters[osid].next;
    }
    if (priority_check)
-      check_requests(TRUE);
+      check_requests(true);
    return(OK);
 }

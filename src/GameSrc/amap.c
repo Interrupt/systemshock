@@ -201,12 +201,12 @@ void automap_init(int version, int id)
    amptr->zoom=2;
    amptr->lh=grd_bm.h; amptr->lw=grd_bm.w;
    amap_version_set(id,version);
-   amptr->init=TRUE;
+   amptr->init=true;
 }
 
 void amap_invalidate(int id)
 {
-   oAMap(id)->init=FALSE;
+   oAMap(id)->init=false;
 }
 
 void amap_settings_copy(curAMap* from, curAMap* to)
@@ -489,7 +489,7 @@ void obj_mess(curAMap *amptr, MapElem *curmp, int drw, int xm, int ym, int tsize
 #ifdef SVGA_SUPPORT
                      {
                         extern uchar shadow_scale;
-                        shadow_scale = FALSE;
+                        shadow_scale = false;
 #endif
 #ifdef CORRECT_PIXEL_RATIO
                         draw_shadowed_string(buf,xm+1,coor_to_pix(ym-tsize+1),AQUA_8_BASE+col);
@@ -497,7 +497,7 @@ void obj_mess(curAMap *amptr, MapElem *curmp, int drw, int xm, int ym, int tsize
                         draw_shadowed_string(buf,xm+1,ym-tsize+1,AQUA_8_BASE+col);
 #endif
 #ifdef SVGA_SUPPORT
-                        shadow_scale = TRUE;
+                        shadow_scale = true;
                      }
 #endif
                      ResUnlock(RES_tinyTechFont);
@@ -914,7 +914,7 @@ hack_breakout:
 uchar amap_flags(curAMap *amptr, int flags, int set)
 {
    flags&=amptr->avail_flags;
-   if (flags==0) return FALSE;
+   if (flags==0) return false;
    switch (set)
    {
    case AMAP_SET: amptr->flags|=flags; break;
@@ -926,7 +926,7 @@ uchar amap_flags(curAMap *amptr, int flags, int set)
          amptr->flags|=flags;
       break;
    }
-   return TRUE;
+   return true;
 }
 
 uchar amap_zoom(curAMap *amptr, uchar set, int zoom_delta)
@@ -936,12 +936,12 @@ uchar amap_zoom(curAMap *amptr, uchar set, int zoom_delta)
    else
    {
       if (zoom_delta>0)
-       { if (amptr->zoom+zoom_delta>=AMAP_MAX_ZOOM) return FALSE; }
+       { if (amptr->zoom+zoom_delta>=AMAP_MAX_ZOOM) return false; }
       else
-       { if (amptr->zoom+zoom_delta<AMAP_MIN_ZOOM) return FALSE; }
+       { if (amptr->zoom+zoom_delta<AMAP_MIN_ZOOM) return false; }
       amptr->zoom+=zoom_delta;
    }
-   return TRUE;
+   return true;
 }
 
 void amap_pan(curAMap *amptr, int dir, int* dist)
@@ -1036,7 +1036,7 @@ void amap_str_delete(char *toast_str)
 
 uchar amap_get_note(curAMap *amptr, char *buf)
 {
-   uchar retval = TRUE;
+   uchar retval = true;
 // later, do this for real
 // ie base on the string stuff
 #ifdef USE_OBJ
@@ -1054,7 +1054,7 @@ uchar amap_get_note(curAMap *amptr, char *buf)
 #endif
    else
    {
-      retval = FALSE;
+      retval = false;
       strcpy(buf,get_temp_string(REF_STR_NoMapMessage));
    }
    return retval;

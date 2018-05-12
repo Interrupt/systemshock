@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //=====================================================================
 
+#include <string.h>
+
 #include <GestaltEqu.h>
 #include "DialogHelpers.h"
 #include "ShockHelp.h"
@@ -31,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //-----------------
 //  PROTOTYPES
 //-----------------
-Boolean GetHelpMgr(void);
+bool GetHelpMgr(void);
 pascal void DrawHelp(WindowPtr, int);
 
 //-----------------
@@ -50,7 +52,7 @@ void AddHelpMenu(void)
  	MenuHandle	mh;
 	Str255			str;
 	
-	BlockMove("System Shock HelpÉ",str,32L);
+	memmove(str, "System Shock HelpÉ", 32L);
 		
 	if (GetHelpMgr())													// If Help Mgr is available, stick Help
 	{																			// menu item in the Help menu
@@ -188,17 +190,17 @@ void ShowShockHelp(void)
 //--------------------------------------------------------------------
 //	  Returns TRUE if the Help Manager is installed.
 //--------------------------------------------------------------------
-Boolean GetHelpMgr(void)
+bool GetHelpMgr(void)
  {
 	long	result;
 	
 	if (!Gestalt(gestaltHelpMgrAttr, &result)) 
 	 {
 		if (result & 1L)
-			return (TRUE);
+			return (true);
 	 }
 	
-	return(FALSE);
+	return(false);
  }
 
 /*

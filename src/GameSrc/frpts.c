@@ -39,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
+#include <stdbool.h>
 #include <string.h>
 
 #define __FRPTS_SRC
@@ -109,7 +110,7 @@ int fr_pts_resize(int x, int y)					// x, y
 void dumb_hack_for_now(int x, int y);
 void dumb_hack_for_now(int x, int y)
 {
-   uchar tran_sv=FALSE, d=TRUE;
+   uchar tran_sv=false, d=true;
    ushort *_cur_rowv, *_nxt_rowv;
    g3s_phandle *_cur_pt, *_fr_curb, *_fr_curn;
    g3s_vector   _pt_vec;
@@ -117,11 +118,11 @@ void dumb_hack_for_now(int x, int y)
    _fr_sdbg(NEW_PTS,mprintf("dhon %d %d...",x,y));
 
    if (pt_rowv[0][x]==y) // go from [0]
-      tran_sv=TRUE;
+      tran_sv=true;
    else if (pt_rowv[1][x]==y)
    {
-      tran_sv=TRUE;
-      d=FALSE;
+      tran_sv=true;
+      d=false;
    }
    else
    {

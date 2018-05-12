@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	Get on with it then...
 //	======================
 #include <iostream>
-#include "EDMS_Int.h"				//Object types, END conventions, etc.
+#include "edms_int.h"				//Object types, END conventions, etc.
 #include "idof.h"
 
 #include "physhand.h"
@@ -395,13 +395,13 @@ extern "C"
 //      ==========================================
 uchar    EDMS_frere_jaques( physics_handle ph )
 {
-   uchar    rval = FALSE;
+   uchar    rval = false;
 
 // condomate...
 // ------------
    if ( ph > -1 )
    {
-      if ( no_no_not_me[ ph2on[ph] ] == 1 ) rval = TRUE;
+      if ( no_no_not_me[ ph2on[ph] ] == 1 ) rval = true;
    }
 
    return rval;

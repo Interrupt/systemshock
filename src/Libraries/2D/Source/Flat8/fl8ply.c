@@ -77,7 +77,7 @@ int gri_poly_loop (grs_tmap_loop_info *ti)
 	        break;
 	     }
 	  } else if (d<0) {
-	     return TRUE;
+	     return true;
 	  }
 	  /* update span extrema and destination. */
 	  ti_d+=grow;
@@ -88,7 +88,7 @@ int gri_poly_loop (grs_tmap_loop_info *ti)
 	ti->d = ti_d;
 	ti->right.x = ti_right_x;
 	ti->left.x = ti_left_x;
-	return FALSE;
+	return false;
 }
 
 void gri_solid_poly_init (grs_tmap_loop_info *ti)

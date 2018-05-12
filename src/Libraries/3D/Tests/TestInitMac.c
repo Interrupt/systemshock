@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
+
+#include <stdbool.h>
 #include <Carbon/Carbon.h>
 //#include <Palettes.h>
 //#include <GestaltEqu.h>
@@ -57,7 +59,7 @@ short				gScreenWide, gScreenHigh;
 short				gActiveWide, gActiveHigh;
 short				gActiveLeft, gActiveTop;
 Rect				gActiveArea, gOffActiveArea;
-Boolean			gIsPowerPC = false;
+bool				gIsPowerPC = false;
 long				gDataDirID;
 short				gDataVref;
 long				gAlogDirID;

@@ -185,7 +185,7 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
             }
             break;
          }
-      } else if (d<0) return TRUE; /* punt this tmap */
+      } else if (d<0) return true; /* punt this tmap */
       
 			
       tli->w+=tli->dw;
@@ -229,7 +229,7 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
          
    } while (--(tli->n) > 0);
 
-	return FALSE;
+	return false;
 
 // handle 68K loops
 #else
@@ -371,7 +371,7 @@ asm int Handle_Wall_68K_Loop(fix u, fix v, fix du, fix dv, fix dy,
 
 @Done:
   movem.l	(sp)+,d0-d7/a0-a6
-	moveq		#FALSE,d0
+	moveq		#false,d0
   rts
 
 @Err: 	
@@ -635,7 +635,7 @@ int HandleWallLoop1D_C(grs_tmap_loop_info *tli,
            *p_dest = t_clut[t_bits[k]];	// gr_fill_upixel(t_clut[t_bits[k]],t_x,y);
            v+=dv; p_dest += gr_row; 
           }
-      } else if (k<0) return TRUE; // punt this tmap 
+      } else if (k<0) return true; // punt this tmap
 			
       tli->w+=tli->dw;
 
@@ -868,7 +868,7 @@ asm int Handle_Wall_68K_Loop_1D(fix u, fix v, fix dv, fix dy,
 
 @Done:
   movem.l	(sp)+,d0-d7/a0-a6
-	moveq		#FALSE,d0
+	moveq		#false,d0
   rts
 
 @Err: 	

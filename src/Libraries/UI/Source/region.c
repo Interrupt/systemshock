@@ -58,7 +58,7 @@ errtype region_add_sequence_expose(LGRegion *reg, LGRect exp_rect);
 /* Globals */
 
 int region_in_sequence = 0;
-uchar region_system_init = FALSE, region_found;
+uchar region_system_init = false, region_found;
 slist_head sequence_header;
 LGRegion *obsc_region, *current_expose_region;
 
@@ -68,7 +68,7 @@ errtype init_rse_pool();
 
 errtype region_init()
 {
-   region_system_init = TRUE;
+   region_system_init = true;
    slist_init(&sequence_header);
    init_rse_pool();
    return(OK);
@@ -198,7 +198,7 @@ errtype region_move(LGRegion *reg, int new_x, int new_y, int new_z)
    LGRegion *lastp, *curp;
 
    /* trigger the "picking up" callbacks */
-   region_remove(reg,TRUE);
+   region_remove(reg,true);
 
    // Spew(DSRC_UI_Region_Manipulation, ("after region_remove call..."));
    /* Update the database numbers */
@@ -291,7 +291,7 @@ int region_traverse_point(LGRegion *reg, LGPoint target, TravRectCallback fn, in
    inter.ul = target;
    inter.lr = target;
    if ((reg->status_flags & INVISIBLE_FLAG) != 0)
-      return FALSE;
+      return false;
    if (RectTestPt(reg->r, target))
       iflag = 1;
    if ((order == BOTTOM_TO_TOP) && iflag)
@@ -330,7 +330,7 @@ int region_traverse_rect(LGRegion *reg, LGRect *target, TravRectCallback fn, int
    // Spew(DSRC_UI_Traversal, ("r_t_r -- target = (%d, %d) - (%d, %d) %s->r = (%d, %d) - (%d, %d)\n",
    //  RECT_PRINT_ARGS(target), GD_NAME(reg), RECT_PRINT_ARGS(reg->r)));
    if ((reg->status_flags & INVISIBLE_FLAG) != 0)
-      return FALSE;
+      return false;
    if (RectTestSect(reg->r, target)) {
       RectSect(reg->r, target, &inter);
       iflag = 1;
@@ -373,7 +373,7 @@ int region_traverse(LGRegion *reg, TravCallback fn, int order, void *data)
 
    // Spew(DSRC_UI_Traversal, ("r_traverse -- %s\n",GD_NAME(reg)));
    if ((reg->status_flags & INVISIBLE_FLAG) != 0)
-      return FALSE;
+      return false;
    if (order == BOTTOM_TO_TOP)
    {
       // Spew (DSRC_UI_Traversal, ("BOTTOM_TO_TOP, root case\n"));
@@ -612,12 +612,12 @@ uchar reg_exp_CB(LGRegion *reg, LGRect *rc, void *data)
    if ((!(*dbp)) && !(current_expose_region->moving))
    {
       if (reg == current_expose_region)
-         *dbp = TRUE;
+         *dbp = true;
       else
       {
          // Spew(DSRC_UI_Callbacks, ("Did not display region %s (vs. %s) (%d,%d)(%d,%d)\n",GD_NAME(reg),GD_NAME(current_expose_region),
          //   RECT_EXPAND_ARGS(rc)));
-         return(FALSE);
+         return(false);
       }
    }
 
@@ -626,13 +626,13 @@ uchar reg_exp_CB(LGRegion *reg, LGRect *rc, void *data)
       // Spew(DSRC_UI_Callbacks, ("Expose CB sent! (%d,%d)(%d,%d)\n", RECT_EXPAND_ARGS(rc)));
       reg->expose(reg, rc);
    }
-   return (FALSE);
+   return (false);
 }
 
 errtype region_expose_absolute(LGRegion *reg, LGRect *newr)
 {
    LGRect absr, dummy_rect;
-   uchar draw_beneath = TRUE;
+   uchar draw_beneath = true;
    LGRegion *par;
 
    absr.ul.x = reg->abs_x; absr.ul.y = reg->abs_y;
@@ -643,7 +643,7 @@ errtype region_expose_absolute(LGRegion *reg, LGRect *newr)
    // Spew(DSRC_UI_Callbacks, ("Expose of %s (%d,%d)(%d,%d) -- newr = (%d,%d)(%d,%d)\n",GD_NAME(reg),
    //    RECT_EXPAND_ARGS(&absr), RECT_EXPAND_ARGS(newr)));
    if (RECT_ENCLOSES(&absr, newr))
-      draw_beneath = FALSE;
+      draw_beneath = false;
    current_expose_region = reg;
    uiHideMouse(&absr);
    region_traverse_rect(par, newr, &reg_exp_CB, BOTTOM_TO_TOP, &draw_beneath);
@@ -730,12 +730,12 @@ errtype region_abs_rect(LGRegion *reg, LGRect *orig_rect, LGRect *conv)
 
 uchar is_child(LGRegion *poss_parent, LGRegion *child)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
    LGRegion *curp;
 
    if (child == poss_parent)
    {
-      return(TRUE);
+      return(true);
    }
    curp = poss_parent->sub_region;
    while (curp != NULL)
@@ -743,11 +743,11 @@ uchar is_child(LGRegion *poss_parent, LGRegion *child)
       retval = is_child(curp, child);
       if (retval)
       {
-         return(TRUE);
+         return(true);
       }
       curp = curp->next_region;
    }
-   return(FALSE);
+   return(false);
 }
 
 uchar ignore_children;
@@ -759,18 +759,18 @@ uchar region_obscured_callback(LGRegion *reg, LGRect *r, void *data)
    if (!region_found)
    {
       if (reg == obsc_region)
-         region_found = TRUE;
-      return(FALSE);
+         region_found = true;
+      return(false);
    }
    if (ignore_children)
    {
       if (is_child(obsc_region,reg))
       {
-         return(FALSE);
+         return(false);
       }
    }
    if (reg->moving)
-      return(FALSE);
+      return(false);
    ival = (int *)data;
    region_abs_rect(reg, r, &ar1);
    region_abs_rect(obsc_region, obsc_region->r, &ar2);
@@ -784,7 +784,7 @@ uchar region_obscured_callback(LGRegion *reg, LGRect *r, void *data)
          *ival = PARTIALLY_OBSCURED;
    }
    // Spew(DSRC_UI_Utilities, ("*ival = %d\n",*ival));
-   return(FALSE);
+   return(false);
 }
 
 int region_obscured(LGRegion *reg, LGRect *obs_rect)
@@ -794,9 +794,9 @@ int region_obscured(LGRegion *reg, LGRect *obs_rect)
    LGRegion *rr;
 
    obsc_region = reg;
-   region_found = FALSE;
+   region_found = false;
    region_convert_to_root(reg, &rr, obs_rect, &newr);
-   ignore_children = FALSE;
+   ignore_children = false;
    if (reg != NULL)
       region_traverse_rect(rr, &newr, &region_obscured_callback, BOTTOM_TO_TOP, &retval);
    return(retval);
@@ -809,9 +809,9 @@ int foreign_region_obscured(LGRegion *reg, LGRect *obs_rect)
    LGRegion *rr;
      
    obsc_region = reg;
-   region_found = FALSE;
+   region_found = false;
    region_convert_to_root(reg, &rr, obs_rect, &newr);
-   ignore_children = TRUE;
+   ignore_children = true;
    if (reg != NULL)
       region_traverse_rect(rr, &newr, &region_obscured_callback, BOTTOM_TO_TOP, &retval);
    return(retval);
@@ -887,7 +887,7 @@ errtype region_end_sequence(uchar replay)
 errtype region_add_sequence_expose(LGRegion *reg, LGRect exp_rect)
 {
    Region_Sequence_Element *rse, *pnode;
-   uchar add_flag = TRUE;
+   uchar add_flag = true;
    rse = get_rse_from_pool();
    if (rse == NULL)
    {
@@ -902,7 +902,7 @@ errtype region_add_sequence_expose(LGRegion *reg, LGRect exp_rect)
 //         && PointsEqual(pnode->exp_rect.lr, exp_rect.lr))
 
         if (add_flag && (pnode->reg == reg) && RECT_ENCLOSES(&(exp_rect),&(pnode->exp_rect)))
-            add_flag = FALSE;
+            add_flag = false;
    }
    if (add_flag)
    {

@@ -25,10 +25,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Includes
+
+#include <stdbool.h>
+
+#include "fix.h"
 #include "handart.h"
 #include "objclass.h"
 #include "weapons.h"
 #include "player.h"
+#include "res.h"
 #include "handart.h"
 #include "hand.h"
 #include "fullscrn.h"
@@ -111,8 +116,8 @@ byte energy_hand_info[NUM_ENERGY_GUN][NUM_FRAMES] =
 ubyte handart_count = 2;
 ubyte hand_bobbing = HAND_BOB;
 ubyte hand_bobx = HAND_BOBX;
-uchar bob_up = TRUE;
-uchar bob_left = TRUE;
+uchar bob_up = true;
+uchar bob_left = true;
 void reset_handart_count(int wpn_num);
 
 
@@ -167,7 +172,7 @@ Ref get_handart(int *x_offset, int *y_offset, short mouse_x, short mouse_y)
                {
                   if (hand_bobbing >= BOB_MAX)
                   {
-                     bob_up = FALSE;
+                     bob_up = false;
                      hand_bobbing --;
                   }
                   else
@@ -177,7 +182,7 @@ Ref get_handart(int *x_offset, int *y_offset, short mouse_x, short mouse_y)
                {
                   if (hand_bobbing <= BOB_MIN)
                   {
-                     bob_up = TRUE;
+                     bob_up = true;
                      hand_bobbing ++;
                   }
                   else
@@ -187,7 +192,7 @@ Ref get_handart(int *x_offset, int *y_offset, short mouse_x, short mouse_y)
                {
                   if (hand_bobx <= BOBX_MIN)
                   {
-                     bob_left = FALSE;
+                     bob_left = false;
                      hand_bobx++;
                   }
                   else hand_bobx--;
@@ -196,7 +201,7 @@ Ref get_handart(int *x_offset, int *y_offset, short mouse_x, short mouse_y)
                {
                   if (hand_bobx >= BOBX_MAX)
                   {
-                     bob_left = TRUE;
+                     bob_left = true;
                      hand_bobx--;
                   }
                   else hand_bobx++;
@@ -283,7 +288,7 @@ void notify_draw_handart(void)
    // once a fire frame has been shown, set handart_fire to TRUE
    // - this is so we definitely show the fire frame, otherwise it would looooook very goooooofy - minman
 
-   handart_fire = TRUE;
+   handart_fire = true;
 }
 
 void reset_handart_count(int wpn_num)

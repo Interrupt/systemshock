@@ -98,7 +98,7 @@ uchar  FF_terrain( fix X, fix Y, fix Z, uchar fast, terrain_ff* TFF ) {
 
 	TFF->terrain_information = 0;
 
-	return (TRUE);
+	return (true);
 }
 
 
@@ -127,7 +127,7 @@ fix		dx, dy, rot, timestep = fix_make(0,0x03ae);
 physics_handle	m1, m2, m3, m4, m5, m6, m7, m8;
 //physics_handle  death_comes_calling;
 
-bool		killed_m2 = FALSE;
+bool		killed_m2 = false;
 int		i = 0;
 
 short		mouse_x,
@@ -196,7 +196,7 @@ fix	skeleton0[50],
 	robot.hardness	= fix_make(15,0);		// 15
 	robot.pep  		= fix_make(5,0);
 	robot.gravity	= fix_make(4,0);
-	robot.cyber_space = FALSE;
+	robot.cyber_space = false;
 
 	state.X = fix_make(0,0);	state.X_dot = fix_make(1,0x8000);
 	state.Y = fix_make(0,0);	state.Y_dot = fix_make(0,0x8000);
@@ -214,7 +214,7 @@ fix	skeleton0[50],
 	elvis.pep  		= fix_make(5,0);
 	elvis.gravity	= fix_make(4,0);
 	elvis.height 	= fix_make(0, 0xbd00);
-	elvis.cyber_space = FALSE;
+	elvis.cyber_space = false;
 
 	state.X = fix_make(4,0);	state.X_dot = fix_make(1,0x8000);
 	state.Y = fix_make(1,0);	state.Y_dot = fix_make(0,0x8000);

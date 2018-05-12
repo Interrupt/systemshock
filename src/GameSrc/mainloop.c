@@ -39,10 +39,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __MAINLOOP_SRC
 
+#include <stdbool.h>
 #include <stdio.h>
 
 #include "criterr.h"
+#include "error.h"
 #include "init.h"
+#include "lg.h"
 #include "rendtool.h"
 #include "game_screen.h"
 #include "fullscrn.h"
@@ -58,10 +61,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <wsample.h>
 */
 // how is the game doing, anyway, set to true at end of time
-uchar cit_success=FALSE;
+uchar cit_success=false;
 
 // are we "paused"
-uchar game_paused = FALSE;
+uchar game_paused = false;
 
 void ShockMain(void);
 
@@ -138,7 +141,7 @@ void ShockMain(void)
 		chg_set_flg(_static_change);
 	}
 */
-	cit_success=TRUE;
+	cit_success=true;
 	// hit them atexit's
 }
 

@@ -23,11 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/10/27 04:56:12 $
  */
 
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "Shock.h"
 #include "MoviePlay.h"
 
+#include "edms.h"
 #include "effect.h"
 #include "newmfd.h"
 #include "damage.h"
@@ -96,7 +99,7 @@ void critter_hit_effect(ObjID target, ubyte effect,Combat_Pt location, int damag
 void destroy_destroyed_objects(void)
 {
    int      i, j;
-   uchar     change_target = FALSE;
+   uchar     change_target = false;
    uchar     dupe;
    ObjID    id;
 
@@ -111,14 +114,14 @@ void destroy_destroyed_objects(void)
          // to us later...
          // Yeah, yeah, so this is an N-squared algorithm, but hopefully the size of
          // the list is pretty damn short...
-         dupe = FALSE;
+         dupe = false;
          id = destroyed_ids[i];
 
          for (j=i+1; j < destroyed_obj_count; j++)
          {
             if (id == destroyed_ids[j])
             {
-               dupe = TRUE;
+               dupe = true;
                break;
             }
          }
@@ -139,20 +142,20 @@ void destroy_destroyed_objects(void)
                }
                else if (objs[id].obclass == CLASS_GRENADE)
                {
-                  do_grenade_explosion(id, TRUE);
+                  do_grenade_explosion(id, true);
                }
 
                // If we destroyed a creature which was being targeted, we
                // need to switch the current target
                if (destroyed_ids[i] == player_struct.curr_target)
-                  change_target = TRUE;
+                  change_target = true;
 
                obj_destroy(destroyed_ids[i]);
 
                if (change_target)
                {
                   toggle_current_target();
-                  change_target = FALSE;
+                  change_target = false;
                }
             }
          }
@@ -175,13 +178,13 @@ void destroy_destroyed_objects(void)
 uchar is_obj_destroyed(ObjID id)
 {
    int   i;
-   uchar  found = FALSE;
+   uchar  found = false;
 
    for (i=0; i<destroyed_obj_count;i++)
    {
       if (destroyed_ids[i] == id)
       {
-         found = TRUE;
+         found = true;
          break;
       }
    }
@@ -408,16 +411,16 @@ int shield_absorb_damage(int damage, ubyte ub, byte shield_absorb, ubyte shield_
    // let's get the percentage absorbed (w.r.t. the VOODOO_SHIELD_THRESHOLD)
    shield_drain = (ubyte) (((int) shield_drain << 8) / VOODOO_SHIELD_THRESHOLD);
 
-   if ((shield_used = (shield_drain > 0)) == TRUE)
+   if ((shield_used = (shield_drain > 0)) == true)
       set_dmg_percentage(DMG_SHIELD,shield_drain);
 
    return(damage);
 }
 
 
-uchar alternate_death = FALSE;
-extern Boolean	gPlayingGame;
-extern Boolean	gDeadPlayerQuit;
+uchar alternate_death = false;
+extern bool	gPlayingGame;
+extern bool	gDeadPlayerQuit;
 
 // kill_player()
 // kills the player, checks for traps and stuff, so on
@@ -425,7 +428,7 @@ extern Boolean	gDeadPlayerQuit;
 uchar kill_player(void)
 {
    ObjSpecID osid;
-   uchar quick_death = TRUE;
+   uchar quick_death = true;
    uchar dummy;
    extern uchar clear_player_data;
 
@@ -436,14 +439,14 @@ uchar kill_player(void)
    {
       if (ID2TRIP(objTraps[osid].id)==PLRDETH_TRIG_TRIPLE)
          if (trap_activate(objTraps[osid].id, &dummy))
-            quick_death = FALSE;
+            quick_death = false;
       osid = objTraps[osid].next;
    }
 
    // if we died not from a trap - then we should clear the player data
 #ifdef TEST_REBIRTH
-   clear_player_data = FALSE;
-   return FALSE;
+   clear_player_data = false;
+   return false;
 #else
    clear_player_data = (quick_death | alternate_death);
 
@@ -451,8 +454,8 @@ uchar kill_player(void)
    {
       amap_reset();
      secret_render_fx=0;
-     gDeadPlayerQuit = TRUE;
-	 gPlayingGame = FALSE;															// Hop out of the game loop.
+     gDeadPlayerQuit = true;
+	 gPlayingGame = false;															// Hop out of the game loop.
    }
 
    return(quick_death | alternate_death);
@@ -529,7 +532,7 @@ void player_dies()
    // hey no more things to do to player while he's dead
    // it's really a secret - don't do things to player
    // while there are cool secret_render_fx going on
-   player_struct.dead = TRUE;
+   player_struct.dead = true;
    set_dmg_percentage(DMG_BLOOD, 100); // 100 is an arbitrary number - we're trying to get it to do red static
 	secret_render_fx=DYING_REND_SFX;
 
@@ -547,7 +550,7 @@ ubyte damage_player(int damage, ubyte dtype, ubyte flags)
 {
    ubyte *cur_hp;
    short rawval;
-   uchar dead = 0, damage_dealt=FALSE;
+   uchar dead = 0, damage_dealt=false;
    char dlev, dmg_type=DMG_BLOOD;
 
    if (secret_render_fx > 0)
@@ -562,7 +565,7 @@ ubyte damage_player(int damage, ubyte dtype, ubyte flags)
    cur_hp= (global_fullmap->cyber) ?
       &player_struct.cspace_hp : &player_struct.hit_points;
 
-   shield_used = FALSE;
+   shield_used = false;
 
    // check if shields should play a role
    if ((dtype==RADIATION_TYPE)||(dtype==BIO_TYPE))
@@ -611,7 +614,7 @@ ubyte damage_player(int damage, ubyte dtype, ubyte flags)
    // did we take more damage than hit points?? - eeeegggads! we're dead
    if ((*cur_hp)<=damage)
    {
-      damage_dealt=TRUE;
+      damage_dealt=true;
       {
 		   if (global_fullmap->cyber)
 		   {  // No matter what, the player can't be killed in one shot.....it takes at least two shots
@@ -628,12 +631,12 @@ ubyte damage_player(int damage, ubyte dtype, ubyte flags)
 #endif 
                {
                   *cur_hp = 0;
-                  dead = TRUE;
+                  dead = true;
 
                   // if we're carrying an object - let's drop it here!
                   if (object_on_cursor != OBJ_NULL)
                   {
-                     obj_move_to(object_on_cursor,&objs[PLAYER_OBJ].loc,TRUE);
+                     obj_move_to(object_on_cursor,&objs[PLAYER_OBJ].loc,true);
                      pop_cursor_object();
                   }
 
@@ -678,8 +681,8 @@ ubyte damage_object(ObjID target_id, int damage, int dtype, ubyte flags)
 {
    int   obclass = objs[target_id].obclass;
    int   dead = 0;
-   uchar  tranq=FALSE;
-   uchar  stun= FALSE;
+   uchar  tranq=false;
+   uchar  stun= false;
    short target_hp = ObjProps[OPNUM(target_id)].hit_points;
 
    // If we've already been destroyed, or don't care, thendon't bother us.
@@ -706,7 +709,7 @@ ubyte damage_object(ObjID target_id, int damage, int dtype, ubyte flags)
 
             if (tranq)
             {
-               tranq = FALSE;
+               tranq = false;
                // okay tranq - only if we've done damage, and we're lucky and the damage we're doing
                // is a decent amount of the remaining life
                if (damage)
@@ -715,7 +718,7 @@ ubyte damage_object(ObjID target_id, int damage, int dtype, ubyte flags)
             else if (stun)
             {
                if (objs[target_id].subclass == CRITTER_SUBCLASS_ROBOT)
-                  stun = FALSE;
+                  stun = false;
                else
                   stun = (RndRange(&damage_rnd, 0, 100) < pct);
             }
@@ -771,7 +774,7 @@ ubyte damage_object(ObjID target_id, int damage, int dtype, ubyte flags)
 
       // If we damaged the currently targeted creature, let mfds know...
       if ((target_id == player_struct.curr_target) && !global_fullmap->cyber)
-         mfd_notify_func(MFD_TARGET_FUNC, MFD_TARGET_SLOT, FALSE, MFD_ACTIVE, TRUE);
+         mfd_notify_func(MFD_TARGET_FUNC, MFD_TARGET_SLOT, false, MFD_ACTIVE, true);
 
    }
    return(dead);
@@ -786,7 +789,7 @@ uchar simple_damage_object(ObjID target, int damage, ubyte dtype, ubyte flags)
 {
    if (object_affect(target,1 << (dtype-1) ))
       return damage_object(target,damage,dtype,flags);
-   return FALSE;
+   return false;
 }
 
 #define FIRST_ENRG_PROJ_TYPE     7
@@ -881,7 +884,7 @@ void slow_proj_hit(ObjID id, ObjID victim)
 uchar special_terrain_hit(ObjID cobjid)
 {
    if (is_obj_destroyed(cobjid))
-      return TRUE;
+      return true;
 
    if (objs[cobjid].obclass==CLASS_GRENADE)
    {
@@ -889,7 +892,7 @@ uchar special_terrain_hit(ObjID cobjid)
          ADD_DESTROYED_OBJECT(cobjid);
       else
       {
-         return FALSE;     // dead grenades stay alive
+         return false;     // dead grenades stay alive
          // in the sense that they are not live, but should remain physics live, see
       }
    }
@@ -897,7 +900,7 @@ uchar special_terrain_hit(ObjID cobjid)
    {
       // only one terrain hit per turn!
       if (objPhysicss[objs[cobjid].specID].p3.x)
-         return FALSE;
+         return false;
       else
          objPhysicss[objs[cobjid].specID].p3.x = 3;
 
@@ -905,13 +908,13 @@ uchar special_terrain_hit(ObjID cobjid)
       EDMS_obey_collisions(objs[cobjid].info.ph);
 
       if (PhysicsProps[CPNUM(cobjid)].flags & PROJ_PRESERVE_WALL)
-         return FALSE;
+         return false;
 
       // Signal a miss to our controller
       ai_misses(objs[objPhysicss[objs[cobjid].specID].owner].specID);
    }
    ADD_DESTROYED_OBJECT(cobjid);
-   return TRUE;
+   return true;
 }
 
 #define DMG_THRESH  0x60000
@@ -923,7 +926,7 @@ uchar special_terrain_hit(ObjID cobjid)
 #ifdef CALLS_WERENT_SLOW
 uchar terrain_damage_object(physics_handle ph, fix raw_damage)
 {
-   uchar dead = FALSE;
+   uchar dead = false;
    ObjID target = physics_handle_to_id(ph);
 
    if (ObjProps[OPNUM(cobjid)].flags & SPCL_TERR_DMG)
@@ -932,7 +935,7 @@ uchar terrain_damage_object(physics_handle ph, fix raw_damage)
       {
          objs[target].info.current_hp = 0;
          ADD_DESTROYED_OBJECT(target);
-         dead = TRUE;
+         dead = true;
       }
    }
    else
@@ -1155,7 +1158,7 @@ ubyte attack_object(ObjID target, int damage_type,int damage_mod, ubyte offense,
       objs[target].info.current_hp=0;
       if (effect)
 	      *effect = ObjProps[OPNUM(target)].destroy_effect;
-      return(TRUE);
+      return(true);
    }
    return(damage_object(target, damage, damage_type, flags));
 }
@@ -1181,8 +1184,8 @@ ubyte player_attack_object(ObjID target, int wpn_triple, int power_level, Combat
    ubyte special_effect = 0;
    ubyte flags = 0;
    ObjID effect_id = OBJ_NULL;
-   uchar  dead = FALSE;
-   uchar  new_loc = FALSE;
+   uchar  dead = false;
+   uchar  new_loc = false;
    ObjLoc            loc;
    ubyte effect_class = (objs[target].obclass == CLASS_CRITTER) ? CritterProps[CPNUM(target)].hit_effect : NON_CRITTER_EFFECT;
 
@@ -1191,7 +1194,7 @@ ubyte player_attack_object(ObjID target, int wpn_triple, int power_level, Combat
        (get_player_ware_version(WARE_HARD,HARDWARE_TARGET) > 3) && (player_struct.curr_target == OBJ_NULL)
        && (!global_fullmap->cyber))
    {
-      select_current_target(target,FALSE);
+      select_current_target(target,false);
    }
 
    switch (wpn_class)
@@ -1277,7 +1280,7 @@ ubyte player_attack_object(ObjID target, int wpn_triple, int power_level, Combat
 
       if (old_effect != effect)
       {
-         new_loc = TRUE;
+         new_loc = true;
          loc = objs[target].loc;
       }
    }
@@ -1339,7 +1342,7 @@ ubyte player_attack_object(ObjID target, int wpn_triple, int power_level, Combat
       if (effect_id!=OBJ_NULL)
       {
          beam_effect_id = effect_id;
-         hudobj_set_id(beam_effect_id, TRUE);
+         hudobj_set_id(beam_effect_id, true);
       }
    }
 

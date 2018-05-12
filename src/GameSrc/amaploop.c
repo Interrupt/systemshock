@@ -27,11 +27,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
-#include "../MacSrc/ShockBitmap.h"
+#include "ShockBitmap.h"
 
 #include "audiolog.h"
 #include "criterr.h"
 #include "tools.h"
+#include "event.h"
 #include "gamescr.h"
 #include "rcolors.h"
 #include "mainloop.h"
@@ -138,7 +139,7 @@ static uchar      bcolor[]={GREEN_8_BASE+7,GREEN_8_BASE+3,GREEN_8_BASE,GREEN_8_B
 static int        cur_btn_hgt;
 static char      *cur_mapnote_base=NULL;
 static char      *cur_mapnote_ptr=NULL;
-static uchar       last_msg_ok=TRUE;
+static uchar       last_msg_ok=true;
 static ulong      map_scrolltime=0L;
 static int      map_scroll_d=0;
 static char       map_scroll_code=0;
@@ -490,9 +491,9 @@ uchar pend_check(void)
       fsmap_btn_pending=0;
       chg_set_flg(AMAP_BUTTON_EV);
 //      mprintf("done %x\n",fsmap_buttons);
-      return TRUE;
+      return true;
    }
-   return FALSE;
+   return false;
 }
 
 
@@ -509,7 +510,7 @@ uchar amap_scroll_handler(uiEvent* ev, LGRegion * reg, void* v)
    short code;
    curAMap* amptr=oAMap(MFD_FULLSCR_MAP);
 
-   if(map_scroll_code==0) return FALSE;
+   if(map_scroll_code==0) return false;
 
    if(ev->type==UI_EVENT_KBD_POLL) {
       map_scroll_code=0;
@@ -520,20 +521,20 @@ uchar amap_scroll_handler(uiEvent* ev, LGRegion * reg, void* v)
          case LEFT_ARROW_CODE: map_scroll_code=AMAP_PAN_W; break;
          case RIGHT_ARROW_CODE: map_scroll_code=AMAP_PAN_E; break;
       }
-      if(map_scroll_code==0) return FALSE;
+      if(map_scroll_code==0) return false;
    }
 
    now=*tmd_ticks;
    elapsed=now-map_scrolltime;
    if(elapsed<(CIT_CYCLE/SCROLL_FRATE))
-      return TRUE;
+      return true;
    map_scrolltime=now;
    map_scroll_d += (elapsed*MAP_SCROLL_SPEED*AMAP_DEF_DST)/CIT_CYCLE;
    amap_pan(amptr,map_scroll_code,&map_scroll_d);
    s_bf(BTN_RECENTER,AMAP_SET);
    pend_check();
    chg_set_flg(AMAP_MAP_EV);
-   return TRUE;
+   return true;
 }
 
 void edit_mapnote(curAMap* amptr)
@@ -563,11 +564,11 @@ uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte b)
 			map_scroll_code=0;
 		}
 		pend_check();
-		return TRUE;
+		return true;
 	}
 
 	if (!(action&MOUSE_DOWNS))
-		return FALSE;
+		return false;
 
 	ui_mouse_constrain_xy(x,y,x,y);
 	
@@ -621,7 +622,7 @@ uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte b)
 			map_scrolltime=*tmd_ticks;
 			
 			if ((abs(abs(x)-abs(y)))<3)
-				return TRUE; // null pan area...
+				return true; // null pan area...
 			if (abs(x)>abs(y))   // ew
 				if (x>0)
 					map_scroll_code=AMAP_PAN_E;
@@ -641,7 +642,7 @@ uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte b)
 
       scregion=AMAP_MAP_EV;
       x-=AMAP_LFT(grd_bm.w);
-      if ((x<=0)||(y<=0)) return TRUE;  // not really in map
+      if ((x<=0)||(y<=0)) return true;  // not really in map
       prev_note=amptr->note_obj;
       if ((deal_data=amap_deal_with_map_click(amptr,&x,&y))!=NULL)
       {
@@ -656,7 +657,7 @@ uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte b)
             }
             clear_cur_mapnote();
          }
-         last_msg_ok=TRUE;
+         last_msg_ok=true;
          chg_set_flg(AMAP_MESSAGE_EV|AMAP_MAP_EV);
          if (deal_data!=AMAP_NOTE_HACK_PTR)
          {
@@ -665,7 +666,7 @@ uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte b)
                fsmap_new_msg(amptr);
             else
             {
-               last_msg_ok=FALSE;
+               last_msg_ok=false;
                clear_cur_mapnote();
                Warning(("No more mapnote space\n"));
             }
@@ -677,7 +678,7 @@ uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte b)
 //         }
       }
       else {
-         last_msg_ok=FALSE;
+         last_msg_ok=false;
          chg_set_flg(AMAP_MESSAGE_EV);
       }
    }
@@ -692,10 +693,10 @@ uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte b)
             amap_str_grab(cur_mapnote_base);
       }
       clear_cur_mapnote();
-      last_msg_ok=TRUE;
+      last_msg_ok=true;
       chg_set_flg(AMAP_MESSAGE_EV);
    }
-   return TRUE;
+   return true;
 }
 
 uchar zoom_deal(curAMap *amptr, int btn)
@@ -704,7 +705,7 @@ uchar zoom_deal(curAMap *amptr, int btn)
    uchar res;
    // now, set up for real 
    if (btn==BTN_ZOOMIN) zfac=1; else zfac=-1;
-   res=amap_zoom(amptr,FALSE,zfac);
+   res=amap_zoom(amptr,false,zfac);
    if (res)
    {
       if (amptr->zoom+1>=AMAP_MAX_ZOOM)
@@ -727,7 +728,7 @@ uchar flags_deal(curAMap *amptr, int btn, int todo)
    uchar res;
 
 //   mprintf("Think deal with %x - %d\n",flgs,todo);
-   if (flgs==0) return FALSE;
+   if (flgs==0) return false;
 
    if (flgs&FSMAP_OPP)
    {
@@ -817,11 +818,11 @@ uchar amap_kb_callback(curAMap *amptr, int code)
          if (cur_mapnote_ptr>cur_mapnote_base)
             *--cur_mapnote_ptr='\0';
       }
-      else return FALSE;
+      else return false;
       chg_set_flg(AMAP_MESSAGE_EV);
       if(amptr->flags & AMAP_FULL_MSG)
          chg_set_flg(AMAP_MAP_EV);
-      return TRUE;
+      return true;
    }
    
    // We're not editing.  Keyboard equivalents for buttons.
@@ -845,7 +846,7 @@ uchar amap_kb_callback(curAMap *amptr, int code)
             obj_destroy(amptr->note_obj);		// Delete the map note
             amptr->note_obj=0;
          	   clear_cur_mapnote();
-            last_msg_ok=TRUE;
+            last_msg_ok=true;
             chg_set_flg(AMAP_MESSAGE_EV|AMAP_MAP_EV);
             break;
 //KLC      case DO_FULLMSG:           btn=BTN_FULLMSG; break;  
@@ -866,9 +867,9 @@ uchar amap_kb_callback(curAMap *amptr, int code)
       if (exp)
       {
          chg_set_flg(AMAP_MAP_EV);
-         return TRUE;
+         return true;
       }
-      return FALSE;
+      return false;
    }
 }
 

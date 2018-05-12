@@ -42,7 +42,7 @@ errtype tng_pushbutton_init(void *ui_data, TNG *ptng, TNGStyle *sty, int button_
    ppbtng->size = size;
    ppbtng->disp_data = display_data;
    ppbtng->type = button_type;
-   ppbtng->pressed = FALSE;
+   ppbtng->pressed = false;
    return(OK);
 }
 
@@ -113,7 +113,7 @@ int tng_pushbutton_getvalue(TNG *ptng)
 uchar tng_pushbutton_keycooked(TNG *ptng, ushort key)
 {
    int code = key & 0xff;
-   uchar retval = FALSE;
+   uchar retval = false;
 
    if (code == 0xd)
    {
@@ -128,28 +128,28 @@ uchar tng_pushbutton_keycooked(TNG *ptng, ushort key)
 // React appropriately for receiving the specified mouse button event
 uchar tng_pushbutton_mousebutt(TNG *ptng, uchar type, LGPoint loc)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
 //   Spew(DSRC_UI_Pushbutton, ("After doing cb_mousebutt, inside pushbutton_mousebutt\n"));
    if (type == TNG_MOUSE_LDOWN)
       IF_SET_RV(ptng->signal(ptng,TNG_SIGNAL_SELECT));
    if (type == TNG_MOUSE_LUP)
       IF_SET_RV(ptng->signal(ptng,TNG_SIGNAL_DESELECT));
    IF_SET_RV(tng_cb_mousebutt(ptng,type,loc));
-   retval = TRUE;
+   retval = true;
    return(retval);
 }
 
 // Handle incoming signals
 uchar tng_pushbutton_signal(TNG *ptng, ushort signal)
 {
-   uchar retval = FALSE;
+   uchar retval = false;
 //   Spew(DSRC_UI_Pushbutton, ("After doing cb_signal, inside pushbutton_signal\n"));
    if (signal & TNG_SIGNAL_SELECT)
       IF_SET_RV(tng_pushbutton_pressed(TNG_PB(ptng)));
    if (signal & TNG_SIGNAL_DESELECT)
       IF_SET_RV(tng_pushbutton_released(TNG_PB(ptng)));
    IF_SET_RV(tng_cb_signal(ptng,signal));
-   retval = TRUE;
+   retval = true;
    return(retval);
 }
 

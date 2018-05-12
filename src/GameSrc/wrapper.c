@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <limits.h>
 
+#include "cursors.h"
+#include "event.h"
 #include "wrapper.h"
 #include "tools.h"
 #include "invent.h"
@@ -92,16 +94,16 @@ grs_bitmap option_cursor_bmap;
 
 extern LGRegion *inventory_region;
 int wrap_id = -1, wrapper_wid, wrap_key_id;
-uchar clear_panel = TRUE, wrapper_panel_on = FALSE;
+uchar clear_panel = true, wrapper_panel_on = false;
 grs_font* opt_font;
 uchar olh_temp;
 extern uchar sfx_on;
 extern uchar digi_gain;
 errtype (*wrapper_cb)(int num_clicked);
 errtype (*slot_callback)(int num_clicked);
-static uchar cursor_loaded = FALSE;
+static uchar cursor_loaded = false;
 #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
-uchar headset_track = TRUE;
+uchar headset_track = true;
 #define HEADSET_FOV_MIN 30
 #define HEADSET_FOV_MAX 180
 // these 3 should all be initialized for real elsewhere...
@@ -156,7 +158,7 @@ uchar really_quit_key_func(short keycode, ulong context, void* data);
 LGRegion options_mouseregion[NUM_MOUSEREGION_SCREENS];
 uchar free_mouseregion=0;
 
-uchar popup_cursors = TRUE;
+uchar popup_cursors = true;
 
 char save_game_name[]="savgam00.dat";
 
@@ -446,14 +448,14 @@ uchar slider_handler(uiEvent* ev, uchar butid)
          if(st->active) {
             st->sliderpos=mev->pos.x-(BR(butid).ul.x+1);
             if(st->smooth)
-               slider_deal(butid,FALSE);
+               slider_deal(butid,false);
          }
          break;
       case UI_EVENT_MOUSE:
          if(st->active && !(mev->buttons)) {
             st->sliderpos=mev->pos.x-(BR(butid).ul.x+1);
-            st->active=FALSE;
-            slider_deal(butid,TRUE);
+            st->active=false;
+            slider_deal(butid,true);
             uiPopGlobalCursor();
             mouse_unconstrain();
             draw_button(butid);
@@ -461,12 +463,12 @@ uchar slider_handler(uiEvent* ev, uchar butid)
          else if(!st->active && (ev->subtype & MOUSE_DOWN)) {
             short tmpy;
 
-            st->active=TRUE;
+            st->active=true;
             st->sliderpos=mev->pos.x-(BR(butid).ul.x+1);
             slider_cursor.hotspot.x=slider_cursor_bmap.w/2;
             tmpy=mev->pos.y-((BR(butid).ul.y+BR(butid).lr.y)/2);
 #ifdef SVGA_SUPPORT
-             { short duh; ss_point_convert(&duh,&tmpy,FALSE); }
+             { short duh; ss_point_convert(&duh,&tmpy,false); }
 #endif
             slider_cursor.hotspot.y=(slider_cursor_bmap.h/2)+tmpy;
             uiPushGlobalCursor(&slider_cursor);
@@ -478,11 +480,11 @@ uchar slider_handler(uiEvent* ev, uchar butid)
                                BR(butid).lr.x+inventory_region->r->ul.x-2,
                                mev->pos.y+inventory_region->r->ul.y);
          }
-         return TRUE;
+         return true;
       default:
          break;
    }
-   return FALSE;
+   return false;
 }
 
 void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void* var, uint maxval, uchar baseval, void* dealfunc, Rect* r)
@@ -497,7 +499,7 @@ void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void* var, 
    st->sliderpos=val;
    st->baseval=baseval;
    st->maxval=maxval;
-   st->active=FALSE;
+   st->active=false;
    st->descrip=descrip;
    st->type=type;
    // note that in these settings, we don't care what size of
@@ -535,9 +537,9 @@ uchar pushbutton_handler(uiEvent* ev, uchar butid)
       ((ev->type==UI_EVENT_KBD_COOKED) && ((((uiCookedKeyEvent*)ev)->code & 0xFF)==((opt_pushbutton_state*)(&OButtons[butid].user))->keyeq)))
    {
       ((opt_pushbutton_state*)&OButtons[butid].user)->pushfunc(butid);
-      return TRUE;
+      return true;
    }
-   return FALSE;
+   return false;
 }
 
 void pushbutton_init(uchar butid, uchar keyeq, Ref descrip, void (*pushfunc)(uchar butid), Rect* r)
@@ -703,9 +705,9 @@ uchar multi_handler(uiEvent* ev, uchar butid)
       if(st->feedbackbase) {
          string_message_info(st->feedbackbase+val);
       }
-      return TRUE;
+      return true;
    }
-   return FALSE;
+   return false;
 }
 
 void multi_init(uchar butid, uchar key, Ref descrip, Ref optbase, Ref feedbase,
@@ -893,13 +895,13 @@ uchar textlist_handler(uiEvent* ev, uchar butid)
          else if (!st->modified){
             string_message_info(st->selectprompt);
             if(st->selectprompt)
-               textlist_select_line(st,butid,line,FALSE);
+               textlist_select_line(st,butid,line,false);
          }
       }
       else if(st->selectmask & (1<<line)) {
-         textlist_select_line(st,butid,line,TRUE);
+         textlist_select_line(st,butid,line,true);
       }
-      return TRUE;
+      return true;
    }
    else if (ev->type==UI_EVENT_KBD_COOKED) {
       uiCookedKeyEvent* kev=(uiCookedKeyEvent*)ev;
@@ -913,7 +915,7 @@ uchar textlist_handler(uiEvent* ev, uchar butid)
       // explicitly do not deal with alt-x, but leave
       // it to more capable hands.
       if(keycode==(KB_FLAG_ALT|'x'))
-         return FALSE;
+         return false;
       if(cur>=0)
          s=textlist_string(st,cur);
       if(st->editable && cur>=0 && !special && kb_isprint(keycode)) {
@@ -927,8 +929,8 @@ uchar textlist_handler(uiEvent* ev, uchar butid)
             s[st->index]='\0';
             textlist_draw_line(st,cur,butid);
          }
-         st->modified = TRUE;
-         return TRUE;
+         st->modified = true;
+         return true;
       }        
       switch(keycode) {
          case KEY_BS:
@@ -952,14 +954,14 @@ uchar textlist_handler(uiEvent* ev, uchar butid)
          case KEY_ENTER:
             if(st->currstring>=0) {
                st->dealfunc(butid,cur);
-               return TRUE;
+               return true;
             }
             break;
          case KEY_ESC:
             // on ESC, clean up but pass the event through.
             textlist_cleanup(st);
-            wrapper_panel_close(TRUE);
-            return FALSE;
+            wrapper_panel_close(true);
+            return false;
       }
       if(upness!=0) {
          char newstring;
@@ -982,9 +984,9 @@ uchar textlist_handler(uiEvent* ev, uchar butid)
             textlist_draw_line(st,newstring,butid);
          }
       }
-      return TRUE;
+      return true;
    }
-   return TRUE;
+   return true;
 }
 
 void textlist_init(uchar butid,char* text,uchar numblocks,uchar blocksiz,
@@ -1021,7 +1023,7 @@ void textlist_init(uchar butid,char* text,uchar numblocks,uchar blocksiz,
 
    st->currstring=-1;
    st->index=-1;
-   st->modified=FALSE;
+   st->modified=false;
 }
 
 // One, true mouse handler for all options panel mouse events.
@@ -1037,9 +1039,9 @@ uchar opanel_mouse_handler(uiEvent *ev, Region *r, void *user_data)
    mev=*((uiMouseEvent*)ev);
 
    if(!ev->type && (UI_EVENT_MOUSE|UI_EVENT_MOUSE_MOVE))
-      return FALSE;
+      return false;
    if(ev->type==UI_EVENT_MOUSE && !(ev->subtype & (MOUSE_DOWN|MOUSE_UP)))
-      return FALSE;
+      return false;
 
    mev.pos.x-=inventory_region->r->ul.x;
    mev.pos.y-=inventory_region->r->ul.y;
@@ -1047,10 +1049,10 @@ uchar opanel_mouse_handler(uiEvent *ev, Region *r, void *user_data)
    for(b=0;b<MAX_OPTION_BUTTONS;b++) {
       if(RECT_TEST_PT(&BR(b),mev.pos) && (ev->type & OButtons[b].evmask)) {
          if(OButtons[b].handler && OButtons[b].handler((uiEvent*)(&mev),b))
-            return TRUE;
+            return true;
       }
    }
-   return TRUE;
+   return true;
 }
 
 // One, true keyboard handler for all options mode events.
@@ -1061,18 +1063,18 @@ uchar opanel_kb_handler(uiEvent *ev, Region *r, void* user_data)
    uiCookedKeyEvent* kev=(uiCookedKeyEvent*)ev;
    int b;
 
-   if(!(kev->code & KB_FLAG_DOWN)) return TRUE;
+   if(!(kev->code & KB_FLAG_DOWN)) return true;
 
    for(b=0;b<MAX_OPTION_BUTTONS;b++) {
       if((ev->type & OButtons[b].evmask) && OButtons[b].handler && OButtons[b].handler(ev,b))
-         return TRUE;
+         return true;
    }
    // if no-one else has hooked KEY_ESC, it defaults to closing
    // the wrapper panel.
    //
    if((kev->code & 0xFF)==KEY_ESC)
-      wrapper_panel_close(TRUE);
-   return TRUE;
+      wrapper_panel_close(true);
+   return true;
 }
 #pragma enable_message(202)
 
@@ -1170,7 +1172,7 @@ errtype wrapper_panel_close(uchar clear_message)
    mouse_unconstrain();
    if (clear_message)
       message_info("");
-   wrapper_panel_on = FALSE;
+   wrapper_panel_on = false;
    inventory_page = inv_last_page;
    if (inventory_page < 0 && inventory_page != INV_3DVIEW_PAGE)
       inventory_page = 0;
@@ -1204,17 +1206,17 @@ uchar can_save()
    {
       // spoof the game as not being paused so that the message won't go to the 
       // phantom message line in full screen mode, where it will stay only for a frame.
-      game_paused=FALSE;              
+      game_paused=false;
       string_message_info(REF_STR_NoCyberSave);
       game_paused=gp;
-      return(FALSE);
+      return(false);
    }
    if (input_cursor_mode == INPUT_OBJECT_CURSOR)
    {
       string_message_info(REF_STR_CursorObjSave);
-      return(FALSE);
+      return(false);
    }
-   return(TRUE);
+   return(true);
 }
 
 //
@@ -1226,7 +1228,7 @@ void wrapper_pushbutton_func(uchar butid)
    switch(butid) {
       case LOAD_BUTTON: // Load Game
 #ifdef DEMO
-         wrapper_panel_close(FALSE);
+         wrapper_panel_close(false);
 #else
          load_screen_init();
          string_message_info(REF_STR_LoadSlot);
@@ -1234,14 +1236,14 @@ void wrapper_pushbutton_func(uchar butid)
          break;
       case SAVE_BUTTON: // Save Game
 #ifdef DEMO
-         wrapper_panel_close(FALSE);
+         wrapper_panel_close(false);
 #else
          if(can_save()) {
             save_screen_init();
             string_message_info(REF_STR_SaveSlot);
          }
          else
-            wrapper_panel_close(FALSE);
+            wrapper_panel_close(false);
 #endif
          break;
       case AUDIO_BUTTON: // Audio
@@ -1274,7 +1276,7 @@ void wrapper_pushbutton_func(uchar butid)
          options_screen_init();
          break;
       case RETURN_BUTTON: // Return
-         wrapper_panel_close(TRUE);
+         wrapper_panel_close(true);
          break;
       case QUIT_BUTTON: // Quit
          verify_screen_init(quit_verify_pushbutton_handler,quit_verify_slorker);
@@ -1304,7 +1306,7 @@ void wrapper_init(void)
    dim_pushbutton(LOAD_BUTTON);
    dim_pushbutton(SAVE_BUTTON);
 #endif
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 
 // 
@@ -1319,8 +1321,8 @@ void quit_verify_pushbutton_handler(uchar butid)
 
 uchar quit_verify_slorker(uchar butid)
 {
-   wrapper_panel_close(TRUE);
-   return TRUE;
+   wrapper_panel_close(true);
+   return true;
 }
 
 void save_verify_pushbutton_handler(uchar butid)
@@ -1331,8 +1333,8 @@ void save_verify_pushbutton_handler(uchar butid)
 uchar save_verify_slorker(uchar butid)
 {
    strcpy(comments[savegame_verify],comments[NUM_SAVE_SLOTS]);
-   wrapper_panel_close(TRUE);
-   return TRUE;
+   wrapper_panel_close(true);
+   return true;
 }
 #pragma enable_message(202)
 
@@ -1350,7 +1352,7 @@ void verify_screen_init(void (*verify)(uchar butid), slorker slork)
 
    slork_init(2,slork);
 
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 
 void quit_verify_init(void)
@@ -1370,12 +1372,12 @@ void recompute_music_level(ushort vol)
 //   curr_vol_lev=long_sqrt(100*vol);
    curr_vol_lev=QVAR_TO_VOLUME(vol);
    if(vol==0) {
-      music_on=FALSE;
+      music_on=false;
       stop_music_func(0,0,0);
    }
    else {
       if(!music_on) {
-         music_on=TRUE;
+         music_on=true;
          start_music_func(0,0,0);
       }
       mlimbs_change_master_volume(curr_vol_lev);
@@ -1387,7 +1389,7 @@ void recompute_digifx_level(ushort vol)
    if (sfx_card)
       sfx_on=(vol!=0);
    else
-      sfx_on=FALSE;
+      sfx_on=false;
    curr_sfx_vol=QVAR_TO_VOLUME(vol);
    if (sfx_on)
    {
@@ -1488,7 +1490,7 @@ void soundopt_screen_init()
    pushbutton_init(RETURN_BUTTON,retkey,REF_STR_MusicText+2,wrapper_pushbutton_func,&r);
 
    keywidget_init(QUIT_BUTTON,KB_FLAG_ALT|'x',wrapper_pushbutton_func);
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 
 void sound_screen_init(void)
@@ -1512,7 +1514,7 @@ void sound_screen_init(void)
       r.lr.y-=slider_offset;
       sliderbase=r.lr.x-r.ul.x-2;
       slider_init(0,REF_STR_MusicText,sizeof(ushort),
-         TRUE,&player_struct.questvars[MUSIC_VOLUME_QVAR],100,sliderbase,recompute_music_level,&r);
+         true,&player_struct.questvars[MUSIC_VOLUME_QVAR],100,sliderbase,recompute_music_level,&r);
    }
    else {
       standard_button_rect(&r,0,2,2,5);
@@ -1529,7 +1531,7 @@ void sound_screen_init(void)
          r.ul.y-=slider_offset;
          r.lr.y-=slider_offset;
          slider_init(1,REF_STR_MusicText+1,sizeof(ushort),
-            FALSE,&player_struct.questvars[SFX_VOLUME_QVAR],100,sliderbase,recompute_digifx_level,&r);
+            false,&player_struct.questvars[SFX_VOLUME_QVAR],100,sliderbase,recompute_digifx_level,&r);
       }
       else {
          standard_button_rect(&r,3,2,2,5);
@@ -1553,7 +1555,7 @@ void sound_screen_init(void)
       r.ul.y-=slider_offset;
       r.lr.y-=slider_offset;
       slider_init(2,REF_STR_MusicText+4,sizeof(ushort),
-         FALSE,&player_struct.questvars[ALOG_VOLUME_QVAR],100,sliderbase,recompute_audiolog_level,&r);
+         false,&player_struct.questvars[ALOG_VOLUME_QVAR],100,sliderbase,recompute_audiolog_level,&r);
    }
 #endif
 
@@ -1570,7 +1572,7 @@ void sound_screen_init(void)
 
    keywidget_init(QUIT_BUTTON,KB_FLAG_ALT|'x',wrapper_pushbutton_func);
 
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 
 //
@@ -1588,14 +1590,14 @@ void gamma_dealfunc(ushort gamma_qvar)
 }
 
 #ifdef SVGA_SUPPORT
-uchar wrapper_screenmode_hack = FALSE;
+uchar wrapper_screenmode_hack = false;
 void screenmode_change(new_mode)
 {
    extern short mode_id;
    mode_id = new_mode;
    QUESTVAR_SET(SCREENMODE_QVAR, new_mode);
    change_mode_func(0,0,(void *)_current_loop);
-   wrapper_screenmode_hack = TRUE;
+   wrapper_screenmode_hack = true;
 }
 #endif
 
@@ -1637,7 +1639,7 @@ void language_dealfunc(uchar lang)
    language_change(lang);
 
    render_run();
-   opanel_redraw(FALSE);
+   opanel_redraw(false);
 }
 
 void dclick_dealfunc(ushort dclick_qvar)
@@ -1688,7 +1690,7 @@ void detail_dealfunc(uchar det)
    uiHideMouse(NULL);
    render_run();
    if(full_game_3d)
-      opanel_redraw(FALSE);
+      opanel_redraw(false);
    uiShowMouse(NULL);
 }
 
@@ -1786,7 +1788,7 @@ void joystick_screen_init(void)
    if(joystick_count) {
       standard_slider_rect(&r,i,2,1);
       sliderbase=(r.lr.x-r.ul.x-2)>>1;
-      slider_init(i,REF_STR_JoystickSens,sizeof(ushort),FALSE,
+      slider_init(i,REF_STR_JoystickSens,sizeof(ushort),false,
          &player_struct.questvars[JOYSENS_QVAR],256,sliderbase,joysens_dealfunc,&r);
    }
    i++;
@@ -1796,7 +1798,7 @@ void joystick_screen_init(void)
 
    keywidget_init(QUIT_BUTTON,KB_FLAG_ALT|'x',wrapper_pushbutton_func);
 
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 
 #pragma disable_message(202)
@@ -1837,7 +1839,7 @@ void input_screen_init(void)
    r.ul.x-=1;
    sliderbase=((r.lr.x-r.ul.x-3)*(FIX_UNIT/3))/USHRT_MAX;
    slider_init(i,REF_STR_DoubleClick,sizeof(ushort),
-      FALSE,&player_struct.questvars[DCLICK_QVAR],USHRT_MAX,sliderbase,dclick_dealfunc,&r);
+      false,&player_struct.questvars[DCLICK_QVAR],USHRT_MAX,sliderbase,dclick_dealfunc,&r);
    i++;
 
    standard_button_rect(&r,i,2,2,1);
@@ -1847,7 +1849,7 @@ void input_screen_init(void)
 
    keywidget_init(QUIT_BUTTON,KB_FLAG_ALT|'x',wrapper_pushbutton_func);
 
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 
 void video_screen_init(void)
@@ -1888,7 +1890,7 @@ void video_screen_init(void)
    r.ul.x=r.ul.x+1;
    sliderbase=((r.lr.x-r.ul.x-1)*((29*FIX_UNIT)/100))/USHRT_MAX;
    slider_init(i,REF_STR_OptionsText+3,sizeof(ushort),
-      TRUE,&player_struct.questvars[GAMMACOR_QVAR],USHRT_MAX,sliderbase,gamma_dealfunc,&r);
+      true,&player_struct.questvars[GAMMACOR_QVAR],USHRT_MAX,sliderbase,gamma_dealfunc,&r);
 
 #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
    i++;
@@ -1904,7 +1906,7 @@ void video_screen_init(void)
 
    keywidget_init(QUIT_BUTTON,KB_FLAG_ALT|'x',wrapper_pushbutton_func);
 
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 
 #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
@@ -1932,7 +1934,7 @@ void headset_screen_init(void)
    standard_slider_rect(&r,i,2,2);
    r.ul.x -= 1;
    slider_init(i,REF_STR_HeadsetText + 2,sizeof(inp6d_stereo_div),
-      FALSE,&inp6d_stereo_div,fix_make(10,0),INITIAL_OCULAR_DIST,NULL,&r);
+      false,&inp6d_stereo_div,fix_make(10,0),INITIAL_OCULAR_DIST,NULL,&r);
 
    i++;
    standard_button_rect(&r,i,2,2,2);
@@ -1951,7 +1953,7 @@ void headset_screen_init(void)
    standard_slider_rect(&r,i,2,2);
    r.ul.x -= 1;
    slider_init(i,REF_STR_MoreHeadset,sizeof(hack_headset_fov),
-      FALSE,&hack_headset_fov,HEADSET_FOV_MAX - HEADSET_FOV_MIN,
+      false,&hack_headset_fov,HEADSET_FOV_MAX - HEADSET_FOV_MIN,
       inp6d_real_fov - HEADSET_FOV_MIN,headset_fov_dealfunc,&r);
 #endif
 
@@ -1959,7 +1961,7 @@ void headset_screen_init(void)
    standard_button_rect(&r,5,2,2,2);
    pushbutton_init(RETURN_BUTTON,keys[2],REF_STR_OptionsText+5,wrapper_pushbutton_func,&r);
    keywidget_init(QUIT_BUTTON,KB_FLAG_ALT|'x',wrapper_pushbutton_func);
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 #endif
 
@@ -1975,7 +1977,7 @@ void screenmode_screen_init(void)
       uiHideMouse(NULL);
       render_run();
       uiShowMouse(NULL);
-      wrapper_screenmode_hack = FALSE;
+      wrapper_screenmode_hack = false;
    }
 
    keys=get_temp_string(REF_STR_KeyEquivs4);
@@ -1985,14 +1987,14 @@ void screenmode_screen_init(void)
    for (i=0; i < 4; i++)
    {
       extern short svga_mode_data[];
-      uchar mode_ok = FALSE;
+      uchar mode_ok = false;
       char j =0;
       standard_button_rect(&r,i,2,2,2);
       pushbutton_init(i,keys[i],REF_STR_ScreenModeText + i,screenmode_change,&r);
       while ((grd_info.modes[j] != -1) && !mode_ok)
       {
          if (grd_info.modes[j] == svga_mode_data[i])
-            mode_ok = TRUE;
+            mode_ok = true;
          j++;
       }
       if (!mode_ok)
@@ -2006,7 +2008,7 @@ void screenmode_screen_init(void)
 
    keywidget_init(QUIT_BUTTON,KB_FLAG_ALT|'x',wrapper_pushbutton_func);
 
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 #endif
 
@@ -2051,7 +2053,7 @@ void options_screen_init(void)
 
    keywidget_init(QUIT_BUTTON,KB_FLAG_ALT|'x',wrapper_pushbutton_func);
 
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 
 #pragma disable_message(202)
@@ -2083,7 +2085,7 @@ void load_dealfunc(uchar butid,uchar index)
    }
    end_wait();
    spoof_mouse_event();
-   wrapper_panel_close(TRUE);
+   wrapper_panel_close(true);
 }
 #pragma enable_message(202)
 
@@ -2094,12 +2096,12 @@ void load_screen_init(void)
    clear_obuttons();
 
    textlist_init(0,comments,NUM_SAVE_SLOTS,SAVE_COMMENT_LEN,
-      FALSE,0,valid_save,valid_save,REF_STR_UnusedSave,
+      false,0,valid_save,valid_save,REF_STR_UnusedSave,
       BUTTON_COLOR,WHITE,BUTTON_COLOR+2,0,load_dealfunc,NULL);
 
    keywidget_init(QUIT_BUTTON,KB_FLAG_ALT|'x',wrapper_pushbutton_func);
 
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 
 //
@@ -2127,13 +2129,13 @@ void save_screen_init(void)
    clear_obuttons();
 
    textlist_init(0,comments,NUM_SAVE_SLOTS,SAVE_COMMENT_LEN,
-      TRUE,0xFFFF,0xFFFF,valid_save,REF_STR_UnusedSave,
+      true,0xFFFF,0xFFFF,valid_save,REF_STR_UnusedSave,
       BUTTON_COLOR,WHITE,BUTTON_COLOR+2,REF_STR_EnterSaveString,
       save_dealfunc,NULL);
 
    keywidget_init(QUIT_BUTTON,KB_FLAG_ALT|'x',wrapper_pushbutton_func);
 
-   opanel_redraw(TRUE);
+   opanel_redraw(true);
 }
 
 
@@ -2149,7 +2151,7 @@ void wrapper_start(void (*init)(void))
    if (!full_game_3d)
       message_info("");
    inventory_page = -1;
-   wrapper_panel_on = TRUE;
+   wrapper_panel_on = true;
    suspend_game_time();
    opt_font=(grs_font*)ResLock(OPTIONS_FONT);
 #ifndef STATIC_BUTTON_STORE 
@@ -2180,7 +2182,7 @@ void wrapper_start(void (*init)(void))
    uiInstallRegionHandler(inventory_region, UI_EVENT_MOUSE|UI_EVENT_MOUSE_MOVE, opanel_mouse_handler, NULL, &wrap_id);
    uiInstallRegionHandler(inventory_region, UI_EVENT_KBD_COOKED, opanel_kb_handler, NULL, &wrap_key_id);
    uiGrabFocus(inventory_region, UI_EVENT_KBD_COOKED|UI_EVENT_MOUSE);
-   region_set_invisible(inventory_region,FALSE);
+   region_set_invisible(inventory_region,false);
    reset_input_system();
    init();
 }
@@ -2235,7 +2237,7 @@ errtype do_savegame_guts(uchar slot)
    end_wait();
    spoof_mouse_event();
    if (retval == OK)
-      wrapper_panel_close(TRUE);
+      wrapper_panel_close(true);
    return(retval);
 }
 
@@ -2245,17 +2247,17 @@ uchar wrapper_region_mouse_handler(uiMouseEvent* ev, Region* r, void* data)
    if (global_fullmap->cyber)
    {
       uiSetRegionDefaultCursor(r,NULL);
-      return FALSE;
+      return false;
    }
    else
       uiSetRegionDefaultCursor(r,&option_cursor);
 
    if (ev->action & MOUSE_DOWN)
    {
-      wrapper_options_func(0,0,(void*)TRUE);
-      return TRUE;
+      wrapper_options_func(0,0,(void*)true);
+      return true;
    }
-   return FALSE;
+   return false;
 }
 #pragma enable_message(202)
 
@@ -2275,7 +2277,7 @@ errtype make_options_cursor(void)
 
    orig_w = w=res_bm_width(REF_IMG_bmOptionCursor);
    h=res_bm_height(REF_IMG_bmOptionCursor);
-   ss_point_convert(&w,&h,FALSE);
+   ss_point_convert(&w,&h,false);
    gr_init_bm(&option_cursor_bmap, svga_options_cursor_bits, BMT_FLAT8, BMF_TRANS, w,h);
    gr_make_canvas(&option_cursor_bmap,&cursor_canv);
    gr_push_canvas(&cursor_canv);
@@ -2292,7 +2294,7 @@ errtype make_options_cursor(void)
    uiMakeBitmapCursor(&option_cursor,&option_cursor_bmap,hot);
    gr_pop_canvas();
    ResUnlock(OPTIONS_FONT);
-   cursor_loaded = TRUE;
+   cursor_loaded = true;
    gr2ss_override = old_over;
 
    return OK;
@@ -2332,13 +2334,13 @@ errtype wrapper_create_mouse_region(Region* root)
 uchar saveload_hotkey_func(short keycode, ulong context, void* data)
 {
 #ifdef DEMO
-   return(TRUE);
+   return(true);
 #else
    if ((!data) && (!can_save()))
-      return(TRUE);
+      return(true);
    wrapper_start(data ? load_screen_init : save_screen_init);
    string_message_info(data ? REF_STR_LoadSlot : REF_STR_SaveSlot);
-   return(TRUE);
+   return(true);
 #endif
 }
 
@@ -2346,7 +2348,7 @@ uchar demo_quit_func(short keycode, ulong context, void* data)
 {
    wrapper_start(quit_verify_init);
    string_message_info(REF_STR_QuitConfirm);
-   return(TRUE);
+   return(true);
 }
 #pragma enable_message(202)
 

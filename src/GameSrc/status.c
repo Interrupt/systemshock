@@ -32,7 +32,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // bar graphs
 
 #include <math.h>
- 
+#include <stdbool.h>
+
+#include "2dres.h"
 #include "status.h"
 #include "player.h"
 #include "tools.h"
@@ -157,7 +159,7 @@ typedef struct {
 } bio_data_block;
 
 
-uchar gBioInited = FALSE;
+uchar gBioInited = false;
 
 uchar status_background[(DIFF_BIO_WIDTH+4)*(DIFF_BIO_HEIGHT+2)];
 //uchar status_background[(266+4)*(44+2)];
@@ -231,8 +233,8 @@ uchar under_bio(int x)
 	   ((x >= 114) && (x <= 208)) ||
 	   ((x >= 252) && (x <= 258)) ||
 	   ((x >= 298) && (x <= 303)) )
-	 return(TRUE);
-      return(FALSE);
+	 return(true);
+      return(false);
 }
 
 // ---------------------------------------------------------
@@ -396,7 +398,7 @@ void status_bio_set(short bio_mode)
 
    bio_data = (bio_data_block *) bio_data_buffer;
    for (i=0; i<NUM_BIO_TRACKS; i++)
-      bio_data[i].free = TRUE;
+      bio_data[i].free = true;
 
    RefUnlock(STATUS_RESID);
    bio_funcs[curr_bio_mode]();
@@ -425,7 +427,7 @@ void status_bio_init(void)
 void status_bio_start(void)
 {
    if (!full_game_3d)
-      gBioInited = TRUE;
+      gBioInited = true;
    
 #ifndef TIMING_PROCEDURES_OFF
    tm_activate_process(bio_time_id);
@@ -434,7 +436,7 @@ void status_bio_start(void)
 
 void status_bio_end(void)
 {
-   gBioInited = FALSE;
+   gBioInited = false;
 //   Free(bio_background_bitmap.bits);
 #ifndef TIMING_PROCEDURES_OFF
    tm_deactivate_process(bio_time_id);
@@ -501,18 +503,18 @@ errtype status_bio_add(int *var, int max_value, int update_time, int track_numbe
 
    if (var == NULL)     // are we trying to clear out a track slot??
    {
-      if (bio_data[track_number].free == TRUE)
+      if (bio_data[track_number].free == true)
 	 return(ERR_NOEFFECT);
       else
       {
-	      bio_data[track_number].free = TRUE;
-         bio_data[track_number].active = FALSE;
+	      bio_data[track_number].free = true;
+         bio_data[track_number].active = false;
 	      return(OK);
       }
    }
 
    // Make sure we have a valid entry
-   if ((bio_data[track_number].free == FALSE) ||   // unused track?
+   if ((bio_data[track_number].free == false) ||   // unused track?
 	 (track_number >= NUM_BIO_TRACKS) ||       // correct track number?
 	 (tail_length < 1) ||                      // non-negative tail length?
 	 (tail_length > MAX_TAIL_LENGTH))          // too long of a tail?
@@ -522,7 +524,7 @@ errtype status_bio_add(int *var, int max_value, int update_time, int track_numbe
       // Initialize the new biorhythm
 
       new_block = bio_data + track_number;
-      new_block->free = FALSE;
+      new_block->free = false;
       new_block->data = var;
       LG_memset(&(new_block->height), INVALID_HEIGHT, sizeof(uchar) * MAX_BIO_LENGTH);
 
@@ -542,14 +544,14 @@ errtype status_bio_add(int *var, int max_value, int update_time, int track_numbe
 
       // Initialize the struct
       new_block->head = 0;       // head represents the first "new" x location
-      new_block->tail = FALSE;
+      new_block->tail = false;
       new_block->tail_length = tail_length * STATUS_BIO_TAIL;
       new_block->color_length = tail_length * COLOR_LENGTH;
       new_block->update_time = update_time;
       new_block->counter = 0;
       new_block->max_value = max_value;
       new_block->special = special;
-      new_block->active = TRUE;
+      new_block->active = true;
 
       return(OK);
    }
@@ -623,7 +625,7 @@ void status_bio_update(void)
 #endif
    for (i=0; i<NUM_BIO_TRACKS;i++, curr_blk++)
    {
-      if (curr_blk->free == FALSE)
+      if (curr_blk->free == false)
       {
 	      // We must check to see if this track should be drawn now,
 	      // or must it wait until it's time
@@ -656,7 +658,7 @@ void status_bio_update(void)
 	         curr_blk->height[draw_location] |= COLOR_BIT_SHIFT(1); // shift color
 	         draw_lower_tracks(i, draw_location);
 	 
-	         if (curr_blk->tail == FALSE)
+	         if (curr_blk->tail == false)
 	         {
 	            // Since we don't have a tail - 
 	            // we don't know how long the biorhythm is 
@@ -679,7 +681,7 @@ void status_bio_update(void)
 	    
 	            if (the_head == curr_blk->tail_length)
 	            {
-		            curr_blk->tail = TRUE;     // start the tail
+		            curr_blk->tail = true;     // start the tail
 		            clear_tail(i, 0);          // clear the first spot 
                }
 	         }
@@ -805,7 +807,7 @@ void clear_tail(int track_number, int delete_location)
 	// First, check to see if we're restoring for a v-line spike.
 	delta = abs(height-prevHeight);
 	if ((delta >= SPIKE_THRESHOLD) &&
-		 !((delete_location == 0) && (curr_blk->tail == FALSE)))
+		 !((delete_location == 0) && (curr_blk->tail == false)))
 	{
 		y1 = STATUS_BIO_Y_BASE - prevHeight;
 		if (y>y1)

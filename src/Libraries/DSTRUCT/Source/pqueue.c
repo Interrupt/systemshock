@@ -167,8 +167,8 @@ errtype pqueue_insert(PQueue* q, void* elem)
       char* newp = malloc(q->elemsize * q->size*2);
       if (newp == NULL)
       	return ERR_NOMEM;
-      BlockMoveData(q->vec, newp, q->size * q->elemsize);
-      DisposePtr(q->vec);
+      memmove(newp, q->vec, q->size * q->elemsize);
+      free(q->vec);
       q->vec = newp;
       q->size*=2;
    }

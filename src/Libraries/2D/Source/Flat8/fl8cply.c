@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * This file is part of the 2d library.
  */
 
+#include <stdbool.h>
+
 #include "fix.h"
 #include "cnvdat.h"
 #include "tmapint.h"
@@ -82,7 +84,7 @@ int gri_cpoly_loop (grs_tmap_loop_info *ti)
             break;
          }
       } else if (d<0) {
-         return TRUE;
+         return true;
       }
       /* update span extrema and destination. */
       ti->left.x+=ti->left.dx;
@@ -95,7 +97,7 @@ int gri_cpoly_loop (grs_tmap_loop_info *ti)
       ti->right.i+=ti->right.di;
       ti->d+=grd_bm.row;
    } while ((--(ti->n))>0);
-   return FALSE;
+   return false;
 }
 
 void gri_cpoly_init (grs_tmap_loop_info *ti)

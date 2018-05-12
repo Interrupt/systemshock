@@ -150,7 +150,7 @@ uchar gad_qbox_close_func(void *vg, void *ud)
 #endif
 
    gadget_destroy((Gadget **)ud);
-   return(FALSE);
+   return(false);
 }
 
 // This represents that the quickbox is done being created and is ready for display, input, etc.

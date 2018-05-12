@@ -84,8 +84,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __FRCAMERA_SRC
 #include <string.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>        // for abs, of course
 
+#include "fix.h
 #include "frcamera.h"
 #include "froslew.h"       // has objects
 #include "fauxrint.h"
@@ -106,7 +109,7 @@ cams   *fr_camera_getdef (void)
 uchar    fr_camera_create (cams *cam, int camtype, void *arg1, void *arg2)
 {
    printf("fr_camera_create\n");
-   _cam_top(cam) FALSE;
+   _cam_top(cam) false;
    _cam->type=camtype;
 
    if (camtype&CAMBIT_OBJ)
@@ -117,7 +120,7 @@ uchar    fr_camera_create (cams *cam, int camtype, void *arg1, void *arg2)
    if(arg2 != NULL)
       LG_memcpy(_cam->args,arg2,sizeof(fix)*CAM_ARGS_CNT);
 
-   return TRUE;
+   return true;
 }
 
 uchar   fr_camera_modtype(cams *cam, uchar type_on, uchar type_off)
@@ -133,14 +136,14 @@ uchar   fr_camera_modtype(cams *cam, uchar type_on, uchar type_off)
 // i'll give you fish, i'll give you candy, i'll give you, everything I have in my hand
 int     fr_camera_update (cams *cam, void *arg1, int whicharg, void *arg2)
 {
-   _cam_top(cam) FALSE;
+   _cam_top(cam) false;
    if (arg1!=NULL)
 	   if (_cam->type&CAMBIT_OBJ) _cam->obj_id=(ushort)arg1; else LG_memcpy(_cam->coor,arg1,sizeof(fix)*CAM_COOR_CNT);
    if (whicharg==CAM_UPDATE_ALL)
 	   LG_memcpy(_cam->args,arg2,sizeof(fix)*CAM_ARGS_CNT);
    else if (whicharg<CAM_ARGS_CNT)
       _cam->args[whicharg]=(fix)arg2;
-   return TRUE;
+   return true;
 }
 
 void    fr_camera_setone(cams *cam, int which, int newone)
@@ -236,7 +239,7 @@ void    fr_camera_slewcam(cams *cam, int which, int how)
 {
    _cam_top(cam);
    if (_cam->type&CAMBIT_OBJ)
-      fr_objslew_moveone(NULL,_cam->obj_id,which,how,TRUE);
+      fr_objslew_moveone(NULL,_cam->obj_id,which,how,true);
    else
       fr_camera_slewone(_cam,which,how);
 }
