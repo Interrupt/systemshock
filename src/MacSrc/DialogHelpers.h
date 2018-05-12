@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
+#if 0 // DG: let's just hope none of this is really needed..
 
 //--------------------
 //  Constants
@@ -77,3 +78,6 @@ void SetSliderBitmaps(void);
 pascal void DrawSlider(WindowPtr dlog, short itemNum);
 short DoSliderTracking(WindowPtr dlog, short itemNum, SliderCallbackProcPtr cb);
 void FreeSlider(void);
+
+
+#endif // 0

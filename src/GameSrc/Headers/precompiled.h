@@ -1,6 +1,25 @@
 #pragma pack(2)
 
 #include <stdbool.h>
+#include <stdio.h>
+
+// DG: helpful for seeing which stubbed out things are even used
+
+// prints a stub message (incl. containing function)
+#define STUB(msg) \
+	printf("STUB: %s() %s\n", __FUNCTION__, msg);
+
+// prints a stub message (incl. containing function) only the first time it's called
+#define STUB_ONCE(msg) do { \
+	static int show=1; \
+	if(show) { \
+		show = 0; \
+		printf("STUB: %s() %s\n", __FUNCTION__, msg); \
+	} \
+} while(0);
+
+
+
 
 #include "2d.h"
 
@@ -23,7 +42,8 @@
 
 #include "2dres.h"
 //#include "base.h"
-#include "error.h"
+// use explicit path for error.h include so it doesn't use system's <error.h>
+#include "../../Libraries/H/error.h"
 #include "keydefs.h"
 #include "lg_types.h"
 #include "lgsprntf.h"
@@ -47,7 +67,7 @@
 #include "rnd.h"
 
 // NO SOUND YET!
-//#include "lgsndx.h"
+#include "lgsndx.h"
 //#include "digi.h"
 //#include "midi.h"
 

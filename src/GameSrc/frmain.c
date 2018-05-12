@@ -53,7 +53,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frintern.h"
 #include "frparams.h"
 #include "frflags.h"
-#include "error.h"
+#include "gr2ss.h"
+//#include "error.h"
 //#include <Carbon/Carbon.h>
 
 int fr_pipe_go_2(void);

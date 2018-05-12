@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * This file is part of the input library.
  */
-
+#include <Carbon/Carbon.h> // Handle
 #include "lg.h"
 #include "kbcook.h"
 //#include <kbmod.h>
@@ -59,7 +59,7 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 	{								// simulate an alt key.
 		Handle	kHdl;
 		long	tk;
-		UInt32	state = 0;
+		uint32_t	state = 0;
 		
 		// Unfortunately, option-key changes the character that was
 		// pressed.  So we need to find out what the unmodified

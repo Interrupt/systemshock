@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <iostream>
-#include "EDMS_Int.h"				//This is the object type library. It is universal.
+#include "edms_int.h"				//This is the object type library. It is universal.
 #include "physhand.h"
 #include "idof.h"
 

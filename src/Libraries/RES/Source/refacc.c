@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //#include <string.h>
 //#include <io.h>
-
+#include <stdlib.h> // malloc
 #include "res.h"
 #include "res_.h"
 #include "lzw.h"

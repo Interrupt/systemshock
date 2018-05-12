@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	This is the GLOBALS file for EDMS.  It's a girl?!
 //	=================================================
 
-#include "Fixpp.h"
+#include "fixpp.h"
 
 Q	END = -9999., 
 	VACUUM = 0.,

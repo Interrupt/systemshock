@@ -54,6 +54,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <decod4x4.h>
 //#include <huff.h>
 
+#include "movie.h"
+
 //	Type-specific information
 
 typedef struct
@@ -341,6 +343,7 @@ int AmovReadClose(Afile *paf)
 int AmovWriteBegin(Afile *paf)
 {
 	printf("AmovWriteBegin not implemented yet!\n");
+	return -1;
 /*
 	AmovInfo *pmi;
 
@@ -380,6 +383,7 @@ int AmovWriteBegin(Afile *paf)
 int AmovWriteFrame(Afile *paf, grs_bitmap *pbm, long bmlength, fix time)
 {
 	printf("AmovWriteFrame not implemented yet!\n");
+	return -1;
 /*
 	AmovInfo *pmi;
 	Rect area;
@@ -427,6 +431,7 @@ int AmovWriteFrame(Afile *paf, grs_bitmap *pbm, long bmlength, fix time)
 int AmovWriteClose(Afile *paf)
 {
 	printf("AmovWriteClose not implemented yet!\n");
+	return -1;
 /*
 	AmovInfo *pmi;
 	long nc,numBlocks,numExtra;

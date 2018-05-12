@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
+#if 0 // DG: let's just hope none of this is really needed..
 
 //--------------------
 //  Includes
@@ -491,3 +492,5 @@ void FreeSlider(void)
 	FreeShockBitmap(&gSliderAsm);
 	FreeShockBitmap(&gSliderBack);
 }
+
+#endif // 0

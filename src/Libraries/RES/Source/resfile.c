@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <sys\stat.h>
 //#include <io.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "res.h"
 #include "res_.h"
@@ -137,6 +138,7 @@ short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 	if (mode != ROM_CREATE)
 		{
 //		fd = DatapathFDOpen(&gDatapath, fname, openMode[mode]);
+		// FIXME: wrapper for case-insensitive loading for Linux
 		fd = fopen(fname, "rb");
 		if (fd != NULL)
 			{

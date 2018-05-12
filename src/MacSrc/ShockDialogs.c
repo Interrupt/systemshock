@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
+#if 0 // DG: let's just hope none of this is really needed..
 
 //--------------------
 //  Includes
@@ -732,6 +733,7 @@ void EndProgressDlg(void)
 //--------------------------------------------------------------------
 //	  Append src to dest - Pascal strings!!!
 //--------------------------------------------------------------------
+
 void Pstrcat(StringPtr dest, ConstStr255Param src)
 {
 	long	sLen = min(*src, 255 - *dest);
@@ -739,3 +741,4 @@ void Pstrcat(StringPtr dest, ConstStr255Param src)
 	BlockMove(src+1, dest + *dest + 1, sLen);
 	*dest += sLen;
 }
+#endif // 0

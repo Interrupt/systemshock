@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 //#include <iostream>
-#include "EDMS_int.h"				//Object types, END conventions, etc.
+#include "edms_int.h"				//Object types, END conventions, etc.
 
 #include "physhand.h"
 #include "lg.h"
@@ -91,7 +91,7 @@ const Q	one_sixth = .1666666666667,      //Overboard?
 			point_one_two_five = .125,
 			two = 2.,
 			point_1 = 0.1,
-			min_scale_slice = .03;	// ¥¥¥¥Ê.03
+			min_scale_slice = .03;	// ï¿½ï¿½ï¿½ï¿½ï¿½.03
 
 //      Sleeping...
 //      -----------

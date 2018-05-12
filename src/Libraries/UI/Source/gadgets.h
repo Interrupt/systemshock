@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "region.h"
 #include "event.h"
 #include "array.h"
+//#include "tng.h"
 
 // Master Game Includes
 
@@ -48,13 +49,13 @@ typedef enum {
 // Your basic gadget.  Most of the real work info is in whatever
 // class structure is pointed to be the class_data pointer.
 
-typedef struct _TNG TNG;
+//typedef struct _TNG TNG;
 
 typedef struct _Gadget{
    LGRegion *rep;
    struct _Gadget *parent;
    GadgetClass gclass;
-   TNG *tng_data;
+   struct _TNG *tng_data;
    void *device_data;
    LGPoint conversion;
    int handler_id;

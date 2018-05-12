@@ -69,9 +69,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Includes
+#include "gadgets.h"
 #include "lg.h"  // every file should have this
 #include "region.h"
-#include "gadgets.h"
 //#include <pushbutt.h>
 //#include <slider.h>
 

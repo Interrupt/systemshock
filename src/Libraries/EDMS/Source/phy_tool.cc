@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	Get on with it then...
 //	======================
 #include <iostream>
-#include "EDMS_Int.h"				//Object types, END conventions, etc.
+#include "edms_int.h"				//Object types, END conventions, etc.
 #include "idof.h"
 
 #include "physhand.h"

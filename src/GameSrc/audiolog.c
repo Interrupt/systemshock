@@ -125,7 +125,7 @@ errtype audiolog_play(int email_id)
 		return(ERR_NOEFFECT);
 	
 	begin_wait();
-	MaxMem(&dummy);							// Compact heap before loading the alog.
+	//MaxMem(&dummy);							// Compact heap before loading the alog. - DG: I don't think we need that anymore
 
 	// Open up the appropriate sound-only movie file.
 
