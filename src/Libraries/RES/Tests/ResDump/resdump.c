@@ -161,8 +161,8 @@ int main(int argc, char *argv[]) {
 #ifndef LISTALLFILES
       if ((i & 15) == 0) {
         printf("\n");
-        printf("  ID     TYPE     SIZE    CSIZE  PCT  LZW COMP LOAD\n");
-        printf("-----  --------  ------  ------  ---  --- ---- ----\n");
+        printf("Offset        ID     TYPE      SIZE    CSIZE  PCT  LZW COMP LOAD\n");
+        printf("----------  ------  --------  ------  ------  ---  --- ---- ----\n");
       }
 #endif
 
@@ -179,9 +179,10 @@ int main(int argc, char *argv[]) {
         numErased++;
         sizeErased += pentry->csize;
       }
-      sprintf(buff, "$%4x  %s  %6d  %6d  %3d   %c    %c    %c", pentry->id,
-              tname, pentry->size, pentry->csize, compPct, flagLzw, flagComp,
-              flagLoad);
+
+      sprintf(buff, "0x%08x    %04d  %s  %6d  %6d  %3d   %c    %c    %c",
+              dataOffset, pentry->id, tname, pentry->size, pentry->csize,
+              compPct, flagLzw, flagComp, flagLoad);
 
 #ifdef LISTALLFILES
       // if ((pentry->flags & RDF_LZW) && (pentry->flags & RDF_COMPOUND))
@@ -207,22 +208,22 @@ int main(int argc, char *argv[]) {
             printf("\tIndex: $%4x  Offset: %6d  Size: %6d\n", j, offset[j], sizeRef);
 
             if (doFull) {
-              if (pentry->flags & RDF_LZW)
-                printf("\t(CAN'T DUMP BYTES - LZW COMPRESSED)\n");
-              else {
+//              if (pentry->flags & RDF_LZW)
+//                printf("\t(CAN'T DUMP BYTES - LZW COMPRESSED)\n");
+//              else {
                 DumpData(fd, dataOffset + offset[j], sizeRef);
-              }
+//              }
             }
           }
           free(offset);
         }
       } else {
         if (doFull) {
-          if (pentry->flags & RDF_LZW)
-            printf("\t(CAN'T DUMP BYTES - LZW COMPRESSED)\n");
-          else {
+//          if (pentry->flags & RDF_LZW)
+//            printf("\t(CAN'T DUMP BYTES - LZW COMPRESSED)\n");
+//          else {
             DumpData(fd, dataOffset, pentry->csize);
-          }
+//          }
         }
       }
 
@@ -316,11 +317,11 @@ int main(int argc, char *argv[]) {
         buffpos = 0;
       }
       line[l++] = buff[buffpos];
-      printf("%2x ", buff[buffpos++]);
+      printf("%02x ", buff[buffpos++]);
       if ((i & 15) == 15) {
         printf("  ");
-        for (j = 0; j < 16; j++)
-          printf("%c", line[j]);
+//        for (j = 0; j < 16; j++)
+//          printf("%c", line[j]);
         printf("\n");
         l = 0;
       }
@@ -329,8 +330,8 @@ int main(int argc, char *argv[]) {
       for (j = l; j < 16; j++)
         printf("   ");
       printf("  ");
-      for (j = 0; j < l; j++)
-        printf("%c", line[j]);
+//      for (j = 0; j < l; j++)
+//        printf("%c", line[j]);
       printf("\n");
     }
     printf("\n\n");
