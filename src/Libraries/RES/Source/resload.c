@@ -62,62 +62,42 @@ void *ResLoadResource(Id id) {
   ResDesc *prd = RESDESC(id);
   ResDesc2 *prd2 = RESDESC2(id);
 
-  //	If doesn't exit, forget it
+  // If doesn't exit, forget it
 
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResInUse(id)) return NULL;});
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
+  // DBG(DSRC_RES_ChkIdRef, {
+  if (!ResInUse(id))
+    return NULL;
+  //});
 
-  //	Spew(DSRC_RES_Read, ("ResLoadResource: loading $%x\n", id));
+  // DBG(DSRC_RES_ChkIdRef, {
+  if (!ResCheckId(id))
+    return NULL;
+  //});
 
-  //	Allocate memory, setting magic id so pager can tell who it is if need
-  // be.
+  // Spew(DSRC_RES_Read, ("ResLoadResource: loading $%x\n", id));
 
+  // Allocate memory, setting magic id so pager can tell who it is if need be.
   prd->ptr = malloc(prd->size);
   if (prd->ptr == NULL)
     return (NULL);
 
-  if (ResFlags(id) & RDF_LZW) {
-    FILE *fd = resFile[prd->filenum].fd;
+  // Tally memory allocated to resources
 
-    RefTable *prt = (RefTable *)prd->ptr;
-    fseek(fd, prt->numRefs, sizeof(RefIndex));
-    fread(&prt->offset[0], sizeof(int32_t) * (prt->numRefs +1), 1, fd);
-
-    RefExtract(prt, MKREF(id,0), (uint8_t *) (prd->ptr)) + (sizeof(RefIndex) + sizeof(int32_t) * (prt->numRefs+1));
-
-  } else {
-    ResRetrieve(id, prd->ptr);
-  }
-
-  return (prd->ptr);
-  //	Tally memory allocated to resources
-
-  //	DBG(DSRC_RES_Stat, {resStat.totMemAlloc += prd->size;});
-  //	Spew(DSRC_RES_Stat, ("ResLoadResource: loading id: $%x, alloc %d, total
+  // DBG(DSRC_RES_Stat, {resStat.totMemAlloc += prd->size;});
+  // Spew(DSRC_RES_Stat, ("ResLoadResource: loading id: $%x, alloc %d, total
   // now %d bytes\n", id, prd->size, resStat.totMemAlloc));
 
-  //	Add to cumulative stats
+  // Add to cumulative stats
+  // CUMSTATS(id,numLoads);
 
-  //	CUMSTATS(id,numLoads);
+  // Load from disk
+  ResRetrieve(id, prd->ptr);
 
-  //	Load from disk
+  // Tally stats
+  // DBG(DSRC_RES_Stat, {resStat.numLoaded++;});
 
-
-  if (prd2->flags & RDF_LZW) {
-    LoadCompressedResource(prd, id);
-  } else {
-    ResRetrieve(id, prd->ptr);
-  }
-  //	ResRetrieve(id, nil);
-
-  //	Tally stats
-
-  //	DBG(DSRC_RES_Stat, {resStat.numLoaded++;});
-
-  //	Return handle
-
+  // Return handle
   return (prd->ptr);
-
 }
 
 //	---------------------------------------------------------
@@ -140,7 +120,7 @@ void *ResLoadResource(Id id) {
   uint16_t numRefs;
 
 //  DebugString("LoadCompressedResource");
-*//*  ResDesc2 *prd2 = RESDESC2(id);
+*/ /*  ResDesc2 *prd2 = RESDESC2(id);
 
   // If everything's still in memory, there's no need to load.
   if (prd->ptr != NULL)
@@ -196,10 +176,10 @@ void *ResLoadResource(Id id) {
   if (exlen < 0) {
     DebugStr("LoadCompressedResource: Can't expand resource.\n");
     return;
-  }*//*
+  }*/ /*
 
-  // DisposeHandle(mirrorHdl); // Free the mirror buffer.
-}*/
+   // DisposeHandle(mirrorHdl); // Free the mirror buffer.
+ }*/
 
 //	---------------------------------------------------------
 //
@@ -218,25 +198,23 @@ uint8_t ResRetrieve(Id id, void *buffer) {
   int32_t size;
   RefIndex numRefs;
 
-  //	Check id and file number
+  // Check id and file number
+  // DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return false;});
 
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return false;});
   prd = RESDESC(id);
   prd2 = RESDESC2(id);
   fd = resFile[prd->filenum].fd;
-  //	DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
+  // DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
 //		Warning(("ResRetrieve: id $%x doesn't exist\n", id)); \
 //		return false; \
 //		}});
 
-  //	Seek to data, set up
-
+  // Seek to data, set up
   fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
   p = buffer;
   size = prd->size;
 
-  //	If compound, read in ref table
-
+  // If compound, read in ref table
   if (prd2->flags & RDF_COMPOUND) {
     fread(p, sizeof(int16_t), 1, fd);
     numRefs = *(int16_t *)p;
@@ -246,8 +224,7 @@ uint8_t ResRetrieve(Id id, void *buffer) {
     size -= REFTABLESIZE(numRefs);
   }
 
-  //	Read in data
-
+  // Read in data
   if (prd2->flags & RDF_LZW)
     LzwExpandFd2Buff(fd, p, 0, 0);
   else
