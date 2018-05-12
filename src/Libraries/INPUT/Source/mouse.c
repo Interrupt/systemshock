@@ -450,8 +450,11 @@ void _mouse_update_vel(void)
 
 errtype mouse_get_xy(short* x, short* y)
 {
+	int mouse_x, mouse_y;
+	uint mouse_state = SDL_GetMouseState(&mouse_x, &mouse_y);
 
-	uint mouse_state = SDL_GetMouseState(x, y);
+	*x = (short)mouse_x;
+	*y = (short)mouse_y;
 
 /*   if (!mouse_installed)
    {
