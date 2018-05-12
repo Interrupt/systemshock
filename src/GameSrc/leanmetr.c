@@ -306,10 +306,6 @@ void lean_icon(LGPoint* pos, grs_bitmap** icon, int* inum)
 		posture = POSTURE_STAND;
 		leanx = 0;
 	}
-
-	// HAX HAX HAX Disable when EDMS lean o meter is back on!
-	posture = POSTURE_STAND;
-	leanx = 0;
 	
 	// Calculate the bitmap resource index based on posture and lean.
 	*inum = posture*BMAPS_PER_POSTURE + ((100 - leanx)*BMAPS_PER_POSTURE/201);
@@ -328,7 +324,7 @@ void lean_icon(LGPoint* pos, grs_bitmap** icon, int* inum)
 
 	// Determine where to draw the bitmap.
 	pos->y = 53 - (*icon)->h;
-	pos->x = (46 - (*icon)->w+1) * abs(leanx)/200;
+	pos->x = (46 - (*icon)->w+1) * abs(leanx)/600;
 	if (leanx < 0) pos->x = - pos->x;
 	pos->x += LEANOMETER_X() + (25)/2 - ((*icon)->w+1)/2;
 	pos->y += LEANOMETER_Y() - 31;
@@ -536,9 +532,6 @@ void update_lean_meter(uchar force)
 	
 	//saveMode = convert_use_mode;
 	//convert_use_mode = 0;
-
-	// HAX HAX HAX: why is this needed to reset the view?
-   	ss_safe_set_cliprect(0,0,640,480);
 
 	if (is_onscreen()) uiHideMouse(&r);
 	ss_bitmap(icon, r.ul.x, r.ul.y);
