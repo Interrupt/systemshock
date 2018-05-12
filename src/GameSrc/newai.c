@@ -178,8 +178,9 @@ short compute_base_visibility()
       visibility += LANTERN_VISIBLE_FACTOR * player_struct.light_value;         
 
 	   // More visible if fired gun recently (this may want to be exponentially decaying
-      if (player_struct.last_fire)  // make sure we've actually fired a weapon
-   	   visibility += ((GUN_VISIBLE_FACTOR * CIT_CYCLE) / (player_struct.game_time - player_struct.last_fire));
+      if (player_struct.last_fire) { // make sure we've actually fired a weapon
+   	   visibility += ((GUN_VISIBLE_FACTOR * CIT_CYCLE) / max(player_struct.game_time - player_struct.last_fire, 1));
+      }
 
 	   // Less visible if critters have lost track of ya
 	   if (last_known_loc.x == 255)
