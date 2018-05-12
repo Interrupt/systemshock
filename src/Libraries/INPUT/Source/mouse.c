@@ -473,7 +473,10 @@ errtype mouse_put_xy(short x, short y)
 {
 	// thanks to Mark for the help! - phs, 8/1/95
 
-	Point *MTemp;
+	// HAX HAX HAX Can't do this yet!
+	return OK;
+
+	/*Point *MTemp;
 	Point *RawMouse;
 	char *CrsrNew;
 
@@ -496,7 +499,7 @@ errtype mouse_put_xy(short x, short y)
  
  	*CrsrNew=1;
 
-	return OK;
+	return OK;*/
 
 /*
    union REGS regs;
