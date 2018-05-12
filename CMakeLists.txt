@@ -13,6 +13,8 @@ add_definitions(-Dpowerc -DSVGA_SUPPORT)
 
 add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
 
+link_libraries("-Wl,--no-as-needed")
+
 # Find SDL
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
@@ -259,6 +261,8 @@ add_executable(systemshock
 add_library(GAME_LIB ${GAME_SRC})
 
 target_link_libraries(systemshock
+	GAME_LIB
+	UI_LIB
 	2D_LIB
 	LG_LIB
 	GR_LIB
@@ -271,11 +275,9 @@ target_link_libraries(systemshock
 	PALETTE_LIB
 	RES_LIB
 #	SND_LIB
-	UI_LIB
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
-	GAME_LIB
 	${CARBON}
 	${SDL2_LIBRARIES}
 )
