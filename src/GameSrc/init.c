@@ -683,8 +683,8 @@ errtype init_kb()
 
 #endif 	// Â¥ DUMMY
 
-errtype load_da_palette();
-errtype load_da_palette()
+
+errtype load_da_palette(void)
 {
 	int 		pal_file;
 	

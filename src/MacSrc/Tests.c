@@ -52,15 +52,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "map.h"
 #include "tilename.h"
 #include "frprotox.h"
-#include "Rendtool.h"
+#include "rendtool.h"
 #include "faketime.h"
-#include "Game_Screen.h"
+#include "game_screen.h"
 #include "fullscrn.h"
 
-#include "objects.h";
+#include "objects.h"
 #include "player.h"
+#include "input.h"
+#include "2d.h"
 
-#include <sdl.h>
+#include <SDL.h>
 
 extern errtype object_data_load(void);
 
@@ -107,6 +109,10 @@ long QuickTickCount() {
 
 Boolean IsOptKeyDown(void)
  {
+#if 1
+	STUB_ONCE("Needed?")
+	return 0;
+#else
 	long		keys[4];
 
 #ifdef __MWERKS__
@@ -115,10 +121,15 @@ Boolean IsOptKeyDown(void)
 		GetKeys(keys);
 #endif
 	return((keys[1] & 0x00000004) != 0L);
+#endif
  }
 
 Boolean IsCmdKeyDown(void)
  {
+#if 1
+	STUB_ONCE("Needed?")
+	return 0;
+#else
 	long		keys[4];
 
 #ifdef __MWERKS__
@@ -127,6 +138,7 @@ Boolean IsCmdKeyDown(void)
 		GetKeys(keys);
 #endif
 	return((keys[1] & 0x00008000) != 0L);
+#endif
  }
 
 
@@ -1446,13 +1458,16 @@ void RenderTest(void)
 	Boolean					profileOn = false;
 	extern void game_redrop_rad(int);
 	int						size_left, size_top, size_wide, size_high;
-	PicHandle				pic;
+	//PicHandle				pic;
 	Rect						r;
 	Boolean				    	showFrames = false;
 	extern 	void 			change_svga_screen_mode();
 	extern 	frc 			*svga_render_context;
 	extern void _fr_change_detail(int det);
 	extern char _g3d_enable_blend;
+	extern errtype load_da_palette(void);
+	extern errtype physics_run(void);
+	extern uchar kb_state(uchar code);
 	
 	object_data_load();
 	HideCursor();
@@ -1486,7 +1501,7 @@ void RenderTest(void)
 	detailCheck = time = 0;
 
 	printf("Button?\n");
-	uint8* keyboard = SDL_GetKeyboardState(NULL);
+	Uint8* keyboard = SDL_GetKeyboardState(NULL);
  	while (!keyboard[SDL_SCANCODE_ESCAPE])
  	  {		
 			SDL_PumpEvents();
@@ -1559,7 +1574,11 @@ void RenderTest(void)
 		_g3d_enable_blend = TRUE;
 		
 		// debugger
+#ifdef __APPLE__
 		if (kb_state(0x32)) Debugger();
+#else
+		STUB_ONCE("What does Debugger() do?")
+#endif
 		
 		// double size
 		if (kb_state(0x12))
@@ -1642,7 +1661,7 @@ void RenderTest(void)
 		 	numtostring(frames,(char *) str);
 		 	strcat((char *) str,", 0");
 		 	str[strlen((char *) str)-1] += _frc->detail;
-		 	MoveTo(2,418);
+		 	//MoveTo(2,418);
 		 	//drawstring((char *) str);
 		 	
 		 	frames = 0;

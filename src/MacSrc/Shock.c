@@ -66,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "physics.h"
 
 #include <stdint.h>
-#include <sdl.h>
+#include <SDL.h>
 
 extern uchar game_paused;		// I've learned such bad lessons from LG.
 extern uchar objdata_loaded;
@@ -123,6 +123,7 @@ int main(int argc, char** argv)
 {  
 	InitMac();																// init mac managers
 				
+	STUB("TODO: FlushEvents()?")
 	//FlushEvents(autoKey+keyDown+mouseDown,0L);		// get rid of any extra mouse/key clicks
  
 	GetFolders();															// get refs to data, sound, etc folders.
@@ -149,6 +150,7 @@ int main(int argc, char** argv)
 	init_all();
 	/*if (gShockPrefs.prefPlayIntro)
 	{
+		extern void PlayIntroCutScene(void);
 		PlayIntroCutScene();
 		gShockPrefs.prefPlayIntro = 0;
 		SavePrefs(kPrefsResID);
@@ -840,6 +842,7 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 //  The main game loop for System Shock.
 //--------------------------------------------------------------------
+extern pascal void MousePollProc(void);
 void ShockGameLoop(void)
 {
 	gPlayingGame = TRUE;
@@ -886,7 +889,7 @@ void ShockGameLoop(void)
 		//MousePollProc();		// update the cursor, was 35 times/sec originally
 		status_bio_update();	// draw the biometer
 
-		uint8_t* keyboard = SDL_GetKeyboardState(NULL);
+		Uint8* keyboard = SDL_GetKeyboardState(NULL);
 		if (keyboard[SDL_SCANCODE_P])
 			physics_running = !physics_running;
 
@@ -1260,6 +1263,7 @@ void InitSDL()
 	gActiveWide = 640;
 	gActiveHigh = 480;
 
+	STUB("I guess/hope this SetRect() stuff is not needed anymore?")
 	//SetRect(&gActiveArea, gActiveLeft, gActiveTop, gActiveWide+gActiveLeft, gActiveHigh+gActiveTop);
 	//SetRect(&gOffActiveArea, 0, 0, gActiveWide, gActiveHigh);
 

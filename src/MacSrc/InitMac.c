@@ -472,8 +472,12 @@ void InstallShockTimers(void)
 //------------------------------------------------------------------------------------
 void RemoveShockTimers(void)
 {
-	//RmvTime((QElemPtr)&pShockTicksTask);					// Stop the Shock ticks task
-	//DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP
+#if 1
+	STUB("if the timer is still used, remove it here..")
+#else
+	RmvTime((QElemPtr)&pShockTicksTask);					// Stop the Shock ticks task
+	DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP
+#endif
 }
 
 //------------------------------------------------------------------------------------

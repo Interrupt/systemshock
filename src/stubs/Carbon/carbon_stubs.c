@@ -35,7 +35,7 @@ Ptr NewPtr(Size byteCount)
 Ptr NewPtrClear(Size byteCount)
 {
 	STUB_ONCE("probably just replace all calls to this with calloc()");
-	Ptr ret = calloc(byteCount);
+	Ptr ret = calloc(1, byteCount);
 	return ret;
 }
 
@@ -46,7 +46,7 @@ void DisposePtr(Ptr p)
 	free(p);
 }
 
-// yet another wrapper around malloc() and free() ...
+// yet another wrapper around malloc() and free() ?
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/Carbon/Reference/Memory_Manager/memory_mgr_ref/function_group_2.html#//apple_ref/c/func/NewHandle
 
 Handle NewHandle(Size cnt)

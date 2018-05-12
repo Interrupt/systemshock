@@ -69,7 +69,7 @@ asm long long_sqrt(long num);
 //-----------------------------------------------------------------
 fix fix_sqrt(fix num)
 {
-	fix	res = long_sqrt(num);
+	//fix	res = long_sqrt(num);
 
 	float f = fix_float(num);
 	f = sqrtf(f);
