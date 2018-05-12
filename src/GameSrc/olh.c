@@ -61,6 +61,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "otrip.h"
 #include "cybstrng.h"
 
+extern void SDLDraw(void);
+
 // -------------------------------------------------
 //          ON-LINE HELP FOR SYSTEM SHOCK
 // -------------------------------------------------

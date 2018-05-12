@@ -36,6 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grnull.h"
 
+extern void DebugString(char* msg);
+
 void gr_null (void) {}
 void gr_not_imp (void) {DebugString("Graphics function not implemented");}
 void gr_not_imp_test (void) {} 

@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ////#include <conio.h>
 #include "fixpp.h"
-#include "EDMS_int.h"
+#include "edms_int.h"
 
 
 

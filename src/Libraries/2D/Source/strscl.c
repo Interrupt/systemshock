@@ -40,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "chr.h"
 #include "general.h"
 
+#include <stdio.h> // printf()
 
 int gen_font_scale_string (grs_font *f, char *s, short x0, short y0, short w, short h)
 {

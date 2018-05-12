@@ -251,6 +251,8 @@ uchar do_plotware_hack(int hack_num, char* vbuf)
 
 #define BUTTON_Y (MFD_VIEW_HGT - res_bm_height(REF_IMG_PrevPage) - 2)
 
+extern void mfd_item_micro_expose(uchar full, int triple);
+
 void mfd_plotware_expose(MFD* mfd, ubyte control)
 {
    extern void mfd_item_micro_hires_expose(bool,int);

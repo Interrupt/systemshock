@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grs.h"
 #include "detect.h"
-#include "init.h"
+#include "init_2D.h"
 #include "initint.h"
 
 int gr_init(void)

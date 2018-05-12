@@ -126,6 +126,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 #include "3d.h"
 #include "GlobalV.h"
+#include <stdio.h> // printf()
 
 extern void per_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 extern void h_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
@@ -553,7 +554,8 @@ int draw_tmap_common(int n, g3s_phandle *vp, grs_bitmap *bm)
  	
 	// always clip for now
 	// copy to temp buffer for clipping
-	BlockMove(vp,vbuf,n*4);
+	//BlockMove(vp,vbuf,n*4);
+ 	memmove(vbuf, vp, n*4);
 	
 	_n_verts = n = g3_clip_polygon(n,vbuf,_vbuf2);
 	if (n==0) return CLIP_ALL;

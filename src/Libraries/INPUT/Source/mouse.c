@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <Carbon/Carbon.h>
 
-#include <sdl.h>
+#include <SDL.h>
 
 typedef struct _mouse_state
 {
@@ -450,11 +450,10 @@ void _mouse_update_vel(void)
 
 errtype mouse_get_xy(short* x, short* y)
 {
-	int mouse_x, mouse_y;
-	uint mouse_state = SDL_GetMouseState(&mouse_x, &mouse_y);
-
-	*x = (short)mouse_x;
-	*y = (short)mouse_y;
+	int x_, y_;
+	uint mouse_state = SDL_GetMouseState(&x_, &y_);
+	if(x)  *x = x_;
+	if(y)  *y = y_;
 
 /*   if (!mouse_installed)
    {
@@ -469,14 +468,22 @@ errtype mouse_get_xy(short* x, short* y)
    return OK;
 }
 
+// Set the mouse position
 errtype mouse_put_xy(short x, short y)
 {
 	// thanks to Mark for the help! - phs, 8/1/95
+<<<<<<< HEAD
 
 	// HAX HAX HAX Can't do this yet!
 	return OK;
 
 	/*Point *MTemp;
+=======
+#if 1
+	STUB_ONCE("TODO: Implement with SDL_WarpMouseInWindow()")
+#else
+	Point *MTemp;
+>>>>>>> 60103891265e15e93765f091c5aa175999862733
 	Point *RawMouse;
 	char *CrsrNew;
 
@@ -498,6 +505,7 @@ errtype mouse_put_xy(short x, short y)
 	RawMouse->h = pt.h; 	
  
  	*CrsrNew=1;
+#endif
 
 	return OK;*/
 
@@ -636,7 +644,7 @@ int btn_left  = 0;
 errtype mouse_next(mouse_event *res)
 {
 	short				eventMask;
-	EventRecord	theEvent;
+	//EventRecord	theEvent;
 	Boolean			nowDown;
 	uchar			rbType = 0;
 

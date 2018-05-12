@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
-#include <sdl.h>
+#include <SDL.h>
 
 //--------------------
 // Defines
@@ -119,7 +119,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Function Prototypes
 //--------------------
-void main(void);
+typedef void* WindowPtr; // FIXME: get rid of UpdateWindow()?
+typedef void* MenuHandle; // FIXME: what's gMainMenus about?
+int main(int argc, char** argv);
 void HandleEvents(void);
 void UpdateWindow(WindowPtr wind);
 void DoCommand(unsigned long mResult);

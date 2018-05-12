@@ -25,8 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	==========================
 
 
-#include "EDMS_Int.h"					//This is the model type library. It is universal.
-#include "EDMS_mod.h"
+#include "edms_int.h"					//This is the model type library. It is universal.
+#include "edms_mod.h"
 
 
 

@@ -141,7 +141,7 @@ uchar digi_fx_playing(int fx_id, int *handle_ptr);
 errtype output_text(char *);
 extern void mlimbs_do_ai(void);
 
-typedef struct
+typedef struct snd_digi_parms
 {
    uchar       pan;
    uchar       pri;

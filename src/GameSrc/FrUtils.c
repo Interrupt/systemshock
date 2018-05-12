@@ -39,6 +39,10 @@ grs_canvas		gDoubleSizeOffCanvas;
 //---------------------------------------------------------------------
 int AllocDoubleBuffer(int w, int h)
 {
+#if 1
+	STUB_ONCE("");
+	return 0;
+#else
 	Size		dummy;
 
 	FreeDoubleBuffer();													// If one's there, free it first.
@@ -57,6 +61,7 @@ int AllocDoubleBuffer(int w, int h)
 	}
 	else
 		return 0;
+#endif
 }
 
 //---------------------------------------------------------------------

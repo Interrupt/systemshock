@@ -71,8 +71,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frcamera.h"
 #include "faketime.h"
 #include "dynmem.h"
+#include "citres.h"
 
-#include <sdl.h>
+#include <SDL.h>
 
 /*
 #define AIL_SOUND
@@ -514,7 +515,7 @@ void DrawSplashScreen(short id, Boolean fadeIn)
 	byte  				pal_id;
 	uchar 			savep[768];
 	grs_bitmap	bits;
-	CTabHandle		ctab;
+	//CTabHandle		ctab;
 	extern void finish_pal_effect(byte id);
 	extern byte palfx_start_fade_up(uchar *new_pal);
 
@@ -686,8 +687,6 @@ errtype load_da_palette();
 errtype load_da_palette()
 {
 	int 		pal_file;
-	FSSpec	fSpec;
-	FSRef   fsRef;
 	
 	printf("Loading gamepal.res\n");
 	pal_file = ResOpenFile("res/data/gamepal.res");
@@ -789,7 +788,7 @@ Handle shock_alloc_ipal()
 	if (!temp)
 		return(NULL);
 	
-	HLockHi(temp);
+	//HLockHi(temp); // DG: I doubt this is really needed
 	grd_ipal = (uchar *) *temp;
 	
 	return(temp);
@@ -811,7 +810,7 @@ errtype init_gamesys()
 
 errtype free_gamesys(void)
 {
-   extern game_sched_free(void);
+   extern void game_sched_free(void);
    game_sched_free();
 
    return(OK);

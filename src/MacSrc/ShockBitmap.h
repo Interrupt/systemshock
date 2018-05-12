@@ -27,8 +27,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <Carbon/Carbon.h>
 
-#include <sdl.h>
+#include <SDL.h>
 
+#if 1
+
+#else
 //--------------------
 //  Types
 //--------------------
@@ -57,6 +60,10 @@ extern PixMapHandle 		gScreenPixMap;
 extern CTabHandle			gMainColorHand;
 extern Boolean				gChangedColors;
 //extern ShockBitmap			gMainOffScreen;
+
+#endif // 0
+
+typedef struct ShockBitmap ShockBitmap; // FIXME: if this is actually needed, provide a portable struct
 
 extern SDL_Surface* drawSurface;
 extern SDL_Surface* offscreenDrawSurface;

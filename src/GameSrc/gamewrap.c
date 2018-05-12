@@ -93,6 +93,10 @@ errtype interpret_qvars(void);
 
 errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile)
 {
+#if 1
+	STUB_ONCE("reimplement with stdio if really needed");
+	return ERR_FOPEN;
+#else
 	OSErr	err;
 	FInfo		fi;
 	short		destRefNum, srcRefNum;
@@ -139,6 +143,7 @@ errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile)
 	FSClose(srcRefNum);
 	// FlushVol(nil, destFile->vRefNum); No more vRefNum?
 	return(retv);
+#endif
 }
 
 void closedown_game(uchar visible)
@@ -218,8 +223,8 @@ errtype save_game(FSSpec *saveSpec)
    // Why is this done???			closedown_game(FALSE);
 
    //KLC  do it the Mac way						i = flush_resource_cache();
-	Size	dummy;
-	MaxMem(&dummy);
+	//Size	dummy;
+	//MaxMem(&dummy); DG: I don't think this is needed anymore
 	
 	// Open the current game file to save some more resources into it.
 	FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);

@@ -112,6 +112,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <libdbg.h>
 #include "vmouse.h"
 #include <stdlib.h>
+#include <stdio.h> // printf()
 
 #define SPEW_ANAL Spew
 

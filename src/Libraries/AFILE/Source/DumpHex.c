@@ -60,7 +60,7 @@ static char *tableNames[] = {
 	char infile[128];
 	char buff[128];
 	
-	short	outResNum;
+	//short	outResNum;
 	short	resID = 128;
 
 	dumpChunkHdrs = TRUE;
@@ -227,7 +227,7 @@ static char *tableNames[] = {
 //	Close file
 
 	fclose(fpi);
-	CloseResFile(outResNum);
+	//CloseResFile(outResNum); outResNum wasn't even set
 }
 
 

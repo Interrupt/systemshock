@@ -79,4 +79,4 @@ void StartProgressDlg(const char* title, int numSteps);
 void AdvanceProgress(void);
 void EndProgressDlg(void);
 
-void Pstrcat(StringPtr dest, ConstStr255Param src);
+// void Pstrcat(StringPtr dest, ConstStr255Param src); DG: hopefully not needed anymore

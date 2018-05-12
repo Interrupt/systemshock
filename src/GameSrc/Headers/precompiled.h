@@ -1,6 +1,7 @@
 #pragma pack(2)
 
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "2d.h"
 
@@ -23,7 +24,8 @@
 
 #include "2dres.h"
 //#include "base.h"
-#include "error.h"
+// use explicit path for error.h include so it doesn't use system's <error.h>
+#include "../../Libraries/H/error.h"
 #include "keydefs.h"
 #include "lg_types.h"
 #include "lgsprntf.h"
@@ -47,7 +49,7 @@
 #include "rnd.h"
 
 // NO SOUND YET!
-//#include "lgsndx.h"
+#include "lgsndx.h"
 //#include "digi.h"
 //#include "midi.h"
 

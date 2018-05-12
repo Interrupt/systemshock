@@ -185,6 +185,21 @@ void critical_error(short code)
 	if (gExtraMemory)
 		DisposHandle(gExtraMemory);			// free our extra space
 	
+#if 1
+	STUB_ONCE("Maybe use SDL_ShowSimpleMessageBox() ?");
+
+	printf("A fatal error has occured in System Shock. Error code %d.\n", code);
+
+	s = criterr_type_messages[CLASS(code)]; // Specific error message.
+	if (s != NULL)
+		strcpy(explain, s);
+	for (i = 0; i < NUM_CODE_MESSAGES; i++)
+		if (code_messages[i].code == code)
+			strcat(explain, code_messages[i].message);
+
+	printf("  %s\n", explain);
+
+#else
 	sprintf(buf, "A fatal error has occurred in System Shock.  Error code %d.", code);
 	len = strlen(buf);																	// Convert to p-string.
 	BlockMove(buf, buf+1, 255);
@@ -205,6 +220,7 @@ void critical_error(short code)
 		StopAlert(1001, nil);
 	else
 		StopAlert(1000, nil);
+#endif
 
 	CleanupAndExit();																	// Get out of here.
 }

@@ -711,6 +711,9 @@ errtype uiSetKeyboardPolling(ubyte* codes)
 // before dispatching an event.
 void ui_poll_keyboard(void)
 {
+#if 1
+	STUB_ONCE("TODO: Implement with SDL!");
+#else
 	extern uchar	pKbdGetKeys[16];
 	long			*keys = (long *)pKbdGetKeys;
 	GetKeys((UInt32 *)keys);
@@ -733,6 +736,7 @@ void ui_poll_keyboard(void)
 
 			uiDispatchEvent((uiEvent*)&ev);
 		}
+#endif
 }
 
 void ui_pop_up_keys(void)

@@ -61,8 +61,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //��� For now
 //#define DBG_ON		1
 
+#ifdef __APPLE__
 #include <Carbon/Carbon.h>
+#else
+// DG: probably because this is part of precompiled.h which is set with "-include" compiler flag,
+//     it can't find my Carbon/Carbon.h stub on Linux, so let's use the explicit path here
+#include "../../../stubs/Carbon/Carbon.h"
+#endif
 #include "lg.h"
+#include <stdio.h> // for FILE*
 
 //#ifndef DATAPATH_H
 //#include <datapath.h>
@@ -128,7 +135,7 @@ void *RefGet(Ref ref);									// get ptr to item in comp. res (dangerous!)
 
 RefTable *ResReadRefTable(Id id);									// alloc & read ref table
 #define ResFreeRefTable(prt) (DisposePtr((Ptr)prt))		// free ref table
-//int ResExtractRefTable(Id id, RefTable *prt, long size); 	// extract reftable
+int ResExtractRefTable(Id id, RefTable *prt, long size); 	// extract reftable
 void *RefExtract(RefTable *prt, Ref ref, void *buff);			// extract ref
 
 #define RefIndexValid(prt,index) ((index) < (prt)->numRefs)

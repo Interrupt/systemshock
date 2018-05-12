@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <lg.h>
 #include "res.h"
 #include "res_.h"
-//#include <lzw.h>
+#include "lzw.h"
 //#include <memall.h>
 //#include <_res.h>
 
@@ -89,7 +89,7 @@ void ResInit()
 	resDescMax = DEFAULT_RESMAX;
 	gResDesc = (ResDesc *)NewPtrClear( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
 	if (MemError())
-		DebugStr("ResInit: Can't allocate the global resource descriptor table.\n");
+		DebugString("ResInit: Can't allocate the global resource descriptor table.\n");
 
 //	Clear file descriptor array
 
@@ -207,7 +207,7 @@ void ResGrowResDescTable(Id id)
 		growPtr = NewPtr(newAmt * sizeof(ResDesc));
 		if (MemError() != noErr)
 		{
-			DebugStr("\pResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
+			DebugString("ResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
 			return;
 		}
 		BlockMove(gResDesc, growPtr, currAmt * sizeof(ResDesc));

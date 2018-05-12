@@ -1081,6 +1081,8 @@ void mfd_emailware_expose(MFD* mfd, ubyte control)
 {
    extern void mfd_item_micro_hires_expose(uchar full, int triple);
    extern void draw_mfd_item_spew(Ref id, int n);
+   extern void mfd_item_micro_expose(uchar full, int triple);
+
    int i;
    uchar full = control & MFD_EXPOSE_FULL;
    uchar on = (control & (MFD_EXPOSE|MFD_EXPOSE_FULL)) != 0;

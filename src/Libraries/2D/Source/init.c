@@ -29,9 +29,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "grd.h"
-#include "init.h"
 #include "detect.h"
 #include "grdev.h"
+#include "init_2D.h"
 #include "state.h"
 #include "invtab.h"
 #include "memall.h"

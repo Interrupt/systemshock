@@ -53,7 +53,7 @@ void ResMake(Id id, void *ptr, long size, uchar type, short filenum, uchar flags
 {
 	Handle		resHdl;
 	ResDesc 	*prd;
-	Str255		resName;
+	//Str255		resName;
 
 	printf("ResMake\n");
 	

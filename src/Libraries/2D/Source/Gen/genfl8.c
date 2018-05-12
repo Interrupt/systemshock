@@ -68,6 +68,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "grpix.h"
 #include "general.h"
 
+#include <stdio.h> // printf()
+
 /* bozo flat8 bitmap drawer. */
 void gen_flat8_ubitmap (grs_bitmap *bm, short x, short y)
 {

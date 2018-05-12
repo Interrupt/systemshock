@@ -91,6 +91,8 @@ byte num_installed_shifts = 0;
 
 void palette_advance_all_fx(long timestamp)
 {
+   extern void SetSDLPalette(int index, int count, uchar *pal);
+
    static int	ts_remainder = 0;   
    int         	i, time_diff;
    short		c1, c2, t;

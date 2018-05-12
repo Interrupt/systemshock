@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Includes
 //--------------------
 #include "fix.h"
+#include <math.h>
 
 //--------------------
 //  Table of square root guesses
@@ -59,7 +60,7 @@ ubyte  pGuessTable[256] =
 //--------------------
 #if defined(powerc) || defined(__powerc)
 int long_sqrt(int num);
-#else
+#elif defined(DG_HAS_NOIDEA_68k)
 asm long long_sqrt(long num);
 #endif
 
@@ -71,14 +72,15 @@ fix fix_sqrt(fix num)
 	fix	res = long_sqrt(num);
 
 	float f = fix_float(num);
-	f = sqrt(f);
+	f = sqrtf(f);
 	
 	// Make the number a fix and return it
 	return fix_from_float(f);
 }
 
 // PowerPC  versions of quad_sqrt & long_sqrt
-#if defined(powerc) || defined(__powerc)
+//#if defined(powerc) || defined(__powerc)
+#if 1 // DG: this is plain C code, use it everywhere
 //-----------------------------------------------------------------
 //  Calculate the square root of a wide (64-bit) number.
 //-----------------------------------------------------------------
@@ -286,7 +288,8 @@ found_byte:
 	return (divisor);
 }
 
-#else
+#elif defined(DG_HAS_NOIDEA_68k)
+
 // 68k versions of quad_sqrt & long_sqrt
 asm long quad_sqrt(long hi, long lo)
  {

@@ -40,7 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------------
 //	Types
 //--------------------------
-typedef struct
+#if 0 // FIXME: clashes with musicai.h's definition
+typedef struct snd_digi_parms
 {
    SndChannelPtr	sndChan;	// Ptr to Mac sound channel.
    uchar			pan;
@@ -53,6 +54,9 @@ typedef struct
    void			*data;
    int			len;
 } snd_digi_parms;
+#endif // 0
+
+//typedef struct snd_digi_parms snd_digi_parms;
 
 typedef struct
 {
@@ -76,7 +80,7 @@ typedef struct
 extern uchar	snd_digi_vol;
 extern uchar          snd_midi_vol;
 //extern void cdecl   (*snd_update)(snd_digi_parms *dprm);
-extern void (*snd_finish)(snd_digi_parms *dprm);
+extern void (*snd_finish)(struct snd_digi_parms *dprm);
 //extern void cdecl   (*snd_nblock)(snd_digi_parms *dprm);
 extern void (*seq_finish)(long seq_ind);
 //extern void cdecl   (*seq_miditrig)(snd_midi_parms *mprm, int trig_value);
@@ -105,16 +109,19 @@ int   snd_set_digital_channels(int chan_cnt);
 int   snd_start_midi(void);
 int   snd_stop_midi(void);
 
-int   snd_sample_play(int snd_ref, int len, uchar *smp, snd_digi_parms *dprm);
+int   snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dprm);
 void  snd_end_sample(int hnd_id);
-snd_digi_parms *snd_sample_parms(int hnd_id);
+struct snd_digi_parms *snd_sample_parms(int hnd_id);
 //void *snd_get_sample(int hnd_id);
 void  snd_kill_all_samples(void);
-void  snd_sample_reload_parms(snd_digi_parms *sdp);
+void  snd_sample_reload_parms(struct snd_digi_parms *sdp);
 
 int snd_find_free_sequence(void);
 //int   snd_sequence_play(int snd_ref, uchar *seq_dat, int seq_num, snd_midi_parms *mparm);
 //snd_midi_parms *snd_sequence_parms(int hnd_id);
+
+typedef struct {} TunePlayer; // DG: hack so compiler shuts up about the two functions using this
+
 TunePlayer snd_get_sequence(int seq_id);
 void  snd_end_sequence(int seq_id);
 void  snd_kill_all_sequences(void);

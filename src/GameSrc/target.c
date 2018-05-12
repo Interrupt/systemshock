@@ -588,6 +588,7 @@ uchar mfd_target_handler(MFD *m, uiEvent *e)
 
 extern void mfd_item_micro_hires_expose(uchar full, int triple);
 extern void draw_mfd_item_spew(Ref id, int n);
+extern void mfd_item_micro_expose(uchar full, int triple);
 #define STRINGS_PER_WARE (REF_STR_wareSpew1 - REF_STR_wareSpew0)
 
 void mfd_targetware_expose(MFD* mfd, ubyte control)

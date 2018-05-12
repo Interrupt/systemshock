@@ -118,7 +118,7 @@ errtype CheckFreeSpace(short	checkRefNum);
 //------------------------------------------------------------------------------------
 //		Main function.
 //------------------------------------------------------------------------------------
-void main(void)
+int main(int argc, char** argv)
 {  
 	InitMac();																// init mac managers
 				
@@ -184,6 +184,8 @@ void main(void)
 	//PaintRect(&gMainWindow->portRect);
 	
 //	CleanupAndExit();			ETS patch does this now.
+
+	return 0;
 }
 
 //------------------------------------------------------------------------------------
