@@ -241,7 +241,7 @@ RefTable *ResReadRefTable(Id id)
 	return(prt);
 }
 
-/*
+
 //	---------------------------------------------------------
 //
 //	ResExtractRefTable() extracts a compound res's ref table.
@@ -254,6 +254,9 @@ RefTable *ResReadRefTable(Id id)
 
 int ResExtractRefTable(Id id, RefTable *prt, long size)
 {
+	STUB_ONCE("TODO: implement if needed?"); // at least I can't build without this
+	return -1;
+	/*
 	ResDesc *prd;
 	int fd;
 
@@ -286,8 +289,10 @@ int ResExtractRefTable(Id id, RefTable *prt, long size)
 	read(fd, &prt->offset[0], sizeof(long) * (prt->numRefs + 1));
 
 	return(0);
+	*/
 }
 
+/*
 //	---------------------------------------------------------
 //
 // return number of refs, or -1 if error

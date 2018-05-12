@@ -135,7 +135,7 @@ void *RefGet(Ref ref);									// get ptr to item in comp. res (dangerous!)
 
 RefTable *ResReadRefTable(Id id);									// alloc & read ref table
 #define ResFreeRefTable(prt) (DisposePtr((Ptr)prt))		// free ref table
-//int ResExtractRefTable(Id id, RefTable *prt, long size); 	// extract reftable
+int ResExtractRefTable(Id id, RefTable *prt, long size); 	// extract reftable
 void *RefExtract(RefTable *prt, Ref ref, void *buff);			// extract ref
 
 #define RefIndexValid(prt,index) ((index) < (prt)->numRefs)

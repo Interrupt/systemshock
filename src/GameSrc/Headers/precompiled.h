@@ -3,24 +3,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-// DG: helpful for seeing which stubbed out things are even used
-
-// prints a stub message (incl. containing function)
-#define STUB(msg) \
-	printf("STUB: %s() %s\n", __FUNCTION__, msg);
-
-// prints a stub message (incl. containing function) only the first time it's called
-#define STUB_ONCE(msg) do { \
-	static int show=1; \
-	if(show) { \
-		show = 0; \
-		printf("STUB: %s() %s\n", __FUNCTION__, msg); \
-	} \
-} while(0);
-
-
-
-
 #include "2d.h"
 
 #include "3d.h"

@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 //#include <mprintf.h>
 #include "texttool.h"
+#include <stdlib.h> // malloc(), free()
 
 #define _tt_top(tid) if (tid==NULL) tid=cur_tt; _tt=tid;
 

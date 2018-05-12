@@ -38,6 +38,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include "memall.h"
 #include "dbg.h"
 
+
+// DG: helpful for seeing which stubbed out things are even used
+
+// prints a stub message (incl. containing function)
+#define STUB(msg) \
+	printf("STUB: %s() %s\n", __FUNCTION__, msg);
+
+// prints a stub message (incl. containing function) only the first time it's called
+#define STUB_ONCE(msg) do { \
+	static int show=1; \
+	if(show) { \
+		show = 0; \
+		printf("STUB: %s() %s\n", __FUNCTION__, msg); \
+	} \
+} while(0);
+
 // For mac version.
 #define	max(a,b)	(((a) > (b)) ? (a) : (b))
 #define	min(a,b)	(((a) < (b)) ? (a) : (b))

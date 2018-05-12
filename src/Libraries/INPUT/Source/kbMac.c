@@ -75,9 +75,11 @@ kbs_event kb_next(void)
 {
 	int				flags = kb_get_flags();
 	bool				gotKey = FALSE;
-	EventRecord	theEvent;
 	kbs_event		retEvent = { 0xFF, 0x00 };
-
+#if 1
+	STUB_ONCE("TODO: Implement with SDL");
+#else
+	EventRecord	theEvent;
 	while(!gotKey)
 	{
 		gotKey = GetOSEvent(keyDownMask | autoKeyMask, &theEvent);		// Get a key
@@ -91,6 +93,7 @@ kbs_event kb_next(void)
 		else if ((flags & KBF_BLOCK) == 0)					// If there was no key and we're
 			return (retEvent);										// not blocking, then return.
 	}
+#endif
 	return (retEvent);
 }
 
@@ -101,12 +104,14 @@ kbs_event kb_look_next(void)
 {
 	int				flags = kb_get_flags();
 	bool				gotKey = FALSE;
-	EventRecord	theEvent;
 	kbs_event		retEvent = { 0xFF, 0x00 };
-
+#if 1
+	STUB_ONCE("TODO: Implement with SDL!");
+#else
+	EventRecord	theEvent;
 	while(!gotKey)
 	{
-		/*gotKey = OSEventAvail(keyDownMask | autoKeyMask, &theEvent);		// Get a key
+		gotKey = OSEventAvail(keyDownMask | autoKeyMask, &theEvent);		// Get a key
 		if (gotKey)
 		{
 			retEvent.code = (uchar)(theEvent.message >> 8);
@@ -114,9 +119,10 @@ kbs_event kb_look_next(void)
 			retEvent.ascii = (uchar)(theEvent.message & charCodeMask);
 			retEvent.modifiers = (uchar)(theEvent.modifiers >> 8);
 		}
-		else if (flags & KBF_BLOCK == 0)					// If there was no key and we're*/
+		else if (flags & KBF_BLOCK == 0)					// If there was no key and we're
 			return (retEvent);										// not blocking, then return.
 	}
+#endif
 	return (retEvent);
 }
 
@@ -126,7 +132,9 @@ kbs_event kb_look_next(void)
 //---------------------------------------------------------------
 void kb_flush(void)
 {
-	FlushEvents(keyDownMask | autoKeyMask, 0);
+	// http://mirror.informatimago.com/next/developer.apple.com/documentation/Carbon/Reference/Event_Manager/event_mgr_ref/function_group_5.html#//apple_ref/c/func/FlushEvents
+	//FlushEvents(keyDownMask | autoKeyMask, 0);
+	STUB_ONCE("TODO: Implement with SDL!");
 }
 
 
@@ -135,6 +143,9 @@ void kb_flush(void)
 //---------------------------------------------------------------
 uchar kb_state(uchar code)
 {
-	GetKeys((UInt32 *) pKbdGetKeys);
-	return ((pKbdGetKeys[code>>3] >> (code & 7)) & 1);
+	// see http://mirror.informatimago.com/next/developer.apple.com/documentation/Carbon/Reference/Event_Manager/event_mgr_ref/function_group_4.html#//apple_ref/c/func/GetKeys
+	STUB_ONCE("TODO: Implement with SDL!");
+	//GetKeys((UInt32 *) pKbdGetKeys);
+	//return ((pKbdGetKeys[code>>3] >> (code & 7)) & 1);
+	return 0;
 }

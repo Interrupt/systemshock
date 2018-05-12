@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lintab.h"
 // #include "ShockBitmap.h"
 
+#include <stdio.h> // printf()
+
 //extern CTabHandle           gMainColorHand;
 
 // #include <Carbon/Carbon.h>

@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "InitMac.h"
 #include "ShockBitmap.h"
 //#include "MacTune.h"
-#include <sdl.h>
+#include <SDL.h>
 
 #include <Carbon/Carbon.h>
 
@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //QDGlobals	qd;
 #endif
 Handle			gExtraMemory = nil;
-ColorSpec 		*gOriginalColors;
+//ColorSpec 		*gOriginalColors;
 unsigned long	gRandSeed;
 short				gMainVRef;
 //CursHandle		gWatchCurs;
@@ -178,7 +178,8 @@ void InitMac(void)
 	
 	gMenusHid = FALSE;*/
 
-	GetDateTime(&gRandSeed);								// Start off with a random seed
+	//GetDateTime(&gRandSeed);								// Start off with a random seed
+	gRandSeed = TickCount();
 	gRandSeed += TickCount()<<8;
 
 	InstallShockTimers(); // needed for the tick pointer
@@ -428,6 +429,10 @@ Handle GetResourceFail(long id, short num)
 	h = GetResource(id, num);
 	if (h) return(h);
 	
+#if 1
+	STUB("If, GetResource() and friends are relevant after all, implement this..")
+#else
+
 	// At this point GetResource failed, figure out why.
 	SetResLoad(false);
 	h = GetResource(id, num);
@@ -440,7 +445,7 @@ Handle GetResourceFail(long id, short num)
 		ErrorDie(1);		// resource is there, must be a memory problem
 	else
 		ErrorDie(3);		// resource not there, somethings bad
-		
+#endif
 	return (nil);
 }
 

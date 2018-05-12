@@ -18,6 +18,9 @@ typedef char* Ptr;
 typedef Ptr* Handle;
 typedef void* CGrafPtr; // whatever this is?
 
+typedef Handle PixMapHandle; // whatever this is..
+typedef Handle CTabHandle;   // ...
+
 typedef unsigned char Boolean;
 
 enum { noErr = 0 };
@@ -27,6 +30,10 @@ typedef int32_t Size; // long in MacOS, I guess that was a 32bit int?
 typedef int32_t Fixed;
 
 typedef int16_t OSErr;
+
+typedef int32_t TimeValue;
+
+typedef unsigned char Str255[256];
 
 typedef struct FSSpec
 {
@@ -66,8 +73,17 @@ OSErr FSMakeFSSpec(short vRefNum, long dirID, /*ConstStr255Param*/ const char* f
 Handle GetResource(ResType type, /*Integer*/ int id);
 
 static void ReleaseResource(Handle h) {}
+static void HLock(Handle h) {}
 static void HUnlock(Handle h) {}
-static void DisposeHandle(Handle h) {}
+
+extern Handle NewHandle(Size cnt);
+extern void DisposeHandle(Handle h);
+static void WriteResource (Handle theResource) {}
+
+static void AddResource (Handle theData, ResType theType, short theID, /*ConstStr255Param*/ const char* name) {}
+
+static void CloseResFile(short refNum) {}
+
 
 static void numtostring(int num, char *str)
 {
@@ -98,7 +114,7 @@ int32_t TickCount(void);
 void SetPort(/*GrafPtr*/ void* port);
 
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/Carbon/Reference/Memory_Manager/memory_mgr_ref/function_group_14.html#//apple_ref/c/func/BlockMoveData
-static void BlockMoveData(const void* srcPtr,void* destPtr, Size byteCount)
+static void BlockMoveData(const void* srcPtr, void* destPtr, Size byteCount)
 {
 	// docs say "If the value of byteCount is 0, BlockMove does nothing"
 	// memmove() might assume (=> make the compilers optimizer believe)
@@ -107,7 +123,7 @@ static void BlockMoveData(const void* srcPtr,void* destPtr, Size byteCount)
 		memmove(destPtr, srcPtr, byteCount);
 }
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/mac/Memory/Memory-42.html
-static void BlockMove(const void* srcPtr,void* destPtr, Size byteCount)
+static void BlockMove(const void* srcPtr, void* destPtr, Size byteCount)
 {
 	if(byteCount > 0)
 		memmove(destPtr, srcPtr, byteCount);

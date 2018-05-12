@@ -35,7 +35,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 fix24 fix24_pyth_dist (fix24 a, fix24 b)
 {
-	return fix24_sqrt (fix24_mul (a, a) + fix24_mul (b, b));
+	//return fix24_sqrt (fix24_mul (a, a) + fix24_mul (b, b));
+	// DG: I hope this is correct.. fix24_sqrt() was asm-only so far?!
+	fix24 x = fix24_mul(a, a) + fix24_mul(b, b);
+	return fix_sqrt(x << 8);
 }
 
 //////////////////////////////

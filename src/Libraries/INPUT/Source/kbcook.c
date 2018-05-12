@@ -57,17 +57,21 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 		
 	if (ev.modifiers & 0x08)		// If option-key was down,
 	{								// simulate an alt key.
-		Handle	kHdl;
-		long	tk;
+		long	tk = 0;
 		uint32_t	state = 0;
 		
 		// Unfortunately, option-key changes the character that was
 		// pressed.  So we need to find out what the unmodified
 		// character is.
+#if 1
+		STUB_ONCE("TODO: Figure out what this should do and do it with SDL..");
+#else
+		Handle	kHdl;
 		kHdl = GetIndResource('KCHR', 1);
 		HLock(kHdl);
 		tk = KeyTranslate(*kHdl, ev.code, &state);
 		HUnlock(kHdl);
+#endif
 		
 		// We've got the character, so or it into the "cooked" short.
 		*cooked &= 0xFF00;

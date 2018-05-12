@@ -94,6 +94,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include "fix.h"
 #include "trigtab.h"
+#include "dbg.h"
 #include <math.h>       // for sqrtl only
 
 fix fix_mul_3_3_3_asm(fix a, fix b)
@@ -301,7 +302,7 @@ fix fix_safe_pyth_dist (fix a, fix b)
 		{
 //			ssWarning (("Overflow in fix_safe_pyth_dist\n"));
 			//DebugStr("\pOverflow in fix_safe_pyth_dist");
-			DebugStr("Overflow in fix_safe_pyth_dist");
+			DebugString("Overflow in fix_safe_pyth_dist");
 			return 0;
 		}
 		for (;;)

@@ -187,6 +187,25 @@ int AmovReadHeader(Afile *paf)
 	return(0);
 }
 
+// DG: add some stubs so stuff builds
+
+// for some reason precompiled.h is missing here?!
+static void Draw4x4(const uchar* data, short w, short h)
+{
+	// I have no idea what this really does..
+	STUB_ONCE("TODO: Implement");
+}
+static void HuffExpandFlashTables(uchar* huffmanTable, ulong len, ulong* pl, int xWTF)
+{
+	// unsure about the types, especially of pl? and what it is as well..
+	STUB_ONCE("TODO: Implement");
+}
+static void Draw4x4Reset(uchar* x, uchar* y)
+{
+	// as you may have guessed, I have no idea about this one either.
+	STUB_ONCE("TODO: Implement");
+}
+// DG end
 
 //	----------------------------------------------------------
 //

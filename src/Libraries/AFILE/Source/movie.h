@@ -145,7 +145,7 @@ typedef struct {
 	short nextBuff;		// next buffer to load (0 or 1, -1 for none)
    short smp_id;        // snd lib id of the current sample
 } MovieAudioState;
-/*
+
 typedef struct Movie_ {
 	MovieHeader *pmh;		// ptr to movie header (read from 1st bytes of movie)
 	MovieChunk *pmc;		// ptr to movie chunk array
@@ -203,6 +203,6 @@ extern MovieAudioBuffers movieAudioBuffers;
 // 4x4 cleanup routine (frees 
 
 void Draw4x4FreeResources();
-*/
+
 #endif
 

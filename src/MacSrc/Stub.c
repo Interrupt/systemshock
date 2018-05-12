@@ -1,13 +1,14 @@
 
 #include <Carbon/Carbon.h>
+#include "musicai.h"
 
 // Stub out all of the functions that we haven't implemented yet!
 
 
 // Start with the sound library functions
-typedef struct {
+/*typedef struct {
 
-} snd_digi_parms;
+} snd_digi_parms;*/
 
 Boolean				gTuneDone;
 
@@ -25,9 +26,9 @@ snd_digi_parms *snd_sample_parms(int hnd_id)
 	return &parms;
 }
 
-void StopMovie(long) { }
+void StopMovie(long x) { }
 void StartMovie(void * m) { }
-Boolean IsMovieDone(long) { return true; }
+Boolean IsMovieDone(long x) { return true; }
 
 void HideCursor(void) { }
 void ShowCursor(void) { }

@@ -47,6 +47,7 @@ asm void Handle_Smooth_HV_Asm(int tempH, int tempW, int temp,
 // ========================================================================
 void flat8_flat8_h_double_ubitmap(grs_bitmap *bm)
  {
+	extern void DebugString(char* msg);
 DebugString("call mark"); 	
 /* 	int		h,v,endh,endv;
  	uchar *src=bm->bits, *dst=grd_bm.bits;

@@ -25,6 +25,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma require_prototypes off
 
+static void mput()
+{
+	// FIXME: DG: no idea what this is supposed to do
+}
+static int mono_setxy()
+{
+	// FIXME: DG: neither about this
+	return 0;
+}
+static void mprint(const char* s)
+{
+	// FIXME: DG: .. or this.
+}
+
 // monochrome font package
 int mono_c_wid(char c)
  { return 1; }

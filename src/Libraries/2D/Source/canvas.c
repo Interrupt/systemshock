@@ -42,6 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "valloc.h"
 #include "canvas.h"
 
+#include <stdio.h> // printf()
+
 #define CANVAS_STACKSIZE 16
 grs_canvas *grd_canvas_stack[CANVAS_STACKSIZE];
 int grd_canvas_stackp = 0;
