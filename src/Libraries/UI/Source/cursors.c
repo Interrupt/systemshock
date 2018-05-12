@@ -196,12 +196,10 @@ static errtype grow_save_under(short x, short y)
       free(SaveUnder.bm.bits);
    }
 
-   // Grow bigger than we actually need
-   int newsize = sz;
-   SaveUnder.bm.bits = (uchar *)malloc(newsize * 2);
+   // Grow bigger than we actually need so that this doesn't happen all the time
+   int newsize = sz * 2;
+   SaveUnder.bm.bits = (uchar *)malloc(newsize);
    SaveUnder.mapsize = newsize;
-
-	DebugString("SaveUnder needs to be increased!");	//¥¥¥
 	return OK;
 }
 
