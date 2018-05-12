@@ -369,6 +369,9 @@ int g3_draw_cline(g3s_phandle p0,g3s_phandle p1) // rgb-space gouraud line
  	else
  	 {
  	 	gour_flag = 0;
+ 	 	
+ 	 	// FIXME grd_ipal crashes!
+ 	 	printf("CRASH grd_ipal gr_index_brgb(p0->rgb) %i\n", gr_index_brgb(p0->rgb));
  	 	draw_color = grd_ipal[gr_index_brgb(p0->rgb)];
  		return(draw_line_common(p0,p1));
  	 }
