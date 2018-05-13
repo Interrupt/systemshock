@@ -430,7 +430,7 @@ Handle GetResourceFail(long id, short num)
 	if (h) return(h);
 	
 #if 1
-	STUB("If, GetResource() and friends are relevant after all, implement this..")
+	STUB("If GetResource() and friends are relevant after all, implement this..")
 #else
 
 	// At this point GetResource failed, figure out why.

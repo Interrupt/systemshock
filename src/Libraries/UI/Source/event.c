@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <SDL.h>
 
 #include "lg.h"
 #include "mouse.h" 
@@ -631,16 +632,12 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
    }
 }
 
-#define LEFT_ALT_KEY 0x38
-#define RIGHT_ALT_KEY 0xB8
-
-#define ALT_DOWN  (kb_state(LEFT_ALT_KEY) == KBS_DOWN || kb_state(RIGHT_ALT_KEY) == KBS_DOWN)
-
-
 void ui_dispatch_mouse_event(uiMouseEvent* mout)
 {
    int i;
    uchar eaten = FALSE;
+
+   bool altDown = (SDL_GetModState() & KMOD_ALT) != 0;
 
    printf("----- ui_dispatch_mouse_event -----\n");
 //   ui_mouse_do_conversion(&(mout->pos.x),&(mout->pos.y),TRUE);
@@ -651,7 +648,7 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
          continue;
 
       printf("Checking double click! %i\n", mout->action & MOUSE_BTN2DOWN(i));
-      if (uiAltDoubleClick && ALT_DOWN)
+      if (uiAltDoubleClick && altDown)
       {
          if (mout->action & MOUSE_BTN2DOWN(i))
          {

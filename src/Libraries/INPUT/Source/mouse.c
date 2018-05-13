@@ -470,12 +470,12 @@ errtype mouse_get_xy(short* x, short* y)
 }
 
 // Set the mouse position
+extern SDL_Window* window;
 errtype mouse_put_xy(short x, short y)
 {
 	// thanks to Mark for the help! - phs, 8/1/95
 
-	// HAX HAX HAX Can't do this yet!
-	STUB_ONCE("TODO: Implement with SDL_WarpMouseInWindow()")
+	SDL_WarpMouseInWindow(window, x, y);
 	return OK;
 
 	/*Point *RawMouse;

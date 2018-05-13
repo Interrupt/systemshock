@@ -64,9 +64,11 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 		// pressed.  So we need to find out what the unmodified
 		// character is.
 #if 1
-		STUB_ONCE("TODO: Figure out what this should do and do it with SDL..");
+		STUB_ONCE("TODO: Figure out what this should do and do it with SDL.."); // TODO
 #else
 		Handle	kHdl;
+		// Note: this apprently gets the keyboard layout from MacOS
+		//       not sure we can do that with SDL, we should try to use SDL_TEXTINPUT events..
 		kHdl = GetIndResource('KCHR', 1);
 		HLock(kHdl);
 		tk = KeyTranslate(*kHdl, ev.code, &state);
