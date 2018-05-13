@@ -163,6 +163,10 @@ static void ReadMouseState(mouse_state *pMouseState);
 pascal void MousePollProc(void)
 //#endif
 {
+	// TODO: is this even still needed? if so, can it be replaced by setting mouseInstant* in pump_events() ?
+	//       if the callbacks from mouseCall[] are still needed, could they also be called in pump_events() ?
+	//       if not, could they be the only thing called here, while mouseInstant* is still set in pump_events() ?
+
 	Point 		mp;
 	short		i;
 	mouse_event	e;
@@ -347,7 +351,10 @@ errtype mouse_init(short mone, short mtwo)
 	})
 */
 	//	Initialize mouse state variables
-	
+
+	extern void sdl_mouse_init(void);
+	sdl_mouse_init();
+
 	mouseQueueIn = 0;
 	mouseQueueOut = 0;
 
@@ -632,7 +639,7 @@ errtype mouse_look_next(mouse_event *res)
 //	---------------------------------------------------------
 //  For Mac version: Get event from the normal Mac event queue for mouse events.  
 //  The events looked for depend on the 'mouseMask' setting.
-
+#if 0 // DG: already moved to sdl_events.c
 int btn_right = 0;
 int btn_left  = 0;
 errtype mouse_next(mouse_event *res)
@@ -839,6 +846,7 @@ errtype mouse_flush(void)
 	mouseQueueIn = mouseQueueOut = 0;
 	return OK;
 }
+#endif // 0 - moved to sdl_events
 
 /*
 // -------------------------------------------------------

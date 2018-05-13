@@ -843,6 +843,7 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //  The main game loop for System Shock.
 //--------------------------------------------------------------------
 extern pascal void MousePollProc(void);
+extern void pump_events(void);
 void ShockGameLoop(void)
 {
 	gPlayingGame = TRUE;
@@ -865,11 +866,16 @@ void ShockGameLoop(void)
 
 	StartShockTimer();									// Startup the game timer.
 
+	physics_running = false;
+
 	while (gPlayingGame)
 	{	
 		if (!(_change_flag&(ML_CHG_BASE<<1)))
 			input_chk();
 		
+		// DG: at the beginning of each frame, get all the events from SDL
+		pump_events();
+
 		if (globalChanges)
 		{
 			printf("globalChanges!\n");

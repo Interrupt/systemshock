@@ -235,8 +235,9 @@ set(FIX_SRC
 
 set(INPUT_SRC
 	INPUT/Source/kbcook.c
-	INPUT/Source/kbMac.c
+	#INPUT/Source/kbMac.c
 	INPUT/Source/mouse.c
+	INPUT/Source/sdl_events.c
 )
 
 set(LG_SRC

@@ -129,4 +129,18 @@ extern char * kbd_lowmem_start;
 #define KBC_NONE (0x0ff)
 #define KBS_UP (0)
 #define KBS_DOWN (1)
+
+
+// DG: constants for values of kbs_event::modifiers, also used in sshockKeyStates[]
+//     (those constants are based on the values that were hardcoded in kb_cook())
+#define KB_MOD_CTRL  (0x01)
+#define KB_MOD_SHIFT (0x04)
+#define KB_MOD_ALT   (0x08)
+
+// currente state of the keys, based on the SystemShock/Mac Keycodes (sshockKeyStates[keyCode] has the state for that key)
+extern uchar sshockKeyStates[256];
+// this one is only used in sshockKeyStates[], it's set if a button is pressed
+// (together with the CTRL/SHIFT/ALT modifiers, if they were pressed as while the key was pressed)
+#define KB_MOD_PRESSED (0x10)
+
 #endif /* !__KB_H */

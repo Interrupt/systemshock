@@ -49,13 +49,13 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 	
 	*cooked |= (short)ev.state << KB_DOWN_SHF; // Add in the key-down state.
 
-	if (ev.modifiers & 0x01)		// If command-key was down,
+	if (ev.modifiers & KB_MOD_CTRL)		// If command-key was down,
 		*cooked |= KB_FLAG_CTRL;	// simulate a control key
 		
-	if (ev.modifiers & 0x02)		// If shift-key was down
+	if (ev.modifiers & KB_MOD_SHIFT)		// If shift-key was down
 		*cooked |= KB_FLAG_SHIFT;
 		
-	if (ev.modifiers & 0x08)		// If option-key was down,
+	if (ev.modifiers & KB_MOD_ALT)		// If option-key was down,
 	{								// simulate an alt key.
 		long	tk = 0;
 		uint32_t	state = 0;

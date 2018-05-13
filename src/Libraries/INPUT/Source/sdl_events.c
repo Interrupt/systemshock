@@ -6,67 +6,74 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
-*/
-//===============================================================
-//
-// kbMac.c - All the keyboard handling routines that are specific to the Macintosh.
-//
-//===============================================================
 
-#include <string.h>
-//#include <Timer.h>
+*/
+
+//
+// DG 2018: (eventually) SDL versions of the functions previously in kbMac.c, mouse.c and kbcook.c
+//
+
 #include "lg.h"
 #include "kb.h"
-#include "kbglob.h"
+#include "mouse.h"
 
 #include <SDL.h>
-#include <Carbon/Carbon.h>
 
+// current state of the keys, based on the SystemShock/Mac Keycodes (sshockKeyStates[keyCode] has the state for that key)
+// set at the beginning of each frame in pump_events()
+uchar sshockKeyStates[256];
 
-//------------------
-//  Globals
-//------------------
-int 			pKbdStatusFlags;
-uchar		pKbdGetKeys[16];
+enum {
+	kNumKBevents = 128,
+	kNumMouseEvents = 128
+};
 
+// queue keyboard events, created in pump_events(), consumed by kb_next()
+static kbs_event kbEvents[kNumKBevents];
+static int nextKBevent = 0; // where next to insert (also, if 0 there are no events)
 
-//---------------------------------------------------------------
-//  Startup and keyboard handlers and initialize globals.   Shutdown follows.
-//---------------------------------------------------------------
-int kb_startup(void * v)
+static void addKBevent(const kbs_event* ev)
 {
-	pKbdStatusFlags = 0;
-	
-	LG_memset(pKbdGetKeys, 0, 16);								// Zero out the GetKeys buffer
-
-	return (0);
+	if(nextKBevent < kNumKBevents)
+	{
+		kbEvents[nextKBevent] = *ev;
+		++nextKBevent;
+	}
+	else
+	{
+		printf("WTF, the kbEvents queue is full?!");
+		// drop the oldest event
+		memmove(&kbEvents[0], &kbEvents[1], sizeof(kbs_event)*(kNumKBevents-1));
+		kbEvents[kNumKBevents-1] = *ev;
+	}
 }
 
-int kb_shutdown(void)
-{
-	return (0);
-}
+// same for mouse events, also created in pump_events(), consumed by mouse_next()
+static mouse_event mouseEvents[kNumMouseEvents];
+static int nextMouseEvent = 0;
 
-//---------------------------------------------------------------
-//  Get and set the global flags.
-//---------------------------------------------------------------
-int kb_get_flags()
+static void addMouseEvent(const mouse_event* ev)
 {
-	return (pKbdStatusFlags);
-}
-
-void kb_set_flags(int flags)
-{
-	pKbdStatusFlags = flags;
+	if(nextMouseEvent < kNumMouseEvents)
+	{
+		mouseEvents[nextMouseEvent] = *ev;
+		++nextMouseEvent;
+	}
+	else
+	{
+		printf("WTF, the mouseEvents queue is full?!");
+		// drop the oldest event
+		memmove(&mouseEvents[0], &mouseEvents[1], sizeof(mouse_event)*(kNumMouseEvents-1));
+		mouseEvents[kNumMouseEvents-1] = *ev;
+	}
 }
 
 static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
@@ -199,87 +206,188 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 	return KBC_NONE;
 }
 
+void pump_events(void)
+{
+	SDL_Event ev;
+	while(SDL_PollEvent(&ev))
+	{
+		switch(ev.type)
+		{
+			case SDL_QUIT:
+				// a bit hacky at this place, but this would allow exiting the game via the window's [x] button
+				exit(0); // TODO: I guess there is a better way.
+				break;
+
+
+			// TODO: really also handle key up here? the mac code apparently didn't, but where else do
+			//       kbs_events with .state == KBS_UP come from?
+			case SDL_KEYUP:
+			case SDL_KEYDOWN:
+			{
+				uchar c = sdlKeyCodeToSSHOCKkeyCode(ev.key.keysym.sym);
+				if(c != KBC_NONE)
+				{
+					kbs_event keyEvent = { 0 };
+					keyEvent.code = c;
+
+					// FIXME: this is hacky, see comment in SDL_TEXTINPUT below..
+					if(ev.key.keysym.sym >= ' ' && ev.key.keysym.sym <= '~')
+						keyEvent.ascii = ev.key.keysym.sym;
+					else
+						keyEvent.ascii = 0;
+
+					keyEvent.modifiers = 0;
+					Uint16 mod = ev.key.keysym.mod;
+					if(mod & KMOD_CTRL)
+						keyEvent.modifiers |= KB_MOD_CTRL;
+					if(mod & KMOD_SHIFT)
+						keyEvent.modifiers |= KB_MOD_SHIFT;
+					// TODO: what's 0x04 ? windows key?
+					if(mod & KMOD_ALT)
+						keyEvent.modifiers |= KB_MOD_ALT;
+
+					if(ev.key.state == SDL_PRESSED)
+					{
+						keyEvent.state = KBS_DOWN;
+						sshockKeyStates[c] = keyEvent.modifiers | KB_MOD_PRESSED;
+						addKBevent(&keyEvent);
+					}
+					else
+					{
+						sshockKeyStates[c] = 0;
+						// FIXME: right now it seems to work better without generating up events..
+						//        if that ever changes, uncomment the following lines
+						//keyEvent.state = KBS_UP;
+						//addKBevent(&keyEvent);
+					}
+				}
+
+				break;
+			}
+			case SDL_TEXTINPUT:
+				// ev.text.text is a char[32] UTF-8 string
+				// TODO: this is the proper way to get text input, and the only reliable way
+				//       to get the correct char for non-letter-key + shift (e.g. Shift+2 is " on German KB)
+				break;
+
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+			{
+				bool down = (ev.button.state == SDL_PRESSED);
+				mouse_event mouseEvent = {0};
+				mouseEvent.type = 0;
+
+				switch (ev.button.button)
+				{
+					case SDL_BUTTON_LEFT:
+						// TODO: the old mac code used to emulate right mouse clicks if space, enter, or return
+						//       was pressed at the same time - do the same? (=> could check sshockKeyStates[])
+
+						mouseEvent.type = down ? MOUSE_LDOWN : MOUSE_LUP;
+						break;
+
+					case SDL_BUTTON_RIGHT:
+						mouseEvent.type = down ? MOUSE_RDOWN : MOUSE_RUP;
+						break;
+
+					//case SDL_BUTTON_MIDDLE: // TODO: is this MOUSE_CDOWN/UP ?
+					//		break;
+
+				}
+
+				if(mouseEvent.type != 0)
+				{
+					mouseEvent.x = ev.button.x;
+					mouseEvent.y = ev.button.y;
+					mouseEvent.timestamp = mouse_get_time();
+					mouseEvent.modifiers = 0;
+
+					addMouseEvent(&mouseEvent);
+				}
+
+				break;
+			}
+			case SDL_MOUSEMOTION:
+			{
+				mouse_event mouseEvent = {0};
+				mouseEvent.type = MOUSE_MOTION;
+				mouseEvent.x = ev.motion.x; // TODO: relative mode?
+				mouseEvent.y = ev.motion.y;
+				mouseEvent.timestamp = mouse_get_time();
+
+				addMouseEvent(&mouseEvent);
+				break;
+			}
+
+			// TODO: maybe handle other events as well..
+		}
+	}
+}
+
+
+//===============================================================
+//
+// This section is adapted from:
+// kbMac.c - All the keyboard handling routines that are specific to the Macintosh.
+//
+//===============================================================
+
+//------------------
+//  Globals
+//------------------
+int 		pKbdStatusFlags;
+uchar		pKbdGetKeys[16]; // TODO: eliminate, use sshockKeyStates instead
+
+//---------------------------------------------------------------
+//  Startup and keyboard handlers and initialize globals.   Shutdown follows.
+//---------------------------------------------------------------
+int kb_startup(void * v)
+{
+	pKbdStatusFlags = 0;
+
+	LG_memset(pKbdGetKeys, 0, 16);								// Zero out the GetKeys buffer
+
+	LG_memset(sshockKeyStates, 0, sizeof(sshockKeyStates));
+	nextKBevent = 0;
+
+	return (0);
+}
+
+int kb_shutdown(void)
+{
+	return (0);
+}
+
+//---------------------------------------------------------------
+//  Get and set the global flags.
+//---------------------------------------------------------------
+int kb_get_flags()
+{
+	return (pKbdStatusFlags);
+}
+
+void kb_set_flags(int flags)
+{
+	pKbdStatusFlags = flags;
+}
+
 //---------------------------------------------------------------
 //  Get the next available key from the event queue.
 //---------------------------------------------------------------
 kbs_event kb_next(void)
 {
-	int				flags = kb_get_flags();
-	bool				gotKey = FALSE;
-	kbs_event		retEvent = { 0xFF, 0x00 };
-#if 1
+	kbs_event retEvent = kb_look_next();
+	// kb_look_next() doesn't remove events from the queue, this function does,
+	// right here (but only if there actually was an event in the queue, of course):
+	if(nextKBevent > 0)
+	{
+		--nextKBevent;
+		memmove(&kbEvents[0], &kbEvents[1], sizeof(kbs_event)*(kNumKBevents-1));
+	}
+	return retEvent;
 
-	// DG: ok, this is kinda hacky and should be changed later
-	// my rough idea for later would be to have an array (or ring buffer) of kbs_events and one of mouse_events.
-	// put this SDL polling in a central function that is called from kb_next() and mouse_next() whenever
-	// their arrays are empty, and that function then would just poll all available events from SDL
-	// and fill those arrays accordingly.
-	// maybe it could/should handle other events as well, not sure how though
-	// (for all that it might make sense to unify all the .c files from INPUT/Source into one)
-	SDL_Event ev;
-	do {
-		while(SDL_PollEvent(&ev))
-		{
-			switch(ev.type)
-			{
-				case SDL_QUIT:
-					// a bit hacky at this place, but this would allow exiting the game via the window's [x] button
-					exit(0); // TODO: I guess there is a better way.
-					break;
-
-
-				// TODO: really also handle key up here? the mac code apparently didn't, but where else do
-				//       kbs_events with .state == KBS_UP come from?
-				case SDL_KEYUP:
-				case SDL_KEYDOWN:
-				{
-					// TODO: for keycode translation, apparently SSHOCK uses the Mac keycodes
-					//       I hope they're identical to the carbon keycodes, see
-					// https://github.com/firebreath/FireBreath/blob/0fe3c7f8f9315768893442af51b03378d11a3a26/src/PluginAuto/Mac/KeyCodesCarbon.cpp
-					uchar c = sdlKeyCodeToSSHOCKkeyCode(ev.key.keysym.sym);
-					if(c != KBC_NONE)
-					{
-						retEvent.code = c;
-						//ev.key.keysym
-						// FIXME: this is hacky, see comment in SDL_TEXTINPUT below..
-						if(ev.key.keysym.sym >= ' ' && ev.key.keysym.sym <= '~')
-							retEvent.ascii = ev.key.keysym.sym;
-						else
-							retEvent.ascii = 0;
-
-						retEvent.state = (ev.key.state == SDL_PRESSED) ? KBS_DOWN : KBS_UP;
-
-						// meaning of retEvent.modifiers, from kb_cook():
-						//if (ev.modifiers & 0x01)		// If command-key (=> ctrl) was down
-						//if (ev.modifiers & 0x02)		// If shift-key was down
-						//if (ev.modifiers & 0x08)		// If option-key (=> alt) was down
-						retEvent.modifiers = 0;
-						Uint16 mod = ev.key.keysym.mod;
-						if(mod & KMOD_CTRL)
-							retEvent.modifiers |= 0x01;
-						if(mod & KMOD_SHIFT)
-							retEvent.modifiers |= 0x02;
-						// TODO: what's 0x04 ? windows key?
-						if(mod & KMOD_ALT)
-							retEvent.modifiers |= 0x08;
-
-						return retEvent;
-					}
-
-					break;
-				}
-				case SDL_TEXTINPUT:
-					// ev.text.text is a char[32] UTF-8 string
-					// TODO: this is the proper way to get text input, and the only reliable way
-					//       to get the correct char for non-letter-key + shift (e.g. Shift+2 is " on German KB)
-					break;
-
-				// TODO: we should probably handle other events as well..
-			}
-		}
-	} while((flags & KBF_BLOCK) != 0);
-
-#else
+#if 0
+	bool gotKey = FALSE;
 	EventRecord	theEvent;
 	while(!gotKey)
 	{
@@ -294,8 +402,8 @@ kbs_event kb_next(void)
 		else if ((flags & KBF_BLOCK) == 0)					// If there was no key and we're
 			return (retEvent);										// not blocking, then return.
 	}
-#endif
 	return (retEvent);
+#endif
 }
 
 //---------------------------------------------------------------
@@ -303,12 +411,25 @@ kbs_event kb_next(void)
 //---------------------------------------------------------------
 kbs_event kb_look_next(void)
 {
-	int				flags = kb_get_flags();
-	bool				gotKey = FALSE;
 	kbs_event		retEvent = { 0xFF, 0x00 };
-#if 1
-	STUB_ONCE("TODO: Implement with SDL? (is unused!)"); // TODO ?
-#else
+
+	int				flags = kb_get_flags();
+	if(flags & KBF_BLOCK)
+	{
+		while(nextKBevent == 0)
+		{
+			pump_events();
+		}
+	}
+
+	if(nextKBevent > 0)
+	{
+		retEvent = kbEvents[0];
+	}
+	return retEvent;
+
+#if 0
+	bool				gotKey = FALSE;
 	EventRecord	theEvent;
 	while(!gotKey)
 	{
@@ -323,8 +444,8 @@ kbs_event kb_look_next(void)
 		else if (flags & KBF_BLOCK == 0)					// If there was no key and we're
 			return (retEvent);										// not blocking, then return.
 	}
-#endif
 	return (retEvent);
+#endif
 }
 
 
@@ -337,6 +458,8 @@ void kb_flush(void)
 	//FlushEvents(keyDownMask | autoKeyMask, 0);
 
 	SDL_FlushEvents(SDL_KEYDOWN, SDL_KEYUP); // Note: that's a range!
+
+	nextKBevent = 0; // this flushes the keyboard events already buffered - TODO is that desirable?
 }
 
 
@@ -346,8 +469,54 @@ void kb_flush(void)
 uchar kb_state(uchar code)
 {
 	// see http://mirror.informatimago.com/next/developer.apple.com/documentation/Carbon/Reference/Event_Manager/event_mgr_ref/function_group_4.html#//apple_ref/c/func/GetKeys
-	STUB_ONCE("TODO: Implement with SDL!"); // TODO: apparently only used in tests, luckily
 	//GetKeys((UInt32 *) pKbdGetKeys);
 	//return ((pKbdGetKeys[code>>3] >> (code & 7)) & 1);
+
+	return sshockKeyStates[code] != 0;
+
 	return 0;
+}
+
+
+//---------------------------
+//
+// MOUSE STUFF
+//
+//---------------------------
+
+
+// ---------------------------------------------------------
+// mouse_next gets the event in the front event queue,
+// and removes the event from the queue.
+// res = ptr to event to be filled.
+//	---------------------------------------------------------
+//  For Mac version: Get event from the normal Mac event queue for mouse events.
+//  The events looked for depend on the 'mouseMask' setting.
+
+errtype mouse_next(mouse_event *res)
+{
+	if(nextMouseEvent <= 0)
+		return ERR_DUNDERFLOW;
+
+	*res = mouseEvents[0];
+
+	--nextMouseEvent;
+	memmove(&mouseEvents[0], &mouseEvents[1], sizeof(mouse_event)*(kNumMouseEvents-1));
+
+	return OK;
+}
+
+errtype mouse_flush(void)
+{
+	//FlushEvents(mouseDown | mouseUp, 0);
+//   Spew(DSRC_MOUSE_Flush,("Entering mouse_flush()\n"));
+	//mouseQueueIn = mouseQueueOut = 0;
+	nextMouseEvent = 0;
+	// TODO: anything else?
+	return OK;
+}
+
+void sdl_mouse_init(void)
+{
+	nextMouseEvent = 0;
 }
