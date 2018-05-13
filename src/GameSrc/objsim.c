@@ -2148,7 +2148,12 @@ grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, uchar s
 
 grs_bitmap *get_text_bitmap(int d1, int d2, char dest_type, uchar scroll)
 {
-   return(get_text_bitmap_from_string(d1, dest_type, get_temp_string(text_bitmap_refs[dest_type] + d2), scroll, d2));
+	char* str = get_temp_string(text_bitmap_refs[dest_type] + d2);
+	if(str == NULL)
+	{
+		return NULL;
+	}
+   return(get_text_bitmap_from_string(d1, dest_type, str, scroll, d2));
 }
 
 grs_bitmap *get_text_bitmap_obj(ObjID cobjid, char dest_type, char *pscale)

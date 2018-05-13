@@ -1356,7 +1356,7 @@ void fr_draw_tile(void)
    // now check object cache
 
    // FIXME HAX HAX HAX why does this segfault?
-   //_fr_parse_obj();
+   _fr_parse_obj();
 
 #ifdef CLEAR_AS_WE_GO
    me_subclip_set(_fdt_mptr,SUBCLIP_OUT_OF_CONE);  // sure, deal with it...

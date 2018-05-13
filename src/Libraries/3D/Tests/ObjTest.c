@@ -144,7 +144,7 @@ void test_3d(void)
  {
   int pos_parm=abs(PARM_MAX-(TickCount()&PARM_MOD));         // this is dumb
 	
-	g3_interpret_object((ubyte *) (*object)+0x0C,((PARM_MAX+PARM_BASE)-pos_parm)<<PARM_SHF,PARM_BASE<<PARM_SHF);
+	g3_interpret_object((ubyte *) (*object)+0x0C, ((PARM_MAX+PARM_BASE)-pos_parm)<<PARM_SHF,PARM_BASE<<PARM_SHF);
  }	
 //		g3_check_and_draw_tmap_quad_tile(trans, &bm[0],1,1);
 		g3_end_object();
