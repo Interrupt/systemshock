@@ -703,13 +703,119 @@ errtype uiSetKeyboardPolling(ubyte* codes)
    return OK;
 }
 
+static SDL_Scancode sdlScanCodeForSShockKey(uchar key)
+{
+// from movekeys.c
+// #define _Q_			0x0C // q
+// #define _W_			0x0D // w
+// #define _E_			0x0E // e
+// #define _D_			0x02 // d
+// #define _A_			0x00 // a
+// #define _S_ 			0x01 // s
+// #define _Z_			0x06 // z
+// #define _X_			0x07 // x
+// #define _C_			0x08 // c
+// #define _UP_			0x7E // uparrow
+// #define _LEFT_		0x7B // leftarrow
+// #define _DOWN_	0x7D // downarrow
+// #define _RIGHT_	0x7C // rightarrow
+// #define _PGUP2_	0x5C // keypad pgup
+// #define _HOME2_	0x59 // keypad home
+// #define _END2_		0x53 // keypad End
+// #define _PGDN2_	0x55 // keypad pgdn
+// #define _PAD5_		0x57 // keypad 5
+// #define _UP2_		0x5B // second uparrow
+// #define _LEFT2_ 	0x56 // second leftarrow
+// #define _DOWN2_	0x54 // second downarrow
+// #define _RIGHT2_	0x58 // second rightarrow
+// #define _SPACE_	0x31 // spacebar
+// #define _ENTER2_	0x4C // keypad enter
+// #define _ENTER_	0x24 // enter
+// #define _R_			0x0F // r
+// #define _V_			0x09 // v
+// #define _J_			0x26 // j
+
+	SDL_Keycode kc = 0;
+
+	switch(key)
+	{
+		// TODO: hacky, incomplete, etc
+		case 0x0C : kc = SDLK_q ; break;
+		case 0x0D : kc = SDLK_w ; break;
+		case 0x0E : kc = SDLK_e ; break;
+		case 0x02 : kc = SDLK_d ; break;
+		case 0x00 : kc = SDLK_a ; break;
+		case 0x01 : kc = SDLK_s ; break;
+		case 0x06 : kc = SDLK_z ; break;
+		case 0x07 : kc = SDLK_x ; break;
+		case 0x08 : kc = SDLK_c ; break;
+		case 0x7E : kc = SDLK_UP ; break;
+		case 0x7B : kc = SDLK_LEFT ; break;
+		case 0x7C : kc = SDLK_RIGHT ; break;
+		case 0x7D : kc = SDLK_DOWN ; break;
+		case 0x5C : kc = SDLK_KP_9 ; break;
+		case 0x59 : kc = SDLK_KP_7 ; break;
+		case 0x53 : kc = SDLK_KP_1 ; break;
+		case 0x55 : kc = SDLK_KP_3 ; break;
+		case 0x57 : kc = SDLK_KP_5 ; break;
+		case 0x5B : kc = SDLK_KP_8 ; break;
+		case 0x56 : kc = SDLK_KP_4 ; break;
+		case 0x54 : kc = SDLK_KP_2 ; break;
+		case 0x58 : kc = SDLK_KP_6 ; break;
+		case 0x31 : kc = SDLK_SPACE ; break;
+		case 0x4C : kc = SDLK_KP_ENTER ; break;
+		case 0x24 : kc = SDLK_RETURN ; break;
+		case 0x0F : kc = SDLK_r ; break;
+		case 0x09 : kc = SDLK_v ; break;
+		case 0x26 : kc = SDLK_j ; break;
+		//case 0x : kc = SDLK_ ; break;
+
+	}
+
+	return SDL_GetScancodeFromKey(kc);
+}
+
 // KLC - For Mac version, call GetKeys once at the beginning, then check
 // the results in the loop.  Fill in the "mods" field (ready for cooking)
 // before dispatching an event.
 void ui_poll_keyboard(void)
 {
 #if 1
-	STUB_ONCE("TODO: Implement with SDL!");
+
+	SDL_PumpEvents();
+
+	int numKeys = 0;
+	const Uint8* keys = SDL_GetKeyboardState(&numKeys);
+	ushort mods = 0;
+	SDL_Keymod km = SDL_GetModState();
+	if(km & KMOD_CTRL)
+		mods |= KB_FLAG_CTRL;
+	if(km & KMOD_SHIFT)
+		mods |= KB_FLAG_SHIFT;
+	// TODO: what's 0x04 ? windows key?
+	if(km & KMOD_ALT)
+		mods |= KB_FLAG_ALT;
+
+	// FIXME: this is fugly, maybe we could get the state from kbMac.c
+	//        like a char[255] there with the state of the keys in sshock codes
+	for(uchar* key = ui_poll_keys; *key != KBC_NONE; key++)
+	{
+		SDL_Scancode sc = sdlScanCodeForSShockKey(*key);
+		if(sc != 0 && keys[sc])
+		{
+			uiPollKeyEvent ev;
+			ev.type = UI_EVENT_KBD_POLL;
+			ev.action = KBS_DOWN;
+			ev.scancode = *key;
+			ev.mods = mods;
+
+			printf("\n########### %s generating event with key %x\n", __func__, (int)*key);
+
+			uiDispatchEvent((uiEvent*)&ev);
+		}
+		// *key is a System Shock/Mac keycode
+	}
+
 #else
 	extern uchar	pKbdGetKeys[16];
 	long			*keys = (long *)pKbdGetKeys;

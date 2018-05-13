@@ -141,7 +141,7 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 		case SDLK_KP_4 : return 0x56; //  kVK_ANSI_Keypad4 = 0x56, aka _LEFT2_
 		case SDLK_KP_5 : return 0x57; //  kVK_ANSI_Keypad5 = 0x57, aka _PAD5_
 		case SDLK_KP_6 : return 0x58; //  kVK_ANSI_Keypad6 = 0x58, aka _RIGHT2_
-		case SDLK_KP_7 : return 0x59; //  kVK_ANSI_Keypad7 = 0x59,
+		case SDLK_KP_7 : return 0x59; //  kVK_ANSI_Keypad7 = 0x59, aka _HOME2_
 		case SDLK_KP_8 : return 0x5B; //  kVK_ANSI_Keypad8 = 0x5B, aka _UP2_
 		case SDLK_KP_9 : return 0x5C; //  kVK_ANSI_Keypad9 = 0x5C, aka _PGUP2_
 
