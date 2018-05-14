@@ -25,6 +25,7 @@ typedef int32_t Fixed;
 #endif
 
 
+#if 0 // DG: not sure what this is, but not really C code..
 
 
 #if PRAGMA_ONCE
@@ -550,6 +551,8 @@ WideBitShift(
 #ifdef __cplusplus
 }
 #endif
+
+#endif // 0
 
 #endif /* __FIXMATH__ */
 

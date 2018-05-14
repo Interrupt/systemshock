@@ -30,12 +30,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 #include "2d.h"
-#include "2dRes.h"
+#include "2dres.h"
 #include "3d.h"
 #include "lg.h"
 
 #include <Carbon/Carbon.h>
-#include <sdl.h>
+#include <SDL.h>
 #include <stdio.h>
 
 #define pitch        tx
@@ -218,7 +218,7 @@ void test_3d(void)
 	g3s_phandle 	trans[8];
 	int 					i,j,c=0;
 	grs_bitmap 		bm[num_bitmaps];
-	EventRecord 	evt;
+	//EventRecord 	evt;
 	grs_screen 		*screen;
 	g3s_vector		vec;
 	g3s_angvec		ang;
@@ -321,7 +321,7 @@ void test_3d(void)
 	
 	frames = 0;
 	time = 1;
-	uint8* keyboard;
+	Uint8* keyboard;
 	do
 	 {	 	
 	 	time++;

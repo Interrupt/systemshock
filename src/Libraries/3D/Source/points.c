@@ -103,7 +103,7 @@ g3s_phandle g3_transform_point(g3s_vector *v)
 // takes edi = ptr to point. projects, fills in sx,sy, sets flag.
 // returns 0 if z<=0, 1 if z>0.
 // trashes eax,ecx,edx.
-#if (defined(powerc) || defined(__powerc))	
+#if 1 //(defined(powerc) || defined(__powerc)) - DG: this is plain C code as long as !defined(stereo_on)), use it everywhere
 int g3_project_point(g3s_phandle p)
  {
  	fix		x,y,z,res;
@@ -317,14 +317,14 @@ g3s_codes g3_transform_list(short n, g3s_phandle *dest_list, g3s_vector *v)
  	int					i;
  	g3s_phandle	temphand;
  	
- 	g_codes.or = 0;
- 	g_codes.and = 0xff;
+ 	g_codes.or_ = 0;
+ 	g_codes.and_ = 0xff;
  	
  	for (i = n; i--; i>0)
  	 {
  	 	temphand = g3_transform_point(v++);
- 	 	g_codes.or |= temphand->codes;
- 	 	g_codes.and &= temphand->codes;
+ 	 	g_codes.or_ |= temphand->codes;
+ 	 	g_codes.and_ &= temphand->codes;
  	 	
  	 	*(dest_list++) = temphand;
  	 }
@@ -338,14 +338,14 @@ g3s_codes g3_rotate_list(short n,g3s_phandle *dest_list,g3s_vector *v)
  	int					i;
  	g3s_phandle	temphand;
  	
- 	g_codes.or = 0;
- 	g_codes.and = 0xff;
+ 	g_codes.or_ = 0;
+ 	g_codes.and_ = 0xff;
 
  	for (i = n; i--; i>0)
  	 {
  	 	temphand = g3_rotate_point(v++);
- 	 	g_codes.or |= temphand->codes;
- 	 	g_codes.and &= temphand->codes;
+ 	 	g_codes.or_ |= temphand->codes;
+ 	 	g_codes.and_ &= temphand->codes;
  	 	
  	 	*(dest_list++) = temphand;
  	 }
@@ -359,14 +359,14 @@ g3s_codes g3_project_list(short n,g3s_phandle *point_list)
  	int					i;
  	g3s_phandle	temphand;
  	
- 	g_codes.or = 0;
- 	g_codes.and = 0xff;
+ 	g_codes.or_ = 0;
+ 	g_codes.and_ = 0xff;
 
  	for (i = n; i--; i>0)
  	 {
 		temphand = *(point_list++);
-		g_codes.or |= temphand->codes;
-		g_codes.and &= temphand->codes;
+		g_codes.or_ |= temphand->codes;
+		g_codes.and_ &= temphand->codes;
 	
 		g3_project_point(temphand);
 	 }
@@ -434,7 +434,7 @@ void xlate_rotate_point(g3s_vector *v, fix *x, fix *y, fix *z)
  
 //does the rotate with the view matrix.
 //takes <x,y,z> = <esi,edi,ebp>, returns <x,y,z> = <ecx,esi,eax>
-#if (defined(powerc) || defined(__powerc))	
+#if 1 //(defined(powerc) || defined(__powerc)) - DG: this is plain C code, use it everywhere
 void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
  {
  	AWide 	result,result2;

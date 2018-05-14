@@ -473,8 +473,6 @@ uchar kb_state(uchar code)
 	//return ((pKbdGetKeys[code>>3] >> (code & 7)) & 1);
 
 	return sshockKeyStates[code] != 0;
-
-	return 0;
 }
 
 

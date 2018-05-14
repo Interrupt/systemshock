@@ -321,7 +321,7 @@ void test_div (void)
 {
 	fix a, b, c;
 	char ans[80];
-	wide	d;
+	//wide	d;
 	long	rem;
 
 	if (!check_args(4)) return;
@@ -528,6 +528,7 @@ void test_atofix(void)
 {
 	fix a;
 	char buff[80];
+	extern fix atofix(char *p);
 
 	printf("Enter number: ");
 	gets(buff);

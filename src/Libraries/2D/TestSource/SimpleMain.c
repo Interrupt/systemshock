@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 
 //#include <SDL2/SDL.h>
-#include <sdl.h>
+#include <SDL.h>
 
 long		gScreenRowbytes;
 Ptr			gScreenAddress;
@@ -67,6 +67,9 @@ uchar shade_buf[4096];
 
 SDL_Window* window;
 SDL_Surface* drawSurface;
+
+extern void flat8_set_upixel(long color, short x, short y);
+extern void gen_flat8_ubitmap (grs_bitmap *bm, short x, short y);
 
 int main(void)
 {

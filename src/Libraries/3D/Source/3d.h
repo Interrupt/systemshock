@@ -183,7 +183,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 // gets the next available pnt in reg.  
-#define getpnt(res) {g3s_point *scratch; if (res = first_free) {scratch = res->next; first_free = scratch;}}
+#define getpnt(res) {g3s_point *scratch; if ((res = first_free)) {scratch = res->next; first_free = scratch;}}
 
 // frees the point in the specified register. uses ebx as scratch
 #define freepnt(src) {g3s_point *scratch = first_free; src->next = scratch; first_free=src;}
@@ -326,8 +326,8 @@ extern g3s_vector g3d_light_src,g3d_light_trans;
 extern g3s_vector g3d_light_src,g3d_light_trans;
 extern g3s_vector g3d_view_vec,g3d_light_vec;
 
-
-typedef struct g3s_codes {byte or,and;} g3s_codes;
+// DG: my compiler was not happy about the names "or" and "and", so I appended a _
+typedef struct g3s_codes {byte or_; byte and_;} g3s_codes;
 
 /*
  *      We're going to want a bunch of general-purpose 3d vector math

@@ -81,8 +81,8 @@ g3s_codes g3_check_codes(int n_verts, g3s_phandle *p)
  	 	p++;
  	 }
  	
- 	retcode.or = orcode;
- 	retcode.and = andcode;
+ 	retcode.or_ = orcode;
+ 	retcode.and_ = andcode;
  	return(retcode);
  }
 

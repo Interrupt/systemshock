@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "3d.h"
 #include "fauxrend.h"
 
-#include <sdl.h>
+#include <SDL.h>
 
 long     gScreenRowbytes;
 Ptr      gScreenAddress;
@@ -199,6 +199,12 @@ void setup_quad(fix x, fix y, fix z, int d, g3s_phandle *trans_p)
 char byt_buf[17000];
 char pal_buf[768];
 
+static bool Button(void)
+{
+	Uint32 state = SDL_GetMouseState(NULL, NULL);
+	return state & SDL_BUTTON(SDL_BUTTON_LEFT);
+}
+
 void main()
 {
    fauxrend_context *main_view;
@@ -267,7 +273,7 @@ void main()
       g3_check_and_draw_tmap_quad_tile(trans,&bm,1,1);
       fauxrend_send_frame();
 
-      uint8* keyboard;
+      Uint8* keyboard;
       keyboard = SDL_GetKeyboardState(NULL);
       if (keyboard[SDL_SCANCODE_UP]) eyepos_moveone(EYE_Y,1);
       if (keyboard[SDL_SCANCODE_DOWN]) eyepos_moveone(EYE_Y,-1);

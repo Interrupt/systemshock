@@ -15,6 +15,8 @@ add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
 
 link_libraries("-Wl,--no-as-needed")
 
+link_libraries("-lm")
+
 # Find SDL
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
@@ -236,6 +238,7 @@ add_executable(FixPPTest
 )
 
 target_link_libraries(FixPPTest
+	FIX_LIB
 	FIXPP_LIB
 	${CARBON}
 	LG_LIB
