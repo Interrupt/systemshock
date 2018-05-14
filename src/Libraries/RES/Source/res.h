@@ -61,7 +61,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //��� For now
 //#define DBG_ON		1
 
-#ifdef __APPLE__
+#if 0 //def __APPLE__
 #include <Carbon/Carbon.h>
 #else
 // DG: probably because this is part of precompiled.h which is set with "-include" compiler flag,
