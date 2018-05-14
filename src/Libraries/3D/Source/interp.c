@@ -378,8 +378,8 @@ g3_interpret_object_raw:
    }
    
 Exit:
- 	//BlockMove(obj_space,object_ptr-2,size);
-	memmove(object_ptr-2, obj_space, size);
+	BlockMove(obj_space,object_ptr-2,size);
+	// memmove(object_ptr-2, obj_space, size);
  }
 
 // interpret the object

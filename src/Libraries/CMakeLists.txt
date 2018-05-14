@@ -198,10 +198,10 @@ set(AFILE_SRC
 #	AFILE/Source/animconv.c
 	AFILE/Source/aqtm.c
 	AFILE/Source/compose.c
-	AFILE/Source/DumpHex.c
+#	AFILE/Source/DumpHex.c
 #	AFILE/Source/MovConv.c
 #	AFILE/Source/MovConvDiv.c
-	AFILE/Source/movinfo.c
+#	AFILE/Source/movinfo.c
 #	AFILE/Source/OldAnimConv.c
 #	AFILE/Source/PalExtract.c
 #	AFILE/Source/QTConv.c

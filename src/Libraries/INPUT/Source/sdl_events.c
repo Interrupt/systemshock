@@ -24,7 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 #include "kb.h"
 #include "mouse.h"
-
+#include <stdio.h>
+#include <stdlib.h>
 #include <SDL.h>
 
 // current state of the keys, based on the SystemShock/Mac Keycodes (sshockKeyStates[keyCode] has the state for that key)

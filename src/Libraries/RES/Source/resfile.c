@@ -37,6 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <io.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "res.h"
 #include "res_.h"
