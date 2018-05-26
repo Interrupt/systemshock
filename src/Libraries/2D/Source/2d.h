@@ -64,14 +64,14 @@ typedef union {
    } f;
    struct {
       grs_stencil *sten;  
-      short left;          
       short pad0;
-      short top;           
+      short left;          
       short pad1;
+      short top;  
+      short pad2;         
       short right;
-      short pad2;
-      short bot;
       short pad3;
+      short bot;
    } i;
 } grs_clip;
 typedef struct {
@@ -421,6 +421,7 @@ extern int gr_clip_flat24_bitmap
       grd_clip.right=(((r)>grd_bm.w)?grd_bm.w:(r));   \
       grd_clip.top=(((t)<0)?0:(t));                   \
       grd_clip.bot=(((b)>grd_bm.h)?grd_bm.h:(b));     \
+      printf("gr_safe_set_cliprect %i %i %i %i\n", grd_clip.left, grd_clip.top, grd_clip.right, grd_clip.bot);              \
    } while (0)
 #define gr_set_fix_cliprect(l, t, r, b) \
    grd_fix_clip.sten=NULL, \
