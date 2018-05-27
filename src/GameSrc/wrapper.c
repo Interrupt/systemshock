@@ -1597,7 +1597,7 @@ void screenmode_change(new_mode)
 
 void language_change(uchar lang)
 {
-   /*extern int string_res_file, mfdart_res_file;
+   extern int string_res_file, mfdart_res_file;
    extern char* mfdart_files[];
    extern char* language_files[];
    extern void invent_language_change(void);
@@ -1624,8 +1624,8 @@ void language_change(uchar lang)
    invent_language_change();
    mfd_language_change();
    side_icon_language_change();
-   free_options_cursor();
-   make_options_cursor();*/
+   //free_options_cursor();
+   make_options_cursor();
 }
 
 void language_dealfunc(uchar lang)
