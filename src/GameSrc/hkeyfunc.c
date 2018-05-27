@@ -1297,8 +1297,14 @@ uchar pause_game_func(short keycode, ulong context, void* data)
 	extern uchar game_paused, redraw_paused;
 	extern LGRegion *inventory_region;
 	
-	game_paused = TRUE;
-	redraw_paused=TRUE;
+	game_paused = !game_paused;
+
+   if(game_paused) {
+	  redraw_paused=TRUE;
+     return FALSE;
+   }
+
+   return TRUE;
 /* KLC - not needed for Mac version
 	game_paused = !game_paused;
 	if (game_paused)
@@ -1316,7 +1322,6 @@ uchar pause_game_func(short keycode, ulong context, void* data)
 		uiPopGlobalCursor();
 	}
 */
-	return(FALSE);
 }
 
 /*KLC - not needed for Mac version

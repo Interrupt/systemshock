@@ -2263,6 +2263,7 @@ uchar wrapper_region_mouse_handler(uiMouseEvent* ev, LGRegion* r, void* data)
 
 errtype make_options_cursor(void)
 {
+   printf("make_options_cursor\n");
    char* s;
    short w,h;
    LGPoint hot = {0,0};
@@ -2294,8 +2295,6 @@ errtype make_options_cursor(void)
    cursor_loaded = TRUE;
    gr2ss_override = old_over;
 
-   wrapper_options_func(0,0,(void*)TRUE);
-
    return OK;
 }
 
@@ -2311,7 +2310,7 @@ errtype wrapper_create_mouse_region(LGRegion* root)
 { 
    errtype err;
    int id;
-   Rect r = { { 50, 50}, {100,100}};
+   LGRect r = { { 0, 0}, {STATUS_X,STATUS_HEIGHT}};
    LGRegion* reg = &(options_mouseregion[free_mouseregion++]);
 
    err = region_create(root,reg,&r,2,0,REG_USER_CONTROLLED|AUTODESTROY_FLAG,NULL,NULL,NULL,NULL);
