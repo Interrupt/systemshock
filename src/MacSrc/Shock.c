@@ -1281,6 +1281,8 @@ void InitSDL()
 		"System Shock", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN);
 
+	SDL_ShowCursor(SDL_DISABLE);
+
 	atexit(SDL_Quit);
 
 	SDL_RaiseWindow(window);
