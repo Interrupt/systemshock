@@ -94,9 +94,9 @@ errtype biohelp_create_mouse_region(LGRegion* root);
 
 #define ITEM_COLOR  (0x5A)
 
-#define STATUS_X 0
-#define GAMESCR_BIO_WIDTH 100
-#define GAMESCR_BIO_HEIGHT 40
+#define STATUS_X 4
+#define GAMESCR_BIO_WIDTH 131
+#define GAMESCR_BIO_HEIGHT 17
 
 
 #define LAST_ACTIVE_BITS(mfd) (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][mfd])
