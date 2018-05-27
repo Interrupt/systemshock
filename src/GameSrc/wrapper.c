@@ -52,6 +52,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sfxlist.h"
 #include "criterr.h"
 #include "gr2ss.h"
+#include "player.h"
+#include "popups.h"
 /*
 #include <olhext.h>
 #include <inp6d.h>
@@ -87,6 +89,11 @@ extern void text_button(char *text, int xc, int yc, int col, int shad, int w, in
 #define MOUSE_UP (MOUSE_LUP|MOUSE_RUP)
 #define MOUSE_LEFT (MOUSE_LDOWN|UI_MOUSE_LDOUBLE)
 
+#define STATUS_X                 4
+#define STATUS_Y                 1
+#define STATUS_HEIGHT            20
+#define STATUS_WIDTH             312
+
 LGCursor option_cursor;
 grs_bitmap option_cursor_bmap;
 
@@ -95,8 +102,8 @@ int wrap_id = -1, wrapper_wid, wrap_key_id;
 uchar clear_panel = TRUE, wrapper_panel_on = FALSE;
 grs_font* opt_font;
 uchar olh_temp;
-extern uchar sfx_on;
-extern uchar digi_gain;
+uchar sfx_on;
+uchar digi_gain;
 errtype (*wrapper_cb)(int num_clicked);
 errtype (*slot_callback)(int num_clicked);
 static uchar cursor_loaded = FALSE;
@@ -123,6 +130,13 @@ uchar save_verify_slorker(uchar butid);
 errtype make_options_cursor(void);
 void free_options_cursor(void);
 
+void input_screen_init(void);
+void joystick_screen_init(void);
+void sound_screen_init(void);
+void soundopt_screen_init(void);
+void screenmode_screen_init(void);
+void video_screen_init(void);
+
 uint multi_get_curval(uchar type, void* p);
 void multi_set_curval(uchar type, void* p, uint val, void* deal);
 
@@ -132,10 +146,10 @@ extern char which_lang;
 
 extern void mouse_unconstrain(void);
 
-void verify_screen_init(void (*verify)(uchar butid), void (*slork)(uchar butid));
 void options_screen_init(void);
 void wrapper_init(void);
 void load_screen_init(void);
+void save_screen_init(void);
 
 void draw_button(uchar butid);
 
@@ -156,8 +170,6 @@ uchar really_quit_key_func(short keycode, ulong context, void* data);
 LGRegion options_mouseregion[NUM_MOUSEREGION_SCREENS];
 uchar free_mouseregion=0;
 
-uchar popup_cursors = TRUE;
-
 char save_game_name[]="savgam00.dat";
 
 
@@ -175,7 +187,7 @@ extern grs_canvas  inv_view360_canvas;
 #define BUTTON_USERDATA_SIZ 32
 
 typedef struct {
-   Rect     rect;
+   LGRect     rect;
    uchar    user[BUTTON_USERDATA_SIZ];
    ulong    evmask;
    void (*drawfunc)(uchar butid);
@@ -296,6 +308,9 @@ typedef struct {
 //                                                                                
 typedef uchar (*slorker)(uchar butid);
 
+void verify_screen_init(void (*verify)(uchar butid), slorker slork);
+//void verify_screen_init(void (*verify)(uchar butid), void (*slork)(uchar butid));
+
 #define OPT_SLIDER_BAR REF_IMG_BeamSetting
 
 #define MAX_OPTION_BUTTONS 12
@@ -333,7 +348,7 @@ uchar fv;
 #endif
 
 
-#ifdef NOT_YET //
+//#ifdef NOT_YET //
 
 void draw_button(uchar butid)
 {
@@ -485,7 +500,7 @@ uchar slider_handler(uiEvent* ev, uchar butid)
    return FALSE;
 }
 
-void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void* var, uint maxval, uchar baseval, void* dealfunc, Rect* r)
+void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void* var, uint maxval, uchar baseval, void* dealfunc, LGRect* r)
 {
    opt_slider_state* st=(opt_slider_state*)&OButtons[butid].user;
    uint val;
@@ -540,7 +555,7 @@ uchar pushbutton_handler(uiEvent* ev, uchar butid)
    return FALSE;
 }
 
-void pushbutton_init(uchar butid, uchar keyeq, Ref descrip, void (*pushfunc)(uchar butid), Rect* r)
+void pushbutton_init(uchar butid, uchar keyeq, Ref descrip, void (*pushfunc)(uchar butid), LGRect* r)
 {
    opt_pushbutton_state* st=(opt_pushbutton_state*)&OButtons[butid].user;
 
@@ -583,7 +598,7 @@ void text_draw_func(uchar butid)
    unwrap_text(s);
 }
 
-void textwidget_init(uchar butid, uchar color, Ref descrip, Rect* r)
+void textwidget_init(uchar butid, uchar color, Ref descrip, LGRect* r)
 {
    opt_text_state* st=(opt_text_state*)&OButtons[butid].user;
 
@@ -709,7 +724,7 @@ uchar multi_handler(uiEvent* ev, uchar butid)
 }
 
 void multi_init(uchar butid, uchar key, Ref descrip, Ref optbase, Ref feedbase,
-   uchar type, void* var, uchar num_opts, void* dealfunc, Rect* r)
+   uchar type, void* var, uchar num_opts, void* dealfunc, LGRect* r)
 {
    opt_multi_state* st=(opt_multi_state*)&OButtons[butid].user;
 
@@ -742,7 +757,7 @@ uchar keyslork_handler(uiEvent* ev, uchar butid)
 
 void slork_init(uchar butid, uchar (*slork)(short code))
 {
-   LG_memset(&OButtons[butid].rect,0,sizeof(Rect));
+   LG_memset(&OButtons[butid].rect,0,sizeof(LGRect));
    *((slorker*)&(OButtons[butid].user))=slork;
    OButtons[butid].evmask=UI_EVENT_KBD_COOKED;
    OButtons[butid].drawfunc=NULL;
@@ -757,8 +772,8 @@ char* textlist_string(opt_textlist_state* st, int ind)
 void textlist_draw_line(opt_textlist_state* st,int line,uchar butid)
 {
    short w,h;
-   Rect scrrect;
-   Rect r;
+   LGRect scrrect;
+   LGRect r;
    char* s;
    uchar col;
 #ifdef SVGA_SUPPORT
@@ -990,7 +1005,7 @@ uchar textlist_handler(uiEvent* ev, uchar butid)
 void textlist_init(uchar butid,char* text,uchar numblocks,uchar blocksiz,
    uchar editable,ushort editmask,ushort selectmask,ushort initmask,
    Ref invalidstr,uchar validcol,uchar selectcol,uchar invalidcol,
-   Ref selectprompt, void (*dealfunc)(uchar butid,uchar index), Rect* r)
+   Ref selectprompt, void (*dealfunc)(uchar butid,uchar index), LGRect* r)
 {
    opt_textlist_state* st=(opt_textlist_state*)&OButtons[butid].user;
 
@@ -1029,7 +1044,7 @@ void textlist_init(uchar butid,char* text,uchar numblocks,uchar blocksiz,
 // event to see if they want to deal with it.
 //
 #pragma disable_message(202)
-uchar opanel_mouse_handler(uiEvent *ev, Region *r, void *user_data)
+uchar opanel_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
 {
    uiMouseEvent mev;
    int b;
@@ -1056,7 +1071,7 @@ uchar opanel_mouse_handler(uiEvent *ev, Region *r, void *user_data)
 // One, true keyboard handler for all options mode events.
 // checks all options panel widgets to see if they want to deal.
 //
-uchar opanel_kb_handler(uiEvent *ev, Region *r, void* user_data)
+uchar opanel_kb_handler(uiEvent *ev, LGRegion *r, void* user_data)
 {
    uiCookedKeyEvent* kev=(uiCookedKeyEvent*)ev;
    int b;
@@ -1126,7 +1141,7 @@ void opanel_redraw(uchar back)
 // assuming buttons in three columns, ro rows, high enough for
 // a specified number of lines of text.
 //
-void standard_button_rect(Rect* r, uchar butid, uchar lines, uchar ro, uchar mar)
+void standard_button_rect(LGRect* r, uchar butid, uchar lines, uchar ro, uchar mar)
 {
    short w,h;
    char i=butid;
@@ -1143,7 +1158,7 @@ void standard_button_rect(Rect* r, uchar butid, uchar lines, uchar ro, uchar mar
    r->lr.y=r->ul.y+h+2;
 }
 
-void standard_slider_rect(Rect* r, uchar butid, uchar ro, uchar mar)
+void standard_slider_rect(LGRect* r, uchar butid, uchar ro, uchar mar)
 {
    short sh,sw;
 
@@ -1259,12 +1274,12 @@ void wrapper_pushbutton_func(uchar butid)
          break;
       case HEAD_RECENTER_BUTTON: // Input
          {
-            extern uchar recenter_headset(short keycode, ulong context, void* data);
-            recenter_headset(0,0,0);
+            //extern uchar recenter_headset(short keycode, ulong context, void* data);
+            //recenter_headset(0,0,0);
          }
          break;
       case HEADSET_BUTTON:
-         headset_screen_init();
+         //headset_screen_init();
          break;
 #endif
       case AUDIO_OPT_BUTTON:
@@ -1286,7 +1301,7 @@ void wrapper_pushbutton_func(uchar butid)
 
 void wrapper_init(void)
 {
-   Rect r;
+   LGRect r;
    int i;
    char* keyequivs;
    
@@ -1296,9 +1311,6 @@ void wrapper_init(void)
    for(i=0;i<8;i++) {
       standard_button_rect(&r,i,2,3,5);
       pushbutton_init(i,keyequivs[i],REF_STR_WrapperText+i,wrapper_pushbutton_func,&r);
-   }   
-   if(!music_card && !sfx_card) {
-      dim_pushbutton(AUDIO_BUTTON);
    }
 #ifdef DEMO
    dim_pushbutton(LOAD_BUTTON);
@@ -1314,7 +1326,7 @@ void wrapper_init(void)
 #pragma disable_message(202)
 void quit_verify_pushbutton_handler(uchar butid)
 {
-   really_quit_key_func(0,0,0);
+   //really_quit_key_func(0,0,0);
 }
 
 uchar quit_verify_slorker(uchar butid)
@@ -1371,23 +1383,20 @@ void recompute_music_level(ushort vol)
    curr_vol_lev=QVAR_TO_VOLUME(vol);
    if(vol==0) {
       music_on=FALSE;
-      stop_music_func(0,0,0);
+      //stop_music_func(0,0,0);
    }
    else {
       if(!music_on) {
          music_on=TRUE;
-         start_music_func(0,0,0);
+         //start_music_func(0,0,0);
       }
-      mlimbs_change_master_volume(curr_vol_lev);
+      //mlimbs_change_master_volume(curr_vol_lev);
    }
 }
 
 void recompute_digifx_level(ushort vol)
 {
-   if (sfx_card)
-      sfx_on=(vol!=0);
-   else
-      sfx_on=FALSE;
+   sfx_on=(vol!=0);
    curr_sfx_vol=QVAR_TO_VOLUME(vol);
    if (sfx_on)
    {
@@ -1449,7 +1458,7 @@ void digichan_dealfunc(short val)
          break;
    }
    QUESTVAR_SET(DIGI_CHANNELS_QVAR, hack_digi_channels);
-   snd_set_digital_channels(cur_digi_channels);
+   //snd_set_digital_channels(cur_digi_channels);
 }
 
 #pragma enable_message(202)
@@ -1471,9 +1480,9 @@ void soundopt_screen_init()
 
    standard_button_rect(&r,i,2,2,5);
    retkey=tolower(get_temp_string(REF_STR_AilThreeText+1)[0]);
-   multi_init(i, retkey, REF_STR_AilThreeText+1, REF_STR_StereoReverseState, NULL,
-      sizeof(snd_stereo_reverse), &snd_stereo_reverse, 2, NULL, &r);
-   i++;
+   //multi_init(i, retkey, REF_STR_AilThreeText+1, REF_STR_StereoReverseState, NULL,
+   //   sizeof(snd_stereo_reverse), &snd_stereo_reverse, 2, NULL, &r);
+   //i++;
 
 #ifdef AUDIOLOGS
    standard_button_rect(&r,i,2,2,5);
@@ -1493,13 +1502,12 @@ void soundopt_screen_init()
 
 void sound_screen_init(void)
 {
-   Rect r;
+   LGRect r;
    uchar sliderbase;
    char retkey;
    char slider_offset = 0;
 #ifdef AUDIOLOGS
-   if (sfx_card)
-      slider_offset = 10;
+   slider_offset = 10;
 #endif
 
    clear_obuttons();
@@ -1522,47 +1530,35 @@ void sound_screen_init(void)
       textwidget_init(0,BUTTON_COLOR,REF_STR_MusicFeedbackText+2,&r);
    }
 
-   if(sfx_card) {
-      if(digi_gain) {
-         standard_slider_rect(&r,3,2,5);
-         r.lr.x+=(r.lr.x-r.ul.x);
-         r.ul.y-=slider_offset;
-         r.lr.y-=slider_offset;
-         slider_init(1,REF_STR_MusicText+1,sizeof(ushort),
-            FALSE,&player_struct.questvars[SFX_VOLUME_QVAR],100,sliderbase,recompute_digifx_level,&r);
-      }
-      else {
-         standard_button_rect(&r,3,2,2,5);
-         r.ul.y-=slider_offset;
-         r.lr.y-=slider_offset;
-         multi_init(1,get_temp_string(REF_STR_MusicText+1)[0],
-            REF_STR_MusicText+1,REF_STR_OffonText,REF_STR_MusicFeedbackText+5,
-            sizeof(sfx_on),&sfx_on, 2, digi_toggle_deal, &r);
-      }
-   }
-   else {
-      standard_button_rect(&r,3,2,2,5);
-      r.lr.x+=(r.lr.x-r.ul.x);
-      textwidget_init(1,BUTTON_COLOR,REF_STR_MusicFeedbackText+7,&r);
-   }
-
-#ifdef AUDIOLOGS
-   if(sfx_card) {
-      standard_slider_rect(&r,6,2,5);
+   if(digi_gain) {
+      standard_slider_rect(&r,3,2,5);
       r.lr.x+=(r.lr.x-r.ul.x);
       r.ul.y-=slider_offset;
       r.lr.y-=slider_offset;
-      slider_init(2,REF_STR_MusicText+4,sizeof(ushort),
-         FALSE,&player_struct.questvars[ALOG_VOLUME_QVAR],100,sliderbase,recompute_audiolog_level,&r);
+      slider_init(1,REF_STR_MusicText+1,sizeof(ushort),
+         FALSE,&player_struct.questvars[SFX_VOLUME_QVAR],100,sliderbase,recompute_digifx_level,&r);
    }
+   else {
+      standard_button_rect(&r,3,2,2,5);
+      r.ul.y-=slider_offset;
+      r.lr.y-=slider_offset;
+      multi_init(1,get_temp_string(REF_STR_MusicText+1)[0],
+         REF_STR_MusicText+1,REF_STR_OffonText,REF_STR_MusicFeedbackText+5,
+         sizeof(sfx_on),&sfx_on, 2, digi_toggle_deal, &r);
+   }
+
+#ifdef AUDIOLOGS
+   standard_slider_rect(&r,6,2,5);
+   r.lr.x+=(r.lr.x-r.ul.x);
+   r.ul.y-=slider_offset;
+   r.lr.y-=slider_offset;
+   slider_init(2,REF_STR_MusicText+4,sizeof(ushort),
+   FALSE,&player_struct.questvars[ALOG_VOLUME_QVAR],100,sliderbase,recompute_audiolog_level,&r);
 #endif
 
-   if (sfx_card)
-   {
-      standard_button_rect(&r,2,2,2,5);
-      retkey=tolower(get_temp_string(REF_STR_AilThreeText+2)[0]);
-      pushbutton_init(AUDIO_OPT_BUTTON, retkey, REF_STR_AilThreeText+2, wrapper_pushbutton_func, &r);
-   }
+   standard_button_rect(&r,2,2,2,5);
+   retkey=tolower(get_temp_string(REF_STR_AilThreeText+2)[0]);
+   pushbutton_init(AUDIO_OPT_BUTTON, retkey, REF_STR_AilThreeText+2, wrapper_pushbutton_func, &r);
 
    standard_button_rect(&r,5,2,2,5);
    retkey=tolower(get_temp_string(REF_STR_MusicText+2)[0]);
@@ -1577,7 +1573,7 @@ void sound_screen_init(void)
 // THE OPTIONS SCREEN: Initialization, update funcs
 //
 
-void gamma_dealfunc(ushort gamma_qvar)
+/*void gamma_dealfunc(ushort gamma_qvar)
 {
    fix gamma;
 
@@ -1585,7 +1581,7 @@ void gamma_dealfunc(ushort gamma_qvar)
 //   gamma=fix_mul(gamma,gamma)+(FIX_UNIT/2);
    gamma=QVAR_TO_GAMMA(gamma_qvar);
    gr_set_gamma_pal(0,256,gamma);
-}
+}*/
 
 #ifdef SVGA_SUPPORT
 uchar wrapper_screenmode_hack = FALSE;
@@ -1601,7 +1597,7 @@ void screenmode_change(new_mode)
 
 void language_change(uchar lang)
 {
-   extern int string_res_file, mfdart_res_file;
+   /*extern int string_res_file, mfdart_res_file;
    extern char* mfdart_files[];
    extern char* language_files[];
    extern void invent_language_change(void);
@@ -1629,7 +1625,7 @@ void language_change(uchar lang)
    mfd_language_change();
    side_icon_language_change();
    free_options_cursor();
-   make_options_cursor();
+   make_options_cursor();*/
 }
 
 void language_dealfunc(uchar lang)
@@ -1659,7 +1655,7 @@ void center_joy_go(uchar butid)
 {
    extern uchar recenter_joystick(short keycode, ulong context, void* data);
 
-   recenter_joystick(0,0,0);
+   //recenter_joystick(0,0,0);
    joystick_screen_init();
 }
 #pragma enable_message(202)
@@ -1694,7 +1690,7 @@ void detail_dealfunc(uchar det)
 
 void mousehand_dealfunc(ushort lefty)
 {
-   mouse_set_lefty(lefty);
+   //mouse_set_lefty(lefty);
 }
 
 #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
@@ -1753,14 +1749,14 @@ ushort high_joy_flags;
 void joystick_type_func(ushort new_joy_type)
 {
    extern uchar joystick_count;
-   joystick_count = joy_init(high_joy_flags | new_joy_type);
-   config_set_single_value("joystick",CONFIG_INT_TYPE,(config_valtype)(high_joy_flags|new_joy_type));
+   //joystick_count = joy_init(high_joy_flags | new_joy_type);
+   //config_set_single_value("joystick",CONFIG_INT_TYPE,(config_valtype)(high_joy_flags|new_joy_type));
    joystick_screen_init();
 }
 
 void joystick_screen_init(void)
 {
-   Rect r;
+   LGRect r;
    int i = 0;
    char *keys;
    extern uchar inp6d_headset;
@@ -1808,7 +1804,7 @@ void joystick_button_func(uchar butid)
 
 void input_screen_init(void)
 {
-   Rect r;
+   LGRect r;
    char* keys;
    int i=0;
    uchar sliderbase;
@@ -1852,7 +1848,7 @@ void input_screen_init(void)
 
 void video_screen_init(void)
 {
-   Rect r;
+   LGRect r;
    int i;
    char* keys;
 #ifdef SVGA_SUPPORT
@@ -1910,7 +1906,7 @@ void video_screen_init(void)
 #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
 void headset_screen_init(void)
 {
-   Rect r;
+   LGRect r;
    int i;
    char* keys;
 #ifdef STEREO_SUPPORT
@@ -1966,7 +1962,7 @@ void headset_screen_init(void)
 #ifdef SVGA_SUPPORT
 void screenmode_screen_init(void)
 {
-   Rect r;
+   LGRect r;
    int i;
    char* keys;
 
@@ -2012,14 +2008,16 @@ void screenmode_screen_init(void)
 
 void options_screen_init(void)
 {
-   Rect r;
+   LGRect r;
    char* keys;
    int i=0;
 
    keys=get_temp_string(REF_STR_KeyEquivs2);
    clear_obuttons();
 
-   olh_temp=(QUESTBIT_GET(OLH_QBIT)==0);
+   //olh_temp=(QUESTBIT_GET(OLH_QBIT)==0);
+
+   olh_temp = TRUE;
 
    // okay, I admit it, we're going to tweak these "standard"
    // button rects a little bit.
@@ -2072,7 +2070,7 @@ extern void spoof_mouse_event();
 #pragma disable_message(202)
 void load_dealfunc(uchar butid,uchar index)
 {
-   begin_wait();
+   /*begin_wait();
    Poke_SaveName(index);
    Spew(DSRC_EDITOR_Save,("attempting to load from %s\n",save_game_name));
    if(load_game(save_game_name)!=OK) {
@@ -2082,7 +2080,7 @@ void load_dealfunc(uchar butid,uchar index)
       Spew(DSRC_EDITOR_Restore,("Game %d loaded!\n",index));
    }
    end_wait();
-   spoof_mouse_event();
+   spoof_mouse_event();*/
    wrapper_panel_close(TRUE);
 }
 #pragma enable_message(202)
@@ -2188,20 +2186,20 @@ void wrapper_start(void (*init)(void))
 #define NEEDED_DISKSPACE   630000
 errtype check_free_diskspace(int *needed)
 {
-   struct diskfree_t freespace;
+   /*struct diskfree_t freespace;
    _dos_getdiskfree(0, &freespace);
    if (freespace.avail_clusters * freespace.sectors_per_cluster * freespace.bytes_per_sector < NEEDED_DISKSPACE)
    {
       *needed = NEEDED_DISKSPACE - (freespace.avail_clusters * freespace.sectors_per_cluster * freespace.bytes_per_sector);
       return(ERR_NOMEM);
    }
-   *needed = 0;
+   *needed = 0;*/
    return(OK);
 }
 
 errtype do_savegame_guts(uchar slot)
 {
-   extern uchar valid_save;
+   /*extern uchar valid_save;
    errtype retval = OK;
 
    begin_wait();
@@ -2236,19 +2234,23 @@ errtype do_savegame_guts(uchar slot)
    spoof_mouse_event();
    if (retval == OK)
       wrapper_panel_close(TRUE);
-   return(retval);
+   return(retval);*/
+   return OK;
 }
 
+//#endif // NOT_YET
+
 #pragma disable_message(202)
-uchar wrapper_region_mouse_handler(uiMouseEvent* ev, Region* r, void* data)
+uchar wrapper_region_mouse_handler(uiMouseEvent* ev, LGRegion* r, void* data)
 {
-   if (global_fullmap->cyber)
+   /*if (global_fullmap->cyber)
    {
       uiSetRegionDefaultCursor(r,NULL);
       return FALSE;
    }
-   else
-      uiSetRegionDefaultCursor(r,&option_cursor);
+   else*/
+
+   uiSetRegionDefaultCursor(r,&option_cursor);
 
    if (ev->action & MOUSE_DOWN)
    {
@@ -2258,9 +2260,6 @@ uchar wrapper_region_mouse_handler(uiMouseEvent* ev, Region* r, void* data)
    return FALSE;
 }
 #pragma enable_message(202)
-
-
-#endif // NOT_YET
 
 errtype make_options_cursor(void)
 {
@@ -2295,25 +2294,25 @@ errtype make_options_cursor(void)
    cursor_loaded = TRUE;
    gr2ss_override = old_over;
 
+   wrapper_options_func(0,0,(void*)TRUE);
+
    return OK;
 }
 
-#ifdef NOT_YET //
-
-void free_options_cursor(void)
+/*void free_options_cursor(void)
 {
 #ifndef SVGA_SUPPORT
    if(cursor_loaded)
       Free(option_cursor_bmap.bits);
 #endif
-}
+}*/
 
-errtype wrapper_create_mouse_region(Region* root)
+errtype wrapper_create_mouse_region(LGRegion* root)
 { 
    errtype err;
    int id;
-   Rect r = { { 0, 0}, {STATUS_X,STATUS_HEIGHT}};
-   Region* reg = &(options_mouseregion[free_mouseregion++]);
+   Rect r = { { 50, 50}, {100,100}};
+   LGRegion* reg = &(options_mouseregion[free_mouseregion++]);
 
    err = region_create(root,reg,&r,2,0,REG_USER_CONTROLLED|AUTODESTROY_FLAG,NULL,NULL,NULL,NULL);
    if (err != OK) return err;
@@ -2328,6 +2327,7 @@ errtype wrapper_create_mouse_region(Region* root)
    return OK;
 }
 
+//#ifdef NOT_YET //
 #pragma disable_message(202)
 uchar saveload_hotkey_func(short keycode, ulong context, void* data)
 {
@@ -2350,4 +2350,4 @@ uchar demo_quit_func(short keycode, ulong context, void* data)
 }
 #pragma enable_message(202)
 
-#endif // NOT_YET
+//#endif // NOT_YET
