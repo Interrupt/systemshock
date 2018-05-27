@@ -2105,9 +2105,9 @@ void load_screen_init(void)
 // THE SAVE GAME SCREEN: Initialization, update funcs
 //
 
-#pragma disable_message(202)
 void save_dealfunc(uchar butid,uchar index)
 {
+   printf("Saving!\n");
    if(!ObjSysOkay()) {
       string_message_info(REF_STR_ObjSysBad);
       savegame_verify=index;
@@ -2200,6 +2200,7 @@ errtype check_free_diskspace(int *needed)
 
 errtype do_savegame_guts(uchar slot)
 {
+   printf("do_savegame_guts\n");
    /*extern uchar valid_save;
    errtype retval = OK;
 

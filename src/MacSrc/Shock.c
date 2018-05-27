@@ -112,6 +112,7 @@ void SetupPauseMenus(void);
 void RestoreTitleScreen(void);
 void InitSDL();
 void SDLDraw(void);
+void SDLPoll(void);
 errtype CheckFreeSpace(short	checkRefNum);
 
 
@@ -1282,10 +1283,34 @@ void SetSDLPalette(int index, int count, uchar *pal)
 }
 
 SDL_Rect destRect;
-void SDLDraw(void)
+void SDLDraw()
 {
 	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
 	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
   	SDL_UpdateWindowSurface(window);
-	SDL_PumpEvents();
+
+  	SDLPoll();
+}
+
+void SDLPoll()
+{
+	SDL_Event event;
+	while(SDL_PollEvent( &event ) != 0)
+    {
+    	// Close the game when requested
+        if(event.type == SDL_QUIT)
+        {
+            gPlayingGame = FALSE;
+        }
+
+        if(event.type == SDL_KEYDOWN) {
+	        switch(event.key.keysym.sym )
+	        {
+	        	case SDLK_ESCAPE:	// ESC should show / hide the options menu
+	        		if(!game_paused) wrapper_options_func(0,0,(void*)TRUE);
+	        		else wrapper_panel_close(TRUE);
+	        		break;
+	        }
+    	}
+    }
 }
