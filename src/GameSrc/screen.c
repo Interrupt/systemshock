@@ -203,10 +203,9 @@ errtype screen_init(void)
    // lean-o-meter
    init_posture_meters(root_region,FALSE);
 
-/* KLC
    // option LGCursor LGRegion
    wrapper_create_mouse_region(root_region);
- */
+ 
    // Install basic input handlers
    uiInstallRegionHandler(root_region,UI_EVENT_KBD_COOKED, &main_kb_callback, NULL, &callid);
 
