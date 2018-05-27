@@ -2081,6 +2081,7 @@ void load_dealfunc(uchar butid,uchar index)
    }
    end_wait();
    spoof_mouse_event();*/
+   printf("FIXME: Loading!\n");
    wrapper_panel_close(TRUE);
 }
 #pragma enable_message(202)
