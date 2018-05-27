@@ -152,6 +152,7 @@ ulong asm high_umpy(ulong a, ulong b)
 
  ulong high_umpy(ulong a, ulong b)
  {
+ 	printf("FIXME: high_umpy\n");
  	return a * b;
  }
 
@@ -169,7 +170,8 @@ ulong asm high_umpy(ulong a, ulong b)
 
 long RndRange(RndStream *prs, long low, long high)
 {
-	return(low + high_umpy(Rnd(prs), (high - low) + 1));
+	// HAX HAX HAX should use this library instead of using the std lib random
+	return (rand() % (high - low)) + low;
 }
 
 //	----------------------------------------------------------------
@@ -184,7 +186,10 @@ long RndRange(RndStream *prs, long low, long high)
 
 fix RndRangeFix(RndStream *prs, fix low, fix high)
 {
-	return(low + (fix_mul(RndFix(prs), high - low)));
+	// HAX HAX HAX should use this library instead of using the std lib random
+	float flow = fix_float(low);
+	float fhigh = fix_float(high);
+	return fix_from_float((float)rand()/(float)(RAND_MAX/(fhigh - flow)) + flow);
 }
 
 //	-----------------------------------------------------------------
