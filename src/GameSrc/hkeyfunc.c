@@ -222,12 +222,12 @@ uchar keyhelp_hotkey_func(short keycode, ulong context, void* data)
 
    return TRUE;
 }
-
+#endif // NOT_YET
 
 uchar really_quit_key_func(short keycode, ulong context, void* data)
 {
-   _new_mode = -1;
-   chg_set_flg(GL_CHG_LOOP);
+   extern uchar gPlayingGame;
+   gPlayingGame = FALSE;
    return TRUE;
 }
 
@@ -236,8 +236,6 @@ uchar toggle_bool_func(short keycode, ulong context, bool* tgl)
    *tgl = !*tgl;
    return TRUE;
 }
-
-#endif // NOT_YET
 
 extern Boolean	DoubleSize;
 

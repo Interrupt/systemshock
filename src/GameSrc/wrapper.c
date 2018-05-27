@@ -1326,7 +1326,7 @@ void wrapper_init(void)
 #pragma disable_message(202)
 void quit_verify_pushbutton_handler(uchar butid)
 {
-   //really_quit_key_func(0,0,0);
+   really_quit_key_func(0,0,0);
 }
 
 uchar quit_verify_slorker(uchar butid)
