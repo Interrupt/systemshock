@@ -585,7 +585,7 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
       if (uiDoubleClicksOn[i] &&
          last_down_events[i].type != UI_EVENT_NULL)
       {
-         int crit = uiDoubleClickDelay;
+         int crit = uiDoubleClickDelay * 5;
          ulong timediff = timestamp - last_down_events[i].tstamp;
          LGPoint downpos = last_down_events[i].pos;
          uchar out = (abs(pos.x - downpos.x) > uiDoubleClickTolerance ||
