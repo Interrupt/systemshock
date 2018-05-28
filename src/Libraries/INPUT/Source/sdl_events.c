@@ -316,7 +316,17 @@ void pump_events(void)
 				mouseEvent.type = MOUSE_MOTION;
 				mouseEvent.x = ev.motion.x; // TODO: relative mode?
 				mouseEvent.y = ev.motion.y;
+				mouseEvent.buttons = 0;
 				mouseEvent.timestamp = mouse_get_time();
+
+				// Fill out the buttons
+				uint mouse_state = SDL_GetMouseState(NULL, NULL);
+				if(mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+					mouseEvent.buttons = 1;
+				}
+				if(mouse_state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
+					mouseEvent.buttons = 2;
+				}
 
 				addMouseEvent(&mouseEvent);
 				break;
