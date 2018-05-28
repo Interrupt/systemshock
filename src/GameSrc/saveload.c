@@ -1587,5 +1587,9 @@ out:
    _MARK_("load_current_map:End");
 */
 
+   // HAX HAX HAX for some reason entering Cyberspace clears grd_ipal, so reset it
+   gr_alloc_ipal();
+   gr_init_ipal();
+
    return retval;
 }
