@@ -2099,13 +2099,13 @@ void draw_page_buttons(uchar full)
 
    gr_push_canvas(ppage_canvas);
    if (full_game_3d)
-      gr2ss_override = OVERRIDE_FAIL;
+      gr2ss_override = OVERRIDE_ALL;
    else
       gr2ss_override = OVERRIDE_ALL;
 
    if (full)
    {
-      draw_res_bm(REF_IMG_bmInventoryButtonBackground,INVENT_BUTTON_PANEL_X, INVENT_BUTTON_PANEL_Y);
+      draw_res_bm(REF_IMG_bmInventoryButtonBackground,INVENT_BUTTON_PANEL_X + 1, INVENT_BUTTON_PANEL_Y);
 		  //draw_hires_resource_bm(REF_IMG_bmInventoryButtonBackground, 0, 0);
    }
 
@@ -2144,8 +2144,8 @@ void draw_page_buttons(uchar full)
       r.lr.x = x+INVENT_BTTN_WD;
       RECT_OFFSETTED_RECT(&r,MakePoint(INVENTORY_PANEL_X, BUTTON_PANEL_Y),&hider);
       uiHideMouse(&hider);
-      ss_rect(r.ul.x,r.ul.y,r.lr.x,r.lr.y);
-      //gr_rect(SCONV_X(r.ul.x)+2, 2, SCONV_X(r.lr.x)+2, 10);
+      //ss_rect(r.ul.x,r.ul.y,r.lr.x,r.lr.y);
+      gr_rect(SCONV_X(r.ul.x)+2, 2, SCONV_X(r.lr.x)+2, 10);
       uiShowMouse(&hider);
       page_button_state[i] = old_button_state[i] = newstate;
    }

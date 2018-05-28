@@ -100,6 +100,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
    if (f == NULL)
    {
 //      Warning(("Could not load bitmap from resource #%d!\n",id_num));
+      printf("Could not load bitmap from resource #%d!\n",id_num);
       return(ERR_FREAD);
    }
    RefExtract(rt,rid,f);

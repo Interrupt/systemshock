@@ -53,7 +53,7 @@ int string_res_file; 							// string res filenum
 // EXTERNALS
 // ---------
 
-//uchar *language_files[] = { "cybstrng.rsrc", "frnstrng.rsrc", "gerstrng.rsrc" } ;
+uchar *language_files[] = { "res/data/cybstrng.res", "res/data/frnstrng.res", "res/data/gerstrng.res" } ;
 char which_lang;
 
 void init_strings(void)

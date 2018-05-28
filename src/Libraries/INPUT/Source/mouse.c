@@ -173,7 +173,7 @@ pascal void MousePollProc(void)
 
 	int mouse_x = -1;
 	int mouse_y = -1;
-
+	
 	//printf("%i %i\n", mouse_x, mouse_y);
 
 	//mp.h = mouse_x;
@@ -186,12 +186,10 @@ pascal void MousePollProc(void)
 
 	if(mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
 		mouseInstantButts = 1;
-		printf("Mouse Left down!\n");
 	}
 
 	if(mouse_state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
 		mouseInstantButts = 2;
-		printf("Mouse Right down!\n");
 	}
 
 	if (mouseInstantX != mouse_x || mouseInstantY != mouse_y)						// If different
@@ -667,7 +665,6 @@ errtype mouse_next(mouse_event *res)
 			res->buttons = 1;
 			btn_left = TRUE;
 			res->type = MOUSE_LDOWN;
-			printf("MOUSE_LDOWN\n");
 			return OK;
 		}
 	}
@@ -675,7 +672,6 @@ errtype mouse_next(mouse_event *res)
 		res->buttons = 1;
 		btn_left = FALSE;
 		res->type = MOUSE_LUP;
-		printf("MOUSE_LUP\n");
 		return OK;
 	}
 
@@ -684,7 +680,6 @@ errtype mouse_next(mouse_event *res)
 			res->buttons = 2;
 			btn_right = TRUE;
 			res->type = MOUSE_RDOWN;
-			printf("MOUSE_RDOWN\n");
 			return OK;
 		}
 	}
@@ -692,7 +687,6 @@ errtype mouse_next(mouse_event *res)
 		res->buttons = 2;
 		btn_right = FALSE;
 		res->type = MOUSE_RUP;
-		printf("MOUSE_RUP\n");
 		return OK;
 	}
 

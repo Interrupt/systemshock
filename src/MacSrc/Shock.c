@@ -690,51 +690,18 @@ void HandleNewGame()
 		InvalRect(&gMainWindow->portRect); 
 	}*/
 
-	//gr_clear(0x0);
-
 	printf("Starting Game\n");
+
 	gIsNewGame = TRUE;									// It's a whole new ballgame.
 	gGameSavedTime = *tmd_ticks;
+	
 	go_and_start_the_game_already();				// Load up everything for a new game
 	SDLDraw();
 
 	printf("Starting Main Loop\n");
 
-	ShockGameLoop();
-
 	//RenderTest();
-
-	// HAX HAX HAX try to reset the player physics after Test Mode
-	/*ObjLoc plr_loc;
-	plr_loc.x=obj_coord_from_fix(fix_make(30,3));
-	plr_loc.y=obj_coord_from_fix(fix_make(23,3));
-	plr_loc.h = 200;
-	plr_loc.z = map_height_from_fix(fix_make(15, 0));
-	plr_loc.p = 0;
-	plr_loc.b = 0;
-
-	obj_move_to(PLAYER_OBJ, &plr_loc, FALSE);
-
-	Pelvis player_pelvis;
-	physics_handle ph;
-
-	State new_state;
-	new_state = standard_state;
-	new_state.X = plr_loc.x<<8;
-	new_state.Y = plr_loc.y<<8;
-	new_state.Z = plr_loc.z<<8;
-	new_state.alpha = phys_angle_from_obj(plr_loc.h);
-	new_state.beta = plr_loc.p;
-	new_state.gamma = plr_loc.b;
-
-	instantiate_pelvis(MAKETRIP(CLASS_CRITTER,0,6),&player_pelvis);
-	objs[PLAYER_OBJ].info.ph = ph = EDMS_make_pelvis(&player_pelvis, &new_state);
-	physics_handle_id[ph] = PLAYER_OBJ;
-
-	physics_running = TRUE;
-	//EDMS_settle_object( ph );
-
-	ShockGameLoop();*/
+	ShockGameLoop();
 }
 
 
@@ -844,6 +811,7 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 extern pascal void MousePollProc(void);
 extern void pump_events(void);
+
 extern long gShockTicks;
 void ShockGameLoop(void)
 {
@@ -867,10 +835,10 @@ void ShockGameLoop(void)
 
 	while (gPlayingGame)
 	{	
+		gShockTicks = TickCount();
+
 		if (!(_change_flag&(ML_CHG_BASE<<1)))
 			input_chk();
-
-		gShockTicks = TickCount();
 		
 		// DG: at the beginning of each frame, get all the events from SDL
 		pump_events();
@@ -1293,6 +1261,8 @@ void InitSDL()
 		"System Shock", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN);
 
+	SDL_ShowCursor(SDL_DISABLE);
+
 	atexit(SDL_Quit);
 
 	SDL_RaiseWindow(window);
@@ -1325,10 +1295,9 @@ void SetSDLPalette(int index, int count, uchar *pal)
 }
 
 SDL_Rect destRect;
-void SDLDraw(void)
+void SDLDraw()
 {
 	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
 	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
   	SDL_UpdateWindowSurface(window);
-	SDL_PumpEvents();
 }

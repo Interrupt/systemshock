@@ -591,13 +591,9 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
          uchar out = (abs(pos.x - downpos.x) > uiDoubleClickTolerance ||
                      abs(pos.y - downpos.y) > uiDoubleClickTolerance);
 
-         printf("Flushing mouse event!\n");
-
          // OK, if we've waited DoubleClickDelay after a down event, send it out.
          if (out || timediff >= crit)
          {
-            printf("flushing old clicks: crit = %d timediff = %d\n",crit,timediff);
-
             uiMouseEvent ev;
             //Spew(DSRC_UI_Polling,("flushing old clicks: crit = %d timediff = %d\n",crit,timediff));
             if (last_down_events[i].type != MOUSE_EVENT_FLUSHED)
@@ -612,9 +608,6 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
                last_up_events[i].type = MOUSE_EVENT_FLUSHED;
                uiDispatchEvent((uiEvent*)&ev);
             }
-         }
-         else {
-            printf("Nothing to flush!\n");
          }
 
          // This is where we do our flushing
@@ -640,6 +633,7 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
    bool altDown = (SDL_GetModState() & KMOD_ALT) != 0;
 
    printf("----- ui_dispatch_mouse_event -----\n");
+
 //   ui_mouse_do_conversion(&(mout->pos.x),&(mout->pos.y),TRUE);
    ui_flush_mouse_events(mout->tstamp,mout->pos);
    for (i = 0; i < NUM_MOUSE_BTNS; i++)
@@ -659,10 +653,8 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
       }
       if (last_down_events[i].type != UI_EVENT_NULL)
       {
-         printf("Last down event was not null\n");
          if (mout->action & MOUSE_BTN2DOWN(i))
          {
-            printf("Double click!\n");
             // Spew(DSRC_UI_Polling,("double click down\n"));
             // make a double click event. 
             mout->action &= ~MOUSE_BTN2DOWN(i);
@@ -673,7 +665,6 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
          }
          if (mout->action & MOUSE_BTN2UP(i))
          {
-            printf("Setting up event\n");
             // Spew(DSRC_UI_Polling,("up in time %d\n",mout->tstamp - last_down_events[i].tstamp));
             last_up_events[i] = *mout;
             eaten = TRUE;
@@ -681,7 +672,6 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
       }
       else if (mout->action & MOUSE_BTN2DOWN(i))
       {
-         printf("Saving last down event at %i\n", mout->tstamp);
          // Spew(DSRC_UI_Polling,("saving the down\n"));
          last_down_events[i] = *mout;
          eaten = TRUE;
@@ -847,7 +837,6 @@ errtype uiPoll(void)
 
 //   ui_mouse_get_xy(&mousepos.x,&mousepos.y);
 
-   printf("mouse_get_xy\n");
    mouse_get_xy(&mousepos.x,&mousepos.y);
 
    while(!kbdone || !msdone)
@@ -888,7 +877,6 @@ errtype uiPoll(void)
       }
       if (!msdone)
       {
-         printf(" !msdone\n");
          mouse_event mse;
          errtype err = mouse_next(&mse);
          /*if (poll_mouse_motion)
@@ -896,6 +884,7 @@ errtype uiPoll(void)
             {
                err = mouse_next(&mse);
             }*/
+
          if (err == OK)
          {
             uiMouseEvent* mout = (uiMouseEvent*)&out;

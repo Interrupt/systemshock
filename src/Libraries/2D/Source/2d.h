@@ -64,14 +64,14 @@ typedef union {
    } f;
    struct {
       grs_stencil *sten;  
-      short left;          
       short pad0;
-      short top;           
+      short left;          
       short pad1;
+      short top;  
+      short pad2;         
       short right;
-      short pad2;
-      short bot;
       short pad3;
+      short bot;
    } i;
 } grs_clip;
 typedef struct {

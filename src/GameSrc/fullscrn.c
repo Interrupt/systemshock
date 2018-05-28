@@ -126,7 +126,7 @@ errtype fullscreen_init(void)
    install_motion_mouse_handler(fullview_region, NULL);
    install_motion_keyboard_handler(fullroot_region);
 
-//KLC - no wrapper in Mac   wrapper_create_mouse_region(fullview_region);
+   wrapper_create_mouse_region(fullview_region);
    create_invent_region(fullview_region, &pagebutton_region_full, &inventory_region_full);
    init_posture_meters(fullview_region, TRUE);
    screen_init_mfd(TRUE);

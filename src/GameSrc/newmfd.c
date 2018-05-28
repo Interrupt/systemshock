@@ -1414,7 +1414,7 @@ void mfd_draw_button_panel(ubyte mfd_id)
 {
    int x[2] = { MFD_LEFT_PANEL_X, MFD_RIGHT_PANEL_X };
 
-   draw_hires_resource_bm(REF_IMG_bmMFDButtonBackground, x[mfd_id], MFD_PANEL_Y);
+   draw_res_bm(REF_IMG_bmMFDButtonBackground, x[mfd_id], MFD_PANEL_Y);
    mfd_draw_all_buttons(mfd_id);
    return;
 }

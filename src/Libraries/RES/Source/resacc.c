@@ -64,7 +64,7 @@ void *ResLock(Id id)
 
 	prd = RESDESC(id);
 	if (ResLoadResource(id) == NULL) {
-		printf("ResLock: Could not load %x", id);
+		printf("ResLock: Could not load %x\n", id);
 		return(NULL);
 	}
 

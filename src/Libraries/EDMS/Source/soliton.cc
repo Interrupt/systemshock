@@ -618,8 +618,6 @@ int EDMS_kill( int deadguy )
    int   deriv = 0;
    int	 object;
 
-   printf("EDMS_kill\n");
-
    // First see if there is, in fact, an object there...
    // ==================================================
    if ( S[deadguy][0][0] > END )

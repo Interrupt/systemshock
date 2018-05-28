@@ -1094,11 +1094,8 @@ errtype obj_move_to_vel(ObjID id, ObjLoc *newloc, uchar phys_tel, fix x_dot, fix
 		new_state.Z_dot = z_dot;
 		new_state.alpha = phys_angle_from_obj(newloc->h);
 
-      printf("obj_move_to_vel %f %f %f\n", fix_float(new_state.X), fix_float(new_state.Y), fix_float(new_state.Z));
-
 		if (!(CHECK_OBJ_PH(id)))
 		{
-         printf(" needs assembling.\n");
 			assemble_physics_object(id, &new_state);
 			if (!CHECK_OBJ_PH(id))
 				return(ERR_NOEFFECT);

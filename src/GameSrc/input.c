@@ -1727,8 +1727,6 @@ int view3d_mouse_input(LGPoint pos, LGRegion* reg,uchar move,int* lastsect)
       pos.x *= 2;
       pos.y *= 2;
    }
-
-   printf("view3d_mouse_input %i\n", move);
    
    if (!cyber)
    {

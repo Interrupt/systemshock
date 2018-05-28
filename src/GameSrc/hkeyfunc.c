@@ -222,12 +222,12 @@ uchar keyhelp_hotkey_func(short keycode, ulong context, void* data)
 
    return TRUE;
 }
-
+#endif // NOT_YET
 
 uchar really_quit_key_func(short keycode, ulong context, void* data)
 {
-   _new_mode = -1;
-   chg_set_flg(GL_CHG_LOOP);
+   extern uchar gPlayingGame;
+   gPlayingGame = FALSE;
    return TRUE;
 }
 
@@ -236,8 +236,6 @@ uchar toggle_bool_func(short keycode, ulong context, bool* tgl)
    *tgl = !*tgl;
    return TRUE;
 }
-
-#endif // NOT_YET
 
 extern Boolean	DoubleSize;
 
@@ -1297,8 +1295,14 @@ uchar pause_game_func(short keycode, ulong context, void* data)
 	extern uchar game_paused, redraw_paused;
 	extern LGRegion *inventory_region;
 	
-	game_paused = TRUE;
-	redraw_paused=TRUE;
+	game_paused = !game_paused;
+
+   if(game_paused) {
+	  redraw_paused=TRUE;
+     return FALSE;
+   }
+
+   return TRUE;
 /* KLC - not needed for Mac version
 	game_paused = !game_paused;
 	if (game_paused)
@@ -1316,7 +1320,6 @@ uchar pause_game_func(short keycode, ulong context, void* data)
 		uiPopGlobalCursor();
 	}
 */
-	return(FALSE);
 }
 
 /*KLC - not needed for Mac version
