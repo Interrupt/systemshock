@@ -64,10 +64,7 @@ void DisposeHandle(Handle h)
 // number of ticks since system start (1 Tick is about 1/60 second)
 int32_t TickCount(void)
 {
-	Uint64 sdlTicks = SDL_GetTicks(); // in milliseconds, but we want 1/60 seconds
-	sdlTicks *= 100;
-	sdlTicks /= 1666;
-	return (int32_t)sdlTicks;
+	return (int32_t)((SDL_GetTicks() * 100) / 357);	// 280 per second;
 }
 
 void SetPort(/*GrafPtr*/ void* port)

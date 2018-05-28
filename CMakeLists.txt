@@ -13,7 +13,7 @@ add_definitions(-Dpowerc -DSVGA_SUPPORT)
 
 add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
 
-link_libraries("-Wl,--no-as-needed")
+#link_libraries("-Wl,--no-as-needed")
 
 link_libraries("-lm")
 

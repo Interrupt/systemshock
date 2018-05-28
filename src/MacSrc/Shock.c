@@ -866,7 +866,7 @@ void ShockGameLoop(void)
 
 	StartShockTimer();									// Startup the game timer.
 
-	physics_running = false;
+	//physics_running = false;
 
 	while (gPlayingGame)
 	{	
