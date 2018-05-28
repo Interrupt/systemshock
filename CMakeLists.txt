@@ -244,11 +244,6 @@ target_link_libraries(FixPPTest
 	LG_LIB
 )
 
-#if(APPLE)
-# Find Carbon
-#find_library(CARBON NAMES Carbon)
-#endif()
-
 # Include magic header file, set struct packing size
 add_definitions(
 	-include precompiled.h
