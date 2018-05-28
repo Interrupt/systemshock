@@ -285,10 +285,12 @@ void pump_events(void)
 						//       was pressed at the same time - do the same? (=> could check sshockKeyStates[])
 
 						mouseEvent.type = down ? MOUSE_LDOWN : MOUSE_LUP;
+						mouseEvent.buttons = 1;
 						break;
 
 					case SDL_BUTTON_RIGHT:
 						mouseEvent.type = down ? MOUSE_RDOWN : MOUSE_RUP;
+						mouseEvent.buttons = 2;
 						break;
 
 					//case SDL_BUTTON_MIDDLE: // TODO: is this MOUSE_CDOWN/UP ?
@@ -492,6 +494,8 @@ uchar kb_state(uchar code)
 //  For Mac version: Get event from the normal Mac event queue for mouse events.
 //  The events looked for depend on the 'mouseMask' setting.
 
+uchar btn_left = FALSE;
+uchar btn_right = FALSE;
 errtype mouse_next(mouse_event *res)
 {
 	if(nextMouseEvent <= 0)

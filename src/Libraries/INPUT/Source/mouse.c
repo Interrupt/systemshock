@@ -180,7 +180,7 @@ pascal void MousePollProc(void)
 	//mp.v = mouse_y;
 
 	STUB_ONCE("TODO: Get mouse x and y?")
-	uint mouse_state = SDL_GetMouseState(NULL, NULL);
+	uint mouse_state = SDL_GetMouseState(&mouse_x, &mouse_y);
 
 	mouseInstantButts = 0;
 

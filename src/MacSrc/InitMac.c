@@ -503,7 +503,7 @@ void StartShockTimer(void)
                          SDL_TimerCallback callback,
                          void*             param)*/
 
-	SDL_TimerID my_timer_id = SDL_AddTimer(1000 / 280, TimerTickCallback, NULL);
+	//SDL_TimerID my_timer_id = SDL_AddTimer(1000 / 280, TimerTickCallback, NULL);
 }
 
 //------------------------------------------------------------------------------------
