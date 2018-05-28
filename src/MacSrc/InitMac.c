@@ -490,11 +490,7 @@ void StartShockTimer(void)
 	//InsXTime((QElemPtr)&pShockTicksTask);
 	//PrimeTime((QElemPtr)&pShockTicksTask, kShockTicksFreq);	// Increment 280 times a second
 
-	/*SDL_TimerID SDL_AddTimer(Uint32            interval,
-                         SDL_TimerCallback callback,
-                         void*             param)*/
-
-	SDL_TimerID my_timer_id = SDL_AddTimer(1000 / 280, TimerTickCallback, NULL);
+	//SDL_TimerID my_timer_id = SDL_AddTimer(1000 / 280, TimerTickCallback, NULL);
 }
 
 //------------------------------------------------------------------------------------

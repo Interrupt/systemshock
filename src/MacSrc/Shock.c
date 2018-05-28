@@ -805,6 +805,8 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 //  The main game loop for System Shock.
 //--------------------------------------------------------------------
+
+extern long gShockTicks;
 void ShockGameLoop(void)
 {
 	gPlayingGame = TRUE;
@@ -825,10 +827,10 @@ void ShockGameLoop(void)
 		_new_mode = _current_loop = GAME_LOOP;
 	}
 
-	StartShockTimer();									// Startup the game timer.
-
 	while (gPlayingGame)
 	{	
+		gShockTicks = (long)((SDL_GetTicks() * 100) / 357);	// 280 per second
+
 		if (!(_change_flag&(ML_CHG_BASE<<1)))
 			input_chk();
 		
