@@ -21,9 +21,6 @@ link_libraries("-lm")
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-# HACK: make carbon an empty list or sth
-set(CARBON  )
-
 # for now I'll put a Carbon/Carbon.h into src/stubs/
 # that defines Mac-specific types and provides stubs for used functions
 # like GetResource()
@@ -190,7 +187,6 @@ target_link_libraries(TestSimpleMain
 	FIX_LIB
 	LG_LIB
 	${SDL2_LIBRARIES}
-	${CARBON}
 )
 
 add_executable(BoxTest
@@ -205,7 +201,6 @@ target_link_libraries(BoxTest
 	FIX_LIB
 	LG_LIB
 	${SDL2_LIBRARIES}
-	${CARBON}
 )
 
 add_executable(BitmapTest
@@ -220,7 +215,6 @@ target_link_libraries(BitmapTest
 	FIX_LIB
 	LG_LIB
 	${SDL2_LIBRARIES}
-	${CARBON}
 )
 
 add_executable(FixTest
@@ -229,7 +223,6 @@ add_executable(FixTest
 
 target_link_libraries(FixTest
 	FIX_LIB
-	${CARBON}
 	LG_LIB
 )
 
@@ -240,7 +233,6 @@ add_executable(FixPPTest
 target_link_libraries(FixPPTest
 	FIX_LIB
 	FIXPP_LIB
-	${CARBON}
 	LG_LIB
 )
 
@@ -273,6 +265,5 @@ target_link_libraries(systemshock
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
-	${CARBON}
 	${SDL2_LIBRARIES}
 )
