@@ -1049,10 +1049,15 @@ uchar location_spew_func(short , ulong , void* )
 uchar toggle_physics_func(short keycode, ulong context, void* data)
 {
    physics_running = !physics_running;
+
+   extern uchar pacifism_on;
+   pacifism_on = !physics_running;
+
    if (physics_running)
       message_info("Physics turned on");
    else
       message_info("Physics turned off");
+
    return(FALSE);
 }
 
