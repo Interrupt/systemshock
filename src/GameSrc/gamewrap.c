@@ -91,7 +91,7 @@ errtype interpret_qvars(void);
 
 #define OldResIdFromLevel(level) (OLD_SAVE_GAME_ID_BASE+(level*2)+2)
 
-errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile)
+errtype copy_file(char *src_fname, char *dest_fname)
 {
 #if 1
 	STUB_ONCE("reimplement with stdio if really needed");
@@ -211,7 +211,7 @@ void check_save_game_wackiness(void)
 
 extern int flush_resource_cache();
 
-errtype save_game(FSSpec *saveSpec)
+errtype save_game(char *fname, char *comment)
 {
 	FSSpec		currSpec;
 	int 			filenum;
@@ -284,7 +284,7 @@ errtype save_game(FSSpec *saveSpec)
 	}
 
 	// Copy current game out to save game slot
-	if (copy_file(&currSpec, saveSpec, TRUE) != OK)
+	if (copy_file(fname, fname) != OK)
 	{
 		// Put up some alert here.
 		DebugString("No good copy, dude!\n");
@@ -387,7 +387,7 @@ errtype load_game(FSSpec *loadSpec)
 	 FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
       
       // Copy game to load to the current file game.
-      retval = copy_file(loadSpec, &currSpec, FALSE);
+      retval = copy_file(loadSpec, &currSpec);
       if (retval != OK)
       {
 		// bring up an alert here??

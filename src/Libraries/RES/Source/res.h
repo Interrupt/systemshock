@@ -196,6 +196,11 @@ typedef struct
    ushort type: 8;								 // resource type (RTYPE_XXX, see restypes.h)
 } ResDesc;
 
+typedef struct {
+  uint16_t flags : 8; // misc flags (RDF_XXX, see below)
+  uint16_t type : 8;  // resource type (RTYPE_XXX, see restypes.h)
+} ResDesc2;
+
 #define RESDESC(id) (&gResDesc[id])					// convert id to resource desc ptr
 #define RESDESC_ID(prd) ((prd)-gResDesc)		// convert resdesc ptr to id
 
@@ -306,6 +311,8 @@ typedef struct					// For Mac version, an array of these are saved in the
 	uchar	type;				// resource type
 } ResDirEntry;
 
+
+
 void ResWriteDir(short filenum);	// Mac version: Write out a resource table for the file.
 */
 
@@ -381,8 +388,8 @@ extern char resFileSignature[16];		// magic header
 void ResSetComment(int filenum, char *comment);	// set comment
 int ResWrite(Id id);												// write resource to file
 void ResKill(Id id);													// delete resource & remove from file
-//long ResPack(int filenum);									// remove empty entries
-#define ResPack(filenum) 
+long ResPack(int filenum);									// remove empty entries
+//#define ResPack(filenum) 
 
 //#define ResAutoPackOn(filenum) (resFile[filenum].pedit->flags |= RFF_AUTOPACK)
 //#define ResAutoPackOff(filenum) (resFile[filenum].pedit->flags &= ~RFF_AUTOPACK)

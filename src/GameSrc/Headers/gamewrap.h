@@ -46,10 +46,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Prototypes
 
 // Loads or saves a game named by fname. 
-//KLC - following is Mac version		errtype copy_file(char *src_fname, char *dest_fname);
-errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile);
-//KLC - following is Mac version 		errtype save_game(char *fname, char *comment);
-errtype save_game(FSSpec *fSpec);
+errtype copy_file(char *src_fname, char *dest_fname);
+//errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile);
+errtype save_game(char *fname, char *comment);
+//errtype save_game(FSSpec *fSpec);
 //KLC - following is Mac version 		errtype load_game(char *fname);
 errtype load_game(FSSpec *loadSpec);
 errtype write_level_to_disk(int idnum, uchar flush_mem);
