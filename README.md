@@ -5,7 +5,7 @@ Copyright 2015-2018, Night Dive Studios, Incorporated.
 GENERAL NOTES
 =============
 
-This is my attempt at a source port of the System Shock source code that was released. This runs well on OSX right now and is buildable on Linux, with some runtime issues to sort out.
+This is my attempt at a cross platform source port of the System Shock source code that was released, using SDL2. This runs well on OSX right now and is buildable on Linux, with some runtime issues to sort out.
 
 ![work so far](https://i.imgur.com/PWdEo9J.gif)
 
