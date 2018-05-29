@@ -5,42 +5,38 @@ Copyright 2015-2018, Night Dive Studios, Incorporated.
 GENERAL NOTES
 =============
 
-This is my attempt to get System Shock running on modern OSX. Once this runs well here, it should be much easier to port forward to other systems like Linux.
+This is my attempt at a source port of the System Shock source code that was released. This runs well on OSX right now and is buildable on Linux, with some runtime issues to sort out.
 
 ![work so far](https://i.imgur.com/PWdEo9J.gif)
 
 # Working so far:
+- Gameplay!
 - Loads original resource files
 - Starting up an SDL drawing context, including palette
+- SDL input
 - Bitmap rendering
 - Level loading
 - Starting a new game
-- Some HUD rendering
+- HUD rendering
 - 3D rendering
 - AI
 - Physics
 
 # Not working:
-- Still a few references to Mac libs left
-  - Could be made cross platform by removing
-- HUD clipping weirdness
-  - something in the switch back to the old inventory / HUD assets has things not drawing properly
-- Keyboard Input
-  - should be switched to SDL2, like rendering and mouse input
 - Saving / Loading
   - save and load system needs to be reimplemented
 - Main Menu
   - the original main menu should be revived, instead of the old Mac version
 - Sound & Music
-  - SDL2 should be able to play the VOC and MIDI files used for sfx and music
+  - SDL_Mixer should be able to play the VOC and MIDI files used for sfx and music
 - Video Files
-  - ???
+  - Need to revive the old movie rendering code in AFile
 
 Compiling / Running
 ============
 
 # Prerequisites
-  - SDL2 for 32 bit
+  - SDL2, 32 bit
   - Original assets in a `res/data` folder next to the executable
 
 # Build and run
