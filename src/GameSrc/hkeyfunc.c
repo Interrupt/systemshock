@@ -1056,6 +1056,42 @@ uchar toggle_physics_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
+uchar toggle_giveall_func(short keycode, ulong context, void* data)
+{
+   message_info("Kick some ass!");
+
+   for (int i=0; i < NUM_HARDWAREZ; i++)
+      player_struct.hardwarez[i] = 1;
+
+   player_struct.weapons[0].type = 4;
+   player_struct.weapons[0].subtype = 1;
+   player_struct.weapons[2].ammo = 25;
+   player_struct.weapons[1].type = 4;
+   player_struct.weapons[1].subtype = 2;
+   player_struct.weapons[2].type = 0;
+   player_struct.weapons[2].subtype = 4;
+   player_struct.weapons[2].ammo = 100;
+   player_struct.weapons[3].type = 1;
+   player_struct.weapons[3].subtype = 0;
+   player_struct.weapons[3].ammo = 150;
+   player_struct.weapons[4].type = 2;
+   player_struct.weapons[4].subtype = 0;
+   player_struct.weapons[4].ammo = 50;
+   player_struct.weapons[5].type = 4;
+   player_struct.weapons[5].subtype = 0;
+   player_struct.weapons[6].type = 3;
+   player_struct.weapons[6].subtype = 0;
+
+   player_struct.hit_points = 255;
+   player_struct.energy = 255;
+
+   chg_set_flg(INVENTORY_UPDATE);
+   chg_set_flg(VITALS_UPDATE);
+   mfd_force_update();
+
+   return(FALSE);
+}
+
 #ifdef NOT_YET //
 
 #ifdef PLAYTEST
@@ -1245,6 +1281,8 @@ uchar convert_all_levels_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
+#endif
+
 uchar invulnerable_func(short keycode, ulong context, void* data)
 {
    if (config_get_raw(CFG_HKEY_GO,NULL,0))
@@ -1273,8 +1311,6 @@ uchar pacifist_func(short keycode, ulong context, void* data)
       message_info ("pacifism off");
    return(FALSE);
 }
-
-#endif
 
 int pause_id;
 uchar remove_pause_handler = FALSE;

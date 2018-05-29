@@ -170,6 +170,7 @@ uchar edit_flags_func(short keycode, ulong context, void* data);
 uchar mono_toggle_func(short keycode, ulong context, void* data);
 uchar new_level_func(short keycode, ulong context, void* data);
 uchar toggle_physics_func(short keycode, ulong context, void* data);
+uchar toggle_giveall_func(short keycode, ulong context, void* data);
 uchar toggle_sfx_func(short keycode, ulong context, void* data);
 
 uchar save_hotkey_func(short, ulong, void *);
