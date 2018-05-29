@@ -2201,7 +2201,7 @@ errtype check_free_diskspace(int *needed)
 errtype do_savegame_guts(uchar slot)
 {
    printf("do_savegame_guts\n");
-   /*extern uchar valid_save;
+   extern uchar valid_save;
    errtype retval = OK;
 
    begin_wait();
@@ -2221,23 +2221,22 @@ errtype do_savegame_guts(uchar slot)
       Poke_SaveName(slot);
       if (save_game(save_game_name, comments[slot]) != OK)
       {
-         Spew(DSRC_EDITOR_Save, ("Save game failed!\n"));
+         //Spew(DSRC_EDITOR_Save, ("Save game failed!\n"));
          message_info("Game save failed!");
    //      strcpy(comments[comment_mode], original_comment);
          retval = ERR_NOEFFECT;
          valid_save &= ~(1<<slot);
       }
       else
-         Spew(DSRC_EDITOR_Save, ("Game %d saved!\n", slot));
+         //Spew(DSRC_EDITOR_Save, ("Game %d saved!\n", slot));
       if (retval == OK)
          valid_save |= 1 << slot;
    }
    end_wait();
-   spoof_mouse_event();
+   //spoof_mouse_event();
    if (retval == OK)
       wrapper_panel_close(TRUE);
-   return(retval);*/
-   return OK;
+   return(retval);
 }
 
 //#endif // NOT_YET

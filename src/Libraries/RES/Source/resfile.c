@@ -602,10 +602,10 @@ void AddResDesc(Handle resHdl, short resID, ResType macResType, short filenum, c
 			break;
 	}	
 
-	for (ind = 0; ind < NUM_RESTYPENAMES; ind++)	// Find associated Shock type.
+	/*for (ind = 0; ind < NUM_RESTYPENAMES; ind++)	// Find associated Shock type.
 		if (resMacTypes[ind] == macResType) {
 			break;
-		}
+		}*/
 	
 	//prd->hdl = resHdl;								// Fill in resource descriptor
 	prd->filenum = filenum;
