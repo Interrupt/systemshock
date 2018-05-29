@@ -1046,9 +1046,6 @@ uchar location_spew_func(short , ulong , void* )
 }
 */
 
-#ifdef NOT_YET	//
-
-#ifdef PLAYTEST
 uchar toggle_physics_func(short keycode, ulong context, void* data)
 {
    physics_running = !physics_running;
@@ -1058,6 +1055,10 @@ uchar toggle_physics_func(short keycode, ulong context, void* data)
       message_info("Physics turned off");
    return(FALSE);
 }
+
+#ifdef NOT_YET //
+
+#ifdef PLAYTEST
 
 #define camera_info message_info
 uchar reset_camera_func(short keycode, ulong context, void* data)

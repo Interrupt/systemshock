@@ -1454,6 +1454,7 @@ void init_input(void)
    hotkey_add(CONTROL('M'), DEMO_CONTEXT, toggle_music_func, NULL);
 //   hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,(void *)TRUE);   
    hotkey_add(DOWN('p'),DEMO_CONTEXT,pause_game_func,(void *)TRUE);
+   hotkey_add(DOWN('y'),DEMO_CONTEXT,toggle_physics_func,(void *)TRUE);
    hotkey_add(DOWN(KEY_ESC),DEMO_CONTEXT,pause_game_func,(void *)TRUE);
    for (i = 0; i < NUM_POSTURES; i++)
    {

@@ -862,10 +862,6 @@ void ShockGameLoop(void)
 		MousePollProc();		// update the cursor, was 35 times/sec originally
 		status_bio_update();	// draw the biometer
 
-		Uint8* keyboard = SDL_GetKeyboardState(NULL);
-		if (keyboard[SDL_SCANCODE_P])
-			physics_running = !physics_running;
-
 		SDLDraw();
 	}
 
