@@ -279,8 +279,8 @@ target_link_libraries(systemshock
 )
 
 # Turn on address sanitizing if wanted
-#set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers-cmake/cmake" ${CMAKE_MODULE_PATH})
-#find_package(Sanitizers)
-#add_sanitizers(systemshock)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers/cmake" ${CMAKE_MODULE_PATH})
+find_package(Sanitizers)
+add_sanitizers(systemshock)
 
 
