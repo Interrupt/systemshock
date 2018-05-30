@@ -20,6 +20,7 @@ link_libraries("-lm")
 find_package(SDL2)
 
 IF(NOT SDL2_LIBRARIES)
+	message(STATUS "Trying SDL2 search fallback")
 	set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/findsdl2-cmake" ${CMAKE_MODULE_PATH})
 	find_package(SDL2 REQUIRED)
 	include_directories(${SDL2_INCLUDE_DIR})
