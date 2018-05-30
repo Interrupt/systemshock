@@ -17,9 +17,13 @@ add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
 
 link_libraries("-lm")
 
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/findsdl2-cmake" ${CMAKE_MODULE_PATH})
+
 # Find SDL
 find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${SDL2_INCLUDE_DIR})
+
+message(STATUS "Found SDL2 Include:${SDL2_INCLUDE_DIR} Library:${SDL2_LIBRARY}")
 
 # for now I'll put a Carbon/Carbon.h into src/stubs/
 # that defines Mac-specific types and provides stubs for used functions
@@ -186,7 +190,7 @@ target_link_libraries(TestSimpleMain
 	RES_LIB
 	FIX_LIB
 	LG_LIB
-	${SDL2_LIBRARIES}
+	${SDL2_LIBRARY}
 )
 
 add_executable(BoxTest
@@ -200,7 +204,7 @@ target_link_libraries(BoxTest
 	RES_LIB
 	FIX_LIB
 	LG_LIB
-	${SDL2_LIBRARIES}
+	${SDL2_LIBRARY}
 )
 
 add_executable(BitmapTest
@@ -214,7 +218,7 @@ target_link_libraries(BitmapTest
 	RES_LIB
 	FIX_LIB
 	LG_LIB
-	${SDL2_LIBRARIES}
+	${SDL2_LIBRARY}
 )
 
 add_executable(FixTest
@@ -265,10 +269,12 @@ target_link_libraries(systemshock
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
-	${SDL2_LIBRARIES}
+	${SDL2_LIBRARY}
 )
 
 # Turn on address sanitizing if wanted
 #set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers-cmake/cmake" ${CMAKE_MODULE_PATH})
 #find_package(Sanitizers)
 #add_sanitizers(systemshock)
+
+
