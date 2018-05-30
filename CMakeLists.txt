@@ -14,16 +14,21 @@ add_definitions(-Dpowerc -DSVGA_SUPPORT)
 add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
 
 #link_libraries("-Wl,--no-as-needed")
-
 link_libraries("-lm")
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/findsdl2-cmake" ${CMAKE_MODULE_PATH})
+# Find SDL, trying the easy way and then the hard way
+find_package(SDL2)
 
-# Find SDL
-find_package(SDL2 REQUIRED)
+IF(NOT SDL2_LIBRARIES)
+	set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/findsdl2-cmake" ${CMAKE_MODULE_PATH})
+	find_package(SDL2 REQUIRED)
+	include_directories(${SDL2_INCLUDE_DIR})
+	set(SDL2_LIBRARIES ${SDL2_LIBRARY})
+ENDIF(NOT SDL2_LIBRARIES)
+
 include_directories(${SDL2_INCLUDE_DIR})
 
-message(STATUS "Found SDL2 Include:${SDL2_INCLUDE_DIR} Library:${SDL2_LIBRARY}")
+message(STATUS "Found SDL2 Include:${SDL2_INCLUDE_DIR} Library:${SDL2_LIBRARIES}")
 
 # for now I'll put a Carbon/Carbon.h into src/stubs/
 # that defines Mac-specific types and provides stubs for used functions
@@ -190,7 +195,7 @@ target_link_libraries(TestSimpleMain
 	RES_LIB
 	FIX_LIB
 	LG_LIB
-	${SDL2_LIBRARY}
+	${SDL2_LIBRARIES}
 )
 
 add_executable(BoxTest
@@ -204,7 +209,7 @@ target_link_libraries(BoxTest
 	RES_LIB
 	FIX_LIB
 	LG_LIB
-	${SDL2_LIBRARY}
+	${SDL2_LIBRARIES}
 )
 
 add_executable(BitmapTest
@@ -218,7 +223,7 @@ target_link_libraries(BitmapTest
 	RES_LIB
 	FIX_LIB
 	LG_LIB
-	${SDL2_LIBRARY}
+	${SDL2_LIBRARIES}
 )
 
 add_executable(FixTest
@@ -269,7 +274,7 @@ target_link_libraries(systemshock
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
-	${SDL2_LIBRARY}
+	${SDL2_LIBRARIES}
 )
 
 # Turn on address sanitizing if wanted
