@@ -343,7 +343,7 @@ errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags
    return(OK);
 }
 
-errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
+errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
 {
    int i,goof;
    int idx = 0;
@@ -355,6 +355,8 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
    uchar make_player = FALSE;
    State player_edms;
    int verify_cookie = 0;
+
+   printf("Save current map: %s\n", fname);
 
 //KLC - Mac cursor showing at this time   begin_wait();
 
@@ -386,9 +388,10 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
    AdvanceProgress();
 
    // Open the file we're going to save into.
-   fd = ResEditFile(fSpec,TRUE);
+   fd = ResEditFile(fname,TRUE);
    if (fd < 0)
    {
+      printf("No filenum!\n");
 //KLC      end_wait();
       return ERR_FOPEN;
    }
@@ -501,6 +504,9 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
       extern void spoof_mouse_event();
 //what does this do???      spoof_mouse_event();
    }
+
+   printf("Saved level.\n");
+
    return OK;
 }
 

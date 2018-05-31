@@ -222,18 +222,22 @@ errtype save_game(char *fname, char *comment)
    //KLC - this does nothing now.		check_save_game_wackiness();
    // Why is this done???			closedown_game(FALSE);
 
+   printf("starting save_game\n");
+
    //KLC  do it the Mac way						i = flush_resource_cache();
 	//Size	dummy;
 	//MaxMem(&dummy); DG: I don't think this is needed anymore
 	
 	// Open the current game file to save some more resources into it.
-	FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
-	filenum = ResEditFile(&currSpec, FALSE);
+	//FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
+	filenum = ResEditFile(fname, FALSE);
 	if (filenum < 0)
 	{
 		DebugString("Couldn't open Current Game\n");
 		return ERR_FOPEN;
 	}
+
+   printf("Opened file at %i\n", filenum);
 
 /*KLC - no need for this on Mac, where we have sensible, descriptive file names
 	// Save comment
@@ -249,6 +253,8 @@ errtype save_game(char *fname, char *comment)
 	EDMS_get_state(objs[PLAYER_OBJ].info.ph, &player_state);
 	LG_memcpy(player_struct.edms_state, &player_state, sizeof (fix) * 12);
 // LZW later		ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, RDF_LZW);
+
+   printf("Writing player\n");
 	ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, 0);
 	ResWrite(idx);
 	ResUnmake(idx);
@@ -258,6 +264,8 @@ errtype save_game(char *fname, char *comment)
 	// Save game schedule (resource #590)
 	idx = SCHEDULE_BASE_ID;
 // LZW later		ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, RDF_LZW);
+
+   printf("Writing schedule\n");
 	ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, 0);
 	ResWrite(idx);
 	ResUnmake(idx);
@@ -364,7 +372,7 @@ errtype interpret_qvars(void)
 
 //char saveArray[16];	//Â¥temp
 
-errtype load_game(FSSpec *loadSpec)
+errtype load_game(char *fname)
 {
    int 			filenum;
    ObjID 		old_plr;
@@ -375,13 +383,15 @@ errtype load_game(FSSpec *loadSpec)
    extern void player_set_eye_fixang(int ang);
    extern uint dynmem_mask;
 
+   printf("load_game\n");
+
    closedown_game(TRUE);
 //KLC - don't do this here   stop_music();
 
 // KLC - user will not be able to open current game file in Mac version, so skip this check.
 //   rv = DatapathFind(&savegame_dpath, CURRENT_GAME_FNAME, dpath_fn);   
 //   if (strcmp(fname, CURRENT_GAME_FNAME))
-   {
+   /*{
       errtype	retval;
 
 	 FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
@@ -394,29 +404,39 @@ errtype load_game(FSSpec *loadSpec)
          string_message_info(REF_STR_LoadGameFail);
          return(retval);
       }
-   }
+   }*/
 
    // Load in player and current level
-   filenum = ResOpenFile(&currSpec);
+   filenum = ResOpenFile(fname);
    old_plr = player_struct.rep;
    orig_lvl = player_struct.level;
    ResExtract(SAVE_GAME_ID_BASE + 1, (void *)&player_struct);
+
+   printf("1\n");
 
    obj_check_time = 0;	// KLC - added because it needs to be reset for Mac version.
 
 //KLC - this is a global pref now.    change_detail_level(player_struct.detail_level);
    player_struct.rep = old_plr;
+   printf("2\n");
    player_set_eye_fixang(player_struct.eye_pos);
+   printf("3\n");
    if (!bad_save)
       obj_move_to(PLAYER_OBJ, &(player_struct.realspace_loc), FALSE);
-   if (load_game_schedules() != OK)
-      bad_save = TRUE;
+
+   printf("4\n");
+   //if (load_game_schedules() != OK)
+      //bad_save = TRUE;
+
+   printf("5\n");
    ResCloseFile(filenum);
    if (orig_lvl == player_struct.level)
    {
 //      Warning(("HEY, trying to be clever about loading the game! %d vs %d\n",orig_lvl,player_struct.level));
       dynmem_mask = DYNMEM_PARTIAL;
    }
+
+   printf("6\n");
    load_level_from_file(player_struct.level);
    obj_load_art(FALSE);							//KLC - added here (removed from load_level_data)
 //KLC   string_message_info(REF_STR_LoadGameLoaded);
@@ -615,12 +635,13 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
 
 errtype write_level_to_disk(int idnum, uchar flush_mem)
 {
-	FSSpec	currSpec;
-
    // Eventually, this ought to cleverly determine whether or not to pack
    // the save game resource, but for now we will always do so...
 
-	FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
-	
-	return(save_current_map(&currSpec, idnum, flush_mem,TRUE));
+	// FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
+
+   printf("write_level_to_disk\n");
+
+   //char* currSpec = "saves/save.dat";
+	return(save_current_map("level.dat", idnum, flush_mem,TRUE));
 }
