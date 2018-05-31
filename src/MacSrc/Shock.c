@@ -65,6 +65,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "physics.h"
 
+#include "wrapper.h"
+
 #include <stdint.h>
 #include <SDL.h>
 
@@ -125,6 +127,12 @@ int main(int argc, char** argv)
 				
 	STUB("TODO: FlushEvents()?")
 	//FlushEvents(autoKey+keyDown+mouseDown,0L);		// get rid of any extra mouse/key clicks
+
+	// HAX HAX HAX adding a prototype savegame
+	extern uchar valid_save;
+	Poke_SaveName(0);
+	strcpy(comments[0], "Test Save");
+	valid_save |= 1 << 0;
  
 	GetFolders();															// get refs to data, sound, etc folders.
 

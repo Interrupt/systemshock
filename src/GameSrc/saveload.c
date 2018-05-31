@@ -376,13 +376,13 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
    trigger_check=FALSE;
 
    // save off physics stuff
-   EDMS_get_state(objs[PLAYER_OBJ].info.ph, &player_edms);
+   /*EDMS_get_state(objs[PLAYER_OBJ].info.ph, &player_edms);
    if (PLAYER_OBJ != OBJ_NULL)
    {
       plr_loc = objs[PLAYER_OBJ].loc;
       obj_destroy(PLAYER_OBJ);
       make_player = TRUE;
-   }
+   }*/
 
    // Read appropriate state modifiers
 //   if (flush_mem)
@@ -399,21 +399,21 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
    }
    AdvanceProgress();
 
-   SDL_Delay(1000);
-
 //KLC - just write the last one   REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
 
-   idx++;	//KLC - not used   REF_WRITE(id_num,idx++,vnum);
-   idx++;	//KLC - not used   REF_WRITE(id_num,idx++,ovnum);   
+   REF_WRITE(id_num,idx++,vnum);
+   REF_WRITE(id_num,idx++,ovnum);
    REF_WRITE(id_num,idx++,*global_fullmap);
 
-   REF_WRITE_RAW(id_num,idx++,MAP_MAP,sizeof(MapElem) << (MAP_XSHF + MAP_YSHF));
+   printf("Size: %i %i\n", sizeof(MapElem), sizeof(MapElem) << (MAP_XSHF + MAP_YSHF));
+   REF_WRITE_RAW(id_num,idx++,MAP_MAP,sizeof(MapElem) * 64 * 64);
 
    // Here we are writing out the schedules.  It's only a teeny tiny rep exposure.  
    for (i = 0; i < NUM_MAP_SCHEDULES; i++)
    {
-      int sz = min(global_fullmap->sched[i].queue.fullness+1,global_fullmap->sched[i].queue.size);
-      REF_WRITE_RAW(id_num,idx++,global_fullmap->sched[i].queue.vec, sizeof(SchedEvent)*sz);
+      //int sz = min(global_fullmap->sched[i].queue.fullness+1,global_fullmap->sched[i].queue.size);
+      //REF_WRITE_RAW(id_num,idx++,global_fullmap->sched[i].queue.vec, sizeof(SchedEvent)*sz);
+      idx++;
    }
    REF_WRITE(id_num,idx++,loved_textures);
 
@@ -825,6 +825,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
 
    // Open the saved-game (or archive) file.
+   //fd = ResOpenFile("savgam00.dat");
    fd = ResOpenFile("res/data/archive.dat");
    if (fd == NULL)
    {
@@ -985,6 +986,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    //REF_READ(id_num, idx++, objs);
 
    // Read in and convert the object refs.
+   printf("Sizeof obj: %i\n", sizeof(Obj));
    REF_READ(id_num, idx++, objRefs);
 /* for (i=0; i < NUM_REF_OBJECTS; i++)
    {

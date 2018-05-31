@@ -261,8 +261,9 @@ errtype save_game(char *fname, char *comment)
 	idx++;
 	AdvanceProgress();
 
+   // HAX HAX HAX Skip the schedule for now!
 	// Save game schedule (resource #590)
-	idx = SCHEDULE_BASE_ID;
+	/*idx = SCHEDULE_BASE_ID;
 // LZW later		ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, RDF_LZW);
 
    printf("Writing schedule\n");
@@ -271,6 +272,8 @@ errtype save_game(char *fname, char *comment)
 	ResUnmake(idx);
 	idx++;
 	AdvanceProgress();
+
+   printf("Writing schedule queue\n");
 	
 	// Save game schedule vec info (resource #591)
 // LZW later		ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, RDF_LZW);
@@ -279,6 +282,8 @@ errtype save_game(char *fname, char *comment)
 	ResUnmake(idx);
 	idx++;
 	AdvanceProgress();
+
+   printf("Done writing player stuff\n");*/
  	
  	ResCloseFile(filenum);
 	AdvanceProgress();
@@ -640,5 +645,5 @@ errtype write_level_to_disk(int idnum, uchar flush_mem)
    printf("write_level_to_disk\n");
 
    //char* currSpec = "saves/save.dat";
-	return(save_current_map("level.dat", idnum, flush_mem,TRUE));
+	return(save_current_map("savgam00.dat", idnum, flush_mem,TRUE));
 }
