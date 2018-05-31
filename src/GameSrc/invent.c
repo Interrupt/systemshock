@@ -2780,7 +2780,7 @@ LGRegion* create_invent_region(LGRegion* root, LGRegion **pbuttons, LGRegion **p
       }
       
       // Pull in the background bitmap
-      ResLockHi(RES_gamescrGfx);
+      ResLock(RES_gamescrGfx);
       f = (FrameDesc*)RefLock(REF_IMG_bmBlankInventoryPanel);
       inv_backgnd = f->bm;
 
