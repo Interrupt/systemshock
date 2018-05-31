@@ -546,11 +546,12 @@ void olh_overlay(void)
       pump_events(); // DG: apparently this can loop for a long time waiting for input w/o game_loop() being able to update events
 
       tight_loop(FALSE);
-      if (mouse_next(&me) == OK)
+      // FIXME It crash on Linux
+      /*if (mouse_next(&me) == OK)
       {
       	if (me.type == MOUSE_LDOWN)
       		done = TRUE;
-      }
+      }*/
       if (kb_get_cooked(&key))
       {
          int i;
