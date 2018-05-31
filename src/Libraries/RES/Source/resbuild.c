@@ -122,19 +122,12 @@ int32_t ResWrite(Id id) {
   //});
 
   // Check if item already in directory, if so erase it
-
-  printf("1\n");
   ResEraseIfInFile(id);
-
-
-  printf("2\n");
 
   // If directory full, grow it
   if (prf->pedit->pdir->numEntries == prf->pedit->numAllocDir) {
     /* Spew(DSRC_RES_Write, ("ResWrite: growing directory of filenum %d\n ",
      * prd->filenum)); */
-
-    printf("3\n");
 
     prf->pedit->numAllocDir += DEFAULT_RES_GROWDIRENTRIES;
     prf->pedit->pdir = realloc(
@@ -142,26 +135,17 @@ int32_t ResWrite(Id id) {
         sizeof(ResDirHeader) + (sizeof(ResDirEntry) * prf->pedit->numAllocDir));
   }
 
-  printf("4\n");
-
   // Set resource's file offset
   prd->offset = RES_OFFSET_REAL2DESC(prf->pedit->currDataOffset);
-
-  printf("5\n");
 
   // Fill in directory entry
   pDirEntry =
       ((ResDirEntry *)(prf->pedit->pdir + 1)) + prf->pedit->pdir->numEntries;
 
-  printf("6\n");
-
   pDirEntry->id = id;
-  //prd2 = RESDESC2(id);
   pDirEntry->flags = prd->flags;
   pDirEntry->type = prd->type;
   pDirEntry->size = prd->size;
-
-  printf("7\n");
 
   /* Spew(DSRC_RES_Write, ("ResWrite: writing $%x\n", id)); */
 
@@ -171,16 +155,12 @@ int32_t ResWrite(Id id) {
   sizeTable = 0;
   size = prd->size;
 
-  printf("8\n");
-
   if (prd->flags & RDF_COMPOUND) {
     sizeTable = REFTABLESIZE(((RefTable *)p)->numRefs);
     fwrite(p, sizeTable, 1, prf->fd);
     p += sizeTable;
     size -= sizeTable;
   }
-
-  printf("9\n");
 
   // If compression, try it (may not work out)
   if (pDirEntry->flags & RDF_LZW) {
@@ -195,22 +175,16 @@ int32_t ResWrite(Id id) {
     free(pcompbuff);
   }
 
-  printf("10\n");
-
   // If no compress (or failed to compress well), just write out
   if (!(pDirEntry->flags & RDF_LZW)) {
     pDirEntry->csize = prd->size;
     fwrite(p, size, 1, prf->fd);
   }
 
-  printf("11\n");
-
   // Pad to align on data boundary
   padBytes = RES_OFFSET_PADBYTES(pDirEntry->csize);
   if (padBytes)
     fwrite(pad, padBytes, 1, prf->fd);
-
-  printf("12\n");
 
 // FIXME Error handling
 //  if (ftell(prf->fd) & 3)
@@ -382,8 +356,6 @@ bool ResEraseIfInFile(Id id) {
   ResFile *prf;
   ResDirEntry *pDirEntry;
   int32_t i;
-
-  printf("ResEraseIfInFile\n");
 
   prd = RESDESC(id);
   prf = &resFile[prd->filenum];

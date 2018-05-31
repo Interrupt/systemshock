@@ -72,6 +72,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "trigger.h"
 #include "verify.h"
 
+#include <SDL.h>
+
 /*
 #include <schedule.h>
 #include <dpaths.h>
@@ -396,6 +398,8 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
       return ERR_FOPEN;
    }
    AdvanceProgress();
+
+   SDL_Delay(1000);
 
 //KLC - just write the last one   REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
 
@@ -801,9 +805,6 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    curAMap  saveAMaps[NUM_O_AMAP];
    uchar       savedMaps;
    bool        do_anims = FALSE;
-
-   // HAX HAX HAX force level number
-   //id_num = 0x1006;
    
 //   _MARK_("load_current_map:Start");
 
@@ -1550,7 +1551,7 @@ obj_out:
    }
 
 out:
-   //ResCloseFile(fd);
+   ResCloseFile(fd);
 
    reset_pathfinding();
    old_bits = -1;

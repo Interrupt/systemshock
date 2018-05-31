@@ -127,9 +127,16 @@ int32_t ResOpenResFile(char *fname, ResOpenMode mode, uint8_t auxinfo) {
   //	return error except if mode 2 (edit/create), in which case
   //	drop thru to create case by faking mode 3.
 
+  printf("ResOpenResFile: %s\n", fname);
+
   if (mode != ROM_CREATE) {
     //		fd = DatapathFDOpen(&gDatapath, fname, openMode[mode]);
-    fd = fopen(fname, "rb");
+
+    if(mode == ROM_READ)
+    	fd = fopen(fname, "rb");
+    else
+    	fd = fopen(fname, "rb+");
+
     if (fd != NULL) {
       //			read(fd, &fileHead, sizeof(ResFileHeader));
       fread(&fileHead, sizeof(ResFileHeader), 1, fd);

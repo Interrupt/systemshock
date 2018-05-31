@@ -383,7 +383,7 @@ errtype load_game(char *fname)
    extern void player_set_eye_fixang(int ang);
    extern uint dynmem_mask;
 
-   printf("load_game\n");
+   printf("load_game %s\n", fname);
 
    closedown_game(TRUE);
 //KLC - don't do this here   stop_music();
@@ -412,31 +412,28 @@ errtype load_game(char *fname)
    orig_lvl = player_struct.level;
    ResExtract(SAVE_GAME_ID_BASE + 1, (void *)&player_struct);
 
-   printf("1\n");
-
    obj_check_time = 0;	// KLC - added because it needs to be reset for Mac version.
 
 //KLC - this is a global pref now.    change_detail_level(player_struct.detail_level);
    player_struct.rep = old_plr;
-   printf("2\n");
    player_set_eye_fixang(player_struct.eye_pos);
-   printf("3\n");
    if (!bad_save)
       obj_move_to(PLAYER_OBJ, &(player_struct.realspace_loc), FALSE);
 
-   printf("4\n");
+   // FIXME: Crashes!
    //if (load_game_schedules() != OK)
       //bad_save = TRUE;
 
-   printf("5\n");
    ResCloseFile(filenum);
+
    if (orig_lvl == player_struct.level)
    {
 //      Warning(("HEY, trying to be clever about loading the game! %d vs %d\n",orig_lvl,player_struct.level));
       dynmem_mask = DYNMEM_PARTIAL;
    }
 
-   printf("6\n");
+   printf("Load level: %i\n", player_struct.level);
+
    load_level_from_file(player_struct.level);
    obj_load_art(FALSE);							//KLC - added here (removed from load_level_data)
 //KLC   string_message_info(REF_STR_LoadGameLoaded);
