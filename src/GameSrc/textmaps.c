@@ -348,9 +348,7 @@ errtype Init_Lighting(void)
    BlockMove(*res, shading_table,(256 * 16));
    ReleaseResource(res);*/
 
-   // HAX HAX HAX use the real res/data/shadtable.dat for this!
-   DebugString("HAX: Reading shading table src/Libraries/2D/test.shd");
-   FILE *fp = fopen("src/Libraries/2D/test.shd","rb");
+   FILE *fp = fopen("res/data/shadtabl.dat","rb");
    fread (shading_table, 1, 256 * 16, fp);
    fclose (fp);
 
