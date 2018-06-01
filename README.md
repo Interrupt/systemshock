@@ -5,9 +5,9 @@ Copyright 2015-2018, Night Dive Studios, Incorporated.
 GENERAL NOTES
 =============
 
-This is my attempt at a cross platform source port of the System Shock source code that was released, using SDL2. This runs well on OSX right now and is buildable on Linux, with some runtime issues to sort out.
+This is my attempt at a cross platform source port of the System Shock source code that was released, using SDL2. This runs well on OSX and Linux right now, with some runtime issues to sort out.
 
-![work so far](https://i.imgur.com/PWdEo9J.gif)
+![work so far](https://i.imgur.com/kbVWQj4.gif)
 
 # Working so far:
 - Gameplay!
@@ -21,14 +21,15 @@ This is my attempt at a cross platform source port of the System Shock source co
 - 3D rendering
 - AI
 - Physics
+- Cyberspace
 
 # Not working:
 - Saving / Loading
   - save and load system needs to be reimplemented
-- Main Menu
-  - the original main menu should be revived, instead of the old Mac version
 - Sound & Music
   - SDL_Mixer should be able to play the VOC and MIDI files used for sfx and music
+- Main Menu
+  - the original main menu should be revived, instead of the Mac version
 - Video Files
   - Need to revive the old movie rendering code in AFile
 
