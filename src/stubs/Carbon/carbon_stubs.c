@@ -2,6 +2,8 @@
 
 #include <SDL.h>
 
+#include "lg.h"
+
 OSErr FSMakeFSSpec(short vRefNum, long dirID, /*ConstStr255Param*/ const char* fileName, FSSpec * spec)
 {
 	printf("STUB: FSMakeFSSpec(vRefNum = %hd, dirID = %ld, fileName = \"%s\", spec) - what does this do? is it needed?\n",
