@@ -531,7 +531,8 @@ void test_atofix(void)
 	extern fix atofix(char *p);
 
 	printf("Enter number: ");
-	gets(buff);
+	//gets(buff);
+	fgets(buff, sizeof(buff), stdin);
 	a = atofix(buff);
 	fix_sprint(buff, a);
 	puts(buff);
