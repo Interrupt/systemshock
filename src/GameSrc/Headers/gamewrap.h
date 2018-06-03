@@ -61,6 +61,4 @@ void closedown_game(uchar visible);
 
 // Globals
 
-char current_game[30];
-
 #endif // __GAMEWRAP_H

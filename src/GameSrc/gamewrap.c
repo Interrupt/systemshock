@@ -370,26 +370,11 @@ errtype load_game(char *fname)
    closedown_game(TRUE);
 //KLC - don't do this here   stop_music();
 
-// KLC - user will not be able to open current game file in Mac version, so skip this check.
-//   rv = DatapathFind(&savegame_dpath, CURRENT_GAME_FNAME, dpath_fn);   
-//   if (strcmp(fname, CURRENT_GAME_FNAME))
-   /*{
-      errtype	retval;
-
-	 FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
-      
-      // Copy game to load to the current file game.
-      retval = copy_file(loadSpec, &currSpec);
-      if (retval != OK)
-      {
-		// bring up an alert here??
-         string_message_info(REF_STR_LoadGameFail);
-         return(retval);
-      }
-   }*/
+   // Copy the save file into the current game
+   copy_file(fname, CURRENT_GAME_FNAME);
 
    // Load in player and current level
-   filenum = ResOpenFile(fname);
+   filenum = ResOpenFile(CURRENT_GAME_FNAME);
    old_plr = player_struct.rep;
    orig_lvl = player_struct.level;
    ResExtract(SAVE_GAME_ID_BASE + 1, (void *)&player_struct);
@@ -507,10 +492,6 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
 
    if (copy_file("res/data/archive.dat", CURRENT_GAME_FNAME) != OK)
       critical_error(CRITERR_FILE|7);
-
-   // This new file will be the game to load
-
-   strcpy(current_game, CURRENT_GAME_FNAME);
 
    plr_obj = PLAYER_OBJ;
    for (i=0; i<4; i++)

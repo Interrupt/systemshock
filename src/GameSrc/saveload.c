@@ -825,7 +825,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
 
    // Open the saved-game (or archive) file.
-   fd = ResOpenFile(current_game);
+   fd = ResOpenFile(CURRENT_GAME_FNAME);
    if (fd == NULL)
    {
       //Warning(("Could not load map file %s (%s) , rv = %d!\n",dpath_fn,fn,retval));
