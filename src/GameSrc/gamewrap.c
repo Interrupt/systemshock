@@ -490,7 +490,7 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
 
    // Copy archive into local current game file.
 
-   if (copy_file("res/data/archive.dat", CURRENT_GAME_FNAME) != OK)
+   if (copy_file(ARCHIVE_FNAME, CURRENT_GAME_FNAME) != OK)
       critical_error(CRITERR_FILE|7);
 
    plr_obj = PLAYER_OBJ;
