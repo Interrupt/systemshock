@@ -2074,6 +2074,10 @@ void load_dealfunc(uchar butid,uchar index)
    Poke_SaveName(index);
    //Spew(DSRC_EDITOR_Save,("attempting to load from %s\n",save_game_name));
    printf("Attempting to load from %s\n", save_game_name);
+
+   // Use this save name to load from
+   strcpy(current_game, save_game_name);
+
    if(load_game(save_game_name)!=OK) {
       Warning(("Load game failed!\n"));
    }

@@ -57,6 +57,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "status.h"
 #include "tools.h"
 
+#include <stdio.h>
+#include <unistd.h>
+
 
 /*
 #include <physics.h>
@@ -93,57 +96,31 @@ errtype interpret_qvars(void);
 
 errtype copy_file(char *src_fname, char *dest_fname)
 {
-#if 1
-	STUB_ONCE("reimplement with stdio if really needed");
-	return ERR_FOPEN;
-#else
-	OSErr	err;
-	FInfo		fi;
-	short		destRefNum, srcRefNum;
-	long 		size, count;
-	errtype	retv=OK;
+   FILE *fsrc, *fdst;
+   printf("copy_file: %s to %s\n", src_fname, dest_fname);
 
-	// If the output file is already there, delete it first.	
-	err = FSpGetFInfo(destFile, &fi);
-	if (err == noErr)
-		FSpDelete(destFile);
+   fsrc=fopen(src_fname, "rb");
+   if(fsrc == NULL)
+   {
+      return ERR_FOPEN;
+   }
 
-	// Create and open the output resource file.
-	FSpCreateResFile(destFile, 'Shok', (saveGameFile) ? 'Sgam' : '????', 0);
-	if (ResError())
-		return (ERR_FOPEN);
-	
-	if (FSpOpenRF(destFile, fsRdWrPerm, &destRefNum) != noErr)
-		return(ERR_FOPEN);
+   fdst=fopen(dest_fname, "wb");
+   if(fdst == NULL)
+   {
+      return ERR_FOPEN;
+   }
 
-	// Open the source resource file.
-	if (FSpOpenRF(srcFile, fsRdPerm, &srcRefNum) != noErr)
-	{
-		FSClose(destRefNum);
-		return(ERR_FOPEN);
-	}
-	SetFPos(srcRefNum, fsFromStart, 0);
+   int b;
+   while((b = fgetc(fsrc)) != EOF)
+   {
+      fputc(b, fdst); 
+   }
 
-	// Copy all the data from src to dest.
-	size = BIG_BUFFER_SIZE / 2;
-	while (size == BIG_BUFFER_SIZE / 2)
-	{
-		size = BIG_BUFFER_SIZE / 2;
-		FSRead(srcRefNum, &size, big_buffer);
-		count = size;
-		FSWrite(destRefNum, &count, big_buffer);
-		if (count != size)
-		{
-			retv = ERR_FWRITE;
-			break;
-		}
-		AdvanceProgress();
-	}
-	FSClose(destRefNum);
-	FSClose(srcRefNum);
-	// FlushVol(nil, destFile->vRefNum); No more vRefNum?
-	return(retv);
-#endif
+   fclose(fsrc);
+   fclose(fdst);
+
+   return OK;
 }
 
 void closedown_game(uchar visible)
@@ -230,7 +207,7 @@ errtype save_game(char *fname, char *comment)
 	
 	// Open the current game file to save some more resources into it.
 	//FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
-	filenum = ResEditFile(fname, FALSE);
+	filenum = ResEditFile(CURRENT_GAME_FNAME, FALSE);
 	if (filenum < 0)
 	{
 		DebugString("Couldn't open Current Game\n");
@@ -297,7 +274,7 @@ errtype save_game(char *fname, char *comment)
 	}
 
 	// Copy current game out to save game slot
-	if (copy_file(fname, fname) != OK)
+	if (copy_file(CURRENT_GAME_FNAME, fname) != OK)
 	{
 		// Put up some alert here.
 		DebugString("No good copy, dude!\n");
@@ -467,9 +444,6 @@ errtype load_game(char *fname)
 errtype load_level_from_file(int level_num)
 {
 	errtype	retval;
-	FSSpec	fSpec;
-
-	//FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &fSpec);
 
    printf("load_level_from_file %x\n", ResIdFromLevel(level_num));
 
@@ -518,10 +492,7 @@ void check_and_update_initial(void)
 
 
 uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefined3)
-{
-	FSSpec	archiveSpec, currSpec;
-	OSErr	err;
-	
+{	
 	int i;
 	extern int actual_score;
 	byte plrdiff[4];
@@ -530,38 +501,17 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
 	extern errtype do_level_entry_triggers();
 
    printf("create_initial_game_func\n\n");
+   printf("Game archive at %s\n", ARCHIVE_FNAME);
 
-   printf("Archive at %s\n", ARCHIVE_FNAME);
+   // Copy archive into local current game file.
 
-	/*free_dynamic_memory(DYNMEM_ALL);
-	
-	// Copy archive into local current game file.
+   if (copy_file("res/data/archive.dat", CURRENT_GAME_FNAME) != OK)
+      critical_error(CRITERR_FILE|7);
 
-	// First, make sure the archive file is actually there.
-	err = FSMakeFSSpec(gCDDataVref, gCDDataDirID, ARCHIVE_FNAME, &archiveSpec);
-	if (err == fnfErr)
-	{
-		load_dynamic_memory(DYNMEM_ALL);
-		return(TRUE);
-	}
-	
-	// Next, copy the archive file to an untitled game.
-	FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
+   // This new file will be the game to load
 
-	if (copy_file(&archiveSpec, &currSpec, FALSE) != OK)
-		critical_error(CRITERR_FILE|7);
+   strcpy(current_game, CURRENT_GAME_FNAME);
 
-/* KLC - I don't think you actually have to load the player in for a new game, since "init_player"
-                zeroes it out anyway.
-                
-   // Load in player and current level
-   filenum = ResOpenFile(&fSpec);
-   if (filenum < 0)
-   {
-      string_message_info(REF_STR_GameInitFail);
-      return(TRUE);
-   }
-*/
    plr_obj = PLAYER_OBJ;
    for (i=0; i<4; i++)
       plrdiff[i] = player_struct.difficulty[i];

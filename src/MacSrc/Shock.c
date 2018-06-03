@@ -124,15 +124,9 @@ errtype CheckFreeSpace(short	checkRefNum);
 int main(int argc, char** argv)
 {  
 	InitMac();																// init mac managers
-				
-	STUB("TODO: FlushEvents()?")
-	//FlushEvents(autoKey+keyDown+mouseDown,0L);		// get rid of any extra mouse/key clicks
 
-	// HAX HAX HAX adding a prototype savegame
-	extern uchar valid_save;
-	Poke_SaveName(0);
-	strcpy(comments[0], "Test Save");
-	valid_save |= 1 << 0;
+	extern errtype load_savegame_names(void);
+	load_savegame_names();
  
 	GetFolders();															// get refs to data, sound, etc folders.
 

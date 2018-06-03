@@ -390,16 +390,16 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
    AdvanceProgress();
 
    // Open the file we're going to save into.
-   fd = ResEditFile(fname,TRUE);
+   fd = ResEditFile(CURRENT_GAME_FNAME,TRUE);
    if (fd < 0)
    {
-      printf("No filenum!\n");
+      printf("No file!\n");
 //KLC      end_wait();
       return ERR_FOPEN;
    }
    AdvanceProgress();
 
-//KLC - just write the last one   REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
+   REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
 
    REF_WRITE(id_num,idx++,vnum);
    REF_WRITE(id_num,idx++,ovnum);
@@ -825,8 +825,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
 
    // Open the saved-game (or archive) file.
-   //fd = ResOpenFile("savgam00.dat");
-   fd = ResOpenFile("res/data/archive.dat");
+   fd = ResOpenFile(current_game);
    if (fd == NULL)
    {
       //Warning(("Could not load map file %s (%s) , rv = %d!\n",dpath_fn,fn,retval));

@@ -40,6 +40,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "miscqvar.h"
 #include "player.h"
 #include "version.h"
+#include "wrapper.h"
+#include "verify.h"
+#include "cybstrng.h"
+#include "gamestrn.h"
+
+#include <unistd.h>
 
 /*
 #include <mainloop.h>
@@ -1075,6 +1081,8 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
 }
 #pragma enable_message(202)
 
+#endif // NOT_YET 
+
 
 // -------------------------------------------------------------
 // setup_init()
@@ -1083,17 +1091,17 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
 errtype load_savegame_names()
 {
    int i, filenum;
-   char path[256];
-   extern Datapath savegame_dpath;
 
    valid_save = 0;
 
    for (i=0; i<NUM_SAVE_SLOTS; i++)
    {
       Poke_SaveName(i);
-      if (DatapathFind(&savegame_dpath, save_game_name, path))
-      {
-         filenum = ResOpenFile(path);
+
+      printf("Checking save game names\n");
+
+      if( access( save_game_name, F_OK ) != -1 ) {
+         /*ResOpenFile(save_game_name);
          if (ResInUse(OLD_SAVE_GAME_ID_BASE))
          {
 #ifdef OLD_SG_FORMAT
@@ -1105,8 +1113,10 @@ errtype load_savegame_names()
          }
          else
          {
+            printf("Checking save file %s\n", save_game_name);
             if (ResInUse(SAVELOAD_VERIFICATION_ID))
             {
+               printf("Checking!\n");
                int verify_cookie;
                ResExtract(SAVELOAD_VERIFICATION_ID, &verify_cookie);
                switch (verify_cookie)
@@ -1127,7 +1137,11 @@ errtype load_savegame_names()
             else
                sprintf(comments[i], "<< %s >>",get_temp_string(REF_STR_BadVersion));
          }
-         ResCloseFile(filenum);
+         ResCloseFile(filenum);*/
+
+         // FIXME Why does ResOpenFile followed by ResInUse crash here?
+         valid_save |= (1 << i);
+         sprintf(comments[i], "<< %s >>",save_game_name);
       }
       else
          *(comments[i])='\0';
@@ -1135,6 +1149,8 @@ errtype load_savegame_names()
 
    return(OK);
 }
+
+#ifdef NOT_YET //
 
 errtype setup_init(void)
 {

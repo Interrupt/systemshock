@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define OLD_SAVE_GAME_ID_BASE 550
 #define SAVE_GAME_ID_BASE  4000
 #define NUM_RESIDS_PER_LEVEL  100
-#define CURRENT_GAME_FNAME "Current Game"
+#define CURRENT_GAME_FNAME "CurrentGame.dat"
 #define ARCHIVE_FNAME "archive.data"
 
 #define ResIdFromLevel(level) (SAVE_GAME_ID_BASE+(level*NUM_RESIDS_PER_LEVEL)+2)
@@ -60,5 +60,7 @@ void startup_game(uchar visible);
 void closedown_game(uchar visible);
 
 // Globals
+
+char current_game[30];
 
 #endif // __GAMEWRAP_H
