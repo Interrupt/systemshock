@@ -61,25 +61,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //��� For now
 //#define DBG_ON		1
 
-#if 0 // def __APPLE__
-#include <Carbon/Carbon.h>
-#else
-// DG: probably because this is part of precompiled.h which is set with
-// "-include" compiler flag,
-//     it can't find my Carbon/Carbon.h stub on Linux, so let's use the explicit
-//     path here
-#include "../../../stubs/Carbon/Carbon.h"
-#endif
-#include "lg.h"
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h> // for FILE*
+#include <stdlib.h>
 
 //#ifndef DATAPATH_H
 //#include <datapath.h>
 //#endif
-
-#ifndef __TYPES_H
-#include "lg_types.h"
-#endif
 
 #ifndef __RESTYPES_H
 #include "restypes.h"
@@ -93,15 +82,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	Id's refer to resources, Ref's refer to items in compound resources
 
-typedef ushort Id;       // ID of a resource
-typedef ulong Ref;       // high word is ID, low word is index
-typedef ushort RefIndex; // index part of ref
+typedef uint16_t Id;       // ID of a resource
+typedef uint32_t Ref;      // high word is ID, low word is index
+typedef uint16_t RefIndex; // index part of ref
 
 //	Here's how you get parts of a ref, or make a ref
 
-#define REFID(ref) ((ref) >> 16)                        // get id from ref
-#define REFINDEX(ref) ((ref)&0xFFFF)                    // get index from ref
-#define MKREF(id, index) ((((long)id) << 16) | (index)) // make ref
+#define REFID(ref) ((ref) >> 16)                           // get id from ref
+#define REFINDEX(ref) (uint16_t)((ref)&0xFFFF)             // get index from ref
+#define MKREF(id, index) ((((int32_t)id) << 16) | (index)) // make ref
 
 #define ID_NULL 0 // null resource id
 #define ID_HEAD 1 // holds head ptr for LRU chain
@@ -113,7 +102,6 @@ typedef ushort RefIndex; // index part of ref
 //	---------------------------------------------------------
 
 void *ResLock(Id id);                  // lock resource & get ptr
-void *ResLockHi(Id id);                // lock resource hi (Mac only)
 void ResUnlock(Id id);                 // unlock resource
 void *ResGet(Id id);                   // get ptr to resource (dangerous!)
 void *ResExtract(Id id, void *buffer); // extract resource into buffer
@@ -124,41 +112,41 @@ void ResDelete(Id id);                 // delete resource forever
 //		ACCESS TO ITEMS IN COMPOUND RESOURCES (REF'S)  (refacc.c)
 //	------------------------------------------------------------
 
-//	Each compound resource starts with a Ref Table
-
+// Each compound resource starts with a Ref Table
 typedef struct __attribute__((packed)) {
-  RefIndex numRefs; // # items in compound resource
-  long offset[1];   // offset to each item (numRefs + 1 of them)
+  RefIndex numRefs;  // # items in compound resource
+  int32_t offset[1]; // offset to each item (numRefs + 1 of them)
 } RefTable;
 
 void *RefLock(Ref ref); // lock compound res, get ptr to item
 #define RefUnlock(ref) ResUnlock(REFID(ref)) // unlock compound res item
 void *RefGet(Ref ref); // get ptr to item in comp. res (dangerous!)
 
-RefTable *ResReadRefTable(Id id);                   // alloc & read ref table
-#define ResFreeRefTable(prt) (DisposePtr((Ptr)prt)) // free ref table
-int ResExtractRefTable(Id id, RefTable *prt, long size); // extract reftable
-void *RefExtract(RefTable *prt, Ref ref, void *buff);    // extract ref
+RefTable *ResReadRefTable(Id id);        // alloc & read ref table
+#define ResFreeRefTable(prt) (free(prt)) // free ref table
+int32_t ResExtractRefTable(Id id, RefTable *prt,
+                           int32_t size);             // extract reftable
+void *RefExtract(RefTable *prt, Ref ref, void *buff); // extract ref
 
 #define RefIndexValid(prt, index) ((index) < (prt)->numRefs)
 #define RefSize(prt, index) (prt->offset[(index) + 1] - prt->offset[index])
 
-int ResNumRefs(Id id); // returns the number of refs in a resource, extracting
-                       // if necessary.
+// returns the number of refs in a resource, extracting if necessary.
+int32_t ResNumRefs(Id id);
 
 #define REFTABLESIZE(numrefs)                                                  \
-  (sizeof(RefIndex) + (((numrefs) + 1) * sizeof(long)))
-#define REFPTR(prt, index) (((uchar *)prt) + prt->offset[index])
+  (sizeof(RefIndex) + (((numrefs) + 1) * sizeof(int32_t)))
+#define REFPTR(prt, index) (((uint8_t *)prt) + prt->offset[index])
 
 /*
 //	-----------------------------------------------------------
 //		BLOCK-AT-A-TIME ACCESS TO RESOURCES  (resexblk.c)
 //	-----------------------------------------------------------
 
-void ResExtractInBlocks(Id id, void *buff, long blockSize,
-        long (*f_ProcBlock)(void *buff, long numBytes, long iblock));
-void RefExtractInBlocks(RefTable *prt, Ref ref, void *buff, long blockSize,
-        long (*f_ProcBlock)(void *buff, long numBytes, long iblock));
+void ResExtractInBlocks(Id id, void *buff, int32_t blockSize,
+        int32_t (*f_ProcBlock)(void *buff, int32_t numBytes, int32_t iblock));
+void RefExtractInBlocks(RefTable *prt, Ref ref, void *buff, int32_t blockSize,
+        int32_t (*f_ProcBlock)(void *buff, int32_t numBytes, int32_t iblock));
 
 #define REBF_FIRST 0x01		// set for 1st block passed to f_ProcBlock
 #define REBF_LAST  0x02		// set for last block (may also be first!)
@@ -175,10 +163,11 @@ void RefExtractInBlocks(RefTable *prt, Ref ref, void *buff, long blockSize,
 /*typedef struct
 {
         //Handle	hdl;			// Mac resource handle.
-NULL if not in memory (on disk) int	filenum;		// Mac
-resource file number uchar 	lock;			// lock count uchar
-flags;			// misc flags (RDF_XXX, see below) uchar 	type;
-// resource type (RTYPE_XXX, see restypes.h) uint 	offset; uint	size;
+NULL if not in memory (on disk) int32_t	filenum;		// Mac
+resource file number uint8_t 	lock;			// lock count uint8_t
+flags;			// misc flags (RDF_XXX, see below) uint8_t 	type;
+// resource type (RTYPE_XXX, see restypes.h) uint32_t 	offset; uint32_t
+size;
 
         void* 	ptr;
         Id   	next;
@@ -186,15 +175,15 @@ flags;			// misc flags (RDF_XXX, see below) uchar 	type;
 } ResDesc;*/
 
 typedef struct {
-  void *ptr;         // ptr to resource in memory, or NULL if on disk
-  ulong lock : 8;    // lock count
-  ulong size : 24;   // size of resource in bytes (1 Mb max)
-  ulong filenum : 5; // file number 0-31
-  ulong offset : 27; // offset in file
+  void *ptr;            // ptr to resource in memory, or NULL if on disk
+  uint32_t lock : 8;    // lock count
+  uint32_t size : 24;   // size of resource in bytes (1 Mb max)
+  uint32_t filenum : 5; // file number 0-31
+  uint32_t offset : 27; // offset in file
   Id next;           // next resource in LRU order
   Id prev;           // previous resource in LRU order
-  ulong flags;       // misc flags (RDF_XXX, see below)
-  ushort type : 8;   // resource type (RTYPE_XXX, see restypes.h)
+  /*uint32_t flags;*/       // misc flags (RDF_XXX, see below)
+  /*uint16_t type : 8;*/   // resource type (RTYPE_XXX, see restypes.h)
 } ResDesc;
 
 typedef struct {
@@ -205,6 +194,9 @@ typedef struct {
 #define RESDESC(id) (&gResDesc[id])      // convert id to resource desc ptr
 #define RESDESC_ID(prd) ((prd)-gResDesc) // convert resdesc ptr to id
 
+#define RESDESC2(id) (&gResDesc2[id])            // convert id to rd2 ptr
+#define RESDESC2_ID(prd) ((prd)-gResDesc2)       // convert rd2 ptr to id
+
 #define RDF_LZW 0x01        // if 1, LZW compressed
 #define RDF_COMPOUND 0x02   // if 1, compound resource
 #define RDF_RESERVED 0x04   // reserved
@@ -212,8 +204,12 @@ typedef struct {
 
 #define RES_MAXLOCK 255 // max locks on a resource
 
-extern ResDesc *gResDesc; // ptr to big array of ResDesc's
-extern Id resDescMax;     // max id in res desc
+// ptr to big array of ResDesc's
+extern ResDesc *gResDesc;
+// ptr to array of ResDesc2 (shared buff with resdesc)
+extern ResDesc2 * gResDesc2;
+
+extern Id resDescMax; // max id in res desc
 
 //	Information about resources
 #define ResInUse(id) (gResDesc[id].offset)
@@ -221,13 +217,14 @@ extern Id resDescMax;     // max id in res desc
 #define ResSize(id) (gResDesc[id].size)
 #define ResLocked(id) (gResDesc[id].lock)
 #define ResFilenum(id) (gResDesc[id].filenum)
-#define ResType(id) (gResDesc[id].type)
-#define ResFlags(id) (gResDesc[id].flags)
+#define ResType(id) (gResDesc2[id].type)
+#define ResFlags(id) (gResDesc2[id].flags)
 #define ResCompressed(id) (gResDesc2[id].flags & RDF_LZW)
-#define ResZipped(id) (gResDesc2[id].flags & RDF_PKZIP)
 #define ResIsCompound(id) (gResDesc2[id].flags & RDF_COMPOUND)
+//#define ResZipped(id) (gResDesc2[id].flags & RDF_PKZIP)
 
-#define MaxSizeRsrc(theResource) GetMaxResourceSize(theResource)
+
+//#define MaxSizeRsrc(theResource) GetMaxResourceSize(theResource)
 
 //	------------------------------------------------------------
 //		RESOURCE MANAGER GENERAL ROUTINES  (res.c)
@@ -248,19 +245,17 @@ typedef enum {
 } ResOpenMode;
 
 void ResAddPath(char *path); // add search path for resfiles
-//short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo);
-int32_t ResOpenResFile(char *fname, ResOpenMode mode, uint8_t auxinfo);
-void ResCloseFile(int filenum); // close res file
+int32_t ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo);
+void ResCloseFile(int32_t filenum); // close res file
 
-#define ResOpenFile(specPtr) ResOpenResFile(specPtr, ROM_READ, FALSE)
-#define ResEditFile(specPtr, creat)                                            \
-  ResOpenResFile(specPtr, (creat) ? ROM_EDITCREATE : ROM_EDIT, TRUE)
-#define ResCreateFile(specPtr) ResOpenResFile(specPtr, ROM_CREATE, TRUE)
+#define ResOpenFile(fname) ResOpenResFile(fname, ROM_READ, FALSE)
+#define ResEditFile(fname, creat)                                              \
+  ResOpenResFile(fname, (creat) ? ROM_EDITCREATE : ROM_EDIT, TRUE)
+#define ResCreateFile(fname) ResOpenResFile(fname, ROM_CREATE, TRUE)
 
-#define MAX_RESFILENUM 15 // maximum file number
+#define MAX_RESFILENUM 31 // maximum file number
 
-// extern Datapath gDatapath;			// res system's datapath (others may
-// use)
+// extern Datapath gDatapath;	// res system's datapath (others may use)
 /*
 //	---------------------------------------------------------
 //		RESOURCE MEMORY MANAGMENT ROUTINES  (resmem.c)
@@ -269,20 +264,19 @@ void ResCloseFile(int filenum); // close res file
 void *ResMalloc(size_t size);
 void *ResRealloc(void *p, size_t newsize);
 void ResFree(void *p);
-void *ResPage(long size);
+void *ResPage(int32_t size);
 
-void ResInstallPager(void *f(long size));
+void ResInstallPager(void *f(int32_t size));
 
 //	---------------------------------------------------------
 //		RESOURCE STATS - ACCESSIBLE AT ANY TIME
 //	---------------------------------------------------------
 
 typedef struct {
-        ushort numLoaded;					// # resources
-loaded in ram ushort numLocked;					// # resources
-locked
-        long totMemAlloc;					// total memory
-alloted to resources } ResStat;
+        uint16_t numLoaded;					// # resources
+loaded in ram uint16_t numLocked;					// #
+resources locked int32_t totMemAlloc;					// total
+memory alloted to resources } ResStat;
 
 extern ResStat resStat;				// stats computed if
 proper DBG bit set
@@ -296,75 +290,50 @@ proper DBG bit set
 //		RESOURCE MAKING  (resmake.c)
 //	----------------------------------------------------------
 
-void ResMake(Id id, void *ptr, long size, uchar type, short filenum,
-             uchar flags); // make resource from data block
-void ResMakeCompound(Id id, uchar type, short filenum,
-                     uchar flags); // make empty compound resource
-void ResAddRef(Ref ref, void *pitem, long itemSize); // add item to compound
-void ResUnmake(Id id);                               // unmake a resource
+void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum,
+             uint8_t flags); // make resource from data block
+void ResMakeCompound(Id id, uint8_t type, int32_t filenum,
+                     uint8_t flags); // make empty compound resource
+void ResAddRef(Ref ref, void *pitem, int32_t itemSize); // add item to compound
+void ResUnmake(Id id);                                  // unmake a resource
 
 //	----------------------------------------------------------
 //		RESOURCE FILE LAYOUT
 //	----------------------------------------------------------
-/*
-typedef struct					// For Mac version, an
-array of these are saved in the {
-// file's 'hTbl' 128 resource.
-        Id 			id;					//
-resource id uchar 	flags;				// resource flags
-(RDF_XXX) uchar	type;				// resource type } ResDirEntry;
-
-
-
-void ResWriteDir(short filenum);	// Mac version: Write out a resource
-table for the file.
-*/
 
 //	Resource-file disk format:  header, data, dir
 
 typedef struct {
-  char signature[16]; // "LG ResFile v2.0\n",
-  char comment[96];   // user comment, terminated with '\z'
-  uchar reserved[12]; // reserved for future use, must be 0
-  int dirOffset : 32; // file offset of directory
-} ResFileHeader;      // total 128 bytes (why not?)
+  char signature[16];   // "LG ResFile v2.0\n",
+  char comment[96];     // user comment, terminated with '\z'
+  uint8_t reserved[12]; // reserved for future use, must be 0
+  int32_t dirOffset;    // file offset of directory
+} ResFileHeader;        // total 128 bytes (why not?)
 
 typedef struct {
-  ushort numEntries : 16; // # items referred to by directory
-  int dataOffset : 32;    // file offset at which data resides
-                          // directory entries follow immediately
-                          // (numEntries of them)
+  uint16_t numEntries; // # items referred to by directory
+  int32_t dataOffset;  // file offset at which data resides
+                       // directory entries follow immediately
+                       // (numEntries of them)
 } ResDirHeader;
 
 typedef struct {
-  Id id;            // resource id (if 0, entry is deleted)
-  ulong size : 24;  // uncompressed size (size in ram)
-  uint flags : 8;   // resource flags (RDF_XXX)
-  ulong csize : 24; // compressed size (size on disk)
-                    // (this size is valid disk size even if not comp.)
-  uint type : 8;    // resource type
+  Id id;               // resource id (if 0, entry is deleted)
+  uint32_t size : 24;  // uncompressed size (size in ram)
+  uint32_t flags : 8;  // resource flags (RDF_XXX)
+  uint32_t csize : 24; // compressed size (size on disk)
+                       // (this size is valid disk size even if not comp.)
+  uint32_t type : 8;   // resource type
 } ResDirEntry;
-
-/*typedef struct {
-        Id id;						// resource id (if
-0, entry is deleted)
-        ulong size: 24;				// uncompressed size
-(size in ram) ushort flags: 8;				// resource flags
-(RDF_XXX) ulong csize: 24;			// compressed size (size on
-disk)
-                                                                        // (this
-size is valid disk size even if not comp.)
-        ushort type: 8;				// resource type
-} ResDirEntry;*/
 
 //	Active resource file table
 
 typedef struct {
-  ushort flags;        // RFF_XXX
-  ResFileHeader hdr;   // file header
-  ResDirHeader *pdir;  // ptr to resource directory
-  ushort numAllocDir;  // # dir entries allocated
-  long currDataOffset; // current data offset in file
+  uint16_t flags;         // RFF_XXX
+  ResFileHeader hdr;      // file header
+  ResDirHeader *pdir;     // ptr to resource directory
+  uint16_t numAllocDir;   // # dir entries allocated
+  int32_t currDataOffset; // current data offset in file
 } ResEditInfo;
 
 typedef struct {
@@ -392,11 +361,10 @@ extern char resFileSignature[16]; // magic header
 //		RESOURCE FILE BUILDING  (resbuild.c)
 //	--------------------------------------------------------
 
-void ResSetComment(int filenum, char *comment); // set comment
-int ResWrite(Id id);                            // write resource to file
-void ResKill(Id id);       // delete resource & remove from file
-long ResPack(int filenum); // remove empty entries
-//#define ResPack(filenum)
+void ResSetComment(int32_t filenum, char *comment); // set comment
+int32_t ResWrite(Id id);                            // write resource to file
+void ResKill(Id id);              // delete resource & remove from file
+int32_t ResPack(int32_t filenum); // remove empty entries
 
 //#define ResAutoPackOn(filenum) (resFile[filenum].pedit->flags |= RFF_AUTOPACK)
 //#define ResAutoPackOff(filenum) (resFile[filenum].pedit->flags &=

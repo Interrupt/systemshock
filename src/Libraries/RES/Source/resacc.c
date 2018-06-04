@@ -67,10 +67,8 @@ void *ResLock(Id id) {
   if (ResLoadResource(id) == NULL) {
     printf("ResLock: Could not load %x\n", id);
     return (NULL);
-  }
-
-  //	else if (prd->lock == 0)
-  //		ResRemoveFromLRU(prd);
+  }  else if (prd->lock == 0)
+    ResRemoveFromLRU(prd);
 
   //	Tally stats, check for over-lock
 
@@ -85,16 +83,6 @@ void *ResLock(Id id) {
 
   return (prd->ptr);
 }
-
-//	---------------------------------------------------------
-//
-//	ResLockHi() Mac only!  Locks a resource, moves hi, and returns ptr.
-//
-//		id = resource id
-//
-//	Returns: ptr to locked resource
-//	---------------------------------------------------------
-void *ResLockHi(Id id) { return ResLock(id); }
 
 //	---------------------------------------------------------
 //
@@ -129,7 +117,7 @@ void ResUnlock(Id id) {
 
   if (prd->lock == 0) {
     //		HUnlock(prd->hdl);
-    //		ResAddToTail(prd);
+    ResAddToTail(prd);
     //		DBG(DSRC_RES_Stat, {resStat.numLocked--;});
   }
 }
@@ -168,6 +156,9 @@ void *ResGet(Id id) {
     if (ResLoadResource(id) == NULL) {
       return (NULL);
     }
+    ResAddToTail(prd);
+  } else if (prd->lock == 0) {
+    ResMoveToTail(prd);
   }
 
   // ValidateRes(id);
@@ -182,23 +173,20 @@ void *ResGet(Id id) {
 //
 //		id   = id
 //		buff = ptr to buffer (use ResSize() to compute needed buffer
-//size)
+// size)
 //
 //	Returns: ptr to supplied buffer, or NULL if problem
 //	---------------------------------------------------------
 //  For Mac version:  Copies information from resource handle into the buffer.
 
 void *ResExtract(Id id, void *buffer) {
-  //	Retrieve the data into the buffer, please
-
+  // Retrieve the data into the buffer, please
   if (ResRetrieve(id, buffer)) {
     return (buffer);
   }
 
   printf("ResExtract failed for %x\n", id);
-
-  //	If ResRetreive failed, return NULL ptr
-
+  // If ResRetreive failed, return NULL ptr
   return (NULL);
 }
 
@@ -224,12 +212,11 @@ void ResDrop(Id id) {
   //	DBG(DSRC_RES_ChkLock, {if (prd->flags & RDF_NODROP) \
 //		Warning(("ResDrop: Block $%x has NODROP flag set, dropping anyway\n", id));});
 
-  //	Spew(DSRC_RES_DelDrop, ("ResDrop: dropping $%x\n", id));
+  // Spew(DSRC_RES_DelDrop, ("ResDrop: dropping $%x\n", id));
 
-  //	Remove from LRU chain
-
-  //	if (prd->lock == 0)
-  //		ResRemoveFromLRU(prd);
+  // Remove from LRU chain
+  if (prd->lock == 0)
+    ResRemoveFromLRU(prd);
 
   //	Tally stats
 
@@ -282,13 +269,13 @@ void ResDelete(Id id) {
     //		Spew(DSRC_RES_DelDrop, ("ResDelete: deleting $%x\n", id));
     if (prd->ptr) {
       //			Spew(DSRC_RES_DelDrop, ("ResDelete: freeing
-      //memory for $%x\n", id)); 			DBG(DSRC_RES_Stat,
+      // memory for $%x\n", id)); 			DBG(DSRC_RES_Stat,
       //{resStat.totMemAlloc -= prd->size;
       //				resStat.numLoaded--;
       //				Spew(DSRC_RES_Stat, ("ResDelete: free
       //%d, total now %d bytes\n",
       //					prd->size,
-      //resStat.totMemAlloc));});
+      // resStat.totMemAlloc));});
 
       // ReleaseResource(prd->hdl);				// release the
       // resource.
@@ -298,7 +285,7 @@ void ResDelete(Id id) {
 
       ResDrop(id);
     }
-    LG_memset(prd, 0, sizeof(ResDesc));
+    memset(prd, 0, sizeof(ResDesc));
   }
 
   //	Else if not in use, spew to whoever's listening
@@ -319,14 +306,14 @@ void ResDelete(Id id) {
 //
 //	Returns: TRUE if id ok, FALSE if invalid & prints warning
 
-uchar ResCheckId(Id id) {
+bool ResCheckId(Id id) {
   if (id < ID_MIN) {
     printf("ResCheckId: id $%x invalid\n", id);
-    return FALSE;
+    return false;
   }
   if (id > resDescMax) {
     printf("ResCheckId: id $%x exceeds table\n", id);
-    return FALSE;
+    return false;
   }
-  return TRUE;
+  return true;
 }

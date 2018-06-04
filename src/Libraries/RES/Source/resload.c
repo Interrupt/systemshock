@@ -44,12 +44,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lzw.h"
 #include "res.h"
 #include "res_.h"
-//#include <_res.h>
 
 //-------------------------------
 //  Private Prototypes
 //-------------------------------
-void LoadCompressedResource(ResDesc *prd, Id id);
 
 //	-----------------------------------------------------------
 //
@@ -61,128 +59,50 @@ void LoadCompressedResource(ResDesc *prd, Id id);
 //  For Mac version:  Call Resource Mgr call LoadResource.
 
 void *ResLoadResource(Id id) {
-  ResDesc *prd = RESDESC(id);
+  ResDesc *prd;
+  ResDesc2 *prd2;
 
-  //	If doesn't exit, forget it
+  // If doesn't exit, forget it
 
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResInUse(id)) return NULL;});
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
+  // DBG(DSRC_RES_ChkIdRef, {
+  if (!ResInUse(id)) return NULL;
+  //});
+  // DBG(DSRC_RES_ChkIdRef, {
+  if (!ResCheckId(id)) return NULL;
+  //});
 
   // printf("ResLoadResource: loading $%x\n", id);
 
-  //	Allocate memory, setting magic id so pager can tell who it is if need
-  //be.
+  prd = RESDESC(id);
+  prd2 = RESDESC2(id);
+
+  if(prd->size == 0) {
+    return NULL;
+  }
+
+  // Allocate memory, setting magic id so pager can tell who it is if need be.
 
   prd->ptr = malloc(prd->size);
   if (prd->ptr == NULL)
     return (NULL);
 
-  //	Tally memory allocated to resources
+  // Tally memory allocated to resources
 
-  //	DBG(DSRC_RES_Stat, {resStat.totMemAlloc += prd->size;});
-  //	Spew(DSRC_RES_Stat, ("ResLoadResource: loading id: $%x, alloc %d, total
-  //now %d bytes\n", 		id, prd->size, resStat.totMemAlloc));
+  // DBG(DSRC_RES_Stat, {resStat.totMemAlloc += prd->size;});
+  // Spew(DSRC_RES_Stat, ("ResLoadResource: loading id: $%x, alloc %d, total
+  // now %d bytes\n", 		id, prd->size, resStat.totMemAlloc));
 
-  //	Add to cumulative stats
+  // Add to cumulative stats
+  // CUMSTATS(id,numLoads);
 
-  //	CUMSTATS(id,numLoads);
-
-  //  Load from disk
+  // Load from disk
   ResRetrieve(id, prd->ptr);
 
-  //	Tally stats
+  // Tally stats
+  // DBG(DSRC_RES_Stat, {resStat.numLoaded++;});
 
-  //	DBG(DSRC_RES_Stat, {resStat.numLoaded++;});
-
-  //	Return handle
-
+  // Return ptr
   return (prd->ptr);
-}
-
-//	---------------------------------------------------------
-//  Load a compressed resource.  It's different enough for the Mac version to
-//  warrant its own function.
-//
-//  In order to keep prd->hdl as the resource handle (that is, the handle
-//  associated with the resource map), we have to be a little non-obvious.
-//  First, we'll get the compressed data from the resource file.  Next we copy
-//  the compressed data into another handle of the same size.  Then we determine
-//  how large the expanded data will be, and set prd->hdl to that size.
-//  Finally, we expand the data into prd->hdl.
-//	---------------------------------------------------------
-void LoadCompressedResource(ResDesc *prd, Id id) {
-  Handle mirrorHdl;
-  Ptr resPtr, expPtr;
-  long exlen;
-  long tableSize = 0;
-  ushort numRefs;
-
-  printf("LoadCompressedResource\n");
-
-  /*if (prd->hdl != NULL && *prd->hdl != NULL)	// If everything's still in
-          return;
-  // memory, there's no need to load.
-
-  // Get the compressed resource from disk.
-  prd->hdl = GetResource(resMacTypes[prd->type], id);
-  if (prd->hdl == NULL)
-  {
-          DebugString("LoadCompressedResource: Can't get compressed
-  resource.\n"); return;
-  }
-
-  // Copy the compressed info into the mirror handle.
-  exlen = GetHandleSize(prd->hdl);
-  mirrorHdl = NewHandle(exlen);
-  if (mirrorHdl == NULL)
-  {
-          DebugString("LoadCompressedResource: Can't allocate mirror
-  handle.\n"); return;
-  }
-  BlockMoveData(*prd->hdl, *mirrorHdl, exlen);
-
-  // Point to the beginning of the compressed data in the mirror handle.
-  HLock(mirrorHdl);
-  resPtr = *mirrorHdl;
-
-  // Determine the expanded buffer size.
-  if (prd->flags & RDF_COMPOUND)
-  {
-          numRefs = *(short *)resPtr;
-          tableSize = REFTABLESIZE(numRefs);
-          resPtr += tableSize;
-  }
-  exlen = LzwExpandBuff2Null(resPtr, 0, 0);
-
-  // Set prd->hdl to the expanded buffer size.
-  SetHandleSize(prd->hdl, exlen + tableSize);
-  if (MemError())
-  {
-          DebugString("LoadCompressedResource: Can't resize resource handle for
-  expansion.\n"); return;
-  }
-
-  // Point to the beginning of the expanded data handle.
-  HLock(prd->hdl);
-  expPtr = *(prd->hdl);
-
-  // Expand-o-rama!  If a compound resource, copy the uncompressed refTable
-  // over first.
-  if (prd->flags & RDF_COMPOUND)
-  {
-          BlockMoveData(resPtr-tableSize, expPtr, tableSize);
-          expPtr += tableSize;
-  }
-  exlen = LzwExpandBuff2Buff(resPtr, expPtr, 0, 0);
-  if (exlen < 0)
-  {
-          DebugString("LoadCompressedResource: Can't expand resource.\n");
-          return;
-  }
-
-  HUnlock(prd->hdl);								// Unlock
-  the buffers. HUnlock(mirrorHdl); DisposeHandle(mirrorHdl);
-  // Free the mirror buffer.*/
 }
 
 //	---------------------------------------------------------
@@ -194,54 +114,55 @@ void LoadCompressedResource(ResDesc *prd, Id id) {
 //
 //	Returns: TRUE if retrieved, FALSE if problem
 
-uchar ResRetrieve(Id id, void *buffer) {
+bool ResRetrieve(Id id, void *buffer) {
   ResDesc *prd;
+  ResDesc2 *prd2;
   FILE *fd;
-  uchar *p;
-  long size;
+  uint8_t *p;
+  int32_t size;
   RefIndex numRefs;
 
-  //	Check id and file number
+  // Check id and file number
 
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return FALSE;});
+  // DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return FALSE;});
 
   if (!ResCheckId(id)) {
     printf("ResRetrieve failed ResCheckId! %x\n", id);
-    // return FALSE;
+    return false;
   }
 
   prd = RESDESC(id);
+  prd2 = RESDESC2(id);
   fd = resFile[prd->filenum].fd;
 
   //	DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
 //		Warning(("ResRetrieve: id $%x doesn't exist\n", id)); \
 //		return FALSE; \
 //		}});
+  if (fd == NULL)
+    return false;
 
-  //	Seek to data, set up
-
+  // Seek to data, set up
   fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
-  p = (uchar *)buffer;
+  p = (uint8_t *)buffer;
   size = prd->size;
 
-  //	If compound, read in ref table
-
-  if (prd->flags & RDF_COMPOUND) {
-    fread(p, sizeof(short), 1, fd);
-    numRefs = *(short *)p;
-    p += sizeof(short);
-    fread(p, sizeof(long), (numRefs + 1), fd);
-    p += sizeof(long) * (numRefs + 1);
+  // If compound, read in ref table
+  if (prd2->flags & RDF_COMPOUND) {
+    fread(p, sizeof(int16_t), 1, fd);
+    numRefs = *(int16_t *)p;
+    p += sizeof(int16_t);
+    fread(p, sizeof(int32_t), (numRefs + 1), fd);
+    p += sizeof(int32_t) * (numRefs + 1);
     size -= REFTABLESIZE(numRefs);
   }
 
-  //	Read in data
-
-  if (prd->flags & RDF_LZW) {
+  // Read in data
+  if (prd2->flags & RDF_LZW) {
     LzwExpandFp2Buff(fd, p, 0, 0);
   } else {
     fread(p, size, 1, fd);
   }
 
-  return TRUE;
+  return true;
 }

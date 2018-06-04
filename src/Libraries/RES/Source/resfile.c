@@ -57,16 +57,12 @@ ResFile resFile[MAX_RESFILENUM + 1];
 
 // Datapath gDatapath;
 
-// CD spoofing data
-// ResSpoofDrive gSpoofDrive;
-
-//	Internal prototypes
-
 int32_t ResFindFreeFilenum();
-void ResReadDirEntries(int32_t filenum, ResDirHeader *pDirHead,
-                       uint32_t add_flags);
+
+void ResReadDirEntries(int32_t filenum, ResDirHeader *pDirHead);
 void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum,
-                     int32_t dataOffset, uint32_t add_flags);
+                     int32_t dataOffset);
+
 void ResReadEditInfo(ResFile *prf);
 void ResReadDir(ResFile *prf, int32_t filenum);
 void ResCreateEditInfo(ResFile *prf, int32_t filenum);
@@ -79,11 +75,14 @@ void ResWriteHeader(int32_t filenum);
 //	ResAddPath() adds a path to the resource manager's list.
 //
 //		path = name of directory to add
-void ResAddPath(char *path) {
-  // DatapathAdd(&gDatapath, path);
+/*
+void ResAddPath(char *path)
+{
+        DatapathAdd(&gDatapath, path);
 
-  //        Spew(DSRC_RES_General, ("ResAddPath: added %s\n", path));
+        Spew(DSRC_RES_General, ("ResAddPath: added %s\n", path));
 }
+*/
 
 //	---------------------------------------------------------
 //
@@ -92,8 +91,8 @@ void ResAddPath(char *path) {
 //		fname   = ptr to filename
 //		mode    = ROM_XXX (see res.h)
 //		auxinfo = if TRUE, allocate aux info, including directory
-//						(applies to mode 0, other modes
-//                      automatically get it)
+//				  (applies to mode 0, other modes automatically
+// get  it)
 //
 //	Returns:
 //
@@ -102,7 +101,7 @@ void ResAddPath(char *path) {
 //		-3 = invalid resource file
 //		-4 = memory allocation failure
 
-int32_t ResOpenResFile(char *fname, ResOpenMode mode, uint8_t auxinfo) {
+int32_t ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo) {
   // static int32_t openMode[] = {
   //	O_RDONLY | O_BINARY,
   //	O_RDWR | O_BINARY,
@@ -113,7 +112,7 @@ int32_t ResOpenResFile(char *fname, ResOpenMode mode, uint8_t auxinfo) {
   ResFile *prf;
   ResFileHeader fileHead;
   ResDirHeader dirHead;
-  //   uint8_t cd_spoof = FALSE;
+  // uint8_t cd_spoof = FALSE;
 
   //	Find free file number, else return -1
 
@@ -169,8 +168,7 @@ int32_t ResOpenResFile(char *fname, ResOpenMode mode, uint8_t auxinfo) {
     //			S_IREAD | S_IWRITE);
     fd = fopen(fname, "wb");
     if (fd == NULL) {
-      //			Warning(("ResOpenResFile: Can't create file:
-      //%s\n", fname));
+      // Warning(("ResOpenResFile: Can't create file: %s\n", fname));
       return (-2);
     }
   }
@@ -182,9 +180,7 @@ int32_t ResOpenResFile(char *fname, ResOpenMode mode, uint8_t auxinfo) {
   if (mode || auxinfo) {
     prf->pedit = (ResEditInfo *)malloc(sizeof(ResEditInfo));
     if (prf->pedit == NULL) {
-      //			Warning(("ResOpenResFile: unable to allocate
-      // ResEditInfo\n"));
-      //			close(fd);
+      // Warning(("ResOpenResFile: unable to allocate ResEditInfo\n"));
       fclose(fd);
       return (-4);
     }
@@ -199,10 +195,8 @@ int32_t ResOpenResFile(char *fname, ResOpenMode mode, uint8_t auxinfo) {
   //	Switch based on mode
 
   switch (mode) {
-
-    //	If open existing file, read directory into edit info & process, or
-    //	if no edit info then process piecemeal.
-
+  // If open existing file, read directory into edit info & process, or
+  // if no edit info then process piecemeal.
   case ROM_READ:
   case ROM_EDIT:
   case ROM_EDITCREATE:
@@ -218,20 +212,18 @@ int32_t ResOpenResFile(char *fname, ResOpenMode mode, uint8_t auxinfo) {
       // dirHead.numEntries = SwapShortBytes(dirHead.numEntries); //¥¥¥
       // dirHead.dataOffset = SwapLongBytes(dirHead.dataOffset);  //¥¥¥
       // ResReadDirEntries(filenum, &dirHead, (cd_spoof) ? RDF_CDSPOOF : 0);
-      ResReadDirEntries(filenum, &dirHead, 0);
+      ResReadDirEntries(filenum, &dirHead);
     }
     break;
 
-    //	If open for create, initialize header & dir
-
+  // If open for create, initialize header & dir
   case ROM_CREATE:
     ResCreateEditInfo(prf, filenum);
     ResCreateDir(prf);
     break;
   }
 
-  //	Return filenum
-
+  // Return filenum
   return (filenum);
 }
 
@@ -244,39 +236,33 @@ int32_t ResOpenResFile(char *fname, ResOpenMode mode, uint8_t auxinfo) {
 void ResCloseFile(int32_t filenum) {
   Id id;
 
-  //	Make sure file is open
-
+  // Make sure file is open
   if (resFile[filenum].fd == NULL) {
-    //		Warning(("ResCloseFile: filenum %d not in use\n"));
+    // Warning(("ResCloseFile: filenum %d not in use\n"));
     return;
   }
 
-  //	If file being created, flush it
-  //        Spew(DSRC_RES_General, ("ResCloseFile: closing %d\n", filenum));
-
+  // If file being created, flush it
+  // Spew(DSRC_RES_General, ("ResCloseFile: closing %d\n", filenum));
   if (resFile[filenum].pedit) {
     ResWriteDir(filenum);
     ResWriteHeader(filenum);
   }
 
-  //	Scan object list, delete any blocks associated with this file
-
+  // Scan object list, delete any blocks associated with this file
   for (id = ID_MIN; id <= resDescMax; id++) {
     if (ResInUse(id) && (ResFilenum(id) == filenum))
       ResDelete(id);
   }
 
-  //	Free up memory
-
+  // Free up memory
   if (resFile[filenum].pedit) {
     if (resFile[filenum].pedit->pdir)
       free(resFile[filenum].pedit->pdir);
     free(resFile[filenum].pedit);
   }
 
-  //	Close file
-
-  //	close(resFile[filenum].fd);
+  // Close file
   fclose(resFile[filenum].fd);
   resFile[filenum].fd = NULL;
 }
@@ -307,43 +293,32 @@ int32_t ResFindFreeFilenum() {
 //    add_flags = additional flags to OR into RDF flags for all
 //                resources in this file.
 
-void ResReadDirEntries(int32_t filenum, ResDirHeader *pDirHead,
-                       uint32_t add_flags) {
+void ResReadDirEntries(int32_t filenum, ResDirHeader *pDirHead) {
 #define NUM_DIRENTRY_BLOCK 64 // (12 bytes each)
-  int32_t entry;
   FILE *fd;
+  int32_t entry;
   int32_t dataOffset;
   ResDirEntry *pDirEntry;
   ResDirEntry dirEntries[NUM_DIRENTRY_BLOCK];
 
-  //	Set up
-
-  //	Spew(DSRC_RES_Read,
-  //		("ResReadDirEntries: scanning directory, filenum %d\n",
-  // filenum));
-
+  // Set up
   pDirEntry = &dirEntries[NUM_DIRENTRY_BLOCK]; // no dir entries read
   dataOffset = pDirHead->dataOffset;           // mark starting offset
   fd = resFile[filenum].fd;
 
-  //	Scan directory:
-
+  // Scan directory:
   for (entry = 0; entry < pDirHead->numEntries; entry++) {
-
-    //	If reached end of local directory buffer, refill it
-
+    // If reached end of local directory buffer, refill it
     if (pDirEntry >= &dirEntries[NUM_DIRENTRY_BLOCK]) {
       // read(fd, dirEntries, sizeof(ResDirEntry) * NUM_DIRENTRY_BLOCK);
       fread(dirEntries, sizeof(ResDirEntry) * NUM_DIRENTRY_BLOCK, 1, fd);
       pDirEntry = &dirEntries[0];
     }
 
-    //	Process entry
+    // Process entry
+    ResProcDirEntry(pDirEntry, filenum, dataOffset);
 
-    ResProcDirEntry(pDirEntry, filenum, dataOffset, add_flags);
-
-    //	Advance file offset and get next
-
+    // Advance file offset and get next
     dataOffset = RES_OFFSET_ALIGN(dataOffset + pDirEntry->csize);
     pDirEntry++;
   }
@@ -360,40 +335,40 @@ void ResReadDirEntries(int32_t filenum, ResDirHeader *pDirHead,
 //                resources in this file.
 
 void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum,
-                     int32_t dataOffset, uint32_t add_flags) {
+                     int32_t dataOffset) {
   ResDesc *prd;
   ResDesc2 *prd2;
   int32_t currOffset;
 
-  //	Grow table if need to
-
+  // Grow table if need to
   ResExtendDesc(pDirEntry->id);
 
-  //	If already a resource at this id, warning
-
-  //	Spew(DSRC_RES_Read, ("ResProcDirEntry: reading entry for id $%x\n",
-  //		pDirEntry->id));
-
+  // If already a resource at this id, warning
   prd = RESDESC(pDirEntry->id);
+  prd2 = RESDESC2(pDirEntry->id);
   if (prd->ptr) {
     //      Warning(("RESOURCE ID COLLISION AT ID %x!!\n",pDirEntry->id));
     // CUMSTATS(pDirEntry->id, numOverwrites);
     //		ResDelete(pDirEntry->id);
   }
-
-  //	Fill in resource descriptor
-
+  // Fill in resource descriptor
   prd->ptr = NULL;
   prd->size = pDirEntry->size;
   prd->filenum = filenum;
   prd->lock = 0;
   prd->offset = RES_OFFSET_REAL2DESC(dataOffset);
-  prd->flags = pDirEntry->flags | add_flags;
-  prd->type = pDirEntry->type;
+  prd2->flags = pDirEntry->flags;
+  prd2->type = pDirEntry->type;
   prd->next = 0;
   prd->prev = 0;
 
-  //	If loadonopen flag set, load resource
+  if (pDirEntry->id == 0x268) {
+    printf("res: id: %x, flags: %x, type: %x offset: %i size: %i csize: %i\n",
+           pDirEntry->id, prd2->flags, prd2->type, prd->offset, prd->size,
+           pDirEntry->csize);
+  }
+
+  // If loadonopen flag set, load resource
 
   if (pDirEntry->flags & RDF_LOADONOPEN) {
     currOffset = ftell(resFile[filenum].fd);
@@ -410,19 +385,14 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum,
 void ResReadEditInfo(ResFile *prf) {
   ResEditInfo *pedit = prf->pedit;
 
-  //	Init flags to no autopack or anything else
-
+  // Init flags to no autopack or anything else
   pedit->flags = 0;
 
-  //	Seek to start of file, read in header
-
-  //	lseek(prf->fd, 0L, SEEK_SET);
-  //	read(prf->fd, &pedit->hdr, sizeof(pedit->hdr));
+  // Seek to start of file, read in header
   fseek(prf->fd, 0L, SEEK_SET);
   fread(&pedit->hdr, sizeof(pedit->hdr), 1, prf->fd);
 
-  //	Set no directory (yet, anyway)
-
+  // Set no directory (yet, anyway)
   pedit->pdir = NULL;
   pedit->numAllocDir = 0;
   pedit->currDataOffset = 0L;
@@ -439,16 +409,14 @@ void ResReadDir(ResFile *prf, int32_t filenum) {
   ResDirEntry *pDirEntry;
   ResDirHeader dirHead;
 
-  //	Read directory header
+  // Read directory header
 
   pedit = prf->pedit;
   phead = &pedit->hdr;
-  //	lseek(prf->fd, phead->dirOffset, SEEK_SET);
-  //	read(prf->fd, &dirHead, sizeof(ResDirHeader));
   fseek(prf->fd, phead->dirOffset, SEEK_SET);
   fread(&dirHead, sizeof(ResDirHeader), 1, prf->fd);
 
-  //	Allocate space for directory, copy directory header into it
+  // Allocate space for directory, copy directory header into it
 
   pedit->numAllocDir = (dirHead.numEntries + DEFAULT_RES_GROWDIRENTRIES) &
                        ~(DEFAULT_RES_GROWDIRENTRIES - 1);
@@ -456,29 +424,23 @@ void ResReadDir(ResFile *prf, int32_t filenum) {
       malloc(sizeof(ResDirHeader) + (sizeof(ResDirEntry) * pedit->numAllocDir));
   *pdir = dirHead;
 
-  //	Read in directory into allocated space (past header)
-
-  //	read(prf->fd, RESFILE_DIRENTRY(pdir,0),
-  //		dirHead.numEntries * sizeof(ResDirEntry));
+  // Read in directory into allocated space (past header)
   fread(RESFILE_DIRENTRY(pdir, 0), dirHead.numEntries * sizeof(ResDirEntry), 1,
         prf->fd);
 
-  //	Scan directory, setting resource descriptors & counting data bytes
-
+  // Scan directory, setting resource descriptors & counting data bytes
   pedit->currDataOffset = pdir->dataOffset;
 
   RESFILE_FORALLINDIR(pdir, pDirEntry) {
     if (pDirEntry->id == 0)
       pedit->flags |= RFF_NEEDSPACK;
     else
-      ResProcDirEntry(pDirEntry, filenum, pedit->currDataOffset, 0);
+      ResProcDirEntry(pDirEntry, filenum, pedit->currDataOffset);
     pedit->currDataOffset =
         RES_OFFSET_ALIGN(pedit->currDataOffset + pDirEntry->csize);
   }
 
-  //	Seek to current data location
-
-  //	lseek(prf->fd, pedit->currDataOffset, SEEK_SET);
+  // Seek to current data location
   fseek(prf->fd, pedit->currDataOffset, SEEK_SET);
 }
 
@@ -508,7 +470,6 @@ void ResCreateDir(ResFile *prf) {
       malloc(sizeof(ResDirHeader) + (sizeof(ResDirEntry) * pedit->numAllocDir));
   pedit->pdir->numEntries = 0;
   pedit->currDataOffset = pedit->pdir->dataOffset = sizeof(ResFileHeader);
-  //	lseek(prf->fd, pedit->currDataOffset, SEEK_SET);
   fseek(prf->fd, pedit->currDataOffset, SEEK_SET);
 }
 
@@ -519,12 +480,12 @@ void ResCreateDir(ResFile *prf) {
 void ResWriteDir(int32_t filenum) {
   ResFile *prf;
 
-  /*DBG(DSRC_RES_ChkIdRef,
-      {if (resFile[filenum].pedit == NULL) { \
-          Warning(("ResWriteDir: file %d not open for writing\n", filenum)); \
-          return;
-      }
-  });*/
+  // DBG(DSRC_RES_ChkIdRef, {
+  if (resFile[filenum].pedit == NULL) {
+    // Warning(("ResWriteDir: file %d not open for writing\n", filenum));
+    return;
+  }
+  //});
 
   // Spew(DSRC_RES_Write, ("ResWriteDir: writing directory for filenum %d\n",
   // filenum));
@@ -544,12 +505,12 @@ void ResWriteDir(int32_t filenum) {
 void ResWriteHeader(int32_t filenum) {
   ResFile *prf;
 
-  /*DBG(DSRC_RES_ChkIdRef,
-      {if (resFile[filenum].pedit == NULL) { \
-          Warning(("ResWriteHeader: file %d not open for writing\n", filenum));
-  \ return;
-      }
-  });*/
+  // DBG(DSRC_RES_ChkIdRef, {
+  if (resFile[filenum].pedit == NULL) {
+    // Warning(("ResWriteHeader: file %d not open for writing\n", filenum));
+    return;
+  }
+  //});
 
   // Spew(DSRC_RES_Write, ("ResWriteHeader: writing header for filenum %d\n",
   // filenum));
@@ -557,25 +518,6 @@ void ResWriteHeader(int32_t filenum) {
   prf = &resFile[filenum];
   prf->pedit->hdr.dirOffset = prf->pedit->currDataOffset;
 
-  fseek(prf->fd, 0L, SEEK_SET);
+  fseek(prf->fd, 0, SEEK_SET);
   fwrite(&prf->pedit->hdr, sizeof(ResFileHeader), 1, prf->fd);
 }
-
-/*
-
-// Sets the path that the resource system will treat as a virtual CD
-//
-// path = path to treat as the virtual CD
-// fix_delay = a delay, in milliseconds, to add every time the
-//       virtual CD is accessed
-// size_delay = a delay in milliseconds per KB to add when the
-//       virtual CD is accessed, so it is proportional to transfer size
-
-// right now, this only handles one spoof_drive, but obviously
-// it could be tweaked to keep around an array of ResSpoofDrives...
-void ResSetCDSpoof(char *path, void (*spoof_cb)(int32_t size, Id id))
-{
-   gSpoofDrive.path = path;
-   gSpoofDrive.callback = spoof_cb;
-}
-*/
