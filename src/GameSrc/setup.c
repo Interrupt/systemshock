@@ -1090,7 +1090,8 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
 
 errtype load_savegame_names()
 {
-   int i, filenum;
+   int i;
+   FILE* file;
 
    valid_save = 0;
 
@@ -1098,10 +1099,10 @@ errtype load_savegame_names()
    {
       Poke_SaveName(i);
 
-      printf("Checking save game names\n");
+      printf("Grabbing save game names\n");
 
       if( access( save_game_name, F_OK ) != -1 ) {
-         /*ResOpenFile(save_game_name);
+         file = ResOpenFile(save_game_name);
          if (ResInUse(OLD_SAVE_GAME_ID_BASE))
          {
 #ifdef OLD_SG_FORMAT
@@ -1113,10 +1114,8 @@ errtype load_savegame_names()
          }
          else
          {
-            printf("Checking save file %s\n", save_game_name);
             if (ResInUse(SAVELOAD_VERIFICATION_ID))
             {
-               printf("Checking!\n");
                int verify_cookie;
                ResExtract(SAVELOAD_VERIFICATION_ID, &verify_cookie);
                switch (verify_cookie)
@@ -1137,11 +1136,7 @@ errtype load_savegame_names()
             else
                sprintf(comments[i], "<< %s >>",get_temp_string(REF_STR_BadVersion));
          }
-         ResCloseFile(filenum);*/
-
-         // FIXME Why does ResOpenFile followed by ResInUse crash here?
-         valid_save |= (1 << i);
-         sprintf(comments[i], "<< %s >>",save_game_name);
+         ResCloseFile(file);
       }
       else
          *(comments[i])='\0';

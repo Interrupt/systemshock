@@ -124,9 +124,6 @@ errtype CheckFreeSpace(short	checkRefNum);
 int main(int argc, char** argv)
 {  
 	InitMac();																// init mac managers
-
-	extern errtype load_savegame_names(void);
-	load_savegame_names();
  
 	GetFolders();															// get refs to data, sound, etc folders.
 
@@ -157,6 +154,9 @@ int main(int argc, char** argv)
 		gShockPrefs.prefPlayIntro = 0;
 		SavePrefs(kPrefsResID);
 	}*/
+
+	extern errtype load_savegame_names(void);
+	load_savegame_names();
 	
 	printf("Showing title screen\n");
 	SetupTitleScreen();

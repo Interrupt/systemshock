@@ -214,13 +214,10 @@ errtype save_game(char *fname, char *comment)
 		return ERR_FOPEN;
 	}
 
-   printf("Opened file at %i\n", filenum);
-
-/*KLC - no need for this on Mac, where we have sensible, descriptive file names
 	// Save comment
 	ResMake(idx, (void *)comment, strlen(comment)+1, RTYPE_APP, filenum, RDF_LZW);
 	ResWrite(idx);
-	ResUnmake(idx);	*/
+	ResUnmake(idx);
 	idx++;
 	AdvanceProgress();
 
@@ -240,7 +237,7 @@ errtype save_game(char *fname, char *comment)
 
    // HAX HAX HAX Skip the schedule for now!
 	// Save game schedule (resource #590)
-	/*idx = SCHEDULE_BASE_ID;
+	idx = SCHEDULE_BASE_ID;
 // LZW later		ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, RDF_LZW);
 
    printf("Writing schedule\n");
@@ -250,17 +247,15 @@ errtype save_game(char *fname, char *comment)
 	idx++;
 	AdvanceProgress();
 
-   printf("Writing schedule queue\n");
+   printf("FIXME: Writing schedule queue\n");
 	
 	// Save game schedule vec info (resource #591)
 // LZW later		ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, RDF_LZW);
-	ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, 0);
+	/*ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, 0);
 	ResWrite(idx);
 	ResUnmake(idx);
 	idx++;
-	AdvanceProgress();
-
-   printf("Done writing player stuff\n");*/
+	AdvanceProgress();*/
  	
  	ResCloseFile(filenum);
 	AdvanceProgress();
@@ -555,8 +550,8 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    printf("STARTING PLAYER_BIN_X: %i, PLAYER_BIN_Y: %i\n", PLAYER_BIN_X, PLAYER_BIN_Y);
    
    // KLC - if not already on, turn on-line help on.
-   //if (!olh_active)
-   //   toggle_olh_func(0, 0, NULL);
+   if (!olh_active)
+      toggle_olh_func(0, 0, NULL);
    
    // turn on help overlay. 
    olh_overlay_on = TRUE;
