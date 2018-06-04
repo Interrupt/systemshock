@@ -94,7 +94,6 @@ void ResSetComment(int32_t filenum, char *comment) {
 int32_t ResWrite(Id id) {
   static uint8_t pad[] = {0, 0, 0, 0, 0, 0, 0, 0};
   ResDesc *prd;
-  ResDesc2 *prd2;
   ResFile *prf;
   ResDirEntry *pDirEntry;
   uint8_t *p;
@@ -102,6 +101,8 @@ int32_t ResWrite(Id id) {
   void *pcompbuff;
   int32_t compsize;
   int32_t padBytes;
+
+  printf("ResWrite\n");
 
   // Check for errors
   //DBG(DSRC_RES_ChkIdRef, {
@@ -115,12 +116,12 @@ int32_t ResWrite(Id id) {
   //DBG(DSRC_RES_Write, {
   if (prf->pedit == NULL) {
     // Warning(("ResWrite: file %d not open for writing\n", prd->filenum));
+    printf("File %i not open for writing!\n", prd->filenum);
     return -1;
   }
   //});
 
   // Check if item already in directory, if so erase it
-
   ResEraseIfInFile(id);
 
   // If directory full, grow it
@@ -142,7 +143,6 @@ int32_t ResWrite(Id id) {
       ((ResDirEntry *)(prf->pedit->pdir + 1)) + prf->pedit->pdir->numEntries;
 
   pDirEntry->id = id;
-  //prd2 = RESDESC2(id);
   pDirEntry->flags = prd->flags;
   pDirEntry->type = prd->type;
   pDirEntry->size = prd->size;
@@ -155,7 +155,7 @@ int32_t ResWrite(Id id) {
   sizeTable = 0;
   size = prd->size;
 
-  if (prd2->flags & RDF_COMPOUND) {
+  if (prd->flags & RDF_COMPOUND) {
     sizeTable = REFTABLESIZE(((RefTable *)p)->numRefs);
     fwrite(p, sizeTable, 1, prf->fd);
     p += sizeTable;

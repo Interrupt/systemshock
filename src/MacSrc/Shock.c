@@ -65,6 +65,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "physics.h"
 
+#include "wrapper.h"
+
 #include <stdint.h>
 #include <SDL.h>
 
@@ -122,9 +124,6 @@ errtype CheckFreeSpace(short	checkRefNum);
 int main(int argc, char** argv)
 {  
 	InitMac();																// init mac managers
-				
-	STUB("TODO: FlushEvents()?")
-	//FlushEvents(autoKey+keyDown+mouseDown,0L);		// get rid of any extra mouse/key clicks
  
 	GetFolders();															// get refs to data, sound, etc folders.
 
@@ -155,6 +154,9 @@ int main(int argc, char** argv)
 		gShockPrefs.prefPlayIntro = 0;
 		SavePrefs(kPrefsResID);
 	}*/
+
+	extern errtype load_savegame_names(void);
+	load_savegame_names();
 	
 	printf("Showing title screen\n");
 	SetupTitleScreen();

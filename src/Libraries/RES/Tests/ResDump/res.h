@@ -216,7 +216,7 @@ typedef enum
 } ResOpenMode;
 
 void ResAddPath(char *path);		// add search path for resfiles
-short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, bool auxinfo);
+short ResOpenResFile(char *fname, ResOpenMode mode, uchar auxinfo)
 void ResCloseFile(short filenum);	// close res file
 
 #define ResOpenFile(specPtr) ResOpenResFile(specPtr, ROM_READ, FALSE)

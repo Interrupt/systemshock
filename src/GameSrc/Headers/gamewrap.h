@@ -34,8 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define OLD_SAVE_GAME_ID_BASE 550
 #define SAVE_GAME_ID_BASE  4000
 #define NUM_RESIDS_PER_LEVEL  100
-#define CURRENT_GAME_FNAME "Current Game"
-#define ARCHIVE_FNAME "archive.data"
+#define CURRENT_GAME_FNAME "CurrentGame.dat"
+#define ARCHIVE_FNAME "res/data/archive.dat"
 
 #define ResIdFromLevel(level) (SAVE_GAME_ID_BASE+(level*NUM_RESIDS_PER_LEVEL)+2)
 
@@ -50,8 +50,8 @@ errtype copy_file(char *src_fname, char *dest_fname);
 //errtype copy_file(FSSpec *srcFile, FSSpec *destFile, Boolean saveGameFile);
 errtype save_game(char *fname, char *comment);
 //errtype save_game(FSSpec *fSpec);
-//KLC - following is Mac version 		errtype load_game(char *fname);
-errtype load_game(FSSpec *loadSpec);
+errtype load_game(char *fname);
+//errtype load_game(FSSpec *loadSpec);
 errtype write_level_to_disk(int idnum, uchar flush_mem);
 uchar create_initial_game_func(short keycode, ulong context, void* data);
 uchar create_level_archive_func(short keycode, ulong context, void* data);

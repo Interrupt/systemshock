@@ -2070,18 +2070,20 @@ extern void spoof_mouse_event();
 #pragma disable_message(202)
 void load_dealfunc(uchar butid,uchar index)
 {
-   /*begin_wait();
+   begin_wait();
    Poke_SaveName(index);
-   Spew(DSRC_EDITOR_Save,("attempting to load from %s\n",save_game_name));
+   //Spew(DSRC_EDITOR_Save,("attempting to load from %s\n",save_game_name));
+   printf("Attempting to load from %s\n", save_game_name);
+
    if(load_game(save_game_name)!=OK) {
       Warning(("Load game failed!\n"));
    }
    else {
-      Spew(DSRC_EDITOR_Restore,("Game %d loaded!\n",index));
+      printf("Game loaded!\n");
+      //Spew(DSRC_EDITOR_Restore,("Game %d loaded!\n",index));
    }
    end_wait();
-   spoof_mouse_event();*/
-   printf("FIXME: Loading!\n");
+   //spoof_mouse_event();
    wrapper_panel_close(TRUE);
 }
 #pragma enable_message(202)

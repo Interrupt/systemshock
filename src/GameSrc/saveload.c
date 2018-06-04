@@ -72,6 +72,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "trigger.h"
 #include "verify.h"
 
+#include <SDL.h>
+
 /*
 #include <schedule.h>
 #include <dpaths.h>
@@ -343,18 +345,20 @@ errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags
    return(OK);
 }
 
-errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
+errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
 {
    int i,goof;
    int idx = 0;
    int fd;
-   int vnum = MAP_VERSION_NUMBER;
+   int vnum = MAP_EASYSAVES_VERSION_NUMBER;
    int ovnum = OBJECT_VERSION_NUMBER;
    int mvnum = MISC_SAVELOAD_VERSION_NUMBER;
    ObjLoc plr_loc;
    uchar make_player = FALSE;
    State player_edms;
    int verify_cookie = 0;
+
+   printf("Save current map: %s\n", fname);
 
 //KLC - Mac cursor showing at this time   begin_wait();
 
@@ -386,21 +390,22 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
    AdvanceProgress();
 
    // Open the file we're going to save into.
-   fd = ResEditFile(fSpec,TRUE);
+   fd = ResEditFile(CURRENT_GAME_FNAME,TRUE);
    if (fd < 0)
    {
+      printf("No file!\n");
 //KLC      end_wait();
       return ERR_FOPEN;
    }
    AdvanceProgress();
 
-//KLC - just write the last one   REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
+   REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
 
-   idx++;	//KLC - not used   REF_WRITE(id_num,idx++,vnum);
-   idx++;	//KLC - not used   REF_WRITE(id_num,idx++,ovnum);   
+   REF_WRITE(id_num,idx++,vnum);
+   REF_WRITE(id_num,idx++,ovnum);
    REF_WRITE(id_num,idx++,*global_fullmap);
 
-   REF_WRITE_RAW(id_num,idx++,MAP_MAP,sizeof(MapElem) << (MAP_XSHF + MAP_YSHF));
+   REF_WRITE_RAW(id_num,idx++,MAP_MAP,sizeof(MapElem) * 64 * 64);
 
    // Here we are writing out the schedules.  It's only a teeny tiny rep exposure.  
    for (i = 0; i < NUM_MAP_SCHEDULES; i++)
@@ -501,6 +506,9 @@ errtype save_current_map(FSSpec* fSpec, Id id_num, uchar flush_mem, uchar pack)
       extern void spoof_mouse_event();
 //what does this do???      spoof_mouse_event();
    }
+
+   printf("Saved level.\n");
+
    return OK;
 }
 
@@ -784,7 +792,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    extern char old_bits;
    extern int compare_events(void* e1, void* e2);
    
-   int         i, idx = 0, fd, version;
+   int         i, idx = 0, fd, version, map_version;
    LGRect      bounds;
    errtype     retval = OK;
    bool        make_player = FALSE;
@@ -795,9 +803,6 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    curAMap  saveAMaps[NUM_O_AMAP];
    uchar       savedMaps;
    bool        do_anims = FALSE;
-
-   // HAX HAX HAX force level number
-   //id_num = 0x1006;
    
 //   _MARK_("load_current_map:Start");
 
@@ -818,7 +823,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
 
    // Open the saved-game (or archive) file.
-   fd = ResOpenFile("res/data/archive.dat");
+   fd = ResOpenFile(CURRENT_GAME_FNAME);
    if (fd == NULL)
    {
       //Warning(("Could not load map file %s (%s) , rv = %d!\n",dpath_fn,fn,retval));
@@ -845,10 +850,12 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 
    //idx++;
    REF_READ(id_num, idx++, version);
+   map_version = version;
+
    printf("Map Version: %i\n", version);
 
    // Check the version number of the map for this level.
-   if (version != MAP_VERSION_NUMBER)
+   if (version < MAP_VERSION_NUMBER)
    {
       printf("OLD MAP FORMAT!\n");
    }
@@ -959,6 +966,12 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    
    // Read in object information.  For the Mac version, copy from the resource's 27-byte structs, then
    // place it into an Obj struct (which is 28 bytes, due to alignment).  Swap bytes as needed.
+
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
+   {
+      REF_READ(id_num, idx++, objs);
+   }
+   else
    {
       uchar *op = (uchar *)ResLock(id_num + idx);
       for(i = 0; i < NUM_OBJECTS; i++)
@@ -978,6 +991,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    //REF_READ(id_num, idx++, objs);
 
    // Read in and convert the object refs.
+   printf("Sizeof obj: %i\n", sizeof(Obj));
    REF_READ(id_num, idx++, objRefs);
 /* for (i=0; i < NUM_REF_OBJECTS; i++)
    {
@@ -1045,7 +1059,12 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }*/
    
    // Read in and convert the hardwares.  Resource is array of 7-byte structs.  Ours are 8.
- {
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
+   {
+      REF_READ(id_num, idx++, objHardwares);
+   }
+   else
+   {
       uchar *hp = (uchar *)ResLock(id_num + idx);
       for (i=0; i < NUM_OBJECTS_HARDWARE; i++)
       {
@@ -1061,6 +1080,11 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    //REF_READ(id_num, idx++, objHardwares);
    
    // Read in and convert the softwares.  Resource is array of 9-byte structs.  Ours are 10.
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
+   {
+      REF_READ(id_num, idx++, objSoftwares);
+   }
+   else
  {
       uchar *sp = (uchar *)ResLock(id_num + idx);
       for (i=0; i < NUM_OBJECTS_SOFTWARE; i++)
@@ -1153,6 +1177,11 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }  */
    
    // Read in and convert the containers.  Resource is array of 21-byte structs.  Ours are 22.
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
+   {
+      REF_READ(id_num, idx++, objContainers);
+   }
+   else
  {
       uchar *sp = (uchar *)ResLock(id_num + idx);
       for (i=0; i < NUM_OBJECTS_CONTAINER; i++)
@@ -1235,8 +1264,13 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    SwapShortBytes(&default_drug.next);
    SwapShortBytes(&default_drug.prev);*/
    
-   // Convert the default hardware.  Resource is array of 7-byte structs.  Ours is 8.
- {
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
+   {
+      REF_READ(id_num,idx++,default_hardware);
+   }
+   else 
+   {
+      // Convert the default hardware.  Resource is array of 7-byte structs.  Ours is 8.
       uchar *hp = (uchar *)ResLock(id_num + idx);
       memmove(&default_hardware, hp, 7);
       /*SwapShortBytes(&default_hardware.id);
@@ -1247,8 +1281,13 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
    //REF_READ(id_num,idx++,default_hardware);
 
-   // Convert the default software.  Resource is array of 9-byte structs.  Ours is 10.
-{
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
+   {
+      REF_READ(id_num, idx++, default_software);
+   }
+   else
+   {
+      // Convert the default software.  Resource is array of 9-byte structs.  Ours is 10.
       uchar *sp = (uchar *)ResLock(id_num + idx);
       memmove(&default_software, sp, 7);
       memmove(&default_software.data_munge, sp+7, 2);
@@ -1315,8 +1354,13 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    SwapLongBytes(&default_trap.p3);
    SwapLongBytes(&default_trap.p4);*/
 
- // Convert the default container.  Resource is a 21-byte struct.  Ours is 22.
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
    {
+      REF_READ(id_num, idx++, default_container);
+   }
+   else
+   {
+      // Convert the default container.  Resource is a 21-byte struct.  Ours is 22.
       uchar *sp = (uchar *)ResLock(id_num + idx);
       memmove(&default_container, sp, 17);
       memmove(&default_container.data1, sp+17, 4);
@@ -1362,8 +1406,13 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 */
    idx++;   // skip over resource where flickers once lived
 
-   // Convert the anim textures.  Resource is a 7-byte struct.  Ours is 8.
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
    {
+      REF_READ(id_num, idx++, animtextures);
+   }
+   else
+   {
+      // Convert the anim textures.  Resource is a 7-byte struct.  Ours is 8.
       uchar *ap = (uchar *)ResLock(id_num + idx);
       for (i=0; i < NUM_ANIM_TEXTURE_GROUPS; i++)
       {
@@ -1373,7 +1422,6 @@ errtype load_current_map(Id id_num, FSSpec* spec)
       ResUnlock(id_num + idx);
       idx++;
    }
-   //REF_READ(id_num, idx++, animtextures);
 
    // Read in and convert the hack camera objects.
    REF_READ( id_num, idx++, hack_cam_objs);
@@ -1396,7 +1444,11 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
    
    // Get other level data at next id
-   //REF_READ( id_num, idx++, level_gamedata);
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
+   {
+      REF_READ(id_num, idx++, level_gamedata);
+   }
+   else
  {
       uchar *ldp = (uchar *)ResLock(id_num + idx);
       LG_memset(&level_gamedata, 0, sizeof(LevelData));
@@ -1452,20 +1504,26 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    REF_READ(id_num,idx++,used_paths);
 // SwapShortBytes(&used_paths);
 
-   uchar *ap = (uchar *)ResLock(id_num + idx);
-   for (i=0; i < MAX_ANIMLIST_SIZE; i++)
+   if(map_version > MAP_VERSION_NUMBER)
    {
-      memmove(&animlist[i].id, ap, 2);
-      memmove(&animlist[i].flags, ap+2, 1);
-      memmove(&animlist[i].cbtype, ap+3, 12);
-      ap += 15;
-      /*SwapShortBytes(&animlist[i].id);
-      SwapShortBytes(&animlist[i].cbtype);
-      SwapLongBytes(&animlist[i].callback);
-      SwapShortBytes(&animlist[i].speed);*/
+      REF_READ(id_num, idx++, animlist);
    }
-   ResUnlock(id_num + idx);
-   idx++;
+   else {
+      uchar *ap = (uchar *)ResLock(id_num + idx);
+      for (i=0; i < MAX_ANIMLIST_SIZE; i++)
+      {
+         memmove(&animlist[i].id, ap, 2);
+         memmove(&animlist[i].flags, ap+2, 1);
+         memmove(&animlist[i].cbtype, ap+3, 12);
+         ap += 15;
+         /*SwapShortBytes(&animlist[i].id);
+         SwapShortBytes(&animlist[i].cbtype);
+         SwapLongBytes(&animlist[i].callback);
+         SwapShortBytes(&animlist[i].speed);*/
+      }
+      ResUnlock(id_num + idx);
+      idx++;
+   }
    //REF_READ(id_num, idx++, animlist);    
 
    REF_READ(id_num, idx++, anim_counter);
@@ -1544,7 +1602,7 @@ obj_out:
    }
 
 out:
-   //ResCloseFile(fd);
+   ResCloseFile(fd);
 
    reset_pathfinding();
    old_bits = -1;
