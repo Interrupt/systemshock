@@ -87,6 +87,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MAP_SCHEDULE_GAMETIME 0
 #define NUM_MAP_SCHEDULES     1
 
+// CC: simplified savegames version
+#define MAP_EASYSAVES_VERSION_NUMBER ((int)12)
+
 #define MAP_VERSION_NUMBER ((int)11)
 // so we auto convert from it
 #define OLD_MAP

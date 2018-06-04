@@ -571,5 +571,5 @@ errtype write_level_to_disk(int idnum, uchar flush_mem)
    printf("write_level_to_disk\n");
 
    //char* currSpec = "saves/save.dat";
-	return(save_current_map("savgam00.dat", idnum, flush_mem,TRUE));
+	return(save_current_map(CURRENT_GAME_FNAME, idnum, flush_mem,TRUE));
 }

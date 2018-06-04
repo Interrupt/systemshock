@@ -350,7 +350,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
    int i,goof;
    int idx = 0;
    int fd;
-   int vnum = MAP_VERSION_NUMBER + 1;
+   int vnum = MAP_EASYSAVES_VERSION_NUMBER;
    int ovnum = OBJECT_VERSION_NUMBER;
    int mvnum = MISC_SAVELOAD_VERSION_NUMBER;
    ObjLoc plr_loc;
@@ -405,15 +405,13 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
    REF_WRITE(id_num,idx++,ovnum);
    REF_WRITE(id_num,idx++,*global_fullmap);
 
-   printf("Size: %i %i\n", sizeof(MapElem), sizeof(MapElem) << (MAP_XSHF + MAP_YSHF));
    REF_WRITE_RAW(id_num,idx++,MAP_MAP,sizeof(MapElem) * 64 * 64);
 
    // Here we are writing out the schedules.  It's only a teeny tiny rep exposure.  
    for (i = 0; i < NUM_MAP_SCHEDULES; i++)
    {
-      //int sz = min(global_fullmap->sched[i].queue.fullness+1,global_fullmap->sched[i].queue.size);
-      //REF_WRITE_RAW(id_num,idx++,global_fullmap->sched[i].queue.vec, sizeof(SchedEvent)*sz);
-      idx++;
+      int sz = min(global_fullmap->sched[i].queue.fullness+1,global_fullmap->sched[i].queue.size);
+      REF_WRITE_RAW(id_num,idx++,global_fullmap->sched[i].queue.vec, sizeof(SchedEvent)*sz);
    }
    REF_WRITE(id_num,idx++,loved_textures);
 
@@ -857,7 +855,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    printf("Map Version: %i\n", version);
 
    // Check the version number of the map for this level.
-   if (version != MAP_VERSION_NUMBER)
+   if (version < MAP_VERSION_NUMBER)
    {
       printf("OLD MAP FORMAT!\n");
    }
@@ -969,7 +967,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    // Read in object information.  For the Mac version, copy from the resource's 27-byte structs, then
    // place it into an Obj struct (which is 28 bytes, due to alignment).  Swap bytes as needed.
 
-   if(map_version > MAP_VERSION_NUMBER)
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
    {
       REF_READ(id_num, idx++, objs);
    }
@@ -1061,7 +1059,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }*/
    
    // Read in and convert the hardwares.  Resource is array of 7-byte structs.  Ours are 8.
-   if(map_version > MAP_VERSION_NUMBER)
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
    {
       REF_READ(id_num, idx++, objHardwares);
    }
@@ -1082,7 +1080,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    //REF_READ(id_num, idx++, objHardwares);
    
    // Read in and convert the softwares.  Resource is array of 9-byte structs.  Ours are 10.
-   if(map_version > MAP_VERSION_NUMBER)
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
    {
       REF_READ(id_num, idx++, objSoftwares);
    }
@@ -1179,7 +1177,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }  */
    
    // Read in and convert the containers.  Resource is array of 21-byte structs.  Ours are 22.
-   if(map_version > MAP_VERSION_NUMBER)
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
    {
       REF_READ(id_num, idx++, objContainers);
    }
@@ -1266,8 +1264,13 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    SwapShortBytes(&default_drug.next);
    SwapShortBytes(&default_drug.prev);*/
    
-   // Convert the default hardware.  Resource is array of 7-byte structs.  Ours is 8.
- {
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
+   {
+      REF_READ(id_num,idx++,default_hardware);
+   }
+   else 
+   {
+      // Convert the default hardware.  Resource is array of 7-byte structs.  Ours is 8.
       uchar *hp = (uchar *)ResLock(id_num + idx);
       memmove(&default_hardware, hp, 7);
       /*SwapShortBytes(&default_hardware.id);
@@ -1278,8 +1281,13 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
    //REF_READ(id_num,idx++,default_hardware);
 
-   // Convert the default software.  Resource is array of 9-byte structs.  Ours is 10.
-{
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
+   {
+      REF_READ(id_num, idx++, default_software);
+   }
+   else
+   {
+      // Convert the default software.  Resource is array of 9-byte structs.  Ours is 10.
       uchar *sp = (uchar *)ResLock(id_num + idx);
       memmove(&default_software, sp, 7);
       memmove(&default_software.data_munge, sp+7, 2);
@@ -1346,13 +1354,13 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    SwapLongBytes(&default_trap.p3);
    SwapLongBytes(&default_trap.p4);*/
 
- // Convert the default container.  Resource is a 21-byte struct.  Ours is 22.
-   if(map_version > MAP_VERSION_NUMBER)
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
    {
       REF_READ(id_num, idx++, default_container);
    }
    else
    {
+      // Convert the default container.  Resource is a 21-byte struct.  Ours is 22.
       uchar *sp = (uchar *)ResLock(id_num + idx);
       memmove(&default_container, sp, 17);
       memmove(&default_container.data1, sp+17, 4);
@@ -1398,13 +1406,13 @@ errtype load_current_map(Id id_num, FSSpec* spec)
 */
    idx++;   // skip over resource where flickers once lived
 
-   // Convert the anim textures.  Resource is a 7-byte struct.  Ours is 8.
-   if(map_version > MAP_VERSION_NUMBER)
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
    {
       REF_READ(id_num, idx++, animtextures);
    }
    else
    {
+      // Convert the anim textures.  Resource is a 7-byte struct.  Ours is 8.
       uchar *ap = (uchar *)ResLock(id_num + idx);
       for (i=0; i < NUM_ANIM_TEXTURE_GROUPS; i++)
       {
@@ -1414,7 +1422,6 @@ errtype load_current_map(Id id_num, FSSpec* spec)
       ResUnlock(id_num + idx);
       idx++;
    }
-   //REF_READ(id_num, idx++, animtextures);
 
    // Read in and convert the hack camera objects.
    REF_READ( id_num, idx++, hack_cam_objs);
@@ -1437,8 +1444,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
    
    // Get other level data at next id
-   //REF_READ( id_num, idx++, level_gamedata);
-   if(map_version > MAP_VERSION_NUMBER)
+   if(map_version == MAP_EASYSAVES_VERSION_NUMBER)
    {
       REF_READ(id_num, idx++, level_gamedata);
    }
