@@ -42,7 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // make sure comment ends with one, so can type a file
 #define CTRL_Z 26
 
-
 bool ResEraseIfInFile(Id id);
 
 //  Internal prototypes
@@ -105,7 +104,7 @@ int32_t ResWrite(Id id) {
   printf("ResWrite\n");
 
   // Check for errors
-  //DBG(DSRC_RES_ChkIdRef, {
+  // DBG(DSRC_RES_ChkIdRef, {
   if (!ResCheckId(id))
     return -1;
   //});
@@ -113,7 +112,7 @@ int32_t ResWrite(Id id) {
   prd = RESDESC(id);
   prf = &resFile[prd->filenum];
 
-  //DBG(DSRC_RES_Write, {
+  // DBG(DSRC_RES_Write, {
   if (prf->pedit == NULL) {
     // Warning(("ResWrite: file %d not open for writing\n", prd->filenum));
     printf("File %i not open for writing!\n", prd->filenum);
@@ -143,6 +142,7 @@ int32_t ResWrite(Id id) {
       ((ResDirEntry *)(prf->pedit->pdir + 1)) + prf->pedit->pdir->numEntries;
 
   pDirEntry->id = id;
+  //prd2 = RESDESC2(id);
   pDirEntry->flags = prd->flags;
   pDirEntry->type = prd->type;
   pDirEntry->size = prd->size;
@@ -186,9 +186,9 @@ int32_t ResWrite(Id id) {
   if (padBytes)
     fwrite(pad, padBytes, 1, prf->fd);
 
-// FIXME Error handling
-//  if (ftell(prf->fd) & 3)
-//    Warning(("ResWrite: misaligned writing!\n"));
+  // FIXME Error handling
+  //  if (ftell(prf->fd) & 3)
+  //    Warning(("ResWrite: misaligned writing!\n"));
 
   // Advance dir num entries, current data offset
   prf->pedit->pdir->numEntries++;
@@ -232,7 +232,7 @@ void ResKill(Id id) {
   if (resFile[prd->filenum].pedit == NULL) {
     return;
   }
-  //DBG(DSRC_RES_Write, {
+  // DBG(DSRC_RES_Write, {
   if (resFile[prd->filenum].pedit == NULL) {
     // Warning(("ResKill: file %d not open for writing\n", prd->filenum));
     return;
