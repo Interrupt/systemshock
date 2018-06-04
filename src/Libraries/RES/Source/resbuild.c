@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // make sure comment ends with one, so can type a file
 #define CTRL_Z 26
 
-#define	min(a,b) (((a) < (b)) ? (a) : (b))
+#define min(a, b) (((a) < (b)) ? (a) : (b))
 
 bool ResEraseIfInFile(Id id);
 

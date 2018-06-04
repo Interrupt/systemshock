@@ -114,7 +114,7 @@ void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags) {
 //
 //		ref      = reference
 //		pitem    = ptr to item's data (copied from here, unlike simple
-// resource)
+//			resource)
 //		itemSize = size of item
 //	---------------------------------------------------------------
 //  For Mac version:  Change references from 'ptr' to 'hdl'.  Use Mac memory
@@ -215,14 +215,12 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
 //		ptr to NULL.  In this way, a program may take over management
 //		of the resource data, and the RES system forgets about it.
 //		This is typically done when user-managed data needs to be
-//		written to a resource file, using
-// ResMake(),ResWrite(),ResUnmake().
+//		written to a resource file, using ResMake(), ResWrite(),
+//		ResUnmake().
 //
 //		id = id of resource to unmake
 //	--------------------------------------------------------
 //  For Mac version: use ReleaseResource to free the handle (the pointer that
 //  the handle was made from will still be around).
 
-void ResUnmake(Id id) {
-  memset(RESDESC(id), 0, sizeof(ResDesc));
-}
+void ResUnmake(Id id) { memset(RESDESC(id), 0, sizeof(ResDesc)); }

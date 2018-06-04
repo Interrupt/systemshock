@@ -47,9 +47,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	The resource descriptor table
 
-ResDesc *gResDesc; // ptr to array of resource descriptors
+ResDesc *gResDesc;   // ptr to array of resource descriptors
 ResDesc2 *gResDesc2; // secondary array, shared buff with resdesc
-Id resDescMax;     // max id in res desc
+Id resDescMax;       // max id in res desc
 // default max resource id
 #define DEFAULT_RESMAX 32767
 // grow by blocks of 1024 resources must be power of 2!

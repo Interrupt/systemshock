@@ -67,7 +67,7 @@ void *ResLock(Id id) {
   if (ResLoadResource(id) == NULL) {
     printf("ResLock: Could not load %x\n", id);
     return (NULL);
-  }  else if (prd->lock == 0)
+  } else if (prd->lock == 0)
     ResRemoveFromLRU(prd);
 
   //	Tally stats, check for over-lock

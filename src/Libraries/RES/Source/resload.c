@@ -65,10 +65,12 @@ void *ResLoadResource(Id id) {
   // If doesn't exit, forget it
 
   // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResInUse(id)) return NULL;
+  if (!ResInUse(id))
+    return NULL;
   //});
   // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResCheckId(id)) return NULL;
+  if (!ResCheckId(id))
+    return NULL;
   //});
 
   // printf("ResLoadResource: loading $%x\n", id);
@@ -76,7 +78,7 @@ void *ResLoadResource(Id id) {
   prd = RESDESC(id);
   prd2 = RESDESC2(id);
 
-  if(prd->size == 0) {
+  if (prd->size == 0) {
     return NULL;
   }
 

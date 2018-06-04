@@ -175,15 +175,15 @@ size;
 } ResDesc;*/
 
 typedef struct {
-  void *ptr;            // ptr to resource in memory, or NULL if on disk
-  uint32_t lock : 8;    // lock count
-  uint32_t size : 24;   // size of resource in bytes (1 Mb max)
-  uint32_t filenum : 5; // file number 0-31
-  uint32_t offset : 27; // offset in file
-  Id next;           // next resource in LRU order
-  Id prev;           // previous resource in LRU order
-  /*uint32_t flags;*/       // misc flags (RDF_XXX, see below)
-  /*uint16_t type : 8;*/   // resource type (RTYPE_XXX, see restypes.h)
+  void *ptr;             // ptr to resource in memory, or NULL if on disk
+  uint32_t lock : 8;     // lock count
+  uint32_t size : 24;    // size of resource in bytes (1 Mb max)
+  uint32_t filenum : 5;  // file number 0-31
+  uint32_t offset : 27;  // offset in file
+  Id next;               // next resource in LRU order
+  Id prev;               // previous resource in LRU order
+  /*uint32_t flags;*/    // misc flags (RDF_XXX, see below)
+  /*uint16_t type : 8;*/ // resource type (RTYPE_XXX, see restypes.h)
 } ResDesc;
 
 typedef struct {
@@ -194,8 +194,8 @@ typedef struct {
 #define RESDESC(id) (&gResDesc[id])      // convert id to resource desc ptr
 #define RESDESC_ID(prd) ((prd)-gResDesc) // convert resdesc ptr to id
 
-#define RESDESC2(id) (&gResDesc2[id])            // convert id to rd2 ptr
-#define RESDESC2_ID(prd) ((prd)-gResDesc2)       // convert rd2 ptr to id
+#define RESDESC2(id) (&gResDesc2[id])      // convert id to rd2 ptr
+#define RESDESC2_ID(prd) ((prd)-gResDesc2) // convert rd2 ptr to id
 
 #define RDF_LZW 0x01        // if 1, LZW compressed
 #define RDF_COMPOUND 0x02   // if 1, compound resource
@@ -207,7 +207,7 @@ typedef struct {
 // ptr to big array of ResDesc's
 extern ResDesc *gResDesc;
 // ptr to array of ResDesc2 (shared buff with resdesc)
-extern ResDesc2 * gResDesc2;
+extern ResDesc2 *gResDesc2;
 
 extern Id resDescMax; // max id in res desc
 
@@ -222,7 +222,6 @@ extern Id resDescMax; // max id in res desc
 #define ResCompressed(id) (gResDesc2[id].flags & RDF_LZW)
 #define ResIsCompound(id) (gResDesc2[id].flags & RDF_COMPOUND)
 //#define ResZipped(id) (gResDesc2[id].flags & RDF_PKZIP)
-
 
 //#define MaxSizeRsrc(theResource) GetMaxResourceSize(theResource)
 

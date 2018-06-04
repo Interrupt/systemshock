@@ -184,7 +184,7 @@ RefTable *ResReadRefTable(Id id) {
   // Check id and file number and make sure compound
   // DBG(DSRC_RES_ChkIdRef, {
   if (!ResCheckId(id))
-    return(NULL);
+    return (NULL);
   //});
 
   prd = RESDESC(id);
@@ -265,8 +265,7 @@ int32_t ResExtractRefTable(Id id, RefTable *prt, int32_t size) {
 // return number of refs, or -1 if error
 //
 //	---------------------------------------------------------
-int32_t ResNumRefs(Id id)
-{
+int32_t ResNumRefs(Id id) {
   ResDesc *prd;
 
   // Check id and file number and make sure compound
@@ -296,7 +295,6 @@ int32_t ResNumRefs(Id id)
     return result;
   }
 }
-
 
 //	---------------------------------------------------------
 //
