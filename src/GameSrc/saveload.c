@@ -376,13 +376,13 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
    trigger_check=FALSE;
 
    // save off physics stuff
-   /*EDMS_get_state(objs[PLAYER_OBJ].info.ph, &player_edms);
+   EDMS_get_state(objs[PLAYER_OBJ].info.ph, &player_edms);
    if (PLAYER_OBJ != OBJ_NULL)
    {
       plr_loc = objs[PLAYER_OBJ].loc;
       obj_destroy(PLAYER_OBJ);
       make_player = TRUE;
-   }*/
+   }
 
    // Read appropriate state modifiers
 //   if (flush_mem)
