@@ -381,7 +381,7 @@ uchar event_dispatch_callback(LGRegion* reg, LGRect* rect, void* v)
    int i,next;
 
    if(ch == NULL) {
-      printf("WARNING! handler_chain is NULL in event_dispatch_callback\n");
+      //printf("WARNING! handler_chain is NULL in event_dispatch_callback\n");
       return FALSE;
    }
    
@@ -632,8 +632,6 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
 
    bool altDown = (SDL_GetModState() & KMOD_ALT) != 0;
 
-   printf("----- ui_dispatch_mouse_event -----\n");
-
 //   ui_mouse_do_conversion(&(mout->pos.x),&(mout->pos.y),TRUE);
    ui_flush_mouse_events(mout->tstamp,mout->pos);
    for (i = 0; i < NUM_MOUSE_BTNS; i++)
@@ -641,7 +639,7 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
       if (!(uiDoubleClicksOn[i]))
          continue;
 
-      printf("Checking double click! %i\n", mout->action & MOUSE_BTN2DOWN(i));
+      //printf("Checking double click! %i\n", mout->action & MOUSE_BTN2DOWN(i));
       if (uiAltDoubleClick && altDown)
       {
          if (mout->action & MOUSE_BTN2DOWN(i))
