@@ -64,7 +64,7 @@ void *ResLock(Id id)
 
 	// CC: If already loaded, use the existing bytes
 
-	if(prd->lock > 0) {
+	if(prd->ptr != NULL) {
 		prd->lock++;
 		return prd->ptr;
 	}
@@ -139,6 +139,8 @@ void ResUnlock(Id id)
 
 	if (prd->lock == 0)
 	{
+		// CC: Should we free the prd ptr here?
+		
 //		HUnlock(prd->hdl);
 //		ResAddToTail(prd);
 //		DBG(DSRC_RES_Stat, {resStat.numLocked--;});

@@ -72,7 +72,7 @@ void *ResLoadResource(Id id)
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResInUse(id)) return NULL;});
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
 
-	// printf("ResLoadResource: loading $%x\n", id);
+	printf("ResLoadResource: loading $%x\n", id);
 
 	//	Allocate memory, setting magic id so pager can tell who it is if need be.
 
