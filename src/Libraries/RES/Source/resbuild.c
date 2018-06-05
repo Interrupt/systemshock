@@ -61,6 +61,7 @@ static void ResCopyBytes(FILE *fd, int32_t writePos, int32_t readPos,
 void ResSetComment(int32_t filenum, char *comment) {
 
   ResFileHeader *phead;
+  /*
   DBG(DSRC_RES_ChkIdRef, {
     if (resFile[filenum].pedit == NULL) {
       return;
