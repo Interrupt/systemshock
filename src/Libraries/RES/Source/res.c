@@ -71,22 +71,18 @@ void ResInit() {
   // char *p;
   int32_t i;
 
-  atexit(ResTerm);
+  // We must exit cleanly
+  // FIXME Segfault at exit
+  //atexit(ResTerm);
   /*
-  //	We must exit cleanly
-
-          AtExit(ResTerm);
-
-  //	Set memory allocator, init LZW system
-
-          MemPushAllocator(ResMalloc, ResRealloc, ResFree);
-          resPushedAllocators = TRUE;
-          LzwInit();
+  // Set memory allocator, init LZW system
+  MemPushAllocator(ResMalloc, ResRealloc, ResFree);
+  resPushedAllocators = TRUE;
   */
 
   LzwInit();
 
-  //	Allocate initial resource descriptor table, default size (can't fail)
+  // Allocate initial resource descriptor table, default size (can't fail)
 
   printf("ResInit\n");
 
@@ -101,12 +97,12 @@ void ResInit() {
   gResDesc[ID_TAIL].prev = ID_HEAD;
   gResDesc[ID_TAIL].next = 0;
 
-  //	Clear file descriptor array
+  // Clear file descriptor array
 
   for (i = 0; i <= MAX_RESFILENUM; i++)
     resFile[i].fd = NULL;
 
-  //	Add directory pointed to by RES env var to search path
+  // Add directory pointed to by RES env var to search path
 
   /*p = getenv("RES");
   if (p)
@@ -114,7 +110,7 @@ void ResInit() {
 
   Spew(DSRC_RES_General, ("ResInit: res system initialized\n"));*/
 
-  //	Install default pager
+  // Install default pager
   // ResInstallPager(ResDefaultPager);
 }
 
@@ -167,7 +163,6 @@ void ResTerm() {
 void ResGrowResDescTable(Id id) {
   int32_t newAmt, currAmt;
   ResDesc2 *pNewResDesc2;
-  ;
 
   // Calculate size of new table and size of current
 
