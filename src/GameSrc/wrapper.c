@@ -1117,7 +1117,7 @@ void opanel_redraw(uchar back)
    if (!full_game_3d)
       inventory_clear();
    gr_push_canvas(&inv_norm_canvas);
-   uiHideMouse(&r);
+   uiHideMouse(NULL);
    gr_set_font(opt_font);
    if(back) {
       if (full_game_3d)
