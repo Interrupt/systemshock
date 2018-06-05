@@ -90,14 +90,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RTYPE_RECT                                                             \
   18 // list of bounding rects for images (usually in
      // compound table)
-
-//	Resource types 48-63 are application-specific
-
+// Resource types 48-63 are application-specific
 #define RTYPE_APP 48 // 16 application-specific resource types
 
-//	Type names can be found thru this array (array kept in res.c)
-
+// Type names can be found thru this array (array kept in res.c)
 extern char *resTypeNames[NUM_RESTYPENAMES];
-// extern ResType resMacTypes[NUM_RESTYPENAMES]; // Table of Mac resID's - KC
 
 #endif

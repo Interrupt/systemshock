@@ -88,7 +88,7 @@ typedef uint16_t RefIndex; // index part of ref
 
 //	Here's how you get parts of a ref, or make a ref
 
-#define REFID(ref) ((ref) >> 16)                           // get id from ref
+#define REFID(ref) (uint16_t)((ref) >> 16)                 // get id from ref
 #define REFINDEX(ref) (uint16_t)((ref)&0xFFFF)             // get index from ref
 #define MKREF(id, index) ((((int32_t)id) << 16) | (index)) // make ref
 
@@ -289,12 +289,15 @@ proper DBG bit set
 //		RESOURCE MAKING  (resmake.c)
 //	----------------------------------------------------------
 
+// make resource from data block
 void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum,
-             uint8_t flags); // make resource from data block
-void ResMakeCompound(Id id, uint8_t type, int32_t filenum,
-                     uint8_t flags); // make empty compound resource
-void ResAddRef(Ref ref, void *pitem, int32_t itemSize); // add item to compound
-void ResUnmake(Id id);                                  // unmake a resource
+             uint8_t flags);
+// make empty compound resource
+void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags);
+// add item to compound
+void ResAddRef(Ref ref, void *pitem, int32_t itemSize);
+// unmake a resource
+void ResUnmake(Id id);
 
 //	----------------------------------------------------------
 //		RESOURCE FILE LAYOUT
@@ -325,7 +328,7 @@ typedef struct {
   uint32_t type : 8;   // resource type
 } ResDirEntry;
 
-//	Active resource file table
+// Active resource file table
 
 typedef struct {
   uint16_t flags;         // RFF_XXX
@@ -345,7 +348,7 @@ typedef struct {
 
 extern ResFile resFile[MAX_RESFILENUM + 1];
 
-//	Macros to get ptr to resfile's directory, & iterate across entries
+// Macros to get ptr to resfile's directory, & iterate across entries
 
 #define RESFILE_HASDIR(filenum) (resFile[filenum].pedit)
 #define RESFILE_DIRPTR(filenum) (resFile[filenum].pedit->pdir)

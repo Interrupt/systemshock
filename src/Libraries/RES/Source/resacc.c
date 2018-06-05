@@ -202,25 +202,25 @@ void *ResExtract(Id id, void *buffer) {
 void ResDrop(Id id) {
   ResDesc *prd;
 
-  //	Check for locked
-
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
+  // Check for locked
+  // DBG(DSRC_RES_ChkIdRef, {
+  if (!ResCheckId(id))
+    return;
+  //});
 
   prd = RESDESC(id);
-  //	DBG(DSRC_RES_ChkLock, {if (prd->lock) \
-//		Warning(("ResDrop: Block $%x is locked, dropping anyway\n", id));});
-  //	DBG(DSRC_RES_ChkLock, {if (prd->flags & RDF_NODROP) \
-//		Warning(("ResDrop: Block $%x has NODROP flag set, dropping anyway\n", id));});
-
+  // DBG(DSRC_RES_ChkLock, {if (prd->lock) \
+  // Warning(("ResDrop: Block $%x is locked, dropping anyway\n", id));});
+  // DBG(DSRC_RES_ChkLock, {if (prd->flags & RDF_NODROP) \
+  // Warning(("ResDrop: Block $%x has NODROP flag set, dropping anyway\n", id));});
   // Spew(DSRC_RES_DelDrop, ("ResDrop: dropping $%x\n", id));
 
   // Remove from LRU chain
   if (prd->lock == 0)
     ResRemoveFromLRU(prd);
 
-  //	Tally stats
-
-  //	DBG(DSRC_RES_Stat, {resStat.totMemAlloc -= prd->size;
+  // Tally stats
+  // DBG(DSRC_RES_Stat, {resStat.totMemAlloc -= prd->size;
   //		resStat.numLoaded--;
   //		Spew(DSRC_RES_Stat, ("ResDrop: free %d, total now %d bytes\n",
   //			prd->size, resStat.totMemAlloc));});
@@ -255,45 +255,43 @@ void ResDrop(Id id) {
 void ResDelete(Id id) {
   ResDesc *prd;
 
-  //	If locked, issue warning
-
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
+  // If locked, issue warning
+  // DBG(DSRC_RES_ChkIdRef, {
+  if (!ResCheckId(id))
+    return;
+  //});
 
   prd = RESDESC(id);
-  //	DBG(DSRC_RES_ChkLock, {if (prd->lock) \
-//		Warning(("ResDelete: Block $%x is locked!\n", id));});
+  // DBG(DSRC_RES_ChkLock, {if (prd->lock) \
+  // Warning(("ResDelete: Block $%x is locked!\n", id));});
 
-  //	If in use: if in ram, free memory & LRU, then in any case zap entry
-
+  // If in use: if in ram, free memory & LRU, then in any case zap entry
   if (prd->offset) {
-    //		Spew(DSRC_RES_DelDrop, ("ResDelete: deleting $%x\n", id));
+    // Spew(DSRC_RES_DelDrop, ("ResDelete: deleting $%x\n", id));
     if (prd->ptr) {
-      //			Spew(DSRC_RES_DelDrop, ("ResDelete: freeing
-      // memory for $%x\n", id)); 			DBG(DSRC_RES_Stat,
-      //{resStat.totMemAlloc -= prd->size;
-      //				resStat.numLoaded--;
-      //				Spew(DSRC_RES_Stat, ("ResDelete: free
-      //%d, total now %d bytes\n",
-      //					prd->size,
-      // resStat.totMemAlloc));});
+      // Spew(DSRC_RES_DelDrop, ("ResDelete: freeing memory for $%x\n", id));
+      // DBG(DSRC_RES_Stat,
+      // {resStat.totMemAlloc -= prd->size;
+      // resStat.numLoaded--;
+      // Spew(DSRC_RES_Stat, ("ResDelete: free %d, total now %d bytes\n",
+      // prd->size, resStat.totMemAlloc));
+      // });
 
-      // ReleaseResource(prd->hdl);				// release the
-      // resource.
+      // ReleaseResource(prd->hdl); // release the resource.
 
-      // if (prd->lock == 0)
-      // ResRemoveFromLRU(prd);
+      if (prd->lock == 0)
+        ResRemoveFromLRU(prd);
 
       ResDrop(id);
     }
     memset(prd, 0, sizeof(ResDesc));
   }
 
-  //	Else if not in use, spew to whoever's listening
-
-  //	else
-  //		{
-  //		Spew(DSRC_RES_DelDrop, ("ResDelete: $%x not in use\n", id));
-  //		}
+  // Else if not in use, spew to whoever's listening
+  // else
+  // {
+  // Spew(DSRC_RES_DelDrop, ("ResDelete: $%x not in use\n", id));
+  // }
 }
 
 //	--------------------------------------------------------

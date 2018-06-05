@@ -61,17 +61,21 @@ static void ResCopyBytes(FILE *fd, int32_t writePos, int32_t readPos,
 void ResSetComment(int32_t filenum, char *comment) {
 
   ResFileHeader *phead;
-  /*
   DBG(DSRC_RES_ChkIdRef, {
     if (resFile[filenum].pedit == NULL) {
-       filenum)); \
       return;
     }
   });
+    DBG(DSRC_RES_ChkIdRef, {
+      if (resFile[filenum].pedit == NULL) {
+      Warning(("ResSetComment: file %d not open for writing\n", filenum));
+      return;}
+    });
   Spew(DSRC_RES_General,
        ("ResSetComment: setting comment for filenum %d to:\n%s\n", filenum,
         comment));
   */
+
   phead = &resFile[filenum].pedit->hdr;
   memset(phead->comment, 0, sizeof(phead->comment));
   strncpy(phead->comment, comment, sizeof(phead->comment) - 2);
@@ -100,10 +104,9 @@ int32_t ResWrite(Id id) {
   ResFile *prf;
   ResDirEntry *pDirEntry;
   uint8_t *p;
-  int32_t size, sizeTable;
+  uint32_t size, sizeTable;
   void *pcompbuff;
-  int32_t compsize;
-  int32_t padBytes;
+  int32_t compsize, padBytes;
 
   printf("ResWrite\n");
 
