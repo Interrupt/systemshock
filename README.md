@@ -22,16 +22,17 @@ This is my attempt at a cross platform source port of the System Shock source co
 - AI
 - Physics
 - Cyberspace
+- Saving / Loading
 
 # Not working:
-- Saving / Loading
-  - save and load system needs to be reimplemented
 - Sound & Music
   - SDL_Mixer should be able to play the VOC and MIDI files used for sfx and music
 - Main Menu
   - the original main menu should be revived, instead of the Mac version
 - Video Files
   - Need to revive the old movie rendering code in AFile
+- Stability
+  - Leaks memory, crashes often
 
 Compiling / Running
 ============
