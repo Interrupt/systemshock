@@ -60,16 +60,23 @@ void *ResLock(Id id)
 	//	Add to cumulative stats
 //	CUMSTATS(id,numLocks);
 
-	//	If resource not loaded, load it
-
 	prd = RESDESC(id);
+
+	// CC: If already loaded, use the existing bytes
+
+	if(prd->lock > 0) {
+		prd->lock++;
+		return prd->ptr;
+	}
+
+	//	If resource not loaded, load it now
+
 	if (ResLoadResource(id) == NULL) {
 		printf("ResLock: Could not load %x\n", id);
 		return(NULL);
 	}
-
-//	else if (prd->lock == 0)
-//		ResRemoveFromLRU(prd);
+	else if (prd->lock == 0)
+		ResRemoveFromLRU(prd);
 
 	//	Tally stats, check for over-lock
 
