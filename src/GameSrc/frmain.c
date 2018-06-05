@@ -88,8 +88,7 @@ int fr_rend(frc *view)
          _g3d_enable_blend=FALSE;
       }
 
-      // HAX HAX HAX: why is this needed to reset the view?
-      ss_safe_set_cliprect(0,0,640,480);
+      // CC: Do we really need to do this?
       //gr_clear(0x0);
 
       // MLA - does nothing!  

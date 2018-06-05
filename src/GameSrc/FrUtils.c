@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
  #include "FrUtils.h"
+ #include "gr2ss.h"
  #include "Shock.h"
  #include "2d.h"
 
@@ -81,8 +82,8 @@ void FreeDoubleBuffer(void)
  // hard coded to copy from 56,57 to 56+536,57+259 to the screen 
  #define kFastSlotWide 536
  #define kFastSlotHigh 259
- #define kFastSlotLeft 56
- #define kFastSlotTop 57
+ #define kFastSlotLeft 28
+ #define kFastSlotTop 24
  
   #define kFastSlotWide_Half 268
  #define kFastSlotHigh_Half 129
@@ -93,7 +94,7 @@ void FreeDoubleBuffer(void)
 #if (defined(powerc) || defined(__powerc))	
 void Fast_Slot_Copy(grs_bitmap *bm)
    {
-   	gr_bitmap(bm, kFastSlotLeft, kFastSlotTop);
+   	gr_bitmap(bm, SCONV_X(kFastSlotLeft), SCONV_Y(kFastSlotTop));
   }
 #else
 asm void Fast_Slot_Copy(grs_bitmap *bm)
