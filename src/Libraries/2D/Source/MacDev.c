@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lintab.h"
 // #include "ShockBitmap.h"
 
+#include <SDL.h>
+
 #include <stdio.h> // printf()
 
 //extern CTabHandle           gMainColorHand;
@@ -85,6 +87,12 @@ void mac_set_mode(void)
  	grd_canvas_table_list[BMT_DEVICE] = flat8_canvas_table;
  	grd_function_table_list[BMT_DEVICE] = (grt_function_table *) flat8_function_table;
  	grd_uline_fill_table_list[BMT_DEVICE] = (grt_uline_fill_table *) flat8_uline_fill_table;
+ }
+
+ void ChangeScreenSize(int width, int height)
+ {
+    extern SDL_Window* window;
+    SDL_SetWindowSize(window, width, height);
  }
 
 

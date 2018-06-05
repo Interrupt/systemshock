@@ -2786,8 +2786,7 @@ LGRegion* create_invent_region(LGRegion* root, LGRegion **pbuttons, LGRegion **p
 
       // This background is going to get used by the 360 ware 
       // in fullscreen mode, so we need extra bits 
-//KLC      inv_backgnd.bits = (uchar *)malloc(MAX_INV_FULL_WD(INV_FULL_WD) * MAX_INV_FULL_HT(grd_cap->h - GAME_MESSAGE_Y));
-      inv_backgnd.bits = (uchar *)malloc(290 * 136);					// KLC - I just happen to know what these are.
+      inv_backgnd.bits = (uchar *)malloc(MAX_INV_FULL_WD(INV_FULL_WD) * MAX_INV_FULL_HT(grd_cap->h - GAME_MESSAGE_Y));
       LG_memcpy(inv_backgnd.bits,(f+1),f->bm.w * f->bm.h);
       ResUnlock(RES_gamescrGfx);
       ResUnlock(RES_gamescrGfx);
@@ -2937,7 +2936,7 @@ void inv_update_fullscreen(uchar full)
       ss_safe_set_cliprect(INVENTORY_PANEL_X+bm->w/2,BUTTON_PANEL_Y,
          INVENTORY_PANEL_X+bm->w,BUTTON_PANEL_Y+bm->h);
    }
-   gr_bitmap(bm, 172, 470);		//KLC - was ss_bitmap (with scaling)
+   ss_bitmap(bm, 172, 470);		//KLC - was ss_bitmap (with scaling)
    bm->flags &= BMF_TRANS;
    RESTORE_CLIP(a,b,c,d);
 }

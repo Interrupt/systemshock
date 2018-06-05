@@ -157,7 +157,7 @@ errtype screen_init(void)
    gr2ss_register_mode(0,320,400);
    gr2ss_register_mode(0,640,400);
    gr2ss_register_mode(0,640,480);
-//   gr2ss_register_mode(0,1024,768);
+   gr2ss_register_mode(0,1024,768);
 #ifdef STEREO_SUPPORT
    if (i6d_device == I6D_VFX1)
    {

@@ -278,6 +278,9 @@ void change_svga_screen_mode()
 
 		svga_screen=gr_alloc_screen(cur_w,cur_h);
 		gr_set_screen(svga_screen);
+
+      extern void ChangeScreenSize(int w, int h);
+      ChangeScreenSize(cur_w, cur_h);
 	}
 	else
 	{

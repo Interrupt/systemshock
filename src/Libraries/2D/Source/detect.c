@@ -57,10 +57,10 @@ int gr_detect(grs_sys_info *info)
 	info->id_min = 0;
 	info->memory = 300;
 	info->modes[0] = GRM_640x480x8;
-	info->modes[1] = -1;
-	info->modes[2] = -1;
-	info->modes[3] = -1;
-	info->modes[4] = -1;
+	info->modes[1] = GRM_320x400x8;
+	info->modes[2] = GRM_640x400x8;
+	info->modes[3] = GRM_320x200x8;
+	info->modes[4] = GRM_1024x768x8;
 
   grd_device_table = grd_device_table_list[info->id_maj];
   grd_canvas_table_list[BMT_DEVICE] = (void (**)())grd_device_table[GRT_CANVAS_TABLE];

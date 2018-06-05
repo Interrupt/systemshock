@@ -54,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "player.h"
 #include "popups.h"
+
 /*
 #include <olhext.h>
 #include <inp6d.h>
@@ -1592,6 +1593,9 @@ void screenmode_change(new_mode)
    QUESTVAR_SET(SCREENMODE_QVAR, new_mode);
    change_mode_func(0,0,(void *)_current_loop);
    wrapper_screenmode_hack = TRUE;
+
+   printf("Changed screen mode to %i\n", mode_id);
+   wrapper_panel_close(TRUE);
 }
 #endif
 
@@ -1978,7 +1982,7 @@ void screenmode_screen_init(void)
 
    clear_obuttons();
    
-   for (i=0; i < 4; i++)
+   for (i=0; i < 5; i++)
    {
       extern short svga_mode_data[];
       uchar mode_ok = FALSE;

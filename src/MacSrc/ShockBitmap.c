@@ -59,13 +59,13 @@ void SetupOffscreenBitmaps(void)
 {
 	printf("SetupOffscreenBitmaps\n");
 	
-	drawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+	drawSurface = SDL_CreateRGBSurface(0, 1024, 768, 8, 0, 0, 0, 0);
 	if(!drawSurface) {
 		DebugString("SDL: Failed to create draw surface");
 		return;
 	}
 
-	offscreenDrawSurface = SDL_CreateRGBSurface(0, 640, 480, 8, 0, 0, 0, 0);
+	offscreenDrawSurface = SDL_CreateRGBSurface(0, 1024, 768, 8, 0, 0, 0, 0);
 	if(!offscreenDrawSurface) {
 		DebugString("SDL: Failed to create offscreen draw surface");
 		return;

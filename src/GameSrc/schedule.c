@@ -493,7 +493,8 @@ errtype schedule_event(Schedule* s, SchedEvent *ev)
    }
    
    // FIXME sometimes this crashes!
-   printf("Scheduling an event.\n");
+   printf("Scheduling an event. %x\n", &s->queue);
+
    retval = pqueue_insert(&s->queue,ev);
    if (retval != OK)
    {

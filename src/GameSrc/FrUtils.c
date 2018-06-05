@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
  #include "FrUtils.h"
  #include "Shock.h"
+ #include "2d.h"
 
 // ------------------
 //  GLOBALS
@@ -92,58 +93,7 @@ void FreeDoubleBuffer(void)
 #if (defined(powerc) || defined(__powerc))	
 void Fast_Slot_Copy(grs_bitmap *bm)
    {
-   	double 	*src,*dest,doub1,doub2;
-   	int		rows = kFastSlotHigh;
-   	int		src_rowb,dest_rowb;
-
-   	printf("Fast_Slot_Copy\n");
-   	
-   	src = (double *) bm->bits;
-   	src_rowb = bm->row>>3;
-   	
-   	dest = (double *) (gScreenAddress + (kFastSlotTop*gScreenRowbytes) + kFastSlotLeft);
-   	dest_rowb = gScreenRowbytes>>3;
-   	
-   	while (rows--)
-   	  {
-		dest[0] = src[0];
-		LoadStoreTwoDoub(1,2);
-		LoadStoreTwoDoub(3,4);
-		LoadStoreTwoDoub(5,6);
-		LoadStoreTwoDoub(7,8);
-		LoadStoreTwoDoub(9,10);
-		LoadStoreTwoDoub(11,12);
-		LoadStoreTwoDoub(13,14);
-		LoadStoreTwoDoub(15,16);
-		LoadStoreTwoDoub(17,18);
-		LoadStoreTwoDoub(19,20);
-		LoadStoreTwoDoub(21,22);
-		LoadStoreTwoDoub(23,24);
-		LoadStoreTwoDoub(25,26);
-		LoadStoreTwoDoub(27,28);
-		LoadStoreTwoDoub(29,30);
-		LoadStoreTwoDoub(31,32);
-		LoadStoreTwoDoub(33,34);
-		LoadStoreTwoDoub(35,36);
-		LoadStoreTwoDoub(37,38);
-		LoadStoreTwoDoub(39,40);
-		LoadStoreTwoDoub(41,42);
-		LoadStoreTwoDoub(43,44);
-		LoadStoreTwoDoub(45,46);
-		LoadStoreTwoDoub(47,48);
-		LoadStoreTwoDoub(49,50);
-		LoadStoreTwoDoub(51,52);
-		LoadStoreTwoDoub(53,54);
-		LoadStoreTwoDoub(55,56);
-		LoadStoreTwoDoub(57,58);
-		LoadStoreTwoDoub(59,60);
-		LoadStoreTwoDoub(61,62);
-		LoadStoreTwoDoub(63,64);
-		LoadStoreTwoDoub(65,66);
-			 
-   	  	dest += dest_rowb;
-   	  	src += src_rowb;
-   	  }
+   	gr_bitmap(bm, kFastSlotLeft, kFastSlotTop);
   }
 #else
 asm void Fast_Slot_Copy(grs_bitmap *bm)
@@ -253,64 +203,7 @@ asm void Fast_Slot_Copy(grs_bitmap *bm)
  #if (defined(powerc) || defined(__powerc))	
 void Fast_FullScreen_Copy(grs_bitmap *bm)
    {
-   	double 	*src,*dest,doub1,doub2;
-   	int		rows = 480;
-   	int		src_rowb,dest_rowb;
-
-   	printf("Fast_FullScreen_Copy\n");
-
-   	src = (double *) bm->bits;
-   	src_rowb = bm->row>>3;
-   	
-   	dest = (double *) gScreenAddress;
-   	dest_rowb = gScreenRowbytes>>3;
-   	
-   	while (rows--)
-   	  {
-		LoadStoreTwoDoub(79,78);
-		LoadStoreTwoDoub(77,76);
-		LoadStoreTwoDoub(75,74);
-		LoadStoreTwoDoub(73,72);
-		LoadStoreTwoDoub(71,70);
-		LoadStoreTwoDoub(69,68);
-		LoadStoreTwoDoub(67,66);
-		LoadStoreTwoDoub(65,64);
-		LoadStoreTwoDoub(63,62);
-		LoadStoreTwoDoub(61,60);
-		LoadStoreTwoDoub(59,58);
-		LoadStoreTwoDoub(57,56);
-		LoadStoreTwoDoub(55,54);
-		LoadStoreTwoDoub(53,52);
-		LoadStoreTwoDoub(51,50);
-		LoadStoreTwoDoub(49,48);
-		LoadStoreTwoDoub(47,46);
-		LoadStoreTwoDoub(45,44);
-		LoadStoreTwoDoub(43,42);
-		LoadStoreTwoDoub(41,40);
-		LoadStoreTwoDoub(39,38);
-		LoadStoreTwoDoub(37,36);
-		LoadStoreTwoDoub(35,34);
-		LoadStoreTwoDoub(33,32);
-		LoadStoreTwoDoub(31,30);
-		LoadStoreTwoDoub(29,28);
-		LoadStoreTwoDoub(27,26);
-		LoadStoreTwoDoub(25,24);
-		LoadStoreTwoDoub(23,22);
-		LoadStoreTwoDoub(21,20);
-		LoadStoreTwoDoub(19,18);
-		LoadStoreTwoDoub(17,16);
-		LoadStoreTwoDoub(15,14);
-		LoadStoreTwoDoub(13,12);
-		LoadStoreTwoDoub(11,10);
-		LoadStoreTwoDoub(9,8);
-		LoadStoreTwoDoub(7,6);
-		LoadStoreTwoDoub(5,4);
-		LoadStoreTwoDoub(3,2);
-		LoadStoreTwoDoub(1,0);
-			 
-   	  	dest += dest_rowb;
-   	  	src += src_rowb;
-   	  }
+   	gr_bitmap(bm, 0, 0);
    }
 #else   
 asm void Fast_FullScreen_Copy(grs_bitmap *bm)
