@@ -1,4 +1,4 @@
-System Shock GPL Source Code
+Shockolate - System Shock, but cross platform!
 ============================
 Copyright 2015-2018, Night Dive Studios, Incorporated.
 
