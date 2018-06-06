@@ -2814,7 +2814,7 @@ errtype inventory_update_screen_mode()
 {
    if (convert_use_mode)
    {
-      gr_init_sub_canvas(grd_scr_canv, &inv_norm_canvas,174, 347, 290, 120);
+      gr_init_sub_canvas(grd_scr_canv, &inv_norm_canvas,SCONV_X(INVENTORY_PANEL_X), SCONV_Y(INVENTORY_PANEL_Y), SCONV_X(INVENTORY_PANEL_WIDTH), SCONV_Y(INVENTORY_PANEL_HEIGHT));
       if (full_game_3d)
       {
           gr_init_canvas(&inv_fullscrn_canvas,inv_backgnd.bits, BMT_FLAT8, SCONV_X(INVENTORY_PANEL_WIDTH),SCONV_Y(INVENTORY_PANEL_HEIGHT));
@@ -2825,7 +2825,7 @@ errtype inventory_update_screen_mode()
       else
       {
          gr_init_sub_canvas(grd_scr_canv,&inv_gamepage_canvas, 172, 470, 292, 10);
-         gr_init_canvas(&inv_view360_canvas, inv_backgnd.bits, BMT_FLAT8, 290, SCONV_Y(INV_FULL_HT));
+         gr_init_canvas(&inv_view360_canvas, inv_backgnd.bits, BMT_FLAT8,  SCONV_X(INV_FULL_WD), SCONV_Y(INV_FULL_HT));
       }
    }
 /*KLC - not used in Mac version
