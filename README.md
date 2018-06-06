@@ -1,6 +1,6 @@
 Shockolate - System Shock, but cross platform!
 ============================
-Copyright 2015-2018, Night Dive Studios, Incorporated.
+Based on the source code for PowerPC released by Night Dive Studios, Incorporated.
 
 GENERAL NOTES
 =============
