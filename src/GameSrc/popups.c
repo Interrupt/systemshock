@@ -89,8 +89,6 @@ void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* s, uint tmplt,uchar al
 	MouseLock++;
 	*bm = *pbm;
 
-   //s= "1 1 1 1 1";
-
    // CC - Convert this to be the right size for the screen mode
    int sw, sh;
    sw = SCONV_X(bm->w);
