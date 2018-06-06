@@ -247,6 +247,7 @@ set(LG_SRC
 	LG/Source/memall.c
 	LG/Source/stack.c
 	LG/Source/tmpalloc.c
+	../stubs/Carbon/carbon_stubs.c # a bit hacky to add it here, but this way the tests can use the stubs
 )
 
 set(PALETTE_SRC

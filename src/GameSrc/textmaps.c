@@ -348,7 +348,7 @@ errtype Init_Lighting(void)
    BlockMove(*res, shading_table,(256 * 16));
    ReleaseResource(res);*/
 
-   FILE *fp = fopen("res/data/shadtabl.dat","rb");
+   FILE *fp = fopen_caseless("res/data/shadtabl.dat","rb");
    fread (shading_table, 1, 256 * 16, fp);
    fclose (fp);
 
@@ -443,7 +443,7 @@ errtype load_master_texture_properties(void)
 
    printf("load_master_texture_properties\n");
 
-   FILE* f = fopen("res/data/textprop.dat", "rb");
+   FILE* f = fopen_caseless("res/data/textprop.dat", "rb");
 
    if (f == NULL)
    {

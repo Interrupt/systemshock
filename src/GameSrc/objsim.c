@@ -1445,7 +1445,7 @@ errtype obj_load_properties()
 //  For Mac version, replaced with GetResource
 
    //Spew(DSRC_GFX_Anim, ("objprop path = %s\n",path));
-   FILE* f = fopen("res/data/objprop.dat", "rb");
+   FILE* f = fopen_caseless("res/data/objprop.dat", "rb");
 
    if (f == NULL)
    {
