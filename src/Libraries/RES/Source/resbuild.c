@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // make sure comment ends with one, so can type a file
 #define CTRL_Z 26
 
+#define min(a, b) (((a) < (b)) ? (a) : (b))
 
 bool ResEraseIfInFile(Id id);
 
@@ -61,15 +62,21 @@ void ResSetComment(int32_t filenum, char *comment) {
 
   ResFileHeader *phead;
   /*
-            DBG(DSRC_RES_ChkIdRef, {if (resFile[filenum].pedit == NULL) { \
-                    Warning(("ResSetComment: file %d not open for writing\n",
-       filenum)); \
-                    return;}});
-
-            Spew(DSRC_RES_General,
-                    ("ResSetComment: setting comment for filenum %d to:\n%s\n",
-                    filenum, comment));
+  DBG(DSRC_RES_ChkIdRef, {
+    if (resFile[filenum].pedit == NULL) {
+      return;
+    }
+  });
+    DBG(DSRC_RES_ChkIdRef, {
+      if (resFile[filenum].pedit == NULL) {
+      Warning(("ResSetComment: file %d not open for writing\n", filenum));
+      return;}
+    });
+  Spew(DSRC_RES_General,
+       ("ResSetComment: setting comment for filenum %d to:\n%s\n", filenum,
+        comment));
   */
+
   phead = &resFile[filenum].pedit->hdr;
   memset(phead->comment, 0, sizeof(phead->comment));
   strncpy(phead->comment, comment, sizeof(phead->comment) - 2);
@@ -94,18 +101,18 @@ void ResSetComment(int32_t filenum, char *comment) {
 int32_t ResWrite(Id id) {
   static uint8_t pad[] = {0, 0, 0, 0, 0, 0, 0, 0};
   ResDesc *prd;
+  ResDesc2 *prd2;
   ResFile *prf;
   ResDirEntry *pDirEntry;
   uint8_t *p;
-  int32_t size, sizeTable;
+  uint32_t size, sizeTable;
   void *pcompbuff;
-  int32_t compsize;
-  int32_t padBytes;
+  int32_t compsize, padBytes;
 
   printf("ResWrite\n");
 
   // Check for errors
-  //DBG(DSRC_RES_ChkIdRef, {
+  // DBG(DSRC_RES_ChkIdRef, {
   if (!ResCheckId(id))
     return -1;
   //});
@@ -113,7 +120,7 @@ int32_t ResWrite(Id id) {
   prd = RESDESC(id);
   prf = &resFile[prd->filenum];
 
-  //DBG(DSRC_RES_Write, {
+  // DBG(DSRC_RES_Write, {
   if (prf->pedit == NULL) {
     // Warning(("ResWrite: file %d not open for writing\n", prd->filenum));
     printf("File %i not open for writing!\n", prd->filenum);
@@ -143,8 +150,9 @@ int32_t ResWrite(Id id) {
       ((ResDirEntry *)(prf->pedit->pdir + 1)) + prf->pedit->pdir->numEntries;
 
   pDirEntry->id = id;
-  pDirEntry->flags = prd->flags;
-  pDirEntry->type = prd->type;
+  prd2 = RESDESC2(id);
+  pDirEntry->flags = prd2->flags;
+  pDirEntry->type = prd2->type;
   pDirEntry->size = prd->size;
 
   /* Spew(DSRC_RES_Write, ("ResWrite: writing $%x\n", id)); */
@@ -155,7 +163,7 @@ int32_t ResWrite(Id id) {
   sizeTable = 0;
   size = prd->size;
 
-  if (prd->flags & RDF_COMPOUND) {
+  if (prd2->flags & RDF_COMPOUND) {
     sizeTable = REFTABLESIZE(((RefTable *)p)->numRefs);
     fwrite(p, sizeTable, 1, prf->fd);
     p += sizeTable;
@@ -186,9 +194,9 @@ int32_t ResWrite(Id id) {
   if (padBytes)
     fwrite(pad, padBytes, 1, prf->fd);
 
-// FIXME Error handling
-//  if (ftell(prf->fd) & 3)
-//    Warning(("ResWrite: misaligned writing!\n"));
+  // FIXME Error handling
+  //  if (ftell(prf->fd) & 3)
+  //    Warning(("ResWrite: misaligned writing!\n"));
 
   // Advance dir num entries, current data offset
   prf->pedit->pdir->numEntries++;
@@ -229,10 +237,7 @@ void ResKill(Id id) {
 
   // Make sure file is writeable
   prd = RESDESC(id);
-  if (resFile[prd->filenum].pedit == NULL) {
-    return;
-  }
-  //DBG(DSRC_RES_Write, {
+  // DBG(DSRC_RES_Write, {
   if (resFile[prd->filenum].pedit == NULL) {
     // Warning(("ResKill: file %d not open for writing\n", prd->filenum));
     return;
@@ -252,18 +257,18 @@ void ResKill(Id id) {
 //
 //  Returns: # bytes reclaimed
 
-long ResPack(int filenum) {
+int32_t ResPack(int32_t filenum) {
   ResFile *prf;
   ResDirEntry *pDirEntry;
-  long numReclaimed, sizeReclaimed;
-  long dataRead, dataWrite;
-  long i;
+  int32_t numReclaimed, sizeReclaimed;
+  int32_t dataRead, dataWrite;
+  int32_t i;
   ResDirEntry *peWrite;
 
   // Check for errors
   prf = &resFile[filenum];
   if (prf->pedit == NULL) {
-    Warning(("ResPack: filenum %d not open for editing\n"));
+    printf("ResPack: filenum %d not open for editing\n", filenum);
     return (0);
   }
 

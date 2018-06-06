@@ -53,12 +53,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  For Mac version, use Resource Manager to add the resource to indicated res
 //  file.
 
-void ResMake(Id id, void *ptr, long size, uchar type, short filenum,
-             uchar flags) {
+void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum,
+             uint8_t flags) {
 
   printf("ResMake\n");	
 
   ResDesc *prd;
+  ResDesc2 *prd2;
 
   ResExtendDesc(id);
   // Check for resource at that id.  If the handle exists, then just change the
@@ -66,7 +67,7 @@ void ResMake(Id id, void *ptr, long size, uchar type, short filenum,
 
   // Extend res desc table if need to
   prd = RESDESC(id);
-
+  prd2 = RESDESC2(id);
   // If resource has id, delete it
   if (prd->offset) {
     ResDelete(id);
@@ -78,8 +79,8 @@ void ResMake(Id id, void *ptr, long size, uchar type, short filenum,
   prd->filenum = filenum;
   prd->lock = 1;
   prd->offset = RES_OFFSET_PENDING;
-  prd->flags = flags;
-  prd->type = type;
+  prd2->flags = flags;
+  prd2->type = type;
 }
 
 //	---------------------------------------------------------------
@@ -91,21 +92,19 @@ void ResMake(Id id, void *ptr, long size, uchar type, short filenum,
 //		filenum = file number
 //		flags   = flags (RDF_XXX, RDF_COMPOUND automatically added)
 
-void ResMakeCompound(Id id, uchar type, short filenum, uchar flags) {
+void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags) {
   RefTable *prt;
   int32_t sizeTable;
 
-  //	Build empty compound resource in allocated memory
-
-  //	Spew(DSRC_RES_Make, ("ResMake: making compound resource $%x\n", id));
+  // Build empty compound resource in allocated memory
+  // Spew(DSRC_RES_Make, ("ResMake: making compound resource $%x\n", id));
 
   sizeTable = REFTABLESIZE(0);
   prt = (RefTable *)malloc(sizeTable);
   prt->numRefs = 0;
   prt->offset[0] = sizeTable;
 
-  //	Make a resource out of it
-
+  // Make a resource out of it
   ResMake(id, prt, sizeTable, type, filenum, flags | RDF_COMPOUND);
 }
 
@@ -115,25 +114,26 @@ void ResMakeCompound(Id id, uchar type, short filenum, uchar flags) {
 //
 //		ref      = reference
 //		pitem    = ptr to item's data (copied from here, unlike simple
-// resource)
+//			resource)
 //		itemSize = size of item
 //	---------------------------------------------------------------
 //  For Mac version:  Change references from 'ptr' to 'hdl'.  Use Mac memory
 //  allocating routines.
 
-void ResAddRef(Ref ref, void *pitem, long itemSize) {
+void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
   ResDesc *prd;
   RefTable *prt;
   RefIndex index, i;
   int32_t sizeItemOffsets, oldSize, sizeDiff;
 
-  //	Error check
+  // Error check
+  // DBG(DSRC_RES_ChkIdRef, {
+  if (!RefCheckRef(ref))
+    return;
+  //});
 
-  //	DBG(DSRC_RES_ChkIdRef, {if (!RefCheckRef(ref)) return;});
-
-  //	Get vital info (and get into memory if not already)
-
-  //	Spew(DSRC_RES_Make, ("ResAddRef: adding ref $%x\n", ref));
+  // Get vital info (and get into memory if not already)
+  // Spew(DSRC_RES_Make, ("ResAddRef: adding ref $%x\n", ref));
 
   prd = RESDESC(REFID(ref));
 
@@ -178,9 +178,8 @@ void ResAddRef(Ref ref, void *pitem, long itemSize) {
         prt->offset[i] += sizeDiff;
       memcpy(REFPTR(prt, index), pitem, itemSize);
     }
-  }
-  // Else if index exceeds current range, expand
-  else {
+  } else {
+    // Else if index exceeds current range, expand
     // Spew(DSRC_RES_Make, ("ResAddRef: extending compound resource\n"));
 
     // Extend resource for new offset(s) and data item
@@ -216,14 +215,12 @@ void ResAddRef(Ref ref, void *pitem, long itemSize) {
 //		ptr to NULL.  In this way, a program may take over management
 //		of the resource data, and the RES system forgets about it.
 //		This is typically done when user-managed data needs to be
-//		written to a resource file, using
-//      ResMake(),ResWrite(),ResUnmake().
+//		written to a resource file, using ResMake(), ResWrite(),
+//		ResUnmake().
 //
 //		id = id of resource to unmake
 //	--------------------------------------------------------
 //  For Mac version: use ReleaseResource to free the handle (the pointer that
 //  the handle was made from will still be around).
 
-void ResUnmake(Id id) {
-  memset(RESDESC(id), 0, sizeof(ResDesc));
-}
+void ResUnmake(Id id) { memset(RESDESC(id), 0, sizeof(ResDesc)); }

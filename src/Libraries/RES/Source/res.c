@@ -6,56 +6,59 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 //		Res.C		Resource Manager primary access routines
 //		Rex E. Bradford (REX)
 //
 //		See the doc RESOURCE.DOC for information.
 /*
-* $Header: r:/prj/lib/src/res/rcs/res.c 1.24 1994/07/15 18:19:33 xemu Exp $
-* $Log: res.c $
+ * $Header: r:/prj/lib/src/res/rcs/res.c 1.24 1994/07/15 18:19:33 xemu Exp $
+ * $Log: res.c $
  * Revision 1.24  1994/07/15  18:19:33  xemu
  * added ResShrinkResDescTable
- * 
+ *
  * Revision 1.23  1994/05/26  13:51:55  rex
  * Added ResInstallPager(ResDefaultPager) to ResInit()
- * 
+ *
  * Revision 1.22  1994/02/17  11:24:51  rex
  * Moved most funcs out into other .c files
- * 
-*/
+ *
+ */
 
 //#include <io.h>
 //#include <stdlib.h>
 #include <string.h>
 
 //#include <lg.h>
+#include "lzw.h"
 #include "res.h"
 #include "res_.h"
-#include "lzw.h"
 //#include <memall.h>
 //#include <_res.h>
 
 //	The resource descriptor table
 
-ResDesc *gResDesc;								// ptr to array of resource descriptors
-Id resDescMax;									// max id in res desc
-#define DEFAULT_RESMAX 32767			// default max resource id
-#define DEFAULT_RESGROW 32768		// grow by blocks of 1024 resources
-														// must be power of 2!
+ResDesc *gResDesc;   // ptr to array of resource descriptors
+ResDesc2 *gResDesc2; // secondary array, shared buff with resdesc
+Id resDescMax;       // max id in res desc
+// default max resource id
+#define DEFAULT_RESMAX 32767
+// grow by blocks of 1024 resources must be power of 2!
+#define DEFAULT_RESGROW 32768
+
 //	Some variables
 /*
-ResStat resStat;						// stats held here
-static bool resPushedAllocators;	// did we push our allocators?
+ResStat resStat;						// stats held
+here static bool resPushedAllocators;	// did we push our allocators?
 */
 
 //	---------------------------------------------------------
@@ -64,116 +67,88 @@ static bool resPushedAllocators;	// did we push our allocators?
 //
 //	ResInit() initializes resource manager.
 
-void ResInit()
-{
-	char *p;
-	int i;
-/*
-//	We must exit cleanly
+void ResInit() {
+  // char *p;
+  int32_t i;
 
-	AtExit(ResTerm);
+  // We must exit cleanly
+  // FIXME Segfault at exit
+  //atexit(ResTerm);
+  /*
+  // Set memory allocator, init LZW system
+  MemPushAllocator(ResMalloc, ResRealloc, ResFree);
+  resPushedAllocators = TRUE;
+  */
 
-//	Set memory allocator, init LZW system
+  LzwInit();
 
-	MemPushAllocator(ResMalloc, ResRealloc, ResFree);
-	resPushedAllocators = TRUE;
-	LzwInit();
-*/
+  // Allocate initial resource descriptor table, default size (can't fail)
 
-	LzwInit();
+  printf("ResInit\n");
 
-//	Allocate initial resource descriptor table, default size (can't fail)
+  resDescMax = DEFAULT_RESMAX;
+  gResDesc = (ResDesc *)malloc((DEFAULT_RESMAX + 1) *
+                               (sizeof(ResDesc) + sizeof(ResDesc2)));
+  if (gResDesc == NULL)
+    printf("ResInit: Can't allocate the global resource descriptor table.\n");
+  gResDesc2 = (ResDesc2 *)(gResDesc + (DEFAULT_RESMAX + 1));
+  gResDesc[ID_HEAD].prev = 0;
+  gResDesc[ID_HEAD].next = ID_TAIL;
+  gResDesc[ID_TAIL].prev = ID_HEAD;
+  gResDesc[ID_TAIL].next = 0;
 
-	printf("ResInit\n");
+  // Clear file descriptor array
 
-	resDescMax = DEFAULT_RESMAX;
-	gResDesc = (ResDesc *)NewPtrClear( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
-	if (MemError())
-		DebugString("ResInit: Can't allocate the global resource descriptor table.\n");
+  for (i = 0; i <= MAX_RESFILENUM; i++)
+    resFile[i].fd = NULL;
 
-//	Clear file descriptor array
+  // Add directory pointed to by RES env var to search path
 
-	for (i = 0; i <= MAX_RESFILENUM; i++)
-		resFile[i].fd = NULL;
+  /*p = getenv("RES");
+  if (p)
+          ResAddPath(p);
 
-//	Add directory pointed to by RES env var to search path
+  Spew(DSRC_RES_General, ("ResInit: res system initialized\n"));*/
 
-	/*p = getenv("RES");
-	if (p)
-		ResAddPath(p);
-
-	Spew(DSRC_RES_General, ("ResInit: res system initialized\n"));*/
-
-//	Install default pager
-	//ResInstallPager(ResDefaultPager);
+  // Install default pager
+  // ResInstallPager(ResDefaultPager);
 }
 
 //	---------------------------------------------------------
 //
 //	ResTerm() terminates resource manager.
 
-void ResTerm()
-{
-//	int i;
-/*
-//	Close all open resource files
+void ResTerm() {
+  int32_t i;
+  // Close all open resource files
+  for (i = 0; i <= MAX_RESFILENUM; i++) {
+    if (resFile[i].fd >= 0)
+      ResCloseFile(i);
+  }
 
-	for (i = 0; i <= MAX_RESFILENUM; i++)
-		{
-		if (resFile[i].fd >= 0)
-			ResCloseFile(i);
-		}
+  // Spew out cumulative stats if want them
+  // DBG(DSRC_RES_CumStat, {ResSpewCumStats();});
 
-//	Spew out cumulative stats if want them
+  // Free up resource descriptor table
 
-	DBG(DSRC_RES_CumStat, {ResSpewCumStats();});
-*/
+  if (gResDesc) {
+    free(gResDesc);
+    gResDesc = NULL;
+    gResDesc2 = NULL;
+    resDescMax = 0;
+  }
+  /*
+  // Pop allocators
+          if (resPushedAllocators)
+                  {
+                  MemPopAllocator();
+                  resPushedAllocators = FALSE;
+                  }
 
-//	Free up resource descriptor table
-
-	if (gResDesc)
-	{
-		DisposePtr((Ptr)gResDesc);
-		gResDesc = NULL;
-		resDescMax = 0;
-	}
-/*
-//	Pop allocators
-
-	if (resPushedAllocators)
-		{
-		MemPopAllocator();
-		resPushedAllocators = FALSE;
-		}
-
-//	We're outta here
-
-	Spew(DSRC_RES_General, ("ResTerm: res system terminated\n"));
-*/
+  // We're outta here
+  Spew(DSRC_RES_General, ("ResTerm: res system terminated\n"));
+  */
 }
-
-//	---------------------------------------------------------
-//  For Mac version:  This is now a function, because we have to check a few things
-//  before returning the size.
-//	---------------------------------------------------------
-/*long ResSize(Id id)
-{
-	printf("ResSize\n");
-	ResDesc *prd = RESDESC(id);
-
-	if (prd->flags & RDF_LZW)							// If it's compressed...
-	{
-		if (*prd->hdl)										// if it's a real handle
-			return(GetHandleSize(prd->hdl));		// return the handle size
-		else
-			return (MaxSizeRsrc(prd->hdl));		// else return the res map size.
-	}
-	else
-		return (MaxSizeRsrc(prd->hdl));			// For normal resources, 
-
-	return 0;
-}																// return the res map size.
-*/
 
 //	---------------------------------------------------------
 //
@@ -185,58 +160,67 @@ void ResTerm()
 //
 //		id = id
 
-void ResGrowResDescTable(Id id)
-{
-	long	newAmt, currAmt;
-	Ptr	growPtr;
+void ResGrowResDescTable(Id id) {
+  int32_t newAmt, currAmt;
+  ResDesc2 *pNewResDesc2;
 
-//	Calculate size of new table and size of current
+  // Calculate size of new table and size of current
 
-	newAmt = (id + DEFAULT_RESGROW) & ~(DEFAULT_RESGROW - 1);
-	currAmt = resDescMax + 1;
+  newAmt = (id + DEFAULT_RESGROW) & ~(DEFAULT_RESGROW - 1);
+  currAmt = resDescMax + 1;
 
-//	If need to grow, do it, clearing new entries
+  // If need to grow, do it, clearing new entries
 
-	if (newAmt > currAmt)
-	{
-//		Spew(DSRC_RES_General,
-//			("ResGrowResDescTable: extending to $%x entries\n", newAmt));
+  if (newAmt > currAmt) {
+    //		Spew(DSRC_RES_General,
+    //			("ResGrowResDescTable: extending to $%x entries\n",
+    // newAmt));
 
-		printf("ResGrowResDescTable\n");
-//		SetPtrSize((Ptr)gResDesc, newAmt * sizeof(ResDesc));
-		growPtr = NewPtr(newAmt * sizeof(ResDesc));
-		if (MemError() != noErr)
-		{
-			DebugString("ResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
-			return;
-		}
-		BlockMove(gResDesc, growPtr, currAmt * sizeof(ResDesc));
-		DisposePtr((Ptr)gResDesc);
-		gResDesc = (ResDesc *)growPtr;
-		LG_memset(gResDesc + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc));
-		resDescMax = newAmt - 1;
+    printf("ResGrowResDescTable\n");
 
+    // Realloc double-array buffer and check for error
+    gResDesc = (ResDesc *)realloc(
+        gResDesc, newAmt * (sizeof(ResDesc) + sizeof(ResDesc2)));
+    if (gResDesc == NULL) {
+      // Warning(("ResGrowDescTable: RES DESCRIPTOR TABLE BAD!!!\n"));
+      return;
+    }
 
+    //  Compute new location for gResDesc2[] array at top of buffer,
+    //  and move the gResDesc2[] array up there
 
-//	Grow cumulative stats table too
-/*
-		DBG(DSRC_RES_CumStat, {
-			if (pCumStatId == NULL)
-				ResAllocCumStatTable();
-			else
-				{
-				pCumStatId = Realloc(pCumStatId, newAmt * sizeof(ResCumStat));
-				if (pCumStatId == NULL)
-					{
-					Warning(("ResGrowDescTable: RES CUMSTAT TABLE BAD!!!\n"));
-					return;
-					}
-				memset(pCumStatId + currAmt, 0, (newAmt - currAmt) *
-					sizeof(ResCumStat));
-				}
-			});
-*/
-	}
+    gResDesc2 = (ResDesc2 *)(gResDesc + currAmt);
+    pNewResDesc2 = (ResDesc2 *)(gResDesc + newAmt);
+    memmove(pNewResDesc2, gResDesc2, currAmt * sizeof(ResDesc2));
+    gResDesc2 = pNewResDesc2;
+
+    //  Clear extra entries in both tables
+
+    memset(gResDesc + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc));
+    memset(gResDesc2 + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc2));
+
+    //  Set new max id limit
+
+    resDescMax = newAmt - 1;
+
+    // Grow cumulative stats table too
+
+    /*
+    DBG(DSRC_RES_CumStat, {
+      if (pCumStatId == NULL)
+        ResAllocCumStatTable();
+      else {
+        pCumStatId = Realloc(pCumStatId, newAmt * sizeof(ResCumStat));
+        if (pCumStatId == NULL) {
+          Warning(("ResGrowDescTable: RES CUMSTAT TABLE BAD!!!\n"));
+          return;
+        }
+        memset(pCumStatId + currAmt, 0,
+               (newAmt - currAmt) * sizeof(ResCumStat));
+      }
+    });
+    */
+  }
 }
 
 //	---------------------------------------------------------
@@ -247,7 +231,7 @@ void ResGrowResDescTable(Id id)
 /*
 void ResShrinkResDescTable()
 {
-	long newAmt,currAmt;
+        int32_t newAmt,currAmt;
    // id is the largest used ID
    Id id;
 
@@ -259,24 +243,25 @@ void ResShrinkResDescTable()
 
 //	Calculate size of new table and size of current
 
-	newAmt = (id + DEFAULT_RESGROW) & ~(DEFAULT_RESGROW - 1);
-	currAmt = resDescMax + 1;
+        newAmt = (id + DEFAULT_RESGROW) & ~(DEFAULT_RESGROW - 1);
+        currAmt = resDescMax + 1;
 
 //	If need to shrink do it
 // note that we don't increase the stat table
 
-	if (currAmt > newAmt)
-	{
+        if (currAmt > newAmt)
+        {
 //		Spew(DSRC_RES_General,
-//			("ResGrowResDescTable: extending to $%x entries\n", newAmt));
+//			("ResGrowResDescTable: extending to $%x entries\n",
+newAmt));
 
-		SetPtrSize(gResDesc, newAmt * sizeof(ResDesc));
-		if (MemError() != noErr)
-		{
-//���			Warning(("ResGrowDescTable: RES DESCRIPTOR TABLE BAD!!!\n"));
-			return;
-		}
-		resDescMax = newAmt - 1;
+                SetPtrSize(gResDesc, newAmt * sizeof(ResDesc));
+                if (MemError() != noErr)
+                {
+//���			Warning(("ResGrowDescTable: RES DESCRIPTOR TABLE
+BAD!!!\n")); return;
+                }
+                resDescMax = newAmt - 1;
       }
 }
 */

@@ -555,31 +555,31 @@ void DrawSplashScreen(short id, Boolean fadeIn)
 void PreloadGameResources(void)
 {
 	// Images
-	ResLockHi(RES_gamescrGfx);
+	ResLock(RES_gamescrGfx);
 	
 	// Fonts
-	ResLockHi(RES_tinyTechFont);
-	ResLockHi(RES_doubleTinyTechFont);
-	ResLockHi(RES_citadelFont);
-	ResLockHi(RES_mediumLEDFont);
+	ResLock(RES_tinyTechFont);
+	ResLock(RES_doubleTinyTechFont);
+	ResLock(RES_citadelFont);
+	ResLock(RES_mediumLEDFont);
 	
 	// Strings
-	ResLockHi(RES_objlongnames);
-	ResLockHi(RES_traps);
-	ResLockHi(RES_words);
-	ResLockHi(RES_texnames);
-	ResLockHi(RES_texuse);
-	ResLockHi(RES_inventory);
-	ResLockHi(RES_objshortnames);
-	ResLockHi(RES_HUDstrings);
-	ResLockHi(RES_lognames);
-	ResLockHi(RES_messages);
-	ResLockHi(RES_plotware);
-	ResLockHi(RES_screenText);
-	ResLockHi(RES_cyberspaceText);
-	ResLockHi(RES_accessCards);
-	ResLockHi(RES_miscellaneous);
-	ResLockHi(RES_games);
+	ResLock(RES_objlongnames);
+	ResLock(RES_traps);
+	ResLock(RES_words);
+	ResLock(RES_texnames);
+	ResLock(RES_texuse);
+	ResLock(RES_inventory);
+	ResLock(RES_objshortnames);
+	ResLock(RES_HUDstrings);
+	ResLock(RES_lognames);
+	ResLock(RES_messages);
+	ResLock(RES_plotware);
+	ResLock(RES_screenText);
+	ResLock(RES_cyberspaceText);
+	ResLock(RES_accessCards);
+	ResLock(RES_miscellaneous);
+	ResLock(RES_games);
 }
 
 void object_data_flush(void)
