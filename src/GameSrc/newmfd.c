@@ -333,8 +333,8 @@ errtype mfd_update_screen_mode()
    }
    else
    {
-      gr_init_canvas(&_offscreen_mfd, mfd_canvas_bits, BMT_FLAT8, 148, 137);
-      gr_init_canvas(&_fullscreen_mfd,mfd_background.bits, BMT_FLAT8, 148, 137);
+      gr_init_canvas(&_offscreen_mfd, mfd_canvas_bits, BMT_FLAT8, SCONV_X(MFD_VIEW_WID), SCONV_Y(MFD_VIEW_HGT));
+      gr_init_canvas(&_fullscreen_mfd,mfd_background.bits, BMT_FLAT8, SCONV_X(MFD_VIEW_WID), SCONV_Y(MFD_VIEW_HGT));
    }
    return(OK);
 }
