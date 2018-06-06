@@ -5,7 +5,9 @@ Based on the source code for PowerPC released by Night Dive Studios, Incorporate
 GENERAL NOTES
 =============
 
-This is my attempt at a cross platform source port of the System Shock source code that was released, using SDL2. This runs well on OSX and Linux right now, with some runtime issues to sort out.
+A cross platform source port of the System Shock source code that was released, using SDL2. This runs well on OSX and Linux right now, with some runtime issues to sort out.
+
+The end goal for this project is something like what Chocolate Doom is for Doom: an experience that closely mimics the original, but portable and with some quality of life improvements - and mod support!
 
 ![work so far](https://i.imgur.com/kbVWQj4.gif)
 
