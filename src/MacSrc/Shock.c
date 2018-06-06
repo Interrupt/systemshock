@@ -1244,20 +1244,18 @@ void InitSDL()
 
     printf("Setting up screen and render contexts\n");
 
-    svga_screen = cit_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
-    gr_set_screen(svga_screen);
+    // Open our window!
 
-    svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels,
-		FR_DOUBLEB_MASK|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
-		SCONV_X(SCREEN_VIEW_X), SCONV_Y(SCREEN_VIEW_Y), 
-		SCONV_X(SCREEN_VIEW_WIDTH), SCONV_Y(SCREEN_VIEW_HEIGHT));
-
-	gr_alloc_ipal();
-
-	// Open window!
 	window = SDL_CreateWindow(
 		"System Shock", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN);
+
+	// Setup the screen
+
+    svga_screen = cit_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
+    gr_set_screen(svga_screen);
+
+	gr_alloc_ipal();
 
 	SDL_ShowCursor(SDL_DISABLE);
 

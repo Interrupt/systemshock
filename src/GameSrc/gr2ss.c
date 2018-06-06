@@ -93,11 +93,13 @@ void ss_scale_string(char *s, short x, short y)
 #ifdef STEREO_SUPPORT
    uchar rv = perform_svga_conversion(OVERRIDE_SCALE);
 #endif
+
    if (convert_use_mode == 0)
    {
       gr_string(s,x,y);
       return;
    }
+
    if ((f == ttfont) || (f == mlfont))
    {
       switch(convert_use_mode)

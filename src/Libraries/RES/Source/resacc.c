@@ -61,9 +61,15 @@ void *ResLock(Id id) {
   //	Add to cumulative stats
   //	CUMSTATS(id,numLocks);
 
-  //	If resource not loaded, load it
-
   prd = RESDESC(id);
+
+  // CC: If already loaded, use the existing bytes
+  if(prd->ptr != NULL) {
+    prd->lock++;
+    return prd->ptr;
+  }
+
+  // If resource not loaded, load it now
   if (ResLoadResource(id) == NULL) {
     printf("ResLock: Could not load %x\n", id);
     return (NULL);
@@ -116,6 +122,8 @@ void ResUnlock(Id id) {
     prd->lock--;
 
   if (prd->lock == 0) {
+    // CC: Should we free the prd ptr here?
+
     //		HUnlock(prd->hdl);
     ResAddToTail(prd);
     //		DBG(DSRC_RES_Stat, {resStat.numLocked--;});

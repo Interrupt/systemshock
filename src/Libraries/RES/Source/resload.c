@@ -73,7 +73,7 @@ void *ResLoadResource(Id id) {
     return NULL;
   //});
 
-  // printf("ResLoadResource: loading $%x\n", id);
+  printf("ResLoadResource: loading $%x\n", id);
 
   prd = RESDESC(id);
   prd2 = RESDESC2(id);

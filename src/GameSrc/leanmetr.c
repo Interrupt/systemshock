@@ -555,7 +555,7 @@ void update_lean_meter(uchar force)
 			DebugString("No shield resource bitmap!");
 		
 		offset = shield_offsets[inum];
-		gr_bitmap(sbm, r.ul.x - offset.x, r.ul.y - offset.y);
+		ss_bitmap(sbm, r.ul.x - offset.x, r.ul.y - offset.y);
 	}
 
    gBioInited = saveBio;
@@ -587,12 +587,12 @@ void draw_eye_bitmap(grs_bitmap *eye_bmap, LGPoint pos, int lasty)
 	r.ul.y = pos.y;
 	r.lr.y = pos.y + eye_bmap->h;
 	
-	saveMode = convert_use_mode;
-	convert_use_mode = 0;
+	//saveMode = convert_use_mode;
+	//convert_use_mode = 0;
 	if (is_onscreen()) uiHideMouse(&r);
 	gr_bitmap(eye_bmap, r.ul.x, r.ul.y);
 	if (is_onscreen()) uiShowMouse(&r);
-	convert_use_mode = saveMode;
+	//convert_use_mode = saveMode;
 }
 
 
@@ -635,7 +635,7 @@ void update_eye_meter(uchar force)
 
    if (force)
    {
-      LGRect r = { {0,0}, {42,53} };
+      LGRect r = { {0,0}, {SCONV_X(46),SCONV_Y(53)} };
       RECT_MOVE(&r,MakePoint(SCONV_X(EYEMETER_X()), SCONV_Y(EYEMETER_Y())));
       undraw_meter_area(&r);
    }

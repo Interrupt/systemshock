@@ -2098,14 +2098,15 @@ void draw_page_buttons(uchar full)
    uchar old_over = gr2ss_override;
 
    gr_push_canvas(ppage_canvas);
+
    if (full_game_3d)
-      gr2ss_override = OVERRIDE_ALL;
+      gr2ss_override = OVERRIDE_NONE;
    else
       gr2ss_override = OVERRIDE_ALL;
 
    if (full)
    {
-      draw_res_bm(REF_IMG_bmInventoryButtonBackground,INVENT_BUTTON_PANEL_X + 1, INVENT_BUTTON_PANEL_Y);
+      draw_res_bm(REF_IMG_bmInventoryButtonBackground,INVENT_BUTTON_PANEL_X, INVENT_BUTTON_PANEL_Y);
 		  //draw_hires_resource_bm(REF_IMG_bmInventoryButtonBackground, 0, 0);
    }
 
@@ -2144,8 +2145,8 @@ void draw_page_buttons(uchar full)
       r.lr.x = x+INVENT_BTTN_WD;
       RECT_OFFSETTED_RECT(&r,MakePoint(INVENTORY_PANEL_X, BUTTON_PANEL_Y),&hider);
       uiHideMouse(&hider);
-      //ss_rect(r.ul.x,r.ul.y,r.lr.x,r.lr.y);
-      gr_rect(SCONV_X(r.ul.x)+2, 2, SCONV_X(r.lr.x)+2, 10);
+      ss_rect(r.ul.x,r.ul.y,r.lr.x,r.lr.y);
+      //gr_rect(SCONV_X(r.ul.x)+2, 2, SCONV_X(r.lr.x)+2, 10);
       uiShowMouse(&hider);
       page_button_state[i] = old_button_state[i] = newstate;
    }
@@ -2814,7 +2815,7 @@ errtype inventory_update_screen_mode()
 {
    if (convert_use_mode)
    {
-      gr_init_sub_canvas(grd_scr_canv, &inv_norm_canvas,174, 347, 290, 120);
+      gr_init_sub_canvas(grd_scr_canv, &inv_norm_canvas,SCONV_X(INVENTORY_PANEL_X), SCONV_Y(INVENTORY_PANEL_Y), SCONV_X(INVENTORY_PANEL_WIDTH), SCONV_Y(INVENTORY_PANEL_HEIGHT));
       if (full_game_3d)
       {
           gr_init_canvas(&inv_fullscrn_canvas,inv_backgnd.bits, BMT_FLAT8, SCONV_X(INVENTORY_PANEL_WIDTH),SCONV_Y(INVENTORY_PANEL_HEIGHT));
@@ -2824,8 +2825,8 @@ errtype inventory_update_screen_mode()
       }
       else
       {
-         gr_init_sub_canvas(grd_scr_canv,&inv_gamepage_canvas, 172, 470, 292, 10);
-         gr_init_canvas(&inv_view360_canvas, inv_backgnd.bits, BMT_FLAT8, 290, SCONV_Y(INV_FULL_HT));
+         gr_init_sub_canvas(grd_scr_canv,&inv_gamepage_canvas, SCONV_X(INVENTORY_PANEL_X), SCONV_Y(BUTTON_PANEL_Y), SCONV_X(INVENTORY_PANEL_WIDTH), SCONV_Y(10));
+         gr_init_canvas(&inv_view360_canvas, inv_backgnd.bits, BMT_FLAT8,  SCONV_X(INV_FULL_WD), SCONV_Y(INV_FULL_HT));
       }
    }
 /*KLC - not used in Mac version
@@ -2862,6 +2863,10 @@ void inv_change_fullscreen(uchar on)
       gr_clear(0);
       gr_pop_canvas();
       dirty_inv_canvas = TRUE;
+
+      gr_push_canvas(ppage_canvas);
+      gr_clear(0);
+      gr_pop_canvas();
    }
    else
    {
@@ -2936,7 +2941,17 @@ void inv_update_fullscreen(uchar full)
       ss_safe_set_cliprect(INVENTORY_PANEL_X+bm->w/2,BUTTON_PANEL_Y,
          INVENTORY_PANEL_X+bm->w,BUTTON_PANEL_Y+bm->h);
    }
-   ss_bitmap(bm, 172, 470);		//KLC - was ss_bitmap (with scaling)
+
+   if(convert_use_mode == 3)
+   {
+      // CC - something about this in 640x480 mode does not scale correctly
+      gr_bitmap(bm, 172, 470);   //KLC - was ss_bitmap (with scaling)
+   }
+   else
+   {
+      ss_bitmap(bm, INVENTORY_PANEL_X, BUTTON_PANEL_Y);
+   }
+
    bm->flags &= BMF_TRANS;
    RESTORE_CLIP(a,b,c,d);
 }

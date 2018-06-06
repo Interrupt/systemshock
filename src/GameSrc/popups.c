@@ -88,10 +88,15 @@ void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* s, uint tmplt,uchar al
 	
 	MouseLock++;
 	*bm = *pbm;
+
+   // CC - Convert this to be the right size for the screen mode
+   int sw, sh;
+   sw = SCONV_X(bm->w);
+   sh = SCONV_Y(bm->h);
 		
 	if (allocate)
 	{
-		bptr = (uchar *)malloc(bm->w*bm->h*8);
+		bptr = (uchar *)malloc(sw * sh * 2);
 		if (bptr == NULL)
 			critical_error(CRITERR_MEM|4);
 	}
@@ -99,7 +104,7 @@ void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* s, uint tmplt,uchar al
 	{
 		bptr = bits;
 	}
-	gr_init_bm(bm,bptr,BMT_FLAT8,BMF_TRANS,bm->w*2,bm->h*3);
+	gr_init_bm(bm,bptr,BMT_FLAT8,BMF_TRANS,sw,sh);
 	gr_make_canvas(bm,&gc);
 	gr_push_canvas(&gc);
 
@@ -109,12 +114,12 @@ void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* s, uint tmplt,uchar al
 	gr_string_size(s,&w,&h);
 	//ss_point_convert(&w, &h, FALSE);
 
-	x = (r->ul.x + r->lr.x - w)/2 + offset.x;
-	y = (r->ul.y + r->lr.y - h)/2 + offset.y;
-	ss_point_convert(&x, &y, TRUE);
+	x = (r->ul.x + r->lr.x - w)/2 + offset.x + 1;
+	y = (r->ul.y + r->lr.y - h)/2 + offset.y - 1;
+
+	//ss_point_convert(&x, &y, TRUE);
 	gr_set_fcolor(CURSOR_TEXT_COLOR);
-	//ss_string(s,x+4,y+1);
-	ss_scale_string(s, SCONV_X(x)+8, SCONV_Y(y)+3);
+	ss_string(s,x,y + 1);
 	ResUnlock(RES_tinyTechFont);
 	gr_pop_canvas();
 	ph = popup_hotspots[tmplt];
