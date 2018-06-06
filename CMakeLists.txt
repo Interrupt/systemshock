@@ -46,7 +46,8 @@ set(MAC_SRC
 	src/MacSrc/Shock.c
 	src/MacSrc/Prefs.c
 	src/MacSrc/MacTune.c
-	src/stubs/Carbon/carbon_stubs.c
+#	src/stubs/Carbon/carbon_stubs.c - now in LG_SRC so the tests can use it as well
+#                                     (in src/Libraries/CMakeLists.txt)
 #	src/MacSrc/Tests.c
 )
 

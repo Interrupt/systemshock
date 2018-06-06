@@ -396,5 +396,7 @@ long ResPack(int filenum);									// remove empty entries
 //#define ResAutoPackOff(filenum) (resFile[filenum].pedit->flags &= ~RFF_AUTOPACK)
 //#define ResNeedsPacking(filenum) (resFile[filenum].pedit->flags & RFF_NEEDSPACK)
 
+// DG: a case-insensitive fopen()-wrapper (see resfile.c)
+extern FILE *fopen_caseless(const char* path, const char* mode);
 
 #endif
