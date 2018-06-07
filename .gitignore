@@ -44,3 +44,6 @@ src/Libraries/CMakeFiles
 
 TestSimpleMain
 **/core
+
+# 3rd Party builds
+build_ext
