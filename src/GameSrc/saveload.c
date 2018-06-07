@@ -868,8 +868,8 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    physics_init();   
 
    // Read in the global fullmap (without disrupting schedule vec ptr)
-   schedule_init(&global_fullmap->sched[0],128,FALSE);
    schedvec = global_fullmap->sched[0].queue.vec;     // KLC - Only one schedule, so just save it.
+   int schedsize = global_fullmap->sched[0].queue.size;
    
    // convert_from is the version we are coming from.
    // for now, this is only defined for coming from version 9
@@ -881,21 +881,31 @@ errtype load_current_map(Id id_num, FSSpec* spec)
       AdvanceProgress();
    }
 
-   // Load schedules, performing some voodoo.  
-   schedule_init(&global_fullmap->sched[0],128,TRUE);
+   // Load schedules, performing some voodoo. 
+   global_fullmap->sched[0].queue.vec = schedvec;
+   global_fullmap->sched[0].queue.comp = compare_events;
+
+   // CC: HAX HAX HAX - Why don't these get set properly?
+   global_fullmap->sched[0].queue.fullness = 0;
+   global_fullmap->sched[0].queue.size = schedsize;
+   global_fullmap->sched[0].queue.elemsize = sizeof(SchedEvent);
 
    int queue_size = ResSize(id_num + idx);
    if (queue_size > 0)      // KLC - no need to read in vec if none there.
    {
-      uchar* vec_ptr = (uchar*)malloc(queue_size);
-      ResExtract(id_num + idx++, vec_ptr);
+      uchar* vec_ptr = ResLock(id_num + idx);
+      queue_size /= sizeof(SchedEvent);
 
-      int num_items = queue_size / sizeof(SchedEvent);
-
-      for(int i = 0; i < num_items; i++) {
-         pqueue_insert(&global_fullmap->sched[0].queue, (SchedEvent*)vec_ptr);
+      uchar* dst_ptr = global_fullmap->sched[0].queue.vec;
+      for(int i = 0; i < queue_size; i++)
+      {
+         memmove(dst_ptr, vec_ptr, sizeof(SchedEvent));
          vec_ptr += sizeof(SchedEvent);
+         dst_ptr += sizeof(SchedEvent);
+         global_fullmap->sched[0].queue.fullness++;
       }
+
+      ResUnlock(id_num + idx++);
    }
    else
      idx++;
