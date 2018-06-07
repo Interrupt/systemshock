@@ -34,6 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "audiolog.h"
 #endif
 
+#include <SDL_Mixer.h>
+
 #define NUM_DIGI_FX  114
 
 char volumes[NUM_DIGI_FX];
@@ -290,7 +292,9 @@ char secret_global_pan=SND_DEF_PAN;
 
 int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort y)
 {
-   /*Id vocRes;
+   printf("play_digi_fx_master\n");
+
+   Id vocRes;
    int retval, real_code = sfx_code, len;
    uchar *addr;
    extern uchar sfx_on;
@@ -350,8 +354,14 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
    s_dprm.flags=0;
    len=ResSize(vocRes);
    addr=(uchar *)ResLock(vocRes);
-   if (addr!=NULL)
-	   retval=snd_sample_play(vocRes,len,addr,&s_dprm);
+   if (addr!=NULL) {
+      printf("Sound is not null, playing %i bytes!\n", len);
+      //Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromFile("res/buzzer.voc", "rb"), 1);
+      Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromConstMem(addr, len), 0);
+      Mix_PlayChannel(-1, sample, 0);
+      return 0;
+	   //retval=snd_sample_play(vocRes,len,addr,&s_dprm);
+   }
    else
       critical_error(CRITERR_MEM|9);
    if (retval == SND_PERROR)
@@ -359,7 +369,7 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
       ResUnlock(vocRes);
       return -3;
    }
-   return retval;          // which sample id*/
+   return retval;          // which sample id
    return -3;
 }
 

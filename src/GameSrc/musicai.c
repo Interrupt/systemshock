@@ -498,9 +498,11 @@ void load_score_guts(char score_playing)
 	char 		base[20], temp[30];
 	FSSpec	themeSpec;
 	
-	strcpy(base, "Theme");							// Get the theme file name.
+	strcpy(base, "thm");							// Get the theme file name.
 	numtostring(score_playing, temp);
 	strcat(base, temp);
+
+   printf("Playing music score %s\n", base);
 
 // temp
 /*

@@ -2,6 +2,8 @@
 #include <Carbon/Carbon.h>
 #include "musicai.h"
 
+#include <SDL_Mixer.h>
+
 // Stub out all of the functions that we haven't implemented yet!
 
 
@@ -17,7 +19,12 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) { }
 void snd_end_sample(int hnd_id) { }
 void snd_startup(void) { }
 
-int snd_start_digital(void) { return 1; /* SND_GENERIC_ERROR */ }
+int snd_start_digital(void) {
+	printf("snd_start_digital\n");
+	Mix_AllocateChannels(16);
+	return OK;
+}
+
 int snd_stop_digital(void) { return 1; }
 
 snd_digi_parms *snd_sample_parms(int hnd_id)

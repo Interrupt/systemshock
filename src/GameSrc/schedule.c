@@ -483,7 +483,6 @@ errtype schedule_free(Schedule* s)
 
 errtype schedule_event(Schedule* s, SchedEvent *ev)
 {
-
    errtype retval = OK;
    if (!time_passes)
       return ERR_NOEFFECT;

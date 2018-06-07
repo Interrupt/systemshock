@@ -19,17 +19,20 @@ link_libraries("-lm")
 # Find SDL, trying the easy way and then the hard way
 find_package(SDL2)
 
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/findsdl2-cmake" ${CMAKE_MODULE_PATH})
 IF(NOT SDL2_LIBRARIES)
 	message(STATUS "Trying SDL2 search fallback")
-	set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/findsdl2-cmake" ${CMAKE_MODULE_PATH})
 	find_package(SDL2 REQUIRED)
 	set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
 	set(SDL2_LIBRARIES ${SDL2_LIBRARY})
 ENDIF(NOT SDL2_LIBRARIES)
 
-include_directories(${SDL2_INCLUDE_DIRS})
+find_package(SDL2_mixer REQUIRED)
+
+include_directories(${SDL2_INCLUDE_DIRS}, ${SDL2_MIXER_INCLUDE_DIRS})
 
 message(STATUS "Found SDL2 Include:${SDL2_INCLUDE_DIRS} Library:${SDL2_LIBRARIES}")
+message(STATUS "Found SDL2_Mixer Include:${SDL2_MIXER_INCLUDE_DIRS} Library:${SDL2_MIXER_LIBRARIES}")
 
 # for now I'll put a Carbon/Carbon.h into src/stubs/
 # that defines Mac-specific types and provides stubs for used functions
@@ -277,6 +280,7 @@ target_link_libraries(systemshock
 	EDMS_LIB
 	FIXPP_LIB
 	${SDL2_LIBRARIES}
+	${SDL2_MIXER_LIBRARIES}
 )
 
 # Turn on address sanitizing if wanted
