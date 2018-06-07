@@ -62,7 +62,7 @@ void (*cspace_effect_turnoff[])(uchar visible,uchar real) = { turbo_turnoff, dec
 errtype early_exit_cyberspace_stuff();
 
 uchar cyber_nodie = FALSE;
-Handle	gCyberHdl;
+FILE *gCyberHdl;
 
 errtype check_cspace_death()
 {
@@ -127,7 +127,7 @@ extern void hardware_startup(uchar visible);
 int old_loop;
 
 extern void drug_closedown(uchar),drug_startup(uchar);
-extern Handle shock_alloc_ipal();		// KLC - Mac style
+extern FILE * shock_alloc_ipal();		// KLC - Mac style
 
 errtype enter_cyberspace_stuff(char dest_lev)
 {
@@ -251,10 +251,10 @@ errtype exit_cyberspace_stuff()
       change_mode_func(0,0,(void *)old_loop);
    inventory_draw_new_page(0);
    
-   if (gCyberHdl)
+   if (gCyberHdl != NULL)
    {
-	   HUnlock(gCyberHdl);      	// reclaim the memory, fight the power
-	   ReleaseResource(gCyberHdl);
+	   // reclaim the memory, fight the power
+	   fclose(gCyberHdl);
    }
    grd_ipal = NULL;     // hack hack hack hack
 
