@@ -134,7 +134,7 @@ errtype init_3d_objects();
 errtype obj_3d_shutdown();
 void init_popups();
 uchar pause_for_input(ulong wait_time);
-Handle shock_alloc_ipal();		// KLC - Mac style
+void shock_alloc_ipal();
 
 extern void rendedit_process_tilemap(FullMap* fmap, LGRect* r, uchar newMap);
 extern void mac_get_pal (int start, int n, uchar *pal_data);
@@ -704,7 +704,7 @@ errtype load_da_palette(void)
 errtype init_pal_fx()
 {
 	int i;
-	Handle	ipalHdl;
+	FILE *ipalHdl;
 	
 	i=1;
 	
@@ -718,7 +718,8 @@ errtype init_pal_fx()
 	
 	// alloc ipal after the above - since we free ipal earlier
 	// prevents fragmenting a bit
-	ipalHdl = shock_alloc_ipal();
+	shock_alloc_ipal();
+	//ipalHdl = shock_alloc_ipal();
 	
 	for (i=0; i<16; i++)
 		gr_init_tluc8_spoly_table(i,fix_make(0,0xe000),fix_make(0,0x8000),
@@ -772,26 +773,22 @@ errtype init_pal_fx()
    }
 }
 
-   HUnlock(ipalHdl);      	// reclaim the memory, fight the power
-   ReleaseResource(ipalHdl);
+   //fclose(ipalHdl); // reclaim the memory, fight the power
    grd_ipal = NULL;     		// hack hack hack
 
  //  Spew(DSRC_EDITOR_Screen, ("Loaded the palette...\n"));
    return(OK);
 }
 
-Handle shock_alloc_ipal()
-{
-	Handle temp;
-	
-	temp = GetResource('ipal',1000);
-	if (!temp)
-		return(NULL);
-	
-	//HLockHi(temp); // DG: I doubt this is really needed
-	grd_ipal = (uchar *) *temp;
-	
-	return(temp);
+void shock_alloc_ipal() {
+  FILE *temp = fopen_caseless("res/data/ipal.dat","rb");
+  if (temp == NULL) {
+    printf("Failed to open ipal.dat\n");
+    return;
+  }
+  fread(grd_ipal, 1, 32768, temp);
+  return;
+  //return(temp);
 }
 
 

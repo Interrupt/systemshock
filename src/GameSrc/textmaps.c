@@ -336,97 +336,34 @@ uchar empty_bitmap(grs_bitmap *bmp)
 
 errtype Init_Lighting(void)
 {
-   Handle	res;
-   int		i;
-   
-   // Read in the standard shading table
-   /*res = GetResource('shad',1000);
-   if (!res) {
-      printf("Could not open lighting table.\n");
-      return(ERR_FOPEN);
-   }
-   BlockMove(*res, shading_table,(256 * 16));
-   ReleaseResource(res);*/
+   int i;
+   FILE *fp;
 
-   FILE *fp = fopen_caseless("res/data/shadtabl.dat","rb");
+   fp = fopen_caseless("res/data/shadtabl.dat","rb");
+   if (fp == NULL)
+      return(ERR_FOPEN);
    fread (shading_table, 1, 256 * 16, fp);
    fclose (fp);
 
    for (i=0; i<256*16; i+=256)
    {
-      shading_table[i]=0xFF;           // i love our shading table
+      shading_table[i]=0xFF; // i love our shading table
    }
 
-   DebugString("Set Light Table");  
-   gr_set_light_tab(shading_table);
-   fr_set_cluts(shading_table,shading_table,shading_table,shading_table);
-
-   //fr_set_cluts(shading_table,bw_shading_table,bw_shading_table,bw_shading_table);
-
-// MLA- changed this to use resources
-/*   char shad_path[255];
-   int num_shad,fd,i;
-
-   // Read in the standard shading table
-   if (!DatapathFind(&DataDirPath,SHADING_TABLE_FNAME,shad_path))
-   {
-      //Warning(("Could not find lighting table(%s)!!\n",SHADING_TABLE_FNAME));
-      return(ERR_FOPEN);
-   }
-   fd = open(shad_path, O_RDONLY|O_BINARY);
-   if (fd < 0)
-   {
-      //Warning(("Could not load lighting table(%s)!!\n",shad_path));
-      return(ERR_FREAD);
-   }
-   num_shad = read(fd,shading_table,(256 * 16));
-   if (num_shad < (256 * 16))
-   {
-      //Warning(("Read only %d values from shading_table\n"));
-   }
-   close(fd);*/
-   
-   /*for (i=0; i<256*16; i+=256)
-   {
-      shading_table[i]=0xFF;  			// i love our shading table
-      //shading_table[i+255]=0xFF;  	// KLC - so do I
-   }
- 
-   // Now choose this one as our normal shading table   
+   DebugString("Set Light Table");
    gr_set_light_tab(shading_table);
 
    // now read bw shading table
-   res = GetResource('shad',1001);
-   if (!res) return(ERR_FOPEN);
-   BlockMove(*res, bw_shading_table,(256 * 16));
-   ReleaseResource(res);*/
-   
-// MLA- changed this to use resources
-/*   if (!DatapathFind(&DataDirPath,SHADING_TABLE_BW_FNAME,shad_path))
-   {
-      //Warning(("Could not find lighting table(%s)!!\n",SHADING_TABLE_BW_FNAME));
+   fp = fopen_caseless("res/data/bwtabl.dat","rb");
+   if (fp == NULL)
       return(ERR_FOPEN);
-   }
-   fd = open(shad_path, O_RDONLY|O_BINARY);
-   if (fd < 0)
-   {
-      //Warning(("Could not load lighting table(%s)!!\n",shad_path));
-      return(ERR_FREAD);
-   }
-   // how about loading these into an array, not separate symbols?
+   fread(bw_shading_table, 1, 256 * 16, fp);
+   fclose(fp);
 
-   num_shad = read(fd,bw_shading_table,(256 * 16));
-   if (num_shad < (256 * 16))
-   {
-      //Warning(("Read only %d values from bw_shading_table\n"));
-   }
-   close(fd);
-   */
-   
-   //for (i=0; i<256*16; i+=256)
-   //   bw_shading_table[i]=0;  // i love our shading table
+   for (i=0; i<256*16; i+=256)
+      bw_shading_table[i]=0; // i love our shading table
 
-   //fr_set_cluts(shading_table,bw_shading_table,bw_shading_table,bw_shading_table);
+   fr_set_cluts(shading_table, bw_shading_table, bw_shading_table, bw_shading_table);
 
    return(OK);
 }
