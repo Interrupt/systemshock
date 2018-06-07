@@ -72,8 +72,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "trigger.h"
 #include "verify.h"
 
-#include <SDL.h>
-
 /*
 #include <schedule.h>
 #include <dpaths.h>
@@ -412,6 +410,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
    {
       int sz = min(global_fullmap->sched[i].queue.fullness+1,global_fullmap->sched[i].queue.size);
       REF_WRITE_RAW(id_num,idx++,global_fullmap->sched[i].queue.vec, sizeof(SchedEvent)*sz);
+      printf("Saved %i schedule items!\n", sz);
    }
    REF_WRITE(id_num,idx++,loved_textures);
 
@@ -869,7 +868,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    physics_init();   
 
    // Read in the global fullmap (without disrupting schedule vec ptr)
-   schedule_init(&global_fullmap->sched[0],400,FALSE);
+   schedule_init(&global_fullmap->sched[0],128,FALSE);
    schedvec = global_fullmap->sched[0].queue.vec;     // KLC - Only one schedule, so just save it.
    
    // convert_from is the version we are coming from.
@@ -883,23 +882,26 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
 
    // Load schedules, performing some voodoo.  
-   //global_fullmap->sched[0].queue.vec = schedvec;        // KLC - Only one schedule, so restore it.
-   //global_fullmap->sched[0].queue.comp = compare_events;
+   schedule_init(&global_fullmap->sched[0],128,TRUE);
 
-   if (global_fullmap->sched[0].queue.fullness > 0)      // KLC - no need to read in vec if none there.
+   int queue_size = ResSize(id_num + idx);
+   if (queue_size > 0)      // KLC - no need to read in vec if none there.
    {
-      // HAX HAX HAX will there ever be more than 400 schedules?
-      schedule_init(&global_fullmap->sched[0],400,FALSE);
-      schedvec = malloc(400 * sizeof(SchedEvent));
-      REF_READ(id_num, idx++, *schedvec);
-      global_fullmap->sched[0].queue.vec = schedvec;
-      //REF_READ(id_num, idx++, *global_fullmap->sched[0].queue.vec);
+      uchar* vec_ptr = (uchar*)malloc(queue_size);
+      ResExtract(id_num + idx++, vec_ptr);
+
+      int num_items = queue_size / sizeof(SchedEvent);
+
+      for(int i = 0; i < num_items; i++) {
+         pqueue_insert(&global_fullmap->sched[0].queue, (SchedEvent*)vec_ptr);
+         vec_ptr += sizeof(SchedEvent);
+      }
    }
    else
-      idx++;
+     idx++;
 
    //KLC��� Big hack!  Force the schedule to growable.
-   global_fullmap->sched[0].queue.grow = TRUE;
+   //global_fullmap->sched[0].queue.grow = TRUE;
 
    REF_READ(id_num, idx++, loved_textures);
 /*
