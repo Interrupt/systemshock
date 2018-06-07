@@ -20,7 +20,7 @@ function build_sdl {
 	tar xvf SDL2-${SDL_version}.tar.gz
 	pushd SDL2-${SDL_version}
 
-	./configure
+	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
 	make
 	make install
 
@@ -32,7 +32,7 @@ function build_sdl_mixer {
 	tar xvf SDL2_mixer-${SDL_mixer_version}.tar.gz
 	pushd SDL2_mixer-${SDL_mixer_version}
 
-	./configure
+	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
 	make
 	make install
 
