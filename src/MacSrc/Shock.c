@@ -701,8 +701,6 @@ void HandleNewGame()
 	go_and_start_the_game_already();				// Load up everything for a new game
 	SDLDraw();
 
-	printf("Starting Main Loop\n");
-
 	//RenderTest();
 	ShockGameLoop();
 }
@@ -1224,11 +1222,11 @@ void InitSDL()
 		DebugString("SDL: Init failed");
 	}
 
-	if(Mix_Init(0) < 0) {
+	if(Mix_Init(MIX_INIT_MP3) < 0) {
 		DebugString("SDL_Mixer: Init failed");
 	}
 
-	if(Mix_OpenAudio(44100, AUDIO_U8, 2, 1024) < 0) {
+	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
 		DebugString("SDL_Mixer: Couldn't open audio device");	
 	}
 
