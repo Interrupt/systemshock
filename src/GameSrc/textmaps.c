@@ -352,9 +352,6 @@ errtype Init_Lighting(void)
 
    DebugString("Set Light Table");
    gr_set_light_tab(shading_table);
-   fr_set_cluts(shading_table, shading_table, shading_table, shading_table);
-
-   gr_set_light_tab(shading_table);
 
    // now read bw shading table
    fp = fopen_caseless("res/data/bwtabl.dat","rb");
@@ -366,7 +363,6 @@ errtype Init_Lighting(void)
    for (i=0; i<256*16; i+=256)
       bw_shading_table[i]=0; // i love our shading table
 
-   DebugString("Set BW Shading Table");
    fr_set_cluts(shading_table, bw_shading_table, bw_shading_table, bw_shading_table);
 
    return(OK);
