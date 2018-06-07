@@ -911,7 +911,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
      idx++;
 
    //KLC��� Big hack!  Force the schedule to growable.
-   //global_fullmap->sched[0].queue.grow = TRUE;
+   global_fullmap->sched[0].queue.grow = TRUE;
 
    REF_READ(id_num, idx++, loved_textures);
 /*
