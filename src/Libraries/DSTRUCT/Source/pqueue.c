@@ -34,6 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include "pqueue.h"
 
+#include <stdio.h>
+
 // -------
 // DEFINES
 // -------
@@ -157,33 +159,27 @@ errtype pqueue_init(PQueue* q, int size, int elemsize, QueueCompare comp, uchar 
    return OK;
 }
 
-errtype pqueue_insert(PQueue* q, void* elem)
-{
-   int n;
-   if (!q->grow && q->fullness >= q->size)
-      return ERR_DOVERFLOW;
-   while (q->fullness >= q->size)
-   {
-      char* newp = malloc(q->elemsize * q->size*2);
-      if (newp == NULL)
-      	return ERR_NOMEM;
-      //BlockMoveData(q->vec, newp, q->size * q->elemsize);
-      memmove(newp, q->vec, q->size * q->elemsize);
-      //DisposePtr(q->vec);
-      free(q->vec);
-      q->vec = newp;
-      q->size*=2;
-   }
-   n = q->fullness++;
-   LG_memcpy(NTH(q,n),elem,q->elemsize);
-   while(n > 0)
-   {
-      if (LESS(q,PARENT(n),n))
-         break;
-      swapelems(q,n,PARENT(n));
-      n = PARENT(n);
-   }
-   return OK;
+errtype pqueue_insert(PQueue* q, void* elem)  
+{  
+   int n;  
+   if (!q->grow && q->fullness >= q->size)  
+      return ERR_DOVERFLOW;  
+   while (q->fullness >= q->size)  
+   {  
+      q->vec = realloc(q->vec, q->elemsize*q->size*2);  
+      q->size*=2;  
+      if (q->vec == NULL) return ERR_NOMEM;  
+   }  
+   n = q->fullness++;  
+   memcpy(NTH(q,n),elem,q->elemsize);  
+   while(n > 0)  
+   {  
+      if (LESS(q,PARENT(n),n))  
+         break;  
+      swapelems(q,n,PARENT(n));  
+      n = PARENT(n);  
+   }  
+   return OK;  
 }
 
 errtype pqueue_extract(PQueue* q, void* elem)
@@ -202,24 +198,24 @@ errtype pqueue_least(PQueue* q, void* elem)
    LG_memcpy(elem,NTH(q,0),q->elemsize);
    return OK;
 }
-/*
-errtype pqueue_write(PQueue* q, int fd, void (*writefunc)(int fd, void* elem))
+
+errtype pqueue_write(PQueue* q, FILE * fd, void (*writefunc)(int fd, void* elem))
 {
    int i;
-   write(fd,(char*)q,sizeof(PQueue));
+   fwrite((char*)q,1,sizeof(PQueue), fd);
    for(i = 0; i < q->fullness; i++)
    {
       if (writefunc != NULL)
          writefunc(fd,NTH(q,i));
-      else write(fd,(char*)NTH(q,i),q->elemsize);
+      else fwrite((char*)NTH(q,i),1,q->elemsize, fd);
    }
    return OK;
 }
 
-errtype pqueue_read(PQueue* q, int fd, void (*readfunc)(int fd, void* elem))
+errtype pqueue_read(PQueue* q, FILE * fd, void (*readfunc)(int fd, void* elem))
 {
    int i;
-   read(fd,(char*)q,sizeof(PQueue));
+   fread((char*)q,1,sizeof(PQueue), fd);
    if (q->grow) q->size = q->fullness;
    q->vec = malloc(q->size*q->elemsize);
    if (q->vec == NULL) return ERR_NOMEM;
@@ -227,11 +223,11 @@ errtype pqueue_read(PQueue* q, int fd, void (*readfunc)(int fd, void* elem))
    {
       if (readfunc != NULL)
          readfunc(fd,NTH(q,i));
-      else read(fd,(char*)NTH(q,i),q->elemsize);
+      else fread((char*)NTH(q,i),1,q->elemsize, fd);
    }
    return OK;
 }
-*/
+
 errtype pqueue_destroy(PQueue* q)
 {
    free(q->vec);

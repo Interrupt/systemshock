@@ -251,11 +251,11 @@ errtype save_game(char *fname, char *comment)
 	
 	// Save game schedule vec info (resource #591)
 // LZW later		ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, RDF_LZW);
-	/*ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, 0);
+	ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, 0);
 	ResWrite(idx);
 	ResUnmake(idx);
 	idx++;
-	AdvanceProgress();*/
+	AdvanceProgress();
  	
  	ResCloseFile(filenum);
 	AdvanceProgress();

@@ -72,8 +72,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "trigger.h"
 #include "verify.h"
 
-#include <SDL.h>
-
 /*
 #include <schedule.h>
 #include <dpaths.h>
@@ -412,6 +410,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
    {
       int sz = min(global_fullmap->sched[i].queue.fullness+1,global_fullmap->sched[i].queue.size);
       REF_WRITE_RAW(id_num,idx++,global_fullmap->sched[i].queue.vec, sizeof(SchedEvent)*sz);
+      printf("Saved %i schedule items!\n", sz);
    }
    REF_WRITE(id_num,idx++,loved_textures);
 
@@ -869,8 +868,8 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    physics_init();   
 
    // Read in the global fullmap (without disrupting schedule vec ptr)
-   schedule_init(&global_fullmap->sched[0],400,FALSE);
    schedvec = global_fullmap->sched[0].queue.vec;     // KLC - Only one schedule, so just save it.
+   int schedsize = global_fullmap->sched[0].queue.size;
    
    // convert_from is the version we are coming from.
    // for now, this is only defined for coming from version 9
@@ -882,21 +881,34 @@ errtype load_current_map(Id id_num, FSSpec* spec)
       AdvanceProgress();
    }
 
-   // Load schedules, performing some voodoo.  
-   //global_fullmap->sched[0].queue.vec = schedvec;        // KLC - Only one schedule, so restore it.
-   //global_fullmap->sched[0].queue.comp = compare_events;
+   // Load schedules, performing some voodoo. 
+   global_fullmap->sched[0].queue.vec = schedvec;
+   global_fullmap->sched[0].queue.comp = compare_events;
 
-   if (global_fullmap->sched[0].queue.fullness > 0)      // KLC - no need to read in vec if none there.
+   // CC: HAX HAX HAX - Why don't these get set properly?
+   global_fullmap->sched[0].queue.fullness = 0;
+   global_fullmap->sched[0].queue.size = schedsize;
+   global_fullmap->sched[0].queue.elemsize = sizeof(SchedEvent);
+
+   int queue_size = ResSize(id_num + idx);
+   if (queue_size > 0)      // KLC - no need to read in vec if none there.
    {
-      // HAX HAX HAX will there ever be more than 400 schedules?
-      schedule_init(&global_fullmap->sched[0],400,FALSE);
-      schedvec = malloc(400 * sizeof(SchedEvent));
-      REF_READ(id_num, idx++, *schedvec);
-      global_fullmap->sched[0].queue.vec = schedvec;
-      //REF_READ(id_num, idx++, *global_fullmap->sched[0].queue.vec);
+      uchar* vec_ptr = ResLock(id_num + idx);
+      queue_size /= sizeof(SchedEvent);
+
+      uchar* dst_ptr = global_fullmap->sched[0].queue.vec;
+      for(int i = 0; i < queue_size; i++)
+      {
+         memmove(dst_ptr, vec_ptr, sizeof(SchedEvent));
+         vec_ptr += sizeof(SchedEvent);
+         dst_ptr += sizeof(SchedEvent);
+         global_fullmap->sched[0].queue.fullness++;
+      }
+
+      ResUnlock(id_num + idx++);
    }
    else
-      idx++;
+     idx++;
 
    //KLC��� Big hack!  Force the schedule to growable.
    global_fullmap->sched[0].queue.grow = TRUE;
