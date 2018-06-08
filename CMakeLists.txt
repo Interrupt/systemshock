@@ -27,7 +27,8 @@ IF(NOT SDL2_LIBRARIES)
 	set(SDL2_LIBRARIES ${SDL2_LIBRARY})
 ENDIF(NOT SDL2_LIBRARIES)
 
-find_package(SDL2_mixer REQUIRED)
+# Try to find SDL_mixer, for sound
+find_package(SDL2_mixer)
 
 include_directories(${SDL2_INCLUDE_DIRS}, ${SDL2_MIXER_INCLUDE_DIRS})
 
@@ -49,6 +50,7 @@ set(MAC_SRC
 	src/MacSrc/Shock.c
 	src/MacSrc/Prefs.c
 	src/MacSrc/MacTune.c
+	src/MacSrc/SDLSound.c
 #	src/stubs/Carbon/carbon_stubs.c - now in LG_SRC so the tests can use it as well
 #                                     (in src/Libraries/CMakeLists.txt)
 #	src/MacSrc/Tests.c

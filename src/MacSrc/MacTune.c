@@ -172,9 +172,9 @@ void MacTuneShutdown(void)
 //  Loads all resources associated with a theme file.  Stops and purges and currently loaded theme.  Returns
 //  a 1 if successful, < 0 if an error.
 //------------------------------------------------------------------------------
-int MacTuneLoadTheme(FSSpec *themeSpec, int themeID)
+/*int MacTuneLoadTheme(FSSpec *themeSpec, int themeID)
 {
-	/*short  	filenum;
+	short  	filenum;
 	Handle	binHdl;
 	Ptr		p;
 	
@@ -260,10 +260,10 @@ Debugger();	//¥¥¥
 	// Here's a big hack.  If we're loading theme 0 (machine sounds only), then don't do an
 	// intro transition.
 	if (themeID == 0)
-	   current_mode = NORMAL_MODE;*/
+	   current_mode = NORMAL_MODE;
 
 	return(1);
-}
+}*/
 
 //------------------------------------------------------------------------------
 //  If there is a theme loaded, start playing it.

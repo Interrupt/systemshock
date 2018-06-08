@@ -84,7 +84,7 @@ extern Boolean		gReadyToQueue;							// True when it's time to queue up a new se
 //-----------------
 int	    MacTuneInit(void);
 void	MacTuneShutdown(void);
-int	    MacTuneLoadTheme(FSSpec *themeSpec, int themeID);
+int	    MacTuneLoadTheme(char *theme, int themeID);
 void	MacTuneStartCurrentTheme(void);
 void	MacTuneKillCurrentTheme(void);
 void	MacTunePurgeCurrentTheme(void);

@@ -34,8 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "audiolog.h"
 #endif
 
-#include <SDL_mixer.h>
-
 #define NUM_DIGI_FX  114
 
 char volumes[NUM_DIGI_FX];
@@ -355,12 +353,7 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
    len=ResSize(vocRes);
    addr=(uchar *)ResLock(vocRes);
    if (addr!=NULL) {
-      printf("Sound is not null, playing %i bytes!\n", len);
-      //Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromFile("res/buzzer.voc", "rb"), 1);
-      Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromConstMem(addr, len), 0);
-      Mix_PlayChannel(-1, sample, 0);
-      return 0;
-	   //retval=snd_sample_play(vocRes,len,addr,&s_dprm);
+	   retval=snd_sample_play(vocRes,len,addr,&s_dprm);
    }
    else
       critical_error(CRITERR_MEM|9);

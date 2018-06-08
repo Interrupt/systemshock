@@ -42,8 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sfxlist.h"
 #include "tools.h"
 
-#include <SDL_mixer.h>
-
 /*
 #include <mainloop.h>
 #include <_audio.h>
@@ -501,31 +499,18 @@ void load_score_guts(char score_playing)
 	char 		base[20], temp[30];
 	FSSpec	themeSpec;
 	
-	strcpy(base, "res/music/thm");							// Get the theme file name.
+	strcpy(base, "thm");							// Get the theme file name.
 	numtostring(score_playing, temp);
 	strcat(base, temp);
-   strcat(base, ".mid");
 
    printf("Playing music score %s\n", base);
 
-// temp
-/*
-strcpy(temp, "Loading: ");
-strcat(temp, base);
-message_info(temp);
-*/
-	//FSMakeFSSpec(gDataVref, gDataDirID, c2pstr(base), &themeSpec);
-
-   // HAX HAX HAX try to play some music!
-   // FIXME: This should really try to play the .xmi files if there is a way!
-   Mix_Music *music;
-   music = Mix_LoadMUS(base);
-   Mix_VolumeMusic(128);
-   Mix_PlayMusic(music, -1);
-   return;
-
 	musicai_shutdown();
-	rv = MacTuneLoadTheme(&themeSpec, score_playing);
+
+	//rv = MacTuneLoadTheme(&themeSpec, score_playing);
+
+   rv = MacTuneLoadTheme(base, score_playing);
+
 	if (rv == 1)
 		musicai_reset(TRUE);
 	else  // handle this a better way.

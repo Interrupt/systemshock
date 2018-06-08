@@ -40,10 +40,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------------
 //	Types
 //--------------------------
-#if 0 // FIXME: clashes with musicai.h's definition
+
 typedef struct snd_digi_parms
 {
-   SndChannelPtr	sndChan;	// Ptr to Mac sound channel.
+   //SndChannelPtr	sndChan;	// Ptr to Mac sound channel.
    uchar			pan;
    uchar			pri;
    ushort			vol;
@@ -54,7 +54,6 @@ typedef struct snd_digi_parms
    void			*data;
    int			len;
 } snd_digi_parms;
-#endif // 0
 
 //typedef struct snd_digi_parms snd_digi_parms;
 

@@ -69,7 +69,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <SDL.h>
-#include <SDL_mixer.h>
 
 extern uchar game_paused;		// I've learned such bad lessons from LG.
 extern uchar objdata_loaded;
@@ -1220,14 +1219,6 @@ void InitSDL()
 	SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO) < 0) {
 		DebugString("SDL: Init failed");
-	}
-
-	if(Mix_Init(MIX_INIT_MP3) < 0) {
-		DebugString("SDL_Mixer: Init failed");
-	}
-
-	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
-		DebugString("SDL_Mixer: Couldn't open audio device");	
 	}
 
 	SetupOffscreenBitmaps();
