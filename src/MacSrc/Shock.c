@@ -700,8 +700,6 @@ void HandleNewGame()
 	go_and_start_the_game_already();				// Load up everything for a new game
 	SDLDraw();
 
-	printf("Starting Main Loop\n");
-
 	//RenderTest();
 	ShockGameLoop();
 }
@@ -1219,7 +1217,7 @@ errtype CheckFreeSpace(short	checkRefNum)
 void InitSDL()
 {
 	SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
-	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
+	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO) < 0) {
 		DebugString("SDL: Init failed");
 	}
 

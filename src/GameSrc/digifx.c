@@ -290,7 +290,9 @@ char secret_global_pan=SND_DEF_PAN;
 
 int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort y)
 {
-   /*Id vocRes;
+   printf("play_digi_fx_master\n");
+
+   Id vocRes;
    int retval, real_code = sfx_code, len;
    uchar *addr;
    extern uchar sfx_on;
@@ -350,8 +352,9 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
    s_dprm.flags=0;
    len=ResSize(vocRes);
    addr=(uchar *)ResLock(vocRes);
-   if (addr!=NULL)
+   if (addr!=NULL) {
 	   retval=snd_sample_play(vocRes,len,addr,&s_dprm);
+   }
    else
       critical_error(CRITERR_MEM|9);
    if (retval == SND_PERROR)
@@ -359,7 +362,7 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
       ResUnlock(vocRes);
       return -3;
    }
-   return retval;          // which sample id*/
+   return retval;          // which sample id
    return -3;
 }
 

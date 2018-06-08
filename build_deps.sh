@@ -28,9 +28,10 @@ function build_sdl {
 }
 
 function build_sdl_mixer {
-	curl -O https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-${SDL_mixer_version}.tar.gz
-	tar xvf SDL2_mixer-${SDL_mixer_version}.tar.gz
-	pushd SDL2_mixer-${SDL_mixer_version}
+	git clone https://github.com/SDL-mirror/SDL_mixer.git
+	#tar xvf SDL2_mixer-${SDL_mixer_version}.tar.gz
+	#pushd SDL2_mixer-${SDL_mixer_version}
+	pushd SDL_mixer
 
 	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
 	make

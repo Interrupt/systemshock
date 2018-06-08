@@ -140,20 +140,6 @@ errtype play_sound_effect(char *filename);
 uchar digi_fx_playing(int fx_id, int *handle_ptr);
 errtype output_text(char *);
 extern void mlimbs_do_ai(void);
-
-typedef struct snd_digi_parms
-{
-   uchar       pan;
-   uchar       pri;
-   ushort         vol;
-   uchar       flags;
-   int         snd_ref;
-   int         loops;
-   Handle         sample;     // Handle to Mac 'snd ' resource.
-   void        *data;
-   int         len;
-} snd_digi_parms;
-
 extern void digifx_EOS_callback(snd_digi_parms *sdp);
 
 extern uchar digi_pan_reverse;
