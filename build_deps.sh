@@ -40,5 +40,5 @@ function build_sdl_mixer {
 	popd
 }
 
-#build_sdl
+build_sdl
 build_sdl_mixer
