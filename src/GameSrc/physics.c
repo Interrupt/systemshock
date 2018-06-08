@@ -623,8 +623,8 @@ errtype physics_run(void)
                plr_y = TUNNEL_CONTROL_MAX;
          }
          // make controls non-linear.
-         plr_side = fix_mul(plr_side,abs(plr_side)) /32;
-         plr_alpha = fix_mul(plr_alpha,abs(plr_alpha))/32;
+         plr_side = fix_mul(plr_side,abs(plr_side)) /16;
+         plr_alpha = fix_mul(plr_alpha,abs(plr_alpha))/16;
 
 #ifdef NO_DEFAULT_FORWARD_IN_CSPACE
          if (QUESTVAR_GET(CYBER_DIFF_QVAR) > 1)
