@@ -893,19 +893,10 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    int queue_size = ResSize(id_num + idx);
    if (queue_size > 0)      // KLC - no need to read in vec if none there.
    {
-      uchar* vec_ptr = ResLock(id_num + idx);
-      queue_size /= sizeof(SchedEvent);
-
       uchar* dst_ptr = global_fullmap->sched[0].queue.vec;
-      for(int i = 0; i < queue_size; i++)
-      {
-         memmove(dst_ptr, vec_ptr, sizeof(SchedEvent));
-         vec_ptr += sizeof(SchedEvent);
-         dst_ptr += sizeof(SchedEvent);
-         global_fullmap->sched[0].queue.fullness++;
-      }
-
+      memmove(dst_ptr, ResLock(id_num + idx), queue_size);
       ResUnlock(id_num + idx++);
+      global_fullmap->sched[0].queue.fullness = queue_size / sizeof(SchedEvent);
    }
    else
      idx++;
