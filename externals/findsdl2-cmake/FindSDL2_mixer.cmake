@@ -42,7 +42,7 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
-find_path(SDL2_MIXER_INCLUDE_DIR SDL_MIXER.h
+find_path(SDL2_MIXER_INCLUDE_DIR SDL_mixer.h
         HINTS
         ENV SDL2MIXERDIR
         ENV SDL2DIR
@@ -59,7 +59,7 @@ else()
 endif()
 
 find_library(SDL2_MIXER_LIBRARY
-        NAMES SDL2_MIXER
+        NAMES SDL2_mixer
         HINTS
         ENV SDL2MIXERDIR
         ENV SDL2DIR
