@@ -292,11 +292,11 @@ uchar parse_motion_key(ushort keycode, short* cnum, short* cval)
       break;
    SLIDL_CASES
 	   *cnum = CONTROL_XVEL;
-	   *cval = -CONTROL_MAX_VAL;
+	   *cval = -CONTROL_MAX_VAL/2;
    	break;
    SLIDR_CASES
 	   *cnum = CONTROL_XVEL;
-	   *cval = CONTROL_MAX_VAL;
+	   *cval = CONTROL_MAX_VAL/2;
 	   break;
    JUMP_CASES
 	   *cnum = CONTROL_ZVEL;
