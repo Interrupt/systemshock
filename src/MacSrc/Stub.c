@@ -2,7 +2,7 @@
 #include <Carbon/Carbon.h>
 #include "musicai.h"
 
-#include <SDL_Mixer.h>
+#include <SDL_mixer.h>
 
 // Stub out all of the functions that we haven't implemented yet!
 

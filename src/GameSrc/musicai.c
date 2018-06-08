@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sfxlist.h"
 #include "tools.h"
 
-#include <SDL_Mixer.h>
+#include <SDL_mixer.h>
 
 /*
 #include <mainloop.h>

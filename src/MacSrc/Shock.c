@@ -69,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <SDL.h>
-#include <SDL_Mixer.h>
+#include <SDL_mixer.h>
 
 extern uchar game_paused;		// I've learned such bad lessons from LG.
 extern uchar objdata_loaded;
