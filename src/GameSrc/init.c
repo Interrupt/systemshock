@@ -781,6 +781,10 @@ errtype init_pal_fx()
 }
 
 void shock_alloc_ipal() {
+
+  // CC: Make sure we always allocate an ipal first
+  gr_alloc_ipal();
+
   FILE *temp = fopen_caseless("res/data/ipal.dat","rb");
   if (temp == NULL) {
     printf("Failed to open ipal.dat\n");
