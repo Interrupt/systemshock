@@ -30,7 +30,10 @@ ENDIF(NOT SDL2_LIBRARIES)
 # Try to find SDL_mixer, for sound
 find_package(SDL2_mixer)
 
-include_directories(${SDL2_INCLUDE_DIRS}, ${SDL2_MIXER_INCLUDE_DIRS})
+include_directories(
+	${SDL2_INCLUDE_DIRS}
+	${SDL2_MIXER_INCLUDE_DIRS}
+)
 
 message(STATUS "Found SDL2 Include:${SDL2_INCLUDE_DIRS} Library:${SDL2_LIBRARIES}")
 message(STATUS "Found SDL2_Mixer Include:${SDL2_MIXER_INCLUDE_DIRS} Library:${SDL2_MIXER_LIBRARIES}")
