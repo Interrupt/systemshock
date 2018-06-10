@@ -70,8 +70,8 @@ extern short MODE_SCONV_Y(short cval, short m);
 #define RSCONV_X(x)   fix_int(0x8000 + fast_fix_mul(fix_make((x),0), convert_x[convert_type][convert_use_mode]))
 #define RSCONV_Y(y)   fix_int(0x8000 + fast_fix_mul(fix_make((y),0), convert_y[convert_type][convert_use_mode]))
 
-#define INV_SCONV_X(x)   fast_fix_mul_int(fix_make((x),0), inv_convert_x[convert_type][convert_use_mode])
-#define INV_SCONV_Y(y)   fast_fix_mul_int(fix_make((y),0), inv_convert_y[convert_type][convert_use_mode])
+#define INV_SCONV_X(x)   (convert_use_mode ? fast_fix_mul_int(fix_make((x),0), inv_convert_x[convert_type][convert_use_mode]) : x)
+#define INV_SCONV_Y(y)   (convert_use_mode ? fast_fix_mul_int(fix_make((y),0), inv_convert_y[convert_type][convert_use_mode]) : y)
 
 #define FIXCONV_X(x)   fast_fix_mul((x), convert_x[convert_type][convert_use_mode])
 #define FIXCONV_Y(y)   fast_fix_mul((y), convert_y[convert_type][convert_use_mode])
