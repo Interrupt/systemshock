@@ -95,7 +95,8 @@ grs_screen  *cit_screen;
 SDL_Window* window;
 
 // Let people override the default game archive
-char* archive_override = NULL;
+char* modding_archive_override = NULL;
+char* modding_additional_files[MOD_FILE_NUM];
 
 extern grs_screen *svga_screen;
 extern 	frc *svga_render_context;
@@ -149,7 +150,37 @@ int main(int argc, char** argv)
 	HideCursor();
 	HideMenuBar();
 
+	// CC: Modding support! This is so exciting.
+
+	for(int i = 0; i < MOD_FILE_NUM; i++) {
+		modding_additional_files[i] = NULL; // Default the additional files to NULL
+	}
+
+	if(argc > 1) {
+		// Check if we should load a different Game Archive data file.
+		int archive_loc = 1;
+		for(int i = 1; i < argc; i++) {
+			if(strcmp(argv[i], "--archive") == 0) {
+				if(i < argc) {
+					archive_loc = i + 1;
+					modding_archive_override = argv[archive_loc];
+					printf("Using archive data file %s\n", modding_archive_override);
+				}
+			}
+		}
+
+		// Now go find the additional mod files
+		int mod_files_found = 0;
+		for(int i = archive_loc + 1; i < argc; i++) {
+			if(mod_files_found < MOD_FILE_NUM) {
+				printf("Using mod file: %s\n", argv[i]);
+				modding_additional_files[mod_files_found++] = argv[i];
+			}
+		}
+	}
+
 	init_all();
+	
 	/*if (gShockPrefs.prefPlayIntro)
 	{
 		extern void PlayIntroCutScene(void);
@@ -176,18 +207,6 @@ int main(int argc, char** argv)
 //		GetAppFiles(1, &theFile);
 //		OpenGame(&theFile, 0L);
 //	 }
-
-	// CC: Check if we should load a different Game Archive data file. Modding is fun!
-	if(argc > 1) {
-		for(int i = 0; i < argc; i++) {
-			if(strcmp(argv[i], "--archive") == 0) {
-				if(i < argc) {
-					archive_override = argv[i + 1];
-					printf("Using archive data file %s\n", archive_override);
-				}
-			}
-		}
-	}
 
 	HandleNewGame();
 
