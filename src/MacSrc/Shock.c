@@ -94,6 +94,9 @@ Boolean				gGameCompletedQuit;
 grs_screen  *cit_screen;
 SDL_Window* window;
 
+// Let people override the default game archive
+char* archive_override = NULL;
+
 extern grs_screen *svga_screen;
 extern 	frc *svga_render_context;
 
@@ -173,6 +176,18 @@ int main(int argc, char** argv)
 //		GetAppFiles(1, &theFile);
 //		OpenGame(&theFile, 0L);
 //	 }
+
+	// CC: Check if we should load a different Game Archive data file. Modding is fun!
+	if(argc > 1) {
+		for(int i = 0; i < argc; i++) {
+			if(strcmp(argv[i], "--archive") == 0) {
+				if(i < argc) {
+					archive_override = argv[i + 1];
+					printf("Using archive data file %s\n", archive_override);
+				}
+			}
+		}
+	}
 
 	HandleNewGame();
 
