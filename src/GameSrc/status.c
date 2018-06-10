@@ -268,16 +268,16 @@ void bio_set_pixel(int color, short x, short y)
 
 //KLC - don't need   if ((curr_bio_mode == DIFF_BIO) && (under_bio(x)))
 //      return;
-//   if (convert_use_mode)
-//   {
+   if (convert_use_mode)
+   {
       x0 = SCONV_X(x); y0 = SCONV_Y(y);
       x1 = SCONV_X(x+1); y1 = SCONV_Y(y+1);
       for (i=x0; i < x1; i++)
          for (j=y0; j < y1; j++)
             ss_save_under_set_pixel(color,i,j);
-//   }
-//   else
-//      ss_save_under_set_pixel(color,x,y);
+   }
+   else
+      ss_save_under_set_pixel(color,x,y);
 }
 
 // ---------------------------------------------------------

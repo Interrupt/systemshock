@@ -289,7 +289,9 @@ void change_svga_screen_mode()
 	}
 	// calculate new pixel ratio for automap; force 1 for 320x200
 	// KLC - we're never 320x200   amap_pixratio_set(svga_mode_data[mode_id]==GRM_320x200x8?FIX_UNIT:0);
-	amap_pixratio_set(0);
+	//amap_pixratio_set(0);
+
+   amap_pixratio_set(svga_mode_data[mode_id]==GRM_320x200x8?FIX_UNIT:0);
 
 	if (svga_render_context!=NULL) {
 		fr_free_view(svga_render_context);
