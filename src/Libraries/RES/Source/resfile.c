@@ -40,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "res.h"
 #include "res_.h"
@@ -122,7 +123,6 @@ size_t DG_strlcat(char* dst, const char* src, size_t dstsize)
 #ifndef _WIN32
 
 #include <dirent.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
 static int check_and_append_pathelem(char dirbuf[PATH_MAX], const char* elem)

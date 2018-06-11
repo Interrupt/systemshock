@@ -44,6 +44,7 @@
 
 find_path(SDL2_MIXER_INCLUDE_DIR SDL_mixer.h
         HINTS
+		$ENV{SDL2_MIXER_DIR}
         ENV SDL2MIXERDIR
         ENV SDL2DIR
         PATH_SUFFIXES SDL2
@@ -61,6 +62,7 @@ endif()
 find_library(SDL2_MIXER_LIBRARY
         NAMES SDL2_mixer
         HINTS
+		$ENV{SDL2_MIXER_DIR}
         ENV SDL2MIXERDIR
         ENV SDL2DIR
         PATH_SUFFIXES lib ${VC_LIB_PATH_SUFFIX}
