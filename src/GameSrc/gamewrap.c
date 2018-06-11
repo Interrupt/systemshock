@@ -246,8 +246,6 @@ errtype save_game(char *fname, char *comment)
 	ResUnmake(idx);
 	idx++;
 	AdvanceProgress();
-
-   printf("FIXME: Writing schedule queue\n");
 	
 	// Save game schedule vec info (resource #591)
 // LZW later		ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE, RTYPE_APP, filenum, RDF_LZW);
@@ -315,13 +313,16 @@ errtype interpret_qvars(void)
    extern uchar fullscrn_icons;
    extern uchar map_notes_on;
    extern uchar audiolog_setting;
+   extern char convert_use_mode;
+   extern ubyte hud_color_bank;
 
 //KLC - don't do this here - it's a global now.   load_da_palette();
-/* later
+
    gamma_dealfunc(QUESTVAR_GET(GAMMACOR_QVAR));
 
-   dclick_dealfunc(QUESTVAR_GET(DCLICK_QVAR));
-   joysens_dealfunc(QUESTVAR_GET(JOYSENS_QVAR));
+   //dclick_dealfunc(QUESTVAR_GET(DCLICK_QVAR));
+   //joysens_dealfunc(QUESTVAR_GET(JOYSENS_QVAR));
+   
    recompute_music_level(QUESTVAR_GET(MUSIC_VOLUME_QVAR));
    recompute_digifx_level(QUESTVAR_GET(SFX_VOLUME_QVAR));
 #ifdef AUDIOLOGS
@@ -335,15 +336,15 @@ errtype interpret_qvars(void)
 
    digichan_dealfunc(QUESTVAR_GET(DIGI_CHANNELS_QVAR));
 
-   mouse_set_lefty(QUESTVAR_GET(MOUSEHAND_QVAR));
+   //mouse_set_lefty(QUESTVAR_GET(MOUSEHAND_QVAR));
 
    language_change(QUESTVAR_GET(LANGUAGE_QVAR));
-*/
-/*KLC - can't ever change screenmode in Mac version
-   mode_id = QUESTVAR_GET(SCREENMODE_QVAR);
+
+   //KLC - can't ever change screenmode in Mac version
+   /*mode_id = QUESTVAR_GET(SCREENMODE_QVAR);
    if (mode_id != convert_use_mode)
-      chg_set_flg(GL_CHG_LOOP);
-*/
+      chg_set_flg(GL_CHG_LOOP);*/
+
    return(OK);
 }
 
@@ -382,9 +383,8 @@ errtype load_game(char *fname)
    if (!bad_save)
       obj_move_to(PLAYER_OBJ, &(player_struct.realspace_loc), FALSE);
 
-   // FIXME: Crashes!
-   //if (load_game_schedules() != OK)
-      //bad_save = TRUE;
+   if (load_game_schedules() != OK)
+      bad_save = TRUE;
 
    ResCloseFile(filenum);
 

@@ -136,7 +136,7 @@ void gri_tpoly_init (grs_tmap_loop_info *ti)
 
 void gri_clut_tpoly_init (grs_tmap_loop_info *ti)
 {
-   DebugString("gri_clut_tpoly_init");
+   //DebugString("gri_clut_tpoly_init");
    if (tluc8tab[(intptr_t)(ti->bm.bits)]!=NULL) {
       ti->bm.bits=tluc8tab[(intptr_t)ti->bm.bits];
       ti->bm.hlog=GRL_TLUC8|GRL_CLUT;
