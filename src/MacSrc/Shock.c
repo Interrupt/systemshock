@@ -869,6 +869,11 @@ void ShockGameLoop(void)
 		SDLDraw();
 	}
 
+	if(gGameCompletedQuit) {
+		// FIXME: Revive the old cutscenes!
+		printf("SHODAN has been defeated!\n");
+	}
+
 	/*Size		dummy;
 	FSSpec	fSpec;
 
