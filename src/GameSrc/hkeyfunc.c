@@ -1099,16 +1099,16 @@ uchar toggle_giveall_func(short keycode, ulong context, void* data)
 
 uchar toggle_up_level_func(short keycode, ulong context, void* data)
 {
-   extern errtype load_level_from_file(int level_num);
+   extern errtype go_to_different_level(int level_num);
    message_info("Changing level!");
-   load_level_from_file(player_struct.level + 1);
+   go_to_different_level(player_struct.level + 1);
 }
 
 uchar toggle_down_level_func(short keycode, ulong context, void* data)
 {
-   extern errtype load_level_from_file(int level_num);
+   extern errtype go_to_different_level(int level_num);
    message_info("Changing level!");
-   load_level_from_file(player_struct.level - 1);
+   go_to_different_level(player_struct.level - 1);
 }
 
 #ifdef NOT_YET //
