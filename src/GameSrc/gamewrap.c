@@ -322,7 +322,7 @@ errtype interpret_qvars(void)
 
    //dclick_dealfunc(QUESTVAR_GET(DCLICK_QVAR));
    //joysens_dealfunc(QUESTVAR_GET(JOYSENS_QVAR));
-   
+
    recompute_music_level(QUESTVAR_GET(MUSIC_VOLUME_QVAR));
    recompute_digifx_level(QUESTVAR_GET(SFX_VOLUME_QVAR));
 #ifdef AUDIOLOGS
@@ -341,9 +341,9 @@ errtype interpret_qvars(void)
    language_change(QUESTVAR_GET(LANGUAGE_QVAR));
 
    //KLC - can't ever change screenmode in Mac version
-   /*mode_id = QUESTVAR_GET(SCREENMODE_QVAR);
+   mode_id = QUESTVAR_GET(SCREENMODE_QVAR);
    if (mode_id != convert_use_mode)
-      chg_set_flg(GL_CHG_LOOP);*/
+      chg_set_flg(GL_CHG_LOOP);
 
    return(OK);
 }

@@ -795,16 +795,17 @@ void go_and_start_the_game_already()
 #ifdef SVGA_SUPPORT
    QUESTVAR_SET(SCREENMODE_QVAR, convert_use_mode);
 #endif
-//Â¥Â¥   QUESTVAR_SET(MUSIC_VOLUME_QVAR, (curr_vol_lev*curr_vol_lev)/100);
-//Â¥Â¥   QUESTVAR_SET(SFX_VOLUME_QVAR, (curr_sfx_vol*curr_sfx_vol)/100);
+   QUESTVAR_SET(MUSIC_VOLUME_QVAR, (curr_vol_lev*curr_vol_lev)/100);
+   QUESTVAR_SET(SFX_VOLUME_QVAR, (curr_sfx_vol*curr_sfx_vol)/100);
 #ifdef AUDIOLOGS
-//Â¥Â¥   QUESTVAR_SET(ALOG_VOLUME_QVAR, (curr_alog_vol*curr_alog_vol)/100);
+   QUESTVAR_SET(ALOG_VOLUME_QVAR, (curr_alog_vol*curr_alog_vol)/100);
    QUESTVAR_SET(ALOG_OPT_QVAR, audiolog_setting);
 #endif
    QUESTVAR_SET(FULLSCRN_ICON_QVAR, fullscrn_icons);
    QUESTVAR_SET(FULLSCRN_VITAL_QVAR, fullscrn_vitals);
-//Â¥Â¥   QUESTVAR_SET(AMAP_NOTES_QVAR, map_notes_on);
+   QUESTVAR_SET(AMAP_NOTES_QVAR, map_notes_on);
    QUESTVAR_SET(HUDCOLOR_QVAR, hud_color_bank);
+   QUESTVAR_SET(SCREENMODE_QVAR, 3);
 //KLC - this is a global now   QUESTVAR_SET(GAMMACOR_QVAR, (short)((29*FIX_UNIT)/100));
 //Â¥Â¥   QUESTVAR_SET(MOUSEHAND_QVAR, mouseLefty);
    QUESTVAR_SET(DCLICK_QVAR, FIX_UNIT/3);
