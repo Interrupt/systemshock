@@ -261,10 +261,8 @@ void pump_events(void)
 					else
 					{
 						sshockKeyStates[c] = 0;
-						// FIXME: right now it seems to work better without generating up events..
-						//        if that ever changes, uncomment the following lines
-						//keyEvent.state = KBS_UP;
-						//addKBevent(&keyEvent);
+						keyEvent.state = KBS_UP;
+						addKBevent(&keyEvent);
 					}
 				}
 

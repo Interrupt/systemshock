@@ -1428,10 +1428,10 @@ void init_input(void)
 #endif
    hotkey_add(CONTROL('s'), DEMO_CONTEXT, save_hotkey_func, NULL);
    hotkey_add(CONTROL('S'), DEMO_CONTEXT, save_hotkey_func, NULL);
-/*KLC - not in Mac version
    hotkey_add(CONTROL('l'), DEMO_CONTEXT, saveload_hotkey_func, (void *)TRUE);
    hotkey_add(CONTROL('L'), DEMO_CONTEXT, saveload_hotkey_func, (void *)TRUE);
 
+/*KLC - not in Mac version
    hotkey_add('?', DEMO_CONTEXT, keyhelp_hotkey_func, NULL);
 
    hotkey_add('/',DEMO_CONTEXT,toggle_bool_func,&joystick_mouse_emul);
@@ -2534,7 +2534,7 @@ typedef struct _view3d_kdata
 } view3d_kdata;
 
 
-#define FIRE_KEY KEY_SPACE  //KLC for PC was KEY_ENTER
+#define FIRE_KEY KEY_ENTER  //KLC for PC was KEY_ENTER
 
 uchar view3d_key_handler(uiCookedKeyEvent* ev, LGRegion* r, void* data)
 {
@@ -2547,7 +2547,7 @@ uchar view3d_key_handler(uiCookedKeyEvent* ev, LGRegion* r, void* data)
 		if (weapon_button_up)												// and we haven't fired already
 		{
       		evp = ev->pos;
-			ss_point_convert(&(evp.x),&(evp.y),FALSE);
+			   ss_point_convert(&(evp.x),&(evp.y),FALSE);
       		fire_player_weapon(&evp, r, !fire_slam);
       		fire_slam = TRUE;
       		weapon_button_up = FALSE;
@@ -2571,6 +2571,11 @@ uchar view3d_key_handler(uiCookedKeyEvent* ev, LGRegion* r, void* data)
       fire_slam = FALSE;
 */
    }
+   else if (ev->code == FIRE_KEY) {
+      weapon_button_up = TRUE;
+      fire_slam = FALSE;
+   }
+
    return retval;
 }
 
@@ -3414,7 +3419,7 @@ void install_motion_mouse_handler(LGRegion* r,frc* fr)
    uiInstallRegionHandler(r,UI_EVENT_MOUSE|UI_EVENT_MOUSE_MOVE|UI_EVENT_USER_DEFINED,(uiHandlerProc)view3d_mouse_handler,data,&cid);
 
    // Yeah, yeah, I know, it's not a mouse handler...
-//KLC   uiInstallRegionHandler(r,UI_EVENT_KBD_COOKED, (uiHandlerProc)view3d_key_handler,    NULL, &cid);
+   uiInstallRegionHandler(r,UI_EVENT_KBD_COOKED, (uiHandlerProc)view3d_key_handler,    NULL, &cid);
    uiSetRegionDefaultCursor(r,NULL);
 }
 
