@@ -72,7 +72,7 @@ void SetDefaultPrefs(void)
 	gShockPrefs.soMusicVolume = 33;				// Figure out when sound is put in.
 
 	gShockPrefs.doResolution = 0;				// High-res.
-	gShockPrefs.doDetail = 2;					// High detail.
+	gShockPrefs.doDetail = 3;					// Max detail.
 	gShockPrefs.doGamma = 29;					// Default gamma (29 out of 100).
 	gShockPrefs.doUseQD = false;
 
