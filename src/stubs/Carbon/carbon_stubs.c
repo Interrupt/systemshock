@@ -1,6 +1,7 @@
 #include "Carbon.h"
 
 #include <SDL.h>
+#include <stdlib.h>
 
 #include "lg.h"
 
