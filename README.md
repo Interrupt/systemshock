@@ -39,7 +39,7 @@ Compiling / Running
   - Original assets in a `res/data` folder next to the executable
   
 # Building SDL
-You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer
+You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer. VOC support was broken until recently in SDL_mixer, so for sound effects to work you'll probably need to build it from the latest sources like that script does.
 
 # Build and run
 ```
