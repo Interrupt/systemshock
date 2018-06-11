@@ -13,35 +13,33 @@ The end goal for this project is something like what Chocolate Doom is for Doom:
 
 # Working so far:
 - Gameplay!
-- Loads original resource files
-- Starting up an SDL drawing context, including palette
-- SDL input
-- Bitmap rendering
-- Level loading
-- Starting a new game
-- HUD rendering
-- 3D rendering
-- AI
+- Mouse and keyboard input
+- Software 3D / 2D rendering
 - Physics
-- Cyberspace
-- Saving / Loading
+- Saving and loading
+- Sound effects
+- Basic midi music, if available
+- Mod support!
 
 # Not working:
-- Sound & Music
-  - SDL_Mixer should be able to play the VOC and MIDI files used for sfx and music
+- Music
+  - SDL_Mixer can't play the multi track XMI midi files, need to find another solution for those
+  - There is basic midi music support if there are .mid files in `/res/data/music` like `thm0.mid`
 - Main Menu
   - the original main menu should be revived, instead of the Mac version
-- Video Files
+- Video Files / Audiologs
   - Need to revive the old movie rendering code in AFile
-- Stability
-  - Leaks memory, crashes often
 
 Compiling / Running
 ============
 
 # Prerequisites
   - SDL2, 32 bit
+  - SDL2_mixer, 32 bit
   - Original assets in a `res/data` folder next to the executable
+  
+# Building SDL
+You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer
 
 # Build and run
 ```
