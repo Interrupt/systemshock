@@ -54,6 +54,7 @@ set(MAC_SRC
 	src/MacSrc/Prefs.c
 	src/MacSrc/MacTune.c
 	src/MacSrc/SDLSound.c
+	src/MacSrc/Modding.c
 #	src/stubs/Carbon/carbon_stubs.c - now in LG_SRC so the tests can use it as well
 #                                     (in src/Libraries/CMakeLists.txt)
 #	src/MacSrc/Tests.c

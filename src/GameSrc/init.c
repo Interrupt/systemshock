@@ -73,6 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "dynmem.h"
 #include "citres.h"
 
+#include "Modding.h"
 #include <SDL.h>
 
 /*
@@ -863,14 +864,8 @@ errtype init_load_resources()
 	if (ResOpenFile("res/data/digifx.res") < 0)
 		critical_error(CRITERR_RES|9);
 
-	// CC: Load mod files
-	extern char* modding_additional_files[MOD_FILE_NUM];
-	for(int i = 0; i < MOD_FILE_NUM; i++) {
-		if(modding_additional_files[i] != NULL) {
-			printf("Loading %s\n", modding_additional_files[i]);
-			ResOpenFile(modding_additional_files[i]);
-		}
-	}
+	// Go load the additional mod files
+	LoadModFiles();
 	
 	return(OK);
 }
