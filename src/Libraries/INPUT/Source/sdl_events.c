@@ -85,6 +85,8 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 	// and https://stackoverflow.com/a/16125341
 	// see also GameSrc/movekeys.c for a very short list
 
+	//printf("sdlKeyCodeToSSHOCKkeyCode: %x\n", kc);
+
 	switch(kc)
 	{
 		case SDLK_a : return 0x00; //  kVK_ANSI_A = 0x00,
@@ -158,6 +160,7 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 		case SDLK_TAB : return 0x30; //  kVK_Tab     = 0x30,
 		case SDLK_SPACE : return 0x31; //  kVK_Space   = 0x31,
 		case SDLK_DELETE : return 0x33; //  kVK_Delete  = 0x33,
+		case SDLK_BACKSPACE : return 0x33; //  kVK_Delete  = 0x33,
 		case SDLK_ESCAPE : return 0x35; //  kVK_Escape  = 0x35,
 		case SDLK_LGUI : // fall-through
 		case SDLK_RGUI : return 0x37; //  kVK_Command = 0x37, // FIXME: I think command is the windows/meta key?
@@ -234,7 +237,7 @@ void pump_events(void)
 					//printf("ev.key.keysym.sym: %x\n", ev.key.keysym.sym);
 
 					// FIXME: this is hacky, see comment in SDL_TEXTINPUT below..
-					if(ev.key.keysym.sym >= 0x0d && ev.key.keysym.sym <= '~')
+					if(ev.key.keysym.sym >= 0x08 && ev.key.keysym.sym <= '~')
 						keyEvent.ascii = ev.key.keysym.sym;
 					else
 						keyEvent.ascii = 0;
