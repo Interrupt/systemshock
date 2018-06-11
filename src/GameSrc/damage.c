@@ -100,8 +100,6 @@ void destroy_destroyed_objects(void)
    uchar     dupe;
    ObjID    id;
 
-   printf("destroy_destroyed_objects\n");
-
    if (destroyed_obj_count != 0)
    {
       for (i=0; i<destroyed_obj_count;i++)

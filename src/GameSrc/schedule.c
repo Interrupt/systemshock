@@ -471,13 +471,13 @@ static ushort current_tstamp = 0;
 
 errtype schedule_init(Schedule* s, int size, uchar grow)
 {
-   printf("schedule_init\n");
+   Spew("schedule", "schedule_init\n");
    return pqueue_init(&s->queue,size,sizeof(SchedEvent),compare_events,grow);
 }
 
 errtype schedule_free(Schedule* s)
 {
-   printf("schedule_free\n");
+   Spew("schedule", "schedule_free\n");
    return pqueue_destroy(&s->queue);
 }
 
@@ -491,8 +491,7 @@ errtype schedule_event(Schedule* s, SchedEvent *ev)
       return ERR_NOEFFECT;
    }
    
-   // FIXME sometimes this crashes!
-   printf("Scheduling an event. %x\n", &s->queue);
+   Spew("schedule", "Scheduling an event.\n");
 
    retval = pqueue_insert(&s->queue,ev);
    if (retval != OK)
@@ -526,7 +525,6 @@ errtype schedule_run(Schedule* s, ushort time)
        err == OK && compare_tstamps(ev.timestamp,time) < 0;
        err = pqueue_least(&s->queue,&ev))
    {
-      printf("Checking schedule item!\n");
       if (ev.type < NUM_EVENT_TYPES)
          sched_handlers[ev.type](s,&ev);
       pqueue_extract(&s->queue,&ev);

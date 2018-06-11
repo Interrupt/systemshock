@@ -163,7 +163,7 @@ int main(int argc, char** argv)
 	extern errtype load_savegame_names(void);
 	load_savegame_names();
 	
-	printf("Showing title screen\n");
+	printf("FIXME: Show title screen\n");
 	SetupTitleScreen();
 	SetupTitleMenus();
 	ShowMenuBar();
@@ -850,7 +850,6 @@ void ShockGameLoop(void)
 
 		if (globalChanges)
 		{
-			printf("globalChanges!\n");
 			if (_change_flag&(ML_CHG_BASE<<3))
 				loopmode_switch(&_current_loop);
 			chg_unset_flg(ML_CHG_BASE<<3);
@@ -1250,7 +1249,7 @@ void InitSDL()
     // Open our window!
 
 	window = SDL_CreateWindow(
-		"System Shock", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		"System Shock - Shockolate 0.5", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN);
 
 	// Setup the screen

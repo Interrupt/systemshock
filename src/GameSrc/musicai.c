@@ -503,8 +503,6 @@ void load_score_guts(char score_playing)
 	numtostring(score_playing, temp);
 	strcat(base, temp);
 
-   printf("Playing music score %s\n", base);
-
 	musicai_shutdown();
 
 	//rv = MacTuneLoadTheme(&themeSpec, score_playing);

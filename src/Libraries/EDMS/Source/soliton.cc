@@ -135,8 +135,6 @@ register	Q	*S_Object;
    int     ccount = 0;
    int     count = 0;
 
-   printf("soliton_lite\n");
-
    // Copy the state vector initially into the argument vector...
    // ===========================================================
    for ( object = 0; S[object][0][0] > END; object++ )
@@ -561,8 +559,8 @@ void EDMS_initialize( EDMS_data *D )
    hash_scale.fix_to( D->playfield_size );
    hash_scale = collision_size / hash_scale;
 
-   printf("hash_scale: %f\n", fix_float(hash_scale.to_fix()));
-   printf("collision_size: %f\n", fix_float(collision_size.to_fix()));
+   //printf("hash_scale: %f\n", fix_float(hash_scale.to_fix()));
+   //printf("collision_size: %f\n", fix_float(collision_size.to_fix()));
 
    for ( coord = 0; coord < EDMS_DATA_SIZE; coord++ )
    {
@@ -749,8 +747,6 @@ void  collision_wakeup( int object )
    void     (*idof_function_save)( int );
 
    extern void     inventory_and_statistics();
-
-   printf("collision_wakeup\n");
 
    // Save me, save me...
    // ===================

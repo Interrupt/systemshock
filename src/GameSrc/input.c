@@ -1936,7 +1936,7 @@ void view3d_rightbutton_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data
       if (left_down_jump) break;
       if (data->rdown)
       {
-         printf("FIRE WEAPON!\n");
+         //printf("FIRE WEAPON!\n");
 	      if (fire_player_weapon(&aimpos,r,weapon_button_up) && (ev->action & MOUSE_RDOWN) && !fire_slam)
          {
             if (full_game_3d)
@@ -2514,7 +2514,6 @@ uchar view3d_mouse_handler(uiMouseEvent* ev, LGRegion* r, view3d_data* data)
 
    if (ev->action & UI_MOUSE_LDOUBLE)
    {
-      printf("use this, bay-bee!\n");
       //Spew(DSRC_USER_I_Motion,("use this, bay-bee!\n"));
       view3d_dclick(evp,data->fr);
       data->lastleft = MakePoint(-100,-100);

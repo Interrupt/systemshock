@@ -44,6 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lzw.h"
 #include "res.h"
 #include "res_.h"
+#include "dbg.h"
 
 //-------------------------------
 //  Private Prototypes
@@ -73,7 +74,7 @@ void *ResLoadResource(Id id) {
     return NULL;
   //});
 
-  printf("ResLoadResource: loading $%x\n", id);
+  SpewArgs("resload", "ResLoadResource: loading $%x\n", id);
 
   prd = RESDESC(id);
   prd2 = RESDESC2(id);

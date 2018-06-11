@@ -779,7 +779,6 @@ errtype uiMakeBitmapCursor(LGCursor* c,grs_bitmap* bm, LGPoint hotspot)
       return ERR_NOEFFECT;
    }
    
-   printf("uiMakeBitmapCursor %i %i\n", bm->w, bm->h);
    grow_save_under(bm->w,bm->h);
    c->func = bitmap_cursor_drawfunc;
    c->state = bm;

@@ -1252,8 +1252,6 @@ uchar obj_destroy(ObjID id)
 	extern void check_panel_ref(uchar puntme);
 	short x,y;
 	uchar  terrain_object = FALSE;
-
-   printf("obj_destroy %x\n", id);
 	
 	decrement_shodan_value(id, TRUE);
 	if (id != OBJ_NULL) 
@@ -1364,14 +1362,12 @@ errtype obj_create_player(ObjLoc *plr_loc)
    {
       instantiate_pelvis(PLAYER_TRIP,&player_pelvis);
       objs[PLAYER_OBJ].info.ph = ph = EDMS_make_pelvis(&player_pelvis, &new_state);
-      printf("objs[PLAYER_OBJ].info.ph: %i\n", objs[PLAYER_OBJ].info.ph);
    }
    physics_handle_id[ph] = PLAYER_OBJ;
 
    if (ph>physics_handle_max)
       physics_handle_max=ph;
 
-   printf("obj_move_to PLAYER_OBJ\n");
    obj_move_to(PLAYER_OBJ, plr_loc, !use_new);
 
    if ( (!global_fullmap->cyber) && (ocp_settle_the_player) )
@@ -1437,10 +1433,6 @@ errtype obj_load_properties()
 
 	//extern void SwapLongBytes(void *pval4);
 	//extern void SwapShortBytes(void *pval2);
-
-   printf("obj_load_properties\n");
-
-   printf(" loading obj prop file: %s\n", OBJPROP_FILENAME);
 
 //  For Mac version, replaced with GetResource
 
@@ -2919,8 +2911,6 @@ errtype obj_physics_refresh(short x, short y, uchar use_floor)
    int count = 0,i;
    ObjID move_list[MAX_MOVE_OBJS];
 
-   printf("Use floor %i\n", use_floor);
-
    oref = me_objref(MAP_GET_XY(x,y));
    while (oref != OBJ_REF_NULL)
    {
@@ -2949,7 +2939,7 @@ errtype obj_physics_refresh(short x, short y, uchar use_floor)
          // If we are on the floor, then refresh us!
          if ((ObjProps[OPNUM(id)].physics_model) && (use_floor || (objs[id].loc.z > obj_floor_height(id) + REFRESH_HEIGHT)))
          {
-            printf("We're on the floor!\n");
+            //Spew("objsim", "We're on the floor!\n");
             if (CHECK_OBJ_PH(id))
             {
                EDMS_get_state(objs[id].info.ph, &goof);
@@ -2972,7 +2962,7 @@ errtype obj_physics_refresh(short x, short y, uchar use_floor)
 
 errtype obj_physics_refresh_area(short x, short y, uchar use_floor)
 {
-   printf("obj_physics_refresh_area %i %i %i\n", x, y, use_floor);
+   //Spew("objsim", "obj_physics_refresh_area %i %i %i\n", x, y, use_floor);
    ObjsClearDealt();
    obj_physics_refresh(x-1,y,use_floor);
    obj_physics_refresh(x+1,y,use_floor);

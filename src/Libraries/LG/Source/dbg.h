@@ -110,6 +110,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+// CC: Turns SPEW_ON, on, if you want debug output
+//#define SPEW_ON
+
+#ifdef SPEW_ON
+#define Spew(src,msg) { printf(src); printf(": "); printf(msg); }
+#define SpewArgs(src,msg,args) { printf(src); printf(": ", args); printf(msg); }
+#else
+#define Spew(src,msg) {}
+#define SpewArgs(src,msg,args) {}
+#endif
+
 // Define the only warning I want to do right now - KC
 /*
 #ifdef DBG_ON

@@ -378,7 +378,7 @@ void gamesys_render_effects(void)
 	short    mx,my;
 	extern uchar full_game_3d;
 
-   printf("gamesys_render_effects\n");
+   Spew("gamerend", "gamesys_render_effects\n");
 	
 	if ((!global_fullmap->cyber)&&(!secret_render_fx))
 	{
@@ -592,7 +592,7 @@ uchar gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y
    uchar *orig_bits;
    int orig_h, loop, orig_w;
 
-   printf("gamesys_draw_func\n");
+   Spew("gamerend", "gamesys_draw_func\n");
 
    if (flags&FR_WINDOWD_MASK)
       gamesys_render_effects();     // static gets drawn over window dressing due to this

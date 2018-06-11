@@ -458,7 +458,7 @@ errtype trap_monster_func(int p1, int p2, int p3, int p4)
    char monster_count;
    MapElem *pme;
 
-   printf("trap_monster_func\n");
+   Spew("trigger", "trap_monster_func\n");
 
    quan = qdata_get(p3);
    switch(player_struct.difficulty[COMBAT_DIFF_INDEX]) {
@@ -605,7 +605,7 @@ errtype trap_ai_func(int p1, int p2, int p3, int p4)
    ObjRefID oref;
    ObjID oid,o1,o2;
 
-   printf("trap_ai_func\n");
+   Spew("trigger", "trap_ai_func\n");
                              
    if (p1 & 0x40000)
    {
@@ -701,7 +701,7 @@ errtype trap_scheduler_func(int p1, int p2, int p3, int p4)
    TrapSchedEvent new_event;
    uint *p;
 
-   printf("trap_scheduler_func\n");
+   Spew("trigger", "trap_scheduler_func\n");
 
    if ((p3 >= 0xFFFF) || 
        ((p3 > 0x1000) && (QUESTBIT_GET(p3 & 0xFFF))) ||
@@ -769,7 +769,7 @@ errtype trap_main_light_func(int p1, int p2, int p3, int p4)
    if (!(p3 & 0x10000))
       trap_lighting_func(TRUE, p1,p2,p3&0xffff,p4);
 
-   printf("trap_main_light_func\n");
+   Spew("trigger", "trap_main_light_func\n");
 
    // Do transition rescheduling & incrementing
    if (p2 & 0xFFFF)
@@ -820,7 +820,7 @@ errtype trap_lighting_func(uchar floor, int p1, int p2, int p3, int p4)
    char light_state;
    uint *p;
 
-   printf("trap_lighting_func\n");
+   Spew("trigger", "trap_lighting_func\n");
 
    o1 = qdata_get(p1 & 0xFFFF);
    o2 = qdata_get(p1 >> 16);
@@ -1147,7 +1147,7 @@ errtype trap_create_obj_func(int p1, int p2, int p3, int p4)
    ObjID new_id, oid;
    ObjLoc new_loc;
 
-   printf("trap_create_obj_func\n");
+   Spew("trigger", "trap_create_obj_func\n");
 
    if ((p1 & 0xFFFF) == OBJ_NULL)
    {
@@ -1201,7 +1201,7 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4)
    qarg = p2 & 0xFFFF;
    mod = p2 >> 16;
 
-   printf("trap_questbit_func\n");
+   Spew("trigger", "trap_questbit_func\n");
 
    if ((p1 & 0xF000) == 0)
       p1 |= 0x2000;
@@ -1290,7 +1290,7 @@ errtype trap_cutscene_func(int p1, int p2, int p3, int p4)
 
 errtype trap_terrain_func(int p1, int p2, int p3, int p4)
 {
-   printf("trap_terrain_func\n");
+   Spew("trigger", "trap_terrain_func\n");
    MapElem *pme;
    uchar reprocess = FALSE;
    extern void rendedit_process_tilemap(FullMap* map,LGRect* r,uchar newMap);
@@ -1321,7 +1321,7 @@ errtype trap_terrain_func(int p1, int p2, int p3, int p4)
 
 errtype trap_height_func(int p1, int p2, int p3, int p4)
 {
-   printf("trap_height_func\n");
+   Spew("trigger", "trap_height_func\n");
    MapElem *pme;
    HeightSchedEvent hse;
    ushort use_val;
@@ -1536,7 +1536,6 @@ void hack_armageddon_func(int otrip, int x0, int y0, int r)
    }
 }
 
-/*ÃÂ¥ÃÂ¥ÃÂ¥
 void hack_area_spew(int p2,int p3,int p4)
 {
    int ulx,uly,lrx,lry;
@@ -1568,7 +1567,6 @@ void hack_area_spew(int p2,int p3,int p4)
       }
    }
 }
-*/
 
 void hack_multi_trans(int trip, int newtype)
 {
@@ -1664,7 +1662,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4)
    void check_panel_ref(uchar puntme);
    void email_slam_hack(short which);
 
-   printf("trap_hack_func %i\n", p1);
+   Spew("trigger", "trap_hack_func\n");
 
    // As we need hacks in the game, just add new
    // cases here to do your particular hack.
@@ -1828,7 +1826,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4)
         plotware_showpage(p2);
          break;
       case AREASPEW_HACK:
-//ÃÂ¥ÃÂ¥ÃÂ¥         hack_area_spew(p2,p3,p4);
+         hack_area_spew(p2,p3,p4);
          break;
       case DIEGO_HACK:
          hack_taunt_diego(p2,p3);

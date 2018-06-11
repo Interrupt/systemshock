@@ -290,8 +290,6 @@ char secret_global_pan=SND_DEF_PAN;
 
 int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort y)
 {
-   printf("play_digi_fx_master\n");
-
    Id vocRes;
    int retval, real_code = sfx_code, len;
    uchar *addr;
