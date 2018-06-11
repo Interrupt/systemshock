@@ -154,7 +154,7 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 		case SDLK_KP_9 : return 0x5C; //  kVK_ANSI_Keypad9 = 0x5C, aka _PGUP2_
 
 		// keycodes for keys that are independent of keyboard layout*/
-		case SDLK_RETURN : return 0x24; //  kVK_Return  = 0x24,
+		case SDLK_RETURN : return 0x0d; //  kVK_Return  = 0x24,
 		case SDLK_TAB : return 0x30; //  kVK_Tab     = 0x30,
 		case SDLK_SPACE : return 0x31; //  kVK_Space   = 0x31,
 		case SDLK_DELETE : return 0x33; //  kVK_Delete  = 0x33,
@@ -231,8 +231,10 @@ void pump_events(void)
 					kbs_event keyEvent = { 0 };
 					keyEvent.code = c;
 
+					//printf("ev.key.keysym.sym: %x\n", ev.key.keysym.sym);
+
 					// FIXME: this is hacky, see comment in SDL_TEXTINPUT below..
-					if(ev.key.keysym.sym >= ' ' && ev.key.keysym.sym <= '~')
+					if(ev.key.keysym.sym >= 0x0d && ev.key.keysym.sym <= '~')
 						keyEvent.ascii = ev.key.keysym.sym;
 					else
 						keyEvent.ascii = 0;
