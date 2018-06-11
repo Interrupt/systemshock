@@ -2375,8 +2375,6 @@ errtype do_level_entry_triggers()
          {
             grind_trap(objTraps[osid].trap_type,objTraps[osid].p1,objTraps[osid].p2,objTraps[osid].p3,objTraps[osid].p4,
                &objTraps[osid].destroy_count,objTraps[osid].id);
-
-            return(OK);
          }
       }
       osid = objTraps[osid].next;
