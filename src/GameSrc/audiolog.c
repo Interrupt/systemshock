@@ -55,7 +55,7 @@ uchar audiolog_cancel_func(short , ulong , void* );
 //-------------------
 int 		curr_alog = -1;
 //int 		alog_fn = -1;
-uchar 	audiolog_setting = 1;
+uchar 	audiolog_setting = 2;
 Movie 	alog = NULL;
 
 // this can become RES_alog_email0 once there is one
