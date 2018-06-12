@@ -658,7 +658,7 @@ ubyte damage_player(int damage, ubyte dtype, ubyte flags)
      rawval = ((damage<<8) / (*cur_hp));      // what is this minmax3/20xff thing?
                                              							// it's my voodoo - minman
    if (!shield_used)
-      set_dmg_percentage(dmg_type,(ubyte) min(max(rawval,((damage*3)/2)),0x00FF));
+      set_dmg_percentage(dmg_type,(ubyte) lg_min(lg_max(rawval,((damage*3)/2)),0x00FF));
 
    // makes sure gamescreen knows that it should be updated
    chg_set_flg(VITALS_UPDATE);

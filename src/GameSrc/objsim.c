@@ -1012,8 +1012,8 @@ void place_obj_at_objloc(ObjID id, ObjLoc *newloc, ushort xsize, ushort ysize)
    if ((xsize > MAX_PLACE_SIZE) || (ysize > MAX_PLACE_SIZE))
    {
       printf("place_obj_at_objloc: obj %d size too large!! (xsize = 0x%x  ysize = 0x%x)\n",id,xsize,ysize);
-      xsize = min(0x200,xsize);
-      ysize = min(0x200,ysize);
+      xsize = lg_min(0x200,xsize);
+      ysize = lg_min(0x200,ysize);
    }
 
    // Clear old homesquare data
@@ -1028,10 +1028,10 @@ void place_obj_at_objloc(ObjID id, ObjLoc *newloc, ushort xsize, ushort ysize)
    ox = bx = OBJ_LOC_BIN_X(*newloc);
    oy = by = OBJ_LOC_BIN_Y(*newloc);
    newstate.refs[refcount++].bin.sq = MakePoint(bx,by);
-   nxl = max(0,(newloc->x - xsize) >> 8);
-   nyl = max(0,(newloc->y - ysize) >> 8);
-   nxh = min(global_fullmap->x_size, (newloc->x + xsize) >> 8);
-   nyh = min(global_fullmap->y_size, (newloc->y + ysize) >> 8);
+   nxl = lg_max(0,(newloc->x - xsize) >> 8);
+   nyl = lg_max(0,(newloc->y - ysize) >> 8);
+   nxh = lg_min(global_fullmap->x_size, (newloc->x + xsize) >> 8);
+   nyh = lg_min(global_fullmap->y_size, (newloc->y + ysize) >> 8);
 
    if ((ObjProps[OPNUM(id)].render_type == FAUBJ_TEXBITMAP) ||
        (ObjProps[OPNUM(id)].render_type == FAUBJ_TPOLY))
@@ -2272,7 +2272,7 @@ uchar obj_combat_destroy(ObjID id)
                   obj_destroy(objSmallstuffs[objs[id].specID].data1);
                break;
             case MULTIPLEXR_TRIPLE:
-               player_struct.cspace_time_base = min(CSPACE_MAX_TIME, player_struct.cspace_time_base + CSPACE_MUX_BONUS);
+               player_struct.cspace_time_base = lg_min(CSPACE_MAX_TIME, player_struct.cspace_time_base + CSPACE_MUX_BONUS);
                break;
          }
          break;
@@ -2386,7 +2386,7 @@ ObjID object_place(int triple, LGPoint square)
       // Randomize some initial data
       objCritters[objs[new_id].specID].wait_frames = rand()%DEFAULT_AI_WAIT;
       objCritters[objs[new_id].specID].path_id = -1;
-      objs[new_id].info.current_frame = rand()%(max(1,CritterProps[CPNUM(new_id)].frames[0] - 2));
+      objs[new_id].info.current_frame = rand()%(lg_max(1,CritterProps[CPNUM(new_id)].frames[0] - 2));
    }
    return(new_id);
 }

@@ -131,9 +131,9 @@ ushort olh_scan_objs(void)
    _fr_glob_flags&=~FR_PICKUPM_MASK;
 
    if (*tmd_ticks - last_real_time < CIT_CYCLE/15)
-      olh_radius = min(olh_radius+1,MAX_OLH_RADIUS);
+      olh_radius = lg_min(olh_radius+1,MAX_OLH_RADIUS);
    else if (*tmd_ticks - last_real_time > CIT_CYCLE/10)
-      olh_radius = max(olh_radius-1,MIN_OLH_RADIUS);
+      olh_radius = lg_max(olh_radius-1,MIN_OLH_RADIUS);
 
 
    xl = yl = 0;

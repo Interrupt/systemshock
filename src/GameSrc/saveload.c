@@ -408,7 +408,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack)
    // Here we are writing out the schedules.  It's only a teeny tiny rep exposure.  
    for (i = 0; i < NUM_MAP_SCHEDULES; i++)
    {
-      int sz = min(global_fullmap->sched[i].queue.fullness+1,global_fullmap->sched[i].queue.size);
+      int sz = lg_min(global_fullmap->sched[i].queue.fullness+1,global_fullmap->sched[i].queue.size);
       REF_WRITE_RAW(id_num,idx++,global_fullmap->sched[i].queue.vec, sizeof(SchedEvent)*sz);
       printf("Saved %i schedule items!\n", sz);
    }

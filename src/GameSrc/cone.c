@@ -63,16 +63,6 @@ extern uint _fr_curflags;
 #define IN_BETWEEN(x,y,z) ((((x) <= (y)) && ((y) <= (z))) || \
                             (((x) >= (y)) && ((y) >= (z))))
 
-#ifdef min
-#undef min
-#endif
-#define min(x,y) (((x) < (y)) ? (x) : (y))
-
-#ifdef max
-#undef max
-#endif
-#define max(x,y) (((x) > (y)) ? (x) : (y))
-
 typedef struct {
    fix x;
    fix y;
@@ -1049,7 +1039,7 @@ void simple_cone_clip_pass(void)
          v_left = (v_left+1)%n;
          if (left_repeat)
          {
-            x_outer_left = min(x_outer_left, x_left);
+            x_outer_left = lg_min(x_outer_left, x_left);
             left_line = TRUE;
          }   
          else
@@ -1063,7 +1053,7 @@ void simple_cone_clip_pass(void)
 
             left_repeat = TRUE;            // signal that if we do this again - we've repeated
          }
-         x_abs_left = min(view_cone_list[2*v_left], x_left);       
+         x_abs_left = lg_min(view_cone_list[2*v_left], x_left);
          d = view_cone_list[2*v_left+1]-y_left;
 
          // if the next point is above the current - calculate the slope
@@ -1081,7 +1071,7 @@ void simple_cone_clip_pass(void)
             if (m_prev > fix_make(0,0))
             {
                d = fix_abs(fix_mul(fix_frac(y_left), m_prev));
-               x_shift = max(d, x_shift);
+               x_shift = lg_max(d, x_shift);
             }
             x_left -= x_shift;
          }
@@ -1099,7 +1089,7 @@ void simple_cone_clip_pass(void)
          v_right = (v_right+n-1)%n;
          if (right_repeat)
          {
-            x_outer_right = max(x_outer_right, x_right);
+            x_outer_right = lg_max(x_outer_right, x_right);
             right_line = TRUE;
          }
          else
@@ -1112,7 +1102,7 @@ void simple_cone_clip_pass(void)
             }
             right_repeat = TRUE;
          }
-         x_abs_right = max(view_cone_list[2*v_right],x_right);
+         x_abs_right = lg_max(view_cone_list[2*v_right],x_right);
          d = view_cone_list[2*v_right+1]-y_right;
 
          // if the next point is above the current - calculate the slope
@@ -1126,7 +1116,7 @@ void simple_cone_clip_pass(void)
             if (m_prev < fix_make(0,0))
             {
                d = fix_abs(fix_mul(fix_frac(y_right), m_prev));
-               x_shift = max(d, x_shift);
+               x_shift = lg_max(d, x_shift);
             }
             x_right += x_shift;
          }
@@ -1138,15 +1128,15 @@ void simple_cone_clip_pass(void)
          right = x_right;
 
          // checking that we don't go pass the endpoints - x_abs_left
-         left = max(x_left, x_abs_left);
-         right = min(x_right,x_abs_right);
+         left = lg_max(x_left, x_abs_left);
+         right = lg_min(x_right,x_abs_right);
 
          // checking for horizontal lines (using x_outer_left)
          // if so, take the leftmost or rightmost point.
          if (left_line)
-            left = min(left, x_outer_left);
+            left = lg_min(left, x_outer_left);
          if (right_line)
-            right = max(right, x_outer_right);
+            right = lg_max(right, x_outer_right);
 
          cone_span_set(y, fix_int(left), fix_int(right));
       }
@@ -1160,8 +1150,8 @@ void simple_cone_clip_pass(void)
    if (fix_int (x_left) <= fix_int (x_right))
    {
       // checking that we don't go pass the endpoints - x_abs_left
-      left = max(x_left, x_abs_left);
-      right = min(x_right,x_abs_right);
+      left = lg_max(x_left, x_abs_left);
+      right = lg_min(x_right,x_abs_right);
 
       cone_span_set(y, fix_int(left), fix_int(right));
    }

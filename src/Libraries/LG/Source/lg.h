@@ -55,8 +55,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 } while(0);
 
 // For mac version.
-#define	max(a,b)	(((a) > (b)) ? (a) : (b))
-#define	min(a,b)	(((a) < (b)) ? (a) : (b))
+#define	lg_max(a,b) (((a) > (b)) ? (a) : (b))
+#define	lg_min(a,b) (((a) < (b)) ? (a) : (b))
 
 // optimized routines to replace standard C functions
 /*

@@ -748,7 +748,7 @@ uchar games_handle_pong(MFD* m, uiEvent* e)
    pong_state *cur_ps=(pong_state *)GAME_DATA;
    LGPoint pos = MakePoint(e->pos.x-m->rect.ul.x,
 			 e->pos.y-m->rect.ul.y);
-   ubyte spd = min(3,abs(pos.x - cur_ps->p_pos)/PLY_PADDLE_XRAD+1);
+   ubyte spd = lg_min(3,abs(pos.x - cur_ps->p_pos)/PLY_PADDLE_XRAD+1);
    if(pos.x+PONG_FUDGE<0 || pos.y+PONG_FUDGE<0 ||
       pos.x>=RECTWID(m->rect)+PONG_FUDGE || pos.y>=RECTHGT(m->rect)+PONG_FUDGE)
    {

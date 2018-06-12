@@ -172,14 +172,14 @@ short compute_base_visibility()
 
 	   // More visible if standing in light
 	   visibility += (LIGHT_VISIBLE_FACTOR /
-						   max(1,(
-						   max(0,me_light_flr(pme) - me_templight_flr(pme)) +
-						   max(0,me_light_ceil(pme) - me_templight_ceil(pme))) / 2));
+						   lg_max(1,(
+						   lg_max(0,me_light_flr(pme) - me_templight_flr(pme)) +
+						   lg_max(0,me_light_ceil(pme) - me_templight_ceil(pme))) / 2));
       visibility += LANTERN_VISIBLE_FACTOR * player_struct.light_value;         
 
 	   // More visible if fired gun recently (this may want to be exponentially decaying
       if (player_struct.last_fire) { // make sure we've actually fired a weapon
-   	   visibility += ((GUN_VISIBLE_FACTOR * CIT_CYCLE) / max(player_struct.game_time - player_struct.last_fire, 1));
+   	   visibility += ((GUN_VISIBLE_FACTOR * CIT_CYCLE) / lg_max(player_struct.game_time - player_struct.last_fire, 1));
       }
 
 	   // Less visible if critters have lost track of ya

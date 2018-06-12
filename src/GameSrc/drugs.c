@@ -156,7 +156,7 @@ void drug_use(int n)
    player_struct.drugs[n]--;
 
    if (Drugs[n].flags & DRUG_LONGER_DOSE)
-      player_struct.drug_status[n] = min((short)player_struct.drug_status[n]+Drugs[n].duration,0x7F);
+      player_struct.drug_status[n] = lg_min((short)player_struct.drug_status[n]+Drugs[n].duration,0x7F);
    else
       player_struct.drug_status[n] =  Drugs[n].duration;
 
@@ -535,7 +535,7 @@ ushort medic_heal_rates[] = { 5,5,25,25,25,30,50,55,100,110};
 
 void drug_medic_use()
 {
-   INTENSITY(DRUG_MEDIC) = min(INTENSITY(DRUG_MEDIC)+MEDIC_HEAL_STEPS,MAX_UBYTE);
+   INTENSITY(DRUG_MEDIC) = lg_min(INTENSITY(DRUG_MEDIC)+MEDIC_HEAL_STEPS,MAX_UBYTE);
    player_struct.hit_points_regen += MEDIC_HEAL_RATE;
    chg_set_flg(VITALS_UPDATE);
 

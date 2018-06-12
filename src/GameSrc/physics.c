@@ -581,7 +581,7 @@ errtype physics_run(void)
       {
          short delta = player_struct.controls[CONTROL_XZROT]*MAX_LEAN_RATE/CONTROL_MAX_VAL;
          int leanx = player_struct.leanx;
-         leanx = min(CONTROL_MAX_VAL,max(leanx+delta*deltat/CIT_CYCLE,-CONTROL_MAX_VAL));
+         leanx = lg_min(CONTROL_MAX_VAL, lg_max(leanx+delta*deltat/CIT_CYCLE,-CONTROL_MAX_VAL));
          player_set_lean(leanx,player_struct.leany);
       }
       if (player_struct.controls[CONTROL_YZROT] != 0)
@@ -592,7 +592,7 @@ errtype physics_run(void)
          int eye = player_get_eye_fixang();
          if (player_struct.drug_status[DRUG_REFLEX] > 0 && !global_fullmap->cyber)
             delta <<= 2;
-         eye = min(FIXANG_PI/2,max(eye+delta*deltat/CIT_CYCLE,-FIXANG_PI/2));
+         eye = lg_min(FIXANG_PI/2, lg_max(eye+delta*deltat/CIT_CYCLE,-FIXANG_PI/2));
          player_set_eye_fixang(eye);
       }
          
@@ -1451,7 +1451,7 @@ uchar player_throw_object(ObjID proj_id,  int x, int y, int lastx, int lasty, fi
 
    if (scale_mag < THROW_DISPLACE_RANGE+radius)
    {
-      g3_vec_scale((g3s_vector*)&locvec,(g3s_vector*)&vector,max(0,scale_mag - radius/2));
+      g3_vec_scale((g3s_vector*)&locvec,(g3s_vector*)&vector, lg_max(0,scale_mag - radius/2));
       loc.x =  obj_coord_from_fix(new_state.X+locvec.x);  
       loc.y =  obj_coord_from_fix(new_state.Y+locvec.y);  
       loc.z = obj_height_from_fix(new_state.Z+locvec.z+radius);
@@ -1459,7 +1459,7 @@ uchar player_throw_object(ObjID proj_id,  int x, int y, int lastx, int lasty, fi
    }
    else
    {
-      g3_vec_scale((g3s_vector*)&locvec,(g3s_vector*)&vector,max(0,THROW_DISPLACE_RANGE));
+      g3_vec_scale((g3s_vector*)&locvec,(g3s_vector*)&vector, lg_max(0,THROW_DISPLACE_RANGE));
       loc.x =  obj_coord_from_fix(new_state.X+locvec.x);  
       loc.y =  obj_coord_from_fix(new_state.Y+locvec.y);  
       loc.z = obj_height_from_fix(new_state.Z+locvec.z+radius);
@@ -1612,13 +1612,13 @@ errtype collide_objects(ObjID collision, ObjID victim, int bad)
 
                   // Damage the ice -- higher level ICEs are tough, but we always
                   // do at least a little tiny bit of damage
-                  dmg = max(1,DRILL_DAMAGE(soft_lvl-1) >> (ICE_LEVEL(victim)) * 2);
+                  dmg = lg_max(1,DRILL_DAMAGE(soft_lvl-1) >> (ICE_LEVEL(victim)) * 2);
 
                   if (dmg < objs[victim].info.current_hp)
                   {
                      // If it is still alive, agitate it
                      objs[victim].info.current_hp -= dmg;
-                     SET_ICE_AGIT(victim,min(ICE_AGIT(victim) + soft_lvl, MAX_AGIT));
+                     SET_ICE_AGIT(victim, lg_min(ICE_AGIT(victim) + soft_lvl, MAX_AGIT));
                   }
                   else
                   {
@@ -1688,7 +1688,7 @@ errtype collide_objects(ObjID collision, ObjID victim, int bad)
    }
    else if ((ID2TRIP(collision) == ENERGY_MINE_TRIPLE) && (victim == PLAYER_OBJ))
    {
-      player_struct.energy = max(0, player_struct.energy - ENERGY_MINE_DRAIN);
+      player_struct.energy = lg_max(0, player_struct.energy - ENERGY_MINE_DRAIN);
       play_digi_fx(SFX_ENERGY_DRAIN,1);
       chg_set_flg(VITALS_UPDATE);
    }

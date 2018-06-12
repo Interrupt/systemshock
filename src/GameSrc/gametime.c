@@ -119,5 +119,5 @@ void update_level_gametime(void)
    {
       EDMS_control_pelvis(PLAYER_PHYSICS,0,0,0,0,0,0);
    }
-   EDMS_soliton_vector(min(MAX_PHYSICS_RUNTIME,deltat/CIT_CYCLE));
+   EDMS_soliton_vector(lg_min(MAX_PHYSICS_RUNTIME,deltat/CIT_CYCLE));
 }
