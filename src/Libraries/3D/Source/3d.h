@@ -188,6 +188,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // frees the point in the specified register. uses ebx as scratch
 #define freepnt(src) {g3s_point *scratch = first_free; src->next = scratch; first_free=src;}
 
+// FIXME Move to FIX
 //new types:
 typedef short sfix;
 
@@ -416,12 +417,7 @@ g3s_phandle g3_rotate_norm(g3s_vector *v);
 g3s_phandle g3_rotate_light_norm(g3s_vector *v);
    //rotate light norm from obj space into viewer space
 
-#if (defined(powerc) || defined(__powerc))	
 int g3_project_point(g3s_phandle p);
-#else
-asm int g3_project_point(g3s_phandle p);
-#endif
-
 	//project already-rotated point. returns true if z>0
 
 g3s_phandle g3_transform_point(g3s_vector *v);

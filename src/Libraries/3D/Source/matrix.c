@@ -114,11 +114,7 @@ void process_view_matrix(void);
 void scale_view_matrix(void);
 void get_pyr_vector(g3s_vector *corners);
 
-#if (defined(powerc) || defined(__powerc))	
 int code_point(g3s_point *pt);
-#else
-asm int code_point(g3s_point *pt);
-#endif
 
 void compute_XYZ(g3s_matrix *view_matrix);
 void compute_YXZ(g3s_matrix *view_matrix);
@@ -390,8 +386,7 @@ void scale_view_matrix(void)
 // including the C&D coder, and a clever one using the set<cond> instruction
 // that contained no jumps.  On my (Matt's) 486, this dull, straightforward
 // one was just as fast as any other, and short, too.
-#if (defined(powerc) || defined(__powerc))	
-int code_point(g3s_point *pt)	
+int code_point(g3s_point *pt)
  {
  	int	code;
  	int	tempX,tempY,tempZ;
@@ -417,42 +412,6 @@ int code_point(g3s_point *pt)
  	pt->codes = code;
  	return(code);
  }
-#else
-asm int code_point(g3s_point *pt)	
- {
- 	move.l	4(sp),a0
- 	move.l	d3,a1					// save d3
- 	
- 	moveq		#0,d0					// codes
-	movem.l	(a0)+,d1-d3		// get x,y,z
-	sub.w		#12,a0
-	 	
-	cmp.l		d3,d1							// cmp	[edi].x,eax	;x > z
-	ble.s		right_ok					// jle	right_ok
-	or.b		#CC_OFF_RIGHT,d0	// or	bl,CC_OFF_RIGHT
-right_ok:	
-	cmp.l		d3,d2							// cmp	[edi].y,eax
-	ble.s		top_ok						// jle	top_ok
-	or.b		#CC_OFF_TOP,d0		// or	bl,CC_OFF_TOP
-top_ok:	
-	neg.l		d3								// neg	eax	;get neg z
-  cmp.l		#-1,d3						// cmp     eax,-1
-	ble.s		z_ok							// jle	z_ok
-	or.b		#CC_BEHIND,d0			// or	bl,CC_BEHIND
-z_ok:	
-	cmp.l		d3,d1							// cmp	[edi].x,eax	;x > z
-	bge.s		left_ok						// jge	left_ok
-	or.b		#CC_OFF_LEFT,d0		// or	bl,CC_OFF_LEFT
-left_ok:	
-	cmp.l		d3,d2							// cmp	[edi].y,eax
-	bge.s		bot_ok						// jge	bot_ok
-	or.b		#CC_OFF_BOT,d0		// or	bl,CC_OFF_BOT
-bot_ok:		 	
- 	move.b	d0,20(a0)
- 	move.l	a1,d3		// restore d3
- 	rts
- }
-#endif
 
 // general matrix multiply. takes esi=src vector, edi=matrix, ebx=dest vector
 // src and dest vectors can be the same

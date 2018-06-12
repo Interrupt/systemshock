@@ -34,11 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void rotate_norm(g3s_vector *v, fix *x, fix *y, fix *z);
 void do_norm_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
 
-#if (defined(powerc) || defined(__powerc))	
 void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
-#else
-asm void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
-#endif
 
 //void xlate_rotate_point(g3s_vector *v, fix *x, fix *y, fix *z);     
 #define xlate_rotate_point(v,x,y,z) do_rotate(v->gX-_view_position.gX, v->gY-_view_position.gY, v->gZ-_view_position.gZ,x,y,z)    
@@ -103,7 +99,6 @@ g3s_phandle g3_transform_point(g3s_vector *v)
 // takes edi = ptr to point. projects, fills in sx,sy, sets flag.
 // returns 0 if z<=0, 1 if z>0.
 // trashes eax,ecx,edx.
-#if 1 //(defined(powerc) || defined(__powerc)) - DG: this is plain C code as long as !defined(stereo_on)), use it everywhere
 int g3_project_point(g3s_phandle p)
  {
  	fix		x,y,z,res;
@@ -220,64 +215,7 @@ no_stereo2:
 	// point has been projected.
 	return 1;
  }
-#else
-// 68K g3_project_point
-asm int g3_project_point(g3s_phandle p)
- {
-	move.l	d3,a1		// save d3
 
- 	move.l	4(a7),a0
- 	
-	// check if this point is in front of the back plane.
-	move.l	8(a0),d2			// mov     ecx,[edi].z             //get z
-												// or      ecx,ecx                 //check neg z
-	ble.s		no_proj				// jle     no_proj
-	
-	// point is in front of back plane---do projection.
-
-	// project y coordinate.
-	move.l	4(a0),d0			// mov     eax,[edi].y             //get y
-	move.l	_scrh,d3
-	dc.l		0x4C030C01   	// muls.l	d3,d1:d0		// imul    _scrh       //* screen height
-proj_div_1:
-	dc.l		0x4C420C01		// divs.l	d2,d1:d0			// idiv    ecx                     /// z
-	bvs.s		project_overflow
-@divback1:
-	neg.l		d0						// neg     eax                     //convert to screen convention ARGHHH!! LAMEASS SONUFABITCH
-	add.l		_biasy,d0			// add     eax,_biasy              //+center
-	bvs.s		project_overflow		// jo      project_overflow
-	move.l	d0,16(a0)	// mov     [edi].sy,eax            //save
-
-        // now project x point
-	move.l	(a0),d0				// mov     eax,[edi].x             //get x
-	move.l	_scrw,d3
-	dc.l		0x4C030C01   	// muls.l	d3,d1:d0		// imul    _scrw                   //* screen width
-proj_div_0:
-	dc.l		0x4C420C01		// divs.l	d2,d1:d0			// idiv    ecx                     /// z
-	bvs.s		project_overflow
-@divback0:
-	add.l		_biasx,d0			// add     eax,_biasx              //+center
-	bvs.s		project_overflow		// jo      project_overflow
-	move.l	d0,12(a0)	// mov     [edi].sx,eax            //save
-
-	// modify point flags to indicate projection.
-	or.b		#PF_PROJECTED,21(a0)	// or      [edi].p3_flags,PF_PROJECTED
-	moveq		#1,d0					// mov     eax,1  //return true when z>0
-	move.l	a1,d3
- 	rts
-
-no_proj:
-	move		#0,d0
-	move.l	a1,d3
-	rts
-	 	
-project_overflow:
-	or.b		#CC_CLIP_OVERFLOW,20(a0)	
-	moveq		#1,d0					// mov     eax,1  //return true when z>0
-	move.l	a1,d3
-	rts
- }
-#endif
  
 // MLA - all the divide exception handler overflow stuff was removed, and checked before
 // each divide.  So all of this stuf isn't needed
@@ -434,7 +372,6 @@ void xlate_rotate_point(g3s_vector *v, fix *x, fix *y, fix *z)
  
 //does the rotate with the view matrix.
 //takes <x,y,z> = <esi,edi,ebp>, returns <x,y,z> = <ecx,esi,eax>
-#if 1 //(defined(powerc) || defined(__powerc)) - DG: this is plain C code, use it everywhere
 void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
  {
  	AWide 	result,result2;
@@ -469,85 +406,6 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 
 	//printf("rotated to: %f %f %f\n", fix_float(*rx), fix_float(*ry), fix_float(*rz));
  }
-#else
-asm void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
- { 
- 	movem.l	d3-d7,-(sp)
- 	
- 	move.l	24(sp),d5
- 	move.l	28(sp),d6
- 	move.l	32(sp),d7
-	
-//first column
-	move.l	d5,d0
-	move.l	vm1,d2
-	dc.l		0x4C020C01			//	muls.l	d2,d1:d0
-	
-	move.l	d6,d3
-	move.l	vm4,d2
-	dc.l		0x4C023C04			// 	muls.l	d2,d4:d3
-	add.l		d3,d0
-	addx.l	d4,d1
-
-	move.l	d7,d3
-	move.l	vm7,d2
-	dc.l		0x4C023C04			// 	muls.l	d2,d4:d3
-	add.l		d3,d0
-	addx.l	d4,d1
-
-	move.w	d1,d0
-	swap		d0
-	move.l	36(sp),a0
-	move.l	d0,(a0)
-	
-//second column
-	move.l	d5,d0
-	move.l	vm2,d2
-	dc.l		0x4C020C01			//	muls.l	d2,d1:d0
-	
-	move.l	d6,d3
-	move.l	vm5,d2
-	dc.l		0x4C023C04			// 	muls.l	d2,d4:d3
-	add.l		d3,d0
-	addx.l	d4,d1
-
-	move.l	d7,d3
-	move.l	vm8,d2
-	dc.l		0x4C023C04			// 	muls.l	d2,d4:d3
-	add.l		d3,d0
-	addx.l	d4,d1
-
-	move.w	d1,d0
-	swap		d0
-	move.l	40(sp),a0
-	move.l	d0,(a0)
-
-//third column
-	move.l	d5,d0
-	move.l	vm3,d2
-	dc.l		0x4C020C01			//	muls.l	d2,d1:d0
-	
-	move.l	d6,d3
-	move.l	vm6,d2
-	dc.l		0x4C023C04			// 	muls.l	d2,d4:d3
-	add.l		d3,d0
-	addx.l	d4,d1
-
-	move.l	d7,d3
-	move.l	vm9,d2
-	dc.l		0x4C023C04			// 	muls.l	d2,d4:d3
-	add.l		d3,d0
-	addx.l	d4,d1
-
-	move.w	d1,d0
-	swap		d0
-	move.l	44(sp),a0
-	move.l	d0,(a0)
-
- 	movem.l	(sp)+,d3-d7
- 	rts
- }
-#endif 
 
 //rotate an x delta. takes edi=dest vector, eax=dx
 //trashes eax,ebx,edx

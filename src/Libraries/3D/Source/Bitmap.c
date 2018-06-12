@@ -100,13 +100,8 @@ grs_tmap_info tmap_info;
 char 	_g3d_enable_blend = 0;
 
 // prototypes
-#if (defined(powerc) || defined(__powerc))	
 char SubLongWithOverflow(long *result, long src, long dest);
 char AddLongWithOverflow(long *result, long src, long dest);
-#else
-asm char SubLongWithOverflow(long *result, long src, long dest);
-asm char AddLongWithOverflow(long *result, long src, long dest);
-#endif
 
 grs_vertex **do_bitmap(grs_bitmap *bm, g3s_phandle p);
 grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p);
@@ -409,7 +404,6 @@ NoBlend:
  	return(_g3d_bitmap_poly);
  }
  
-#if (defined(powerc) || defined(__powerc))	
 // subtract two longs, put the result in result, and return true if overflow
 // result = src-dest;
 char SubLongWithOverflow(long *result, long src, long dest)
@@ -437,36 +431,3 @@ char AddLongWithOverflow(long *result, long src, long dest)
  	else
  		return false;
  }
-#else
-asm char SubLongWithOverflow(long *result, long src, long dest)
- {
- 	move.l	8(a7),d0
- 	sub.l		12(a7),d0
- 	bvs.s		@overflow
- 	
- 	move.l	4(a7),a0
- 	move.l	d0,(a0)
- 	moveq		#0,d0
- 	rts
- 	
-@overflow:
- 	moveq		#-1,d0
-	rts
- }
-
-asm char AddLongWithOverflow(long *result, long src, long dest)
- {
- 	move.l	8(a7),d0
- 	add.l		12(a7),d0
- 	bvs.s		@overflow
- 	
- 	move.l	4(a7),a0
- 	move.l	d0,(a0)
- 	moveq		#0,d0
- 	rts
- 	
-@overflow:
- 	moveq		#-1,d0
-	rts
- }
-#endif
