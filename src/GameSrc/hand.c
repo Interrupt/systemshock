@@ -92,17 +92,17 @@ LGPoint pistol_hand_info[NUM_PROJ_GUN][NUM_FRAMES] =
 };
 
 #define NUM_ENERGY_GUN (NUM_GUN-NUM_PROJ_GUN)
-byte energy_hand_info[NUM_ENERGY_GUN][NUM_FRAMES] =
+LGPoint energy_hand_info[NUM_ENERGY_GUN][NUM_FRAMES] =
 {
-   {21, 25},       // magpulse
-   {23, 27},       // rail gun
-   {0,0},         // filler - hand2hand
-   {0,0},         // filler
-   {24, 24},       // sparq beam
-   {24, 24},       // blaster
-   {21, 21},       // ion rifle
-   {24, 24},       // stungun
-   {21, 21},       // plasma rifle
+   {{0, 22},{-3,19}},       // magpulse
+   {{0, 27},{-10,27}},       // rail gun
+   {{0,0},{0,0}},         // filler - hand2hand
+   {{0,0},{0,0}},         // filler
+   {{0, 24},{0,24}},       // sparq beam
+   {{0, 24},{-12,18}},       // blaster
+   {{0, 21},{-10,15}},      // ion rifle
+   {{0, 24},{0,24}},       // stungun
+   {{0, 21},{0,21}},       // plasma rifle
 };
 
 
@@ -120,7 +120,7 @@ void reset_handart_count(int wpn_num);
 // get_handart()
 //
 
-Ref get_handart(int *x_offset, int *y_offset, short mouse_x, short mouse_y)
+Ref get_handart(int *x_offset, int *y_offset, int *beam_x_offset, short mouse_x, short mouse_y)
 {
    int      view_base_y;
    short    screen_height;
@@ -131,6 +131,8 @@ Ref get_handart(int *x_offset, int *y_offset, short mouse_x, short mouse_y)
 //   byte     offset=HAND_BOB;
    State    new_state;
 //   RefTable *prt;
+
+   *beam_x_offset = 0;
 
 #ifdef HANDART_ADJUST
    extern ubyte hcount;
@@ -206,8 +208,9 @@ Ref get_handart(int *x_offset, int *y_offset, short mouse_x, short mouse_y)
          }
          break;
       default:
-         frame = hand_x = 0;
-         hand_y = energy_hand_info[HANDART_NUM-NUM_PROJ_GUN][0];
+         frame = handart_show-1;
+         hand_x = energy_hand_info[HANDART_NUM-NUM_PROJ_GUN][frame].x;
+         hand_y = energy_hand_info[HANDART_NUM-NUM_PROJ_GUN][frame].y;
          break;
    }
 
@@ -233,6 +236,7 @@ Ref get_handart(int *x_offset, int *y_offset, short mouse_x, short mouse_y)
          factor = 0;
 
       *x_offset = (((mouse_x - FULL_MIDDLE_SCREEN)*factor)/FULL_MIDDLE_SCREEN + FULL_MIDDLE_SCREEN + FULL_VIEW_X - 10)+hand_x;
+      *beam_x_offset = -hand_x;
    }
    else
    {
@@ -257,6 +261,7 @@ Ref get_handart(int *x_offset, int *y_offset, short mouse_x, short mouse_y)
          factor = 0;
 
       *x_offset = ((mouse_x - SCREEN_MIDDLE_SCREEN)*factor)/SCREEN_MIDDLE_SCREEN+SCREEN_MIDDLE_SCREEN-15+hand_x;
+      *beam_x_offset = -hand_x;
    }
    *y_offset = view_base_y+(mouse_y/screen_height)+hand_y;
 

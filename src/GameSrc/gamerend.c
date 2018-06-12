@@ -354,7 +354,7 @@ byte beam_offset[NUM_BEAM_GUN]={-12,-8,-4};
      a = mx+(c1);\
      b = my+(c2);\
      ss_point_convert(&a,&b,TRUE);\
-     ss_thick_fix_line(fix_make(a,0),fix_make(b,0),fix_make(deltax+(c3)+boff,0),fix_make(deltay+(c4)+boff,0));\
+     ss_thick_fix_line(fix_make(a,0),fix_make(b,0),fix_make(deltax+(c3)+boff+beamx,0),fix_make(deltay+(c4)+boff+6,0));\
 }
 
 /*
@@ -374,7 +374,7 @@ byte beam_offset[NUM_BEAM_GUN]={-12,-8,-4};
 void gamesys_render_effects(void)
 {
 	Ref      temp;
-	int deltax, deltay;
+	int deltax, deltay, beamx;
 	short    mx,my;
 	extern uchar full_game_3d;
 
@@ -411,7 +411,7 @@ void gamesys_render_effects(void)
 			}
 			
 			// Get the weapon art to draw.
-			temp = get_handart(&deltax, &deltay,mx, my);
+			temp = get_handart(&deltax, &deltay, &beamx, mx, my);
 			if (temp != NULL)
 			{
 				extern uchar ready_to_draw_handart(void);
@@ -423,6 +423,7 @@ void gamesys_render_effects(void)
 					{
 						short    base_color = (overload_beam) ? BLUE_BASE : TURQUOISE_BASE;
 						byte     boff = beam_offset[player_struct.weapons[active].subtype];
+
 						if (beam_effect_id)
 						{
 							int i;

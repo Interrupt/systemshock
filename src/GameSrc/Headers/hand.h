@@ -46,7 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern ubyte weapon_to_handart[NUM_GUN];
 
-Ref get_handart(int *x_offset, int *y_offset, short mouse_x, short mouse_y);
+Ref get_handart(int *x_offset, int *y_offset, int *beam_x_offset, short mouse_x, short mouse_y);
 void notify_draw_handart(void);
 
 #endif // __HAND_H
