@@ -1073,8 +1073,11 @@ void mfd_select_button(int which_panel, int which_button)
 {
    // Play sound effect
    ubyte old = player_struct.mfd_current_slots[which_panel];
-   int hnd;
-   hnd = play_digi_fx(SFX_MFD_BUTTON,1);
+   int hnd = play_digi_fx(SFX_MFD_BUTTON,1);
+   /*
+   // FIXME There should be sound panning depending on which button is pressed:
+   // FIXME which_button < 5 - left side, else - right side
+
    if (hnd >= 0)
    {
       snd_digi_parms *ssp;
@@ -1085,7 +1088,8 @@ void mfd_select_button(int which_panel, int which_button)
          ssp->pan = 30;
       else
          ssp->pan = 97;
-   }
+   }*/
+
    if (full_game_3d && which_button == old && (full_visible & visible_mask(which_panel)))
    {
       full_visible &= ~visible_mask(which_panel);
