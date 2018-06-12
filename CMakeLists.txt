@@ -8,13 +8,12 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS -m32)
 set(CMAKE_CXX_FLAGS -m32)
 
+option(ENABLE_EXAMPLES "Enable example applications" OFF)
+
 # HAAAAX!!
 add_definitions(-Dpowerc -DSVGA_SUPPORT)
 
 add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
-
-#link_libraries("-Wl,--no-as-needed")
-link_libraries("-lm")
 
 # Find SDL, trying the easy way and then the hard way
 find_package(SDL2)
@@ -55,9 +54,6 @@ set(MAC_SRC
 	src/MacSrc/MacTune.c
 	src/MacSrc/SDLSound.c
 	src/MacSrc/Modding.c
-#	src/stubs/Carbon/carbon_stubs.c - now in LG_SRC so the tests can use it as well
-#                                     (in src/Libraries/CMakeLists.txt)
-#	src/MacSrc/Tests.c
 )
 
 set(GAME_SRC
@@ -195,6 +191,7 @@ include_directories(
 	src/MacSrc
 )
 
+if(ENABLE_EXAMPLES)
 add_executable(TestSimpleMain
 	src/Libraries/2D/TestSource/SimpleMain.c
 )
@@ -255,6 +252,7 @@ target_link_libraries(FixPPTest
 	FIXPP_LIB
 	LG_LIB
 )
+endif()
 
 # Include magic header file, set struct packing size
 add_definitions(
