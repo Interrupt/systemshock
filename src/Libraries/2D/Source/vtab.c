@@ -33,8 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 // build a table of line starts for the bitmap parameter
-// PowerPC version
-#if (defined(powerc) || defined(__powerc))	
 long *gr_make_vtab (grs_bitmap *bm)
  {
  	void 	*mem;
@@ -56,60 +54,4 @@ long *gr_make_vtab (grs_bitmap *bm)
 
  	return((long *) mem);
  }
- 
- 
-// 68K version
-#else
 
-long *xgr_make_vtab (grs_bitmap *bm);
-long *xgr_make_vtab (grs_bitmap *bm)
- {
- 	void 	*mem;
- 	long	*dest;
- 	long	i,add,row;
- 	long	maxh;
- 	
- 	mem = gr_alloc_temp(bm->h<<2);
- 	row = bm->row;
-	add = 0L;
-	maxh = bm->h;
-	dest = (long *) mem;
-	
-	for (i=0; i<maxh; i++)
-	 {
-	 	*(dest++) = add;
-	 	add += row;
-	 }
-
- 	return((long *) mem);
- }
-
-asm long *gr_make_vtab (grs_bitmap *bm)
- {
- 	movem.l	d3/a2,-(sp)
- 	
- 	move.l	12(sp),a2				// a2 = *bm
- 	move.w	10(a2),d0				// d0 = bm->h
- 	ext.l		d0
- 	lsl.l		#2,d0
- 	move.l	d0,-(sp)
- 	jsr			gr_alloc_temp		// returns ptr in a0
- 	addq.w	#4,sp
- 	
- 	moveq		#0,d1
-	moveq		#0,d2
- 	moveq		#0,d3
- 	move.w	0x0c(a2),d1			// get row
- 	move.l	a0,a1						// a1 = dest, a0 = mem
- 	move.w	10(a2),d3				// d3 = bm->h
- 	subq.w	#1,d3
- 		
-@loop:
-	move.l	d2,(a1)+
-	add.l		d1,d2
-	dbra		d3,@loop
-	
- 	movem.l	(sp)+,d3/a2
- 	rts
- }
-#endif
