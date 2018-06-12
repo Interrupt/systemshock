@@ -376,12 +376,8 @@ grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p) {
         // check for bitmap width<polygon width, if so, blend
 
         // MLA - have no idea how this code could ever work, so I'm trying my own code
-        dx = _g3d_bitmap_poly[0]->x - _g3d_bitmap_poly[2]->x;
-        if (dx < 0)
-          dx = -dx;
-        dy = _g3d_bitmap_poly[0]->y - _g3d_bitmap_poly[2]->y;
-        if (dy < 0)
-          dy = -dy;
+        dx = fix_abs(_g3d_bitmap_poly[0]->x - _g3d_bitmap_poly[2]->x);
+        dy = fix_abs(_g3d_bitmap_poly[0]->y - _g3d_bitmap_poly[2]->y);
 
         if (dy > dx)
           dx = dy; // get max value in dx
