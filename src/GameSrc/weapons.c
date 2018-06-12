@@ -1063,7 +1063,7 @@ uchar fire_player_weapon(LGPoint *pos, LGRegion *r, uchar pull)
    {
       if (((GunProps[CPTRIP(gun_triple)].fire_rate*10)+player_struct.last_fire) > player_struct.game_time)
          return FALSE;
-      next_fire_time = (GunProps[CPTRIP(gun_triple)].fire_rate*10)+player_struct.game_time;
+      next_fire_time = (10)+player_struct.game_time;
       gun_fire_offset = 0;
    }
    if (shots)
@@ -1481,7 +1481,7 @@ void change_selected_weapon(int new_weapon)
 
    new_offset = weapon_colors[ws->type];
 
-/* KLC - this color changing code doesn't work with new hi-res cursors.
+
    for (i=0;i<NUM_MOTION_CURSORS;i++)
    {
       bits = curs->bits;
@@ -1494,7 +1494,7 @@ void change_selected_weapon(int new_weapon)
       curs++;
    }
    cursor_color_offset = new_offset;
-*/
+
    check_temperature(ws, TRUE);
    if ((ws->type == GUN_SUBCLASS_BEAM) ||
        (ws->type == GUN_SUBCLASS_BEAMPROJ))
