@@ -434,7 +434,7 @@ void init_all(void)
 
    // set default difficulty levels for player
    for (i=0; i<4; i++)
-      player_struct.difficulty[i] = 1;
+      player_struct.difficulty[i] = 2;
 
 // KLC - no config stuff for Mac version
 //	 if (!config_get_value(CFG_ARCHIVE_VAR, CONFIG_STRING_TYPE, &real_archive_fn, &dummy_count))
