@@ -117,6 +117,13 @@ fix fix_mul_16_32_20_asm(fix a, fix b)
     return (fix)(((int64_t)(a) * (int64_t)(b)) >> 4);
 }
 
+fix fix_div_16_16_3 (fix a, fix b)
+{
+	return (fix)(((int64_t)a << 29) / (int64_t)b);
+}
+
+
+
 // Custom Wide assignment macros
 #define ASSIGN_WIDE_TO_64(x, w) x = (uint64_t)(w)->lo + (((int64_t)(w)->hi) << 32)
 #define ASSIGN_64_TO_WIDE(w, x) (w)->lo = x & 0xFFFFFFFF; (w)->hi = x >> 32

@@ -160,11 +160,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __FIX_H
 #define __FIX_H
 
-#include "lg_types.h"
-	
-#include "stdbool.h"
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+#include "lg_types.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 // Globals
 extern int	gOVResult;
@@ -273,10 +277,6 @@ typedef uint16_t fixang;
 
 // makes a fixed point from a float.
 #define fix_from_float(n) ((fix)(65536.0*(n)))
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
 
 //========================================
 //
@@ -445,7 +445,8 @@ extern unsigned int OurWideSquareRoot(const AWide *source);
 extern AWide *AsmWideNegate(AWide *target);
 extern AWide *AsmWideBitShift(AWide *target, int count);
 
-
+// FIXME replace
+extern fix fix_div_16_16_3 (fix a, fix b);
 
 #define fix_mul_div_3_16_16_3 fix_mul_div
 #define fix_mul_div_3_16_3_16 fix_mul_div
