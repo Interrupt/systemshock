@@ -162,8 +162,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg_types.h"
 	
-#include <stdlib.h>
+#include "stdbool.h"
 #include <stdint.h>
+#include <stdlib.h>
 
 // Globals
 extern int	gOVResult;
@@ -198,7 +199,7 @@ int long_safe_pyth_dist (int a, int b);
    bits of integer, and 16 bits of fraction.  thus, a rational number a is
    represented as a 32-bit number as a*2^16. */
 
-typedef int fix;
+typedef int32_t fix;
 typedef fix fix16;
 
 // define min and max
@@ -217,10 +218,10 @@ typedef fix fix16;
 #define FIXANG_PI 0x8000
 #define fix_2pi fix_make(6,18559) // that's 6 + 18559/65536 = 6.28319
 
-typedef ushort fixang;
+typedef uint16_t fixang;
 
 /* makes a fixed point number with integral part a and fractional part b. */
-#define fix_make(a,b) ((((int)(a))<<16)|(b))
+#define fix_make(a, b) ((((int32_t)(a)) << 16) | (b))
 
 #define FIX_UNIT fix_make(1,0)
 
@@ -380,9 +381,9 @@ fix fix_exp (fix x);
 //
 // fix24.c
 
-typedef int fix24;
+typedef int32_t fix24;
 
-#define fix24_make(a,b) ((((int)(a))<<8)|(b))
+#define fix24_make(a,b) ((((int32_t)(a))<<8)|(b))
 #define fix24_trunc(n) ((n)&0xffffff00)
 #define fix24_round(n) (((n)+128)&0xffffff00)
 #define fix24_int(n) ((n)>>8)
