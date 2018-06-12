@@ -142,11 +142,6 @@ typedef struct {
 
 #define sgn(a) (((a)>0) ? 1 : ((a)<0) ? -1 : 0)
 
-#undef fix_ceil
-#define fix_ceil(a) ((fix)(((a)+0xffff)&0xffff0000))
-#undef fix_cint
-#define fix_cint(a) ((short)(((a)+0xffff)>>16))
-
 #define fix_light(i) ((i>>8)&0xff00)
 
 #endif /* !__TMAPINT_H */
