@@ -359,9 +359,6 @@ fixang fix_atan2 (fix y, fix x);
 //
 //========================================
 
-//	Converts string into fixed-point
-//fix atofix(const char *p);
-
 // Puts a decimal representation of x into str
 char *fix_sprint (char *str, fix x);
 char *fix_sprint_hex (char *str, fix x);
@@ -417,7 +414,6 @@ fix24 fix24_fastcos (fixang theta);
 fixang fix24_asin (fix24 x);
 fixang fix24_acos (fix24 x);
 fixang fix24_atan2 (fix24 y, fix24 x);
-fix24 atofix24(char *p);
 char *fix24_sprint (char *str, fix24 x);
 char *fix24_sprint_hex (char *str, fix24 x);
 
