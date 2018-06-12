@@ -203,7 +203,7 @@ void change_svga_cursors()
    ss_set_hack_mode(2,&temp);
 
 // KLC - not needed   free_options_cursor();
-//   make_options_cursor();
+   make_options_cursor();
    old_obj = object_on_cursor;
    if (old_obj != OBJ_NULL)
    {
