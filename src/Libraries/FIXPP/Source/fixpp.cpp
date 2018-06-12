@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Header: r:/prj/lib/src/fixpp/RCS/fixpp.cc 1.28 1994/08/30 11:32:42 jak Exp $
  */
 
-// ¥¥¥ For now, turn debugging on, so we can run the test programs.
+// Ð…Ð…Ð… For now, turn debugging on, so we can run the test programs.
 #define FIXDEBUG 1
 
 
