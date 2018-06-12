@@ -95,14 +95,14 @@ LGPoint pistol_hand_info[NUM_PROJ_GUN][NUM_FRAMES] =
 LGPoint energy_hand_info[NUM_ENERGY_GUN][NUM_FRAMES] =
 {
    {{0, 22},{-3,19}},       // magpulse
-   {{0, 27},{-10,27}},       // rail gun
+   {{0, 24},{-4,16}},       // rail gun
    {{0,0},{0,0}},         // filler - hand2hand
    {{0,0},{0,0}},         // filler
    {{0, 24},{0,24}},       // sparq beam
    {{0, 24},{-12,18}},       // blaster
    {{0, 21},{-10,15}},      // ion rifle
-   {{0, 24},{0,24}},       // stungun
-   {{0, 21},{0,21}},       // plasma rifle
+   {{0, 24},{0,19}},       // stungun
+   {{0, 21},{-16,10}},       // plasma rifle
 };
 
 

@@ -1068,24 +1068,27 @@ uchar toggle_giveall_func(short keycode, ulong context, void* data)
    for (int i=0; i < NUM_HARDWAREZ; i++)
       player_struct.hardwarez[i] = 1;
 
-   player_struct.weapons[0].type = 4;
+   player_struct.weapons[0].type = 2;
    player_struct.weapons[0].subtype = 1;
+   player_struct.weapons[0].ammo = 50;
    player_struct.weapons[2].ammo = 25;
    player_struct.weapons[1].type = 4;
    player_struct.weapons[1].subtype = 2;
+   player_struct.weapons[1].setting = 40;
    player_struct.weapons[2].type = 0;
    player_struct.weapons[2].subtype = 4;
    player_struct.weapons[2].ammo = 100;
    player_struct.weapons[3].type = 1;
-   player_struct.weapons[3].subtype = 0;
+   player_struct.weapons[3].subtype = 1;
    player_struct.weapons[3].ammo = 150;
    player_struct.weapons[4].type = 2;
    player_struct.weapons[4].subtype = 0;
    player_struct.weapons[4].ammo = 50;
    player_struct.weapons[5].type = 4;
    player_struct.weapons[5].subtype = 0;
+   player_struct.weapons[5].setting = 40;
    player_struct.weapons[6].type = 3;
-   player_struct.weapons[6].subtype = 0;
+   player_struct.weapons[6].subtype = 1;
 
    player_struct.hit_points = 255;
    player_struct.energy = 255;
