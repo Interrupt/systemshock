@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
-extern ushort sintab[256+64+1];
+extern uint16_t sintab[256+64+1];
 
 extern fixang asintab[128+1];
 
 #define INTEGER_EXP_OFFSET 11
-extern ulong expinttab[INTEGER_EXP_OFFSET*2+1];
+extern uint32_t expinttab[INTEGER_EXP_OFFSET*2+1];
 
-extern ulong expfractab[16+1];
+extern uint32_t expfractab[16+1];
