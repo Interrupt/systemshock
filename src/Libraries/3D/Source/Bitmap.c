@@ -364,54 +364,46 @@ grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p) {
 
   // vpl[3][5] provided
   tmap_info.flags = 0;
-  if (_g3d_light_flag != 2)
-    goto NoBlend; // do blending?
+  // do blending?
+  if (_g3d_light_flag == 2) {
+    tmap_info.clut = _g3d_bitmap_clut;
+    tmap_info.flags = TMF_CLUT;
 
-  tmap_info.clut = _g3d_bitmap_clut;
-  tmap_info.flags = TMF_CLUT;
+    if (_g3d_enable_blend) {
 
-  if (!_g3d_enable_blend)
-    goto NoBlend;
+      // only blend if no translucent or no compressed translucent bitmap
+      if ((bm->type != BMT_TLUC8) || (bm->flags != BMF_TLUC8)) {
+        // check for bitmap width<polygon width, if so, blend
 
-  // don't blend if translucent or compressed translucent bitmap
-  if ((bm->type == BMT_TLUC8) || (bm->flags == BMF_TLUC8))
-    goto NoBlend;
+        // MLA - have no idea how this code could ever work, so I'm trying my own code
+        dx = _g3d_bitmap_poly[0]->x - _g3d_bitmap_poly[2]->x;
+        if (dx < 0)
+          dx = -dx;
+        dy = _g3d_bitmap_poly[0]->y - _g3d_bitmap_poly[2]->y;
+        if (dy < 0)
+          dy = -dy;
 
-  // check for bitmap width<polygon width, if so, blend
+        if (dy > dx)
+          dx = dy; // get max value in dx
 
-  // MLA - have no idea how this code could ever work, so I'm trying my own code
-  dx = _g3d_bitmap_poly[0]->x - _g3d_bitmap_poly[2]->x;
-  if (dx < 0)
-    dx = -dx;
-  dy = _g3d_bitmap_poly[0]->y - _g3d_bitmap_poly[2]->y;
-  if (dy < 0)
-    dy = -dy;
+        // shift down because bm_w isn't fixed, and we only double when twice the size
+        dx >>= 0x11;
 
-  if (dy > dx)
-    dx = dy; // get max value in dx
+        // make sure doubled bitmap won't overflow unpack buffer (that's roughly 1/5 of 64k)
+        if ((bm_w <= dx) && (bm_w * bm_h <= 12000)) {
+          // first fix all u's and v's
+          for (tempL = 0; tempL < 4; tempL++) {
+            _g3d_bitmap_poly[tempL]->u <<= 1;
+            _g3d_bitmap_poly[tempL]->v <<= 1;
+          }
 
-  dx >>= 0x11; // shift down because bm_w isn't fixed, and we only double when
-               // twice the size
-  if (bm_w > dx)
-    goto NoBlend;
-
-  // make sure doubled bitmap won't overflow unpack buffer (that's roughly 1/5
-  // of 64k)
-  if (bm_w * bm_h > 12000)
-    goto NoBlend;
-
-  // first fix all u's and v's
-  for (tempL = 0; tempL < 4; tempL++) {
-    _g3d_bitmap_poly[tempL]->u <<= 1;
-    _g3d_bitmap_poly[tempL]->v <<= 1;
+          tmap_info.tmap_type = GRC_POLY;
+          h_map(bm, 4, _g3d_bitmap_poly, &tmap_info);
+          return (_g3d_bitmap_poly);
+        }
+      }
+    }
   }
-
-  tmap_info.tmap_type = GRC_POLY;
-  h_map(bm, 4, _g3d_bitmap_poly, &tmap_info);
-  return (_g3d_bitmap_poly);
-
-// nasty C code!! its a goto!!
-NoBlend:
   tmap_info.tmap_type = (_g3d_light_flag << 1) + GRC_BILIN;
   h_map(bm, 4, _g3d_bitmap_poly, &tmap_info);
 
