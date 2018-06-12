@@ -431,10 +431,10 @@ struct AWide
 };
 typedef struct AWide AWide;
 
-extern fix fix_mul_3_3_3_asm (fix a, fix b);
-extern fix fix_mul_3_32_16_asm (fix a, fix b);
-extern fix fix_mul_3_16_20_asm (fix a, fix b);
-extern fix fix_mul_16_32_20_asm (fix a, fix b);
+extern fix fix_mul_3_3_3(fix a, fix b);
+extern fix fix_mul_3_32_16(fix a, fix b);
+extern fix fix_mul_3_16_20(fix a, fix b);
+extern fix fix_mul_16_32_20(fix a, fix b);
 extern AWide *AsmWideAdd(AWide *target, const AWide *source);
 extern AWide *AsmWideSub(AWide *target, const AWide *source);
 extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);
@@ -445,8 +445,7 @@ extern unsigned int OurWideSquareRoot(const AWide *source);
 extern AWide *AsmWideNegate(AWide *target);
 extern AWide *AsmWideBitShift(AWide *target, int count);
 
-// FIXME replace
-extern fix fix_div_16_16_3 (fix a, fix b);
+extern fix fix_div_16_16_3(fix a, fix b);
 
 #define fix_mul_div_3_16_16_3 fix_mul_div
 #define fix_mul_div_3_16_3_16 fix_mul_div
@@ -457,11 +456,6 @@ extern fix fix_mul_3_3_3 (fix a, fix b);
 extern fix fix_mul_3_32_16 (fix a, fix b);
 extern fix fix_mul_3_16_20 (fix a, fix b);
 extern fix fix_mul_16_32_20 (fix a, fix b);
-
-#define fix_mul_3_3_3 fix_mul_3_3_3_asm
-#define fix_mul_3_32_16 fix_mul_3_32_16_asm
-#define fix_mul_3_16_20 fix_mul_3_16_20_asm
-#define fix_mul_16_32_20 fix_mul_16_32_20_asm
 
 #define fix_div_16_3_16 fix_div_16_16_3
 #define fix_div_3_3_16 fix_div
