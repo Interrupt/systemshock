@@ -8,6 +8,8 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS -m32)
 set(CMAKE_CXX_FLAGS -m32)
 
+option(ENABLE_EXAMPLES "Enable example applications" OFF)
+
 # HAAAAX!!
 add_definitions(-Dpowerc -DSVGA_SUPPORT)
 
@@ -189,6 +191,7 @@ include_directories(
 	src/MacSrc
 )
 
+if(ENABLE_EXAMPLES)
 add_executable(TestSimpleMain
 	src/Libraries/2D/TestSource/SimpleMain.c
 )
@@ -249,6 +252,7 @@ target_link_libraries(FixPPTest
 	FIXPP_LIB
 	LG_LIB
 )
+endif()
 
 # Include magic header file, set struct packing size
 add_definitions(
