@@ -33,17 +33,31 @@ The end goal for this project is something like what Chocolate Doom is for Doom:
 Compiling / Running
 ============
 
-# Prerequisites
+## Prerequisites
   - SDL2, 32 bit
   - SDL2_mixer, 32 bit
   - Original assets in a `res/data` folder next to the executable
   
-# Building SDL
+## Building SDL
 You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer. VOC support was broken until recently in SDL_mixer, so for sound effects to work you'll probably need to build it from the latest sources like that script does.
 
-# Build and run
+## Build and run
 ```
 cmake .
 make systemshock
 ./systemshock
+```
+
+Modding Support
+============
+Shockolate supports loading mods and full on fan missions. Just point the executable at a mod file or folder and the game will load it in. So far mod loading supports additional `.res` and `.dat` files for resources and missions respectively.
+
+Run a fan mission from a folder:
+```
+./systemshock /Path/To/My/Mission
+```
+
+Run a fan mission from specific files:
+```
+./systemshock my-archive.dat my-strings.res
 ```
