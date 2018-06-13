@@ -613,7 +613,6 @@ uchar *do_gour_p(uchar *opcode) {
 }
 
 uchar *do_gour_vc(uchar *opcode) {
-  int temp;
 
   FlipShort((short *)(opcode + 2));
 

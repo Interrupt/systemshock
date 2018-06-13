@@ -864,7 +864,6 @@ g3s_phandle g3_copy_add_delta_yz(g3s_phandle src, fix dy, fix dz) {
 // add an xyz delta to a point. takes edi=point, eax=dx, ebx=dy, ecx=dz
 // trashes eax,ebx,ecx,edx,esi
 g3s_phandle g3_copy_add_delta_xyz(g3s_phandle src, fix dx, fix dy, fix dz) {
-  fix rx, ry, rz;
   g3s_point *point;
 
   getpnt(point);

@@ -202,7 +202,7 @@ void g3_start_frame(void) {
   // mark all points as free
   if (n_points) {
     first_free = point_list;
-    pt3 = (g3s_point *)point_list;
+    pt3 = point_list;
     for (i = 0; i < n_points - 1; i++, pt3++)
       pt3->next = (g3s_phandle)(pt3 + 1);
 
@@ -284,10 +284,8 @@ void g3_free_point(g3s_phandle p) // adds to free list
 void g3_free_list(int n_points, g3s_phandle *p) // adds to free list
 {
   int i;
-  g3s_phandle *gptr;
   g3s_point *tempPtr;
 
-  gptr = p;
   for (i = 0; i < n_points; i++) {
     tempPtr = p[i];
     tempPtr->next = first_free;
@@ -298,7 +296,7 @@ void g3_free_list(int n_points, g3s_phandle *p) // adds to free list
 // make a duplicate of a point. takes esi, returns edi. trashes ebx,ecx
 g3s_phandle g3_dup_point(g3s_phandle p) // makes copy of a point
 {
-  g3s_point *tempPtr, *destPtr;
+  g3s_point *destPtr;
 
   destPtr = first_free;
   first_free = destPtr->next;
