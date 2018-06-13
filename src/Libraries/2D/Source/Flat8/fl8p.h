@@ -69,41 +69,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __FL8P_H
 
 // FIXME Move it to FIX
-#define fix_mul_div_3_16_16_3 fix_mul_div
-#define fix_mul_div_3_16_3_16 fix_mul_div
-#define fix_mul_div_3_8_8_3 fix_mul_div
-
-// MLA- moved implementations of these into Permap.c, since we can't do inline
-// asm
-extern fix fix_div_16_16_3(fix a, fix b);
-extern fix fix_mul_3_3_3(fix a, fix b);
-extern fix fix_mul_3_32_16(fix a, fix b);
-extern fix fix_mul_3_16_20(fix a, fix b);
-extern fix fix_mul_16_32_20(fix a, fix b);
-
-#define fix_mul_3_3_3 fix_mul_3_3_3_asm
-#define fix_mul_3_32_16 fix_mul_3_32_16_asm
-#define fix_mul_3_16_20 fix_mul_3_16_20_asm
-#define fix_mul_16_32_20 fix_mul_16_32_20_asm
-
-#define fix_div_16_3_16 fix_div_16_16_3
-#define fix_div_3_3_16 fix_div
-#define fix_div_3_16_3 fix_div
-#define fix_div_3_8_3 fix_div_16_8_16
-#define fix_div_8_8_8 fix_div_16_8_16
-#define fix_mul_3_16_16 fix_mul_3_3_3
-#define fix_mul_3_8_8 fix_mul_3_3_3
-
-#define fix_sal(a, b) ((a) << (b))
-#define fix_sar(a, b) ((a) >> (b))
-
-#define fix_3_12(a) ((a) >> 9)
-#define fix_12_16(a) ((a) >> 4)
-#define fix_3_16(a) ((a) >> 13)
-#define fix_3_8(a) ((a) >> 5)
-
-#define FIX_UNIT_3 0x20000000
-
 #define ACENT (grd_bm.w >> 1)
 #define BCENT (grd_bm.h >> 1)
 #define SCALE 0x200

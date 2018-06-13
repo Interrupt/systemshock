@@ -103,7 +103,7 @@ errtype check_cspace_death()
             }
 
             // boot player out of cspace
-            player_struct.cspace_time_base = max(CSPACE_MIN_TIME, player_struct.cspace_time_base - CSPACE_DEATH_PENALTY);
+            player_struct.cspace_time_base = lg_max(CSPACE_MIN_TIME, player_struct.cspace_time_base - CSPACE_DEATH_PENALTY);
             go_to_different_level(player_struct.realspace_level);
             obj_move_to(PLAYER_OBJ, &player_struct.realspace_loc, TRUE);
             reset_input_system();

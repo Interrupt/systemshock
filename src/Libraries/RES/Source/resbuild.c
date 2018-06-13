@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <unistd.h>
 
+#include "lg.h"
 #include "lzw.h"
 #include "res.h"
 #include "res_.h"
@@ -41,8 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // make sure comment ends with one, so can type a file
 #define CTRL_Z 26
-
-#define min(a, b) (((a) < (b)) ? (a) : (b))
 
 bool ResEraseIfInFile(Id id);
 
@@ -333,7 +332,7 @@ static void ResCopyBytes(FILE *fd, int32_t writePos, int32_t readPos,
   buff = malloc(SIZE_RESCOPY);
 
   while (size > 0) {
-    sizeCopy = min(SIZE_RESCOPY, size);
+    sizeCopy = lg_min(SIZE_RESCOPY, size);
     fseek(fd, readPos, SEEK_SET);
     fread(buff, sizeCopy, 1, fd);
     fseek(fd, writePos, SEEK_SET);

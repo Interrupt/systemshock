@@ -42,12 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tmaptab.h"
 
 // FIXME Move to FIX
-// PowerPC math routines used by permap stuff
-fix fix_div_16_16_3 (fix a, fix b)
- {
-  return(AsmWideDivide((a) >> 3, (a) << 29, b));
- }
-
 extern int gri_per_umap_setup(int n, grs_vertex **vpl, grs_per_setup *ps);
 
 uchar grd_enable_quad_blend=FALSE;

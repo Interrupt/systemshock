@@ -160,10 +160,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __FIX_H
 #define __FIX_H
 
-#include "lg_types.h"
-	
-#include <stdlib.h>
+#include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+
+#include "lg_types.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 // Globals
 extern int	gOVResult;
@@ -198,7 +203,7 @@ int long_safe_pyth_dist (int a, int b);
    bits of integer, and 16 bits of fraction.  thus, a rational number a is
    represented as a 32-bit number as a*2^16. */
 
-typedef int fix;
+typedef int32_t fix;
 typedef fix fix16;
 
 // define min and max
@@ -217,10 +222,10 @@ typedef fix fix16;
 #define FIXANG_PI 0x8000
 #define fix_2pi fix_make(6,18559) // that's 6 + 18559/65536 = 6.28319
 
-typedef ushort fixang;
+typedef uint16_t fixang;
 
 /* makes a fixed point number with integral part a and fractional part b. */
-#define fix_make(a,b) ((((int)(a))<<16)|(b))
+#define fix_make(a, b) ((((int32_t)(a)) << 16) | (b))
 
 #define FIX_UNIT fix_make(1,0)
 
@@ -272,10 +277,6 @@ typedef ushort fixang;
 
 // makes a fixed point from a float.
 #define fix_from_float(n) ((fix)(65536.0*(n)))
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
 
 //========================================
 //
@@ -359,9 +360,6 @@ fixang fix_atan2 (fix y, fix x);
 //
 //========================================
 
-//	Converts string into fixed-point
-//fix atofix(const char *p);
-
 // Puts a decimal representation of x into str
 char *fix_sprint (char *str, fix x);
 char *fix_sprint_hex (char *str, fix x);
@@ -383,9 +381,9 @@ fix fix_exp (fix x);
 //
 // fix24.c
 
-typedef int fix24;
+typedef int32_t fix24;
 
-#define fix24_make(a,b) ((((int)(a))<<8)|(b))
+#define fix24_make(a,b) ((((int32_t)(a))<<8)|(b))
 #define fix24_trunc(n) ((n)&0xffffff00)
 #define fix24_round(n) (((n)+128)&0xffffff00)
 #define fix24_int(n) ((n)>>8)
@@ -417,7 +415,6 @@ fix24 fix24_fastcos (fixang theta);
 fixang fix24_asin (fix24 x);
 fixang fix24_acos (fix24 x);
 fixang fix24_atan2 (fix24 y, fix24 x);
-fix24 atofix24(char *p);
 char *fix24_sprint (char *str, fix24 x);
 char *fix24_sprint_hex (char *str, fix24 x);
 
@@ -434,10 +431,10 @@ struct AWide
 };
 typedef struct AWide AWide;
 
-extern fix fix_mul_3_3_3_asm (fix a, fix b);
-extern fix fix_mul_3_32_16_asm (fix a, fix b);
-extern fix fix_mul_3_16_20_asm (fix a, fix b);
-extern fix fix_mul_16_32_20_asm (fix a, fix b);
+extern fix fix_mul_3_3_3(fix a, fix b);
+extern fix fix_mul_3_32_16(fix a, fix b);
+extern fix fix_mul_3_16_20(fix a, fix b);
+extern fix fix_mul_16_32_20(fix a, fix b);
 extern AWide *AsmWideAdd(AWide *target, const AWide *source);
 extern AWide *AsmWideSub(AWide *target, const AWide *source);
 extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);
@@ -447,5 +444,38 @@ extern int AsmWideDivide_ZeroAware(int hi, int lo, int divisor);
 extern unsigned int OurWideSquareRoot(const AWide *source);
 extern AWide *AsmWideNegate(AWide *target);
 extern AWide *AsmWideBitShift(AWide *target, int count);
+
+extern fix fix_div_16_16_3(fix a, fix b);
+
+#define fix_mul_div_3_16_16_3 fix_mul_div
+#define fix_mul_div_3_16_3_16 fix_mul_div
+#define fix_mul_div_3_8_8_3 fix_mul_div
+
+extern fix fix_div_16_16_3 (fix a, fix b);
+extern fix fix_mul_3_3_3 (fix a, fix b);
+extern fix fix_mul_3_32_16 (fix a, fix b);
+extern fix fix_mul_3_16_20 (fix a, fix b);
+extern fix fix_mul_16_32_20 (fix a, fix b);
+
+#define fix_div_16_3_16 fix_div_16_16_3
+#define fix_div_3_3_16 fix_div
+#define fix_div_3_16_3 fix_div
+#define fix_div_3_8_3 fix_div_16_8_16
+#define fix_div_8_8_8 fix_div_16_8_16
+#define fix_mul_3_16_16 fix_mul_3_3_3
+#define fix_mul_3_8_8 fix_mul_3_3_3
+
+#define fix_sal(a,b) ((a)<<(b))
+#define fix_sar(a,b) ((a)>>(b))
+
+#define fix_3_12(a) ((a)>>9)
+#define fix_12_16(a) ((a)>>4)
+#define fix_3_16(a) ((a)>>13)
+#define fix_3_8(a) ((a)>>5)
+
+#define FIX_UNIT_3 0x20000000
+
+
+
 
 #endif /* !__fix24_H */

@@ -271,8 +271,8 @@ void span_fixup(void)
    if (span_count(_fr_y_cen)>1)
    {
 	   span_count(_fr_y_cen)--;
-	   span_left(_fr_y_cen,0) =min(span_left(_fr_y_cen,0),span_left(_fr_y_cen,1));
-	   span_right(_fr_y_cen,0)=max(span_right(_fr_y_cen,0),span_right(_fr_y_cen,1));
+	   span_left(_fr_y_cen,0) =lg_min(span_left(_fr_y_cen,0),span_left(_fr_y_cen,1));
+	   span_right(_fr_y_cen,0)=lg_max(span_right(_fr_y_cen,0),span_right(_fr_y_cen,1));
    }
    else
       Warning(("Only one span at y center\n"));
@@ -876,8 +876,8 @@ uchar _fr_move_new_dels(FrClipVec *lv, FrClipVec *rv, uchar northward)
 {
 	int lm, rm;
 
-	lm=min(lv->oldx,lv->loc[0]);
-   rm=max(rv->oldx,rv->loc[0]);
+	lm=lg_min(lv->oldx,lv->loc[0]);
+   rm=lg_max(rv->oldx,rv->loc[0]);
    store_x_span(fix_int(lv->loc[1]),fix_int(lm),fix_int(rm));
    _fr_sdbg(VECSPEW, mprintf("new_dels: setting span %d to %x,%x - o: %x %x c: x %x %x y %x %x m %x\n",span_count(fix_int(lv->loc[1])),lm,rm,lv->oldx,rv->oldx,lv->loc[0],rv->loc[0],lv->loc[1],rv->loc[1],lv->mptr));
 

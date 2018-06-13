@@ -540,6 +540,10 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    printf("load_dynamic_memory\n");
    load_dynamic_memory(DYNMEM_ALL);
 
+   // KLC - if not already on, turn on-line help on.
+   if (!olh_active)
+      toggle_olh_func(0, 0, NULL);
+
    // Do entry-level triggers for starting level
    // Hmm, do we actually want to call this any time we restore
    // a saved game or whatever?  No, probably not....hmmm.....
@@ -547,14 +551,10 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    printf("do_level_entry_triggers\n");
    do_level_entry_triggers();
 
-   printf("STARTING PLAYER_BIN_X: %i, PLAYER_BIN_Y: %i\n", PLAYER_BIN_X, PLAYER_BIN_Y);
-   
-   // KLC - if not already on, turn on-line help on.
-   if (!olh_active)
-      toggle_olh_func(0, 0, NULL);
+   printf("Player starting at x: %i, y: %i\n", PLAYER_BIN_X, PLAYER_BIN_Y);
    
    // turn on help overlay. 
-   olh_overlay_on = TRUE;
+   olh_overlay_on = olh_active;
 
    // Plot timers
 

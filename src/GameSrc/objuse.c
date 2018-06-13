@@ -66,6 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tilename.h"
 #include "tools.h"
 #include "trigger.h"
+#include "mouselook.h"
 
 #define MFD_FIXTURE_FLAG 0x8  // class flag for mfd fixtures
 
@@ -117,6 +118,8 @@ void zoom_mfd(int mfd)
 
    extern void mfd_zoom_rect(LGRect*,int);
    extern Boolean DoubleSize;
+
+   mouse_look_off();
 
    ucp = use_cursor_pos;
    if (!DoubleSize)
@@ -682,7 +685,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj)
          case CYBERHEAL_TRIPLE:
             if (player_struct.cspace_hp != PLAYER_MAX_HP)
             {
-               player_struct.cspace_hp = min(player_struct.cspace_hp + CYBERHEAL_QUANTITY + objSmallstuffs[objs[id].specID].data1, PLAYER_MAX_HP);
+               player_struct.cspace_hp = lg_min(player_struct.cspace_hp + CYBERHEAL_QUANTITY + objSmallstuffs[objs[id].specID].data1, PLAYER_MAX_HP);
                hud_unset(HUD_CYBERDANGER);
                string_message_info(REF_STR_CspaceHeal);
                ADD_DESTROYED_OBJECT(id);
@@ -701,7 +704,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj)
             did_something = TRUE;
             break;
          case CSPACE_EXIT_TRIPLE:
-            player_struct.cspace_time_base = max(CSPACE_MIN_TIME, player_struct.cspace_time_base - CSPACE_EXIT_PENALTY);
+            player_struct.cspace_time_base = lg_max(CSPACE_MIN_TIME, player_struct.cspace_time_base - CSPACE_EXIT_PENALTY);
             go_to_different_level(player_struct.realspace_level);
             did_something = TRUE;
             retval = obj_move_to(PLAYER_OBJ, &player_struct.realspace_loc, TRUE);
@@ -890,7 +893,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj)
                   if (player_struct.game_time >= objFixtures[osid].p4)
                   {
                      // give the player some juice!
-                     player_struct.energy = min(255, player_struct.energy + objFixtures[osid].p1);
+                     player_struct.energy = lg_min(255, player_struct.energy + objFixtures[osid].p1);
 
                      // update the vitals window
                      chg_set_flg(VITALS_UPDATE);
@@ -1090,7 +1093,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj)
                case BATTERY2_TRIPLE:
                   player_struct.energy=255;
                case BATTERY_TRIPLE:
-                  player_struct.energy = min(255, player_struct.energy + BATTERY_ENERGY_BONUS);
+                  player_struct.energy = lg_min(255, player_struct.energy + BATTERY_ENERGY_BONUS);
                   play_digi_fx(SFX_BATTERY_USE,1);
                yankinv:
                   remove_general_item(id);
@@ -1149,7 +1152,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj)
                if (rv)
                {
                   if (pbigs->data2 & 0xFFFF)
-                     player_struct.hit_points = min(PLAYER_MAX_HP, player_struct.hit_points + (pbigs->data2 & 0xFFFF));
+                     player_struct.hit_points = lg_min(PLAYER_MAX_HP, player_struct.hit_points + (pbigs->data2 & 0xFFFF));
                   else
                      player_struct.hit_points = PLAYER_MAX_HP;
                   chg_set_flg(VITALS_UPDATE);

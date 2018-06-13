@@ -1073,8 +1073,11 @@ void mfd_select_button(int which_panel, int which_button)
 {
    // Play sound effect
    ubyte old = player_struct.mfd_current_slots[which_panel];
-   int hnd;
-   hnd = play_digi_fx(SFX_MFD_BUTTON,1);
+   int hnd = play_digi_fx(SFX_MFD_BUTTON,1);
+   /*
+   // FIXME There should be sound panning depending on which button is pressed:
+   // FIXME which_button < 5 - left side, else - right side
+
    if (hnd >= 0)
    {
       snd_digi_parms *ssp;
@@ -1085,7 +1088,8 @@ void mfd_select_button(int which_panel, int which_button)
          ssp->pan = 30;
       else
          ssp->pan = 97;
-   }
+   }*/
+
    if (full_game_3d && which_button == old && (full_visible & visible_mask(which_panel)))
    {
       full_visible &= ~visible_mask(which_panel);
@@ -1157,7 +1161,7 @@ void mfd_update()
       {
          long deltat = (player_struct.game_time - f->last)>>4;
          ubyte increment = (player_struct.mfd_func_status[f_id] >> 4);
-         ubyte num_steps = ( increment > 0) ? max(0,deltat/increment) : 0;
+         ubyte num_steps = ( increment > 0) ? lg_max(0,deltat/increment) : 0;
          steps_cache[i] = num_steps;
          chg_set_flg(MFD_UPDATE);
       }
@@ -1454,8 +1458,8 @@ LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, uchar 
    short border = 0;
    grs_font* thefont = (grs_font*)ResLock(font);
 
-   x = min(max(x,0),MFD_VIEW_WID-1);
-   y = min(max(y,0),MFD_VIEW_HGT-1);
+   x = lg_min(lg_max(x,0),MFD_VIEW_WID-1);
+   y = lg_min(lg_max(y,0),MFD_VIEW_HGT-1);
    STORE_CLIP(sc1,sc2,sc3,sc4);
    if (full_game_3d
       && mfd_string_shadow == MFD_SHADOW_FULLSCREEN
@@ -1466,12 +1470,12 @@ LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, uchar 
    if (mfd_string_wrap)
       wrap_text(s,MFD_VIEW_WID - x-1);
    gr_string_size(s,&w,&h);
-   w = min(w,MFD_VIEW_WID-x-border);
-   h = min(h,MFD_VIEW_HGT-y-border);
+   w = lg_min(w,MFD_VIEW_WID-x-border);
+   h = lg_min(h,MFD_VIEW_HGT-y-border);
    siz.x = w; siz.y = h;
    if (w <= 0 || h <= 0) goto out;
-   ss_safe_set_cliprect(max(x-border,0),
-                   max(y-border,0),
+   ss_safe_set_cliprect(lg_max(x-border,0),
+                   lg_max(y-border,0),
                    x+w+border,y+h+border);
    if (!full_game_3d && !transp)
       ss_bitmap(&mfd_background,0,0);

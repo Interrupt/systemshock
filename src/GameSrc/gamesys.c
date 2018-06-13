@@ -808,7 +808,7 @@ uchar exposure_degrade_rates[] =
 int apply_rate(int var, int rate, int t0, int t1, int vmin, int vmax)
 {
    int delta = find_delta(t0,t1,rate,HEALTH_RESTORE_SHF);
-   int final = min(vmax,max(var + delta,vmin));
+   int final = lg_min(vmax, lg_max(var + delta,vmin));
    return final;
 }
 
@@ -940,7 +940,7 @@ void do_stuff_every_second()
                   int degrade = exposure_degrade_rates[i];
                   int deltahp = player_struct.hit_points
                      - apply_rate(player_struct.hit_points,-num,last,next,0,PLAYER_MAX_HP);
-                  degrade = min(100,find_delta(last,next,degrade,HEALTH_RESTORE_SHF));
+                  degrade = lg_min(100,find_delta(last,next,degrade,HEALTH_RESTORE_SHF));
                   damage_player((ubyte)deltahp,i+1,NO_SHIELD_ABSORBTION);
                   player_struct.hit_points_lost[i] = num*(100-degrade)/100;
                }
@@ -1019,7 +1019,7 @@ void expose_player_real(short damage, ubyte type, ushort undefined)
 {
    int cval = player_struct.hit_points_lost[type-1];
    if (damage == 0) return;
-   damage = max(-cval,min(damage,MAX_UBYTE-cval));
+   damage = lg_max(-cval, lg_min(damage,MAX_UBYTE-cval));
    if (damage > 0 && (type == BIO_TYPE || type == RADIATION_TYPE))
    {
       damage = enviro_suit_absorb(damage,cval,type);
@@ -1096,8 +1096,8 @@ int enviro_suit_absorb(int damage, int exposure, ubyte dtype)
       // if not, recompute absorption.
       absorb = energy*denom/(denom-1);
    }
-   enviro_absorb_rate = min(damage,absorb) >> 1;
-   damage -= min(damage,absorb);
+   enviro_absorb_rate = lg_min(damage, absorb) >> 1;
+   damage -= lg_min(damage,absorb);
    switch(dtype)
    {
       case BIO_TYPE:

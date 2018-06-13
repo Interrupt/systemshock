@@ -110,7 +110,7 @@ fixang asintab[128+1] = {
 
 #define INTEGER_EXP_OFFSET 11
 
-ulong expinttab[INTEGER_EXP_OFFSET*2+1] = {
+uint32_t expinttab[INTEGER_EXP_OFFSET*2+1] = {
 	0x00000001, 0x00000003, 0x00000008, 0x00000016, 
 	0x0000003c, 0x000000a2, 0x000001ba, 0x000004b0, 
 	0x00000cbf, 0x000022a5, 0x00005e2d, 0x00010000, 
@@ -124,7 +124,7 @@ ulong expinttab[INTEGER_EXP_OFFSET*2+1] = {
 // accuracy later if we need it.  So this input to this table goes
 // from 0 to 1 by sixteenths.
 
-ulong expfractab[16+1] = {
+uint32_t expfractab[16+1] = {
 	0x00010000, 0x00011083, 0x00012216, 0x000134cc, 
 	0x000148b6, 0x00015de9, 0x0001747a, 0x00018c80, 
 	0x0001a613, 0x0001c14b, 0x0001de45, 0x0001fd1e, 
