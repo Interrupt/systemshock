@@ -74,7 +74,7 @@ g3s_codes g3_check_codes(int n_verts, g3s_phandle *p) {
   andcode = 0xff;
   orcode = 0;
 
-  for (i = n_verts; i--; i > 0) {
+  for (i = n_verts; i > 0; i--) {
     andcode &= (*p)->codes;
     orcode |= (*p)->codes;
     p++;
@@ -243,7 +243,7 @@ int draw_poly_common(long c, int n_verts, g3s_phandle *p) {
   orcode = 0;
   old_p = p;
 
-  for (i = n_verts; i--; i > 0) {
+  for (i = n_verts; i > 0; i--) {
     andcode &= (*p)->codes;
     orcode |= (*p)->codes;
     p++;
