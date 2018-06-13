@@ -459,6 +459,9 @@ errtype physics_run(void)
    uchar allow_move=TRUE;
 #endif
 
+   // Run the mouse look
+   mouse_look_physics();
+
    // Here we are computing the values of the player's controls
    // from the values of the original control banks.  The value
    // of each control is the average of its non-zero control 
@@ -653,14 +656,11 @@ errtype physics_run(void)
          plr_lean = - plr_lean;
       }
 
-      // Run the mouse look
-      mouse_look_physics();
-
 #ifdef DIRAC_EDMS
       if (global_fullmap->cyber)
       {
          //printf("EDMS_control_Dirac_frame\n");
-         EDMS_control_Dirac_frame(PLAYER_PHYSICS, plr_z, plr_alpha, plr_y,plr_side);
+         EDMS_control_Dirac_frame(PLAYER_PHYSICS, plr_z, plr_alpha + fix_make(mlook_vel_x*3, 0), plr_y - fix_make(mlook_vel_y*3, 0), plr_side);
       }
       else
 #endif

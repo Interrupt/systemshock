@@ -31,6 +31,8 @@ void mouse_look_stop()
 
 void mouse_look_physics()
 {
+  mlook_vel_x = mlook_vel_y = 0;
+
   if(game_paused || !global_fullmap) {
     return;
   }
@@ -47,8 +49,11 @@ void mouse_look_physics()
   mouse_get_xy(&mx, &my);
 
   // How far have we moved?
-  mvelx = (middle_x - mx) * mlook_hsens;
-  mvely = (middle_y - my) * mlook_vsens;
+  mvelx = mlook_vel_x = (middle_x - mx);
+  mvely = mlook_vel_y = (middle_y - my);
+
+  mvelx *= mlook_hsens;
+  mvely *= mlook_vsens;
 
   // Can put the mouse back now
   if(mvelx != 0 || mvely != 0)
