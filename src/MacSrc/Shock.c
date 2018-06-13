@@ -70,6 +70,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include <SDL.h>
 
+#include <stdio.h>
+#include <execinfo.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 extern uchar game_paused;		// I've learned such bad lessons from LG.
 extern uchar objdata_loaded;
 extern uchar music_on;
@@ -117,12 +123,28 @@ void InitSDL();
 void SDLDraw(void);
 errtype CheckFreeSpace(short	checkRefNum);
 
+void print_stack_trace(int sig) {
+	void *array[15];
+	size_t size;
+
+	// get void*'s for all entries on the stack
+	size = backtrace(array, 15);
+
+	// print out all the frames to stderr
+	fprintf(stderr, "Error: signal %d:\n", sig);
+	backtrace_symbols_fd(array, size, STDERR_FILENO);
+	exit(1);
+}
+
 
 //------------------------------------------------------------------------------------
 //		Main function.
 //------------------------------------------------------------------------------------
 int main(int argc, char** argv)
 {  
+	// enable stack trace printing, if things go poorly
+	signal(SIGSEGV, print_stack_trace);
+
 	InitMac();																// init mac managers
  
 	GetFolders();															// get refs to data, sound, etc folders.
