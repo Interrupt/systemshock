@@ -90,7 +90,7 @@ extern void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0,
 
 // takes 3 rotated points: eax,edx,ebx.
 // returns al=true (& s flag set) if facing. trashes all but ebp
-uchar g3_check_poly_facing(g3s_phandle p0, g3s_phandle p1, g3s_phandle p2) {
+bool g3_check_poly_facing(g3s_phandle p0, g3s_phandle p1, g3s_phandle p2) {
   AWide result, result2;
 
   g3_compute_normal_quick(&temp_vector, (g3s_vector *)p0, (g3s_vector *)p1,
@@ -516,7 +516,7 @@ int draw_line_common(g3s_phandle p0, g3s_phandle p1) {
 // check if a surface is facing the viewer
 // takes esi=point on surface, edi=surface normal (can be unnormalized)
 // trashes eax,ebx,ecx,edx. returns al=true & sign set, if facing
-uchar g3_check_normal_facing(g3s_vector *v, g3s_vector *normal) {
+bool g3_check_normal_facing(g3s_vector *v, g3s_vector *normal) {
   AWide result, result2;
 
   AsmWideMultiply(v->gX - _view_position.gX, normal->gX, &result);

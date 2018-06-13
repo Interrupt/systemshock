@@ -148,6 +148,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __3D_H
 #define __3D_H
 
+#include <stdbool.h>
+
 #include "2d.h"
 #include "fix.h"
 
@@ -610,11 +612,11 @@ void g3_draw_horizon(int sky_color, int ground_color);
 g3s_codes g3_check_codes(int n_verts, g3s_phandle *p);
 // returns codes_and & codes_or of points
 
-uchar g3_check_normal_facing(g3s_vector *v, g3s_vector *normal);
+bool g3_check_normal_facing(g3s_vector *v, g3s_vector *normal);
 // takes surface normal and unrotated point on poly. normal need not
 // be normalized
 
-uchar g3_check_poly_facing(g3s_phandle p0, g3s_phandle p1, g3s_phandle p2);
+bool g3_check_poly_facing(g3s_phandle p0, g3s_phandle p1, g3s_phandle p2);
 // takes 3 rotated points on poly
 
 void g3_get_FOV(fixang *x, fixang *y);
