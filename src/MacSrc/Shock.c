@@ -1232,6 +1232,7 @@ void InitSDL()
 
 	SetupOffscreenBitmaps();
 
+	// Point the renderer at the screen bytes
 	gScreenRowbytes = drawSurface->w;
 	gScreenAddress = drawSurface->pixels;
 	gScreenWide = 640;
@@ -1240,10 +1241,6 @@ void InitSDL()
 	gActiveTop = 0;
 	gActiveWide = 640;
 	gActiveHigh = 480;
-
-	STUB("I guess/hope this SetRect() stuff is not needed anymore?")
-	//SetRect(&gActiveArea, gActiveLeft, gActiveTop, gActiveWide+gActiveLeft, gActiveHigh+gActiveTop);
-	//SetRect(&gOffActiveArea, 0, 0, gActiveWide, gActiveHigh);
 
 	gr_init();
 

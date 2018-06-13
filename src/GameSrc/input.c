@@ -1860,16 +1860,24 @@ int view3d_mouse_input(LGPoint pos, LGRegion* reg,uchar move,int* lastsect)
          cnum |= VIEW_VCENTER;
    }
 
+   // If mouse look is enabled, just use the centered cursor
+   extern int mlook_enabled;
+   if(mlook_enabled) {
+      cnum = VIEW_HCENTER | VIEW_VCENTER;
+   }
+
    if (*lastsect != cnum)
    {
       extern LGRegion* fullview_region;
       LGCursor*  c = &motion_cursors[cnum];
 //      Warning(("hey, cursor num = %d!\n",cnum));
 
+      // set the cursor to the motion cursor
       if (reg == fullview_region)
          uiSetGlobalDefaultCursor(c);
       else
          uiSetRegionDefaultCursor(reg,c);
+
       *lastsect = cnum;
    }
 
