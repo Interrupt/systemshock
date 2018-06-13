@@ -86,6 +86,7 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "svgacurs.h"
 #include "tools.h"
 #include "weapons.h"
+#include "mouselook.h"
 
 #ifdef NOT_YET //KLC - for VR headsets
 
@@ -1100,6 +1101,8 @@ extern uchar version_spew_func(short keycode, ulong context, void* data);
 extern uchar location_spew_func(short keycode, ulong context, void* data);
 #endif
 
+extern uchar toggle_mouse_look(short keycode, ulong context, void* data);
+
 #define ckpoint_input(val) Spew(DSRC_TESTING_Test0,("ii %s @%d\n",val,*tmd_ticks));
 
 #define CYB_CURS_ID(i)  (CYBER_CURSOR_BASE+(i))
@@ -1453,6 +1456,9 @@ void init_input(void)
    hotkey_add(CONTROL('m'), DEMO_CONTEXT, toggle_music_func, NULL);
    hotkey_add(CONTROL('M'), DEMO_CONTEXT, toggle_music_func, NULL);
 //   hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,(void *)TRUE);   
+
+   hotkey_add(DOWN('f'),DEMO_CONTEXT,toggle_mouse_look,(void *)TRUE);
+
    hotkey_add(DOWN('p'),DEMO_CONTEXT,pause_game_func,(void *)TRUE);
    hotkey_add(DOWN('y'),DEMO_CONTEXT,toggle_physics_func,(void *)TRUE);
    hotkey_add(DOWN('u'),DEMO_CONTEXT,toggle_giveall_func,(void *)TRUE);
@@ -1553,10 +1559,10 @@ void init_input(void)
 */
    init_invent_hotkeys();
 
-   for (i = 0; i < NUM_EYE_LVL_KEYS; i++)
+   /*for (i = 0; i < NUM_EYE_LVL_KEYS; i++)
    {
       hotkey_add(DOWN(eye_lvl_keys[i]),DEMO_CONTEXT,(hotkey_callback)eye_hotkey_func,(void*)0);
-   }
+   }*/
 
 /* KLC - stuff for VR headsets
    if (config_get_raw(CFG_INP6D_GO,NULL,0))
@@ -2104,6 +2110,8 @@ void use_object_in_3d(ObjID obj)
 
          if(objs[obj].obclass==CLASS_GRENADE)
             grenade_contact(obj,INT_MAX);
+
+         mouse_look_off();
 
          success = TRUE;
       }

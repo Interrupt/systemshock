@@ -169,6 +169,7 @@ set(GAME_SRC
 	src/GameSrc/weapons.c
 	src/GameSrc/wrapper.c
 	src/GameSrc/gamerend.c
+	src/GameSrc/mouselook.c
 )
 
 include_directories(

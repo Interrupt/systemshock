@@ -66,6 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tilename.h"
 #include "tools.h"
 #include "trigger.h"
+#include "mouselook.h"
 
 #define MFD_FIXTURE_FLAG 0x8  // class flag for mfd fixtures
 
@@ -117,6 +118,8 @@ void zoom_mfd(int mfd)
 
    extern void mfd_zoom_rect(LGRect*,int);
    extern Boolean DoubleSize;
+
+   mouse_look_off();
 
    ucp = use_cursor_pos;
    if (!DoubleSize)

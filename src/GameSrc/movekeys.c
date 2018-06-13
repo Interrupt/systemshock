@@ -92,12 +92,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         						case _UP_|ALT: \
                            						case _UP2_|SHF: \
                            						case _UP2_|ALT: 
-#define JOG_THRUST_CASES	case  _S_:   
-#define RUN_THRUST_CASES	case  _S_|SHF:                           
+#define JOG_THRUST_CASES	case  _W_:   
+#define RUN_THRUST_CASES	case  _W_|SHF:                           
 #define JOG_CASES          		case _UP_: \
 											case _UP2_:
-#define BACK_CASES				case _X_: \
-											case _X_|SHF: \
+#define BACK_CASES				case _S_: \
+											case _S_|SHF: \
 											case _DOWN_: \
 											case _DOWN2_: \
  											case _DOWN_|ALT: \
@@ -105,27 +105,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  											case _DOWN_|SHF: \
  											case _DOWN2_|SHF:
 #define ROTL_CASES				case _LEFT_: \
-											case _A_:  \
+											case _Z_:  \
 											case _LEFT2_: 
-#define ROTL_FAST_CASES		case _A_|SHF: \
+#define ROTL_FAST_CASES		case _Z_|SHF: \
 											case _LEFT_|SHF: \
 											case _LEFT2_|SHF: 
 #define ROTR_CASES				case _RIGHT_: \
-											case _D_: \
+											case _C_: \
 											case _RIGHT2_:
 #define ROTR_FAST_CASES		case _RIGHT_|SHF: \
-											case _D_|SHF: \
+											case _C_|SHF: \
 											case _RIGHT2_|SHF:
-#define SLIDL_CASES				case _Z_: \
+#define SLIDL_CASES				case _A_: \
 											case _LEFT_|ALT: \
 											case _END2_: \
-											case _Z_|SHF: \
+											case _A_|SHF: \
 											case _LEFT2_|ALT:
-#define SLIDR_CASES				case _C_: \
+#define SLIDR_CASES				case _D_: \
 											case _RIGHT_|ALT: \
 											case _RIGHT2_|ALT: \
 											case _PGDN2_: \
-											case _C_|SHF: 
+											case _D_|SHF: 
 #define LEANL_CASES				case _Q_: \
 											case _LEFT_|CTRL: \
 											case _LEFT2_|CTRL: \
@@ -134,10 +134,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 											case _RIGHT_|CTRL: \
 											case _RIGHT2_|CTRL: \
 											case _E_|SHF:  
-#define LEANUP_CASES			case _W_: \
-											case _W_|CTRL: \
-											case _W_|ALT: \
-											case _W_|SHF:
+#define LEANUP_CASES			case _X_: \
+											case _X_|CTRL: \
+											case _X_|ALT: \
+											case _X_|SHF:
 #define JUMP_CASES				case _J_: \
 											case _J_|SHF: \
 									case _SPACE_|SHF: \

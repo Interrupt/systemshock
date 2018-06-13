@@ -70,7 +70,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "trigger.h"
 #include "wares.h"
 #include "weapons.h"
-
+#include "mouselook.h"
 
 /*
 #include <fastmat.h>
@@ -652,6 +652,10 @@ errtype physics_run(void)
          plr_side = - plr_side;
          plr_lean = - plr_lean;
       }
+
+      // Run the mouse look
+      mouse_look_physics();
+
 #ifdef DIRAC_EDMS
       if (global_fullmap->cyber)
       {
