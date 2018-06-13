@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "clpfcn.h"
 #include "clpltab.h"
 #include "grrend.h"
-#include "maxmin.h"
+#include "lg.h"
 
 /* The amount of copying into and out of vertex's is quite
    disgusting. 
@@ -60,7 +60,7 @@ int gri_sline_clip (grs_vertex *v0, grs_vertex *v1)
 
    xb0 = x0; xb1 = x1; yb0 = y0; yb1 = y1;
 
-   pixels = max(fix_abs(y1-y0),fix_abs(x1-x0));
+   pixels = lg_max(fix_abs(y1-y0),fix_abs(x1-x0));
 
    if (pixels != 0) di = fix_div(i1-i0,pixels);
 
@@ -73,8 +73,8 @@ int gri_sline_clip (grs_vertex *v0, grs_vertex *v1)
       if ((i0 != i1) &&
           ((x0 != xb0) || (y0 != yb0) || (x1 != xb1) || (y1 != yb1))) {
          
-         pixels_0 = max(fix_abs(yb0-y0),fix_abs(xb0-x0)); // # pixels lost
-         pixels_1 = max(fix_abs(yb1-y1),fix_abs(xb1-x1)); // for endpoints
+         pixels_0 = lg_max(fix_abs(yb0-y0),fix_abs(xb0-x0)); // # pixels lost
+         pixels_1 = lg_max(fix_abs(yb1-y1),fix_abs(xb1-x1)); // for endpoints
 
          i0 += fix_mul(di, pixels_0);
          i1 -= fix_mul(di, pixels_1);

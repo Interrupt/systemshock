@@ -276,9 +276,9 @@ void use_ware(int waretype, int num)
    {
       short newe = player_struct.energy_spend;
       if (WareActive(player_status[num]))
-         newe = min(newe+ecost,MAX_ENERGY);
+         newe = lg_min(newe+ecost,MAX_ENERGY);
       else
-         newe = max(newe-ecost,0);
+         newe = lg_max(newe-ecost,0);
       set_player_energy_spend((ubyte)newe);
    }
    if (_current_loop <= FULLSCREEN_LOOP) 

@@ -97,25 +97,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "dbg.h"
 #include <math.h>       // for sqrtl only
 
-fix fix_mul_3_3_3_asm(fix a, fix b)
+fix fix_mul_3_3_3(fix a, fix b)
 {
     return (fix)(((int64_t)(a) * (int64_t)(b)) >> 29);
 }
 
-fix fix_mul_3_32_16_asm(fix a, fix b)
+fix fix_mul_3_32_16(fix a, fix b)
 {
     return (fix)(((int64_t)(a) * (int64_t)(b)) >> 13);
 }
 
-fix fix_mul_3_16_20_asm(fix a, fix b)
+fix fix_mul_3_16_20(fix a, fix b)
 {
     return (fix)(((int64_t)(a) * (int64_t)(b)) >> 33);
 }
 
-fix fix_mul_16_32_20_asm(fix a, fix b)
+fix fix_mul_16_32_20(fix a, fix b)
 {
     return (fix)(((int64_t)(a) * (int64_t)(b)) >> 4);
 }
+
+fix fix_div_16_16_3 (fix a, fix b)
+{
+	return (fix)(((int64_t)a << 29) / (int64_t)b);
+}
+
+
 
 // Custom Wide assignment macros
 #define ASSIGN_WIDE_TO_64(x, w) x = (uint64_t)(w)->lo + (((int64_t)(w)->hi) << 32)

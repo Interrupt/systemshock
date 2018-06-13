@@ -492,10 +492,10 @@ void draw_ammo_button(int triple, short x, short y)
    short h;
    int id;
    int carts = player_struct.cartridges[CPTRIP(triple)];
-   ubyte cnum = min(MAX_CART_COLORS-1,(carts-1)/CARTRIDGE_BRACKET);
+   ubyte cnum = lg_min(MAX_CART_COLORS-1,(carts-1)/CARTRIDGE_BRACKET);
 
    // Draw the outline of an ammo box
-   draw_res_bm(REF_IMG_BullFrame+min(2,max(3-carts,0)),x,y);
+   draw_res_bm(REF_IMG_BullFrame+lg_min(2,lg_max(3-carts,0)),x,y);
    id = mfd_bmap_id(triple);
    h = res_bm_height(id);
    draw_res_bm(id,x+4,y+AMMO_BUTTON_H-4-h);
@@ -614,7 +614,7 @@ void mfd_weapon_draw_beam_status_bar(int amt, int setting, uchar does_overload)
           MfdBeamStatusRect.lr.y + 1);   
  
    setting_x = (ubyte) fix_int(setting*mfd_pixels_per_charge_unit);
-   setting_x = min(MfdBeamStatusRect.lr.x-MfdBeamStatusRect.ul.x,setting_x);
+   setting_x = lg_min(MfdBeamStatusRect.lr.x-MfdBeamStatusRect.ul.x,setting_x);
 
    // draw the settings bar only if we're not in overload mode
 
@@ -1526,7 +1526,7 @@ void mfd_lantern_setting(int setting)
       lamp_set_vals();
    }
    if (player_struct.hardwarez_status[n] & WARE_ON)
-      set_player_energy_spend(min(MAX_ENERGY,(int)player_struct.energy_spend + energy_cost(n)));
+      set_player_energy_spend(lg_min(MAX_ENERGY,(int)player_struct.energy_spend + energy_cost(n)));
    mfd_notify_func(MFD_LANTERN_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
 }
 
@@ -1667,7 +1667,7 @@ void mfd_shield_setting(int setting)
    if(s & WARE_ON)
    {
       shield_set_absorb();
-      set_player_energy_spend(min(MAX_ENERGY,(int)player_struct.energy_spend + energy_cost(n)));
+      set_player_energy_spend(lg_min(MAX_ENERGY,(int)player_struct.energy_spend + energy_cost(n)));
    }
    mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
 }
@@ -1788,7 +1788,7 @@ uchar mfd_motion_button_handler(MFD* mfd, LGPoint bttn, uiEvent* ev, void* data)
    else
    {
       motionware_mode = bttn.x + 1;
-      set_player_energy_spend(min(MAX_ENERGY,(int)player_struct.energy_spend + energy_cost(n)));
+      set_player_energy_spend(lg_min(MAX_ENERGY,(int)player_struct.energy_spend + energy_cost(n)));
    }
    mfd_notify_func(MFD_MOTION_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
    return TRUE;
@@ -1835,7 +1835,7 @@ void mfd_motionware_expose(MFD* mfd, ubyte control)
    {
       int xjump = MOTION_BARRAY_WD/MOTION_BUTTONS;
       int i;
-      for (i = 0; i < min(v,MOTION_BUTTONS); i++)
+      for (i = 0; i < lg_min(v,MOTION_BUTTONS); i++)
       {
          int id = ((i == MOTION_SETTING(s) && (s & WARE_ON))) ? REF_IMG_LitMotion0 : REF_IMG_UnlitMotion0;
          grs_bitmap *bm = lock_bitmap_from_ref(id+i);
@@ -2312,7 +2312,7 @@ errtype draw_shodan_influence(MFD *mfd, uchar amt)
    grs_bitmap	bm;
    bm.bits = NULL;
 
-   amt = min(NUM_SHODAN_MUGS -1,amt >> SHODAN_INTERVAL_SHIFT);
+   amt = lg_min(NUM_SHODAN_MUGS -1,amt >> SHODAN_INTERVAL_SHIFT);
    draw_raw_res_bm_extract(REF_IMG_EmailMugShotBase+FIRST_SHODAN_MUG +amt,0,0);
    //extract_temp_res_bitmap(&bm, REF_IMG_EmailMugShotBase+FIRST_SHODAN_MUG +amt);
    gr_bitmap(&bm, 0, 0);

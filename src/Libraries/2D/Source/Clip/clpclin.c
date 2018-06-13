@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rgb.h"
 #include "scrdat.h"
 #include "clpltab.h"
-#include "maxmin.h"
+#include "lg.h"
 
 #define fix_make_nof(x)           fix_make(x,0x0000)
 
@@ -65,7 +65,7 @@ int gri_cline_clip (grs_vertex *v0, grs_vertex *v1)
 
    xb0 = x0; xb1 = x1; yb0 = y0; yb1 = y1;
 
-   pixels = max(fix_abs(y1-y0),fix_abs(x1-x0));
+   pixels = lg_max(fix_abs(y1-y0),fix_abs(x1-x0));
 
    if (pixels != 0) {
       dr = fix_div(fix_make_nof(r1-r0),pixels);
@@ -79,8 +79,8 @@ int gri_cline_clip (grs_vertex *v0, grs_vertex *v1)
       if (((r0 != r1) || (g0 != g1) || (b0 != b1)) &&
           ((x0 != xb0) || (y0 != yb0) || (x1 != xb1) || (y1 != yb1))) {
 
-         pixels_0 = max(fix_abs(yb0-y0),fix_abs(xb0-x0)); /* # pixels lost */
-         pixels_1 = max(fix_abs(yb1-y1),fix_abs(xb1-x1)); /* for endpoints */
+         pixels_0 = lg_max(fix_abs(yb0-y0),fix_abs(xb0-x0)); /* # pixels lost */
+         pixels_1 = lg_max(fix_abs(yb1-y1),fix_abs(xb1-x1)); /* for endpoints */
 
          r0 += fix_int(fix_mul(dr, pixels_0));
          g0 += fix_int(fix_mul(dg, pixels_0));

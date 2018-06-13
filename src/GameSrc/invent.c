@@ -1102,7 +1102,7 @@ void push_live_grenade_cursor(ObjID obj)
    ss_set_hack_mode(2, &temp);
    if (convert_use_mode != 0)
    {
-      grenade_bmap.w = max(bmap->w,w);
+      grenade_bmap.w = lg_max(bmap->w,w);
       grenade_bmap.h = bmap->h+h;
       grenade_bmap.w = SCONV_X(grenade_bmap.w);
       grenade_bmap.h = SCONV_Y(grenade_bmap.h);
@@ -1110,7 +1110,7 @@ void push_live_grenade_cursor(ObjID obj)
    else
    {
 #endif
-      grenade_bmap.w = max(bmap->w,w);
+      grenade_bmap.w = lg_max(bmap->w,w);
       grenade_bmap.h = bmap->h+h;
 #ifdef SVGA_SUPPORT
    }
@@ -1342,7 +1342,7 @@ void hardware_add_specials(int n, int ver)
       if(ener) {
          shield_set_absorb();
          ener=energy_cost(CPTRIP(SHIELD_HARD_TRIPLE))-ener;
-         set_player_energy_spend(min(MAX_ENERGY,player_struct.energy_spend+ener));
+         set_player_energy_spend(lg_min(MAX_ENERGY,player_struct.energy_spend+ener));
       }
       mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
    }
@@ -1677,7 +1677,7 @@ ubyte inv_empty_trash(void)
          else
          {
             player_struct.inventory[trash] = OBJ_NULL;
-            last_trash = min(last_trash,trash);
+            last_trash = lg_min(last_trash,trash);
          }
       }
    }

@@ -300,9 +300,9 @@ void apply_email_macros(char *text, char *newval)
                for (i=0; i < 4; i++)
                   stupid += (player_struct.difficulty[i] * player_struct.difficulty[i]);
                // death is 10 anti-kills, but you always keep at least a third of your kills.
-               score = player_struct.num_victories - min(player_struct.num_deaths * 10, player_struct.num_victories * 2 / 3);
+               score = player_struct.num_victories - lg_min(player_struct.num_deaths * 10, player_struct.num_victories * 2 / 3);
                score = score * 10000;
-               score = score - min(score * 2 / 3, ((player_struct.game_time / (CIT_CYCLE * 36)) * 100));
+               score = score - lg_min(score * 2 / 3, ((player_struct.game_time / (CIT_CYCLE * 36)) * 100));
                score = score * (stupid + 1) / 37;  // 9 * 4 + 1 is best difficulty factor
                if (stupid == 36)
                   score += 2222222; // secret kevin bonus

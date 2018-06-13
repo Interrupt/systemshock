@@ -142,34 +142,6 @@ typedef struct {
 
 #define sgn(a) (((a)>0) ? 1 : ((a)<0) ? -1 : 0)
 
-#define ulong_min(x, y)	((((ulong) x) < ((ulong) y)) ? (x) : (y))
-#define ulong_max(x, y)	((((ulong) x) < ((ulong) y)) ? (y) : (x))
-
-/*ulong ulong_min (ulong a, ulong b);
-#pragma aux ulong_min =   \
-   "sub     edx,eax"    \
-   "sbb     ebx,ebx"    \
-   "and     ebx,edx"    \
-   "add     eax,ebx"    \
-   parm [eax] [edx]     \
-   modify [eax ebx edx];
-
-ulong ulong_max (ulong a, ulong b);
-#pragma aux ulong_max =   \
-   "sub     edx,eax"    \
-   "sbb     ebx,ebx"    \
-   "not     ebx"        \
-   "and     ebx,edx"    \
-   "add     eax,ebx"    \
-   parm [eax] [edx]     \
-   modify [eax ebx edx];
-*/
-
-#undef fix_ceil
-#define fix_ceil(a) ((fix)(((a)+0xffff)&0xffff0000))
-#undef fix_cint
-#define fix_cint(a) ((short)(((a)+0xffff)>>16))
-
 #define fix_light(i) ((i>>8)&0xff00)
 
 #endif /* !__TMAPINT_H */
