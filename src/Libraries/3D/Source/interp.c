@@ -239,8 +239,7 @@ void g3_interpret_object(ubyte *object_ptr, ...) {
   size = *(short *)(object_ptr - 4);
   size -= 10; // skip the first 10 bytes
 
-  BlockMove(object_ptr - 2, obj_space, size);
-  // memmove(obj_space, object_ptr-2, size);
+  memmove(obj_space, object_ptr - 2, size);
 
   // lighting stuff, params are on the stack
   // so don't sweat it
@@ -337,7 +336,7 @@ void g3_interpret_object(ubyte *object_ptr, ...) {
           mov	struct_ptr,eax*/
 
   // mark res points as free
-  LG_memset(resbuf, 0, N_RES_POINTS * 4);
+  memset(resbuf, 0, N_RES_POINTS * 4);
 
   // scale view vector for scale
   FlipShort((short *)(object_ptr - 2));
@@ -348,20 +347,31 @@ void g3_interpret_object(ubyte *object_ptr, ...) {
       _view_position.gY >>= scale;
       _view_position.gZ >>= scale;
     } else {
-      int temp;
+      uint32_t temp;
 
       scale = -scale;
 
-      temp = (((ulong)_view_position.gX) >> 16); // get high 16 bits
-      // FIXME: DG: I guess they meant &, not &&
-      if (((temp << scale) && 0xffff0000) != 0)
-        goto Exit;                               // overflow
-      temp = (((ulong)_view_position.gY) >> 16); // get high 16 bits
-      if (((temp << scale) && 0xffff0000) != 0)
-        goto Exit;                               // overflow
-      temp = (((ulong)_view_position.gZ) >> 16); // get high 16 bits
-      if (((temp << scale) && 0xffff0000) != 0)
-        goto Exit; // overflow
+      // get high 16 bits
+      temp = (((uint32_t)_view_position.gX) >> 16);
+      // overflow
+      if (((temp << scale) & 0xffff0000) != 0) {
+        memmove(object_ptr-2, obj_space, size);
+        return;
+      }
+      // get high 16 bits
+      temp = (((uint32_t)_view_position.gY) >> 16);
+      // overflow
+      if (((temp << scale) & 0xffff0000) != 0) {
+        memmove(object_ptr-2, obj_space, size);
+        return;
+      }
+      // get high 16 bits
+      temp = (((uint32_t)_view_position.gZ) >> 16);
+      // overflow
+      if (((temp << scale) & 0xffff0000) != 0)  {
+        memmove(object_ptr-2, obj_space, size);
+        return;
+      }
 
       _view_position.gX <<= scale;
       _view_position.gY <<= scale;
@@ -381,10 +391,6 @@ void g3_interpret_object(ubyte *object_ptr, ...) {
     gr_set_fill_type(FILL_NORM);
     opcode_table[OP_JNORM] = &do_jnorm;
   }
-
-Exit:
-  BlockMove(obj_space, object_ptr - 2, size);
-  // memmove(object_ptr-2, obj_space, size);
 }
 
 // interpret the object
