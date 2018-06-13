@@ -57,6 +57,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "status.h"
 #include "tools.h"
 
+#include "otrip.h"
+
 #include <stdio.h>
 #include <unistd.h>
 
@@ -414,6 +416,12 @@ errtype load_game(char *fname)
 		load_score_for_location(PLAYER_BIN_X, PLAYER_BIN_Y);		//KLC - added here
 	}
 
+   // CC: Should we go back into fullscreen mode?
+   if(player_struct.hardwarez_status[CPTRIP(FULLSCR_HARD_TRIPLE)]) {
+      _new_mode = FULLSCREEN_LOOP;
+      chg_set_flg(GL_CHG_LOOP);
+   }
+
 //Â¥Â¥ temp
 //BlockMove(0, saveArray, 16);
 
@@ -440,6 +448,7 @@ errtype load_level_from_file(int level_num)
 		if (player_struct.initial_shodan_vals[player_struct.level] == -1)
 			player_struct.initial_shodan_vals[player_struct.level] = QUESTVAR_GET(SHODAN_QV);
 	}
+
 	return(retval);
 }
 
