@@ -161,6 +161,9 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
          for (x=xl,u=ul; x<xr; x++) {
             *(p_dest++) = p_src[fix_fint(u)];		// gr_fill_upixel(k,x,tli->y);
             u+=du;
+
+            extern void DebugDrawFrame();
+         		DebugDrawFrame();
          }
          break;
       case GRL_TRANS:
@@ -168,12 +171,18 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
             if (k=p_src[fix_fint(u)]) *p_dest = k;		// gr_fill_upixel(k,x,tli->y);
             u+=du;
             p_dest++;
+
+            extern void DebugDrawFrame();
+         		DebugDrawFrame();
          }
          break;
       case GRL_OPAQUE|GRL_CLUT:
          for (x=xl,u=ul; x<xr; x++) {
             *(p_dest++) = tli->clut[p_src[fix_fint(u)]];	// gr_fill_upixel(tli->clut[k],x,tli->y);
             u+=du;
+
+            extern void DebugDrawFrame();
+         		DebugDrawFrame();
          }
          break;
       case GRL_TRANS|GRL_CLUT:
@@ -181,6 +190,9 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
             if (k=p_src[fix_fint(u)]) *p_dest = tli->clut[k];	// gr_fill_upixel(tli->clut[k],x,tli->y);
             u+=du;
             p_dest++;
+
+            extern void DebugDrawFrame();
+         		DebugDrawFrame();
          }
          break;
       case GRL_TRANS|GRL_SOLID:
@@ -188,11 +200,15 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
             if (k=p_src[fix_fint(u)]) *p_dest = (uchar )(tli->clut);	// gr_fill_upixel((uchar )(tli->clut),x,tli->y);
             u+=du;
             p_dest++;
+
+            extern void DebugDrawFrame();
+         		DebugDrawFrame();
          }
          break;
       }
       tli->left.v+=tli->left.dv;
       tli->y++;
+
    } while (--(tli->n) > 0);
    
    return FALSE; /* tmap OK */

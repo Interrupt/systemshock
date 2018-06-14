@@ -97,6 +97,9 @@ int HandleFloorLoop_C(grs_tmap_loop_info *tli,
 	         	 *(p_dest++) = g_ltab[t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]+fix_light(i)];		
 	         	 u+=du; v+=dv; i+=di;
 	         	 x--;
+
+	         	 extern void DebugDrawFrame();
+         		DebugDrawFrame();
 					 }
 
 			    while(x>0) {
@@ -212,6 +215,9 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
             for (; x>0; x--) {
                k=t_vtab[fix_fint(v)]+fix_fint(u);
                *(p_dest++) = g_ltab[t_bits[k]+fix_light(i)];		// gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],x,t_y);
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
          case GRL_TRANS:
@@ -219,6 +225,9 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
                k=t_vtab[fix_fint(v)]+fix_fint(u);
                if (k=t_bits[k]) *p_dest = g_ltab[k+fix_light(i)];		// gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
                p_dest++; u+=du; v+=dv; i+=di;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
    // special case handles this
@@ -234,6 +243,9 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
                k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
                if (k=t_bits[k]) *p_dest = g_ltab[k+fix_light(i)];		// gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
                p_dest++; u+=du; v+=dv; i+=di;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
          }

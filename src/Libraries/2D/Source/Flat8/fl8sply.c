@@ -69,6 +69,9 @@ int gri_spoly_loop (grs_tmap_loop_info *ti)
 	        {
 	           ti_d[x]=fix_fint(i);
 	           i+=di;
+
+	           extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 	     case GRL_CLUT:
@@ -76,6 +79,9 @@ int gri_spoly_loop (grs_tmap_loop_info *ti)
 	        {
 	           ti_d[x]=ti->clut[fix_fint(i)];
 	           i+=di;
+
+	           extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 	     case GRL_TLUC8:
@@ -83,6 +89,9 @@ int gri_spoly_loop (grs_tmap_loop_info *ti)
 	        {
 	           ti_d[x]=tluc8stab[fix_light(i)+ti_d[x]];
 	           i+=di;
+
+	           extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 	     case GRL_CLUT|GRL_TLUC8:
@@ -90,6 +99,9 @@ int gri_spoly_loop (grs_tmap_loop_info *ti)
 	        {
 	           ti_d[x]=ti->clut[tluc8stab[fix_light(i)+ti_d[x]]];
 	           i+=di;
+
+	           extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 	     }

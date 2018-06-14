@@ -93,6 +93,9 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
                if (tluc8tab[k]!=NULL) *p=tluc8tab[k][*p];
                else *p=k;
                u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+               DebugDrawFrame();
             }
             break;
          case GRL_TRANS:
@@ -103,6 +106,9 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
                   else *p=k;
                }
                u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+               DebugDrawFrame();
             }
             break;
          case GRL_OPAQUE|GRL_LOG2:
@@ -112,6 +118,9 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
                if (tluc8tab[k]!=NULL) *p=tluc8tab[k][*p];
                else *p=k;
                u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+               DebugDrawFrame();
             }
             break;
          case GRL_TRANS|GRL_LOG2:
@@ -122,6 +131,9 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
                   else *p=k;
                }
                u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+               DebugDrawFrame();
             }
             break;
          case GRL_OPAQUE|GRL_CLUT:
@@ -131,6 +143,9 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
                if (tluc8tab[k]!=NULL) *p=t_clut[tluc8tab[k][*p]];
                else *p=t_clut[k];
                u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+               DebugDrawFrame();
             }
             break;
          case GRL_TRANS|GRL_CLUT:
@@ -141,6 +156,9 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
                   else *p=t_clut[k];
                }
                u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+               DebugDrawFrame();
             }
             break;
          case GRL_OPAQUE|GRL_LOG2|GRL_CLUT:
@@ -150,6 +168,9 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
                if (tluc8tab[k]!=NULL) *p=t_clut[tluc8tab[k][*p]];
                else *p=t_clut[k];
                u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+               DebugDrawFrame();
             }
             break;
          case GRL_TRANS|GRL_LOG2|GRL_CLUT:
@@ -161,6 +182,9 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
                   else *p=t_clut[k];
                }
                u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+               DebugDrawFrame();
             }
             break;
          }

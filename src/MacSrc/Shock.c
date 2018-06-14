@@ -1310,7 +1310,7 @@ int debug_frames = 0;
 void DebugDrawFrame()
 {
 	if(do_debug_draw) {
-		if(debug_frames >= 4) {
+		if(debug_frames >= 32) {
 			debug_frames = 0;
 			SDLDraw();
 		}

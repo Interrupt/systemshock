@@ -134,6 +134,9 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
                k=t_vtab[fix_fint(v)]+fix_fint(u);
                *p_dest = t_bits[k];	// gr_fill_upixel(t_bits[k],t_x,y);
                p_dest += gr_row; u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
          case GRL_TRANS:
@@ -141,12 +144,18 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
                if (temp_pix = t_bits[t_vtab[fix_fint(v)]+fix_fint(u)]) 
                  *p_dest = temp_pix;			// gr_fill_upixel(t_bits[k],t_x,y);
                p_dest += gr_row; u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
          case GRL_OPAQUE|GRL_LOG2:
             for (; y>0; y--) {
                *p_dest = t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask];	// gr_fill_upixel(t_bits[k],t_x,y);
                p_dest += gr_row; u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
          case GRL_TRANS|GRL_LOG2:
@@ -154,12 +163,18 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
                if (temp_pix = t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]) 
                  *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],t_x,y);
                p_dest += gr_row; u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
          case GRL_OPAQUE|GRL_CLUT:
             for (; y>0; y--) {
                *p_dest = t_clut[t_bits[t_vtab[fix_fint(v)]+fix_fint(u)]];	// gr_fill_upixel(t_clut[t_bits[k]],t_x,y);
                p_dest += gr_row; u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
          case GRL_TRANS|GRL_CLUT:
@@ -168,12 +183,18 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
                if (k=t_bits[k]) 
                  *p_dest = t_clut[k];	// gr_fill_upixel(t_clut[k],t_x,y);
                p_dest += gr_row; u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
          case GRL_OPAQUE|GRL_LOG2|GRL_CLUT:
             for (; y>0; y--) {
                *p_dest = t_clut[t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]];	// gr_fill_upixel(t_clut[t_bits[k]],t_x,y);
                p_dest += gr_row; u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
          case GRL_TRANS|GRL_LOG2|GRL_CLUT:
@@ -182,6 +203,9 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
                if (k=t_bits[k]) 
                  *p_dest = t_clut[k];	// gr_fill_upixel(t_clut[k],t_x,y);
                p_dest += gr_row; u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
             break;
          }
@@ -634,6 +658,9 @@ int HandleWallLoop1D_C(grs_tmap_loop_info *tli,
            k=((fix_fint(v)<<t_wlog))&t_mask;
            *p_dest = t_clut[t_bits[k]];	// gr_fill_upixel(t_clut[t_bits[k]],t_x,y);
            v+=dv; p_dest += gr_row; 
+
+           extern void DebugDrawFrame();
+         		DebugDrawFrame();
           }
       } else if (k<0) return TRUE; // punt this tmap 
 			

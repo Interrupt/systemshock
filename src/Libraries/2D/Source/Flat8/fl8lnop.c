@@ -107,6 +107,9 @@ int Handle_LinClut_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
        {
          *(p_dest++) = t_clut[t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]];		
          u+=du; v+=dv;
+
+         extern void DebugDrawFrame();
+         DebugDrawFrame();
        }
 	  } else if (x<0) return TRUE; // punt this tmap 
 	  
@@ -191,6 +194,9 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	           k=t_vtab[fix_fint(v)]+fix_fint(u);
 	           *(p_dest++) = t_bits[k];		// gr_fill_upixel(t_bits[k],x,y);
 	           u+=du; v+=dv;
+
+	           extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 	     case GRL_TRANS:
@@ -198,6 +204,9 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	           k=t_vtab[fix_fint(v)]+fix_fint(u);
 	           if (temp_pix=t_bits[k]) *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],x,y);
              p_dest++; u+=du; v+=dv;
+
+             extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 	     case GRL_OPAQUE|GRL_LOG2:
@@ -205,6 +214,9 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	           k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
 	           *(p_dest++) = t_bits[k];		// gr_fill_upixel(t_bits[k],x,y);
 	           u+=du; v+=dv;
+
+	           extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 	     case GRL_TRANS|GRL_LOG2:
@@ -212,6 +224,9 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	           k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
 	           if (temp_pix=t_bits[k]) *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],x,y);
              p_dest++; u+=du; v+=dv;
+
+             extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 	     case GRL_OPAQUE|GRL_CLUT:
@@ -219,6 +234,9 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	           k=t_vtab[fix_fint(v)]+fix_fint(u);
 	           *(p_dest++) = t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,y);
 	           u+=du; v+=dv;
+
+	           extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 	     case GRL_TRANS|GRL_CLUT:
@@ -226,6 +244,9 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	           k=t_vtab[fix_fint(v)]+fix_fint(u);
 	           if (k=t_bits[k]) *p_dest = t_clut[k];		// gr_fill_upixel(tli->clut[k],x,y);
              p_dest++; u+=du; v+=dv;
+
+             extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 // handled in special case now
@@ -241,6 +262,9 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	           k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
 	           if (k=t_bits[k]) *p_dest = t_clut[k];		// gr_fill_upixel(tli->clut[k],x,y);
              p_dest++; u+=du; v+=dv;
+
+             	extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	        }
 	        break;
 	     }

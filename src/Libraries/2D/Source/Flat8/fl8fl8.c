@@ -78,6 +78,9 @@ void flat8_flat8_ubitmap (grs_bitmap *bm, short x, short y)
 		    if (m_src[i]!=0) m_dst[i]=m_src[i];
 		 m_src += brow;
 		 m_dst += grow;
+
+		 extern void DebugDrawFrame();
+         DebugDrawFrame();
 		}
 	else
 		while (h--) {
@@ -85,6 +88,9 @@ void flat8_flat8_ubitmap (grs_bitmap *bm, short x, short y)
 		 
 		 m_src += brow;
 		 m_dst += grow;
+
+		 extern void DebugDrawFrame();
+         DebugDrawFrame();
 		}
 }
 

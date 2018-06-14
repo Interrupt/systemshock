@@ -60,6 +60,9 @@ int gri_tluc8_scale_umap_loop(grs_tmap_loop_info *tli) {
             if (tluc8tab[k]!=NULL) *p_dst=tluc8tab[k][*p_dst];
             else *p_dst=k;
             u+=du;
+
+            extern void DebugDrawFrame();
+               DebugDrawFrame();
          }
          break;
       case GRL_TRANS:
@@ -69,6 +72,9 @@ int gri_tluc8_scale_umap_loop(grs_tmap_loop_info *tli) {
                else *p_dst=k;
             }
             u+=du;
+
+            extern void DebugDrawFrame();
+               DebugDrawFrame();
          }
          break;
       case GRL_OPAQUE|GRL_CLUT:
@@ -77,6 +83,9 @@ int gri_tluc8_scale_umap_loop(grs_tmap_loop_info *tli) {
             if (tluc8tab[k]!=NULL) *p_dst=tli->clut[tluc8tab[k][*p_dst]];
             else *p_dst=tli->clut[k];
             u+=du;
+
+            extern void DebugDrawFrame();
+               DebugDrawFrame();
          }
          break;
       case GRL_TRANS|GRL_CLUT:
@@ -86,6 +95,9 @@ int gri_tluc8_scale_umap_loop(grs_tmap_loop_info *tli) {
                else *p_dst=tli->clut[k];
             }
             u+=du;
+
+            extern void DebugDrawFrame();
+               DebugDrawFrame();
          }
          break;
       }

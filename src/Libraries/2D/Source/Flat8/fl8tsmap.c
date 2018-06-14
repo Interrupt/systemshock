@@ -125,6 +125,9 @@ int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli) {
 	         {
 	           if (t_bits[t_vtab[fix_fint(v)]+fix_fint(u)]) *p_dest = solid_color;		// gr_fill_upixel(t_bits[k],x,y);
              p_dest++; u+=du; v+=dv;
+
+             extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	         }
 	       }
 	      else
@@ -133,6 +136,9 @@ int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli) {
 	         {
 	           if (t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]) *p_dest = solid_color;		// gr_fill_upixel(t_bits[k],x,y);
              p_dest++; u+=du; v+=dv;
+
+             extern void DebugDrawFrame();
+         		DebugDrawFrame();
 	         }
 	       }
 	     }
@@ -766,6 +772,9 @@ int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli) {
                if (t_bits[k]) 
                  *p_dest = solid_color;			// gr_fill_upixel(t_bits[k],t_x,y);
                p_dest += gr_row; u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
 				  }
 				 else
@@ -775,6 +784,9 @@ int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli) {
                if (t_bits[k]) 
                  *p_dest = solid_color;		// gr_fill_upixel(t_bits[k],t_x,y);
                p_dest += gr_row; u+=du; v+=dv;
+
+               extern void DebugDrawFrame();
+         		DebugDrawFrame();
             }
           }
       } else if (d<0) return TRUE; /* punt this tmap */
@@ -1052,6 +1064,9 @@ void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
             int k=(l_u>>16)&l_u_mask;
             k+=(l_v>>l_v_shift)&l_v_mask;
             if (bm_bits[k]) *p=solid_color;		// gr_fill_upixel(bm_bits[k],l_x,y_cint);
+
+            extern void DebugDrawFrame();
+         		DebugDrawFrame();
          }
          temp_y = y_cint; 
          y_cint = fix_int(l_y_fix+=l_scan_slope);
@@ -1085,6 +1100,9 @@ void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 			p++;
       l_u+=l_du;
       l_v+=l_dv;
+
+      extern void DebugDrawFrame();
+         		DebugDrawFrame();
    }
 #else
 	if (l_x<l_xr0)
@@ -1108,6 +1126,9 @@ void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
             int k=(l_u>>16)&l_u_mask;
             k+=(l_v>>l_v_shift)&l_v_mask;
             if (bm_bits[k]) *p=solid_color;		// gr_fill_upixel(bm_bits[k],l_x,y_cint);
+
+            extern void DebugDrawFrame();
+         		DebugDrawFrame();
          }
       	temp_y = y_cint; 
       	y_cint = fix_int(l_y_fix+=l_scan_slope);
@@ -1289,6 +1310,9 @@ void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
             int k=(l_u>>16)&l_u_mask;
             k+=(l_v>>l_v_shift)&l_v_mask;
             if (bm_bits[k]) *p=solid_color;		// gr_fill_upixel(bm_bits[k],x_cint,l_y);
+
+            extern void DebugDrawFrame();
+         		DebugDrawFrame();
          }
          temp_x = x_cint;
          x_cint = fix_int(l_x_fix+=l_scan_slope);
@@ -1311,6 +1335,9 @@ void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       int k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
       if (bm_bits[k]) *p=solid_color;		// gr_fill_upixel(bm_bits[k],x_cint,l_y);
+
+      extern void DebugDrawFrame();
+         		DebugDrawFrame();
 
       temp_x = x_cint;
       x_cint=fix_int(l_x_fix+=l_scan_slope);

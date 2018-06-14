@@ -70,6 +70,9 @@ int gri_cpoly_loop (grs_tmap_loop_info *ti)
                int j=gr_index_rgb(r,g,b);
                ti->d[x]=grd_ipal[j];
                r+=dr, g+=dg, b+=db;
+
+               extern void DebugDrawFrame();
+               DebugDrawFrame();
             }
             break;
          case GRL_CLUT:
@@ -78,6 +81,9 @@ int gri_cpoly_loop (grs_tmap_loop_info *ti)
                int j=gr_index_rgb(r,g,b);
                ti->d[x]=ti->clut[grd_ipal[j]];
                r+=dr, g+=dg, b+=db;
+
+               extern void DebugDrawFrame();
+               DebugDrawFrame();
             }
             break;
          }

@@ -66,14 +66,26 @@ int gri_poly_loop (grs_tmap_loop_info *ti)
 	     switch (ti_hlog) {
 	     case GRL_OPAQUE:
 	        LG_memset(ti_d+fix_cint(ti_left_x), c, d);
+
+	        extern void DebugDrawFrame();
+         		DebugDrawFrame();
+         		
 	        break;
 	     case GRL_TLUC8:
-	        for (x=fix_cint(ti_left_x); x<fix_cint(ti_right_x); x++)
+	        for (x=fix_cint(ti_left_x); x<fix_cint(ti_right_x); x++) {
 	           ti_d[x]=bm_bits[ti_d[x]];
+
+	           extern void DebugDrawFrame();
+         		DebugDrawFrame();
+	        }
 	        break;
 	     case GRL_CLUT|GRL_TLUC8:
-	        for (x=fix_cint(ti_left_x); x<fix_cint(ti_right_x); x++)
+	        for (x=fix_cint(ti_left_x); x<fix_cint(ti_right_x); x++) {
 	           ti_d[x]=ti_clut[bm_bits[ti_d[x]]];
+
+	           extern void DebugDrawFrame();
+         		DebugDrawFrame();
+	        }
 	        break;
 	     }
 	  } else if (d<0) {
