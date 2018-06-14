@@ -299,13 +299,13 @@ void change_svga_screen_mode()
 	if (full_game_3d)
 	 {
 		svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels,
-																	FR_DOUBLEB_MASK|FR_WINDOWD_MASK,0,0, 
+																	FR_WINDOWD_MASK,0,0, 
 	 																0,0,cur_w,cur_h);
 	 }
 	else
 	{
 		svga_render_context = fr_place_view(FR_NEWVIEW, FR_DEFCAM, offscreenDrawSurface->pixels, 
-																FR_DOUBLEB_MASK|FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
+																FR_WINDOWD_MASK|FR_CURVIEW_STRT, 0, 0,
 																SCONV_X(SCREEN_VIEW_X), SCONV_Y(SCREEN_VIEW_Y), 
 																SCONV_X(SCREEN_VIEW_WIDTH), SCONV_Y(SCREEN_VIEW_HEIGHT));
 	}

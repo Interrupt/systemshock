@@ -46,6 +46,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tmapfcn.h"
 #include "lg.h"
 
+#include <SDL.h>
+
 typedef void (*tm_init_type)(grs_tmap_loop_info *, grs_vertex **);
 typedef void (*edge_type)(grs_tmap_loop_info *, grs_vertex **, grs_vertex **, int);
 
@@ -167,6 +169,10 @@ do {
       for (i=0;i<n;i++) vpl[i]->w=old_w[i];
       gr_free_temp(old_w);
    }
+
+   extern void SDLDraw();
+   SDLDraw();
+   SDL_Delay(1);
 }
 
 int h_map(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti)
