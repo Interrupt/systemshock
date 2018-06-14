@@ -1864,6 +1864,9 @@ int view3d_mouse_input(LGPoint pos, LGRegion* reg,uchar move,int* lastsect)
    extern int mlook_enabled;
    if(mlook_enabled) {
       cnum = VIEW_HCENTER | VIEW_VCENTER;
+
+      if(cyber)
+         cnum = VIEW_HCENTER + CYBER_VIEW_CENTER;
    }
 
    if (*lastsect != cnum)

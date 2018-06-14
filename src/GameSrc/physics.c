@@ -660,7 +660,7 @@ errtype physics_run(void)
       if (global_fullmap->cyber)
       {
          //printf("EDMS_control_Dirac_frame\n");
-         EDMS_control_Dirac_frame(PLAYER_PHYSICS, plr_z, plr_alpha + fix_make(mlook_vel_x*3, 0), plr_y - fix_make(mlook_vel_y*3, 0), plr_side);
+         EDMS_control_Dirac_frame(PLAYER_PHYSICS, plr_z, plr_alpha + fix_make(mlook_vel_x*4, 0), plr_y - fix_make(mlook_vel_y*4, 0), plr_side);
       }
       else
 #endif
