@@ -1102,6 +1102,7 @@ extern uchar location_spew_func(short keycode, ulong context, void* data);
 #endif
 
 extern uchar toggle_mouse_look(short keycode, ulong context, void* data);
+extern uchar toggle_debug_draw(short keycode, ulong context, void* data);
 
 #define ckpoint_input(val) Spew(DSRC_TESTING_Test0,("ii %s @%d\n",val,*tmd_ticks));
 
@@ -1458,6 +1459,7 @@ void init_input(void)
 //   hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,(void *)TRUE);   
 
    hotkey_add(DOWN('f'),DEMO_CONTEXT,toggle_mouse_look,(void *)TRUE);
+   hotkey_add(DOWN('h'),DEMO_CONTEXT,toggle_debug_draw,(void*)TRUE);
 
    hotkey_add(DOWN('p'),DEMO_CONTEXT,pause_game_func,(void *)TRUE);
    hotkey_add(DOWN('y'),DEMO_CONTEXT,toggle_physics_func,(void *)TRUE);

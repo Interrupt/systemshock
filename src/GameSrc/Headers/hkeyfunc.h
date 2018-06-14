@@ -184,6 +184,7 @@ uchar select_drug_hotkey(short keycode, ulong context, void* data);
 uchar use_drug_hotkey(short keycode, ulong context, void* data);
 
 uchar toggle_mouse_look(short keycode, ulong context, void* data);
+uchar toggle_debug_draw(short keycode, ulong context, void* data);
 
 // uchar (short keycode, ulong context, void* data);
 

@@ -457,6 +457,12 @@ uchar clear_fullscreen_func(short keycode, ulong context, void* data)
    return(FALSE);
 }
 
+uchar toggle_debug_draw(short keycode, ulong context, void*data)
+{
+   extern uchar do_debug_draw;
+   do_debug_draw = TRUE;
+}
+
 #ifdef NOT_YET  //KLC
 
 #ifndef GAMEONLY

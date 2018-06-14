@@ -562,6 +562,7 @@ int HandleWallLitLoop1D_C(grs_tmap_loop_info *tli,
  
    lefty = tli->left.y;
    righty = tli->right.y;
+
    do
    {   		     
       if ((d = fix_ceil(righty) - fix_ceil(lefty)) > 0)
@@ -587,6 +588,9 @@ int HandleWallLitLoop1D_C(grs_tmap_loop_info *tli,
            k=(fix_fint(v)<<t_wlog)&t_mask;
            *p_dest = g_ltab[t_bits[k]+fix_light(i)]; 
            p_dest += gr_row;	v+=dv; i+=di;
+
+           extern void DebugDrawFrame();
+           DebugDrawFrame();
           }
           
       } else if (d<0) return TRUE; // punt this tmap 

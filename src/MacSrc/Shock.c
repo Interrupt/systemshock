@@ -94,6 +94,8 @@ Boolean				gGameCompletedQuit;
 grs_screen  *cit_screen;
 SDL_Window* window;
 
+uchar do_debug_draw = FALSE;
+
 extern grs_screen *svga_screen;
 extern 	frc *svga_render_context;
 
@@ -867,6 +869,8 @@ void ShockGameLoop(void)
 		status_bio_update();	// draw the biometer
 
 		SDLDraw();
+
+		do_debug_draw = false; // done drawing in debug mode now
 	}
 
 	if(gGameCompletedQuit) {
@@ -1300,4 +1304,16 @@ void SDLDraw()
 	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
 	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
   	SDL_UpdateWindowSurface(window);
+}
+
+int debug_frames = 0;
+void DebugDrawFrame()
+{
+	if(do_debug_draw) {
+		if(debug_frames >= 4) {
+			debug_frames = 0;
+			SDLDraw();
+		}
+		debug_frames++;
+	}
 }
