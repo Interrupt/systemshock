@@ -2315,7 +2315,7 @@ errtype draw_shodan_influence(MFD *mfd, uchar amt)
    amt = lg_min(NUM_SHODAN_MUGS -1,amt >> SHODAN_INTERVAL_SHIFT);
    draw_raw_res_bm_extract(REF_IMG_EmailMugShotBase+FIRST_SHODAN_MUG +amt,0,0);
    //extract_temp_res_bitmap(&bm, REF_IMG_EmailMugShotBase+FIRST_SHODAN_MUG +amt);
-   gr_bitmap(&bm, 0, 0);
+   //gr_bitmap(&bm, 0, 0);
 
    gr_set_font((grs_font*)ResLock(MFD_FONT));
    wrap_text(s,MFD_VIEW_WID);
