@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 #include "fix.h"
 #include "trigtab.h"
@@ -27,7 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // cos[x] = sin[x + 64].
 
-ushort sintab[256+64+1] = { // indexed by fixang
+// indexed by fixang
+// clang-format off
+ushort sintab[256+64+1] = {
 	000000, 0x0192, 0x0324, 0x04b5, 0x0646, 0x07d6, 0x0964, 0x0af1, 
 	0x0c7c, 0x0e06, 0x0f8d, 0x1112, 0x1294, 0x1413, 0x1590, 0x1709, 
 	0x187e, 0x19ef, 0x1b5d, 0x1cc6, 0x1e2b, 0x1f8c, 0x20e7, 0x223d, 
@@ -70,6 +72,7 @@ ushort sintab[256+64+1] = { // indexed by fixang
 	0x3ec5, 0x3f0f, 0x3f4f, 0x3f85, 0x3fb1, 0x3fd4, 0x3fec, 0x3ffb, 
 	0x4000
 };
+// clang-format on
 
 // Now the arcsin table.
 // The arcsin table is indexed by (((fix >> 2) + 0x4000) & 0xffff).
@@ -83,7 +86,8 @@ ushort sintab[256+64+1] = { // indexed by fixang
 // acos(x) = PI/2 - asin(x).   (PI/2 is fixang 0x4000)
 
 // indexed by (high 8 bits of (fix >> 2 + 0x4000)
-fixang asintab[128+1] = { 
+// clang-format off
+fixang asintab[128+1] = {
 	0xc001, 0xc737, 0xca37, 0xcc87, 0xce7c, 0xd037, 0xd1ca, 0xd33d, 
 	0xd498, 0xd5e0, 0xd716, 0xd840, 0xd95d, 0xda6f, 0xdb78, 0xdc7a, 
 	0xdd73, 0xde67, 0xdf54, 0xe03c, 0xe11e, 0xe1fd, 0xe2d7, 0xe3ad, 
@@ -102,6 +106,7 @@ fixang asintab[128+1] = {
 	0x2b69, 0x2cc4, 0x2e37, 0x2fca, 0x3185, 0x337a, 0x35ca, 0x38ca, 
 	0x4000
 };
+// clang-format on
 
 // There are two exp tables.  The first is for integer exponents.
 // The table only goes from -11 to 11 because that's all that will
@@ -110,6 +115,7 @@ fixang asintab[128+1] = {
 
 #define INTEGER_EXP_OFFSET 11
 
+// clang-format off
 uint32_t expinttab[INTEGER_EXP_OFFSET*2+1] = {
 	0x00000001, 0x00000003, 0x00000008, 0x00000016, 
 	0x0000003c, 0x000000a2, 0x000001ba, 0x000004b0, 
@@ -118,12 +124,14 @@ uint32_t expinttab[INTEGER_EXP_OFFSET*2+1] = {
 	0x009469c5, 0x01936dc5, 0x0448a217, 0x0ba4f53f, 
 	0x1fa7157c, 0x560a773e, 0xe9e22447, 
 };
+// clang-format on
 
 // Now for the fractional table, which currently has 16+1 values,
 // which should be interpolated between.  We can crank up the
 // accuracy later if we need it.  So this input to this table goes
 // from 0 to 1 by sixteenths.
 
+// clang-format off
 uint32_t expfractab[16+1] = {
 	0x00010000, 0x00011083, 0x00012216, 0x000134cc, 
 	0x000148b6, 0x00015de9, 0x0001747a, 0x00018c80, 
@@ -131,4 +139,4 @@ uint32_t expfractab[16+1] = {
 	0x00021df4, 0x000240e8, 0x0002661d, 0x00028db8, 
 	0x0002b7e1, 
 };
-
+// clang-format on

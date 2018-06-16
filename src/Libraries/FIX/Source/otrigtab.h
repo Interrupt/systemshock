@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 // First, the sine table.
 // The sine table is indexed by the top 8 bits of a fixang.
@@ -24,7 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // cos[x] = sin[x + 64].
 
-const uint16_t sintab[256+64+1] = { // indexed by fixang
+// indexed by fixang
+// clang-format off
+const uint16_t sintab[256 + 64 + 1] = {
 	0x0000, 0x0192, 0x0324, 0x04b5, 0x0646, 0x07d6, 0x0964, 0x0af1, 
 	0x0c7c, 0x0e06, 0x0f8d, 0x1112, 0x1294, 0x1413, 0x1590, 0x1709, 
 	0x187e, 0x19ef, 0x1b5d, 0x1cc6, 0x1e2b, 0x1f8c, 0x20e7, 0x223d, 
@@ -67,6 +69,7 @@ const uint16_t sintab[256+64+1] = { // indexed by fixang
 	0x3ec5, 0x3f0f, 0x3f4f, 0x3f85, 0x3fb1, 0x3fd4, 0x3fec, 0x3ffb, 
 	0x4000
 };
+// clang-format on
 
 // Now the arcsin table.
 // The arcsin table is indexed by (((fix >> 2) + 0x4000) & 0xffff).
@@ -80,7 +83,8 @@ const uint16_t sintab[256+64+1] = { // indexed by fixang
 // acos(x) = PI/2 - asin(x).   (PI/2 is fixang 0x4000)
 
 // indexed by (high 8 bits of (fix >> 2 + 0x4000)
-const fixang asintab[128+1] = { 
+// clang-format off
+const fixang asintab[128 + 1] = {
 	0xc001, 0xc737, 0xca37, 0xcc87, 0xce7c, 0xd037, 0xd1ca, 0xd33d, 
 	0xd498, 0xd5e0, 0xd716, 0xd840, 0xd95d, 0xda6f, 0xdb78, 0xdc7a, 
 	0xdd73, 0xde67, 0xdf54, 0xe03c, 0xe11e, 0xe1fd, 0xe2d7, 0xe3ad, 
@@ -99,4 +103,4 @@ const fixang asintab[128+1] = {
 	0x2b69, 0x2cc4, 0x2e37, 0x2fca, 0x3185, 0x337a, 0x35ca, 0x38ca, 
 	0x4000
 };
-
+// clang-format on
