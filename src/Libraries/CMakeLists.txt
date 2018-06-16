@@ -362,11 +362,12 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/RSD
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/3D/Source
+	${CMAKE_SOURCE_DIR}/src/Libraries/AFILE/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/DSTRUCT/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/H
 	${CMAKE_SOURCE_DIR}/src/Libraries/INPUT/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/FIX/Source
-    ${CMAKE_SOURCE_DIR}/src/Libraries/LG/Source
+	${CMAKE_SOURCE_DIR}/src/Libraries/LG/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/RES/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/FIXPP/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/EDMS/Source
@@ -380,6 +381,7 @@ add_library(AFILE_LIB ${AFILE_SRC})
 add_library(PALETTE_LIB ${PALETTE_SRC})
 add_library(DSTRUCT_LIB ${DSTRUCT_SRC})
 add_library(FIX_LIB ${FIX_SRC})
+target_link_libraries(FIX_LIB m)
 add_library(INPUT_LIB ${INPUT_SRC})
 add_library(LG_LIB ${LG_SRC})
 add_library(RES_LIB ${RES_SRC})
