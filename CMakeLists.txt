@@ -202,7 +202,6 @@ add_executable(movinfo
 target_link_libraries(movinfo
 	AFILE_LIB
 	FIX_LIB
-	LG_LIB
 )
 
 add_executable(TestSimpleMain

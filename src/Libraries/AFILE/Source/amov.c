@@ -80,9 +80,13 @@ int32_t AmovWriteFrame(Afile *paf, grs_bitmap *pbm, int32_t bmlength, fix time);
 int32_t AmovWriteClose(Afile *paf);
 
 Amethods movMethods = {
-    AmovReadHeader, AmovReadFrame, AmovReadFramePal,
+    AmovReadHeader,     // Read header
+    AmovReadFrame,      // Read frame
+    AmovReadFramePal,   // Read frame palette
     NULL, // f_ReadAudio
-    AmovReadReset,  AmovReadClose, AmovWriteBegin,
+    AmovReadReset,
+    AmovReadClose,
+    AmovWriteBegin,
     NULL, // f_WriteAudio
     AmovWriteFrame,
     NULL, // f_WriteFramePal
@@ -108,31 +112,14 @@ int32_t AmovReadHeader(Afile *paf) {
   paf->pspec = malloc(sizeof(AmovInfo));
   pmi = (AmovInfo *)paf->pspec;
 
-  //	Read in movie header
-
+  // Read in movie header
   fread(&pmi->movieHdr, sizeof(pmi->movieHdr), 1, paf->fp);
   if (pmi->movieHdr.magicId != MOVI_MAGIC_ID) {
     free(paf->pspec);
     return (-1);
   }
 
-  //  Swap all the bytes around.
-  /*
-    pmi->movieHdr.numChunks = SwapLongBytes(pmi->movieHdr.numChunks);
-    pmi->movieHdr.sizeChunks = SwapLongBytes(pmi->movieHdr.sizeChunks);
-    pmi->movieHdr.sizeData = SwapLongBytes(pmi->movieHdr.sizeData);
-    pmi->movieHdr.totalTime = SwapLongBytes(pmi->movieHdr.totalTime);
-    pmi->movieHdr.frameRate = SwapLongBytes(pmi->movieHdr.frameRate);
-    pmi->movieHdr.frameWidth = SwapShortBytes(pmi->movieHdr.frameWidth);
-    pmi->movieHdr.frameHeight = SwapShortBytes(pmi->movieHdr.frameHeight);
-    pmi->movieHdr.gfxNumBits = SwapShortBytes(pmi->movieHdr.gfxNumBits);
-    pmi->movieHdr.isPalette = SwapShortBytes(pmi->movieHdr.isPalette);
-    pmi->movieHdr.audioNumChans = SwapShortBytes(pmi->movieHdr.audioNumChans);
-    pmi->movieHdr.audioSampleSize = SwapShortBytes(pmi->movieHdr.audioSampleSize);
-    pmi->movieHdr.audioSampleRate = SwapLongBytes(pmi->movieHdr.audioSampleRate);
-  */
-  //	Record header information
-
+  // Record header information
   paf->v.frameRate = pmi->movieHdr.frameRate;
   paf->v.width = pmi->movieHdr.frameWidth;
   paf->v.height = pmi->movieHdr.frameHeight;
@@ -143,37 +130,24 @@ int32_t AmovReadHeader(Afile *paf) {
     memcpy(paf->v.pal.rgb, pmi->movieHdr.palette, 256 * 3);
   }
 
-  //	Read in chunk offsets
-
+  // Read in chunk offsets
   pmi->pmc = (MovieChunk *)malloc(pmi->movieHdr.sizeChunks);
   fread(pmi->pmc, pmi->movieHdr.sizeChunks, 1, paf->fp);
 
-  //	Compute # frames
-
+  // Compute # frames
   paf->v.numFrames = 0;
   for (pchunk = pmi->pmc; pchunk->chunkType != MOVIE_CHUNK_END; pchunk++) {
-    uint8_t s1, s2;
-
-    // Swap bytes around for the chunk.
-    /* s1 = *((uint8_t *)pchunk);
-    s2 = *(((uint8_t *)pchunk) + 2);
-    *(((uint8_t *)pchunk) + 2) = s1;
-    *((uint8_t *)pchunk) = s2;
-    pchunk->offset = SwapLongBytes(pchunk->offset); */
-
     if (pchunk->chunkType == MOVIE_CHUNK_VIDEO)
       paf->v.numFrames++;
   }
 
   // No new palette
-
   pmi->newPal = FALSE;
 
-  //	Current chunk is first one
-
+  // Current chunk is first one
   pmi->pcurrChunk = pmi->pmc;
 
-  //	Return
+  // Return
 
   return (0);
 }

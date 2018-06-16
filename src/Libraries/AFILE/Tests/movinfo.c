@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
         break;
       }
     } else {
-      printf("END:          time: %3.4f\n", fix_float(pmc->time));
+      printf("END:          time: %08.4f\n", fix_float(pmc->time));
     }
 
     if (pmc->chunkType == MOVIE_CHUNK_END)
