@@ -282,14 +282,14 @@ fix fix_safe_pyth_dist(fix a, fix b) {
 // Computes sin and cos of theta
 //----------------------------------------------------------------------------
 void fix_sincos(fixang theta, fix *sin, fix *cos) {
-  uchar baseth, fracth;                // high and low bytes of the
-  ushort lowsin, lowcos, hisin, hicos; // table lookups
+  uint8_t baseth, fracth;                // high and low bytes of the
+  uint16_t lowsin, lowcos, hisin, hicos; // table lookups
 
   // divide the angle into high and low bytes
   // we will do a table lookup with the high byte and
   // interpolate with the low byte
-  baseth = theta >> 8;
-  fracth = theta & 0xff;
+  baseth = (uint8_t)(theta >> 8);
+  fracth = (uint8_t)(theta & 0xff);
 
   // use the identity [cos x = sin (x + PI/2)] to look up
   // cosines in the sine table
@@ -299,8 +299,8 @@ void fix_sincos(fixang theta, fix *sin, fix *cos) {
   hicos = sintab[baseth + 65];
 
   // interpolate between low___ and hi___ according to fracth
-  *sin = ((short)(lowsin + ((((short)hisin - (short)lowsin) * (uchar)fracth) >> 8))) << 2;
-  *cos = ((short)(lowcos + ((((short)hicos - (short)lowcos) * (uchar)fracth) >> 8))) << 2;
+  *sin = ((int16_t)(lowsin + ((((int16_t)hisin - (int16_t)lowsin) * fracth) >> 8))) << 2;
+  *cos = ((int16_t)(lowcos + ((((int16_t)hicos - (int16_t)lowcos) * fracth) >> 8))) << 2;
 
   return;
 }
@@ -309,28 +309,28 @@ void fix_sincos(fixang theta, fix *sin, fix *cos) {
 // Computes sin of theta
 //----------------------------------------------------------------------------
 fix fix_sin(fixang theta) {
-  uchar baseth, fracth;
-  ushort lowsin, hisin;
+  uint8_t baseth, fracth;
+  uint16_t lowsin, hisin;
 
-  baseth = theta >> 8;
-  fracth = theta & 0xff;
+  baseth = (uint8_t)(theta >> 8);
+  fracth = (uint8_t)(theta & 0xff);
   lowsin = sintab[baseth];
   hisin = sintab[baseth + 1];
-  return ((short)(lowsin + ((((short)hisin - (short)lowsin) * (uchar)fracth) >> 8))) << 2;
+  return ((int16_t)(lowsin + ((((int16_t)hisin - (int16_t)lowsin) * fracth) >> 8))) << 2;
 }
 
 //----------------------------------------------------------------------------
 // Computes cos of theta
 //----------------------------------------------------------------------------
 fix fix_cos(fixang theta) {
-  uchar baseth, fracth;
-  ushort lowcos, hicos;
+  uint8_t baseth, fracth;
+  uint16_t lowcos, hicos;
 
-  baseth = theta >> 8;
-  fracth = theta & 0xff;
+  baseth = (uint8_t)(theta >> 8);
+  fracth = (uint8_t)(theta & 0xff);
   lowcos = sintab[baseth + 64];
   hicos = sintab[baseth + 65];
-  return ((short)(lowcos + ((((short)hicos - (short)lowcos) * (uchar)fracth) >> 8))) << 2;
+  return ((int16_t)(lowcos + ((((int16_t)hicos - (int16_t)lowcos) * fracth) >> 8))) << 2;
 }
 
 //----------------------------------------------------------------------------
@@ -340,8 +340,8 @@ fix fix_cos(fixang theta) {
 void fix_fastsincos(fixang theta, fix *sin, fix *cos) {
   // use the identity [cos x = sin (x + PI/2)] to look up
   // cosines in the sine table
-  *sin = (((short)(sintab[theta >> 8])) << 2);
-  *cos = (((short)(sintab[(theta >> 8) + 64])) << 2);
+  *sin = (((int16_t)(sintab[theta >> 8])) << 2);
+  *cos = (((int16_t)(sintab[(theta >> 8) + 64])) << 2);
 
   return;
 }
@@ -349,12 +349,12 @@ void fix_fastsincos(fixang theta, fix *sin, fix *cos) {
 //----------------------------------------------------------------------------
 // Fast sin of theta
 //----------------------------------------------------------------------------
-fix fix_fastsin(fixang theta) { return (((short)(sintab[theta >> 8])) << 2); }
+fix fix_fastsin(fixang theta) { return (((int16_t)(sintab[theta >> 8])) << 2); }
 
 //----------------------------------------------------------------------------
 // Fast cos of theta
 //----------------------------------------------------------------------------
-fix fix_fastcos(fixang theta) { return (((short)(sintab[(theta >> 8) + 64])) << 2); }
+fix fix_fastcos(fixang theta) { return (((int16_t)(sintab[(theta >> 8) + 64])) << 2); }
 
 //----------------------------------------------------------------------------
 // Computes the arcsin of x
@@ -362,21 +362,21 @@ fix fix_fastcos(fixang theta) { return (((short)(sintab[(theta >> 8) + 64])) << 
 // Returns 0xc000..0x4000 (-PI/2..PI/2)
 //----------------------------------------------------------------------------
 fixang fix_asin(fix x) {
-  uchar basex, fracx; // high and low bytes of x
+  uint8_t basex, fracx; // high and low bytes of x
   fixang lowy, hiy;   // table lookups
 
   // divide x into high and low bytes
   // lookup with the high byte, interpolate with the low
   // We shift basex around to make it continuous; see trigtab.h
 
-  basex = ((x >> 2) >> 8) + 0x40;
-  fracx = (x >> 2) & 0xff;
+  basex = (uint8_t)(((x >> 2) >> 8) + 0x40);
+  fracx = (uint8_t)((x >> 2) & 0xff);
 
   lowy = asintab[basex];
   hiy = asintab[basex + 1];
 
   // interpolate between lowy and hiy according to fracx
-  return (lowy + ((((short)hiy - (short)lowy) * (uchar)fracx) >> 8));
+  return (lowy + ((((int16_t)hiy - (int16_t)lowy) * fracx) >> 8));
 }
 
 //----------------------------------------------------------------------------
@@ -384,20 +384,20 @@ fixang fix_asin(fix x) {
 // Returns 0x0000..0x8000 (0..PI)
 //----------------------------------------------------------------------------
 fixang fix_acos(fix x) {
-  uchar basex, fracx;
-  ushort lowy, hiy;
+  uint8_t basex, fracx;
+  uint16_t lowy, hiy;
   fixang asin_answer;
 
   // acos(x) = PI/2 - asin(x)
 
-  basex = ((x >> 2) >> 8) + 0x40;
-  fracx = (x >> 2) & 0xff;
+  basex = (uint8_t)(((x >> 2) >> 8) + 0x40);
+  fracx = (uint8_t)((x >> 2) & 0xff);
 
   lowy = asintab[basex];
   hiy = asintab[basex + 1];
 
-  asin_answer = (lowy + ((((short)hiy - (short)lowy) * (uchar)fracx) >> 8));
-  return (0x4000 - asin_answer);
+  asin_answer = (lowy + ((((int16_t)hiy - (int16_t)lowy) * fracx) >> 8));
+  return ((fixang)0x4000 - asin_answer);
 }
 
 //----------------------------------------------------------------------------
@@ -432,7 +432,7 @@ fixang fix_atan2(fix y, fix x) {
   // Use fix_asin or fix_acos depending on where we are.  We don't want to use
   // fix_asin if the sin is close to 1 or -1
   s = fix_div(y, hyp);
-  if ((uint)s < 0x00004000 || (uint)s > 0xffffc000) { // range is good, use asin
+  if ((uint32_t)s < 0x00004000 || (uint32_t)s > 0xffffc000) { // range is good, use asin
     th = fix_asin(s);
     if (x < 0) {
       if (th < 0x4000)
@@ -470,10 +470,10 @@ fix fix_pow(fix x, fix y) {
   int i;
   fix ans;
   fix rh, rl;
-  ushort yh, yl;
+  uint16_t yh, yl;
 
   ans = FIX_UNIT;
-  yh = fix_int(y);
+  yh = (uint16_t)(fix_int(y));
   yl = fix_frac(y);
   rh = rl = x;
 
