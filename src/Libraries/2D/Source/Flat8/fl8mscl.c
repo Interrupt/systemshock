@@ -28,8 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cnvdat.h"
 #include "flat8.h"
 
-void flat8_mono_scale_ubitmap(grs_bitmap *bm, short x, short y, short w,
-                              short h) {
+void flat8_mono_scale_ubitmap(grs_bitmap *bm, short x, short y, short w, short h) {
   fix x_scale;    /* x scale factor */
   fix y_scale;    /* y scale factor */
   fix x_src;      /* fractional x in source bitmap */
@@ -90,8 +89,7 @@ void flat8_mono_scale_ubitmap(grs_bitmap *bm, short x, short y, short w,
     }
 }
 
-int flat8_mono_scale_bitmap(grs_bitmap *bm, short x, short y, short w,
-                            short h) {
+int flat8_mono_scale_bitmap(grs_bitmap *bm, short x, short y, short w, short h) {
   fix x_left;
   fix x_scale;  /* x scale factor */
   fix y_scale;  /* y scale factor */
@@ -108,8 +106,7 @@ int flat8_mono_scale_bitmap(grs_bitmap *bm, short x, short y, short w,
     return CLIP_ALL;
 
   /* check for trivial reject clip. */
-  if (x > grd_clip.right || x + w <= grd_clip.left || y > grd_clip.bot ||
-      y + h <= grd_clip.top)
+  if (x > grd_clip.right || x + w <= grd_clip.left || y > grd_clip.bot || y + h <= grd_clip.top)
     return CLIP_ALL;
 
   x_scale = (bm->w << 16) / w;

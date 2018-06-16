@@ -41,8 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* draw an unclipped, horizontally flipped flat 8 bitmap to a flat 8
    canvas through a color lookup table (clut). */
-void flat8_clut_hflip_flat8_ubitmap(grs_bitmap *bm, short x, short y,
-                                    uchar *cl) {
+void flat8_clut_hflip_flat8_ubitmap(grs_bitmap *bm, short x, short y, uchar *cl) {
   short w;    /* bitmap width */
   short h;    /* height */
   uchar *src; /* pointer into source bitmap */

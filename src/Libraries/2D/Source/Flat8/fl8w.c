@@ -123,8 +123,7 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
         break;
       case GRL_OPAQUE | GRL_LOG2:
         for (; y > 0; y--) {
-          *p_dest = t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) &
-                           t_mask]; // gr_fill_upixel(t_bits[k],t_x,y);
+          *p_dest = t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask]; // gr_fill_upixel(t_bits[k],t_x,y);
           p_dest += gr_row;
           u += du;
           v += dv;
@@ -132,8 +131,7 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
         break;
       case GRL_TRANS | GRL_LOG2:
         for (; y > 0; y--) {
-          if (temp_pix =
-                  t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask])
+          if (temp_pix = t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask])
             *p_dest = temp_pix; // gr_fill_upixel(t_bits[k],t_x,y);
           p_dest += gr_row;
           u += du;
@@ -142,9 +140,7 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
         break;
       case GRL_OPAQUE | GRL_CLUT:
         for (; y > 0; y--) {
-          *p_dest = t_clut
-              [t_bits[t_vtab[fix_fint(v)] +
-                      fix_fint(u)]]; // gr_fill_upixel(t_clut[t_bits[k]],t_x,y);
+          *p_dest = t_clut[t_bits[t_vtab[fix_fint(v)] + fix_fint(u)]]; // gr_fill_upixel(t_clut[t_bits[k]],t_x,y);
           p_dest += gr_row;
           u += du;
           v += dv;
@@ -162,9 +158,8 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
         break;
       case GRL_OPAQUE | GRL_LOG2 | GRL_CLUT:
         for (; y > 0; y--) {
-          *p_dest = t_clut
-              [t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) &
-                      t_mask]]; // gr_fill_upixel(t_clut[t_bits[k]],t_x,y);
+          *p_dest = t_clut[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) &
+                                  t_mask]]; // gr_fill_upixel(t_clut[t_bits[k]],t_x,y);
           p_dest += gr_row;
           u += du;
           v += dv;
@@ -229,8 +224,7 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
 }
 
 void gri_trans_wall_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2;
   } else {
@@ -243,8 +237,7 @@ void gri_trans_wall_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_opaque_wall_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_OPAQUE | GRL_LOG2;
   } else {
@@ -257,8 +250,7 @@ void gri_opaque_wall_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_trans_clut_wall_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2 | GRL_CLUT;
   } else {
@@ -271,8 +263,7 @@ void gri_trans_clut_wall_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_opaque_clut_wall_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_OPAQUE | GRL_LOG2 | GRL_CLUT;
   } else {
@@ -292,9 +283,8 @@ extern int HandleWallLoop1D_PPC(grs_tmap_loop_info *tli,
                                                                                                                                 long gr_row, ulong t_mask, ulong t_wlog);
 }*/
 
-int HandleWallLoop1D_C(grs_tmap_loop_info *tli, fix u, fix v, fix dv, fix dy,
-                       uchar *t_clut, long *t_vtab, uchar *o_bits, long gr_row,
-                       ulong t_mask, ulong t_wlog) {
+int HandleWallLoop1D_C(grs_tmap_loop_info *tli, fix u, fix v, fix dv, fix dy, uchar *t_clut, long *t_vtab,
+                       uchar *o_bits, long gr_row, ulong t_mask, ulong t_wlog) {
   register int k, y;
   register fix inv_dy;
   register uchar *grd_bits, *p_dest, *t_bits;
@@ -395,8 +385,7 @@ int gri_wall_umap_loop_1D(grs_tmap_loop_info *tli) {
 
   gr_row = grd_bm.row;
 
-  return HandleWallLoop1D_C(tli, u, v, dv, dy, t_clut, t_vtab, o_bits, gr_row,
-                            t_mask, t_wlog);
+  return HandleWallLoop1D_C(tli, u, v, dv, dy, t_clut, t_vtab, o_bits, gr_row, t_mask, t_wlog);
 }
 
 void gri_opaque_clut_wall1d_umap_init(grs_tmap_loop_info *tli) {

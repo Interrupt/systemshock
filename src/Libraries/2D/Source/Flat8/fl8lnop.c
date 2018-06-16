@@ -43,14 +43,12 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli);
 /*extern "C"
 {
 int Handle_LinClut_Loop_PPC(fix u, fix v, fix du, fix dv, fix dx,
-                                                                                                                grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row, uchar *t_clut,
-                                                                                                                uchar	t_wlog, ulong t_mask);
+                                                                                                                grs_tmap_loop_info
+*tli, uchar *start_pdest, uchar *t_bits, long gr_row, uchar *t_clut, uchar	t_wlog, ulong t_mask);
 }*/
 
-int Handle_LinClut_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
-                          grs_tmap_loop_info *tli, uchar *start_pdest,
-                          uchar *t_bits, long gr_row, uchar *t_clut,
-                          uchar t_wlog, ulong t_mask) {
+int Handle_LinClut_Loop_C(fix u, fix v, fix du, fix dv, fix dx, grs_tmap_loop_info *tli, uchar *start_pdest,
+                          uchar *t_bits, long gr_row, uchar *t_clut, uchar t_wlog, ulong t_mask) {
   register int x, k;
   uchar *p_dest;
   register fix rx, lx;
@@ -75,8 +73,7 @@ int Handle_LinClut_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
       x = fix_cint(rx) - fix_cint(lx);
 
       for (; x > 0; x--) {
-        *(p_dest++) =
-            t_clut[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask]];
+        *(p_dest++) = t_clut[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask]];
         u += du;
         v += dv;
       }
@@ -134,8 +131,7 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 
   // handle PowerPC loop
   if (tli->bm.hlog == (GRL_OPAQUE | GRL_LOG2 | GRL_CLUT))
-    return (Handle_LinClut_Loop_C(u, v, du, dv, dx, tli, start_pdest, t_bits,
-                                  gr_row, t_clut, t_wlog, t_mask));
+    return (Handle_LinClut_Loop_C(u, v, du, dv, dx, tli, start_pdest, t_bits, gr_row, t_clut, t_wlog, t_mask));
 
   do {
     if ((d = fix_ceil(tli->right.x) - fix_ceil(tli->left.x)) > 0) {
@@ -196,8 +192,7 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
       case GRL_OPAQUE | GRL_CLUT:
         for (; x > 0; x--) {
           k = t_vtab[fix_fint(v)] + fix_fint(u);
-          *(p_dest++) =
-              t_clut[t_bits[k]]; // gr_fill_upixel(tli->clut[t_bits[k]],x,y);
+          *(p_dest++) = t_clut[t_bits[k]]; // gr_fill_upixel(tli->clut[t_bits[k]],x,y);
           u += du;
           v += dv;
         }
@@ -250,8 +245,7 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 }
 
 void gri_trans_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2;
   } else {
@@ -264,8 +258,7 @@ void gri_trans_lin_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_opaque_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_OPAQUE | GRL_LOG2;
   } else {
@@ -278,8 +271,7 @@ void gri_opaque_lin_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_trans_clut_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2 | GRL_CLUT;
   } else {
@@ -292,8 +284,7 @@ void gri_trans_clut_lin_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_opaque_clut_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_OPAQUE | GRL_LOG2 | GRL_CLUT;
   } else {

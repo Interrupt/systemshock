@@ -41,12 +41,9 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm);
 void gri_opaque_lit_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps);
 void gri_opaque_lit_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps);
 
-void opaque_lit_per_hscan_Loop_C(int dx, fix l_du, fix l_dv, fix *pl_u,
-                                 fix *pl_v, uchar **pp, fix *pl_y_fix,
-                                 int *py_cint, fix l_di, fix *pl_i,
-                                 int l_u_mask, int l_v_shift, int l_v_mask,
-                                 fix l_scan_slope, uchar *bm_bits, int gr_row,
-                                 uchar *ltab) {
+void opaque_lit_per_hscan_Loop_C(int dx, fix l_du, fix l_dv, fix *pl_u, fix *pl_v, uchar **pp, fix *pl_y_fix,
+                                 int *py_cint, fix l_di, fix *pl_i, int l_u_mask, int l_v_shift, int l_v_mask,
+                                 fix l_scan_slope, uchar *bm_bits, int gr_row, uchar *ltab) {
   fix l_u, l_v, l_y_fix, l_i;
   int k, y_cint;
   uchar *p;
@@ -145,8 +142,7 @@ void gri_opaque_lit_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
         k = (l_u >> 16) & l_u_mask;
         k += (l_v >> l_v_shift) & l_v_mask;
         k = bm_bits[k];
-        *p = ltab[(fix_light(l_i)) +
-                  k]; // gr_fill_upixel(ltab[(fix_int(l_i)<<8)+k],l_x,y_cint);
+        *p = ltab[(fix_light(l_i)) + k]; // gr_fill_upixel(ltab[(fix_int(l_i)<<8)+k],l_x,y_cint);
       }
 
       k = y_cint;
@@ -165,9 +161,8 @@ void gri_opaque_lit_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   }
 
   if (l_x < l_xr0) {
-    opaque_lit_per_hscan_Loop_C(
-        l_xr0 - l_x, l_du, l_dv, &l_u, &l_v, &p, &l_y_fix, &y_cint, l_di, &l_i,
-        l_u_mask, l_v_shift, l_v_mask, l_scan_slope, bm_bits, gr_row, ltab);
+    opaque_lit_per_hscan_Loop_C(l_xr0 - l_x, l_du, l_dv, &l_u, &l_v, &p, &l_y_fix, &y_cint, l_di, &l_i, l_u_mask,
+                                l_v_shift, l_v_mask, l_scan_slope, bm_bits, gr_row, ltab);
     l_x = l_xr0;
   }
 
@@ -208,12 +203,9 @@ void gri_opaque_lit_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   pi->i = l_i;
 }
 
-void opaque_lit_per_vscan_Loop_C(int dy, fix l_du, fix l_dv, fix *pl_u,
-                                 fix *pl_v, uchar **pp, fix *pl_x_fix,
-                                 int *px_cint, fix l_di, fix *pl_i,
-                                 int l_u_mask, int l_v_shift, int l_v_mask,
-                                 fix l_scan_slope, uchar *bm_bits, int gr_row,
-                                 uchar *ltab) {
+void opaque_lit_per_vscan_Loop_C(int dy, fix l_du, fix l_dv, fix *pl_u, fix *pl_v, uchar **pp, fix *pl_x_fix,
+                                 int *px_cint, fix l_di, fix *pl_i, int l_u_mask, int l_v_shift, int l_v_mask,
+                                 fix l_scan_slope, uchar *bm_bits, int gr_row, uchar *ltab) {
   fix l_u, l_v, l_x_fix, l_i;
   int k, x_cint;
   uchar *p;
@@ -255,8 +247,7 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   uchar *ltab = grd_screen->ltab;
 
   // locals used to speed PPC code
-  fix l_dxr, l_x_fix, l_u, l_v, l_du, l_dv, l_scan_slope, l_dtl, l_dxl, l_dyl,
-      l_dtr, l_dyr, l_i, l_di;
+  fix l_dxr, l_x_fix, l_u, l_v, l_du, l_dv, l_scan_slope, l_dtl, l_dxl, l_dyl, l_dtr, l_dyr, l_i, l_di;
   int l_yl, l_yr0, l_yr, l_y, l_u_mask, l_v_mask, l_v_shift;
   int gr_row, temp_x;
   uchar *bm_bits;
@@ -312,8 +303,7 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
         int k = (l_u >> 16) & l_u_mask;
         k += (l_v >> l_v_shift) & l_v_mask;
         k = bm_bits[k];
-        *p = ltab[(fix_light(l_i)) +
-                  k]; // gr_fill_upixel(ltab[(fix_int(l_i)<<8)+k],x_cint,l_y);
+        *p = ltab[(fix_light(l_i)) + k]; // gr_fill_upixel(ltab[(fix_int(l_i)<<8)+k],x_cint,l_y);
       }
 
       temp_x = x_cint;
@@ -334,9 +324,8 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   }
 
   if (l_y < l_yr0) {
-    opaque_lit_per_vscan_Loop_C(
-        l_yr0 - l_y, l_du, l_dv, &l_u, &l_v, &p, &l_x_fix, &x_cint, l_di, &l_i,
-        l_u_mask, l_v_shift, l_v_mask, l_scan_slope, bm_bits, gr_row, ltab);
+    opaque_lit_per_vscan_Loop_C(l_yr0 - l_y, l_du, l_dv, &l_u, &l_v, &p, &l_x_fix, &x_cint, l_di, &l_i, l_u_mask,
+                                l_v_shift, l_v_mask, l_scan_slope, bm_bits, gr_row, ltab);
     l_y = l_yr0;
   }
 
@@ -348,8 +337,7 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
         int k = (l_u >> 16) & l_u_mask;
         k += (l_v >> l_v_shift) & l_v_mask;
         k = bm_bits[k];
-        *p = ltab[(fix_light(l_i)) +
-                  k]; // gr_fill_upixel(ltab[(fix_int(l_i)<<8)+k],x_cint,l_y);
+        *p = ltab[(fix_light(l_i)) + k]; // gr_fill_upixel(ltab[(fix_int(l_i)<<8)+k],x_cint,l_y);
       }
 
       temp_x = x_cint;
@@ -378,10 +366,8 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   pi->i = l_i;
 }
 
-extern void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
-                                   grs_per_setup *ps);
-extern void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
-                                   grs_per_setup *ps);
+extern void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
+extern void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
 
 void gri_opaque_lit_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps) {
   ps->shell_func = (void (*)())gri_lit_per_umap_hscan;

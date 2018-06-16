@@ -36,8 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tmapint.h"
 #include "tmaptab.h"
 
-extern void flat8_flat8_smooth_hv_double_ubitmap(grs_bitmap *src,
-                                                 grs_bitmap *dst);
+extern void flat8_flat8_smooth_hv_double_ubitmap(grs_bitmap *src, grs_bitmap *dst);
 void gri_trans_blend_clut_lin_umap_init(grs_tmap_loop_info *ti);
 
 void gri_trans_blend_clut_lin_umap_init(grs_tmap_loop_info *ti) {

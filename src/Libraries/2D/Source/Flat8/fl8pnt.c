@@ -54,8 +54,7 @@ void flat8_upoint(short x, short y) {
 int flat8_point(short x, short y) {
   uchar *p;
 
-  if (x < grd_clip.left || x >= grd_clip.right || y < grd_clip.top ||
-      y >= grd_clip.bot)
+  if (x < grd_clip.left || x >= grd_clip.right || y < grd_clip.top || y >= grd_clip.bot)
     return CLIP_ALL;
 
   p = grd_bm.bits + grd_bm.row * y + x;

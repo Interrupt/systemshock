@@ -204,8 +204,7 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli) {
 }
 
 void gri_tluc8_trans_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2;
   } else {
@@ -219,8 +218,7 @@ void gri_tluc8_trans_lin_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_tluc8_opaque_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_OPAQUE | GRL_LOG2;
   } else {
@@ -234,8 +232,7 @@ void gri_tluc8_opaque_lin_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_tluc8_trans_clut_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2 | GRL_CLUT;
   } else {
@@ -249,8 +246,7 @@ void gri_tluc8_trans_clut_lin_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_tluc8_opaque_clut_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_OPAQUE | GRL_LOG2 | GRL_CLUT;
   } else {

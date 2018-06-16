@@ -64,8 +64,7 @@ int gri_scale_umap_loop_68K(grs_tmap_loop_info *tli);
 
 // ========================================================================
 // opaque solid polygon scaler
-int gri_opaque_solid_scale_umap_init(grs_tmap_loop_info *info,
-                                     grs_vertex **vert) {
+int gri_opaque_solid_scale_umap_init(grs_tmap_loop_info *info, grs_vertex **vert) {
   info->left_edge_func = (void (*)())gri_scale_edge;
   info->right_edge_func = (void (*)())gr_null;
   info->bm.hlog = 0;
@@ -81,8 +80,7 @@ int gri_opaque_solid_scale_umap_init(grs_tmap_loop_info *info,
 // ------------------------------------------------------------------------
 // ========================================================================
 // transparent solid polygon scaler
-int gri_trans_solid_scale_umap_init(grs_tmap_loop_info *tli,
-                                    grs_vertex **vert) {
+int gri_trans_solid_scale_umap_init(grs_tmap_loop_info *tli, grs_vertex **vert) {
   tli->bm.hlog = GRL_TRANS | GRL_SOLID;
   tli->loop_func = (void (*)())gri_scale_umap_loop_PPC;
   tli->right_edge_func = gr_null;
@@ -169,8 +167,7 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
       break;
     case GRL_OPAQUE | GRL_CLUT:
       for (x = xl, u = ul; x < xr; x++) {
-        *(p_dest++) = tli->clut[p_src[fix_fint(
-            u)]]; // gr_fill_upixel(tli->clut[k],x,tli->y);
+        *(p_dest++) = tli->clut[p_src[fix_fint(u)]]; // gr_fill_upixel(tli->clut[k],x,tli->y);
         u += du;
       }
       break;
@@ -185,8 +182,7 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
     case GRL_TRANS | GRL_SOLID:
       for (x = xl, u = ul; x < xr; x++) {
         if (k = p_src[fix_fint(u)])
-          *p_dest = (uchar)(
-              tli->clut); // gr_fill_upixel((uchar )(tli->clut),x,tli->y);
+          *p_dest = (uchar)(tli->clut); // gr_fill_upixel((uchar )(tli->clut),x,tli->y);
         u += du;
         p_dest++;
       }

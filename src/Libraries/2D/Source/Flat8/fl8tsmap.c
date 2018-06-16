@@ -117,8 +117,7 @@ int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli) {
 }
 
 void gri_trans_solid_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2;
   } else {
@@ -207,8 +206,7 @@ int gri_trans_solid_floor_umap_loop(grs_tmap_loop_info *tli) {
 }
 
 void gri_trans_solid_floor_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2;
   } else {
@@ -303,8 +301,7 @@ int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli) {
 }
 
 void gri_trans_solid_wall_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2;
   } else {
@@ -322,8 +319,7 @@ void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   uchar solid_color;
 
   // locals used to speed PPC code
-  fix l_u, l_v, l_du, l_dv, l_y_fix, l_scan_slope, l_dtl, l_dxl, l_dyl, l_dtr,
-      l_dyr;
+  fix l_u, l_v, l_du, l_dv, l_y_fix, l_scan_slope, l_dtl, l_dxl, l_dyl, l_dtr, l_dyr;
   int l_x, l_xl, l_xr, l_xr0, l_u_mask, l_v_mask, l_v_shift;
   int gr_row, temp_y;
   uchar *bm_bits;
@@ -441,8 +437,7 @@ void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   uchar solid_color;
 
   // locals used to speed PPC code
-  fix l_dxr, l_x_fix, l_u, l_v, l_du, l_dv, l_scan_slope, l_dtl, l_dxl, l_dyl,
-      l_dtr, l_dyr;
+  fix l_dxr, l_x_fix, l_u, l_v, l_du, l_dv, l_scan_slope, l_dtl, l_dxl, l_dyl, l_dtr, l_dyr;
   int l_yl, l_yr0, l_yr, l_y, l_u_mask, l_v_mask, l_v_shift;
   int gr_row, temp_x;
   uchar *bm_bits;
@@ -554,10 +549,8 @@ void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   pi->dv = l_dv;
 }
 
-extern void gri_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
-                               grs_per_setup *ps);
-extern void gri_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
-                               grs_per_setup *ps);
+extern void gri_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
+extern void gri_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
 
 void gri_trans_solid_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps) {
   ps->shell_func = (void (*)())gri_per_umap_hscan;

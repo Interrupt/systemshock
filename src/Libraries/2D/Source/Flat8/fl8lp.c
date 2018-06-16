@@ -46,13 +46,10 @@ vscan=vertical scanlines.
 **************************************************************/
 
 // prototypes
-void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
-                            grs_per_setup *ps);
-void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
-                            grs_per_setup *ps);
+void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
+void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
 
-void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
-                            grs_per_setup *ps) {
+void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps) {
   grs_per_info pi;
   fix y_prime[10];
   fix yp_left, yp_right;
@@ -81,11 +78,9 @@ void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
   pi.v_mask = (bm->h - 1) << bm->wlog;
   pi.v_shift = 16 - bm->wlog;
 
-  yp_min = yp_max = fix_cint(
-      y_prime[n_min = 0] = vpl[0]->y - fix_mul(vpl[0]->x, ps->scan_slope));
+  yp_min = yp_max = fix_cint(y_prime[n_min = 0] = vpl[0]->y - fix_mul(vpl[0]->x, ps->scan_slope));
   for (j = 1; j < n; j++) {
-    pi.yp =
-        fix_cint(y_prime[j] = vpl[j]->y - fix_mul(vpl[j]->x, ps->scan_slope));
+    pi.yp = fix_cint(y_prime[j] = vpl[j]->y - fix_mul(vpl[j]->x, ps->scan_slope));
     if (pi.yp < yp_min) {
       yp_min = pi.yp;
       n_min = j;
@@ -96,12 +91,8 @@ void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
   if (yp_max == yp_min)
     return;
   pi.denom = fix_16_20(ps->c + fix_mul(ps->b, y_prime[0]));
-  pi.u0 = vpl[0]->u - fix_div(fix_mul(vpl[0]->x, ps->alpha_u) +
-                                  fix_mul(vpl[0]->y, ps->beta_u) + ps->gamma_u,
-                              pi.denom);
-  pi.v0 = vpl[0]->v - fix_div(fix_mul(vpl[0]->x, ps->alpha_v) +
-                                  fix_mul(vpl[0]->y, ps->beta_v) + ps->gamma_v,
-                              pi.denom);
+  pi.u0 = vpl[0]->u - fix_div(fix_mul(vpl[0]->x, ps->alpha_u) + fix_mul(vpl[0]->y, ps->beta_u) + ps->gamma_u, pi.denom);
+  pi.v0 = vpl[0]->v - fix_div(fix_mul(vpl[0]->x, ps->alpha_v) + fix_mul(vpl[0]->y, ps->beta_v) + ps->gamma_v, pi.denom);
 
   n_left = n_right = n_min;
   pi.yp = yp_min;
@@ -124,17 +115,11 @@ void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
     pi.x = fix_cint(vpl[n_left]->x);
     pi.xl = fix_cint(vpl[n_right]->x);
     if (pi.scan_slope > 0) {
-      x_max = safe_fix_cint(
-          fix_div(fix_make((grd_int_clip.bot - 1) - pi.yp, 1), pi.scan_slope));
-      x_min = fix_int(fix_div(fix_make((grd_int_clip.top - 1) - pi.yp, 1),
-                              pi.scan_slope)) +
-              1;
+      x_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.bot - 1) - pi.yp, 1), pi.scan_slope));
+      x_min = fix_int(fix_div(fix_make((grd_int_clip.top - 1) - pi.yp, 1), pi.scan_slope)) + 1;
     } else {
-      x_max = safe_fix_cint(
-          fix_div(fix_make((grd_int_clip.top - 1) - pi.yp, 1), pi.scan_slope));
-      x_min = fix_int(fix_div(fix_make((grd_int_clip.bot - 1) - pi.yp, 1),
-                              pi.scan_slope)) +
-              1;
+      x_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.top - 1) - pi.yp, 1), pi.scan_slope));
+      x_min = fix_int(fix_div(fix_make((grd_int_clip.bot - 1) - pi.yp, 1), pi.scan_slope)) + 1;
     }
     if (pi.x < x_min)
       pi.x = x_min;
@@ -151,10 +136,7 @@ void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
     }
 
     pi.cl = fix_mul(pi.dxl, vpl[n_left]->y) - fix_mul(pi.dyl, vpl[n_left]->x);
-    if (pi.x * pi.dyl -
-            fix_mul(fix_make(pi.yp - 1, 0) + pi.x * pi.scan_slope, pi.dxl) +
-            pi.cl <
-        0) {
+    if (pi.x * pi.dyl - fix_mul(fix_make(pi.yp - 1, 0) + pi.x * pi.scan_slope, pi.dxl) + pi.cl < 0) {
       pi.dyl = -pi.dyl;
       pi.dxl = -pi.dxl;
       pi.cl = -pi.cl;
@@ -194,17 +176,13 @@ void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
       pi.cl = fix_mul(pi.dxl, y_left) - fix_mul(pi.dyl, x_left);
       d = pi.dyl - fix_mul(pi.dxl, pi.scan_slope);
       dx_left = fix_div(pi.dxl, d);
-      x_left = fix_div(fix_mul(pi.dyl, x_left) +
-                           fix_mul(pi.dxl, fix_ceil(yp_left) - y_left),
-                       d);
+      x_left = fix_div(fix_mul(pi.dyl, x_left) + fix_mul(pi.dxl, fix_ceil(yp_left) - y_left), d);
       if (xl_max < xl_min) {
         fix foo = xl_min;
         xl_min = xl_max;
         xl_max = foo;
       }
-      if (fix_mul(vpl[n_left]->x - FIX_UNIT, pi.dyl) -
-              fix_mul(vpl[n_left]->y - pi.scan_slope, pi.dxl) + pi.cl <
-          0) {
+      if (fix_mul(vpl[n_left]->x - FIX_UNIT, pi.dyl) - fix_mul(vpl[n_left]->y - pi.scan_slope, pi.dxl) + pi.cl < 0) {
         pi.dyl = -pi.dyl;
         pi.dxl = -pi.dxl;
         pi.cl = -pi.cl;
@@ -239,17 +217,13 @@ void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
       pi.cr = fix_mul(pi.dxr, y_right) - fix_mul(pi.dyr, x_right);
       d = pi.dyr - fix_mul(pi.dxr, pi.scan_slope);
       dx_right = fix_div(pi.dxr, d);
-      x_right = fix_div(fix_mul(pi.dyr, x_right) +
-                            fix_mul(pi.dxr, fix_ceil(yp_right) - y_right),
-                        d);
+      x_right = fix_div(fix_mul(pi.dyr, x_right) + fix_mul(pi.dxr, fix_ceil(yp_right) - y_right), d);
       if (xr_max < xr_min) {
         fix foo = xr_min;
         xr_min = xr_max;
         xr_max = foo;
       }
-      if (fix_mul(vpl[n_right]->x - FIX_UNIT, pi.dyr) -
-              fix_mul(vpl[n_right]->y - pi.scan_slope, pi.dxr) + pi.cr <
-          0) {
+      if (fix_mul(vpl[n_right]->x - FIX_UNIT, pi.dyr) - fix_mul(vpl[n_right]->y - pi.scan_slope, pi.dxr) + pi.cr < 0) {
         pi.dyr = -pi.dyr;
         pi.dxr = -pi.dxr;
         pi.cr = -pi.cr;
@@ -275,17 +249,11 @@ void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
         pi.x = fix_cint(vpl[n_left]->x);
         pi.xl = fix_cint(vpl[n_right]->x);
         if (pi.scan_slope > 0) {
-          x_max = safe_fix_cint(fix_div(
-              fix_make((grd_int_clip.bot - 1) - pi.yp, 1), pi.scan_slope));
-          x_min = fix_int(fix_div(fix_make((grd_int_clip.top - 1) - pi.yp, 1),
-                                  pi.scan_slope)) +
-                  1;
+          x_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.bot - 1) - pi.yp, 1), pi.scan_slope));
+          x_min = fix_int(fix_div(fix_make((grd_int_clip.top - 1) - pi.yp, 1), pi.scan_slope)) + 1;
         } else {
-          x_max = safe_fix_cint(fix_div(
-              fix_make((grd_int_clip.top - 1) - pi.yp, 1), pi.scan_slope));
-          x_min = fix_int(fix_div(fix_make((grd_int_clip.bot - 1) - pi.yp, 1),
-                                  pi.scan_slope)) +
-                  1;
+          x_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.top - 1) - pi.yp, 1), pi.scan_slope));
+          x_min = fix_int(fix_div(fix_make((grd_int_clip.bot - 1) - pi.yp, 1), pi.scan_slope)) + 1;
         }
         if (pi.x < x_min)
           pi.x = x_min;
@@ -301,12 +269,8 @@ void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
             pi.di = -pi.di;
         }
 
-        pi.cl =
-            fix_mul(pi.dxl, vpl[n_left]->y) - fix_mul(pi.dyl, vpl[n_left]->x);
-        if (pi.x * pi.dyl -
-                fix_mul(fix_make(pi.yp + 1, 0) + pi.x * pi.scan_slope, pi.dxl) +
-                pi.cl <
-            0) {
+        pi.cl = fix_mul(pi.dxl, vpl[n_left]->y) - fix_mul(pi.dyl, vpl[n_left]->x);
+        if (pi.x * pi.dyl - fix_mul(fix_make(pi.yp + 1, 0) + pi.x * pi.scan_slope, pi.dxl) + pi.cl < 0) {
           pi.dyl = -pi.dyl;
           pi.dxl = -pi.dxl;
           pi.cl = -pi.cl;
@@ -337,17 +301,11 @@ void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
         pi.xr = fix_cint(x_right);
       }
       if (pi.scan_slope > 0) {
-        x_max = safe_fix_cint(fix_div(
-            fix_make((grd_int_clip.bot - 1) - pi.yp, 1), pi.scan_slope));
-        x_min = fix_int(fix_div(fix_make((grd_int_clip.top - 1) - pi.yp, 1),
-                                pi.scan_slope)) +
-                1;
+        x_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.bot - 1) - pi.yp, 1), pi.scan_slope));
+        x_min = fix_int(fix_div(fix_make((grd_int_clip.top - 1) - pi.yp, 1), pi.scan_slope)) + 1;
       } else {
-        x_max = safe_fix_cint(fix_div(
-            fix_make((grd_int_clip.top - 1) - pi.yp, 1), pi.scan_slope));
-        x_min = fix_int(fix_div(fix_make((grd_int_clip.bot - 1) - pi.yp, 1),
-                                pi.scan_slope)) +
-                1;
+        x_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.top - 1) - pi.yp, 1), pi.scan_slope));
+        x_min = fix_int(fix_div(fix_make((grd_int_clip.bot - 1) - pi.yp, 1), pi.scan_slope)) + 1;
       }
       if (xl_min > x_min)
         x_min = xl_min;
@@ -376,14 +334,12 @@ void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
         i_left += di_left, i_right += di_right;
       }
       x_left += dx_left, x_right += dx_right;
-      pi.denom += fix_16_20(ps->b), pi.unum += ps->beta_u,
-          pi.vnum += ps->beta_v;
+      pi.denom += fix_16_20(ps->b), pi.unum += ps->beta_u, pi.vnum += ps->beta_v;
     }
   }
 }
 
-void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
-                            grs_per_setup *ps) {
+void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps) {
   grs_per_info pi;
   fix x_prime[10];
   fix xp_top, xp_bot;
@@ -412,11 +368,9 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
   pi.v_mask = (bm->h - 1) << bm->wlog;
   pi.v_shift = 16 - bm->wlog;
 
-  xp_min = xp_max = fix_cint(
-      x_prime[n_min = 0] = vpl[0]->x - fix_mul(vpl[0]->y, ps->scan_slope));
+  xp_min = xp_max = fix_cint(x_prime[n_min = 0] = vpl[0]->x - fix_mul(vpl[0]->y, ps->scan_slope));
   for (j = 1; j < n; j++) {
-    pi.xp =
-        fix_cint(x_prime[j] = vpl[j]->x - fix_mul(vpl[j]->y, ps->scan_slope));
+    pi.xp = fix_cint(x_prime[j] = vpl[j]->x - fix_mul(vpl[j]->y, ps->scan_slope));
     if (pi.xp < xp_min) {
       xp_min = pi.xp;
       n_min = j;
@@ -427,12 +381,8 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
   if (xp_max == xp_min)
     return;
   pi.denom = fix_16_20(ps->c + fix_mul(ps->a, x_prime[0]));
-  pi.u0 = vpl[0]->u - fix_div(fix_mul(vpl[0]->x, ps->alpha_u) +
-                                  fix_mul(vpl[0]->y, ps->beta_u) + ps->gamma_u,
-                              pi.denom);
-  pi.v0 = vpl[0]->v - fix_div(fix_mul(vpl[0]->x, ps->alpha_v) +
-                                  fix_mul(vpl[0]->y, ps->beta_v) + ps->gamma_v,
-                              pi.denom);
+  pi.u0 = vpl[0]->u - fix_div(fix_mul(vpl[0]->x, ps->alpha_u) + fix_mul(vpl[0]->y, ps->beta_u) + ps->gamma_u, pi.denom);
+  pi.v0 = vpl[0]->v - fix_div(fix_mul(vpl[0]->x, ps->alpha_v) + fix_mul(vpl[0]->y, ps->beta_v) + ps->gamma_v, pi.denom);
 
   n_top = n_bot = n_min;
   pi.xp = xp_min;
@@ -455,17 +405,11 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
     pi.y = fix_cint(vpl[n_top]->y);
     pi.yl = fix_cint(vpl[n_bot]->y);
     if (pi.scan_slope > 0) {
-      y_max = safe_fix_cint(fix_div(
-          fix_make((grd_int_clip.right - 1) - pi.xp, 1), pi.scan_slope));
-      y_min = fix_int(fix_div(fix_make((grd_int_clip.left - 1) - pi.xp, 1),
-                              pi.scan_slope)) +
-              1;
+      y_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.right - 1) - pi.xp, 1), pi.scan_slope));
+      y_min = fix_int(fix_div(fix_make((grd_int_clip.left - 1) - pi.xp, 1), pi.scan_slope)) + 1;
     } else {
-      y_max = safe_fix_cint(
-          fix_div(fix_make((grd_int_clip.left - 1) - pi.xp, 1), pi.scan_slope));
-      y_min = fix_int(fix_div(fix_make((grd_int_clip.right - 1) - pi.xp, 1),
-                              pi.scan_slope)) +
-              1;
+      y_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.left - 1) - pi.xp, 1), pi.scan_slope));
+      y_min = fix_int(fix_div(fix_make((grd_int_clip.right - 1) - pi.xp, 1), pi.scan_slope)) + 1;
     }
     if (pi.y < y_min)
       pi.y = y_min;
@@ -482,10 +426,7 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
     }
 
     pi.cl = -fix_mul(pi.dxl, vpl[n_top]->y) + fix_mul(pi.dyl, vpl[n_top]->x);
-    if (pi.y * pi.dxl -
-            fix_mul(fix_make(pi.xp - 1, 0) + pi.y * pi.scan_slope, pi.dyl) +
-            pi.cl <
-        0) {
+    if (pi.y * pi.dxl - fix_mul(fix_make(pi.xp - 1, 0) + pi.y * pi.scan_slope, pi.dyl) + pi.cl < 0) {
       pi.dyl = -pi.dyl;
       pi.dxl = -pi.dxl;
       pi.cl = -pi.cl;
@@ -497,8 +438,7 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
 
     ((void (*)(grs_per_info *, grs_bitmap *))(ps->scanline_func))(&pi, bm);
 
-    pi.denom += fix_16_20(ps->a), pi.unum += ps->alpha_u,
-        pi.vnum += ps->alpha_v;
+    pi.denom += fix_16_20(ps->a), pi.unum += ps->alpha_u, pi.vnum += ps->alpha_v;
     xp_min--; /* first line already done */
   }
   pi.xp++;
@@ -526,17 +466,13 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
       pi.cl = -fix_mul(pi.dxl, y_top) + fix_mul(pi.dyl, x_top);
       d = pi.dxl - fix_mul(pi.dyl, pi.scan_slope);
       dy_top = fix_div(pi.dyl, d);
-      y_top = fix_div(fix_mul(pi.dxl, y_top) +
-                          fix_mul(pi.dyl, fix_ceil(xp_top) - x_top),
-                      d);
+      y_top = fix_div(fix_mul(pi.dxl, y_top) + fix_mul(pi.dyl, fix_ceil(xp_top) - x_top), d);
       if (yl_max < yl_min) {
         fix foo = yl_min;
         yl_min = yl_max;
         yl_max = foo;
       }
-      if (fix_mul(vpl[n_top]->y - FIX_UNIT, pi.dxl) -
-              fix_mul(vpl[n_top]->x - pi.scan_slope, pi.dyl) + pi.cl <
-          0) {
+      if (fix_mul(vpl[n_top]->y - FIX_UNIT, pi.dxl) - fix_mul(vpl[n_top]->x - pi.scan_slope, pi.dyl) + pi.cl < 0) {
         pi.dyl = -pi.dyl;
         pi.dxl = -pi.dxl;
         pi.cl = -pi.cl;
@@ -571,17 +507,13 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
       pi.cr = -fix_mul(pi.dxr, y_bot) + fix_mul(pi.dyr, x_bot);
       d = pi.dxr - fix_mul(pi.dyr, pi.scan_slope);
       dy_bot = fix_div(pi.dyr, d);
-      y_bot = fix_div(fix_mul(pi.dxr, y_bot) +
-                          fix_mul(pi.dyr, fix_ceil(xp_bot) - x_bot),
-                      d);
+      y_bot = fix_div(fix_mul(pi.dxr, y_bot) + fix_mul(pi.dyr, fix_ceil(xp_bot) - x_bot), d);
       if (yr_max < yr_min) {
         fix foo = yr_min;
         yr_min = yr_max;
         yr_max = foo;
       }
-      if (fix_mul(vpl[n_bot]->y - FIX_UNIT, pi.dxr) -
-              fix_mul(vpl[n_bot]->x - pi.scan_slope, pi.dyr) + pi.cr <
-          0) {
+      if (fix_mul(vpl[n_bot]->y - FIX_UNIT, pi.dxr) - fix_mul(vpl[n_bot]->x - pi.scan_slope, pi.dyr) + pi.cr < 0) {
         pi.dyr = -pi.dyr;
         pi.dxr = -pi.dxr;
         pi.cr = -pi.cr;
@@ -607,17 +539,11 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
         pi.y = fix_cint(vpl[n_top]->y);
         pi.yl = fix_cint(vpl[n_bot]->y);
         if (pi.scan_slope > 0) {
-          y_max = safe_fix_cint(fix_div(
-              fix_make((grd_int_clip.right - 1) - pi.xp, 1), pi.scan_slope));
-          y_min = fix_int(fix_div(fix_make((grd_int_clip.left - 1) - pi.xp, 1),
-                                  pi.scan_slope)) +
-                  1;
+          y_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.right - 1) - pi.xp, 1), pi.scan_slope));
+          y_min = fix_int(fix_div(fix_make((grd_int_clip.left - 1) - pi.xp, 1), pi.scan_slope)) + 1;
         } else {
-          y_max = safe_fix_cint(fix_div(
-              fix_make((grd_int_clip.left - 1) - pi.xp, 1), pi.scan_slope));
-          y_min = fix_int(fix_div(fix_make((grd_int_clip.right - 1) - pi.xp, 1),
-                                  pi.scan_slope)) +
-                  1;
+          y_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.left - 1) - pi.xp, 1), pi.scan_slope));
+          y_min = fix_int(fix_div(fix_make((grd_int_clip.right - 1) - pi.xp, 1), pi.scan_slope)) + 1;
         }
         if (pi.y < y_min)
           pi.y = y_min;
@@ -633,12 +559,8 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
             pi.di = -pi.di;
         }
 
-        pi.cl =
-            -fix_mul(pi.dxl, vpl[n_top]->y) + fix_mul(pi.dyl, vpl[n_top]->x);
-        if (pi.y * pi.dxl -
-                fix_mul(fix_make(pi.xp + 1, 0) + pi.y * pi.scan_slope, pi.dyl) +
-                pi.cl <
-            0) {
+        pi.cl = -fix_mul(pi.dxl, vpl[n_top]->y) + fix_mul(pi.dyl, vpl[n_top]->x);
+        if (pi.y * pi.dxl - fix_mul(fix_make(pi.xp + 1, 0) + pi.y * pi.scan_slope, pi.dyl) + pi.cl < 0) {
           pi.dyl = -pi.dyl;
           pi.dxl = -pi.dxl;
           pi.cl = -pi.cl;
@@ -669,17 +591,11 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
         pi.yr = fix_cint(y_bot);
       }
       if (pi.scan_slope > 0) {
-        y_max = safe_fix_cint(fix_div(
-            fix_make((grd_int_clip.right - 1) - pi.xp, 1), pi.scan_slope));
-        y_min = fix_int(fix_div(fix_make((grd_int_clip.left - 1) - pi.xp, 1),
-                                pi.scan_slope)) +
-                1;
+        y_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.right - 1) - pi.xp, 1), pi.scan_slope));
+        y_min = fix_int(fix_div(fix_make((grd_int_clip.left - 1) - pi.xp, 1), pi.scan_slope)) + 1;
       } else {
-        y_max = safe_fix_cint(fix_div(
-            fix_make((grd_int_clip.left - 1) - pi.xp, 1), pi.scan_slope));
-        y_min = fix_int(fix_div(fix_make((grd_int_clip.right - 1) - pi.xp, 1),
-                                pi.scan_slope)) +
-                1;
+        y_max = safe_fix_cint(fix_div(fix_make((grd_int_clip.left - 1) - pi.xp, 1), pi.scan_slope));
+        y_min = fix_int(fix_div(fix_make((grd_int_clip.right - 1) - pi.xp, 1), pi.scan_slope)) + 1;
       }
       if (yl_min > y_min)
         y_min = yl_min;
@@ -709,8 +625,7 @@ void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
       }
 
       y_top += dy_top, y_bot += dy_bot;
-      pi.denom += fix_16_20(ps->a), pi.unum += ps->alpha_u,
-          pi.vnum += ps->alpha_v;
+      pi.denom += fix_16_20(ps->a), pi.unum += ps->alpha_u, pi.vnum += ps->alpha_v;
     }
   }
 }

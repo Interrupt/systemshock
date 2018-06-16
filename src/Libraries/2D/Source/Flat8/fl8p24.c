@@ -50,8 +50,7 @@ int flat8_set_pixel24(long c, short x, short y) {
   uchar *p;
   int i;
 
-  if (x < grd_clip.left || x > grd_clip.right || y < grd_clip.top ||
-      y > grd_clip.bot)
+  if (x < grd_clip.left || x > grd_clip.right || y < grd_clip.top || y > grd_clip.bot)
     return CLIP_ALL;
   i = gr_index_lrgb(c);
   p = grd_canvas->bm.bits + grd_canvas->bm.row * y + x;

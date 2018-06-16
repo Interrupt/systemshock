@@ -99,8 +99,7 @@ int gri_flat8_mask_bitmap(grs_bitmap *bm, short x, short y, grs_stencil *sten) {
 }
 
 extern int gen_flat8_clut_bitmap(grs_bitmap *bm, short x, short y, uchar *clut);
-int gri_flat8_mask_fill_clut_bitmap(grs_bitmap *bm, short x, short y,
-                                    grs_stencil *sten) {
+int gri_flat8_mask_fill_clut_bitmap(grs_bitmap *bm, short x, short y, grs_stencil *sten) {
   uchar *clut = (uchar *)(grd_gc.fill_parm);
   if (sten == NULL)
     return gen_flat8_clut_bitmap(bm, x, y, clut);

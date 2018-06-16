@@ -65,9 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void gr_rsd8_blit(uchar *rsd_src, uchar *dst, int grd_bm_row, int bm_w);
 
 //### MLA- not supposed to be used (PC code is in RSDBLT.ASM)
-void gr_rsd8_blit(uchar *rsd_src, uchar *dst, int grd_bm_row, int bm_w) {
-  DebugString("ask mark");
-}
+void gr_rsd8_blit(uchar *rsd_src, uchar *dst, int grd_bm_row, int bm_w) { DebugString("ask mark"); }
 
 void gri_flat8_rsd8_ubitmap(grs_bitmap *bm, short x, short y) {
   /*   uchar *p_dst;
@@ -100,8 +98,7 @@ int gri_flat8_rsd8_bitmap(grs_bitmap *bm, short x_left, short y_top) {
   y_bot = y_top + bm->h;
 
   /* clip bitmap to rectangular clipping window. */
-  if (x_left > grd_clip.right || x_right <= grd_clip.left ||
-      y_top > grd_clip.bot || y_bot <= grd_clip.top)
+  if (x_left > grd_clip.right || x_right <= grd_clip.left || y_top > grd_clip.bot || y_bot <= grd_clip.top)
     /* completely clipped, forget it. */
     return CLIP_ALL;
 

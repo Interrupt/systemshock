@@ -44,18 +44,16 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli);
 /*extern "C"
 {
 int Handle_Lit_Lin_Loop_PPC(fix u, fix v, fix du, fix dv, fix dx,
-                                                                                                                grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row,
-                                                                                                                fix i, fix di, uchar *g_ltab, uchar	t_wlog, ulong	t_mask);
+                                                                                                                grs_tmap_loop_info
+*tli, uchar *start_pdest, uchar *t_bits, long gr_row, fix i, fix di, uchar *g_ltab, uchar	t_wlog, ulong	t_mask);
 
 int Handle_TLit_Lin_Loop2_PPC(fix u, fix v, fix du, fix dv, fix dx,
                                                                                                                         grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row,
                                                                                                                         fix i, fix di, uchar *g_ltab, uchar	t_wlog, ulong	t_mask);
 }*/
 
-int Handle_Lit_Lin_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
-                          grs_tmap_loop_info *tli, uchar *start_pdest,
-                          uchar *t_bits, long gr_row, fix i, fix di,
-                          uchar *g_ltab, uchar t_wlog, ulong t_mask) {
+int Handle_Lit_Lin_Loop_C(fix u, fix v, fix du, fix dv, fix dx, grs_tmap_loop_info *tli, uchar *start_pdest,
+                          uchar *t_bits, long gr_row, fix i, fix di, uchar *g_ltab, uchar t_wlog, ulong t_mask) {
   int x, t_xl, t_xr, inv;
   uchar *p_dest;
 
@@ -81,9 +79,7 @@ int Handle_Lit_Lin_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
       x = t_xr - t_xl;
 
       for (; x > 0; x--) {
-        *(p_dest++) =
-            g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] +
-                   fix_light(i)];
+        *(p_dest++) = g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] + fix_light(i)];
         u += du;
         v += dv;
         i += di;
@@ -108,10 +104,8 @@ int Handle_Lit_Lin_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
   return FALSE; // tmap OK
 }
 
-int Handle_TLit_Lin_Loop2_C(fix u, fix v, fix du, fix dv, fix dx,
-                            grs_tmap_loop_info *tli, uchar *start_pdest,
-                            uchar *t_bits, long gr_row, fix i, fix di,
-                            uchar *g_ltab, uchar t_wlog, ulong t_mask) {
+int Handle_TLit_Lin_Loop2_C(fix u, fix v, fix du, fix dv, fix dx, grs_tmap_loop_info *tli, uchar *start_pdest,
+                            uchar *t_bits, long gr_row, fix i, fix di, uchar *g_ltab, uchar t_wlog, ulong t_mask) {
   int x, k;
   uchar *p_dest;
   int t_xl, t_xr;
@@ -212,11 +206,9 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
 
   // handle optimized cases first
   if (tli->bm.hlog == (GRL_OPAQUE | GRL_LOG2))
-    return (Handle_Lit_Lin_Loop_C(u, v, du, dv, dx, tli, start_pdest, t_bits,
-                                  gr_row, i, di, g_ltab, t_wlog, t_mask));
+    return (Handle_Lit_Lin_Loop_C(u, v, du, dv, dx, tli, start_pdest, t_bits, gr_row, i, di, g_ltab, t_wlog, t_mask));
   if (tli->bm.hlog == (GRL_TRANS | GRL_LOG2))
-    return (Handle_TLit_Lin_Loop2_C(u, v, du, dv, dx, tli, start_pdest, t_bits,
-                                    gr_row, i, di, g_ltab, t_wlog, t_mask));
+    return (Handle_TLit_Lin_Loop2_C(u, v, du, dv, dx, tli, start_pdest, t_bits, gr_row, i, di, g_ltab, t_wlog, t_mask));
 
   do {
     if ((d = fix_ceil(tli->right.x) - fix_ceil(tli->left.x)) > 0) {
@@ -248,10 +240,7 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
       case GRL_OPAQUE:
         for (; x > 0; x--) {
           k = t_vtab[fix_fint(v)] + fix_fint(u);
-          *(p_dest++) = g_ltab
-              [t_bits[k] +
-               fix_light(
-                   i)]; // gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],x,t_y);
+          *(p_dest++) = g_ltab[t_bits[k] + fix_light(i)]; // gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],x,t_y);
           u += du;
           v += dv;
           i += di;
@@ -261,10 +250,7 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
         for (; x > 0; x--) {
           k = t_vtab[fix_fint(v)] + fix_fint(u);
           if (k = t_bits[k])
-            *p_dest =
-                g_ltab[k +
-                       fix_light(
-                           i)]; // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
+            *p_dest = g_ltab[k + fix_light(i)]; // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
           p_dest++;
           u += du;
           v += dv;
@@ -275,10 +261,7 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
       case GRL_OPAQUE | GRL_LOG2:
         for (; x > 0; x--) {
           k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
-          *(p_dest++) = g_ltab
-              [t_bits[k] +
-               fix_light(
-                   i)]; // gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],x,t_y);
+          *(p_dest++) = g_ltab[t_bits[k] + fix_light(i)]; // gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],x,t_y);
           u += du;
           v += dv;
           i += di;
@@ -288,10 +271,7 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
         for (; x > 0; x--) {
           k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
           if (k = t_bits[k])
-            *p_dest =
-                g_ltab[k +
-                       fix_light(
-                           i)]; // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
+            *p_dest = g_ltab[k + fix_light(i)]; // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
           p_dest++;
           u += du;
           v += dv;
@@ -321,8 +301,7 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
 }
 
 void gri_trans_lit_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2;
   } else {
@@ -335,8 +314,7 @@ void gri_trans_lit_lin_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_opaque_lit_lin_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_OPAQUE | GRL_LOG2;
   } else {

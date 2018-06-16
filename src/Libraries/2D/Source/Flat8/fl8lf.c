@@ -47,9 +47,8 @@ extern int HandleFloorLoop_PPC(grs_tmap_loop_info *tli,
                                                                                                                          uchar t_wlog, ulong	t_mask, uchar *t_bits, uchar *g_ltab);
 }*/
 
-int HandleFloorLoop_C(grs_tmap_loop_info *tli, fix u, fix v, fix du, fix dv,
-                      fix dx, fix i, fix di, uchar t_wlog, ulong t_mask,
-                      uchar *t_bits, uchar *g_ltab) {
+int HandleFloorLoop_C(grs_tmap_loop_info *tli, fix u, fix v, fix du, fix dv, fix dx, fix i, fix di, uchar t_wlog,
+                      ulong t_mask, uchar *t_bits, uchar *g_ltab) {
   uchar *p_dest;
   int x;
   fix inv;
@@ -73,9 +72,7 @@ int HandleFloorLoop_C(grs_tmap_loop_info *tli, fix u, fix v, fix du, fix dv,
       x = fix_cint(tli->right.x) - fix_cint(tli->left.x);
 
       while ((long)p_dest & 3 != 0) {
-        *(p_dest++) =
-            g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] +
-                   fix_light(i)];
+        *(p_dest++) = g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] + fix_light(i)];
         u += du;
         v += dv;
         i += di;
@@ -83,29 +80,25 @@ int HandleFloorLoop_C(grs_tmap_loop_info *tli, fix u, fix v, fix du, fix dv,
       }
 
       while (x >= 4) {
-        inv = g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] +
-                     fix_light(i)];
+        inv = g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] + fix_light(i)];
         u += du;
         v += dv;
         i += di;
         inv <<= 8;
 
-        inv |= g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] +
-                      fix_light(i)];
+        inv |= g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] + fix_light(i)];
         u += du;
         v += dv;
         i += di;
         inv <<= 8;
 
-        inv |= g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] +
-                      fix_light(i)];
+        inv |= g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] + fix_light(i)];
         u += du;
         v += dv;
         i += di;
         inv <<= 8;
 
-        inv |= g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] +
-                      fix_light(i)];
+        inv |= g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] + fix_light(i)];
         u += du;
         v += dv;
         i += di;
@@ -116,9 +109,7 @@ int HandleFloorLoop_C(grs_tmap_loop_info *tli, fix u, fix v, fix du, fix dv,
       }
 
       for (; x > 0; x--) {
-        *(p_dest++) =
-            g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] +
-                   fix_light(i)];
+        *(p_dest++) = g_ltab[t_bits[((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask] + fix_light(i)];
         u += du;
         v += dv;
         i += di;
@@ -188,8 +179,7 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
   t_bits = tli->bm.bits;
 
   if (tli->bm.hlog == (GRL_OPAQUE | GRL_LOG2))
-    return HandleFloorLoop_C(tli, u, v, du, dv, dx, i, di, t_wlog, t_mask,
-                             t_bits, g_ltab);
+    return HandleFloorLoop_C(tli, u, v, du, dv, dx, i, di, t_wlog, t_mask, t_bits, g_ltab);
 
   do {
     if ((d = fix_ceil(tli->right.x) - fix_ceil(tli->left.x)) > 0) {
@@ -218,20 +208,14 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
       case GRL_OPAQUE:
         for (; x > 0; x--) {
           k = t_vtab[fix_fint(v)] + fix_fint(u);
-          *(p_dest++) = g_ltab
-              [t_bits[k] +
-               fix_light(
-                   i)]; // gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],x,t_y);
+          *(p_dest++) = g_ltab[t_bits[k] + fix_light(i)]; // gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],x,t_y);
         }
         break;
       case GRL_TRANS:
         for (; x > 0; x--) {
           k = t_vtab[fix_fint(v)] + fix_fint(u);
           if (k = t_bits[k])
-            *p_dest =
-                g_ltab[k +
-                       fix_light(
-                           i)]; // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
+            *p_dest = g_ltab[k + fix_light(i)]; // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
           p_dest++;
           u += du;
           v += dv;
@@ -251,10 +235,7 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
         for (; x > 0; x--) {
           k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
           if (k = t_bits[k])
-            *p_dest =
-                g_ltab[k +
-                       fix_light(
-                           i)]; // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
+            *p_dest = g_ltab[k + fix_light(i)]; // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
           p_dest++;
           u += du;
           v += dv;
@@ -299,8 +280,7 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
 }
 
 void gri_trans_lit_floor_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_TRANS | GRL_LOG2;
   } else {
@@ -313,8 +293,7 @@ void gri_trans_lit_floor_umap_init(grs_tmap_loop_info *tli) {
 }
 
 void gri_opaque_lit_floor_umap_init(grs_tmap_loop_info *tli) {
-  if ((tli->bm.row == (1 << tli->bm.wlog)) &&
-      (tli->bm.h == (1 << tli->bm.hlog))) {
+  if ((tli->bm.row == (1 << tli->bm.wlog)) && (tli->bm.h == (1 << tli->bm.hlog))) {
     tli->mask = (1 << (tli->bm.hlog + tli->bm.wlog)) - 1;
     tli->bm.hlog = GRL_OPAQUE | GRL_LOG2;
   } else {

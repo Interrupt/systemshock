@@ -63,8 +63,7 @@ long flat8_get_pixel24(short x, short y) {
   long *r;
   int i;
 
-  if (x < grd_clip.left || x >= grd_clip.right || y < grd_clip.top ||
-      y >= grd_clip.bot)
+  if (x < grd_clip.left || x >= grd_clip.right || y < grd_clip.top || y >= grd_clip.bot)
     return CLIP_ALL;
   p = grd_canvas->bm.bits + grd_canvas->bm.row * y + x;
   i = *p;

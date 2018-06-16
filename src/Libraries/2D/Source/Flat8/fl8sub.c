@@ -38,8 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "flat8.h"
 #include "grs.h"
 
-grs_bitmap *flat8_sub_bitmap(grs_bitmap *bm, short x, short y, short w,
-                             short h) {
+grs_bitmap *flat8_sub_bitmap(grs_bitmap *bm, short x, short y, short w, short h) {
   bm->bits += y * bm->row + x;
   bm->w = w;
   bm->h = h;

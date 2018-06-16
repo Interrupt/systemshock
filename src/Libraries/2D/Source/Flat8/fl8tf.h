@@ -43,11 +43,9 @@ extern void flat8_solid_set_upixel(long color, short x, short y);
 extern void flat8_flat8_ubitmap(grs_bitmap *bm, short x, short y);
 
 extern void flat8_tluc8_ubitmap(grs_bitmap *bm, short x, short y);
-extern int gri_flat8_mask_bitmap(grs_bitmap *bm, short x, short y,
-                                 grs_stencil *sten);
+extern int gri_flat8_mask_bitmap(grs_bitmap *bm, short x, short y, grs_stencil *sten);
 extern void gri_flat8_clut_ubitmap(grs_bitmap *bm, short x, short y, uchar *cl);
-extern int gri_flat8_mask_fill_clut_bitmap(grs_bitmap *bm, short x, short y,
-                                           grs_stencil *sten);
+extern int gri_flat8_mask_fill_clut_bitmap(grs_bitmap *bm, short x, short y, grs_stencil *sten);
 extern void gri_flat8_fill_clut_ubitmap(grs_bitmap *bm, short x, short y);
 extern void gri_flat8_rsd8_ubitmap(grs_bitmap *bm, short x, short y);
 extern int gri_flat8_rsd8_bitmap(grs_bitmap *bm, short x_left, short y_top);
@@ -90,27 +88,18 @@ extern void gri_opaque_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps);
 extern void gri_trans_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps);
 extern void gri_opaque_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps);
 extern void gri_trans_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps);
-extern void gri_opaque_lit_per_umap_hscan_init(grs_bitmap *bm,
-                                               grs_per_setup *ps);
-extern void gri_trans_lit_per_umap_hscan_init(grs_bitmap *bm,
-                                              grs_per_setup *ps);
+extern void gri_opaque_lit_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps);
+extern void gri_trans_lit_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps);
 
-extern void gri_opaque_lit_per_umap_vscan_init(grs_bitmap *bm,
-                                               grs_per_setup *ps);
-extern void gri_trans_lit_per_umap_vscan_init(grs_bitmap *bm,
-                                              grs_per_setup *ps);
-extern void gri_opaque_clut_per_umap_hscan_init(grs_bitmap *bm,
-                                                grs_per_setup *ps);
-extern void gri_trans_clut_per_umap_hscan_init(grs_bitmap *bm,
-                                               grs_per_setup *ps);
-extern void gri_opaque_clut_per_umap_vscan_init(grs_bitmap *bm,
-                                                grs_per_setup *ps);
-extern void gri_trans_clut_per_umap_vscan_init(grs_bitmap *bm,
-                                               grs_per_setup *ps);
+extern void gri_opaque_lit_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps);
+extern void gri_trans_lit_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps);
+extern void gri_opaque_clut_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps);
+extern void gri_trans_clut_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps);
+extern void gri_opaque_clut_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps);
+extern void gri_trans_clut_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps);
 
 extern int gri_opaque_scale_umap_init(grs_tmap_loop_info *tli);
-extern int gri_trans_scale_umap_init(grs_tmap_loop_info *tli,
-                                     grs_vertex **vert);
+extern int gri_trans_scale_umap_init(grs_tmap_loop_info *tli, grs_vertex **vert);
 extern int gri_opaque_clut_scale_umap_init(grs_tmap_loop_info *tli);
 extern int gri_trans_clut_scale_umap_init(grs_tmap_loop_info *tli);
 
@@ -132,14 +121,10 @@ extern void gri_solid_poly_init(grs_tmap_loop_info *ti);
 extern void gri_trans_solid_lin_umap_init(grs_tmap_loop_info *ti);
 extern void gri_trans_solid_floor_umap_init(grs_tmap_loop_info *ti);
 extern void gri_trans_solid_wall_umap_init(grs_tmap_loop_info *ti);
-extern void gri_trans_solid_per_umap_hscan_init(grs_bitmap *bm,
-                                                grs_per_setup *ps);
-extern void gri_trans_solid_per_umap_vscan_init(grs_bitmap *bm,
-                                                grs_per_setup *ps);
-extern int gri_opaque_solid_scale_umap_init(grs_tmap_loop_info *info,
-                                            grs_vertex **vert);
-extern int gri_trans_solid_scale_umap_init(grs_tmap_loop_info *tli,
-                                           grs_vertex **vert);
+extern void gri_trans_solid_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps);
+extern void gri_trans_solid_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps);
+extern int gri_opaque_solid_scale_umap_init(grs_tmap_loop_info *info, grs_vertex **vert);
+extern int gri_trans_solid_scale_umap_init(grs_tmap_loop_info *tli, grs_vertex **vert);
 
 /* translucent bitmaps */
 extern void gri_tluc8_opaque_lin_umap_init(grs_tmap_loop_info *tli);

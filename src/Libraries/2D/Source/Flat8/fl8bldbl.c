@@ -62,8 +62,7 @@ void flat8_flat8_v_double_ubitmap(grs_bitmap *bm) {
     for (j = 0; j < bm->w; j++) /* all pixels in vertical clone */
     {
       *dst++ = local_grd_half_blend[((bpv = *src_nxt++) << 8) | (*src++)];
-      *dst_nxt++ =
-          bpv; /* is this faster than another memcpy? in asm probably? */
+      *dst_nxt++ = bpv; /* is this faster than another memcpy? in asm probably? */
     }
     dst += dst_skip;
     src += src_skip; /* get to the next line */
@@ -80,10 +79,8 @@ void flat8_flat8_v_double_ubitmap(grs_bitmap *bm) {
 uchar *grd_last_sub_bm;
 uchar grd_sub_bm_buffer[D_ROW * D_ROW];
 
-void gri_flat8_hv_quadruple_sub_bitmap(grs_bitmap *src_bm, grs_bitmap *dst_bm,
-                                       int u, int v);
-void gri_flat8_hv_quadruple_sub_bitmap(grs_bitmap *src_bm, grs_bitmap *dst_bm,
-                                       int u, int v) {
+void gri_flat8_hv_quadruple_sub_bitmap(grs_bitmap *src_bm, grs_bitmap *dst_bm, int u, int v);
+void gri_flat8_hv_quadruple_sub_bitmap(grs_bitmap *src_bm, grs_bitmap *dst_bm, int u, int v) {
   int i, j, full_h_blend;
   uchar *src, *dst;
 
@@ -180,10 +177,8 @@ void gri_flat8_hv_quadruple_sub_bitmap(grs_bitmap *src_bm, grs_bitmap *dst_bm,
 #define DSB_SIZE 8
 #define LOG_DSB_SIZE 3
 
-void gri_flat8_hv_double_sub_bitmap(grs_bitmap *src_bm, grs_bitmap *dst_bm,
-                                    int u, int v);
-void gri_flat8_hv_double_sub_bitmap(grs_bitmap *src_bm, grs_bitmap *dst_bm,
-                                    int u, int v) {
+void gri_flat8_hv_double_sub_bitmap(grs_bitmap *src_bm, grs_bitmap *dst_bm, int u, int v);
+void gri_flat8_hv_double_sub_bitmap(grs_bitmap *src_bm, grs_bitmap *dst_bm, int u, int v) {
   int i, j, full_h_blend;
   uchar *src, *dst;
 

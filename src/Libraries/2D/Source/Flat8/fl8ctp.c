@@ -44,8 +44,7 @@ void gri_trans_clut_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   uchar *p;
 
   // ltc_als used to speed PPC code
-  fix l_u, l_v, l_du, l_dv, l_y_fix, l_scan_slope, l_dtl, l_dxl, l_dyl, l_dtr,
-      l_dyr;
+  fix l_u, l_v, l_du, l_dv, l_y_fix, l_scan_slope, l_dtl, l_dxl, l_dyl, l_dtr, l_dyr;
   int l_x, l_xl, l_xr, l_xr0, l_u_mask, l_v_mask, l_v_shift;
   int gr_row, temp_y;
   uchar *bm_bits;
@@ -103,8 +102,7 @@ void gri_trans_clut_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
         k = (l_u >> 16) & l_u_mask;
         k += (l_v >> l_v_shift) & l_v_mask;
         if (temp_pix = bm_bits[k])
-          *p = t_clut
-              [temp_pix]; // gr_fill_upixel(t_clut[bm_bits[k]],l_x,y_cint);
+          *p = t_clut[temp_pix]; // gr_fill_upixel(t_clut[bm_bits[k]],l_x,y_cint);
       }
       temp_y = y_cint;
       y_cint = fix_int(l_y_fix += l_scan_slope);
@@ -144,8 +142,7 @@ void gri_trans_clut_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
         k = (l_u >> 16) & l_u_mask;
         k += (l_v >> l_v_shift) & l_v_mask;
         if (temp_pix = bm_bits[k])
-          *p = t_clut
-              [temp_pix]; // gr_fill_upixel(t_clut[bm_bits[k]],l_x,y_cint);
+          *p = t_clut[temp_pix]; // gr_fill_upixel(t_clut[bm_bits[k]],l_x,y_cint);
       }
       temp_y = y_cint;
       y_cint = fix_int(l_y_fix += l_scan_slope);
@@ -174,8 +171,7 @@ void gri_trans_clut_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   register int k, x_cint;
 
   // locals used to speed PPC code
-  fix l_dxr, l_x_fix, l_u, l_v, l_du, l_dv, l_scan_slope, l_dtl, l_dxl, l_dyl,
-      l_dtr, l_dyr;
+  fix l_dxr, l_x_fix, l_u, l_v, l_du, l_dv, l_scan_slope, l_dtl, l_dxl, l_dyl, l_dtr, l_dyr;
   int l_yl, l_yr0, l_yr, l_y, l_u_mask, l_v_mask, l_v_shift;
   int gr_row, temp_x;
   uchar *bm_bits;
@@ -232,8 +228,7 @@ void gri_trans_clut_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
         k = (l_u >> 16) & l_u_mask;
         k += (l_v >> l_v_shift) & l_v_mask;
         if (temp_pix = bm_bits[k])
-          *p = t_clut
-              [temp_pix]; // gr_fill_upixel(t_clut[bm_bits[k]],x_cint,l_y);
+          *p = t_clut[temp_pix]; // gr_fill_upixel(t_clut[bm_bits[k]],x_cint,l_y);
       }
       temp_x = x_cint;
       x_cint = fix_int(l_x_fix += l_scan_slope);
@@ -273,8 +268,7 @@ void gri_trans_clut_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
         k = (l_u >> 16) & l_u_mask;
         k += (l_v >> l_v_shift) & l_v_mask;
         if (temp_pix = bm_bits[k])
-          *p = t_clut
-              [temp_pix]; // gr_fill_upixel(t_clut[bm_bits[k]],x_cint,l_y);
+          *p = t_clut[temp_pix]; // gr_fill_upixel(t_clut[bm_bits[k]],x_cint,l_y);
       }
 
       temp_x = x_cint;
@@ -299,10 +293,8 @@ void gri_trans_clut_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
   pi->dv = l_dv;
 }
 
-extern void gri_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl,
-                               grs_per_setup *ps);
-extern void gri_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl,
-                               grs_per_setup *ps);
+extern void gri_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
+extern void gri_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
 
 void gri_trans_clut_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps) {
   ps->shell_func = (void (*)())gri_per_umap_hscan;

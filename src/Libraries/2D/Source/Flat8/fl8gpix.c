@@ -53,8 +53,7 @@ long flat8_get_upixel(short x, short y) {
 long flat8_get_pixel(short x, short y) {
   uchar *p;
 
-  if (x < grd_clip.left || x > grd_clip.right || y < grd_clip.top ||
-      y > grd_clip.bot)
+  if (x < grd_clip.left || x > grd_clip.right || y < grd_clip.top || y > grd_clip.bot)
     return -1;
 
   p = grd_bm.bits + grd_bm.row * y + x;
