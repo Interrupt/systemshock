@@ -81,6 +81,8 @@ typedef struct _handler_chain
 
 ulong uiGlobalEventMask = ALL_EVENTS;
 
+ulong last_mouse_draw_time = 0;
+
 // ----------------------------
 // HANDLER CHAIN IMPLEMENTATION
 // ----------------------------
@@ -909,10 +911,15 @@ errtype uiPoll(void)
    if (ui_poll_keys != NULL && (uiGlobalEventMask & UI_EVENT_KBD_POLL))
       ui_poll_keyboard();
    ui_flush_mouse_events(mouse_get_time(),mousepos);
-   if (!PointsEqual(mousepos,last_mouse))
+
+   // CC: Make sure the attack cursor doesn't display forever!
+   int diff = mouse_get_time() - last_mouse_draw_time;
+   
+   if (!PointsEqual(mousepos,last_mouse) || diff > uiDoubleClickDelay * 5)
    {
       ui_update_cursor(mousepos);
       last_mouse = mousepos;
+      last_mouse_draw_time = mouse_get_time();
    }
 
    return OK;

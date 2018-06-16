@@ -66,7 +66,12 @@ void mouse_look_physics()
     if(mvely != 0) {
       // Moving the eye up angle is easy
       fix pos = eye_mods[1];
-      fr_objslew_setone(EYE_P, pos + mvely);
+
+      pos += mvely;
+      pos = lg_min(pos, 14500);
+      pos = lg_max(pos, -14500);
+
+      fr_objslew_setone(EYE_P, pos);
     }
 
     if(mvelx != 0) {
