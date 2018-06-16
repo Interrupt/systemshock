@@ -16,14 +16,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-//		COMPOSEW.C		Routines for handling wide8 compose buffer
+//		COMPOSEW.C		Routines for handling wide8 compose
+// buffer
 //		Rex E. Bradford (REX)
 //
 /*
  * $Header: r:/prj/lib/src/afile/RCS/compose.c 1.4 1994/10/18 08:19:13 rex Exp $
  * $Log: compose.c $
  * Revision 1.4  1994/10/18  08:19:13  rex
- * Added BMF_TRANS flag to computed RSD bitmaps, so they'll work properly with 2d.
+ * Added BMF_TRANS flag to computed RSD bitmaps, so they'll work properly with
+ * 2d.
  *
  * Revision 1.3  1994/09/13  12:23:27  rex
  * Push and pop stack canvas, instead of just set
@@ -47,16 +49,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //	ComposeInit() allocates memory and inits bitmap.
 
-void ComposeInit(grs_bitmap *pcompose, int bmtype, int w, int h) {
+void ComposeInit(grs_bitmap *pcompose, int32_t bmtype, int32_t w, int32_t h) {
   //	Compute rowbytes based on type
 
   switch (bmtype) {
   case BMT_FLAT8:
-    pcompose->row = sizeof(uchar) * w;
+    pcompose->row = sizeof(uint8_t) * w;
     break;
-    //		case BMT_FLAT24:
-    //			pcompose->row = 3 * w;
-    //			break;
+  //		case BMT_FLAT24:
+  //			pcompose->row = 3 * w;
+  //			break;
   default:
     printf("ComposeInit: invalid bitmap type: %d\n", bmtype);
     return;
@@ -64,7 +66,7 @@ void ComposeInit(grs_bitmap *pcompose, int bmtype, int w, int h) {
 
   //	Init bitmap
 
-  pcompose->bits = (uchar *)malloc((long)pcompose->row * h);
+  pcompose->bits = (uint8_t *)malloc((int32_t)pcompose->row * h);
   pcompose->type = bmtype;
   pcompose->flags = 0;
   pcompose->align = 0;
@@ -106,7 +108,8 @@ void ComposeFlat8Add(grs_bitmap *pcompose, grs_bitmap *pbm) {
 
   switch (pbm->type) {
     //		case BMT_RSD24:
-    //			printf("ComposeFlat8Add: can't add RSD24 to compose buffer\n");
+    //			printf("ComposeFlat8Add: can't add RSD24 to compose
+    // buffer\n");
     //			break;
 
   default:
@@ -122,10 +125,10 @@ void ComposeFlat8Add(grs_bitmap *pcompose, grs_bitmap *pbm) {
 //
 //	ComposeFlat24Add() adds a bitmap to a flat8 compose buffer.
 
-void gr_flat24_flat24_ubitmap(grs_bitmap *pbm, int x, int y)
+void gr_flat24_flat24_ubitmap(grs_bitmap *pbm, int32_t x, int32_t y)
 {
-        uchar *ps,*pd;
-        int iy;
+        uint8_t *ps,*pd;
+        int32_t iy;
 
         ps = pbm->bits;
         pd = grd_canvas->bm.bits + (grd_canvas->bm.row * y) + (x * 3);
@@ -151,7 +154,8 @@ void ComposeFlat24Add(grs_bitmap *pcompose, grs_bitmap *pbm)
         switch (pbm->type)
                 {
                 case BMT_RSD24:
-                        Warning(("ComposeFlat24Add: can't add RSD24 to compose buffer!\n"));
+                        Warning(("ComposeFlat24Add: can't add RSD24 to compose
+buffer!\n"));
                         break;
 
                 case BMT_FLAT24:
@@ -174,7 +178,7 @@ void ComposeFlat24Add(grs_bitmap *pcompose, grs_bitmap *pbm)
 //
 //	ComposeDiff() computes difference between compose buffer & bitmap.
 
-long ComposeDiff(grs_bitmap *pcompose, grs_bitmap *pbmNew, grs_bitmap *pbmDiff) {
+int32_t ComposeDiff(grs_bitmap *pcompose, grs_bitmap *pbmNew, grs_bitmap *pbmDiff) {
   switch (pcompose->type) {
   case BMT_FLAT8:
     return (ComposeFlat8Diff(pcompose, pbmNew, pbmDiff));
@@ -192,8 +196,8 @@ long ComposeDiff(grs_bitmap *pcompose, grs_bitmap *pbmNew, grs_bitmap *pbmDiff) 
 //
 //	ComposeFlat8Diff() computes diff between flat8 compose buff & bitmap.
 
-long ComposeFlat8Diff(grs_bitmap *pcompose, grs_bitmap *pbmNew, grs_bitmap *pbmDiff) {
-  long numPixels, len;
+int32_t ComposeFlat8Diff(grs_bitmap *pcompose, grs_bitmap *pbmNew, grs_bitmap *pbmDiff) {
+  int32_t numPixels, len;
 
   //	Error-check
 
@@ -209,7 +213,7 @@ long ComposeFlat8Diff(grs_bitmap *pcompose, grs_bitmap *pbmNew, grs_bitmap *pbmD
 
   //	Try rsd compression
 
-  numPixels = (long)pbmDiff->row * pbmDiff->h;
+  numPixels = (int32_t)pbmDiff->row * pbmDiff->h;
   len = 0;
   //	len = RsdCompressDiff(pbmDiff->bits, numPixels, pcompose->bits,
   //		pbmNew->bits, numPixels);
@@ -231,16 +235,17 @@ long ComposeFlat8Diff(grs_bitmap *pcompose, grs_bitmap *pbmNew, grs_bitmap *pbmD
 //
 //	ComposeFlat24Diff() computes diff between flat24 compose buff & bitmap.
 
-long ComposeFlat24Diff(grs_bitmap *pcompose, grs_bitmap *pbmNew,
+int32_t ComposeFlat24Diff(grs_bitmap *pcompose, grs_bitmap *pbmNew,
         grs_bitmap *pbmDiff)
 {
-        long numPixels,numPixels3,len;
+        int32_t numPixels,numPixels3,len;
 
 //	Error-check
 
         if (pbmNew->type != BMT_FLAT24)
                 {
-                Warning(("ComposeFlat8Diff: new bitmap wrong type: %d\n", pbmNew->type));
+                Warning(("ComposeFlat8Diff: new bitmap wrong type: %d\n",
+pbmNew->type));
                 return(-1);
                 }
 
@@ -255,7 +260,7 @@ long ComposeFlat24Diff(grs_bitmap *pcompose, grs_bitmap *pbmNew,
 
 //	Try rsd compression
 
-        numPixels = (long) pbmDiff->row * pbmDiff->h;
+        numPixels = (int32_t) pbmDiff->row * pbmDiff->h;
         numPixels3 = numPixels * 3;
         len = Rsd24CompressDiff(pbmDiff->bits, numPixels3, pcompose->bits,
                 pbmNew->bits, numPixels);
@@ -278,7 +283,7 @@ long ComposeFlat24Diff(grs_bitmap *pcompose, grs_bitmap *pbmNew,
 //
 //	ComposeConvert() converts compose buffer into bitmap.
 
-long ComposeConvert(grs_bitmap *pcompose, grs_bitmap *pbm) {
+int32_t ComposeConvert(grs_bitmap *pcompose, grs_bitmap *pbm) {
   switch (pcompose->type) {
   case BMT_FLAT8:
     return (ComposeFlat8Convert(pcompose, pbm));
@@ -296,8 +301,8 @@ long ComposeConvert(grs_bitmap *pcompose, grs_bitmap *pbm) {
 //
 //	ComposeFlat8Convert() converts flat8 compose buffer into bitmap.
 
-long ComposeFlat8Convert(grs_bitmap *pcompose, grs_bitmap *pbm) {
-  long numPixels, len;
+int32_t ComposeFlat8Convert(grs_bitmap *pcompose, grs_bitmap *pbm) {
+  int32_t numPixels, len;
   grs_canvas cv;
 
   if ((pcompose->w != pbm->w) || (pcompose->h != pbm->h) || (pcompose->row != pbm->row)) {
@@ -305,7 +310,7 @@ long ComposeFlat8Convert(grs_bitmap *pcompose, grs_bitmap *pbm) {
     return (0);
   }
 
-  numPixels = (long)pcompose->w * pcompose->h;
+  numPixels = (int32_t)pcompose->w * pcompose->h;
 
 CONVERT:
 
@@ -315,7 +320,8 @@ CONVERT:
     return (numPixels);
 
   case BMT_RSD8:
-    //			len = RsdCompress(pbm->bits, numPixels, pcompose->bits, -1,
+    //			len = RsdCompress(pbm->bits, numPixels, pcompose->bits,
+    //-1,
     //				numPixels);
     len = -1;
     if (len < 0) {
@@ -341,9 +347,9 @@ CONVERT:
 //
 //	ComposeFlat24Convert() converts flat24 compose buffer into bitmap.
 
-long ComposeFlat24Convert(grs_bitmap *pcompose, grs_bitmap *pbm)
+int32_t ComposeFlat24Convert(grs_bitmap *pcompose, grs_bitmap *pbm)
 {
-        long numPixels;
+        int32_t numPixels;
         grs_canvas cv;
 
         if ((pcompose->w != pbm->w) || (pcompose->h != pbm->h) ||
@@ -353,7 +359,7 @@ long ComposeFlat24Convert(grs_bitmap *pcompose, grs_bitmap *pbm)
                 return(0);
                 }
 
-        numPixels = (long) pcompose->w * pcompose->h;
+        numPixels = (int32_t) pcompose->w * pcompose->h;
 
         switch (pbm->type)
                 {
@@ -369,7 +375,8 @@ long ComposeFlat24Convert(grs_bitmap *pcompose, grs_bitmap *pbm)
                         return(numPixels * 3);
 
                 default:
-                        Warning(("ComposeFlat24Convert: can't convert to bm type: %d\n",
+                        Warning(("ComposeFlat24Convert: can't convert to bm
+type: %d\n",
                                 pbm->type));
                         return(0);
                 }

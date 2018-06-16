@@ -38,19 +38,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 typedef struct {
-  uchar *buff;    // ptr to circular buffer
-  uchar *buffEnd; // end of buffer
-  uchar *pput;    // ptr to put data to
-  uchar *pget;    // ptr to get data from
+  uint8_t *buff;    // ptr to circular buffer
+  uint8_t *buffEnd; // end of buffer
+  uint8_t *pput;    // ptr to put data to
+  uint8_t *pget;    // ptr to get data from
 } CircBuff;
 
-void CircBuffInit(CircBuff *pcb, uchar *buff, long length);
+void CircBuffInit(CircBuff *pcb, uint8_t *buff, int32_t length);
 void CircBuffReset(CircBuff *pcb);
-ulong CircBuffRoom(CircBuff *pcb);
-ulong CircBuffUsed(CircBuff *pcb);
-void CircBuffAdvancePut(CircBuff *pcb, long amt);
-void CircBuffAdvanceGet(CircBuff *pcb, long amt);
-uchar CircBuffBetween(uchar *ptest, uchar *pbeg, uchar *pend);
+uint32_t CircBuffRoom(CircBuff *pcb);
+uint32_t CircBuffUsed(CircBuff *pcb);
+void CircBuffAdvancePut(CircBuff *pcb, int32_t amt);
+void CircBuffAdvanceGet(CircBuff *pcb, int32_t amt);
+uint8_t CircBuffBetween(uint8_t *ptest, uint8_t *pbeg, uint8_t *pend);
 
 #define CircBuffEmpty(pcb) ((pcb)->pput == (pcb)->pget)
 #define CircBuffHitEnd(pcb, p) ((p) >= (pcb)->buffEnd)

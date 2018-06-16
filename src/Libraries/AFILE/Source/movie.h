@@ -53,14 +53,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	3. Actual chunks, as pointed at in MovieChunk[] array
 
 //	Movie chunk format
-
+#pragma pack(1)
+// FIXME bitfield and little-endian hell of madness...
+/*
 typedef struct {
-  ulong time : 24;     // fixed-point time since movie start
-  ulong played : 1;    // has this chunk been clocked out?
-  ulong flags : 4;     // chunkType-specific
-  ulong chunkType : 3; // MOVIE_CHUNK_XXX
-  ulong offset;        // byte offset to chunk start
+  uint32_t time : 24;     // fixed-point time since movie start
+  uint32_t played : 1;    // has this chunk been clocked out?
+  uint32_t flags : 4;     // chunkType-specific
+  uint32_t chunkType : 3; // MOVIE_CHUNK_XXX
+  uint32_t offset;        // int8_t offset to chunk start
+} MovieChunk __attribute__ ((__packed__));;
+*/
+typedef struct {
+  uint32_t time : 24;     // fixed-point time since movie start
+  uint32_t chunkType : 3; // MOVIE_CHUNK_XXX
+  uint32_t flags : 4;     // chunkType-specific
+  uint32_t played : 1;    // has this chunk been clocked out?
+  uint32_t offset;        // int8_t offset to chunk start
 } MovieChunk;
+#pragma pack()
 
 //	Movie chunk types
 
@@ -85,40 +96,44 @@ typedef struct {
 #define MOVIE_FTABLE_HUFFTAB 1  // huffman table (compressed)
 
 //	Movie header layout
-
+#pragma pack(1)
 typedef struct {
-  ulong magicId;         // 'MOVI' (MOVI_MAGIC_ID)
-  long numChunks;        // number of chunks in movie
-  long sizeChunks;       // size in bytes of chunk array
-  long sizeData;         // size in bytes of chunk data
-  fix totalTime;         // total playback time
-  fix frameRate;         // frames/second, for info only
-  short frameWidth;      // frame width in pixels
-  short frameHeight;     // frame height in pixels
-  short gfxNumBits;      // 8, 15, 24
-  short isPalette;       // is palette present?
-  short audioNumChans;   // 0 = no audio, 1 = mono, 2 = stereo
-  short audioSampleSize; // 1 = 8-bit, 2 = 16-bit
-  fix audioSampleRate;   // in Khz
-  uchar reserved[216];   // so chunk is 1K in size
-  uchar palette[768];    // palette
+  uint32_t magicId;        // 'MOVI' (MOVI_MAGIC_ID)
+  int32_t numChunks;       // number of chunks in movie
+  int32_t sizeChunks;      // size in bytes of chunk array
+  int32_t sizeData;        // size in bytes of chunk data
+  fix totalTime;           // total playback time
+  fix frameRate;           // frames/second, for info only
+  int16_t frameWidth;      // frame width in pixels
+  int16_t frameHeight;     // frame height in pixels
+  int16_t gfxNumBits;      // 8, 15, 24
+  int16_t isPalette;       // is palette present?
+  int16_t audioNumChans;   // 0 = no audio, 1 = mono, 2 = stereo
+  int16_t audioSampleSize; // 1 = 8-bit, 2 = 16-bit
+  fix audioSampleRate;     // in Khz
+  uint8_t reserved[216];   // so chunk is 1K in size
+  uint8_t palette[768];    // palette
 } MovieHeader;
+#pragma pack()
 
 #ifndef SAMPRATE_11KHZ // also appear in voc.h
 #define SAMPRATE_11KHZ fix_make(11127, 0)
 #define SAMPRATE_22KHZ fix_make(22254, 0)
 #endif
 
-#define MOVI_MAGIC_ID 0x4D4F5649
+// FIXME: unportable, need change to FourCC
+// Little endian
+#define MOVI_MAGIC_ID 0x49564F4D
 
 //	Movie text chunk begins with a 0-terminated array of these:
 
 typedef struct {
-  ulong tag;    // 'XXXX'
-  ulong offset; // offset to text string
+  uint32_t tag;    // 'XXXX'
+  uint32_t offset; // offset to text string
 } MovieTextItem;
 
-#define MOVIE_TEXTITEM_MAKETAG(c1, c2, c3, c4) ((((ulong)c4) << 24) | (((ulong)c3) << 16) | (((ulong)c2) << 8) | (c1))
+#define MOVIE_TEXTITEM_MAKETAG(c1, c2, c3, c4) \
+  ((((uint32_t)c4) << 24) | (((uint32_t)c3) << 16) | (((uint32_t)c2) << 8) | (c1))
 #define MOVIE_TEXTITEM_TAG(pmti, index) ((pmti + (index))->tag)
 #define MOVIE_TEXTITEM_PTR(pmti, index) ((char *)(pmti) + (pmti + (index))->offset)
 #define MOVIE_TEXTITEM_EXISTS(pmti, index) MOVIE_TEXTITEM_TAG(pmti, index)
@@ -128,51 +143,51 @@ typedef struct {
 //	Movie runtime structures
 
 typedef struct {
-  short sizeBuffers; // size of each buffer
-  uchar *pbuff[2];   // sound buffers (raw ptrs)
+  int16_t sizeBuffers; // size of each buffer
+  uint8_t *pbuff[2];   // sound buffers (raw ptrs)
 } MovieAudioBuffers;
 
 typedef struct {
   CircBuff cb;            // circular data buffer
-  long blockLen;          // # bytes to read in each block
-  long ovfLen;            // # overflow bytes past circular buffer
+  int32_t blockLen;       // # bytes to read in each block
+  int32_t ovfLen;         // # overflow bytes past circular buffer
   MovieChunk *pCurrChunk; // ptr to current chunk to use
-  long bytesLeft;         // bytes left to read
+  int32_t bytesLeft;      // bytes left to read
 } MovieBuffInfo;
 
 typedef struct {
-  int snd_in;
-  short nextBuff; // next buffer to load (0 or 1, -1 for none)
-  short smp_id;   // snd lib id of the current sample
+  int32_t snd_in;
+  int16_t nextBuff; // next buffer to load (0 or 1, -1 for none)
+  int16_t smp_id;   // snd lib id of the current sample
 } MovieAudioState;
 
 typedef struct Movie_ {
   MovieHeader *pmh;                               // ptr to movie header (read from 1st bytes of movie)
   MovieChunk *pmc;                                // ptr to movie chunk array
-  int fd;                                         // file being read from
-  long fileOff;                                   // offset in file to start of movie
+  int32_t fd;                                     // file being read from
+  int32_t fileOff;                                // offset in file to start of movie
   grs_canvas *pcanvas;                            // ptr to canvas being played into
   fix tStart;                                     // time movie started
   MovieBuffInfo bi;                               // movie buffering info
   MovieAudioState as;                             // current audio state for each channel
-  uchar *pColorSet;                               // ptr to color set table (4x4 codec)
-  long lenColorSet;                               // length of color set table
-  uchar *pHuffTab;                                // ptr to huffman table (4x4 codec)
-  long lenHuffTab;                                // length of huffman table
+  uint8_t *pColorSet;                             // ptr to color set table (4x4 codec)
+  int32_t lenColorSet;                            // length of color set table
+  uint8_t *pHuffTab;                              // ptr to huffman table (4x4 codec)
+  int32_t lenHuffTab;                             // length of huffman table
   void (*f_VideoCallback)(struct Movie_ *pmovie); // video callback for composing
   void (*f_TextCallback)(struct Movie_ *pmovie, MovieTextItem *pitem); // text chunk callback
   void *pTextCallbackInfo;                                             // info maintained by text callback
-  uchar playing;                                                       // is movie playing?
-  uchar processing;                                                    // is movie processing?
-  uchar singleStep;                                                    // single step movie
-  uchar clipCanvas;                                                    // clip to canvas?
+  uint8_t playing;                                                     // is movie playing?
+  uint8_t processing;                                                  // is movie processing?
+  uint8_t singleStep;                                                  // single step movie
+  uint8_t clipCanvas;                                                  // clip to canvas?
 } Movie;
 
 //	Prototypes
 
-Movie *MoviePrepare(int fd, uchar *buff, long buffLen, long blockLen);
-Movie *MoviePrepareRes(Id id, uchar *buff, long buffLen, long blockLen);
-void MovieReadAhead(Movie *pmovie, int numBlocks);
+Movie *MoviePrepare(int32_t fd, uint8_t *buff, int32_t buffLen, int32_t blockLen);
+Movie *MoviePrepareRes(Id id, uint8_t *buff, int32_t buffLen, int32_t blockLen);
+void MovieReadAhead(Movie *pmovie, int32_t numBlocks);
 void MoviePlay(Movie *pmovie, grs_canvas *pcanvas);
 void MovieUpdate(Movie *pmovie);
 void MovieAdvance(Movie *pmovie);
@@ -183,7 +198,7 @@ void MovieKill(Movie *pmovie);
 #define TXTCB_FLAG_CENTER_Y 0x02
 #define TXTCB_FLAG_CENTERED TXTCB_FLAG_CENTER_X | TXTCB_FLAG_CENTER_Y
 
-void MovieInstallStdTextCallback(Movie *pmovie, ulong lang, Id fontId, uchar color, uchar flags);
+void MovieInstallStdTextCallback(Movie *pmovie, uint32_t lang, Id fontId, uint8_t color, uint8_t flags);
 
 #define MovieChunkLength(pmc) (((pmc) + 1)->offset - (pmc)->offset)
 #define MoviePlaying(pmovie) ((pmovie)->playing)

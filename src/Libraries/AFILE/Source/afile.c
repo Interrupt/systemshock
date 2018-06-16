@@ -191,7 +191,7 @@ int AfileOpen(Afile *paf, char *filename) {
 //
 //	Returns: size of frame, or -1 if error
 
-long AfileReadFullFrame(Afile *paf, grs_bitmap *pbm, fix *ptime) {
+int32_t AfileReadFullFrame(Afile *paf, grs_bitmap *pbm, fix *ptime) {
   long len;
   fix time;
 
@@ -420,14 +420,14 @@ AfileType AfileLookupType(char *ext) {
 //
 //	AfileBitmapLength() returns amount of space needed to read bitmaps.
 
-long AfileBitmapLength(Afile *paf) { return (paf->frameLen); }
+int32_t AfileBitmapLength(Afile *paf) { return (paf->frameLen); }
 
 //	-------------------------------------------------------------
 //
 //	AfileAudioLength() computes the length of the buffer needed
 //	to store audio data.  Hope it all fits into ram!
 
-long AfileAudioLength(Afile *paf) {
+int32_t AfileAudioLength(Afile *paf) {
   if (paf->a.numChans == 0)
     return (0);
   else
