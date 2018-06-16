@@ -346,7 +346,6 @@ void drug_lsd_startup(void) {
 
 void drug_lsd_wearoff() {
   // Return from palette shift
-  int ppall = 0;
   gr_set_pal(0, 256, ppall);
   // KLC   gamma_dealfunc(QUESTVAR_GET(GAMMACOR_QVAR));
   gamma_dealfunc(gShockPrefs.doGamma);
@@ -355,7 +354,6 @@ void drug_lsd_wearoff() {
 }
 
 void drug_lsd_closedown(uchar visible) {
-  int ppall = 0;
   if (visible && STATUS(DRUG_LSD) > 0)
     gr_set_pal(0, 256, ppall);
 }
