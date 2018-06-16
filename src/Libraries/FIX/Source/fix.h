@@ -189,7 +189,6 @@ int long_sqrt(int x);
 //
 
 int long_fast_pyth_dist(int a, int b);
-int long_safe_pyth_dist(int a, int b);
 
 //========================================
 //
@@ -240,7 +239,7 @@ typedef uint16_t fixang;
 #define fix_round(n) (((n) + 32768) & 0xffff0000)
 
 /* returns the integral part of a fixed point number. */
-#define fix_int(n) ((n) >> 16)
+#define fix_int(n) ((int16_t)((n) >> 16))
 
 // Absolute value and signum
 #define fix_abs(n) (((n) < 0) ? -(n) : (n))
@@ -259,7 +258,7 @@ typedef uint16_t fixang;
 #define fix_rint(n) (((n) + 0x8000) >> 16)
 
 /* returns the fractional part of a fixed point number. */
-#define fix_frac(n) ((n)&0xffff)
+#define fix_frac(n) ((uint16_t)((n)&0xffff))
 
 // fixrad_to_fixang converts a fixed-point in radians to a fixang
 // fixang_to_fixrad converts a fixang to a fixed point radians
@@ -408,7 +407,7 @@ typedef struct AWide AWide;
 
 extern AWide *AsmWideAdd(AWide *target, const AWide *source);
 extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);
-extern int AsmWideDivide(int hi, int lo, int den);
+extern int32_t AsmWideDivide(int32_t hi, uint32_t lo, int32_t den);
 // New functions
 extern AWide *AsmWideNegate(AWide *target);
 extern AWide *AsmWideBitShift(AWide *target, int count);

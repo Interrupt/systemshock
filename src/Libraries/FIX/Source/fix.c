@@ -293,10 +293,6 @@ fix fix_safe_pyth_dist(fix a, fix b) {
   return a;
 }
 
-//----------------------------------------------------------------------------
-// We can use the fix function because the difference in scale doesn't matter.
-//----------------------------------------------------------------------------
-int long_safe_pyth_dist(int a, int b) { return (fix_safe_pyth_dist(a, b)); }
 
 //----------------------------------------------------------------------------
 // Computes sin and cos of theta
@@ -550,7 +546,7 @@ AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target) {
   return target;
 }
 
-int AsmWideDivide(int hi, int lo, int divisor) {
+int32_t AsmWideDivide(int32_t hi, uint32_t lo, int32_t divisor) {
   int64_t x;
   AWide w;
   w.lo = lo;
