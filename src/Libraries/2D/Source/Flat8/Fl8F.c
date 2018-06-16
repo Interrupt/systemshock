@@ -166,37 +166,15 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
           x--;
         }
 
-        while (x >= 4) {
+        while (x >= 0) {
           k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
           inv = t_clut[t_bits[k]];
           // gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
           u += du;
           v += dv;
-          inv <<= 8;
-
-          k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
-          inv |= t_clut[t_bits[k]];
-          // gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
-          u += du;
-          v += dv;
-          inv <<= 8;
-
-          k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
-          inv |= t_clut[t_bits[k]];
-          // gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
-          u += du;
-          v += dv;
-          inv <<= 8;
-
-          k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
-          inv |= t_clut[t_bits[k]];
-          // gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
-          u += du;
-          v += dv;
-
-          *(long *)p_dest = inv;
-          x -= 4;
-          p_dest += 4;
+          *p_dest = inv;
+          p_dest++;
+          x--;
         }
 
         for (; x > 0; x--) {
