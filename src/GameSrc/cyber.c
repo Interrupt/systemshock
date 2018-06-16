@@ -126,7 +126,8 @@ extern void hardware_startup(uchar visible);
 
 int old_loop;
 
-extern void drug_closedown(uchar),drug_startup(uchar);
+extern void drug_closedown(bool visible);
+extern void drug_startup(bool visible);
 extern void shock_alloc_ipal();
 
 errtype enter_cyberspace_stuff(char dest_lev)

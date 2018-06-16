@@ -75,19 +75,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------
 
 typedef struct {
-  ubyte duration; // Preset duration of given drug
-  ubyte flags;
+  uint8_t duration; // Preset duration of given drug
+  uint8_t flags;
   void (*use)(); // Function slots for take, effect, wear off
   void (*effect)();
   void (*wearoff)();
   void (*startup)(void);
-  void (*closedown)(uchar visible);
+  void (*closedown)(bool visible);
   void (*after_effect)();
 } DRUG;
 
 // -------
 // Globals
 // -------
+
 
 extern DRUG Drugs[NUM_DRUGZ]; // Global array of drugs
 
@@ -247,14 +248,14 @@ void drugs_init() {}
 //
 // do drug startup on game load.
 
-void drug_startup(uchar uc) {
+void drug_startup(bool visible) {
   int i;
   for (i = 0; i < NUM_DRUGZ; i++)
     if (Drugs[i].startup != NULL)
       Drugs[i].startup();
 }
 
-void drug_closedown(uchar visible) {
+void drug_closedown(bool visible) {
   int i;
   for (i = 0; i < NUM_DRUGZ; i++)
     if (Drugs[i].closedown != NULL)
@@ -301,7 +302,7 @@ void dummy_wearoff_drug() { return; }
 void drug_lsd_effect();
 void drug_lsd_startup(void);
 void drug_lsd_wearoff();
-void drug_lsd_closedown(uchar visible);
+void drug_lsd_closedown(bool visible);
 
 // ---------------------------------------------------------------------------
 // drug_lsd_effect()
@@ -324,7 +325,7 @@ void drug_lsd_effect() {
   for (i = 0; i <= ((lsd_last - lsd_first) * 3); i++)
     lsd_palette[i] = (uchar)(rand() % 256);
 
-  gr_set_pal((int)lsd_first, (int)(lsd_last - lsd_first + 1), lsd_palette);
+  gr_set_pal(lsd_first, (lsd_last - lsd_first + 1), lsd_palette);
 
   return;
 }
@@ -354,7 +355,7 @@ void drug_lsd_wearoff() {
   return;
 }
 
-void drug_lsd_closedown(uchar visible) {
+void drug_lsd_closedown(bool visible) {
   if (visible && STATUS(DRUG_LSD) > 0)
     gr_set_pal(0, 256, ppall);
 }
@@ -406,7 +407,7 @@ void drug_sight_startup();
 void drug_sight_effect();
 void drug_sight_wearoff();
 void drug_sight_after_effect(void);
-void drug_sight_closedown(uchar visible);
+void drug_sight_closedown(bool visible);
 
 extern void set_global_lighting(short);
 #define SIGHT_LIGHT_LEVEL (4 << 8)
@@ -456,7 +457,7 @@ void drug_sight_after_effect(void) {
     set_global_lighting(SIGHT_LIGHT_LEVEL);
 }
 
-void drug_sight_closedown(uchar visible) {
+void drug_sight_closedown(bool visible) {
   if (!visible)
     return;
   if (STATUS(DRUG_SIGHT) > 0)
@@ -576,7 +577,7 @@ void drug_genius_wearoff();
 void drug_genius_use() {
   void mfd_gridpanel_set_winmove(uchar check);
 
-  mfd_gridpanel_set_winmove(TRUE);
+  mfd_gridpanel_set_winmove(true);
   return;
 }
 
