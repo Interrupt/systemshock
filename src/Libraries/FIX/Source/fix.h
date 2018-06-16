@@ -315,7 +315,7 @@ fix fix_safe_pyth_dist(fix a, fix b);
 // Returns 0 if x < 0
 fix fix_sqrt(fix x);
 
-int quad_sqrt(int hi, int lo);
+int32_t quad_sqrt(int32_t hi, uint32_t lo);
 
 //========================================
 //
@@ -396,6 +396,13 @@ struct AWide {
 };
 typedef struct AWide AWide;
 
+// Custom Wide assignment macros
+#define ASSIGN_WIDE_TO_64(x, w)                                                \
+  x = (uint64_t)(w)->lo + (((int64_t)(w)->hi) << 32)
+#define ASSIGN_64_TO_WIDE(w, x)                                                \
+  (w)->lo = x & 0xFFFFFFFF;                                                    \
+  (w)->hi = x >> 32
+
 extern fix fix_mul_3_3_3(fix a, fix b);
 extern fix fix_mul_3_32_16(fix a, fix b);
 extern fix fix_mul_3_16_20(fix a, fix b);
@@ -404,7 +411,6 @@ extern AWide *AsmWideAdd(AWide *target, const AWide *source);
 extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);
 extern int AsmWideDivide(int hi, int lo, int den);
 // New functions
-extern unsigned int OurWideSquareRoot(const AWide *source);
 extern AWide *AsmWideNegate(AWide *target);
 extern AWide *AsmWideBitShift(AWide *target, int count);
 

@@ -67,7 +67,7 @@ fix fix_sqrt(fix num) {
 //-----------------------------------------------------------------
 //  Calculate the square root of a wide (64-bit) number.
 //-----------------------------------------------------------------
-int quad_sqrt(int hi, int lo) {
+int32_t quad_sqrt(int32_t hi, uint32_t lo) {
   //	uchar	testb, trans;
   //	uchar	shift;
   //	long		divisor, temp, savediv, rem;
@@ -88,97 +88,9 @@ int quad_sqrt(int hi, int lo) {
   AWide a;
   a.hi = hi;
   a.lo = lo;
-
-  return OurWideSquareRoot(&a);
-
-  /*  We gave it the ol' college try, but WideSquareRoot is faster in this case.
-
-          // Find the highest byte that is non-zero (look only in hiword, since
-  we're assured at this point
-          // that it is non-zero), look up a good first guess for that byte, and
-  shift it the appropriate amount.
-
-          testb = (uchar)(hi >> 24);
-          if (testb != 0)
-          {
-                  trans = pGuessTable[testb];
-                  shift = 12 + 16;
-                  goto q_found_byte;
-          }
-          testb = (uchar)(hi >> 16);
-          if (testb != 0)
-          {
-                  trans = pGuessTable[testb];
-                  shift = 8 + 16;
-                  goto q_found_byte;
-          }
-          testb = (uchar)(hi >> 8);
-          if (testb != 0)
-          {
-                  trans = pGuessTable[testb];
-                  shift = 4 + 16;
-                  goto q_found_byte;
-          }
-          testb = (uchar)hi;
-          if (testb != 0)
-          {
-                  trans = pGuessTable[testb];
-                  shift = 16;
-          }
-
-          // We now have the good initial guess.  Shift it the appropriate
-  amount.
-
-  q_found_byte:
-          divisor = trans;
-          divisor = divisor << shift;
-
-          // Experience has shown that we almost always go through the loop
-          // just about three times.  To avoid compares and jumps, we iterate
-          // three times without even thinking about it, and then start checking
-          // to see if our answer is correct.
-
-          for (int i = 0; i < 2; i++)
-          {
-                  temp = AsmWideDivide(hi, lo, divisor);
-                  divisor += temp;
-                  divisor = divisor >> 1;
-          }
-
-          // Starting with the third iteration, we now actually check for a
-  match.
-
-          while (true)
-          {
-                  AWide	orig, test;
-
-                  temp = AsmWideDivide(hi, lo, divisor);
-                  if (temp == divisor)
-                          break;
-
-                  AsmWideMultiply(temp, divisor, &test);
-                  orig.hi = hi;
-                  orig.lo = lo;
-                  AsmWideSub(&orig, &test);
-                  rem = orig.lo;
-
-                  savediv = divisor;
-                  divisor += temp;
-                  divisor = divisor >> 1;
-                  if (temp == divisor)
-                  {
-                          if (rem != 0)
-                                  divisor++;
-                          break;
-                  }
-                  else if (savediv == divisor)
-                  {
-                          if (rem != 0)
-                                  divisor++;
-                          break;
-                  }
-          }
-          return (divisor);  */
+  int64_t x;
+  ASSIGN_WIDE_TO_64(x, &a);
+  return (unsigned int)sqrtl((long double)x);
 }
 
 //-----------------------------------------------------------------

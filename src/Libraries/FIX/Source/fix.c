@@ -117,13 +117,6 @@ fix fix_div_16_16_3(fix a, fix b) {
   return (fix)(((int64_t)a << 29) / (int64_t)b);
 }
 
-// Custom Wide assignment macros
-#define ASSIGN_WIDE_TO_64(x, w)                                                \
-  x = (uint64_t)(w)->lo + (((int64_t)(w)->hi) << 32)
-#define ASSIGN_64_TO_WIDE(w, x)                                                \
-  (w)->lo = x & 0xFFFFFFFF;                                                    \
-  (w)->hi = x >> 32
-
 int gOVResult;
 
 fix fix_mul(fix a, fix b) { return (fix)(((int64_t)(a) * (int64_t)(b)) >> 16); }
@@ -564,12 +557,6 @@ int AsmWideDivide(int hi, int lo, int divisor) {
   w.hi = hi;
   ASSIGN_WIDE_TO_64(x, &w);
   return (int)(x / (int64_t)divisor);
-}
-
-unsigned int OurWideSquareRoot(const AWide *source) {
-  int64_t x;
-  ASSIGN_WIDE_TO_64(x, source);
-  return (unsigned int)sqrtl((long double)x);
 }
 
 AWide *AsmWideNegate(AWide *target) {
