@@ -377,7 +377,6 @@ typedef int32_t fix24;
 #define fix24_from_fix16(n) ((n) >> 8)
 #define fix16_from_fix24(n) ((n) << 8)
 
-
 // For Mac version: The PowerPC version uses an assembly language routine
 // to do the multiply.
 fix24 fix24_mul(fix24 a, fix24 b);
@@ -390,8 +389,6 @@ typedef int64_t fix64;
 
 #define fix64_make(a, b) ((((int64_t)(a)) << 32) | (b))
 
-
-
 struct AWide {
   unsigned int lo;
   int hi;
@@ -399,10 +396,9 @@ struct AWide {
 typedef struct AWide AWide;
 
 // Custom Wide assignment macros
-#define ASSIGN_WIDE_TO_64(x, w)                                                \
-  x = (uint64_t)(w)->lo + (((int64_t)(w)->hi) << 32)
-#define ASSIGN_64_TO_WIDE(w, x)                                                \
-  (w)->lo = x & 0xFFFFFFFF;                                                    \
+#define ASSIGN_WIDE_TO_64(x, w) x = (uint64_t)(w)->lo + (((int64_t)(w)->hi) << 32)
+#define ASSIGN_64_TO_WIDE(w, x) \
+  (w)->lo = x & 0xFFFFFFFF;     \
   (w)->hi = x >> 32
 
 extern AWide *AsmWideAdd(AWide *target, const AWide *source);
@@ -435,7 +431,6 @@ extern fix fix_mul_16_32_20(fix a, fix b);
 #define fix_div_16_3_16 fix_div_16_16_3
 #define fix_div_3_3_16 fix_div
 #define fix_mul_3_16_16 fix_mul_3_3_3
-
 
 #define fix_sal(a, b) ((a) << (b))
 #define fix_sar(a, b) ((a) >> (b))

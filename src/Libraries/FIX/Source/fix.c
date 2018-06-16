@@ -97,33 +97,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include <stdlib.h>
 
-fix fix_mul_3_3_3(fix a, fix b) {
-  return (fix)(((int64_t)(a) * (int64_t)(b)) >> 29);
-}
+fix fix_mul_3_3_3(fix a, fix b) { return (fix)(((int64_t)(a) * (int64_t)(b)) >> 29); }
 
-fix fix_mul_3_32_16(fix a, fix b) {
-  return (fix)(((int64_t)(a) * (int64_t)(b)) >> 13);
-}
+fix fix_mul_3_32_16(fix a, fix b) { return (fix)(((int64_t)(a) * (int64_t)(b)) >> 13); }
 
-fix fix_mul_3_16_20(fix a, fix b) {
-  return (fix)(((int64_t)(a) * (int64_t)(b)) >> 33);
-}
+fix fix_mul_3_16_20(fix a, fix b) { return (fix)(((int64_t)(a) * (int64_t)(b)) >> 33); }
 
-fix fix_mul_16_32_20(fix a, fix b) {
-  return (fix)(((int64_t)(a) * (int64_t)(b)) >> 4);
-}
+fix fix_mul_16_32_20(fix a, fix b) { return (fix)(((int64_t)(a) * (int64_t)(b)) >> 4); }
 
-fix fix_div_16_16_3(fix a, fix b) {
-  return (fix)(((int64_t)a << 29) / (int64_t)b);
-}
+fix fix_div_16_16_3(fix a, fix b) { return (fix)(((int64_t)a << 29) / (int64_t)b); }
 
 int gOVResult;
 
 fix fix_mul(fix a, fix b) { return (fix)(((int64_t)(a) * (int64_t)(b)) >> 16); }
 
-fix fast_fix_mul_int(fix a, fix b) {
-  return (fix)(((int64_t)(a) * (int64_t)(b)) >> 32);
-}
+fix fast_fix_mul_int(fix a, fix b) { return (fix)(((int64_t)(a) * (int64_t)(b)) >> 32); }
 
 fix fix_mul_asm_safe(fix a, fix b) {
   int64_t intermediate = (int64_t)(a) * (int64_t)(b);
@@ -219,14 +207,11 @@ fix fix_mul_div(fix m0, fix m1, fix d) {
   return r32;
 }
 
-int blah;
-
 //----------------------------------------------------------------------------
 // Returns the distance from (0,0) to (a,b)
 //----------------------------------------------------------------------------
 fix fix_pyth_dist(fix a, fix b) {
   gOVResult = 100;
-  blah = 200;
 
   // @@@should check for overflow!
   return fix_sqrt(fix_mul(a, a) + fix_mul(b, b));
@@ -293,7 +278,6 @@ fix fix_safe_pyth_dist(fix a, fix b) {
   return a;
 }
 
-
 //----------------------------------------------------------------------------
 // Computes sin and cos of theta
 //----------------------------------------------------------------------------
@@ -315,14 +299,8 @@ void fix_sincos(fixang theta, fix *sin, fix *cos) {
   hicos = sintab[baseth + 65];
 
   // interpolate between low___ and hi___ according to fracth
-  *sin =
-      ((short)(lowsin +
-               (short)((((short)hisin - (short)lowsin) * (uchar)fracth) >> 8)))
-      << 2;
-  *cos =
-      ((short)(lowcos +
-               (short)((((short)hicos - (short)lowcos) * (uchar)fracth) >> 8)))
-      << 2;
+  *sin = ((short)(lowsin + ((((short)hisin - (short)lowsin) * (uchar)fracth) >> 8))) << 2;
+  *cos = ((short)(lowcos + ((((short)hicos - (short)lowcos) * (uchar)fracth) >> 8))) << 2;
 
   return;
 }
@@ -338,10 +316,7 @@ fix fix_sin(fixang theta) {
   fracth = theta & 0xff;
   lowsin = sintab[baseth];
   hisin = sintab[baseth + 1];
-  return ((short)(lowsin +
-                  (short)((((short)hisin - (short)lowsin) * (uchar)fracth) >>
-                          8)))
-         << 2;
+  return ((short)(lowsin + ((((short)hisin - (short)lowsin) * (uchar)fracth) >> 8))) << 2;
 }
 
 //----------------------------------------------------------------------------
@@ -355,10 +330,7 @@ fix fix_cos(fixang theta) {
   fracth = theta & 0xff;
   lowcos = sintab[baseth + 64];
   hicos = sintab[baseth + 65];
-  return ((short)(lowcos +
-                  (short)((((short)hicos - (short)lowcos) * (uchar)fracth) >>
-                          8)))
-         << 2;
+  return ((short)(lowcos + ((((short)hicos - (short)lowcos) * (uchar)fracth) >> 8))) << 2;
 }
 
 //----------------------------------------------------------------------------
@@ -382,9 +354,7 @@ fix fix_fastsin(fixang theta) { return (((short)(sintab[theta >> 8])) << 2); }
 //----------------------------------------------------------------------------
 // Fast cos of theta
 //----------------------------------------------------------------------------
-fix fix_fastcos(fixang theta) {
-  return (((short)(sintab[(theta >> 8) + 64])) << 2);
-}
+fix fix_fastcos(fixang theta) { return (((short)(sintab[(theta >> 8) + 64])) << 2); }
 
 //----------------------------------------------------------------------------
 // Computes the arcsin of x
@@ -406,7 +376,7 @@ fixang fix_asin(fix x) {
   hiy = asintab[basex + 1];
 
   // interpolate between lowy and hiy according to fracx
-  return (lowy + (short)((((short)hiy - (short)lowy) * (uchar)fracx) >> 8));
+  return (lowy + ((((short)hiy - (short)lowy) * (uchar)fracx) >> 8));
 }
 
 //----------------------------------------------------------------------------
@@ -426,8 +396,7 @@ fixang fix_acos(fix x) {
   lowy = asintab[basex];
   hiy = asintab[basex + 1];
 
-  asin_answer =
-      (lowy + (short)((((short)hiy - (short)lowy) * (uchar)fracx) >> 8));
+  asin_answer = (lowy + ((((short)hiy - (short)lowy) * (uchar)fracx) >> 8));
   return (0x4000 - asin_answer);
 }
 
@@ -493,13 +462,9 @@ fixang fix_atan2(fix y, fix x) {
   return th;
 }
 
-fix24 fix24_mul(fix24 a, fix24 b) {
-  return (fix24)(((int64_t)a * (int64_t)b) >> 8);
-}
+fix24 fix24_mul(fix24 a, fix24 b) { return (fix24)(((int64_t)a * (int64_t)b) >> 8); }
 
-fix24 fix24_div(fix24 a, fix24 b) {
-  return (fix24)(((int64_t)a << 8) / (int64_t)b);
-}
+fix24 fix24_div(fix24 a, fix24 b) { return (fix24)(((int64_t)a << 8) / (int64_t)b); }
 
 fix fix_pow(fix x, fix y) {
   int i;
