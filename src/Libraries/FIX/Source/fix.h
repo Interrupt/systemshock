@@ -401,11 +401,9 @@ extern fix fix_mul_3_32_16(fix a, fix b);
 extern fix fix_mul_3_16_20(fix a, fix b);
 extern fix fix_mul_16_32_20(fix a, fix b);
 extern AWide *AsmWideAdd(AWide *target, const AWide *source);
-extern AWide *AsmWideSub(AWide *target, const AWide *source);
 extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);
 extern int AsmWideDivide(int hi, int lo, int den);
 // New functions
-extern int AsmWideDivide_ZeroAware(int hi, int lo, int divisor);
 extern unsigned int OurWideSquareRoot(const AWide *source);
 extern AWide *AsmWideNegate(AWide *target);
 extern AWide *AsmWideBitShift(AWide *target, int count);

@@ -548,15 +548,6 @@ AWide *AsmWideAdd(AWide *target, const AWide *source) {
   return target;
 }
 
-AWide *AsmWideSub(AWide *target, const AWide *source) {
-  int64_t t, s;
-  ASSIGN_WIDE_TO_64(t, target);
-  ASSIGN_WIDE_TO_64(s, source);
-  t -= s;
-  ASSIGN_64_TO_WIDE(target, t);
-  return target;
-}
-
 AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target) {
   int64_t a, b;
   a = multiplicand;
@@ -569,22 +560,6 @@ AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target) {
 int AsmWideDivide(int hi, int lo, int divisor) {
   int64_t x;
   AWide w;
-  w.lo = lo;
-  w.hi = hi;
-  ASSIGN_WIDE_TO_64(x, &w);
-  return (int)(x / (int64_t)divisor);
-}
-
-int AsmWideDivide_ZeroAware(int hi, int lo, int divisor) {
-  int64_t x;
-  AWide w;
-
-  if (divisor == 0) {
-    if (hi >= 0) {
-      return 0x7FFFFFFF;
-    }
-    return -0x7FFFFFFF;
-  }
   w.lo = lo;
   w.hi = hi;
   ASSIGN_WIDE_TO_64(x, &w);
