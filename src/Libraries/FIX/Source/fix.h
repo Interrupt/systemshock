@@ -351,16 +351,6 @@ fixang fix_atan2(fix y, fix x);
 }
 #endif
 
-//========================================
-//
-//  String/fix conversions.
-//
-//========================================
-
-// Puts a decimal representation of x into str
-char *fix_sprint(char *str, fix x);
-char *fix_sprint_hex(char *str, fix x);
-
 /* fixpoint x ^ y */
 extern fix fix_pow(fix x, fix y);
 
@@ -376,7 +366,6 @@ fix fix_exp(fix x);
 //
 // fix24 - 24 bits integer, 8 bits fraction
 //
-// fix24.c
 
 typedef int32_t fix24;
 
@@ -384,37 +373,17 @@ typedef int32_t fix24;
 #define fix24_trunc(n) ((n)&0xffffff00)
 #define fix24_round(n) (((n) + 128) & 0xffffff00)
 #define fix24_int(n) ((n) >> 8)
-#define fix24_rint(n) (((n) + 128) >> 8)
 #define fix24_frac(n) ((n)&0xff)
-#define fix24_float(n) ((float)(fix24_int(n)) + (float)(fix24_frac(n)) / 256.0)
-#define fix24_from_float(n)                                                    \
-  (fix24_make((short)(floor(n)), (ushort)((n - floor(n)) * 256.0)))
 
 #define fix24_from_fix16(n) ((n) >> 8)
 #define fix16_from_fix24(n) ((n) << 8)
 
-#define fix16_to_fix24(n) (fix24_from_fix16(n))
-#define fix24_to_fix16(n) (fix16_from_fix24(n))
 
 // For Mac version: The PowerPC version uses an assembly language routine
 // to do the multiply.
 fix24 fix24_mul(fix24 a, fix24 b);
 fix24 fix24_div(fix24 a, fix24 b);
 
-fix24 fix24_pyth_dist(fix24 a, fix24 b);
-fix24 fix24_fast_pyth_dist(fix24 a, fix24 b);
-fix24 fix24_safe_pyth_dist(fix24 a, fix24 b);
-void fix24_sincos(fixang theta, fix24 *sin, fix24 *cos);
-fix24 fix24_sin(fixang theta);
-fix24 fix24_cos(fixang theta);
-void fix24_fastsincos(fixang theta, fix24 *sin, fix24 *cos);
-fix24 fix24_fastsin(fixang theta);
-fix24 fix24_fastcos(fixang theta);
-fixang fix24_asin(fix24 x);
-fixang fix24_acos(fix24 x);
-fixang fix24_atan2(fix24 y, fix24 x);
-char *fix24_sprint(char *str, fix24 x);
-char *fix24_sprint_hex(char *str, fix24 x);
 
 //============================================
 //
@@ -444,8 +413,6 @@ extern AWide *AsmWideBitShift(AWide *target, int count);
 extern fix fix_div_16_16_3(fix a, fix b);
 
 #define fix_mul_div_3_16_16_3 fix_mul_div
-#define fix_mul_div_3_16_3_16 fix_mul_div
-#define fix_mul_div_3_8_8_3 fix_mul_div
 
 extern fix fix_div_16_16_3(fix a, fix b);
 extern fix fix_mul_3_3_3(fix a, fix b);
@@ -455,19 +422,13 @@ extern fix fix_mul_16_32_20(fix a, fix b);
 
 #define fix_div_16_3_16 fix_div_16_16_3
 #define fix_div_3_3_16 fix_div
-#define fix_div_3_16_3 fix_div
-#define fix_div_3_8_3 fix_div_16_8_16
-#define fix_div_8_8_8 fix_div_16_8_16
 #define fix_mul_3_16_16 fix_mul_3_3_3
-#define fix_mul_3_8_8 fix_mul_3_3_3
+
 
 #define fix_sal(a, b) ((a) << (b))
 #define fix_sar(a, b) ((a) >> (b))
 
-#define fix_3_12(a) ((a) >> 9)
-#define fix_12_16(a) ((a) >> 4)
 #define fix_3_16(a) ((a) >> 13)
-#define fix_3_8(a) ((a) >> 5)
 
 #define FIX_UNIT_3 0x20000000
 
