@@ -384,12 +384,15 @@ typedef int32_t fix24;
 fix24 fix24_mul(fix24 a, fix24 b);
 fix24 fix24_div(fix24 a, fix24 b);
 
+// Wide (64-bit) fix functions
 
-//============================================
-//
-//  Other multiply/div/add variants used by 2D and 3D.
-//
-//============================================
+// 64-bit fix type (high 32 bit - integer, low 32 bit - fractional)
+typedef int64_t fix64;
+
+#define fix64_make(a, b) ((((int64_t)(a)) << 32) | (b))
+
+
+
 struct AWide {
   unsigned int lo;
   int hi;
@@ -403,16 +406,22 @@ typedef struct AWide AWide;
   (w)->lo = x & 0xFFFFFFFF;                                                    \
   (w)->hi = x >> 32
 
-extern fix fix_mul_3_3_3(fix a, fix b);
-extern fix fix_mul_3_32_16(fix a, fix b);
-extern fix fix_mul_3_16_20(fix a, fix b);
-extern fix fix_mul_16_32_20(fix a, fix b);
 extern AWide *AsmWideAdd(AWide *target, const AWide *source);
 extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);
 extern int AsmWideDivide(int hi, int lo, int den);
 // New functions
 extern AWide *AsmWideNegate(AWide *target);
 extern AWide *AsmWideBitShift(AWide *target, int count);
+
+//============================================
+//
+//  Other multiply/div/add variants used by 2D and 3D.
+//
+//============================================
+extern fix fix_mul_3_3_3(fix a, fix b);
+extern fix fix_mul_3_32_16(fix a, fix b);
+extern fix fix_mul_3_16_20(fix a, fix b);
+extern fix fix_mul_16_32_20(fix a, fix b);
 
 extern fix fix_div_16_16_3(fix a, fix b);
 

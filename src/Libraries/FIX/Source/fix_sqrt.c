@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 #include "fix.h"
 #include <math.h>
+#include <stdio.h>
 
 //--------------------
 //  Table of square root guesses
@@ -68,29 +69,18 @@ fix fix_sqrt(fix num) {
 //  Calculate the square root of a wide (64-bit) number.
 //-----------------------------------------------------------------
 int32_t quad_sqrt(int32_t hi, uint32_t lo) {
-  //	uchar	testb, trans;
-  //	uchar	shift;
-  //	long		divisor, temp, savediv, rem;
-
   // Parameter checking
-
-  if (hi == 0) // If there is no high word
-  {
-    if (lo > 0) // If lo word is positive, just call long_sqrt()
-      return (sqrt(lo));
-    if (lo == 0) // If lo word is zero, return 0.
-      return (0);
-  }
-  if (hi < 0) // If a negative number, return 0.
+  // WH dunno, needed?
+  if (lo == 0) // If lo word is zero, return 0.
     return (0);
 
-  // If 'hi' is non-zero, call FixMath's WideSquareRoot.
-  AWide a;
-  a.hi = hi;
-  a.lo = lo;
-  int64_t x;
-  ASSIGN_WIDE_TO_64(x, &a);
-  return (unsigned int)sqrtl((long double)x);
+  // If a negative number, return 0.
+  if (hi < 0) {
+    printf("quad_sqrt of negative number!");
+    return (0);
+  }
+
+  return (uint32_t)sqrtl(fix64_make(hi, lo));
 }
 
 //-----------------------------------------------------------------
