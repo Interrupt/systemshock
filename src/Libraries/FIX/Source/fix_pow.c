@@ -24,23 +24,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *  $Date: 1994/06/18 03:48:48 $
  */
 
-#include <fix.h>
+#include "fix.h"
 
 // returns the fixed point x ^ y, read em and weep
 // this can easily overflow so chill
 fix fix_pow(fix x, fix y) {
-  int i;
   fix ans;
   fix rh, rl;
-  ushort yh, yl;
+  uint16_t yh, yl;
 
   ans = FIX_UNIT;
-  yh = fix_int(y);
+  yh = (uint16_t)fix_int(y);
   yl = fix_frac(y);
   rh = rl = x;
 
   // calculate hi part, leave when done
-  for (i = 0; i < 16; ++i) {
+  for (int i = 0; i < 16; ++i) {
     if (yh & 1)
       ans = fix_mul(ans, rh);
     if (yh != 0)
