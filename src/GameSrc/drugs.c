@@ -67,6 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                               //   duration unit is 7 * 16/8  =  14 secs
 
 // Flags
+#define DRUG_NONE 0x00        // No flags
 #define DRUG_LONGER_DOSE 0x01 // If set, taking 2+ of a drug ups duration
 
 // ----------
@@ -671,64 +672,64 @@ void drug_detox_wearoff() {
 DRUG Drugs[NUM_DRUGZ] = {
     // Staminup
     {
-        10,
-        DRUG_LONGER_DOSE,
-        &drug_staminup_use,
-        &drug_staminup_effect,
-        &drug_staminup_wearoff
+        10,                     // duration
+        DRUG_LONGER_DOSE,       // flags
+        &drug_staminup_use,     // use
+        &drug_staminup_effect,  // effect
+        &drug_staminup_wearoff  // wearoff
     },
     // Sight
     {
-        20,
-        DRUG_LONGER_DOSE,
-        &drug_sight_use,
-        &drug_sight_effect,
-        &drug_sight_wearoff,
-        &drug_sight_startup,
-        &drug_sight_closedown,
-        &drug_sight_after_effect,
+        20,                         // duration
+        DRUG_LONGER_DOSE,           // flags
+        &drug_sight_use,            // use
+        &drug_sight_effect,         // effect
+        &drug_sight_wearoff,        // wearoff
+        &drug_sight_startup,        // startup
+        &drug_sight_closedown,      // closedown
+        &drug_sight_after_effect,   // aftereffect
     },
     // Berserk
     {
-        DRUG_DEFAULT_TIME / 2,
-        DRUG_LONGER_DOSE,
-        NULL,
-        &drug_lsd_effect,
-        &drug_lsd_wearoff,
-        &drug_lsd_startup,
-        &drug_lsd_closedown
+        DRUG_DEFAULT_TIME / 2,  // duration
+        DRUG_LONGER_DOSE,       // flags
+        NULL,                   // use
+        &drug_lsd_effect,       // effect
+        &drug_lsd_wearoff,      // wearoff
+        &drug_lsd_startup,      // startup
+        &drug_lsd_closedown     // closedown
     },
     // Medic
     {
-        10,
-        NULL,
-        &drug_medic_use,
-        &drug_medic_effect,
-        &drug_medic_wearoff
+        10,                     // duration
+        DRUG_NONE,              // flags
+        &drug_medic_use,        // use
+        &drug_medic_effect,     // effect
+        &drug_medic_wearoff     // wearoff
     },
     // Reflex
     {
-        DRUG_DEFAULT_TIME,
-        DRUG_LONGER_DOSE,
-        &drug_reflex_use,
-        &drug_reflex_effect,
-        &drug_reflex_wearoff
+        DRUG_DEFAULT_TIME,      // duration
+        DRUG_LONGER_DOSE,       // flags
+        &drug_reflex_use,       // use
+        &drug_reflex_effect,    // effect
+        &drug_reflex_wearoff    // wearoff
     },
 
     // Genius
     {
-        DRUG_DEFAULT_TIME / 2,
-        NULL,
-        &drug_genius_use,
-        &drug_genius_effect,
-        &drug_genius_wearoff
+        DRUG_DEFAULT_TIME / 2,  // duration
+        DRUG_NONE,              // flags
+        &drug_genius_use,       // use
+        &drug_genius_effect,    // effect
+        &drug_genius_wearoff    // wearoff
     },
     // Detox
     {
-        DRUG_DEFAULT_TIME,
-        NULL,
-        &drug_detox_use,
-        &drug_detox_effect,
-        &drug_detox_wearoff,
+        DRUG_DEFAULT_TIME,      // duration
+        DRUG_NONE,              // flags
+        &drug_detox_use,        // use
+        &drug_detox_effect,     // effect
+        &drug_detox_wearoff,    // wearoff
     },
 };
