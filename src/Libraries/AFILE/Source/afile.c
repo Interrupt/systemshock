@@ -66,15 +66,13 @@ static AfileType afTypes[] = {AFILE_FLC, AFILE_FLC, AFILE_FLC, AFILE_ANM, AFILE_
 
 // extern Amethods flcMethods;
 // extern Amethods anmMethods;
-extern Amethods qtmMethods;
+// extern Amethods qtmMethods;
 extern Amethods movMethods;
 
 static Amethods *methods[] = {
-    //	&flcMethods,		// AFILE_FLC
-    //	&anmMethods,		// AFILE_ANM
-    NULL,        // AFILE_FLC
-    NULL,        // AFILE_ANM
-    &qtmMethods, // AFILE_QTM
+    NULL,        // &flcMethods, // AFILE_FLC
+    NULL,        // &anmMethods, // AFILE_ANM
+    NULL,        // &qtmMethods, // AFILE_QTM
     &movMethods, // AFILE_MOV
 };
 
