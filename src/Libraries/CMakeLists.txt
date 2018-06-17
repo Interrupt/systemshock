@@ -373,9 +373,11 @@ include_directories(
 )
 
 add_library(2D_LIB ${2D_SRC})
+target_link_libraries(2D_LIB LG_LIB)
 add_library(GR_LIB ${GR_SRC})
 add_library(3D_LIB ${3D_SRC})
 add_library(AFILE_LIB ${AFILE_SRC})
+target_link_libraries(AFILE_LIB 2D_LIB)
 add_library(PALETTE_LIB ${PALETTE_SRC})
 add_library(DSTRUCT_LIB ${DSTRUCT_SRC})
 add_library(FIX_LIB ${FIX_SRC})
