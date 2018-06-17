@@ -57,11 +57,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 int main(int argc, char *argv[]) {
 
   MovieHeader mh;
-  static char *chunkNames[] = {"END  ", "VIDEO", "AUDIO", "TEXT ",
-                               "PAL  ", "TABLE", "?????", "?????"};
+  static char *chunkNames[] = {"END  ", "VIDEO", "AUDIO", "TEXT ", "PAL  ", "TABLE", "?????", "?????"};
   static char *bmTypeNames[] = {
-      "DEVICE", "MONO", "FLAT8", "FLAT24", "RSD8", "TLUC8", "SPAN", "GEN",
-      "",       "",     "",      "",       "",     "",      "",     "4X4",
+      "DEVICE", "MONO", "FLAT8", "FLAT24", "RSD8", "TLUC8", "SPAN", "GEN", "", "", "", "", "", "", "", "4X4",
   };
   static char *palNames[] = {
       "SET", "BLACK", "???", "???", "???", "???", "???", "???",
@@ -125,9 +123,8 @@ int main(int argc, char *argv[]) {
       uint32_t nxoff = (pmc + 1)->offset;
       length = nxoff - pmc->offset;
 
-      printf("[%04lu] %s  time: %08.4f offset: %08d ($%06x) len: %05d ",
-             pmc - pmcBase, chunkNames[pmc->chunkType], fix_float(pmc->time),
-             pmc->offset, pmc->offset, length);
+      printf("[%04u] %s  time: %08.4f offset: %08d ($%06x) len: %05d ", (uint32_t)(pmc - pmcBase),
+             chunkNames[pmc->chunkType], fix_float(pmc->time), pmc->offset, pmc->offset, length);
 
       switch (pmc->chunkType) {
       case MOVIE_CHUNK_VIDEO:
