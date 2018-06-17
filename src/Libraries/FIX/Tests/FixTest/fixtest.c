@@ -55,7 +55,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <ctype.h>
 #include "fix.h"
-#include <FixMath.h>
 
 #define MAX_ARGS 8
 
@@ -88,7 +87,7 @@ char cmd;
 #define CMD_COS			14
 #define CMD_EXP			15
 #define CMD_FASTDIST    16
-#define CMD_ATOFIX		17
+//#define CMD_ATOFIX		17
 #define CMD_MULDIV		18
 #define CMD_MUL24		19
 #define CMD_DIV24		20
@@ -146,8 +145,6 @@ command cmd_list[] =
 
 	"f",				CMD_FLOAT,
 
-	"af",				CMD_ATOFIX,
-	
 	"md",				CMD_MULDIV,
 	"muldiv",			CMD_MULDIV,
 
@@ -524,21 +521,6 @@ void test_exp (void)
 	puts (ans);
 }
 
-void test_atofix(void)
-{
-	fix a;
-	char buff[80];
-	extern fix atofix(char *p);
-
-	printf("Enter number: ");
-	//gets(buff);
-	fgets(buff, sizeof(buff), stdin);
-	a = atofix(buff);
-	fix_sprint(buff, a);
-	puts(buff);
-}
-
-
 void help ()
 {
 	printf ("Enter all numbers with decimal point, e.g. 5.0, -2.57\n");
@@ -593,7 +575,6 @@ void main ()
 			case CMD_FLOAT:		test_float();		break;
 			case CMD_SQRT:		test_sqrt();		break;
 			case CMD_EXP:		test_exp();			break;
-			case CMD_ATOFIX:	test_atofix();		break;
 			case CMD_MULDIV:	test_mul_div();		break;
 			case CMD_MUL24:		test_mul24();		break;
 			case CMD_DIV24:		test_div24();		break;

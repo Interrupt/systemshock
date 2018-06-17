@@ -154,7 +154,7 @@ do {
          poly_do_right_edge(p_right,prev,y_right,y_prev,y,vpl,n);
          ((edge_type) info.right_edge_func) (&info,p_right,&prev,TMS_RIGHT);
       }
-      y_limit=ulong_min(info.right.y,info.left.y);
+      y_limit=lg_min(info.right.y,info.left.y);
       info.n=y_limit-y;
 
       if (((int (*)(grs_tmap_loop_info *))(info.loop_func))(&info)) break;
@@ -264,7 +264,7 @@ void v_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti)
          poly_do_bot_edge(p_bot,prev,x_bot,x_prev,x,vpl,n);
          ((edge_type) info.bot_edge_func) (&info,p_bot,&prev,TMS_RIGHT);
       }
-      x_limit=ulong_min(info.bot.x,info.top.x);
+      x_limit=lg_min(info.bot.x,info.top.x);
       info.n=x_limit-x;
 
       if (((int (*)(grs_tmap_loop_info *))(info.loop_func))(&info)) break;

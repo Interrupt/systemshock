@@ -481,6 +481,10 @@ errtype mouse_put_xy(short x, short y)
 	// thanks to Mark for the help! - phs, 8/1/95
 
 	SDL_WarpMouseInWindow(window, x, y);
+
+	mouseInstantX = x;
+	mouseInstantY = y;
+	
 	return OK;
 
 	/*Point *RawMouse;

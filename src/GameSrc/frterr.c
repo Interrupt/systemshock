@@ -1884,10 +1884,10 @@ int get_edge_code(void *omp, int edge)
 	   d_list[el+0]=edge_list[el2+2]-edge_list[el2+0];  // height diffs in square
 	  	d_list[el+1]=edge_list[el2+3]-edge_list[el2+1];  //  ourl,ourr,othl,othr
    }
-   max_df[0]=max(edge_list[5],edge_list[0]);
-   max_df[1]=max(edge_list[4],edge_list[1]);
-   min_dc[0]=min(edge_list[7],edge_list[2]);
-   min_dc[1]=min(edge_list[6],edge_list[3]);
+   max_df[0]=lg_max(edge_list[5],edge_list[0]);
+   max_df[1]=lg_max(edge_list[4],edge_list[1]);
+   min_dc[0]=lg_min(edge_list[7],edge_list[2]);
+   min_dc[1]=lg_min(edge_list[6],edge_list[3]);
    edge_vals[0]=gap[0]=min_dc[0]-max_df[0];
    edge_vals[1]=gap[1]=min_dc[1]-max_df[1];
    edge_vals[2]=(gap[0]+gap[1])>>1;    // sure, average, not min or max

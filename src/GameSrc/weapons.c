@@ -595,7 +595,7 @@ uchar weapon_energy_drain(weapon_slot *ws, ubyte charge, ubyte max_charge)
    }
 
    // find out which is smaller, the charge setting, or the amount of "coolness" in the weapon
-   charge = min(charge, (MAX_HEAT - ws->heat));
+   charge = lg_min(charge, (MAX_HEAT - ws->heat));
    if (OVERLOAD_VALUE(ws->setting))              // if we are overloaded - double it!
    {
       overload_beam = TRUE;
@@ -1041,7 +1041,7 @@ uchar fire_player_weapon(LGPoint *pos, LGRegion *r, uchar pull)
 
          shots = deltat/AUTOFIRE_SPEED;
 
-         shots = min(min(shots, player_struct.weapons[w].ammo), MAX_AUTO_FIRE);
+         shots = lg_min(lg_min(shots, player_struct.weapons[w].ammo), MAX_AUTO_FIRE);
          weapon_fire_remainder = deltat % AUTOFIRE_SPEED;
          if (shots)
             gun_fire_offset = RndRange(&effect_rnd, 0, 30) - 15;
@@ -1329,7 +1329,7 @@ void cool_off_beam_weapons(void)
    running_dt += player_struct.deltat;
    while (running_dt > WEAPON_COOL_OFF_TIME)
    {
-      running_dt = max(0,running_dt - WEAPON_COOL_OFF_TIME); // must be non frame-rate dependant, even if goofily so.
+      running_dt = lg_max(0,running_dt - WEAPON_COOL_OFF_TIME); // must be non frame-rate dependant, even if goofily so.
 
       for (i = 0; i < NUM_WEAPON_SLOTS; i++)
       {
@@ -1377,8 +1377,8 @@ void randomize_cursor_pos(LGPoint *cpos, LGRegion *reg, ubyte p)
    ss_mouse_convert(&(r.ul.x),&(r.ul.y),FALSE);
    ss_mouse_convert(&(r.lr.x),&(r.lr.y),FALSE);
 #endif   
-   cpos->x = max(r.ul.x,(min(newx,r.lr.x)));
-   cpos->y = max(r.ul.y,(min(newy,r.lr.y)));
+   cpos->x = lg_max(r.ul.x,(lg_min(newx,r.lr.x)));
+   cpos->y = lg_max(r.ul.y,(lg_min(newy,r.lr.y)));
 
 #ifdef STEREO_SUPPORT
    if (convert_use_mode == 5)

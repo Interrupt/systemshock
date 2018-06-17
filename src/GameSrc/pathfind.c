@@ -497,7 +497,7 @@ uchar pf_obj_height(MapElem *pme, uchar old_z)
             case FAUBJ_TL_POLY:
             case FAUBJ_TPOLY:
             case FAUBJ_SPECIAL:
-               retval = max(retval, OBJZ_TO_PFEZ(objs[id].loc.z));
+               retval = lg_max(retval, OBJZ_TO_PFEZ(objs[id].loc.z));
 //               Spew(DSRC_AI_Pathfind, ("pf_o_ht: obj retval = %x (id = %x)\n",retval,id));
                break;
          }

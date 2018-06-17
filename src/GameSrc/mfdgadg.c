@@ -81,8 +81,8 @@ uchar mfd_buttonarray_handlerproc(MFD* mfd, uiEvent* ev, MFDhandler* h)
    if (pos.x % (ba->bspace.x + ba->bsize.x) >= ba->bsize.x
     || pos.y % (ba->bspace.y + ba->bsize.y) >= ba->bsize.y)
       return FALSE;
-   bttn.x = min(pos.x / (ba->bspace.x + ba->bsize.x),ba->bdims.x-1);
-   bttn.y = min(pos.y / (ba->bspace.y + ba->bsize.y),ba->bdims.y-1);
+   bttn.x = lg_min(pos.x / (ba->bspace.x + ba->bsize.x),ba->bdims.x-1);
+   bttn.y = lg_min(pos.y / (ba->bspace.y + ba->bsize.y),ba->bdims.y-1);
    return ba->cb(mfd,bttn,ev,ba->cbdata);
 }
 

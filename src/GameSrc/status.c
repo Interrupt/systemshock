@@ -956,7 +956,7 @@ void change_bio_vars(void)
       case 0:
          
          {
-            int f = max(0,(player_struct.fatigue - (CIT_CYCLE*fatigue_threshold))/CIT_CYCLE);
+            int f = lg_max(0,(player_struct.fatigue - (CIT_CYCLE*fatigue_threshold))/CIT_CYCLE);
             int heart_ratio = 3400/(f+7);
             if (heart_ratio > 500)
                heart_ratio = 500;

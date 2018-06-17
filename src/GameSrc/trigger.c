@@ -263,7 +263,7 @@ uchar comparator_check(int comparator, ObjID obj, uchar *special_code)
       if ((*special_code != 0) && (fail_code == SPECIAL_SHODAN_FAIL_CODE))
       {
          short shodan_amt;
-         shodan_amt = min(NUM_SHODAN_MUGS-1, *special_code >> SHODAN_INTERVAL_SHIFT);
+         shodan_amt = lg_min(NUM_SHODAN_MUGS-1, *special_code >> SHODAN_INTERVAL_SHIFT);
          long_bark(obj, FIRST_SHODAN_MUG + shodan_amt, SHODAN_FAILURE_STRING, 0x4c);
       }
       else
@@ -471,10 +471,10 @@ errtype trap_monster_func(int p1, int p2, int p3, int p4)
       id2 = p2 >> 16;
       if (id2 != OBJ_NULL)
       {
-         minx = min(OBJ_LOC_BIN_X(objs[id1].loc), OBJ_LOC_BIN_X(objs[id2].loc));
-         miny = min(OBJ_LOC_BIN_Y(objs[id1].loc), OBJ_LOC_BIN_Y(objs[id2].loc));
-         sizex = max(OBJ_LOC_BIN_X(objs[id1].loc), OBJ_LOC_BIN_X(objs[id2].loc)) - minx;
-         sizey = max(OBJ_LOC_BIN_Y(objs[id1].loc), OBJ_LOC_BIN_Y(objs[id2].loc)) - miny;
+         minx = lg_min(OBJ_LOC_BIN_X(objs[id1].loc), OBJ_LOC_BIN_X(objs[id2].loc));
+         miny = lg_min(OBJ_LOC_BIN_Y(objs[id1].loc), OBJ_LOC_BIN_Y(objs[id2].loc));
+         sizex = lg_max(OBJ_LOC_BIN_X(objs[id1].loc), OBJ_LOC_BIN_X(objs[id2].loc)) - minx;
+         sizey = lg_max(OBJ_LOC_BIN_Y(objs[id1].loc), OBJ_LOC_BIN_Y(objs[id2].loc)) - miny;
       }
       else
       {
@@ -642,10 +642,10 @@ errtype trap_ai_func(int p1, int p2, int p3, int p4)
       }
       else
       {
-         x1 = min(OBJ_LOC_BIN_X(objs[o1].loc), OBJ_LOC_BIN_X(objs[o2].loc));
-         x2 = max(OBJ_LOC_BIN_X(objs[o1].loc), OBJ_LOC_BIN_X(objs[o2].loc));
-         y1 = min(OBJ_LOC_BIN_Y(objs[o1].loc), OBJ_LOC_BIN_Y(objs[o2].loc));
-         y2 = max(OBJ_LOC_BIN_Y(objs[o1].loc), OBJ_LOC_BIN_Y(objs[o2].loc));
+         x1 = lg_min(OBJ_LOC_BIN_X(objs[o1].loc), OBJ_LOC_BIN_X(objs[o2].loc));
+         x2 = lg_max(OBJ_LOC_BIN_X(objs[o1].loc), OBJ_LOC_BIN_X(objs[o2].loc));
+         y1 = lg_min(OBJ_LOC_BIN_Y(objs[o1].loc), OBJ_LOC_BIN_Y(objs[o2].loc));
+         y2 = lg_max(OBJ_LOC_BIN_Y(objs[o1].loc), OBJ_LOC_BIN_Y(objs[o2].loc));
       }
    }
 
@@ -849,10 +849,10 @@ errtype trap_lighting_func(uchar floor, int p1, int p2, int p3, int p4)
          return(ERR_NOEFFECT);
       }
 
-      x1 = min(OBJ_LOC_BIN_X(objs[o1].loc), OBJ_LOC_BIN_X(objs[o2].loc));
-      x2 = max(OBJ_LOC_BIN_X(objs[o1].loc), OBJ_LOC_BIN_X(objs[o2].loc));
-      y1 = min(OBJ_LOC_BIN_Y(objs[o1].loc), OBJ_LOC_BIN_Y(objs[o2].loc));
-      y2 = max(OBJ_LOC_BIN_Y(objs[o1].loc), OBJ_LOC_BIN_Y(objs[o2].loc));
+      x1 = lg_min(OBJ_LOC_BIN_X(objs[o1].loc), OBJ_LOC_BIN_X(objs[o2].loc));
+      x2 = lg_max(OBJ_LOC_BIN_X(objs[o1].loc), OBJ_LOC_BIN_X(objs[o2].loc));
+      y1 = lg_min(OBJ_LOC_BIN_Y(objs[o1].loc), OBJ_LOC_BIN_Y(objs[o2].loc));
+      y2 = lg_max(OBJ_LOC_BIN_Y(objs[o1].loc), OBJ_LOC_BIN_Y(objs[o2].loc));
    }
 
       v[0] = p4 & 0xFF;
@@ -1030,7 +1030,7 @@ errtype trap_damage_func(int p1, int p2, int p3, int p4)
    if (!(p2 & 0x10000))
       damage_object(PLAYER_OBJ, dval, p2 >> 24, 0x01);
    else 
-      player_struct.hit_points = min((short)player_struct.hit_points + dval, PLAYER_MAX_HP);
+      player_struct.hit_points = lg_min((short)player_struct.hit_points + dval, PLAYER_MAX_HP);
 
    dval = qdata_get(p3 & 0xFFFF);
    if (p3 < 0x10000)
@@ -1544,10 +1544,10 @@ void hack_area_spew(int p2,int p3,int p4)
    uchar state;
    ObjID obj;
 
-   ulx = min(OBJ_LOC_BIN_X(objs[current_trap].loc), OBJ_LOC_BIN_X(objs[(ObjID)p2].loc));
-   lrx = max(OBJ_LOC_BIN_X(objs[current_trap].loc), OBJ_LOC_BIN_X(objs[(ObjID)p2].loc));
-   uly = min(OBJ_LOC_BIN_Y(objs[current_trap].loc), OBJ_LOC_BIN_Y(objs[(ObjID)p2].loc));
-   lry = max(OBJ_LOC_BIN_Y(objs[current_trap].loc), OBJ_LOC_BIN_Y(objs[(ObjID)p2].loc));
+   ulx = lg_min(OBJ_LOC_BIN_X(objs[current_trap].loc), OBJ_LOC_BIN_X(objs[(ObjID)p2].loc));
+   lrx = lg_max(OBJ_LOC_BIN_X(objs[current_trap].loc), OBJ_LOC_BIN_X(objs[(ObjID)p2].loc));
+   uly = lg_min(OBJ_LOC_BIN_Y(objs[current_trap].loc), OBJ_LOC_BIN_Y(objs[(ObjID)p2].loc));
+   lry = lg_max(OBJ_LOC_BIN_Y(objs[current_trap].loc), OBJ_LOC_BIN_Y(objs[(ObjID)p2].loc));
 
    obj=(ObjID)(p3&0xFFFF);
    if(obj==OBJ_NULL)
@@ -1982,10 +1982,10 @@ errtype trap_texture_func(int p1, int p2, int p3, int p4)
       {
          return(OK);
       }
-      minx = min(OBJ_LOC_BIN_X(objs[id1].loc), OBJ_LOC_BIN_X(objs[id2].loc));
-      maxx = max(OBJ_LOC_BIN_X(objs[id1].loc), OBJ_LOC_BIN_X(objs[id2].loc));
-      miny = min(OBJ_LOC_BIN_Y(objs[id1].loc), OBJ_LOC_BIN_Y(objs[id2].loc));
-      maxy = max(OBJ_LOC_BIN_Y(objs[id1].loc), OBJ_LOC_BIN_Y(objs[id2].loc));
+      minx = lg_min(OBJ_LOC_BIN_X(objs[id1].loc), OBJ_LOC_BIN_X(objs[id2].loc));
+      maxx = lg_max(OBJ_LOC_BIN_X(objs[id1].loc), OBJ_LOC_BIN_X(objs[id2].loc));
+      miny = lg_min(OBJ_LOC_BIN_Y(objs[id1].loc), OBJ_LOC_BIN_Y(objs[id2].loc));
+      maxy = lg_max(OBJ_LOC_BIN_Y(objs[id1].loc), OBJ_LOC_BIN_Y(objs[id2].loc));
    }
    else
    {
@@ -2096,7 +2096,7 @@ errtype trap_expose_func(int dmg, int dtype, int tsecs, int p4)
          damage -= player_struct.bio_post_expose;
          player_struct.bio_post_expose = 0;
       }
-      damage = max(- damage,-128);
+      damage = lg_max(- damage,-128);
    }
    expose_player((byte)damage,(ubyte)qdata_get(dtype),(ushort)qdata_get(tsecs));
    return OK;

@@ -57,6 +57,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "status.h"
 #include "tools.h"
 
+#include "otrip.h"
+
 #include <stdio.h>
 #include <unistd.h>
 
@@ -128,8 +130,8 @@ void closedown_game(uchar visible)
    extern void fr_closedown(void);
    extern void olh_closedown(void);
    extern void musicai_clear();
-   extern void drug_closedown(uchar visible);
-   extern void hardware_closedown(uchar visible);
+   extern void drug_closedown(bool visible);
+   extern void hardware_closedown(bool visible);
    extern void clear_digi_fx();
    extern void reset_schedules(void);
    extern void hud_shutdown_lines(void);
@@ -414,6 +416,12 @@ errtype load_game(char *fname)
 		load_score_for_location(PLAYER_BIN_X, PLAYER_BIN_Y);		//KLC - added here
 	}
 
+   // CC: Should we go back into fullscreen mode?
+   if(player_struct.hardwarez_status[CPTRIP(FULLSCR_HARD_TRIPLE)]) {
+      _new_mode = FULLSCREEN_LOOP;
+      chg_set_flg(GL_CHG_LOOP);
+   }
+
 //Â¥Â¥ temp
 //BlockMove(0, saveArray, 16);
 
@@ -440,6 +448,7 @@ errtype load_level_from_file(int level_num)
 		if (player_struct.initial_shodan_vals[player_struct.level] == -1)
 			player_struct.initial_shodan_vals[player_struct.level] = QUESTVAR_GET(SHODAN_QV);
 	}
+
 	return(retval);
 }
 
@@ -540,6 +549,10 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    printf("load_dynamic_memory\n");
    load_dynamic_memory(DYNMEM_ALL);
 
+   // KLC - if not already on, turn on-line help on.
+   if (!olh_active)
+      toggle_olh_func(0, 0, NULL);
+
    // Do entry-level triggers for starting level
    // Hmm, do we actually want to call this any time we restore
    // a saved game or whatever?  No, probably not....hmmm.....
@@ -547,14 +560,10 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void* undefin
    printf("do_level_entry_triggers\n");
    do_level_entry_triggers();
 
-   printf("STARTING PLAYER_BIN_X: %i, PLAYER_BIN_Y: %i\n", PLAYER_BIN_X, PLAYER_BIN_Y);
-   
-   // KLC - if not already on, turn on-line help on.
-   if (!olh_active)
-      toggle_olh_func(0, 0, NULL);
+   printf("Player starting at x: %i, y: %i\n", PLAYER_BIN_X, PLAYER_BIN_Y);
    
    // turn on help overlay. 
-   olh_overlay_on = TRUE;
+   olh_overlay_on = olh_active;
 
    // Plot timers
 

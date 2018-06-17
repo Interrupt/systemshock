@@ -223,12 +223,9 @@ set(DSTRUCT_SRC
 
 
 set(FIX_SRC
-	FIX/Source/atofix.c
 	FIX/Source/f_exp.c
-	FIX/Source/fix24.c
 	FIX/Source/fix.c
 	FIX/Source/fix_pow.c
-	FIX/Source/fixsprnt.c
 	FIX/Source/fix_sqrt.c
 	FIX/Source/MakeTables.c
 )

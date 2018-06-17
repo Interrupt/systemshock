@@ -86,6 +86,7 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "svgacurs.h"
 #include "tools.h"
 #include "weapons.h"
+#include "mouselook.h"
 
 #ifdef NOT_YET //KLC - for VR headsets
 
@@ -288,14 +289,14 @@ void handle_keyboard_fatigue(void)
    physics_get_one_control(KEYBD_CONTROL_BANK,CONTROL_YVEL,&cval);
    if (cval > 0)
    {
-      int f = max(CONTROL_MAX_VAL - PLAYER_FATIGUE,SPRINT_CONTROL_THRESHOLD);
+      int f = lg_max(CONTROL_MAX_VAL - PLAYER_FATIGUE,SPRINT_CONTROL_THRESHOLD);
       if (cval > f)
          physics_set_one_control(KEYBD_CONTROL_BANK,CONTROL_YVEL,f);
    }
    physics_get_one_control(KEYBD_CONTROL_BANK,CONTROL_ZVEL,&cval);
    if (cval > 0)
    {
-      int f = max(MAX_JUMP_CONTROL - PLAYER_FATIGUE,MAX_JUMP_CONTROL/2);
+      int f = lg_max(MAX_JUMP_CONTROL - PLAYER_FATIGUE,MAX_JUMP_CONTROL/2);
       if (cval > f)
          physics_set_one_control(KEYBD_CONTROL_BANK,CONTROL_ZVEL,f);
    }
@@ -1100,6 +1101,8 @@ extern uchar version_spew_func(short keycode, ulong context, void* data);
 extern uchar location_spew_func(short keycode, ulong context, void* data);
 #endif
 
+extern uchar toggle_mouse_look(short keycode, ulong context, void* data);
+
 #define ckpoint_input(val) Spew(DSRC_TESTING_Test0,("ii %s @%d\n",val,*tmd_ticks));
 
 #define CYB_CURS_ID(i)  (CYBER_CURSOR_BASE+(i))
@@ -1137,7 +1140,7 @@ void reload_motion_cursors(uchar cyber)
 void free_cursor_bitmaps()
 {
    int i=0;
-   for (; i < max(NUM_MOTION_CURSORS,NUM_CYBER_CURSORS); i++)
+   for (; i < lg_max(NUM_MOTION_CURSORS,NUM_CYBER_CURSORS); i++)
    {
       grs_bitmap* bm = &motion_cursor_bitmaps[i];
       if (bm->bits!=NULL)
@@ -1149,7 +1152,7 @@ void alloc_cursor_bitmaps(void)
 {
    int i;
    short w,h;
-   for (i = 0; i < min(NUM_MOTION_CURSORS,NUM_CYBER_CURSORS); i++)
+   for (i = 0; i < lg_min(NUM_MOTION_CURSORS,NUM_CYBER_CURSORS); i++)
    {
       int cybsz;
       int realsz = 0;
@@ -1167,9 +1170,9 @@ void alloc_cursor_bitmaps(void)
          realsz = w * h;
       }
 
-      bm->bits = (uchar *)malloc(max(cybsz,realsz));
+      bm->bits = (uchar *)malloc(lg_max(cybsz,realsz));
    }
-   for (; i < max(NUM_MOTION_CURSORS,NUM_CYBER_CURSORS); i++)
+   for (; i < lg_max(NUM_MOTION_CURSORS,NUM_CYBER_CURSORS); i++)
    {
       grs_bitmap* bm = &motion_cursor_bitmaps[i];
       int sz =  0;
@@ -1453,6 +1456,9 @@ void init_input(void)
    hotkey_add(CONTROL('m'), DEMO_CONTEXT, toggle_music_func, NULL);
    hotkey_add(CONTROL('M'), DEMO_CONTEXT, toggle_music_func, NULL);
 //   hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,(void *)TRUE);   
+
+   hotkey_add(DOWN('f'),DEMO_CONTEXT,toggle_mouse_look,(void *)TRUE);
+
    hotkey_add(DOWN('p'),DEMO_CONTEXT,pause_game_func,(void *)TRUE);
    hotkey_add(DOWN('y'),DEMO_CONTEXT,toggle_physics_func,(void *)TRUE);
    hotkey_add(DOWN('u'),DEMO_CONTEXT,toggle_giveall_func,(void *)TRUE);
@@ -1553,10 +1559,10 @@ void init_input(void)
 */
    init_invent_hotkeys();
 
-   for (i = 0; i < NUM_EYE_LVL_KEYS; i++)
+   /*for (i = 0; i < NUM_EYE_LVL_KEYS; i++)
    {
       hotkey_add(DOWN(eye_lvl_keys[i]),DEMO_CONTEXT,(hotkey_callback)eye_hotkey_func,(void*)0);
-   }
+   }*/
 
 /* KLC - stuff for VR headsets
    if (config_get_raw(CFG_INP6D_GO,NULL,0))
@@ -1820,7 +1826,7 @@ int view3d_mouse_input(LGPoint pos, LGRegion* reg,uchar move,int* lastsect)
 	         if (ycntl + f > CONTROL_MAX_VAL)
 	         {  // compute new mouse cursor position
 	            int newy;
-	            f = max(CONTROL_MAX_VAL-f,SPRINT_CONTROL_THRESHOLD);
+	            f = lg_max(CONTROL_MAX_VAL-f,SPRINT_CONTROL_THRESHOLD);
 	            newy = f*(ch+reg->abs_y-cy)/CONTROL_MAX_VAL - ch +cy;
 	            ycntl = (ycntl + f)/2;
 	            // put the cursor between here and there
@@ -1854,16 +1860,27 @@ int view3d_mouse_input(LGPoint pos, LGRegion* reg,uchar move,int* lastsect)
          cnum |= VIEW_VCENTER;
    }
 
+   // If mouse look is enabled, just use the centered cursor
+   extern int mlook_enabled;
+   if(mlook_enabled) {
+      cnum = VIEW_HCENTER | VIEW_VCENTER;
+
+      if(cyber)
+         cnum = VIEW_HCENTER + CYBER_VIEW_CENTER;
+   }
+
    if (*lastsect != cnum)
    {
       extern LGRegion* fullview_region;
       LGCursor*  c = &motion_cursors[cnum];
 //      Warning(("hey, cursor num = %d!\n",cnum));
 
+      // set the cursor to the motion cursor
       if (reg == fullview_region)
          uiSetGlobalDefaultCursor(c);
       else
          uiSetRegionDefaultCursor(reg,c);
+
       *lastsect = cnum;
    }
 
@@ -2104,6 +2121,8 @@ void use_object_in_3d(ObjID obj)
 
          if(objs[obj].obclass==CLASS_GRENADE)
             grenade_contact(obj,INT_MAX);
+
+         mouse_look_off();
 
          success = TRUE;
       }
@@ -3469,8 +3488,9 @@ void push_cursor_object(short obj)
    {
       grs_canvas temp_canv;
       // Get a new bigger bitmap
-      gr_init_bm(&svga_cursor_bmp,svga_cursor_bits,BMT_FLAT8,BMF_TRANS,min(MODE_SCONV_X(bmp->w,2),SVGA_CURSOR_WIDTH),
-         min(MODE_SCONV_Y(bmp->h,2),SVGA_CURSOR_HEIGHT));
+      gr_init_bm(&svga_cursor_bmp,svga_cursor_bits,BMT_FLAT8,BMF_TRANS,
+                 lg_min(MODE_SCONV_X(bmp->w,2),SVGA_CURSOR_WIDTH),
+                 lg_min(MODE_SCONV_Y(bmp->h,2),SVGA_CURSOR_HEIGHT));
       gr_make_canvas(&svga_cursor_bmp,&temp_canv);
 
       // Draw into it

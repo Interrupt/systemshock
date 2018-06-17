@@ -99,26 +99,13 @@ int HandleFloorLoop_C(grs_tmap_loop_info *tli,
 	         	 x--;
 					 }
 					 
-	      	 while (x>=4) 
+	      	 while (x>=0) 
 	      	  {
-	         	 inv = g_ltab[t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]+fix_light(i)];		
-	         	 u+=du; v+=dv; i+=di;
-	         	 inv <<= 8;
-	         	 
-	         	 inv |= g_ltab[t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]+fix_light(i)];		
-	         	 u+=du; v+=dv; i+=di;
-	         	 inv <<= 8;
-	
-	         	 inv |= g_ltab[t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]+fix_light(i)];	
-	         	 u+=du; v+=dv; i+=di;
-	         	 inv <<= 8;
-	
-	         	 inv |= g_ltab[t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]+fix_light(i)];	
-	         	 u+=du; v+=dv; i+=di;
-	
-						 * (long *) p_dest = inv;
-						 x-=4;
-						 p_dest += 4;
+	            inv = g_ltab[t_bits[((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask]+fix_light(i)];		
+	            u+=du; v+=dv; i+=di;
+	            *p_dest = inv;
+	            p_dest++;
+	            x--;
 	      	  }
 	         
 	       for (; x>0; x--) 

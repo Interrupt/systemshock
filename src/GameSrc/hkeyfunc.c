@@ -46,6 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "status.h"
 #include "tools.h"
 #include "wares.h"
+#include "mouselook.h"
 
 //--------------
 //  PROTOTYPES
@@ -1361,6 +1362,8 @@ uchar pause_game_func(short keycode, ulong context, void* data)
      return FALSE;
    }
 
+   mouse_look_unpause();
+
    return TRUE;
 /* KLC - not needed for Mac version
 	game_paused = !game_paused;
@@ -1397,6 +1400,12 @@ uchar unpause_game_func(short, ulong, void*)
 	return(FALSE);
 }
 */
+
+uchar toggle_mouse_look(short keycode, ulong context, void* data)
+{
+   mouse_look_toggle();
+   return(TRUE);
+}
 
 //--------------------------------------------------------------------
 //  For Mac version.  Save the current game.

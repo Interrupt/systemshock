@@ -199,7 +199,7 @@ void compute_hud_var(HudLine* hl)
          break;
       case 2:
          {
-            short use_perc = min(shield_absorb_perc, 95);
+            short use_perc = lg_min(shield_absorb_perc, 95);
             numtostring(use_perc, s);
             strcat(s, " %");
          }

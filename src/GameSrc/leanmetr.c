@@ -215,11 +215,11 @@ void set_base_lean_bmap(uchar shield)
 }
 
 #define LEAN_CONST (fix_2pi/10)
-#define LEAN_TO_LEANX(ln) min(100,max(-100,(100*(ln)/LEAN_CONST)))
+#define LEAN_TO_LEANX(ln) lg_min(100, lg_max(-100,(100*(ln)/LEAN_CONST)))
 
 #define PLAYER_HGT (fix_make(0,0xbd00))
 #define CROUCH_CONST (2*PLAYER_HGT/5)
-#define CROUCH_TO_POSTURE(c) min(2,max(0,(2 - max(c,0)*2/CROUCH_CONST)))
+#define CROUCH_TO_POSTURE(c) lg_min(2,lg_max(0,(2 - lg_max(c,0)*2/CROUCH_CONST)))
 
 
 // The posture meter output is filtered by a capacitor, 

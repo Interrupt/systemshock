@@ -346,7 +346,7 @@ void olh_do_panel_ref(short xl, short yl)
    char buf[80];
 
    buf[0] = '\0';
-   if (is_container(obj,&d1,&d2) && (*d1 != 0 || *d2 != 0))
+   if (is_container(obj,&d1,&d2) && ((d1 != NULL && *d1 != 0) || (d2 != NULL && *d2 != 0)))
    {
       char namebuf[80];
 

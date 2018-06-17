@@ -181,7 +181,7 @@ void view360_init(void)
 #ifdef SVGA_SUPPORT
    ss_point_convert(&x,&y,FALSE);
    ss_point_convert(&w,&h,FALSE);
-   h = min(h, 137);
+   h = lg_min(h, 137);
 #endif
    view360_contexts[LEFT_CONTEXT]  = fr_place_view(FR_NEWVIEW,FR_DEFCAM,canv,VIEW360_BASEFR|FR_CURVIEW_LEFT,0,0,x,y,w,h);
    c = view360_fullscreen_contexts[LEFT_CONTEXT] = fr_place_view(FR_NEWVIEW,FR_DEFCAM,canv,VIEW360_BASEFR|FR_CURVIEW_LEFT,0,0,x,y,w,h);
@@ -194,7 +194,7 @@ void view360_init(void)
 #ifdef SVGA_SUPPORT
    ss_point_convert(&x,&y,FALSE);
    ss_point_convert(&w,&h,FALSE);
-   h = min(h, 137);
+   h = lg_min(h, 137);
 #endif
    view360_contexts[RIGHT_CONTEXT] = fr_place_view(FR_NEWVIEW,FR_DEFCAM,canv,VIEW360_BASEFR|FR_CURVIEW_RGHT,0,0,x,y,w,h);
    canv=_fullscreen_mfd.bm.bits;
