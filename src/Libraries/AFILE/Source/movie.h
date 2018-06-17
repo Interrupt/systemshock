@@ -26,9 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MOVIE_H
 #define __MOVIE_H
 
-#ifndef __TYPES_H
-#include "lg_types.h"
-#endif
 #ifndef __FIX_H
 #include "fix.h"
 #endif

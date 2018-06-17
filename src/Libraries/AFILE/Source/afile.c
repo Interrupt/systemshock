@@ -98,7 +98,7 @@ static Amethods *methods[] = {
 
 int AfileOpen(Afile *paf, char *filename) {
   AfileType aftype;
-  uchar bmtype;
+  uint8_t bmtype;
   FILE *fp;
   char *p;
 
@@ -134,7 +134,7 @@ int AfileOpen(Afile *paf, char *filename) {
   memset(paf, 0, sizeof(Afile));
   paf->fp = fp;
   paf->type = aftype;
-  paf->writing = FALSE;
+  paf->writing = false;
   paf->pm = methods[paf->type];
   paf->currFrame = 0;
 
@@ -151,10 +151,10 @@ int AfileOpen(Afile *paf, char *filename) {
 
   if (paf->v.numBits == 8) {
     bmtype = BMT_FLAT8;
-    paf->frameLen = (long)paf->v.width * paf->v.height;
+    paf->frameLen = (int32_t)paf->v.width * paf->v.height;
   } else {
     bmtype = BMT_FLAT24;
-    paf->frameLen = (long)paf->v.width * paf->v.height * 3;
+    paf->frameLen = (int32_t)paf->v.width * paf->v.height * 3;
   }
 
   //	Spew(DSRC_2D_Afile, ("AfileOpen: numBits: %d  w,h: %d,%d  frameLen: %d\n",
@@ -190,7 +190,7 @@ int AfileOpen(Afile *paf, char *filename) {
 //	Returns: size of frame, or -1 if error
 
 int32_t AfileReadFullFrame(Afile *paf, grs_bitmap *pbm, fix *ptime) {
-  long len;
+  int32_t len;
   fix time;
 
   //	Hey, did we hit end?
@@ -320,11 +320,11 @@ long AfileReadDiffFrame(Afile *paf, grs_bitmap *pbm, fix *ptime)
 //
 //	Returns: TRUE if palette for this frame, FALSE if none
 
-uchar AfileGetFramePal(Afile *paf, Apalette *ppal) {
+bool AfileGetFramePal(Afile *paf, Apalette *ppal) {
   //	Spew(DSRC_2D_Afile, ("AfileGetFramePal: getting pal\n"));
 
   if (paf->pm->f_ReadFramePal == NULL)
-    return FALSE;
+    return false;
 
   (*paf->pm->f_ReadFramePal)(paf, ppal);
   return (ppal->numcols != 0);
@@ -403,9 +403,7 @@ void AfileClose(Afile *paf) {
 //	AfileLookupType() looks up anim file type given extension.
 
 AfileType AfileLookupType(char *ext) {
-  int itype;
-
-  itype = 0;
+  int itype = 0;
   while (afExts[itype]) {
     if (strcmp(ext, afExts[itype]) == 0)
       return (afTypes[itype]);
@@ -489,7 +487,7 @@ int AfileCreate(Afile *paf, char *filename, fix frameRate) {
   memset(paf, 0, sizeof(Afile));
   paf->fp = fp;
   paf->type = aftype;
-  paf->writing = TRUE;
+  paf->writing = true;
   paf->pm = methods[paf->type];
 
   paf->v.frameRate = frameRate;
@@ -536,9 +534,9 @@ int AfilePutAudio(Afile *paf, AaudioInfo *pai, void *paudio) {
 //	AfileWriteFrame() writes frame out to writer.
 
 int AfileWriteFrame(Afile *paf, grs_bitmap *pbm, fix time) {
-  int bmtype;
-  long len;
-  int ret;
+  int32_t bmtype;
+  int32_t len;
+  int32_t ret;
 
   //	Spew(DSRC_2D_Afile, ("AfileWriteFrame: writing frame: %d\n",
   //		paf->currFrame));
@@ -552,11 +550,11 @@ int AfileWriteFrame(Afile *paf, grs_bitmap *pbm, fix time) {
     if ((pbm->type == BMT_FLAT8) || (pbm->type == BMT_RSD8)) {
       paf->v.numBits = 8;
       bmtype = BMT_FLAT8;
-      paf->frameLen = (long)paf->v.width * paf->v.height;
+      paf->frameLen = (int32_t)paf->v.width * paf->v.height;
     } else {
       paf->v.numBits = 24;
       bmtype = BMT_FLAT24;
-      paf->frameLen = (long)paf->v.width * paf->v.height * 3;
+      paf->frameLen = (int32_t)paf->v.width * paf->v.height * 3;
     }
     //		Spew(DSRC_2D_Afile, ("AfileWriteFrame: numBits: %d  w,h: %d,%d  frameLen: %d\n",
     //			paf->v.numBits, paf->v.width, paf->v.height, paf->frameLen));
@@ -652,27 +650,4 @@ int AfileSetFramePal(Afile *paf, Apalette *ppal) {
   if (paf->pm->f_WriteFramePal == NULL)
     return (-1);
   return ((*paf->pm->f_WriteFramePal)(paf, ppal));
-}
-
-//	---------------------------------------------------------
-long SwapLongBytes(long in) {
-  /*long	out;
-  *(uchar*)&out = *(((uchar *)&in)+3);
-  *(((uchar*)&out)+1) = *(((uchar *)&in)+2);
-  *(((uchar*)&out)+2) = *(((uchar *)&in)+1);
-  *(((uchar*)&out)+3) = *(uchar *)&in;
-  return(out);*/
-
-  printf("SwapLongBytes\n");
-  return in;
-}
-
-short SwapShortBytes(short in) {
-  /*short out;
-  *(uchar*)&out = *(((uchar *)&in)+1);
-  *(((uchar*)&out)+1) = *(uchar *)&in;
-  return(out);*/
-
-  printf("SwapShortBytes\n");
-  return in;
 }

@@ -117,7 +117,7 @@ typedef struct Amethods_ {
 int32_t AfileOpen(Afile *paf, char *filename /*Datapath *pdp*/);
 int32_t AfileReadFullFrame(Afile *paf, grs_bitmap *pbm, fix *ptime);
 int32_t AfileReadDiffFrame(Afile *paf, grs_bitmap *pbm, fix *ptime);
-uint8_t AfileGetFramePal(Afile *paf, Apalette *ppal);
+bool AfileGetFramePal(Afile *paf, Apalette *ppal);
 int32_t AfileGetAudio(Afile *paf, void *paudio);
 int32_t AfileReadReset(Afile *paf);
 void AfileClose(Afile *paf); // write also

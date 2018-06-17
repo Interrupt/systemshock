@@ -142,7 +142,7 @@ int32_t AmovReadHeader(Afile *paf) {
   }
 
   // No new palette
-  pmi->newPal = FALSE;
+  pmi->newPal = false;
 
   // Current chunk is first one
   pmi->pcurrChunk = pmi->pmc;
@@ -155,15 +155,15 @@ int32_t AmovReadHeader(Afile *paf) {
 // DG: add some stubs so stuff builds
 
 // for some reason precompiled.h is missing here?!
-static void Draw4x4(const uchar *data, short w, short h) {
+static void Draw4x4(const uint8_t *data, int16_t w, int16_t h) {
   // I have no idea what this really does..
   STUB_ONCE("TODO: Implement");
 }
-static void HuffExpandFlashTables(uchar *huffmanTable, ulong len, ulong *pl, int xWTF) {
+static void HuffExpandFlashTables(uint8_t *huffmanTable, uint32_t len, uint32_t *pl, int32_t xWTF) {
   // unsure about the types, especially of pl? and what it is as well..
   STUB_ONCE("TODO: Implement");
 }
-static void Draw4x4Reset(uchar *x, uchar *y) {
+static void Draw4x4Reset(uint8_t *x, uint8_t *y) {
   // as you may have guessed, I have no idea about this one either.
   STUB_ONCE("TODO: Implement");
 }
@@ -268,11 +268,11 @@ int32_t AmovReadFramePal(Afile *paf, Apalette *ppal) {
   if (pmi->newPal) {
     ppal->numcols = 256;
     memcpy(ppal->rgb, pmi->pal, 768);
-    pmi->newPal = FALSE;
-    return TRUE;
+    pmi->newPal = false;
+    return false;
   }
 
-  return FALSE;
+  return false;
 }
 
 //	----------------------------------------------------------
