@@ -57,23 +57,14 @@ void digifx_EOS_callback(snd_digi_parms *sdp)
 
 void sound_frame_update(void)
 {
-	/*int			i;
-	SCStatus	stat;
+	int i;
 	snd_digi_parms *sdp;
 	extern uchar set_sample_pan_gain(snd_digi_parms *sdp);
 
-	while (rulock_ptr>0)
-		ResUnlock(rulock_list[--rulock_ptr]);
-
-	for (i=0; i < _snd_smp_cnt; i++)
-	{
-		SndChannelStatus(_snd_smp_prm[i].sndChan, sizeof(SCStatus), &stat);
-		if (stat.scChannelBusy || stat.scChannelPaused)
-		{
-			sdp = snd_sample_parms(i);
-			if (set_sample_pan_gain(sdp))
-				snd_end_sample(i);
-		}
-	}*/
+	for (i = 0; i < SND_MAX_SAMPLES; i++) {
+		snd_digi_parms *sdp = snd_sample_parms(i);
+		if (set_sample_pan_gain(sdp))
+			snd_end_sample(i);
+	}
 }
 
