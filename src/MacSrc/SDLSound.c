@@ -6,7 +6,8 @@
 
 #include <SDL_mixer.h>
 
-// Hacky stubs to hook sound functions into SDL
+static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
+static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
 
 int snd_start_digital(void) {
 
@@ -20,7 +21,7 @@ int snd_start_digital(void) {
 		DebugString("SDL_Mixer: Couldn't open audio device");	
 	}
 
-	Mix_AllocateChannels(16);
+	Mix_AllocateChannels(SND_MAX_SAMPLES);
 
 	return OK;
 }
@@ -29,10 +30,62 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 
 	// Play one of the VOC format sounds
 
-	Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromConstMem(smp, len), 0);
-	Mix_PlayChannel(-1, sample, 0);
+	Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromConstMem(smp, len), 1);
+	if (sample == NULL) {
+		DebugString("SDL_Mixer: Failed to load sample");
+		return ERR_NOEFFECT;
+	}
 
-	return OK;
+	int channel = Mix_PlayChannel(-1, sample, 0);
+	if (channel < 0) {
+		DebugString("SDL_Mixer: Failed to play sample");
+		Mix_FreeChunk(sample);
+		return ERR_NOEFFECT;
+	}
+
+	if (samples_by_channel[channel])
+		Mix_FreeChunk(samples_by_channel[channel]);
+
+	samples_by_channel[channel] = sample;
+	digi_parms_by_channel[channel] = *dprm;
+
+	return channel;
+}
+
+void snd_end_sample(int hnd_id) {
+	Mix_HaltChannel(hnd_id);
+	if (samples_by_channel[hnd_id]) {
+		Mix_FreeChunk(samples_by_channel[hnd_id]);
+		samples_by_channel[hnd_id] = NULL;
+	}
+}
+
+snd_digi_parms *snd_sample_parms(int hnd_id)
+{
+	return &digi_parms_by_channel[hnd_id];
+}
+
+void snd_kill_all_samples(void) {
+	for (int channel = 0; channel < SND_MAX_SAMPLES; channel++) {
+		snd_end_sample(channel);
+	}
+}
+
+void snd_sample_reload_parms(snd_digi_parms *sdp) {
+	// ignore if *sdp is not one of the items in digi_parms_by_channel[]
+	if (sdp < digi_parms_by_channel || sdp > digi_parms_by_channel + SND_MAX_SAMPLES)
+		return;
+	int channel = sdp - digi_parms_by_channel;
+
+	if (!Mix_Playing(channel))
+		return;
+
+	// sdp->vol ranges from 0..255
+	Mix_Volume(channel, sdp->vol / 2);
+
+	// sdp->pan ranges from 1 (left) to 127 (right)
+	uint8_t right = 2 * sdp->pan;
+	Mix_SetPanning(channel, 254 - right, right);
 }
 
 int MacTuneLoadTheme(char* theme_base, int themeID) {
@@ -71,14 +124,5 @@ int MacTuneLoadTheme(char* theme_base, int themeID) { return OK; }
 
 // Unimplemented sound stubs
 
-void snd_kill_all_samples(void) { }
-void snd_sample_reload_parms(snd_digi_parms *sdp) { }
-void snd_end_sample(int hnd_id) { }
 void snd_startup(void) { }
 int snd_stop_digital(void) { return 1; }
-
-snd_digi_parms *snd_sample_parms(int hnd_id)
-{
-	snd_digi_parms parms;
-	return &parms;
-}
