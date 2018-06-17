@@ -4,7 +4,7 @@ set -e
 SDL_version=2.0.8
 SDL_mixer_version=2.0.2
 
-if [ -d ./built_ext/ ]; then
+if [ -d ./build_ext/ ]; then
 	echo A directory named build_ext already exists.
 	echo Please remove it if you want to recompile.
 	exit
