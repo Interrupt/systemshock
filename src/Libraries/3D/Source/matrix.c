@@ -551,73 +551,35 @@ void g3_matrix_x_matrix(g3s_matrix *dest,g3s_matrix *src1 ,g3s_matrix *src2 )
 	mxm_mul(m9, m7,m8,m9, m3,m6,m9);
 }
 
-
-// MLA- oh no I've got LookingGlass disease, I'm making multi-line #defines!
-#define do_cross(v1,v2,v3,v4,res) \
-  {AWide	result,result2; \
-	AsmWideMultiply(v3, v4, &result); \
-	AsmWideMultiply(v1, v2, &result2);\
-	AsmWideNegate(&result); \
-	AsmWideAdd(&result, &result2);\
-	res = (result.hi<<16) | (((ulong) result.lo) >> 16);}
-
-#define do_cross_nofixup(v1,v2,v3,v4,wide_res) \
-  {AWide	result2; \
-	AsmWideMultiply(v3, v4, &wide_res); \
-	AsmWideMultiply(v1, v2, &result2);\
-	AsmWideNegate(&wide_res); \
-	AsmWideAdd(&wide_res, &result2);}
-
-   	
-#define DEN_MIN  0x00008000	// minimum acceptable value for denomintor
+static int64_t cross(int v1, int v2, int v3, int v4)
+{
+	return (int64_t)v1 * v2 - (int64_t)v3 * v4;
+}
 
 // fills in edi with vector. takes deltas set
 void get_pyr_vector(g3s_vector *corners) 
  {
- 	fix			den;
  	AWide		wide_den,wide2;
- 	
-	// try assuming z==1
-	do_cross(d13,d56,d23,d46,den);
-	if (fix_abs(den) >= DEN_MIN)
-	 {
-	 	corners->gZ = f1_0;
-	 	
-	 	do_cross_nofixup(d89,d46,d79,d56,wide_den);
-	 	corners->gX = AsmWideDivide(wide_den.hi,wide_den.lo,den);
-	 	
-	 	do_cross_nofixup(d79,d23,d13,d89,wide_den);
-	 	corners->gY = AsmWideDivide(wide_den.hi,wide_den.lo,den);
-	 }
-	else	
-	 {
-		// try assuming x==1
-		do_cross(d46,d89,d56,d79,den);
-		if (fix_abs(den) >= DEN_MIN)
-	 	 {
-	 		corners->gX = f1_0;
 
-		 	do_cross_nofixup(d23,d79,d13,d89,wide_den);
-		 	corners->gY = AsmWideDivide(wide_den.hi,wide_den.lo,den);
+	// calculate denominators, divide each by the longest of the three
+	int64_t den_x = cross(d46, d89, d56, d79);
+	int64_t den_y = cross(d23, d79, d13, d89);
+	int64_t den_z = cross(d13, d56, d23, d46);
 
-		 	do_cross_nofixup(d13,d56,d23,d46,wide_den);
-		 	corners->gZ = AsmWideDivide(wide_den.hi,wide_den.lo,den);
-	 	 }
-	 	else
-	 	 {
-			//try assuming y==1
-		 	do_cross(d13,d89,d23,d79,den);
+	if (llabs(den_x) >= llabs(den_y) && llabs(den_x) >= llabs(den_z)) {
+		corners->gX = f1_0;
+		corners->gY = den_y / (den_x >> 16);
+		corners->gZ = den_z / (den_x >> 16);
+	} else if (llabs(den_y) >= llabs(den_x) && llabs(den_y) >= llabs(den_z)) {
+		corners->gX = den_x / (den_y >> 16);
+		corners->gY = f1_0;
+		corners->gZ = den_z / (den_y >> 16);
+	} else {
+		corners->gX = den_x / (den_z >> 16);
+		corners->gY = den_y / (den_z >> 16);
+		corners->gZ = f1_0;
+	}
 
-	 		corners->gY = f1_0;
-
-		 	do_cross_nofixup(d56,d79,d46,d89,wide_den);
-		 	corners->gX = AsmWideDivide(wide_den.hi,wide_den.lo,den);
-
-		 	do_cross_nofixup(d46,d23,d56,d13,wide_den);
-		 	corners->gZ = AsmWideDivide(wide_den.hi,wide_den.lo,den);
-	 	 }
-	 }
-	  
 // got_vector
 	g3_vec_normalize(corners);
 
