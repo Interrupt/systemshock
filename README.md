@@ -5,7 +5,7 @@ Based on the source code for PowerPC released by Night Dive Studios, Incorporate
 GENERAL NOTES
 =============
 
-A cross platform source port of the System Shock source code that was released, using SDL2. This runs well on OSX and Linux right now, with some runtime issues to sort out.
+Shockolate is a cross platform source port of the System Shock source code that was released, using SDL2. This runs well on OSX, Linux, and Windows right now, with some runtime issues to sort out.
 
 The end goal for this project is something like what Chocolate Doom is for Doom: an experience that closely mimics the original, but portable and with some quality of life improvements - and mod support!
 
@@ -36,7 +36,8 @@ Compiling / Running
 ## Prerequisites
   - SDL2, 32 bit
   - SDL2_mixer, 32 bit
-  - Original assets in a `res/data` folder next to the executable
+  - Original cd-rom or SS:EE assets in a `res/data` folder next to the executable
+    - Floppy disk assets are an older version that we can't load currently
   
 ## Building SDL
 You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer. VOC support was broken until recently in SDL_mixer, so for sound effects to work you'll probably need to build it from the latest sources like that script does.
