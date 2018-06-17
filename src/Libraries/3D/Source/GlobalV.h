@@ -106,8 +106,8 @@ extern char _g3d_light_type; // db      0       ; The lighting type, see above
 extern fix _g3d_amb_light;  // fix    0       ; amount of ambient light
 extern fix _g3d_diff_light; // fix    10000h  ; intensity of light source
 extern fix _g3d_spec_light; // fix    0       ; amount of spec light
-extern fix _g3d_flash; // fix    0       ; specular flash point below which none
-                       // is applied
+extern fix _g3d_flash;      // fix    0       ; specular flash point below which none
+                            // is applied
 // note that specular light is used to provide a "flash" mostly
 // so you can artificially inflate it a bit, or we could try
 // funny functions to make it "flash" only within a certain

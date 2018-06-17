@@ -44,19 +44,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 
 // double a 64 bit long (two 32's), basically a shift left
-#define Double_64(a, b)                                                        \
-  if (((long)b) < 0) {                                                         \
-    b <<= 1;                                                                   \
-    a <<= 1;                                                                   \
-    a++;                                                                       \
-  } else {                                                                     \
-    b <<= 1;                                                                   \
-    a <<= 1;                                                                   \
+#define Double_64(a, b) \
+  if (((long)b) < 0) {  \
+    b <<= 1;            \
+    a <<= 1;            \
+    a++;                \
+  } else {              \
+    b <<= 1;            \
+    a <<= 1;            \
   }
 
 // prototypes
-void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0, g3s_vector *v1,
-                             g3s_vector *v2);
+void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0, g3s_vector *v1, g3s_vector *v2);
 
 // adds two vectors:  edi = esi + ebx
 void g3_vec_add(g3s_vector *dest, g3s_vector *src1, g3s_vector *src2) {
@@ -110,8 +109,7 @@ fix g3_vec_dotprod(g3s_vector *v0, g3s_vector *v1) {
 // compute normalized surface normal from three points.
 // takes edi=dest, eax,edx,ebx = points. fills in [edi].
 // trashes eax,ebx,ecx,edx,esi
-void g3_compute_normal(g3s_vector *norm, g3s_vector *v0, g3s_vector *v1,
-                       g3s_vector *v2) {
+void g3_compute_normal(g3s_vector *norm, g3s_vector *v0, g3s_vector *v1, g3s_vector *v2) {
   g3_compute_normal_quick(norm, v0, v1, v2);
   g3_vec_normalize(norm); // now normalize
 }
@@ -131,8 +129,7 @@ void g3_vec_normalize(g3s_vector *v) {
 // takes edi=dest, eax,edx,ebx = points. fills in [edi].
 // trashes eax,ebx,ecx,edx,esi
 // the quick version does not normalize
-void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0, g3s_vector *v1,
-                             g3s_vector *v2) {
+void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0, g3s_vector *v1, g3s_vector *v2) {
   AWide result, result2;
   g3s_vector temp_v0;
   g3s_vector temp_v1;

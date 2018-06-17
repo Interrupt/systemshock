@@ -41,8 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Output:	number actually allocated
 // Side effects:	allocates point array
 //----------------------------------------------------------------------------
-short g3_init(short max_points, int user_x_axis, int user_y_axis,
-              int user_z_axis) {
+short g3_init(short max_points, int user_x_axis, int user_y_axis, int user_z_axis) {
   int temp_user_y_axis;
   long temp_long;
   char temp_char;
@@ -80,9 +79,8 @@ short g3_init(short max_points, int user_x_axis, int user_y_axis,
   axis_z = user_z_axis; // no_neg_z:	mov	axis_z,edx
 
   // set axis swap flags
-  if (user_x_axis >=
-      user_y_axis) // cmp	ebx,ecx	;check swap x,y			jl
-                   // no_swap_xy
+  if (user_x_axis >= user_y_axis) // cmp	ebx,ecx	;check swap x,y			jl
+                                  // no_swap_xy
   {
     axis_swap_flag |= 1; //	or	axis_swap_flag,1
     temp_long = user_x_axis;
@@ -94,9 +92,8 @@ short g3_init(short max_points, int user_x_axis, int user_y_axis,
     temp_neg_flags[1] = temp_char; // mswap	temp_neg_flags,temp_neg_flags+1
   }
 
-  if (user_x_axis >=
-      user_z_axis) // cmp	ebx,edx	;check swap x,z			jl
-                   // no_swap_xy
+  if (user_x_axis >= user_z_axis) // cmp	ebx,edx	;check swap x,z			jl
+                                  // no_swap_xy
   {
     axis_swap_flag |= 2; //	or	axis_swap_flag,1
     temp_long = user_x_axis;
@@ -108,24 +105,20 @@ short g3_init(short max_points, int user_x_axis, int user_y_axis,
     temp_neg_flags[2] = temp_char; // mswap	temp_neg_flags,temp_neg_flags+2
   }
 
-  if (user_y_axis >=
-      user_z_axis) // cmp	ecx,edx	;check swap y,z			jl
-                   // no_swap_xy
+  if (user_y_axis >= user_z_axis) // cmp	ecx,edx	;check swap y,z			jl
+                                  // no_swap_xy
   {
     axis_swap_flag |= 4; //	or	axis_swap_flag,1
     temp_char = temp_neg_flags[1];
     temp_neg_flags[1] = temp_neg_flags[2];
-    temp_neg_flags[2] =
-        temp_char; // mswap	temp_neg_flags+1,temp_neg_flags+2
+    temp_neg_flags[2] = temp_char; // mswap	temp_neg_flags+1,temp_neg_flags+2
   }
 
   // set neg flags bitmask
-  axis_neg_flag =
-      (temp_neg_flags[2] << 2) | (temp_neg_flags[1] << 1) | temp_neg_flags[0];
+  axis_neg_flag = (temp_neg_flags[2] << 2) | (temp_neg_flags[1] << 1) | temp_neg_flags[0];
 
-  user_y_axis =
-      temp_user_y_axis - 1; // pop	ecx	;get back y axis
-                            // 	dec	ecx	;make y axis 0,1,2
+  user_y_axis = temp_user_y_axis - 1; // pop	ecx	;get back y axis
+                                      // 	dec	ecx	;make y axis 0,1,2
   up_axis = (user_y_axis << 1) + user_y_axis;
 
   // set axis offset vars. offset is number of elements, not bytes

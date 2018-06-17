@@ -35,8 +35,7 @@ typedef struct {
 void fauxrend(fauxrend_context *fr);
 void fauxrend_set_context(fauxrend_context *frc);
 void fauxrend_free_context(fauxrend_context *frc);
-fauxrend_context *fauxrend_place_3d(fauxrend_context *fr, uchar db_buf,
-                                    char axis, int fov, int xc, int yc, int wid,
+fauxrend_context *fauxrend_place_3d(fauxrend_context *fr, uchar db_buf, char axis, int fov, int xc, int yc, int wid,
                                     int hgt);
 void fauxrend_zoom(fauxrend_context *fr, fix mod_fac);
 void fauxrend_setup_3d(void);

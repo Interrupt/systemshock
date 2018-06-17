@@ -74,8 +74,7 @@ fix g3_get_zoom(char axis, fixang angle, int window_width, int window_height) {
                                          // bx
   temp1 = fix_div(f1_0 - cos_val, cos_val + f1_0);
 
-  unscalezoom =
-      fix_sqrt(temp1); // 	call	fix_sqrt_	;eax = unscaled zoom
+  unscalezoom = fix_sqrt(temp1); // 	call	fix_sqrt_	;eax = unscaled zoom
 
   // now, temp1 would be zoom if not for window and pixel matrix scaling.
   // correct for these
@@ -84,10 +83,9 @@ fix g3_get_zoom(char axis, fixang angle, int window_width, int window_height) {
   pixel_ratio = grd_cap->aspect;
 
   // get matrix scale value for given window size
-  templong =
-      fix_mul_div(window_height, pixel_ratio,
-                  window_width); // imul	pixel_ratio	;height * pixrat
-                                 // 	idiv	ebx	;eax = h * pixrat / w
+  templong = fix_mul_div(window_height, pixel_ratio,
+                         window_width); // imul	pixel_ratio	;height * pixrat
+                                        // 	idiv	ebx	;eax = h * pixrat / w
   // window and pixrat scaling affects y. see if y FOV requested
   if (templong <= f1_0) // cmp	eax,f1_0	;< 1.0? jle	scale_x	;scale x
   {

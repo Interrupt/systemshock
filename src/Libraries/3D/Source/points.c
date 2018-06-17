@@ -37,9 +37,8 @@ void do_norm_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
 void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
 
 // void xlate_rotate_point(g3s_vector *v, fix *x, fix *y, fix *z);
-#define xlate_rotate_point(v, x, y, z)                                         \
-  do_rotate(v->gX - _view_position.gX, v->gY - _view_position.gY,              \
-            v->gZ - _view_position.gZ, x, y, z)
+#define xlate_rotate_point(v, x, y, z) \
+  do_rotate(v->gX - _view_position.gX, v->gY - _view_position.gY, v->gZ - _view_position.gZ, x, y, z)
 
 extern int code_point(g3s_point *pt);
 extern char SubLongWithOverflow(long *result, long src, long dest);
@@ -61,8 +60,7 @@ g3s_phandle g3_rotate_norm(g3s_vector *v) {
   temp2 = fix_div(x, _matrix_scale.gX);
   temp3 = fix_div(y, _matrix_scale.gY);
 
-  temp3 = -fix_mul_div(
-      temp3, _scrw, _scrh); // because projecting negates too, of course. Grrr.
+  temp3 = -fix_mul_div(temp3, _scrw, _scrh); // because projecting negates too, of course. Grrr.
 
   getpnt(point);
   point->gX = temp2;
@@ -335,9 +333,7 @@ g3s_phandle g3_rotate_light_norm(g3s_vector *v) {
 }
 
 // takes esi=ptr to normal vector. returns in <ecx,esi,eax>. trashes all regs
-void rotate_norm(g3s_vector *v, fix *x, fix *y, fix *z) {
-  do_norm_rotate(v->gX, v->gY, v->gZ, x, y, z);
-}
+void rotate_norm(g3s_vector *v, fix *x, fix *y, fix *z) { do_norm_rotate(v->gX, v->gY, v->gZ, x, y, z); }
 
 // does the rotate with the view matrix.
 // takes <x,y,z> = <esi,edi,ebp>, returns <x,y,z> = <ecx,esi,eax>

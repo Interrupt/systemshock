@@ -58,8 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 
 // externs
-extern void angles_2_matrix(g3s_angvec *angles, g3s_matrix *view_matrix,
-                            int rotation_order);
+extern void angles_2_matrix(g3s_angvec *angles, g3s_matrix *view_matrix, int rotation_order);
 
 // prototypes
 uchar instance_x(fixang tx);
@@ -67,8 +66,7 @@ uchar instance_y(fixang ty);
 uchar instance_z(fixang tz);
 void instance_matrix(g3s_matrix *src, g3s_matrix *dest);
 uchar save_context(void);
-uchar g3_start_object_angles_zy(g3s_vector *p, fixang ty, fixang tz,
-                                int rotation_order);
+uchar g3_start_object_angles_zy(g3s_vector *p, fixang ty, fixang tz, int rotation_order);
 uchar start_obj_common(g3s_vector *p, g3s_angvec *o, int rotation_order);
 
 #define MAX_INSTANCE_DEPTH 5
@@ -96,8 +94,7 @@ uchar g3_start_object(g3s_vector *p) // position only (no orientation)
 }
 
 // takes esi=position, ecx=rotation order, angles=eax,ebx,edx
-uchar g3_start_object_angles_xyz(g3s_vector *p, fixang tx, fixang ty, fixang tz,
-                                 int rotation_order) {
+uchar g3_start_object_angles_xyz(g3s_vector *p, fixang tx, fixang ty, fixang tz, int rotation_order) {
   g3s_angvec temp_angles;
 
   if (save_context())
@@ -111,8 +108,7 @@ uchar g3_start_object_angles_xyz(g3s_vector *p, fixang tx, fixang ty, fixang tz,
 }
 
 // takes esi=position, edi=orientation vector, ecx=rotation order
-uchar g3_start_object_angles_v(g3s_vector *p, g3s_angvec *o,
-                               int rotation_order) {
+uchar g3_start_object_angles_v(g3s_vector *p, g3s_angvec *o, int rotation_order) {
   if (save_context())
     return 0;
   return (start_obj_common(p, o, rotation_order));
@@ -147,24 +143,24 @@ uchar start_obj_common(g3s_vector *p, g3s_angvec *o, int rotation_order) {
 }
 
 // dest=c1*s1+c2*s2
-#define update_m(dest, c1, s1, c2, s2)                                         \
-  {                                                                            \
-    AWide result, result2;                                                     \
-    AsmWideMultiply(c1, s1, &result);                                          \
-    AsmWideMultiply(c2, s2, &result2);                                         \
-    AsmWideAdd(&result, &result2);                                             \
-    dest = (result.hi << 16) | (((ulong)result.lo) >> 16);                     \
+#define update_m(dest, c1, s1, c2, s2)                     \
+  {                                                        \
+    AWide result, result2;                                 \
+    AsmWideMultiply(c1, s1, &result);                      \
+    AsmWideMultiply(c2, s2, &result2);                     \
+    AsmWideAdd(&result, &result2);                         \
+    dest = (result.hi << 16) | (((ulong)result.lo) >> 16); \
   }
 
 // dest=c1*s1-c2*s2
-#define update_ms(dest, c1, s1, c2, s2)                                        \
-  {                                                                            \
-    AWide result, result2;                                                     \
-    AsmWideMultiply(c1, s1, &result);                                          \
-    AsmWideMultiply(c2, s2, &result2);                                         \
-    AsmWideNegate(&result2);                                                   \
-    AsmWideAdd(&result, &result2);                                             \
-    dest = (result.hi << 16) | (((ulong)result.lo) >> 16);                     \
+#define update_ms(dest, c1, s1, c2, s2)                    \
+  {                                                        \
+    AWide result, result2;                                 \
+    AsmWideMultiply(c1, s1, &result);                      \
+    AsmWideMultiply(c2, s2, &result2);                     \
+    AsmWideNegate(&result2);                               \
+    AsmWideAdd(&result, &result2);                         \
+    dest = (result.hi << 16) | (((ulong)result.lo) >> 16); \
   }
 
 // rotate around the specified axis. angle = ebx
@@ -331,8 +327,7 @@ uchar instance_z(fixang tz) {
 }
 
 // rotate around the specified axes. angles = ebx edx. esi=position
-uchar g3_start_object_angles_xy(g3s_vector *p, fixang tx, fixang ty,
-                                int rotation_order) {
+uchar g3_start_object_angles_xy(g3s_vector *p, fixang tx, fixang ty, int rotation_order) {
   if (save_context())
     return 0;
 
@@ -352,8 +347,7 @@ uchar g3_start_object_angles_xy(g3s_vector *p, fixang tx, fixang ty,
 }
 
 // rotate around the specified axes. angles = ebx edx. esi=position
-uchar g3_start_object_angles_xz(g3s_vector *p, fixang tx, fixang tz,
-                                int rotation_order) {
+uchar g3_start_object_angles_xz(g3s_vector *p, fixang tx, fixang tz, int rotation_order) {
   if (save_context())
     return 0;
 
@@ -373,8 +367,7 @@ uchar g3_start_object_angles_xz(g3s_vector *p, fixang tx, fixang tz,
 }
 
 // rotate around the specified axes. angles = ebx edx. esi=position
-uchar g3_start_object_angles_yz(g3s_vector *p, fixang ty, fixang tz,
-                                int rotation_order) {
+uchar g3_start_object_angles_yz(g3s_vector *p, fixang ty, fixang tz, int rotation_order) {
   if (save_context())
     return 0;
 
@@ -394,8 +387,7 @@ uchar g3_start_object_angles_yz(g3s_vector *p, fixang ty, fixang tz,
 }
 
 // rotate around the specified axes. angles = ebx edx. esi=position
-uchar g3_start_object_angles_zy(g3s_vector *p, fixang ty, fixang tz,
-                                int rotation_order) {
+uchar g3_start_object_angles_zy(g3s_vector *p, fixang ty, fixang tz, int rotation_order) {
   if (save_context())
     return 0;
 

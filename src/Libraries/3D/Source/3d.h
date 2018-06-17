@@ -156,11 +156,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma pack(2)
 
 // MLA defines
-#define SwapFix(x, y)                                                          \
-  {                                                                            \
-    fix temp = (x);                                                            \
-    (x) = (y);                                                                 \
-    (y) = temp;                                                                \
+#define SwapFix(x, y) \
+  {                   \
+    fix temp = (x);   \
+    (x) = (y);        \
+    (y) = temp;       \
   }
 #define vm1 view_matrix.m1
 #define vm2 view_matrix.m2
@@ -190,21 +190,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define f0_25 fix_make(0, 0x4000)
 
 // gets the next available pnt in reg.
-#define getpnt(res)                                                            \
-  {                                                                            \
-    g3s_point *scratch;                                                        \
-    if ((res = first_free)) {                                                  \
-      scratch = res->next;                                                     \
-      first_free = scratch;                                                    \
-    }                                                                          \
+#define getpnt(res)           \
+  {                           \
+    g3s_point *scratch;       \
+    if ((res = first_free)) { \
+      scratch = res->next;    \
+      first_free = scratch;   \
+    }                         \
   }
 
 // frees the point in the specified register. uses ebx as scratch
-#define freepnt(src)                                                           \
-  {                                                                            \
-    g3s_point *scratch = first_free;                                           \
-    src->next = scratch;                                                       \
-    first_free = src;                                                          \
+#define freepnt(src)                 \
+  {                                  \
+    g3s_point *scratch = first_free; \
+    src->next = scratch;             \
+    first_free = src;                \
   }
 
 // FIXME Move to FIX
@@ -214,15 +214,15 @@ typedef short sfix;
 #define sfix_make(a, b) ((((short)(a)) << 8) | (b))
 #define fix_from_sfix(a) (((fix)(a)) << 8)
 
-#define g3_set_i(pnt, ii)                                                      \
-  do {                                                                         \
-    pnt->i = sfix_make(ii, 0);                                                 \
-    pnt->p3_flags |= PF_I;                                                     \
+#define g3_set_i(pnt, ii)      \
+  do {                         \
+    pnt->i = sfix_make(ii, 0); \
+    pnt->p3_flags |= PF_I;     \
   } while (0);
-#define g3_set_rgb(pnt, r, g, b)                                               \
-  do {                                                                         \
-    pnt->rgb = gr_bind_rgb(r, g, b);                                           \
-    pnt->p3_flags |= PF_RGB;                                                   \
+#define g3_set_rgb(pnt, r, g, b)     \
+  do {                               \
+    pnt->rgb = gr_bind_rgb(r, g, b); \
+    pnt->p3_flags |= PF_RGB;         \
   } while (0);
 
 // constants
@@ -343,10 +343,10 @@ typedef struct g3s_point {
 #define LT_GOUR 128
 
 #define LT_NEAR_LIGHT 16 // TRUE if light is near and has to be evaluated
-#define LT_NEAR_VIEW 8  // TRUE if viewing point is near, and has to be reevaled
-#define LT_LOC_LIGHT 32 // TRUE if light is a local point, not a vector
-#define LT_TABSIZE 24   // size of the shading table
-#define LT_BASELIT 15   // table entry of normal intensity (before saturating)
+#define LT_NEAR_VIEW 8   // TRUE if viewing point is near, and has to be reevaled
+#define LT_LOC_LIGHT 32  // TRUE if light is a local point, not a vector
+#define LT_TABSIZE 24    // size of the shading table
+#define LT_BASELIT 15    // table entry of normal intensity (before saturating)
 
 extern fix scrw, scrh;
 extern fix biasx, biasy;
@@ -383,8 +383,7 @@ fix g3_vec_mag(g3s_vector *v);
 void g3_vec_scale(g3s_vector *dest, g3s_vector *src, fix s);
 void g3_vec_normalize(g3s_vector *v);
 
-void g3_compute_normal(g3s_vector *norm, g3s_vector *v0, g3s_vector *v1,
-                       g3s_vector *v2);
+void g3_compute_normal(g3s_vector *norm, g3s_vector *v0, g3s_vector *v1, g3s_vector *v2);
 
 fix g3_vec_dotprod(g3s_vector *v0, g3s_vector *v1);
 
@@ -408,8 +407,7 @@ int g3_clip_polygon(int n, g3s_point *src[], g3s_point *dest[]);
  */
 
 // stereo functions
-short g3_init_stereo(short max_points, int user_x_axis, int user_y_axis,
-                     int user_z_axis);
+short g3_init_stereo(short max_points, int user_x_axis, int user_y_axis, int user_z_axis);
 // sets up system for stereo by allocating twice as many
 // points, setting g3d_stereo_base to the amount of memory
 // the points take up
@@ -423,8 +421,7 @@ void g3_set_eyesep(fix sep);
 
 // System inialization, etc.
 
-short g3_init(short max_points, int user_x_axis, int user_y_axis,
-              int user_z_axis);
+short g3_init(short max_points, int user_x_axis, int user_y_axis, int user_z_axis);
 // the three axis vars describe your coordintate system.  Use the constants
 //      X_AXIS,Y_AXIS,Z_AXIS, or negative of these, to describe what your
 // coordinates mean. For each of width_,height_, and depth_axis, specify
@@ -530,9 +527,8 @@ void g3_light_diff(g3s_phandle norm, g3s_phandle pos); // takes normal vector
 // MLA #pragma aux g3_light_diff "*" parm [eax] [edx] modify [eax edx ebx ecx
 // esi edi];
 
-void g3_light_spec(
-    g3s_phandle norm,
-    g3s_phandle pos); // takes norm and point position, lights point
+void g3_light_spec(g3s_phandle norm,
+                   g3s_phandle pos); // takes norm and point position, lights point
 // MLA #pragma aux g3_light_spec "*" parm [eax] [edx] modify [eax edx ebx ecx
 // esi edi];
 
@@ -629,8 +625,7 @@ void g3_get_view_pyramid(g3s_vector *corners);
 // fills in 4 vectors, which unit vectors from the eye that describe the
 // view pyramid.  first vector is upper right, then clockwise
 
-void g3_get_slew_step(fix step_size, g3s_vector *x_step, g3s_vector *y_step,
-                      g3s_vector *z_step);
+void g3_get_slew_step(fix step_size, g3s_vector *x_step, g3s_vector *y_step, g3s_vector *z_step);
 // fills in three vectors, each of length step_size, in the specified
 // direction in the viewer's frame of reference.  any (or all) of the
 // vector pointers can be NULL to skip that axis.
@@ -639,24 +634,18 @@ void g3_get_slew_step(fix step_size, g3s_vector *x_step, g3s_vector *y_step,
 
 uchar g3_start_object(g3s_vector *p); // position only (no orientation).
 
-uchar g3_start_object_matrix(
-    g3s_vector *p, g3s_matrix *m); // position and orientation. these can nest
+uchar g3_start_object_matrix(g3s_vector *p, g3s_matrix *m); // position and orientation. these can nest
 
-uchar g3_start_object_angles_v(
-    g3s_vector *p, g3s_angvec *o,
-    int rotation_order); // position and orientation vector. these can nest
-uchar g3_start_object_angles_xyz(g3s_vector *p, fixang tx, fixang ty, fixang tz,
-                                 int rotation_order);
+uchar g3_start_object_angles_v(g3s_vector *p, g3s_angvec *o,
+                               int rotation_order); // position and orientation vector. these can nest
+uchar g3_start_object_angles_xyz(g3s_vector *p, fixang tx, fixang ty, fixang tz, int rotation_order);
 
 uchar g3_start_object_angles_x(g3s_vector *p, fixang tx);
 uchar g3_start_object_angles_y(g3s_vector *p, fixang ty);
 uchar g3_start_object_angles_z(g3s_vector *p, fixang tz);
-uchar g3_start_object_angles_xy(g3s_vector *p, fixang tx, fixang ty,
-                                int rotation_order);
-uchar g3_start_object_angles_xz(g3s_vector *p, fixang tx, fixang tz,
-                                int rotation_order);
-uchar g3_start_object_angles_yz(g3s_vector *p, fixang ty, fixang tz,
-                                int rotation_order);
+uchar g3_start_object_angles_xy(g3s_vector *p, fixang tx, fixang ty, int rotation_order);
+uchar g3_start_object_angles_xz(g3s_vector *p, fixang tx, fixang tz, int rotation_order);
+uchar g3_start_object_angles_yz(g3s_vector *p, fixang ty, fixang tz, int rotation_order);
 
 // you can use this to scale things like make small boxes and the like.  The
 // effect is to shrink or expand the points in their SOURCE coordinate system.
@@ -723,22 +712,19 @@ int g3_check_and_draw_spoly_st(int n_verts, ...);
 
 grs_vertex **g3_bitmap(grs_bitmap *bm, g3s_phandle p);
 // MLA #pragma aux g3_bitmap "*" parm [esi] [edi] modify [eax ebx ecx edx];
-grs_vertex **g3_anchor_bitmap(grs_bitmap *bm, g3s_phandle p, short u_anchor,
-                              short v_anchor);
+grs_vertex **g3_anchor_bitmap(grs_bitmap *bm, g3s_phandle p, short u_anchor, short v_anchor);
 // MLA #pragma aux g3_anchor_bitmap "*" parm [esi] [edi] [eax] [edx] modify [eax
 // ebx ecx edx];
 grs_vertex **g3_light_bitmap(grs_bitmap *bm, g3s_phandle p);
 // MLA #pragma aux g3_light_bitmap "*" parm [esi] [edi] modify [eax ebx ecx
 // edx];
-grs_vertex **g3_light_anchor_bitmap(grs_bitmap *bm, g3s_phandle p,
-                                    short u_anchor, short v_anchor);
+grs_vertex **g3_light_anchor_bitmap(grs_bitmap *bm, g3s_phandle p, short u_anchor, short v_anchor);
 // MLA #pragma aux g3_light_anchor_bitmap "*" parm [esi] [edi] [eax] [edx]
 // modify [eax ebx ecx edx];
 grs_vertex **g3_full_light_bitmap(grs_bitmap *bm, grs_vertex **p);
 // MLA #pragma aux g3_full_light_bitmap "*" parm [esi] [edi] modify [eax ebx ecx
 // edx];
-grs_vertex **g3_full_light_anchor_bitmap(grs_bitmap *bm, grs_vertex **p,
-                                         short u_anchor, short v_anchor);
+grs_vertex **g3_full_light_anchor_bitmap(grs_bitmap *bm, grs_vertex **p, short u_anchor, short v_anchor);
 // MLA #pragma aux g3_full_light_anchor_bitmap "*" parm [esi] [edi] [eax] [edx]
 // modify [eax ebx ecx edx];
 
@@ -756,49 +742,39 @@ int g3_draw_lmap(int n, g3s_phandle *vp, grs_bitmap *bm);
 int g3_light_lmap(int n, g3s_phandle *vp, grs_bitmap *bm);
 
 #define g3_draw_tmap_quad(vp, bm) g3_draw_tmap_quad_tile(vp, bm, 1, 1)
-#define g3_check_and_draw_tmap_quad(vp, bm)                                    \
-  g3_check_and_draw_tmap_quad_tile(vp, bm, 1, 1)
+#define g3_check_and_draw_tmap_quad(vp, bm) g3_check_and_draw_tmap_quad_tile(vp, bm, 1, 1)
 // these take four points, which match the four points of the texture map
 // corners.  The points are clockwise, and the first point is the upper left.
 
-int g3_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                           int height_count);
+int g3_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count);
 // MLA #pragma aux g3_draw_tmap_quad_tile "*" parm [esi] [edi] [eax] [ebx] value
 // [eax] modify [eax ebx ecx edx esi edi];
-int g3_check_and_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
-                                     int width_count, int height_count);
+int g3_check_and_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count);
 // MLA #pragma aux g3_check_and_draw_tmap_quad_tile "*" parm [esi] [edi] [eax]
 // [ebx] value [eax] modify [eax ebx ecx edx esi edi];
 // these are like draw_tmap_quad(), but tile the specified number of times
 // across and down.
-int g3_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                            int height_count);
+int g3_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count);
 // MLA #pragma aux g3_light_tmap_quad_tile "*" parm [esi] [edi] [eax] [ebx]
 // value [eax] modify [eax ebx ecx edx esi edi];
-int g3_check_and_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
-                                      int width_count, int height_count);
+int g3_check_and_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count);
 // MLA #pragma aux g3_check_and_light_tmap_quad_tile "*" parm [esi] [edi] [eax]
 // [ebx] value [eax] modify [eax ebx ecx edx esi edi];
 
-int g3_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                           int height_count);
+int g3_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count);
 // MLA #pragma aux g3_draw_lmap_quad_tile "*" parm [esi] [edi] [eax] [ebx] value
 // [eax] modify [eax ebx ecx edx esi edi];
-int g3_check_and_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
-                                     int width_count, int height_count);
+int g3_check_and_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count);
 // MLA #pragma aux g3_check_and_draw_lmap_quad_tile "*" parm [esi] [edi] [eax]
 // [ebx] value [eax] modify [eax ebx ecx edx esi edi];
-int g3_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                            int height_count);
+int g3_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count);
 // MLA #pragma aux g3_light_lmap_quad_tile "*" parm [esi] [edi] [eax] [ebx]
 // value [eax] modify [eax ebx ecx edx esi edi];
-int g3_check_and_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
-                                      int width_count, int height_count);
+int g3_check_and_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count);
 // MLA #pragma aux g3_check_and_light_lmap_quad_tile "*" parm [esi] [edi] [eax]
 // [ebx] value [eax] modify [eax ebx ecx edx esi edi];
 
-int g3_draw_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
-                      g3s_vector *v_vec, int nverts, g3s_phandle *vp,
+int g3_draw_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                       grs_bitmap *bm);
 // MLA #pragma aux g3_draw_tmap_tile "*" parm [eax] [ebx] [ecx] [edx] [esi]
 // [edi] value [eax] modify [eax ebx ecx edx esi edi];
@@ -808,18 +784,15 @@ int g3_draw_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
 // upperleft need not be in the polygon.  If upperleft is 0, the warp matrix
 // from the last texture map that drew (i.e. was at least partly on screen)
 // will be used.
-int g3_light_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
-                       g3s_vector *v_vec, int nverts, g3s_phandle *vp,
+int g3_light_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                        grs_bitmap *bm);
 // MLA #pragma aux g3_light_tmap_tile "*" parm [eax] [ebx] [ecx] [edx] [esi]
 // [edi] value [eax] modify [eax ebx ecx edx esi edi];
-int g3_draw_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
-                      g3s_vector *v_vec, int nverts, g3s_phandle *vp,
+int g3_draw_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                       grs_bitmap *bm);
 // MLA #pragma aux g3_draw_lmap_tile "*" parm [eax] [ebx] [ecx] [edx] [esi]
 // [edi] value [eax] modify [eax ebx ecx edx esi edi];
-int g3_light_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
-                       g3s_vector *v_vec, int nverts, g3s_phandle *vp,
+int g3_light_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                        grs_bitmap *bm);
 // MLA #pragma aux g3_light_lmap_tile "*" parm [eax] [ebx] [ecx] [edx] [esi]
 // [edi] value [eax] modify [eax ebx ecx edx esi edi];

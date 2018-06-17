@@ -143,8 +143,7 @@ char _g3d_light_type = 0; // db      0       ; The lighting type, see above
 fix _g3d_amb_light = 0;        // fix    0       ; amount of ambient light
 fix _g3d_diff_light = 0x10000; // fix    10000h  ; intensity of light source
 fix _g3d_spec_light = 0;       // fix    0       ; amount of spec light
-fix _g3d_flash =
-    0; // fix    0       ; specular flash point below which none is applied
+fix _g3d_flash = 0;            // fix    0       ; specular flash point below which none is applied
 // note that specular light is used to provide a "flash" mostly
 // so you can artificially inflate it a bit, or we could try
 // funny functions to make it "flash" only within a certain
@@ -171,12 +170,10 @@ long _g3d_light_tab = 0; //  dd      0       ; lighting table with 32 or 24
                          //  entries.  Should go from black to white,
 
 // stereo globals, read em and weep
-fix _g3d_eyesep_raw = 0; //  fix     0     ;raw 3d sep between eyes
-fix _g3d_eyesep = 0;     //  fix     0     ;scaled eye sep between eyes
-long _g3d_stereo_base =
-    0; //   dd     0     ;stereo point offset, default zero, means non
-long _g3d_stereo_list =
-    0; //   dd     0     ;start of stereo point list, makes it easy to detect
+fix _g3d_eyesep_raw = 0;    //  fix     0     ;raw 3d sep between eyes
+fix _g3d_eyesep = 0;        //  fix     0     ;scaled eye sep between eyes
+long _g3d_stereo_base = 0;  //   dd     0     ;stereo point offset, default zero, means non
+long _g3d_stereo_list = 0;  //   dd     0     ;start of stereo point list, makes it easy to detect
 char _g3d_stereo = 0;       //   db     0     ;stereo this frame
 long _g3d_rt_canv = 0;      //   dd     0     ;pointer to right eye canvas
 long _g3d_rt_canv_bits = 0; //   dd     0     ;pointer to bits of rt canvas

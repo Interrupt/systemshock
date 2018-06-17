@@ -129,21 +129,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 #include <stdio.h> // printf()
 
-extern void per_umap(grs_bitmap *bm, int n, grs_vertex **vpl,
-                     grs_tmap_info *ti);
+extern void per_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 extern void h_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 extern void v_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 
 // prototypes
-int do_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec,
-                 int nverts, g3s_phandle *vp, grs_bitmap *bm);
-int do_check_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                            int height_count);
+int do_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
+                 grs_bitmap *bm);
+int do_check_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count);
 int do_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
-int do_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                      int height_count);
-void calc_warp_matrix2(g3s_phandle upperleft, fix x10, fix x20, fix y10,
-                       fix y20, fix z10, fix z20, grs_bitmap *bm);
+int do_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count);
+void calc_warp_matrix2(g3s_phandle upperleft, fix x10, fix x20, fix y10, fix y20, fix z10, fix z20, grs_bitmap *bm);
 int draw_tmap_common(int n, g3s_phandle *vp, grs_bitmap *bm);
 int check_linear(int w);
 
@@ -172,8 +168,7 @@ extern long _n_verts;
 // tiles a texture map over an arbitarary polygon.
 // takes eax=upperleft, ebx=width, ecx=height, edx=nverts, esi=ptr to points,
 // edi=ptr to bitmap
-int g3_draw_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
-                      g3s_vector *v_vec, int nverts, g3s_phandle *vp,
+int g3_draw_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                       grs_bitmap *bm) {
   tmap_func = (void *)&h_umap;
   ti.tmap_type = GRC_BILIN;
@@ -182,8 +177,7 @@ int g3_draw_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
   return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
 }
 
-int g3_light_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
-                       g3s_vector *v_vec, int nverts, g3s_phandle *vp,
+int g3_light_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                        grs_bitmap *bm) {
   tmap_func = (void *)&h_umap;
   ti.tmap_type = GRC_LIT_BILIN;
@@ -192,8 +186,7 @@ int g3_light_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
   return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
 }
 
-int g3_light_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
-                       g3s_vector *v_vec, int nverts, g3s_phandle *vp,
+int g3_light_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                        grs_bitmap *bm) {
   tmap_func = (void *)&per_umap;
   ti.tmap_type = GRC_LIT_PER;
@@ -202,8 +195,7 @@ int g3_light_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
   return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
 }
 
-int g3_draw_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
-                      g3s_vector *v_vec, int nverts, g3s_phandle *vp,
+int g3_draw_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                       grs_bitmap *bm) {
   printf("g3_draw_tmap_tile\n");
   tmap_func = (void *)&per_umap;
@@ -213,8 +205,8 @@ int g3_draw_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec,
   return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
 }
 
-int do_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec,
-                 int nverts, g3s_phandle *vp, grs_bitmap *bm) {
+int do_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
+                 grs_bitmap *bm) {
   byte andcode, orcode;
   int i;
   g3s_phandle *src;
@@ -278,8 +270,7 @@ int do_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec,
   return (draw_tmap_common(nverts, vp, bm));
 }
 
-int g3_check_and_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
-                                     int width_count, int height_count) {
+int g3_check_and_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
   tmap_func = (void *)&h_umap;
   ti.tmap_type = GRC_BILIN;
   ti.flags = 0;
@@ -287,8 +278,7 @@ int g3_check_and_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
   return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
-int g3_check_and_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
-                                      int width_count, int height_count) {
+int g3_check_and_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
   tmap_func = (void *)&h_umap;
   ti.tmap_type = GRC_LIT_BILIN;
   ti.flags = 0;
@@ -296,8 +286,7 @@ int g3_check_and_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
   return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
-int g3_check_and_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
-                                      int width_count, int height_count) {
+int g3_check_and_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
   tmap_func = (void *)&per_umap;
   ti.tmap_type = GRC_LIT_PER;
   ti.flags = 0;
@@ -305,8 +294,7 @@ int g3_check_and_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
   return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
-int g3_check_and_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
-                                     int width_count, int height_count) {
+int g3_check_and_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
   tmap_func = (void *)&per_umap;
   ti.tmap_type = GRC_PER;
   ti.flags = 0;
@@ -314,8 +302,7 @@ int g3_check_and_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm,
   return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
-int do_check_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                            int height_count) {
+int do_check_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
   if (g3_check_poly_facing(vp[0], vp[1], vp[2]))
     return do_tmap_quad_tile(vp, bm, width_count, height_count);
   else
@@ -393,35 +380,53 @@ int do_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
   g3s_phandle *src;
   g3s_phandle tempHand;
 
+// clang-format off
 #ifdef stereo_on
-  test _g3d_stereo,
-      1 jz no_stereo1 push eax // calling destroys eax
-          mov ecx,
-      d[ti_ptr] push ecx mov ecx, d[ti_ptr + 4] push ecx mov ecx,
-      tmap_func push ecx mov ecx,
-      light_flag push ecx call do_tmap_raw pop eax mov light_flag,
-      eax pop eax mov tmap_func, eax pop eax mov d[ti_ptr + 4],
-      eax pop eax mov d[ti_ptr],
-      eax pop eax
+  test    _g3d_stereo,1
+  jz      no_stereo1
+  push    eax                // calling destroys eax
+  mov     ecx,d [ti_ptr]
+  push    ecx
+  mov     ecx,d [ti_ptr+4]
+  push    ecx
+  mov     ecx,tmap_func
+  push    ecx
+  mov     ecx,light_flag
+  push    ecx
+  call    do_tmap_raw
+  pop     eax
+  mov     light_flag,eax
+  pop     eax
+  mov     tmap_func,eax
+  pop     eax
+  mov     d [ti_ptr+4],eax
+  pop     eax
+  mov     d [ti_ptr],eax
+  pop     eax
 
-          pushm eax,
-      ebx // copy list and codes and uv and rgb and i
-          // num  points,pointer to  bmap
+  pushm eax,ebx           // copy list and codes and uv and rgb and i
+  // num  points,pointer to  bmap
 
-          move_to_stereo_and_uvi
+  move_to_stereo_and_uvi
 
-              set_rt_canv
+  set_rt_canv
 
-                  popm eax,
-      ebx call do_tmap_raw
+  popm eax,ebx
+  call do_tmap_raw
 
-          set_lt_canv popad ret
+  set_lt_canv
+  popad
+  ret
 
-              do_tmap_raw : pushad no_stereo1 :
+do_tmap_raw:
+  pushad
+no_stereo1:
 #endif
 
-      if (bm->type == BMT_RSD8) // convert RSD bitmap to normal
-  {
+// clang-format on
+
+  // convert RSD bitmap to normal
+  if (bm->type == BMT_RSD8) {
     if (gr_rsd8_convert(bm, &unpack_bm) != GR_UNPACK_RSD8_OK)
       return CLIP_ALL;
     else
@@ -448,8 +453,7 @@ int do_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
 // draws a square texture map, where the corners of the 3d quad match the
 // corners of the bitmap
 // takes esi=ptr to points, edi=ptr to bitmap, eax=width count, ebx=height count
-int g3_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                           int height_count) {
+int g3_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
   tmap_func = (void *)&h_umap;
   ti.tmap_type = GRC_BILIN;
   ti.flags = 0;
@@ -457,8 +461,7 @@ int g3_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
   return (do_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
-int g3_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                            int height_count) {
+int g3_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
   tmap_func = (void *)&h_umap;
   ti.tmap_type = GRC_LIT_BILIN;
   ti.flags = 0;
@@ -466,8 +469,7 @@ int g3_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
   return (do_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
-int g3_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                            int height_count) {
+int g3_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
   tmap_func = (void *)&per_umap;
   ti.tmap_type = GRC_LIT_PER;
   ti.flags = 0;
@@ -475,8 +477,7 @@ int g3_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
   return (do_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
-int g3_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                           int height_count) {
+int g3_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
   tmap_func = (void *)&per_umap;
   ti.tmap_type = GRC_PER;
   ti.flags = 0;
@@ -484,8 +485,7 @@ int g3_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
   return (do_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
-int do_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count,
-                      int height_count) {
+int do_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
   int temp_w, temp_h;
   byte andcode, orcode;
   int i;
@@ -595,8 +595,7 @@ int draw_tmap_common(int n, g3s_phandle *vp, grs_bitmap *bm) {
   }
 
   if (!light_flag) {
-    ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti))
-         tmap_func)(bm, _n_verts, p_vpl, &ti);
+    ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti)) tmap_func)(bm, _n_verts, p_vpl, &ti);
     return CLIP_NONE;
   } else {
     extern fix gr_clut_lit_tol;
@@ -617,8 +616,7 @@ int draw_tmap_common(int n, g3s_phandle *vp, grs_bitmap *bm) {
 
     temp_i = imax - imin;
     if (temp_i >= gr_clut_lit_tol) {
-      ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti))
-           tmap_func)(bm, _n_verts, p_vpl, &ti);
+      ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti)) tmap_func)(bm, _n_verts, p_vpl, &ti);
       return CLIP_NONE;
     } else {
       uchar *temp_ptr;
@@ -631,8 +629,7 @@ int draw_tmap_common(int n, g3s_phandle *vp, grs_bitmap *bm) {
       ti.tmap_type += 2;
       ti.flags |= TMF_CLUT;
 
-      ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti))
-           tmap_func)(bm, _n_verts, p_vpl, &ti);
+      ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti)) tmap_func)(bm, _n_verts, p_vpl, &ti);
       return CLIP_NONE;
     }
   }
@@ -676,8 +673,7 @@ int check_linear(int n) {
 //   deltas in x10,x20,y10,y20,z10,z20
 //   pointer to bitmap in bm_ptr
 //   esi=basis 0
-void calc_warp_matrix2(g3s_phandle upperleft, fix x10, fix x20, fix y10,
-                       fix y20, fix z10, fix z20, grs_bitmap *bm) {
+void calc_warp_matrix2(g3s_phandle upperleft, fix x10, fix x20, fix y10, fix y20, fix z10, fix z20, grs_bitmap *bm) {
   fix x0 = upperleft->gX;
   fix y0 = upperleft->gY;
   fix z0 = upperleft->gZ;

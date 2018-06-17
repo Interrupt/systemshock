@@ -123,8 +123,7 @@ grs_vertex **g3_full_light_bitmap(grs_bitmap *bm, grs_vertex **p) {
   return (do_bitmap(bm, (g3s_phandle)p));
 }
 
-grs_vertex **g3_full_light_anchor_bitmap(grs_bitmap *bm, grs_vertex **p,
-                                         short u_anchor, short v_anchor) {
+grs_vertex **g3_full_light_anchor_bitmap(grs_bitmap *bm, grs_vertex **p, short u_anchor, short v_anchor) {
   _g3d_light_flag = 1;
   _g3d_bitmap_u_anchor = u_anchor;
   _g3d_bitmap_v_anchor = v_anchor;
@@ -132,8 +131,7 @@ grs_vertex **g3_full_light_anchor_bitmap(grs_bitmap *bm, grs_vertex **p,
   return (g3_bitmap_common(bm, (g3s_phandle)p));
 }
 
-grs_vertex **g3_light_anchor_bitmap(grs_bitmap *bm, g3s_phandle p,
-                                    short u_anchor, short v_anchor) {
+grs_vertex **g3_light_anchor_bitmap(grs_bitmap *bm, g3s_phandle p, short u_anchor, short v_anchor) {
   _g3d_light_flag = 2;
   _g3d_bitmap_u_anchor = u_anchor;
   _g3d_bitmap_v_anchor = v_anchor;
@@ -149,8 +147,7 @@ grs_vertex **g3_light_bitmap(grs_bitmap *bm, g3s_phandle p) {
   return (do_bitmap(bm, p));
 }
 
-grs_vertex **g3_anchor_bitmap(grs_bitmap *bm, g3s_phandle p, short u_anchor,
-                              short v_anchor) {
+grs_vertex **g3_anchor_bitmap(grs_bitmap *bm, g3s_phandle p, short u_anchor, short v_anchor) {
   _g3d_light_flag = 0;
   _g3d_bitmap_u_anchor = u_anchor;
   _g3d_bitmap_v_anchor = v_anchor;
@@ -412,8 +409,7 @@ char SubLongWithOverflow(long *result, long src, long dest) {
   long tempres;
 
   *result = tempres = src - dest;
-  if ((dest >= 0 && src < 0 && tempres >= 0) ||
-      (dest < 0 && src >= 0 && tempres < 0))
+  if ((dest >= 0 && src < 0 && tempres >= 0) || (dest < 0 && src >= 0 && tempres < 0))
     return true;
   else
     return false;
@@ -425,8 +421,7 @@ char AddLongWithOverflow(long *result, long src, long dest) {
   long tempres;
 
   *result = tempres = src + dest;
-  if ((dest >= 0 && src >= 0 && tempres < 0) ||
-      (dest < 0 && src < 0 && tempres >= 0))
+  if ((dest >= 0 && src >= 0 && tempres < 0) || (dest < 0 && src < 0 && tempres >= 0))
     return true;
   else
     return false;

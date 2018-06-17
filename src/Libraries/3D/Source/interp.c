@@ -141,24 +141,24 @@ void FlipShort(short *sh);
 // globals
 extern char gour_flag; // gour flag for actual polygon drawer
 
+// clang-format off
 #ifdef stereo_on
-temp_vector g3s_vector<> tmp_address dd
-    ?
+  temp_vector      g3s_vector     <>
+  tmp_address      dd             ?
 #endif
+// clang-format on
 
 #define OP_EOF 0
 #define OP_JNORM 1
 
 #define n_ops 40
     void *opcode_table[n_ops] = {
-        do_eof,       do_jnorm,     do_lnres,      do_multires,   do_polyres,
-        do_setcolor,  do_sortnorm,  do_debug,      do_setshade,   do_goursurf,
-        do_x_rel,     do_y_rel,     do_z_rel,      do_xy_rel,     do_xz_rel,
-        do_yz_rel,    do_icall_p,   do_icall_b,    do_icall_h,    0,
-        do_sfcal,     do_defres,    do_defres_i,   do_getparms,   do_getparms_i,
-        do_gour_p,    do_gour_vc,   do_getvcolor,  do_getvscolor, do_rgbshades,
-        do_draw_mode, do_getpcolor, do_getpscolor, do_scaleres,   do_vpnt_p,
-        do_vpnt_v,    do_setuv,     do_uvlist,     do_tmap_op,    do_dbg};
+        do_eof,        do_jnorm,     do_lnres,     do_multires,   do_polyres,    do_setcolor, do_sortnorm,
+        do_debug,      do_setshade,  do_goursurf,  do_x_rel,      do_y_rel,      do_z_rel,    do_xy_rel,
+        do_xz_rel,     do_yz_rel,    do_icall_p,   do_icall_b,    do_icall_h,    0,           do_sfcal,
+        do_defres,     do_defres_i,  do_getparms,  do_getparms_i, do_gour_p,     do_gour_vc,  do_getvcolor,
+        do_getvscolor, do_rgbshades, do_draw_mode, do_getpcolor,  do_getpscolor, do_scaleres, do_vpnt_p,
+        do_vpnt_v,     do_setuv,     do_uvlist,    do_tmap_op,    do_dbg};
 
 #define N_RES_POINTS 1000
 #define PARM_DATA_SIZE 4 * 100
@@ -253,83 +253,89 @@ void g3_interpret_object(ubyte *object_ptr, ...) {
       opcode_table[OP_JNORM] = &do_ljnorm;
   }
 
+// clang-format off
 #ifdef stereo_on
-  test _g3d_stereo,
-      1 jz g3_interpret_object_raw
-          //       call normally if eyesep/distance is small enough (angular
-          //       change is small) transform 0,0,0 to get the z distance
-              mov eax,
-      _view_position.x fixmul view_matrix.m3 mov ecx,
-      eax
+  test    _g3d_stereo,1
+  jz      g3_interpret_object_raw
+  //       call normally if eyesep/distance is small enough (angular change is small)
+  //       transform 0,0,0 to get the z distance
+  mov     eax,_view_position.x
+  fixmul  view_matrix.m3
+  mov     ecx,eax
 
-          mov eax,
-      _view_position.y fixmul view_matrix.m6 add ecx,
-      eax
+  mov     eax,_view_position.y
+  fixmul  view_matrix.m6
+  add     ecx,eax
 
-          mov eax,
-      _view_position.z fixmul view_matrix.m9 add ecx,
-      eax neg ecx
+  mov     eax,_view_position.z
+  fixmul  view_matrix.m9
+  add     ecx,eax
+  neg     ecx
 
-          mov eax,
-      _g3d_eyesep_raw fixmul _matrix_scale.z fixdiv ecx
+  mov     eax,_g3d_eyesep_raw
+  fixmul  _matrix_scale.z
+  fixdiv  ecx
 
-          cmp eax,
-      STEREO_DIST_LIM jl g3_interpret_object_raw
+  cmp     eax,STEREO_DIST_LIM
+  jl      g3_interpret_object_raw
 
-          mov _g3d_stereo,
-      0       // kill stereo
-      pop eax // grab real return address
-          mov tmp_address,
-      eax // save it for later
+  mov     _g3d_stereo,0    // kill stereo
+  pop     eax     // grab real return address
+  mov     tmp_address,eax         // save it for later
 
-          push ret1 // fake out the poor thing so it jumps back here
-              jmp g3_interpret_object_raw
+  push    ret1    // fake out the poor thing so it jumps back here
+  jmp  g3_interpret_object_raw
 
-                  // shift view_position
-                  ret1 :
-      // save the current position
-      lea edi,
-      temp_vector lea esi,
-      _view_position movsd movsd movsd
+  // shift view_position
+  ret1:
+  // save the current position
+  lea     edi,temp_vector
+  lea     esi,_view_position
+  movsd
+  movsd
+  movsd
 
-          mov eax,
-      _g3d_eyesep_raw mov ebx,
-      _matrix_scale.x fixdiv ebx // make ebx the scaled down eyesep
-          mov ebx,
-      eax
+  mov     eax,_g3d_eyesep_raw
+  mov     ebx,_matrix_scale.x
+  fixdiv  ebx     // make ebx the scaled down eyesep
+  mov     ebx,eax
 
-          // get x slewed over (top row of current vector and scale)
-          mov eax,
-      view_matrix.m1 fixmul ebx add _view_position.x,
-      eax
+  // get x slewed over (top row of current vector and scale)
+  mov     eax,view_matrix.m1
+  fixmul  ebx
+  add     _view_position.x,eax
 
-          mov eax,
-      view_matrix.m4 fixmul ebx add _view_position.y,
-      eax
+  mov     eax,view_matrix.m4
+  fixmul  ebx
+  add     _view_position.y,eax
 
-          mov eax,
-      view_matrix.m7 fixmul ebx add _view_position.z,
-      eax
+  mov     eax,view_matrix.m7
+  fixmul  ebx
+  add     _view_position.z,eax
 
-          set_rt_canv // install rt canvas
-              // this time when you call it, its still all set
-              call g3_interpret_object_raw mov _g3d_stereo,
-      1           // restore stereo
-      set_lt_canv // restore left canvas
+  set_rt_canv             // install rt canvas
+  // this time when you call it, its still all set
+  call    g3_interpret_object_raw
+  mov     _g3d_stereo,1    // restore stereo
+  set_lt_canv             // restore left canvas
 
-          // restore view position
-          lea esi,
-      temp_vector lea edi,
-      _view_position movsd movsd movsd
+  // restore view position
+  lea     esi,temp_vector
+  lea     edi,_view_position
+  movsd
+  movsd
+  movsd
 
-          // weeee, pretend we were here all along, but I suppose we
-          // could just jmp there
-          push tmp_address
+  // weeee, pretend we were here all along, but I suppose we
+  // could just jmp there
+  push    tmp_address
 
-              ret g3_interpret_object_raw :
+  ret
+g3_interpret_object_raw:
 #endif
+// clang-format on
 
-      va_start(parm_ptr, object_ptr); // get addr of stack parms
+  va_start(parm_ptr, object_ptr); // get addr of stack parms
 
   // MLA- not used ever?
   /*
@@ -410,8 +416,7 @@ uchar *do_jnorm(uchar *opcode) {
   FlipShort((short *)(opcode + 2));
   FlipVector(2, (g3s_vector *)(opcode + 4));
 
-  if (g3_check_normal_facing((g3s_vector *)(opcode + 16),
-                             (g3s_vector *)(opcode + 4)))
+  if (g3_check_normal_facing((g3s_vector *)(opcode + 16), (g3s_vector *)(opcode + 4)))
     return opcode + 28; // surface is visible. continue
   else
     return opcode + (*(short *)(opcode + 2)); // surface not visible
@@ -422,8 +427,7 @@ uchar *do_lnres(uchar *opcode) {
   FlipShort((short *)(opcode + 2));
   FlipShort((short *)(opcode + 4));
 
-  g3_draw_line(resbuf[*(unsigned short *)(opcode + 2)],
-               resbuf[*(unsigned short *)(opcode + 4)]);
+  g3_draw_line(resbuf[*(unsigned short *)(opcode + 2)], resbuf[*(unsigned short *)(opcode + 4)]);
   return opcode + 6;
 }
 
@@ -436,8 +440,7 @@ uchar *do_multires(uchar *opcode) {
   count = *(short *)(opcode + 2);
   FlipVector(count, (g3s_vector *)(opcode + 6));
 
-  g3_transform_list(count, (g3s_phandle *)(resbuf + (*(short *)(opcode + 4))),
-                    (g3s_vector *)(opcode + 6));
+  g3_transform_list(count, (g3s_phandle *)(resbuf + (*(short *)(opcode + 4))), (g3s_vector *)(opcode + 6));
   return opcode + 6 + (count * 12); // fixup: ebp = esi + ecx*12
 }
 
@@ -515,8 +518,7 @@ uchar *do_vpnt_p(uchar *opcode) {
   FlipShort((short *)(opcode + 2));
   FlipShort((short *)(opcode + 4));
 
-  resbuf[*(short *)(opcode + 4)] =
-      (g3s_point *)(*(long *)(parm_data + (*(unsigned short *)(opcode + 2))));
+  resbuf[*(short *)(opcode + 4)] = (g3s_point *)(*(long *)(parm_data + (*(unsigned short *)(opcode + 2))));
   return opcode + 6;
 }
 
@@ -524,8 +526,7 @@ uchar *do_vpnt_v(uchar *opcode) {
   FlipShort((short *)(opcode + 2));
   FlipShort((short *)(opcode + 4));
 
-  resbuf[*(short *)(opcode + 4)] =
-      _vpoint_tab[(*(unsigned short *)(opcode + 2)) >> 2];
+  resbuf[*(short *)(opcode + 4)] = _vpoint_tab[(*(unsigned short *)(opcode + 2)) >> 2];
   return opcode + 6;
 }
 
@@ -533,8 +534,7 @@ uchar *do_defres(uchar *opcode) {
   FlipShort((short *)(opcode + 2));
   FlipVector(1, (g3s_vector *)(opcode + 4));
 
-  resbuf[*(unsigned short *)(opcode + 2)] =
-      g3_transform_point((g3s_vector *)(opcode + 4));
+  resbuf[*(unsigned short *)(opcode + 2)] = g3_transform_point((g3s_vector *)(opcode + 4));
   return opcode + 16;
 }
 
@@ -584,8 +584,7 @@ uchar *do_sortnorm(uchar *opcode) {
   FlipShort((short *)(opcode + 26));
   FlipShort((short *)(opcode + 28));
 
-  if (g3_check_normal_facing((g3s_vector *)(opcode + 14),
-                             (g3s_vector *)(opcode + 2))) {
+  if (g3_check_normal_facing((g3s_vector *)(opcode + 14), (g3s_vector *)(opcode + 2))) {
     interpreter_loop(opcode + (*(short *)(opcode + 26)));
     interpreter_loop(opcode + (*(short *)(opcode + 28)));
   } else {
@@ -651,8 +650,7 @@ uchar *do_setshade(uchar *opcode) {
     FlipShort((short *)(opcode + 4 + (i << 2)));
     FlipShort((short *)(opcode + 6 + (i << 2)));
 
-    temphand =
-        resbuf[*(unsigned short *)(opcode + 4 + (i << 2))]; // get point handle
+    temphand = resbuf[*(unsigned short *)(opcode + 4 + (i << 2))]; // get point handle
     temphand->i = *(short *)(opcode + 6 + (i << 2));
     temphand->p3_flags |= PF_I;
   }
@@ -739,8 +737,7 @@ uchar *do_getvcolor(uchar *opcode) {
 uchar *do_getpcolor(uchar *opcode) {
   FlipShort((short *)(opcode + 2));
 
-  gr_set_fcolor(
-      *(unsigned short *)(parm_data + (*(unsigned short *)(opcode + 2))));
+  gr_set_fcolor(*(unsigned short *)(parm_data + (*(unsigned short *)(opcode + 2))));
   _itrp_gour_flg = 0;
   return opcode + 4;
 }
@@ -775,8 +772,7 @@ uchar *do_x_rel(uchar *opcode) {
   FlipShort((short *)(opcode + 4));
   FlipLong((long *)(opcode + 6));
 
-  resbuf[*(short *)(opcode + 2)] =
-      g3_copy_add_delta_x(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6));
+  resbuf[*(short *)(opcode + 2)] = g3_copy_add_delta_x(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6));
   return opcode + 10;
 }
 
@@ -785,8 +781,7 @@ uchar *do_y_rel(uchar *opcode) {
   FlipShort((short *)(opcode + 4));
   FlipLong((long *)(opcode + 6));
 
-  resbuf[*(short *)(opcode + 2)] =
-      g3_copy_add_delta_y(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6));
+  resbuf[*(short *)(opcode + 2)] = g3_copy_add_delta_y(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6));
   return opcode + 10;
 }
 
@@ -795,8 +790,7 @@ uchar *do_z_rel(uchar *opcode) {
   FlipShort((short *)(opcode + 4));
   FlipLong((long *)(opcode + 6));
 
-  resbuf[*(short *)(opcode + 2)] =
-      g3_copy_add_delta_z(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6));
+  resbuf[*(short *)(opcode + 2)] = g3_copy_add_delta_z(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6));
   return opcode + 10;
 }
 
@@ -807,8 +801,7 @@ uchar *do_xy_rel(uchar *opcode) {
   FlipLong((long *)(opcode + 10));
 
   resbuf[*(short *)(opcode + 2)] =
-      g3_copy_add_delta_xy(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6),
-                           *(fix *)(opcode + 10));
+      g3_copy_add_delta_xy(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6), *(fix *)(opcode + 10));
   return opcode + 14;
 }
 
@@ -819,8 +812,7 @@ uchar *do_xz_rel(uchar *opcode) {
   FlipLong((long *)(opcode + 10));
 
   resbuf[*(short *)(opcode + 2)] =
-      g3_copy_add_delta_xz(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6),
-                           *(fix *)(opcode + 10));
+      g3_copy_add_delta_xz(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6), *(fix *)(opcode + 10));
   return opcode + 14;
 }
 
@@ -831,8 +823,7 @@ uchar *do_yz_rel(uchar *opcode) {
   FlipLong((long *)(opcode + 10));
 
   resbuf[*(short *)(opcode + 2)] =
-      g3_copy_add_delta_yz(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6),
-                           *(fix *)(opcode + 10));
+      g3_copy_add_delta_yz(resbuf[*(short *)(opcode + 4)], *(fix *)(opcode + 6), *(fix *)(opcode + 10));
   return opcode + 14;
 }
 
@@ -841,9 +832,7 @@ uchar *do_icall_p(uchar *opcode) {
   FlipShort((short *)(opcode + 18));
   FlipLong((long *)(opcode + 2));
 
-  g3_start_object_angles_x(
-      (g3s_vector *)(opcode + 6),
-      *(fixang *)(parm_data + (*(unsigned short *)(opcode + 18))));
+  g3_start_object_angles_x((g3s_vector *)(opcode + 6), *(fixang *)(parm_data + (*(unsigned short *)(opcode + 18))));
   interpreter_loop((uchar *)(*(long *)(opcode + 2)));
   g3_end_object();
 
@@ -855,9 +844,7 @@ uchar *do_icall_h(uchar *opcode) {
   FlipShort((short *)(opcode + 18));
   FlipLong((long *)(opcode + 2));
 
-  g3_start_object_angles_y(
-      (g3s_vector *)(opcode + 6),
-      *(fixang *)(parm_data + (*(unsigned short *)(opcode + 18))));
+  g3_start_object_angles_y((g3s_vector *)(opcode + 6), *(fixang *)(parm_data + (*(unsigned short *)(opcode + 18))));
   interpreter_loop((uchar *)(*(long *)(opcode + 2)));
   g3_end_object();
 
@@ -869,9 +856,7 @@ uchar *do_icall_b(uchar *opcode) {
   FlipShort((short *)(opcode + 18));
   FlipLong((long *)(opcode + 2));
 
-  g3_start_object_angles_z(
-      (g3s_vector *)(opcode + 6),
-      *(fixang *)(parm_data + (*(unsigned short *)(opcode + 18))));
+  g3_start_object_angles_z((g3s_vector *)(opcode + 6), *(fixang *)(parm_data + (*(unsigned short *)(opcode + 18))));
   interpreter_loop((uchar *)(*(long *)(opcode + 2)));
   g3_end_object();
 
@@ -922,30 +907,30 @@ uchar *do_getparms_i(uchar *opcode) {
 }
 
 uchar *do_dbg(uchar *opcode) {
-#ifdef _itrp_dbg
-  mov ax,
-      w 4 [ebp] // code
-          and ax,
-      _itrp_dbg_mask // mask in current debug mode
-          jz dbg_end // none currently on
-              cmp ax,
-      DBG_POLY_ID // itrp_pcode
-          jnz dbg_nxt1 mov ax,
-      w 6 [ebp] // pgon_id
-      cmp ax,
-      _pgon_id_low jl pgon_skip cmp ax,
-      _pgon_id_high jle dbg_end pgon_skip : movsx eax,
-                                            w 2 [ebp] // skip whatever
-                                            next eax dbg_nxt1
-      : cmp ax,
-        DBG_POLY_MAX jnz dbg_end mov ax,
-        w 6 [ebp] mov _pgon_max,
-        ax
+// clang-format off
+#ifdef  _itrp_dbg
+  mov     ax, w 4[ebp]    // code
+  and     ax, _itrp_dbg_mask // mask in current debug mode
+  jz      dbg_end         // none currently on
+  cmp     ax, DBG_POLY_ID // itrp_pcode
+  jnz     dbg_nxt1
+  mov     ax, w 6[ebp]    // pgon_id
+  cmp     ax,_pgon_id_low
+  jl      pgon_skip
+  cmp     ax,_pgon_id_high
+  jle     dbg_end
+pgon_skip:
+  movsx	eax,w 2[ebp]    // skip whatever
+  next	eax
+dbg_nxt1:
+  cmp     ax, DBG_POLY_MAX
+  jnz     dbg_end
+  mov     ax, w 6[ebp]
+  mov     _pgon_max, ax
 //        jmp     dbg_end
 #endif
-
-            return opcode +
-            8;
+// clang-format on
+  return opcode + 8;
 }
 
 extern void (*g3_tmap_func)();
@@ -967,8 +952,8 @@ uchar *do_tmap_op(uchar *opcode) {
     poly_buf[count] = resbuf[temp];
   } while (--count >= 0);
 
-  ((int (*)(int, g3s_phandle *, grs_bitmap *)) *
-   g3_tmap_func)(count2, poly_buf, _vtext_tab[*(unsigned short *)(opcode + 2)]);
+  ((int (*)(int, g3s_phandle *, grs_bitmap *)) * g3_tmap_func)(count2, poly_buf,
+                                                               _vtext_tab[*(unsigned short *)(opcode + 2)]);
 
   return opcode + 6 + (count2 * 2);
 }
@@ -983,8 +968,7 @@ uchar *do_ljnorm(uchar *opcode) {
   FlipShort((short *)(opcode + 2));
   FlipVector(2, (g3s_vector *)(opcode + 4));
 
-  if (g3_check_normal_facing((g3s_vector *)(opcode + 16),
-                             (g3s_vector *)(opcode + 4))) {
+  if (g3_check_normal_facing((g3s_vector *)(opcode + 16), (g3s_vector *)(opcode + 4))) {
     g3_light_obj((g3s_phandle)(opcode + 4), (g3s_phandle)(opcode + 16));
     return opcode + 28;
   } else
@@ -998,8 +982,7 @@ uchar *do_ldjnorm(uchar *opcode) {
   FlipShort((short *)(opcode + 2));
   FlipVector(2, (g3s_vector *)(opcode + 4));
 
-  if (g3_check_normal_facing((g3s_vector *)(opcode + 16),
-                             (g3s_vector *)(opcode + 4))) {
+  if (g3_check_normal_facing((g3s_vector *)(opcode + 16), (g3s_vector *)(opcode + 4))) {
     temp = g3_vec_dotprod(&_g3d_light_vec, (g3s_vector *)(opcode + 4));
     temp <<= 1;
     if (temp < 0)

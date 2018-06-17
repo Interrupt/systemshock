@@ -108,8 +108,7 @@ fix d89; // fix	?
 fix den; // fix	?
 
 // prototypes
-void angles_2_matrix(g3s_angvec *angles, g3s_matrix *view_matrix,
-                     int rotation_order);
+void angles_2_matrix(g3s_angvec *angles, g3s_matrix *view_matrix, int rotation_order);
 void process_view_matrix(void);
 void scale_view_matrix(void);
 void get_pyr_vector(g3s_vector *corners);
@@ -125,14 +124,12 @@ void compute_ZYX(g3s_matrix *view_matrix);
 void compute_invalid(g3s_matrix *view_matrix);
 
 // function table
-void (*rotation_table[])(g3s_matrix *) = {
-    compute_XYZ, compute_YXZ,     compute_invalid, compute_YZX,
-    compute_XZY, compute_invalid, compute_ZXY,     compute_ZYX};
+void (*rotation_table[])(g3s_matrix *) = {compute_XYZ, compute_YXZ,     compute_invalid, compute_YZX,
+                                          compute_XZY, compute_invalid, compute_ZXY,     compute_ZYX};
 
 // build the view matrix from view angles, etc.
 // takes esi=pos, ebx=angles, eax=zoom, ecx=rotation order
-void g3_set_view_angles(g3s_vector *pos, g3s_angvec *angles, int rotation_order,
-                        fix zoom) {
+void g3_set_view_angles(g3s_vector *pos, g3s_angvec *angles, int rotation_order, fix zoom) {
   _view_zoom = zoom; // mov	_view_zoom,eax	;save zoom
   _view_position = *pos;
 
@@ -159,8 +156,7 @@ void g3_set_view_matrix(g3s_vector *pos, g3s_matrix *m, fix zoom) {
 // note that these routines use variables called sinp,sinb,etc., which
 // are really just rotations around certain axes, and don't necessarily
 // mean pitch,bank, or heading in each coordinated system
-void angles_2_matrix(g3s_angvec *angles, g3s_matrix *view_matrix,
-                     int rotation_order) {
+void angles_2_matrix(g3s_angvec *angles, g3s_matrix *view_matrix, int rotation_order) {
   fix_sincos(angles->tx, &sinp, &cosp);
   fix_sincos(angles->ty, &sinh_s, &cosh_s);
   fix_sincos(angles->tz, &sinb, &cosb);
@@ -231,21 +227,13 @@ void compute_YXZ(g3s_matrix *view_matrix) {
   view_matrix->m9 = fix_mul(cosh_s, cosp);
 }
 
-void compute_YZX(g3s_matrix *view_matrix) {
-  DebugString("compute_YZX needs to be implemented");
-}
+void compute_YZX(g3s_matrix *view_matrix) { DebugString("compute_YZX needs to be implemented"); }
 
-void compute_XZY(g3s_matrix *view_matrix) {
-  DebugString("compute_XZY needs to be implemented");
-}
+void compute_XZY(g3s_matrix *view_matrix) { DebugString("compute_XZY needs to be implemented"); }
 
-void compute_ZXY(g3s_matrix *view_matrix) {
-  DebugString("compute_ZXY needs to be implemented");
-}
+void compute_ZXY(g3s_matrix *view_matrix) { DebugString("compute_ZXY needs to be implemented"); }
 
-void compute_ZYX(g3s_matrix *view_matrix) {
-  DebugString("compute_ZYX needs to be implemented");
-}
+void compute_ZYX(g3s_matrix *view_matrix) { DebugString("compute_ZYX needs to be implemented"); }
 
 // invalid does nothing (and does it well!)
 void compute_invalid(g3s_matrix *view_matrix) {}
@@ -342,12 +330,9 @@ void scale_view_matrix(void) {
   vm9 = fix_mul(vm9, temp_fix);
 
   // scale horizon vector
-  horizon_vector.gX =
-      fix_mul(fix_mul(_matrix_scale.gY, _matrix_scale.gZ), horizon_vector.gX);
-  horizon_vector.gY =
-      fix_mul(fix_mul(_matrix_scale.gX, _matrix_scale.gZ), horizon_vector.gY);
-  horizon_vector.gZ =
-      fix_mul(fix_mul(_matrix_scale.gX, _matrix_scale.gY), horizon_vector.gZ);
+  horizon_vector.gX = fix_mul(fix_mul(_matrix_scale.gY, _matrix_scale.gZ), horizon_vector.gX);
+  horizon_vector.gY = fix_mul(fix_mul(_matrix_scale.gX, _matrix_scale.gZ), horizon_vector.gY);
+  horizon_vector.gZ = fix_mul(fix_mul(_matrix_scale.gX, _matrix_scale.gY), horizon_vector.gZ);
 }
 
 // takes point in edi, set codes in point, returns codes in bl
@@ -445,15 +430,15 @@ void g3_copy_transpose(g3s_matrix *dest, g3s_matrix *src) // copy and transpose
 }
 
 // MLA- oh no I've got LookingGlass disease, I'm making multi-line #defines!
-#define mxm_mul(dst, s1_1, s1_2, s1_3, s2_1, s2_2, s2_3)                       \
-  {                                                                            \
-    AWide result, result2;                                                     \
-    AsmWideMultiply(src1->s1_1, src2->s2_1, &result);                          \
-    AsmWideMultiply(src1->s1_2, src2->s2_2, &result2);                         \
-    AsmWideAdd(&result, &result2);                                             \
-    AsmWideMultiply(src1->s1_3, src2->s2_3, &result2);                         \
-    AsmWideAdd(&result, &result2);                                             \
-    dest->dst = (result.hi << 16) | (((ulong)result.lo) >> 16);                \
+#define mxm_mul(dst, s1_1, s1_2, s1_3, s2_1, s2_2, s2_3)        \
+  {                                                             \
+    AWide result, result2;                                      \
+    AsmWideMultiply(src1->s1_1, src2->s2_1, &result);           \
+    AsmWideMultiply(src1->s1_2, src2->s2_2, &result2);          \
+    AsmWideAdd(&result, &result2);                              \
+    AsmWideMultiply(src1->s1_3, src2->s2_3, &result2);          \
+    AsmWideAdd(&result, &result2);                              \
+    dest->dst = (result.hi << 16) | (((ulong)result.lo) >> 16); \
   }
 
 // matrix by matrix multiply:  ebx = esi * edi
@@ -479,33 +464,30 @@ void g3_matrix_x_matrix(g3s_matrix *dest, g3s_matrix *src1, g3s_matrix *src2) {
   mxm_mul(m9, m7, m8, m9, m3, m6, m9);
 }
 
-static int64_t cross(int v1, int v2, int v3, int v4)
-{
-	return (int64_t)v1 * v2 - (int64_t)v3 * v4;
-}
+static int64_t cross(int v1, int v2, int v3, int v4) { return (int64_t)v1 * v2 - (int64_t)v3 * v4; }
 
 // fills in edi with vector. takes deltas set
 void get_pyr_vector(g3s_vector *corners) {
   AWide wide_den, wide2;
 
-	// calculate denominators, divide each by the longest of the three
-	int64_t den_x = cross(d46, d89, d56, d79);
-	int64_t den_y = cross(d23, d79, d13, d89);
-	int64_t den_z = cross(d13, d56, d23, d46);
+  // calculate denominators, divide each by the longest of the three
+  int64_t den_x = cross(d46, d89, d56, d79);
+  int64_t den_y = cross(d23, d79, d13, d89);
+  int64_t den_z = cross(d13, d56, d23, d46);
 
-	if (llabs(den_x) >= llabs(den_y) && llabs(den_x) >= llabs(den_z)) {
-		corners->gX = f1_0;
-		corners->gY = den_y / (den_x >> 16);
-		corners->gZ = den_z / (den_x >> 16);
-	} else if (llabs(den_y) >= llabs(den_x) && llabs(den_y) >= llabs(den_z)) {
-		corners->gX = den_x / (den_y >> 16);
-		corners->gY = f1_0;
-		corners->gZ = den_z / (den_y >> 16);
-	} else {
-		corners->gX = den_x / (den_z >> 16);
-		corners->gY = den_y / (den_z >> 16);
-		corners->gZ = f1_0;
-	}
+  if (llabs(den_x) >= llabs(den_y) && llabs(den_x) >= llabs(den_z)) {
+    corners->gX = f1_0;
+    corners->gY = den_y / (den_x >> 16);
+    corners->gZ = den_z / (den_x >> 16);
+  } else if (llabs(den_y) >= llabs(den_x) && llabs(den_y) >= llabs(den_z)) {
+    corners->gX = den_x / (den_y >> 16);
+    corners->gY = f1_0;
+    corners->gZ = den_z / (den_y >> 16);
+  } else {
+    corners->gX = den_x / (den_z >> 16);
+    corners->gY = den_y / (den_z >> 16);
+    corners->gZ = f1_0;
+  }
 
   // got_vector
   g3_vec_normalize(corners);

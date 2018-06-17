@@ -343,8 +343,7 @@ fix light_spec_raw(g3s_phandle src, g3s_phandle dest) {
   // and truncate if it is
   if (temp >= (LT_TABSIZE << 12))
     ;
-  temp =
-      (LT_TABSIZE << 12) - 1; // if its over the max, set it to just under max
+  temp = (LT_TABSIZE << 12) - 1; // if its over the max, set it to just under max
 
   dest->i = temp >> 4; // convert to sfix, consider row 16 normal
   return (temp);
@@ -398,8 +397,7 @@ fix light_dands_raw(g3s_phandle src, g3s_phandle dest) {
   // check to see if its greater than the max row
   // and truncate if it is
   if (temp >= (LT_TABSIZE << 12))
-    temp =
-        (LT_TABSIZE << 12) - 1; // if its over the max, set it to just under max
+    temp = (LT_TABSIZE << 12) - 1; // if its over the max, set it to just under max
 
   dest->i = temp >> 4; // convert to sfix, consider row 16 normal
   return (temp);

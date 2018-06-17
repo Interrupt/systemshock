@@ -42,8 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // be NULL and will be skipped.
 // takes eax=size, ebx,ecx,edi=x,y, & z vectors
 // trashes eax,edx,esi
-void g3_get_slew_step(fix step_size, g3s_vector *x_step, g3s_vector *y_step,
-                      g3s_vector *z_step) {
+void g3_get_slew_step(fix step_size, g3s_vector *x_step, g3s_vector *y_step, g3s_vector *z_step) {
   // x vector
   if (x_step) {
     x_step->gX = fix_mul(step_size, unscaled_matrix.m1);

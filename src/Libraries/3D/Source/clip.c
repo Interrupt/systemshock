@@ -480,8 +480,7 @@ void g3_intersect(void) {
     gs += fix_mul_div(ge - gs, num, den);
     bs += fix_mul_div(be - bs, num, den);
 
-    _tmp->rgb = ((rs & 0x3ff000) >> 12) | ((gs & 0x3ff000) >> 1) |
-                ((bs & 0x3ff000) << 10);
+    _tmp->rgb = ((rs & 0x3ff000) >> 12) | ((gs & 0x3ff000) >> 1) | ((bs & 0x3ff000) << 10);
 
   } else {
     if ((_tmp->p3_flags & PF_U) != 0)
@@ -510,11 +509,8 @@ void g3_back_intersect(void) {
   _tmp->gY = s->gY + fix_mul_div(_b, num, den);
   _tmp->gZ = _d;
 
-  _tmp->codes =
-      ((_tmp->gX >= _tmp->gZ) ? CC_OFF_RIGHT
-                              : ((_tmp->gX <= -_tmp->gZ) ? CC_OFF_LEFT : 0)) |
-      ((_tmp->gY >= _tmp->gZ) ? CC_OFF_TOP
-                              : ((_tmp->gY <= -_tmp->gZ) ? CC_OFF_BOT : 0));
+  _tmp->codes = ((_tmp->gX >= _tmp->gZ) ? CC_OFF_RIGHT : ((_tmp->gX <= -_tmp->gZ) ? CC_OFF_LEFT : 0)) |
+                ((_tmp->gY >= _tmp->gZ) ? CC_OFF_TOP : ((_tmp->gY <= -_tmp->gZ) ? CC_OFF_BOT : 0));
 
   g3_intersect();
 }
@@ -532,10 +528,7 @@ void g3_left_intersect(void) {
   _tmp->gZ = s->gZ + fix_mul_div(_c, num, den);
   _tmp->gX = -_tmp->gZ;
 
-  _tmp->codes =
-      ((_tmp->gY >= _tmp->gZ) ? CC_OFF_TOP
-                              : ((_tmp->gY <= -_tmp->gZ) ? CC_OFF_BOT : 0)) |
-      CC_OFF_X;
+  _tmp->codes = ((_tmp->gY >= _tmp->gZ) ? CC_OFF_TOP : ((_tmp->gY <= -_tmp->gZ) ? CC_OFF_BOT : 0)) | CC_OFF_X;
 
   g3_intersect();
 }
@@ -553,8 +546,7 @@ void g3_top_intersect(void) {
   _tmp->gZ = s->gZ + fix_mul_div(_c, num, den);
   _tmp->gY = _tmp->gZ;
 
-  _tmp->codes = ((_tmp->gX >= _tmp->gZ) ? CC_OFF_RIGHT : 0) | CC_OFF_Y |
-                (s->codes & e->codes & CC_OFF_X);
+  _tmp->codes = ((_tmp->gX >= _tmp->gZ) ? CC_OFF_RIGHT : 0) | CC_OFF_Y | (s->codes & e->codes & CC_OFF_X);
 
   g3_intersect();
 }
@@ -572,8 +564,7 @@ void g3_right_intersect(void) {
   _tmp->gZ = s->gZ + fix_mul_div(_c, num, den);
   _tmp->gX = _tmp->gZ;
 
-  _tmp->codes = ((_tmp->gY <= -_tmp->gZ) ? CC_OFF_BOT : 0) | CC_OFF_X |
-                (s->codes & e->codes & CC_OFF_Y);
+  _tmp->codes = ((_tmp->gY <= -_tmp->gZ) ? CC_OFF_BOT : 0) | CC_OFF_X | (s->codes & e->codes & CC_OFF_Y);
 
   g3_intersect();
 }

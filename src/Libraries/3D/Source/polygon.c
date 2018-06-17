@@ -58,8 +58,7 @@ g3s_vector temp_vector;
 long		n_temp_used;*/
 
 long draw_color;
-long poly_index[] = {FIX_UPOLY, FIX_TLUC8_UPOLY, FIX_USPOLY, FIX_TLUC8_SPOLY,
-                     FIX_UCPOLY};
+long poly_index[] = {FIX_UPOLY, FIX_TLUC8_UPOLY, FIX_USPOLY, FIX_TLUC8_SPOLY, FIX_UCPOLY};
 
 char gour_flag; // 0=normal,1=tluc_poly,2=spoly,3=tluc_spoly,4=cpoly
 
@@ -85,16 +84,14 @@ g3s_codes g3_check_codes(int n_verts, g3s_phandle *p) {
   return (retcode);
 }
 
-extern void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0,
-                                    g3s_vector *v1, g3s_vector *v2);
+extern void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0, g3s_vector *v1, g3s_vector *v2);
 
 // takes 3 rotated points: eax,edx,ebx.
 // returns al=true (& s flag set) if facing. trashes all but ebp
 bool g3_check_poly_facing(g3s_phandle p0, g3s_phandle p1, g3s_phandle p2) {
   AWide result, result2;
 
-  g3_compute_normal_quick(&temp_vector, (g3s_vector *)p0, (g3s_vector *)p1,
-                          (g3s_vector *)p2);
+  g3_compute_normal_quick(&temp_vector, (g3s_vector *)p0, (g3s_vector *)p1, (g3s_vector *)p2);
 
   AsmWideMultiply(p0->gX, temp_vector.gX, &result);
   AsmWideMultiply(p0->gY, temp_vector.gY, &result2);
@@ -132,31 +129,40 @@ int g3_check_and_draw_poly(long c, int n_verts, g3s_phandle *p) {
 }
 
 int check_and_draw_common(long c, int n_verts, g3s_phandle *p) {
+// clang-format off
 #ifdef stereo_on
-  test _g3d_stereo, 1 jz check_and_draw_common_raw pushm eax, ecx,
-      esi
+  test    _g3d_stereo,1
+  jz      check_and_draw_common_raw
+  pushm eax,ecx,esi
 
-          call check_and_draw_common_raw set_rt_canv
+  call check_and_draw_common_raw
+  set_rt_canv
 
-              popm eax,
-      ecx, esi pushm eax,
-      ecx
+  popm eax,ecx,esi
+  pushm eax,ecx
 
-          // moves list at esi to temp and repoints esi
-          test gour_flag,
-      6 jnz do_uvi_copy1 move_to_stereo jmp raw_poly_continue1 do_uvi_copy1
-      : mov edx,
-        esi mov eax,
-        ecx move_to_stereo_and_uvi mov esi,
-        edx raw_poly_continue1 :
+  // moves list at esi to temp and repoints esi
+  test gour_flag,6
+  jnz  do_uvi_copy1
+  move_to_stereo
+  jmp     raw_poly_continue1
+do_uvi_copy1:
+  mov     edx,esi
+  mov     eax,ecx
+  move_to_stereo_and_uvi
+  mov     esi,edx
+raw_poly_continue1:
 
-      popm eax,
-      ecx call check_and_draw_common_raw
+  popm eax,ecx
+  call check_and_draw_common_raw
 
-          set_lt_canv ret check_and_draw_common_raw :
+  set_lt_canv
+  ret
+check_and_draw_common_raw:
 #endif
+// clang-format on
 
-      if (g3_check_poly_facing(p[0], p[1], p[2])) {
+  if (g3_check_poly_facing(p[0], p[1], p[2])) {
 #ifdef stereo_on
     js draw_poly_common_raw
 #else
@@ -169,20 +175,20 @@ int check_and_draw_common(long c, int n_verts, g3s_phandle *p) {
 // takes ecx=# verts, esi=ptr to list of point handles
 // modify all but ebp
 
-int g3_draw_cpoly(int n_verts, g3s_phandle *p) // RBG-space smooth poly
-{
+// RBG-space smooth poly
+int g3_draw_cpoly(int n_verts, g3s_phandle *p) {
   gour_flag = 4;
   return draw_poly_common(0, n_verts, p);
 }
 
-int g3_draw_tluc_spoly(int n_verts, g3s_phandle *p) // smooth poly
-{
+// smooth poly
+int g3_draw_tluc_spoly(int n_verts, g3s_phandle *p) {
   gour_flag = 3;
   return draw_poly_common(0, n_verts, p);
 }
 
-int g3_draw_spoly(int n_verts, g3s_phandle *p) // smooth poly
-{
+// smooth poly
+int g3_draw_spoly(int n_verts, g3s_phandle *p) {
   gour_flag = 2;
   return draw_poly_common(0, n_verts, p);
 }
@@ -206,37 +212,43 @@ int draw_poly_common(long c, int n_verts, g3s_phandle *p) {
   grs_vertex *dest;
   long rgb;
 
+// clang-format off
 #ifdef stereo_on
-  test _g3d_stereo,
-      1 jz draw_poly_common_raw
+  test    _g3d_stereo, 1
+  jz      draw_poly_common_raw
 
-          pushm eax,
-      ecx,
-      esi
+  pushm eax,ecx,esi
 
-          call draw_poly_common_raw set_rt_canv
+  call draw_poly_common_raw
+  set_rt_canv
 
-              popm eax,
-      ecx, esi pushm eax,
-      ecx
+  popm eax,ecx,esi
+  pushm eax,ecx
 
-          // moves list at esi to temp and repoints esi
-          test gour_flag,
-      6 jnz do_uvi_copy2 move_to_stereo jmp raw_poly_continue2 do_uvi_copy2
-      : mov edx,
-        esi mov eax,
-        ecx move_to_stereo_and_uvi mov esi,
-        edx raw_poly_continue2 :
+  // moves list at esi to temp and repoints esi
+  test gour_flag,6
+  jnz  do_uvi_copy2
+  move_to_stereo
+  jmp     raw_poly_continue2
+do_uvi_copy2:
+  mov     edx,esi
+  mov     eax,ecx
+  move_to_stereo_and_uvi
+  mov     esi,edx
+raw_poly_continue2:
 
-      popm eax,
-      ecx call draw_poly_common_raw
+  popm eax,ecx
+  call draw_poly_common_raw
 
-          set_lt_canv ret
+  set_lt_canv
+  ret
 
-              draw_poly_common_raw :
+draw_poly_common_raw:
 #endif
 
-      poly_color = c;
+// clang-format on
+
+  poly_color = c;
 
   // first, go through points and get codes
   andcode = 0xff;
@@ -308,8 +320,7 @@ int draw_poly_common(long c, int n_verts, g3s_phandle *p) {
   }
 
   // draw it
-  ((void (*)(long c, int n, grs_vertex **vpl))
-       grd_canvas_table[poly_index[gour_flag]])(poly_color, n_verts, p_vpl);
+  ((void (*)(long c, int n, grs_vertex **vpl))grd_canvas_table[poly_index[gour_flag]])(poly_color, n_verts, p_vpl);
 
   return CLIP_NONE;
 }
@@ -394,8 +405,7 @@ int draw_line_common(g3s_phandle p0, g3s_phandle p1) {
     v0.y = p0->sy;
     v1.x = p1->sx;
     v1.y = p1->sy;
-    ((int (*)(long c, long parm, grs_vertex *v0,
-              grs_vertex *v1))grd_line_clip_fill_vector[GR_WIRE_POLY_LINE])(
+    ((int (*)(long c, long parm, grs_vertex *v0, grs_vertex *v1))grd_line_clip_fill_vector[GR_WIRE_POLY_LINE])(
         draw_color, gr_get_fill_parm(), &v0, &v1);
 
     result = CLIP_NONE;
@@ -416,8 +426,7 @@ int draw_line_common(g3s_phandle p0, g3s_phandle p1) {
     v1.u = a;
     v1.v = b;
     v1.w = c;
-    ((int (*)(long c, long parm, grs_vertex *v0,
-              grs_vertex *v1))grd_line_clip_fill_vector[GR_WIRE_POLY_CLINE])(
+    ((int (*)(long c, long parm, grs_vertex *v0, grs_vertex *v1))grd_line_clip_fill_vector[GR_WIRE_POLY_CLINE])(
         gr_get_fcolor(), gr_get_fill_parm(), &v0, &v1);
 
     result = CLIP_NONE;
