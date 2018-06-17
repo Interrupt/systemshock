@@ -93,28 +93,24 @@ void clear_digi_fx()
 
 errtype digifx_init()
 {
-/* KLC - almost none of this is needed now
-   int fp;
-   char fname[80];
-   extern Datapath DataDirPath;
-   extern void asynch_digi_fx(void);
 
-   DatapathFind(&DataDirPath, "digiparm.bin", fname);
-   if ((fp = open(fname,O_RDONLY|O_BINARY)) == NULL)
-      return (ERR_FOPEN);
+   FILE *fp = fopen_caseless("res/data/digiparm.bin", "rb");
+   if (fp == NULL) {
+      printf("Failed to open digiparm.bin\n");
+      return ERR_FOPEN;
+   }
 
-   read(fp, volumes, NUM_DIGI_FX);
-   read(fp, flags, NUM_DIGI_FX);
-   read(fp, priorities, NUM_DIGI_FX);
-
-   close(fp);
-*/
+   fread(volumes, NUM_DIGI_FX, 1, fp);
+   fread(flags, NUM_DIGI_FX, 1, fp);
+   fread(priorities, NUM_DIGI_FX, 1, fp);
+   fclose(fp);
    //clear_digi_fx();
 
    //snd_finish = digifx_EOS_callback;
 
 /* KLC - not needed now.
 #ifdef ASYNCH_DIGI
+   extern void asynch_digi_fx(void);
    digi_timer_id = tm_add_process(asynch_digi_fx, 0, CIT_FREQ << 2);
 #endif
 */
@@ -234,7 +230,6 @@ uchar set_sample_pan_gain(snd_digi_parms *sdp)
       vol = 127;
 //   vol = vol  * curr_sfx_vol / 100;
    sdp->vol = vol * temp_vol / VOL_FULL;
-   sdp->vol = 127;  // for now
    snd_sample_reload_parms(sdp);
    return(FALSE);
 }
@@ -282,8 +277,6 @@ uchar sfx_volume_levels[] = {0, 0x9, 0xF};
 #define ALWAYS_QUEUE_TOLERANCE   2
 #define NO_GAIN_THRESHOLD     0x6A
 #define HARSH_GAIN_THRESHOLD  0xBA
-
-#define SND_DEF_PAN 1
 
 snd_digi_parms s_dprm;
 char secret_global_pan=SND_DEF_PAN;
