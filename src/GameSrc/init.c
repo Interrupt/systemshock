@@ -73,6 +73,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "dynmem.h"
 #include "citres.h"
 
+#include "version.h"	// for system shock version number
+
 #include "Modding.h"
 #include <SDL.h>
 
@@ -935,6 +937,8 @@ void free_all(void)
    _MARK_("free_all done");
 }
 
+#endif // DUMMY
+
 // when you need those arms around you, you wont find my arms around you
 // im going im going im going im gone
 void byebyemessage(void)
@@ -942,11 +946,10 @@ void byebyemessage(void)
    extern uchar cit_success;
    if (cit_success)
 #ifdef DEMO
-	   lg_printf("Thanks for playing the System Shock CD Demo %s.\n",SYSTEM_SHOCK_VERSION);
+	   printf("Thanks for playing the System Shock CD Demo %s.\n",SYSTEM_SHOCK_VERSION);
 #else
-	   lg_printf("Thanks for playing System Shock %s.\n",SYSTEM_SHOCK_VERSION);
+	   printf("Thanks for playing System Shock %s.\n",SYSTEM_SHOCK_VERSION);
 #endif
    else
-      lg_printf("Our system has been shocked!!!\b But rememeber to Salt The Fries\n");
+      printf("Our system has been shocked!!!\b But rememeber to Salt The Fries\n");
 }
-#endif // DUMMY

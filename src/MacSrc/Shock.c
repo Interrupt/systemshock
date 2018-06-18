@@ -707,6 +707,9 @@ void HandleNewGame()
 
 	//RenderTest();
 	ShockGameLoop();
+
+	extern void byebyemessage(void);
+	byebyemessage();
 }
 
 
