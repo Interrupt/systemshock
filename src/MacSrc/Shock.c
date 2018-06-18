@@ -111,6 +111,7 @@ void SetupTitleMenus(void);
 void HandleNewGame(void);
 void HandleOpenGame(void);
 void ShockGameLoop(void);
+void ShockSetupLoop(void);
 void HandlePausedEvents(void);
 void SetupPauseMenus(void);
 void RestoreTitleScreen(void);
@@ -706,6 +707,9 @@ void HandleNewGame()
 	go_and_start_the_game_already();				// Load up everything for a new game
 	SDLDraw();
 
+
+	ShockSetupLoop();
+
 	//RenderTest();
 	ShockGameLoop();
 
@@ -820,8 +824,52 @@ void HandleAEOpenGame(FSSpec *openSpec)
 //--------------------------------------------------------------------
 extern pascal void MousePollProc(void);
 extern void pump_events(void);
-
 extern long gShockTicks;
+
+void ShockSetupLoop(void)
+{
+	gPlayingGame = TRUE;
+	gDeadPlayerQuit = FALSE;
+	gGameCompletedQuit = FALSE;
+
+	// Should go somewhere else
+	_new_mode = _current_loop = SETUP_LOOP;
+	setup_init();
+	setup_start();
+
+	load_da_palette();		// KLC - added here.  Used to be in setup_start().
+	//screen_start();
+	fullscreen_start();
+
+	while(_current_loop == SETUP_LOOP) {
+		gr_clear(0xFF);
+
+		gShockTicks = TickCount();
+
+		if (!(_change_flag&(ML_CHG_BASE<<1)))
+			input_chk();
+		
+		// DG: at the beginning of each frame, get all the events from SDL
+		pump_events();
+
+		if (globalChanges)
+		{
+			if (_change_flag&(ML_CHG_BASE<<3))
+				loopmode_switch(&_current_loop);
+			chg_unset_flg(ML_CHG_BASE<<3);
+		}
+
+		setup_loop();
+
+		chg_set_flg(_static_change);
+
+		MousePollProc();		// update the cursor, was 35 times/sec originally
+		status_bio_update();	// draw the biometer
+
+		SDLDraw();
+	}
+}
+
 void ShockGameLoop(void)
 {
 	gPlayingGame = TRUE;
@@ -842,10 +890,6 @@ void ShockGameLoop(void)
 		_new_mode = _current_loop = GAME_LOOP;
 	}
 
-	_new_mode = _current_loop = SETUP_LOOP;
-	setup_init();
-	setup_start();
-
 	while (gPlayingGame)
 	{	
 		gShockTicks = TickCount();
@@ -863,9 +907,7 @@ void ShockGameLoop(void)
 			chg_unset_flg(ML_CHG_BASE<<3);
 		}
 		
-		if(_current_loop == SETUP_LOOP)
-			setup_loop();
-		else if (_current_loop == AUTOMAP_LOOP)
+		if (_current_loop == AUTOMAP_LOOP)
 			automap_loop();									// Do the fullscreen map loop.
 		else {
 			game_loop();										// Run the game!
