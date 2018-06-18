@@ -47,34 +47,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <unistd.h>
 
-/*
+
 #include <mainloop.h>
 #include <tools.h>
 #include <input.h>
-#include <screen.h>
+#include <game_screen.h>
 #include <hkeyfunc.h>
 #include <loops.h>
 #include <keydefs.h>
-#include <dpaths.h>
+//#include <dpaths.h>
 #include <cybmem.h>
 #include <status.h>
-#include <cutscene.h>
+//#include <cutscene.h>
 #include <wrapper.h>
 #include <mlimbs.h>
 #include <musicai.h>
 #include <palfx.h>
-#include <citmusic.h>
+//#include <citmusic.h>
 #include <verify.h>
 
+#include <gamescr.h>
+#include <gamepal.h>
+#include <gamestrn.h>
+#include <cybstrng.h>
+#include <faketime.h>
+#include "2d.h"
+
+/*
 // Resource stuff
 #include <intro.h>
 #include <gamescr.h>
 #include <gamepal.h>
 #include <gamestrn.h>
 #include <cybstrng.h>
-
 #include <faketime.h>
 #include <scrntext.h>
+*/
 
 #ifdef PLAYTEST
 #include <mprintf.h>
@@ -82,14 +90,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <mlimbs.h>
 extern errtype musicai_shutdown();
-*/
 
 #define CFG_NAME_VAR "name"
 
-/* KLC - no longer needed
 uiSlab setup_slab;
-Region setup_root_region;
-*/
+LGRegion setup_root_region;
 
 uchar play_intro_anim;
 uchar save_game_exists = FALSE;
@@ -109,8 +114,6 @@ uchar setup_bio_started = FALSE;
 // ----------------------
 errtype journey_newgame_func();
 
-
-#ifdef NOT_YET //
 
 #define ALT(x) ((x)|KB_FLAG_ALT)
 
@@ -293,12 +296,13 @@ uchar start_setup_sound(int which)
    if ((setup_sound_on)||(!music_on))
       return FALSE;
 
-   if (citmusic_swap_to_xmi(stp_themes[which])!=-1)
+   // FIXME: start music here
+   /*if (citmusic_swap_to_xmi(stp_themes[which])!=-1)
    {
       if (which==0)
 	      AIL_branch_index((SEQUENCE *)snd_get_sequence(cmus_theme_seq_id),0);
       setup_sound_on=TRUE;
-   }
+   }*/
    return setup_sound_on;
 }
 
@@ -310,7 +314,9 @@ void end_setup_sound(void)
 {
    if (!setup_sound_on)
       return;
-   citmusic_stop_simple_xmi();
+
+   // FIXME: Stop music here
+   //citmusic_stop_simple_xmi();
    setup_sound_on = FALSE;
 }
 
@@ -352,9 +358,10 @@ errtype difficulty_draw(uchar full)
    uiHideMouse(NULL);
    if (full)
    {
-      draw_raw_res_bm_extract(REF_IMG_bmDifficultyScreen, 0, 0);
+      // FIXME: REF_IMG_bmDifficultyScreen and RES_bmIntroGraphics4
+      /*draw_raw_res_bm_extract(REF_IMG_bmDifficultyScreen, 0, 0);
       if (which_lang)
-         draw_raw_res_bm_extract(MKREF(RES_bmIntroGraphics4,which_lang-1),50,11);
+         draw_raw_res_bm_extract(MKREF(RES_bmIntroGraphics4,which_lang-1),50,11);*/
    }
    setup_mode = SETUP_DIFFICULTY;
    for (i=0; i < NUM_DIFF_CATEGORIES; i++)
@@ -493,8 +500,10 @@ errtype journey_draw(char part)
    }
 
    // extract into buffer - AFTER we've stopped biorhythms (which used that buffer.....)
-   if (part == 0)
-      draw_raw_res_bm_extract(REF_IMG_bmJourneyOnwards, 0, 0);
+
+   //FIXME: Dig up REF_IMG_bmJourneyOnwards
+   //if (part == 0)
+      //draw_raw_res_bm_extract(REF_IMG_bmJourneyOnwards, 0, 0);
 
    for (i=0; i < NUM_SETUP_LINES; i++)
    {
@@ -539,12 +548,13 @@ errtype journey_intro_func(uchar draw_stuff)
    if (draw_stuff)
       res_draw_string(RES_citadelFont, SETUP_STRING_BASE, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT1_TOP + 2);
    uiShowMouse(NULL);    // need to leave it hidden
-   return(play_cutscene(START_CUTSCENE, TRUE));
+
+   // FIXME: Cutscenes!
+   //return(play_cutscene(START_CUTSCENE, TRUE));
+   return OK;
 #endif
 }
 #pragma enable_message(202)
-
-#endif //NOT_YET
 
 
 // -------------------------------------------------------------
@@ -573,8 +583,6 @@ errtype journey_newgame_func()
    return(OK);
 }
 
-
-#ifdef NOT_YET  //
 
 // -------------------------------------------------------------
 // journey_difficulty_func
@@ -605,20 +613,24 @@ void journey_credits_func(uchar draw_stuff)
    if (draw_stuff)
       res_draw_string(RES_citadelFont, SETUP_STRING_BASE + 2, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT3_TOP + 2);
    setup_mode = SETUP_CREDITS;
-   credits_txtscrn=scrntext_init(CredResFnt,CredColor,CredResource);
+
+   // FIXME: What is scrntext? The credits screen?
+   //credits_txtscrn=scrntext_init(CredResFnt,CredColor,CredResource);
    if (draw_stuff)
    {
 	   end_setup_sound();
       load_score_guts(7);
       grind_credits_music_ai();
-      mlimbs_preload_requested_timbres();
+
+      // FIXME: music!
+      //mlimbs_preload_requested_timbres();
    }
 }
 
 void journey_credits_done()
 {
    extern char current_cutscene;
-   if ((current_cutscene != WIN_CUTSCENE)&&(current_cutscene != SECRET_EXIT_TO_DOS_CUTSCENE))
+   /*if ((current_cutscene != WIN_CUTSCENE)&&(current_cutscene != SECRET_EXIT_TO_DOS_CUTSCENE))
    {
       musicai_shutdown();
 	   start_setup_sound(0);
@@ -633,7 +645,7 @@ void journey_credits_done()
    {
       really_quit_key_func(0,0,0);
    }
-   else
+   else*/
    {
       uiShowMouse(NULL);
       journey_draw(0);
@@ -697,7 +709,6 @@ errtype draw_savegame_names()
    return(OK);
 }
 
-#endif //NOT_YET
 
 extern void check_and_update_initial(void);
 
@@ -735,8 +746,6 @@ errtype load_that_thar_game(FSSpec *loadSpec)
    return(OK);
 }
 
-#ifdef NOT_YET //
-
 // -------------------------------------------------------------
 // journey_continue_func
 //
@@ -747,7 +756,8 @@ errtype journey_continue_func(uchar draw_stuff)
 #ifndef DEMO
    if (save_game_exists)
    {
-      draw_raw_res_bm_extract(REF_IMG_bmContinueScreen, 0, 0);
+      // FIXME: Dig up REF_IMG_bmContinueScreen
+      //draw_raw_res_bm_extract(REF_IMG_bmContinueScreen, 0, 0);
       setup_mode = SETUP_CONTINUE;
       draw_savegame_names();
    }
@@ -757,8 +767,6 @@ errtype journey_continue_func(uchar draw_stuff)
    return(OK);
 }
 #pragma enable_message(202)
-
-#endif //NOT_YET
 
 
 #define SECRET_MISSION_DIFFICULTY_QB      0xB0
@@ -832,9 +840,6 @@ void go_and_start_the_game_already()
 //KLC   end_wait();
 }
 
-
-#ifdef NOT_YET //
-
 // ------------------------------------
 // journey functions
 
@@ -854,7 +859,7 @@ uchar journey_lock = FALSE;
 // intro_mouse_handler()
 //
 
-uchar intro_mouse_handler(uiEvent *ev, Region *r, void *user_data)
+uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
 {
    uiMouseEvent *mev = (uiMouseEvent *)ev;
    int which_one = -1;
@@ -940,7 +945,7 @@ uchar intro_mouse_handler(uiEvent *ev, Region *r, void *user_data)
 
 #pragma disable_message(202)
 
-uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
+uchar intro_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
 {
    uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
    int code = kev->code & ~(KB_FLAG_DOWN | KB_FLAG_2ND);
@@ -953,8 +958,8 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
          case SETUP_JOURNEY:
             switch (code)
             {
-            case KEY_PAD_UP:   n=NUM_SETUP_LINES-2; // sneaky fallthrough action
-            case KEY_PAD_DOWN:
+            case KEY_UP:   n=NUM_SETUP_LINES-2; // sneaky fallthrough action
+            case KEY_DOWN:
                n++;
                curr_setup_line=(curr_setup_line+n)%NUM_SETUP_LINES;
 #ifdef DEMO
@@ -988,9 +993,9 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
          case SETUP_CONTINUE:
             switch(code)
             {
-            case KEY_PAD_UP:   case KEY_PAD_LEFT:
+            case KEY_UP:   case KEY_LEFT:
                n=NUM_SAVE_SLOTS-2; 
-            case KEY_PAD_DOWN: case KEY_PAD_RIGHT:
+            case KEY_DOWN: case KEY_RIGHT:
                n++;
                old_diff=curr_sg;
                curr_sg=(curr_sg+n)%NUM_SAVE_SLOTS;
@@ -1010,9 +1015,9 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
             {
                case ALT('X'):         // Don't print the X when user ALT-X's out of the game
                case ALT('x'):break;
-               case '-':          case KEY_PAD_LEFT:
+               case '-':          case KEY_LEFT:
                   n=NUM_DIFF_CATEGORIES-2;               // note sneaky -2 for fallthrough
-               case '+':          case KEY_PAD_RIGHT:
+               case '+':          case KEY_RIGHT:
                   n++;                                   // n now NDC-1 or 1
                   if (!start_selected)
                   {
@@ -1025,9 +1030,9 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
                      compute_new_diff();
                   }
                   break;
-               case KEY_PAD_UP:   case (KEY_TAB | KB_FLAG_SHIFT):
+               case KEY_UP:   case (KEY_TAB | KB_FLAG_SHIFT):
                   n=NUM_DIFF_CATEGORIES-2;               // sneaky fallthrough
-               case KEY_PAD_DOWN: case KEY_TAB:
+               case KEY_DOWN: case KEY_TAB:
                   n++;                                   // now -1 or 1
                   if (start_selected && n == 1)
                   {
@@ -1070,8 +1075,11 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
                   }
                   if (((kev->code & 0xFF) == KEY_BS) && (n > 0))
                      start_name[n-1] = '\0';
-                  if (!(gr_string_nwidth(start_name,n) < DIFF_NAME_X2 - DIFF_NAME_TEXT_X))
-                     start_name[n]='\0';
+
+                  // FIXME: string gr_string_nwidth missing?
+                  //if (!(gr_string_nwidth(start_name,n) < DIFF_NAME_X2 - DIFF_NAME_TEXT_X))
+                     //start_name[n]='\0';
+
                   draw_username(NORMAL_ENTRY_COLOR, start_name);
                   break;
             }
@@ -1081,8 +1089,6 @@ uchar intro_key_handler(uiEvent *ev, Region *r, void *user_data)
    return(main_kb_callback(ev,r,user_data));
 }
 #pragma enable_message(202)
-
-#endif // NOT_YET 
 
 
 // -------------------------------------------------------------
@@ -1146,8 +1152,6 @@ errtype load_savegame_names()
    return(OK);
 }
 
-#ifdef NOT_YET //
-
 errtype setup_init(void)
 {
 #ifndef GAMEONLY
@@ -1159,7 +1163,7 @@ errtype setup_init(void)
 
 #ifndef GAMEONLY
    cnt = 1;
-   if (config_get_value("intro", CONFIG_INT_TYPE, data, &cnt))
+   //if (config_get_value("intro", CONFIG_INT_TYPE, data, &cnt))
    {
       physics_running = TRUE;
       time_passes = TRUE;
@@ -1248,7 +1252,7 @@ void setup_start()
 	   int i = 2;
 	   int dvec[2];
 
-      config_get_value(CFG_INIT_SVG,CONFIG_INT_TYPE,dvec,&i);
+      //config_get_value(CFG_INIT_SVG,CONFIG_INT_TYPE,dvec,&i);
       if (i>0)
          do_i_svg=dvec[0];
       if (i>1)
@@ -1284,7 +1288,9 @@ void setup_start()
    else
    {
       direct_into_cutscene = TRUE;
-      play_cutscene(START_CUTSCENE, TRUE);
+
+      // FIXME: Cutscenes!
+      //play_cutscene(START_CUTSCENE, TRUE);
    }
 
 }
@@ -1316,8 +1322,9 @@ void setup_exit()
    // make sure the sound is off before leaving
    end_setup_sound();
 
-   if ((startup_music) && (music_on))
-      start_music_func(0,0,0);
+   // FIXME: Start music!
+   /*if ((startup_music) && (music_on))
+      start_music_func(0,0,0);*/
 
 #ifdef SAFETY_PUPS_NIECE
    mlimbs_shutdown();
@@ -1329,5 +1336,3 @@ void setup_exit()
       uiHideMouse(NULL);
    direct_into_cutscene = FALSE;
 }
-
-#endif //NOT_YET
