@@ -712,37 +712,37 @@ errtype draw_savegame_names()
 
 extern void check_and_update_initial(void);
 
-errtype load_that_thar_game(FSSpec *loadSpec)
+errtype load_that_thar_game(int which_slot)
 {
    errtype retval;
-//KLC - not in Mac version   if (valid_save & (1 << which_slot))
-//KLC - not in Mac version   {
+   if (valid_save & (1 << which_slot))
+   {
       extern uchar clear_player_data;
       extern char curr_vol_lev;
 
-//KLC - not in Mac version      draw_sg_slot(-1);             // highlight the current save game slot with SELECTED_COLOR
+      draw_sg_slot(-1);             // highlight the current save game slot with SELECTED_COLOR
 //KLC - have Mac version up at this point      begin_wait();
 // is this needed?      check_and_update_initial();
       clear_player_data=TRUE;   // initializes the player struct in object_data_load
       object_data_load();
       player_create_initial();
       player_struct.level = 0xFF;      // make sure we load textures
-//KLC - not in Mac version      Poke_SaveName(which_slot);
-//KLC - not in Mac version      change_mode_func(0,0,(void *)GAME_LOOP);
-      retval = load_game(loadSpec);
+      Poke_SaveName(which_slot);
+      change_mode_func(0,0,(void *)GAME_LOOP);
+      retval = load_game(which_slot);
       if (retval != OK)
       {
-//KLC - not in Mac version         strcpy(comments[which_slot], "<< INVALID GAME >>");
+         strcpy(comments[which_slot], "<< INVALID GAME >>");
 //KLC         end_wait();
-//KLC - not in Mac version         uiHideMouse(NULL);
-//KLC - not in Mac version         journey_continue_func(TRUE);
+         uiHideMouse(NULL);
+         journey_continue_func(TRUE);
          return(retval);
       }
 //KLC - don't do the following.
 //      if (curr_vol_lev != 0)
       startup_music = TRUE;
 //KLC      end_wait();
-//KLC - not in Mac version   }
+   }
    return(OK);
 }
 
@@ -830,13 +830,13 @@ void go_and_start_the_game_already()
 //      player_struct.terseness=TRUE;
    strncpy(player_struct.version, SYSTEM_SHOCK_VERSION,6);
 
-/*  KLC - no longer needed
+
    if (setup_bio_started)
    {
       status_bio_end();
       setup_bio_started = FALSE;
    }
-*/
+
 //KLC   end_wait();
 }
 
@@ -1174,7 +1174,26 @@ errtype setup_init(void)
    load_savegame_names();
 #endif
 
+   setup_mode = SETUP_JOURNEY;
+
    return(OK);
+}
+
+// -------------------------------------------------------------
+// setup_loop()
+//
+
+void setup_loop()
+{
+   switch (setup_mode)
+   {
+      case SETUP_DIFFICULTY:
+         difficulty_draw(TRUE);
+         break;
+      case SETUP_JOURNEY:
+         journey_draw(0);
+         break;
+   }
 }
 
 // -------------------------------------------------------------
@@ -1242,7 +1261,7 @@ void setup_start()
    kb_flush();
    mouse_flush();
 
-   intro_num = ResOpenFile("intro.res");
+   intro_num = ResOpenFile("res/data/intro.res");
 
    // slam in the right palette
    load_da_palette();
@@ -1265,7 +1284,9 @@ void setup_start()
       player_invulnerable = i_invuln;
 #endif
       uiShowMouse(NULL);
-      load_that_thar_game(do_i_svg);
+
+      // FIXME: This crashes?
+      //load_that_thar_game(do_i_svg);
    }
    else if (!play_intro_anim)
    {

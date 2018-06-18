@@ -51,6 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "input.h"
 #include "mainloop.h"
 #include "setup.h"
+#include "setploop.h"
 #include "game_screen.h"
 #include "fullscrn.h"
 #include "status.h"
@@ -841,6 +842,10 @@ void ShockGameLoop(void)
 		_new_mode = _current_loop = GAME_LOOP;
 	}
 
+	_new_mode = _current_loop = SETUP_LOOP;
+	setup_init();
+	setup_start();
+
 	while (gPlayingGame)
 	{	
 		gShockTicks = TickCount();
@@ -858,7 +863,9 @@ void ShockGameLoop(void)
 			chg_unset_flg(ML_CHG_BASE<<3);
 		}
 		
-		if (_current_loop == AUTOMAP_LOOP)
+		if(_current_loop == SETUP_LOOP)
+			setup_loop();
+		else if (_current_loop == AUTOMAP_LOOP)
 			automap_loop();									// Do the fullscreen map loop.
 		else {
 			game_loop();										// Run the game!

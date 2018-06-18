@@ -48,6 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 #include "loops.h"
 
+#include <setup.h>
+
 /*
 #include <input.h>
 #include <setup.h>
@@ -77,8 +79,8 @@ void (*enter_modes[])(void)={screen_start,fullscreen_start,screen_start,screen_s
 void (*exit_modes[])(void)={screen_exit,fullscreen_exit,screen_exit, screen_exit,setup_exit,screen_exit,cutscene_exit,fullscreen_exit,amap_exit};
 */
 //  Next two lines are temporary
-void (*enter_modes[])(void)={screen_start, fullscreen_start, NULL,NULL,NULL,NULL,NULL,NULL,amap_start};
-void (*exit_modes[])(void)={screen_exit, fullscreen_exit, NULL, NULL,NULL,NULL,NULL,NULL,amap_exit};
+void (*enter_modes[])(void)={screen_start, fullscreen_start, NULL,NULL,setup_start,NULL,NULL,fullscreen_start,amap_start};
+void (*exit_modes[])(void)={screen_exit, fullscreen_exit, NULL, NULL,setup_exit,NULL,NULL,fullscreen_exit,amap_exit};
 
 void loopmode_switch(short *cmode)
 {
