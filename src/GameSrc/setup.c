@@ -100,6 +100,7 @@ uchar play_intro_anim;
 uchar save_game_exists = FALSE;
 uchar startup_music;
 int setup_mode;
+int last_setup_mode;
 int intro_num;
 int diff_sum = 0;
 
@@ -1190,7 +1191,10 @@ errtype setup_init(void)
 
 void setup_loop()
 {
-   gr_clear(0xFF);
+   if(last_setup_mode != setup_mode)
+      gr_clear(0xFF);
+
+   last_setup_mode = setup_mode;
 
    switch (setup_mode)
    {
@@ -1260,6 +1264,11 @@ void setup_start()
    _current_view = &setup_root_region;
    static_change_copy();
    message_info("");
+
+   #ifdef SVGA_SUPPORT
+      extern void change_svga_screen_mode();
+      change_svga_screen_mode();
+   #endif
 
    // clear the screen
    gr_clear(0);
