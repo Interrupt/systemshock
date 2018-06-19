@@ -1193,8 +1193,10 @@ errtype setup_init(void)
 
 void setup_loop()
 {
-   if(last_setup_mode != setup_mode)
+   if(last_setup_mode != setup_mode) {
+      uiHideMouse(NULL);
       gr_clear(0xFF);
+   }
 
    last_setup_mode = setup_mode;
 
