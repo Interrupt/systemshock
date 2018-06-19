@@ -677,6 +677,7 @@ errtype draw_sg_slot(int slot_num)
       gr_set_fcolor(SELECTED_COLOR);
       slot_num = curr_sg;
    }
+
    if(valid_save & (1<<slot_num)) {
       sz = strlen(comments[slot_num]);
       strcpy(temp,comments[slot_num]);
@@ -696,7 +697,9 @@ errtype draw_sg_slot(int slot_num)
    }
    ResUnlock(RES_smallTechFont);
    // was RES_CitadelFont
+
    res_draw_text(RES_smallTechFont, temp, SG_SLOT_X + SG_SLOT_OFFSET_X, SG_SLOT_Y + SG_SLOT_OFFSET_Y + (slot_num * SG_SLOT_HT));
+
    uiShowMouse(NULL);
    return(OK);
 }
@@ -714,6 +717,8 @@ extern void check_and_update_initial(void);
 
 errtype load_that_thar_game(int which_slot)
 {
+   printf("load_that_thar_game %i\n", which_slot);
+
    errtype retval;
    if (valid_save & (1 << which_slot))
    {
@@ -729,7 +734,7 @@ errtype load_that_thar_game(int which_slot)
       player_struct.level = 0xFF;      // make sure we load textures
       Poke_SaveName(which_slot);
       change_mode_func(0,0,(void *)GAME_LOOP);
-      retval = load_game(which_slot);
+      retval = load_game(save_game_name);
       if (retval != OK)
       {
          strcpy(comments[which_slot], "<< INVALID GAME >>");
@@ -1185,6 +1190,8 @@ errtype setup_init(void)
 
 void setup_loop()
 {
+   gr_clear(0xFF);
+
    switch (setup_mode)
    {
       case SETUP_DIFFICULTY:
@@ -1192,6 +1199,9 @@ void setup_loop()
          break;
       case SETUP_JOURNEY:
          journey_draw(0);
+         break;
+      case SETUP_CONTINUE:
+         journey_continue_func(TRUE);
          break;
    }
 }

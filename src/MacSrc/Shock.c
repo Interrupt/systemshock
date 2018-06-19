@@ -188,8 +188,9 @@ void ShockSetupLoop(void)
 		start_music();
 	}*/
 
+	gr_clear(0xFF);
+
 	while(_current_loop == SETUP_LOOP) {
-		gr_clear(0xFF);
 
 		gShockTicks = TickCount();
 
