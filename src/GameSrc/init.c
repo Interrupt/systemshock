@@ -461,27 +461,19 @@ void init_all(void)
 
 	// Put up title screen
 	uiFlush();
-	//DrawSplashScreen(9003, TRUE);
-	SDLDraw();
 
 	// Preload and lock resources that are used often in the game.
+
 	PreloadGameResources();
-	
+
+	// Draw something to avoid startup flash
+	gr_clear(0x00);
+	SDLDraw();
+
 	// set the wait time for system shock title screen
 
-	gr_clear(0x00);
-	printf("Drawing something!\n");
-	grs_bitmap test_bm;
-
-	int ret = simple_load_res_bitmap(&test_bm, 0x26a0001);
-	printf("Loaded test bitmap: %i %i\n", test_bm.w, test_bm.h);
-
-	gr_bitmap(&test_bm, 0, 20);
-	pause_for_input(TickCount() + 20);
-
-	//gr_clear(0xFF);
-
 	pause_time = TickCount();
+
 	if (!speed_splash)
 		pause_time += TITLE_DISPLAY_TIME;
 	else
@@ -499,7 +491,7 @@ void init_all(void)
    // fade down for last time
    if (_current_loop != EDIT_LOOP)
    {
-	   pause_for_input(TickCount() + 10);
+//	   pause_for_input(TickCount() + 10);
 //	   if (pal_fx_on)
 //	      palfx_fade_down();
    }

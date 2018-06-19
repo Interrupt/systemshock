@@ -56,7 +56,6 @@ int gen_font_scale_string (grs_font *f, char *s, short x0, short y0, short w, sh
    uchar c;                    /* current character */
 
    if(w==0 || h==0) {
-      printf("gen_font_scale_string: %s %i %i bad sizes!\n", s, w, h);
       return CLIP_NONE;
    }
 

@@ -287,6 +287,9 @@ uchar setup_sound_on=FALSE;
 #define MAX_NAME_SIZE   sizeof(player_struct.name)
 #define start_name (player_struct.name)
 
+#define REF_IMG_bmDifficultyScreen 0x26d0000
+#define REF_IMG_bmJourneyOnwards 0x26c0000
+#define REF_IMG_bmContinueScreen 0x26e0000
 // -------------------------------------------------------------
 // start_setup_sound()
 //
@@ -359,9 +362,8 @@ errtype difficulty_draw(uchar full)
    uiHideMouse(NULL);
    if (full)
    {
-      // FIXME: REF_IMG_bmDifficultyScreen and RES_bmIntroGraphics4
-      /*draw_raw_res_bm_extract(REF_IMG_bmDifficultyScreen, 0, 0);
-      if (which_lang)
+      draw_raw_res_bm_extract(REF_IMG_bmDifficultyScreen, 0, 0);
+      /*if (which_lang)
          draw_raw_res_bm_extract(MKREF(RES_bmIntroGraphics4,which_lang-1),50,11);*/
    }
    setup_mode = SETUP_DIFFICULTY;
@@ -505,9 +507,8 @@ errtype journey_draw(char part)
 
    // extract into buffer - AFTER we've stopped biorhythms (which used that buffer.....)
 
-   //FIXME: Dig up REF_IMG_bmJourneyOnwards
-   //if (part == 0)
-      //draw_raw_res_bm_extract(REF_IMG_bmJourneyOnwards, 0, 0);
+   if (part == 0)
+      draw_raw_res_bm_extract(REF_IMG_bmJourneyOnwards, 0, 0);
 
    for (i=0; i < NUM_SETUP_LINES; i++)
    {
@@ -765,8 +766,7 @@ errtype journey_continue_func(uchar draw_stuff)
 #ifndef DEMO
    if (save_game_exists)
    {
-      // FIXME: Dig up REF_IMG_bmContinueScreen
-      //draw_raw_res_bm_extract(REF_IMG_bmContinueScreen, 0, 0);
+      draw_raw_res_bm_extract(REF_IMG_bmContinueScreen, 0, 0);
       setup_mode = SETUP_CONTINUE;
       draw_savegame_names();
    }
@@ -1110,11 +1110,11 @@ errtype load_savegame_names()
 
    valid_save = 0;
 
+   printf("Grabbing save game names\n");
+
    for (i=0; i<NUM_SAVE_SLOTS; i++)
    {
       Poke_SaveName(i);
-
-      printf("Grabbing save game names\n");
 
       if( access( save_game_name, F_OK ) != -1 ) {
          file = ResOpenFile(save_game_name);
@@ -1210,6 +1210,10 @@ void setup_loop()
          break;
       case SETUP_CONTINUE:
          journey_continue_func(TRUE);
+      case SETUP_ANIM:
+         // FIXME: What should this do?
+      case SETUP_CREDITS:
+         // FIXME: What should this do?
          break;
    }
 }
@@ -1236,6 +1240,9 @@ void setup_start()
 
    startup_music = FALSE;
    save_game_exists = (valid_save != 0);
+
+   // FIXME: Should fix play_intro_anim
+   start_first_time = FALSE;
 
    if (setup_mode != SETUP_CREDITS)
    {
@@ -1284,6 +1291,7 @@ void setup_start()
    kb_flush();
    mouse_flush();
 
+   printf("Loading intro.res\n");
    intro_num = ResOpenFile("res/data/intro.res");
 
    // slam in the right palette

@@ -173,15 +173,12 @@ extern long gShockTicks;
 
 void ShockSetupLoop(void)
 {
-	// Should go somewhere else?
+	// CC: Should unify all loops together into one master loop, like they used to be
 	_new_mode = _current_loop = SETUP_LOOP;
 
 	setup_init();
 	setup_start();
 	load_da_palette();		// KLC - added here.  Used to be in setup_start().
-
-	//screen_start();
-	//fullscreen_start();
 
 	/*if (startup_music)
 	{
@@ -207,12 +204,16 @@ void ShockSetupLoop(void)
 			chg_unset_flg(ML_CHG_BASE<<3);
 		}
 
-		setup_loop();
+		if(_current_loop == SETUP_LOOP) {
+			setup_loop();
+		}
 
 		chg_set_flg(_static_change);
 
 		MousePollProc();		// update the cursor, was 35 times/sec originally
-		status_bio_update();	// draw the biometer
+
+		// FIXME: should draw this bio bar again
+		// status_bio_update();	// draw the biometer
 
 		SDLDraw();
 	}
