@@ -95,6 +95,9 @@ void mac_set_mode(void)
     SDL_SetWindowSize(window, width, height);
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
+    extern SDL_Renderer* renderer;
+    SDL_RenderSetLogicalSize(renderer, width, height);
+
     extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
     gScreenWide = width;
     gScreenHigh = height;

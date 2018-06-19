@@ -171,36 +171,17 @@ pascal void MousePollProc(void)
 	short		i;
 	mouse_event	e;
 
-	int mouse_x = -1;
-	int mouse_y = -1;
-	
-	//printf("%i %i\n", mouse_x, mouse_y);
+	extern mouse_event latestMouseEvent;
+	mouseInstantButts = latestMouseEvent.buttons;
 
-	//mp.h = mouse_x;
-	//mp.v = mouse_y;
-
-	STUB_ONCE("TODO: Get mouse x and y?")
-	uint mouse_state = SDL_GetMouseState(&mouse_x, &mouse_y);
-
-	mouseInstantButts = 0;
-
-	if(mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-		mouseInstantButts = 1;
-	}
-
-	if(mouse_state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-		mouseInstantButts = 2;
-	}
-
-	if (mouseInstantX != mouse_x || mouseInstantY != mouse_y)						// If different
+	if (mouseInstantX != latestMouseEvent.x || mouseInstantY != latestMouseEvent.y)		// If different
 	{
-		mouseInstantX = mouse_x;												// save the position
-		mouseInstantY = mouse_y;
+		mouseInstantX = latestMouseEvent.x;						// save the position
+		mouseInstantY = latestMouseEvent.y;
 		
-		e.x = mouse_x;																// and inform the callback routines
-		e.y = mouse_y;
+		mouse_event e = latestMouseEvent;
 		e.type = MOUSE_MOTION;
-		e.buttons = mouseInstantButts;
+
 		for (i = 0; i < mouseCalls; i++)
 			if(mouseCall[i] !=NULL)
 				mouseCall[i](&e,mouseCallData[i]);
@@ -454,6 +435,7 @@ void _mouse_update_vel(void)
 //	---------------------------------------------------------
 //  For Mac version: Use GetMouse().
 
+#if 0 // moved to sdl_events.c
 errtype mouse_get_xy(short* x, short* y)
 {
 	int x_, y_;
@@ -508,7 +490,6 @@ errtype mouse_put_xy(short x, short y)
 	RawMouse->h = pt.h; 	
  
  	*CrsrNew=1;
-#endif
 
 	return OK;*/
 
@@ -541,6 +522,7 @@ errtype mouse_put_xy(short x, short y)
    return OK;
 */
 }
+#endif
 
 // --------------------------------------------------------
 // mouse_check_btn checks button state.  
