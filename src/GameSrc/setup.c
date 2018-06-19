@@ -72,6 +72,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <cybstrng.h>
 #include <faketime.h>
 #include "2d.h"
+#include "splash.h"
+#include "splshpal.h"
+
+#include "Shock.h"
+
+#include <SDL.h>
 
 /*
 // Resource stuff
@@ -102,6 +108,7 @@ uchar startup_music;
 int setup_mode;
 int last_setup_mode;
 int intro_num;
+int splash_num;
 int diff_sum = 0;
 
 extern char which_lang;
@@ -1187,6 +1194,52 @@ errtype setup_init(void)
    return(OK);
 }
 
+void splash_draw()
+{
+   int      pal_file;
+   
+   // Need to load the splash palette file
+
+   printf("Loading splshpal.res\n");
+   pal_file = ResOpenFile("res/data/splshpal.res");
+
+   if (pal_file < 0)
+      printf("Could not open splshpal.res!\n");
+
+   uchar splash_pal[768];
+   ResExtract(RES_splashPalette, splash_pal);
+
+   // Set initial palette
+
+   uchar * splash_pal_loc = splash_pal;
+   gr_set_pal(0, 256, splash_pal_loc);
+   SetSDLPalette(0, 256, splash_pal_loc);
+
+   // Draw Origin Logo
+
+   draw_raw_res_bm_extract(REF_IMG_bmOriginSplash, 0, 0);
+   SDLDraw();
+   SDL_Delay(1000);
+
+   // Draw LGS Logo
+
+   draw_raw_res_bm_extract(REF_IMG_bmLGSplash, 0, 0);
+   SDLDraw();
+   SDL_Delay(1000);
+
+   // Draw System Shock title
+
+   draw_raw_res_bm_extract(REF_IMG_bmSystemShockTitle, 0, 0);
+   SDLDraw();
+   SDL_Delay(1000);
+
+   ResCloseFile(pal_file);
+
+   // Original palette
+   gr_set_pal(0, 256, ppall);
+   SetSDLPalette(0, 256, ppall);
+}
+
 // -------------------------------------------------------------
 // setup_loop()
 //
@@ -1294,6 +1347,9 @@ void setup_start()
    printf("Loading intro.res\n");
    intro_num = ResOpenFile("res/data/intro.res");
 
+   printf("Loading splash.res\n");
+   splash_num = ResOpenFile("res/data/splash.res");
+
    // slam in the right palette
    load_da_palette();
 
@@ -1361,6 +1417,7 @@ void setup_exit()
    extern void end_intro_sound(void);
 
    ResCloseFile(intro_num);
+   ResCloseFile(splash_num);
 
 #ifdef PALFX_FADES
    if (pal_fx_on) 

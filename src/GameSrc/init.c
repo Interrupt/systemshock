@@ -406,8 +406,9 @@ void init_all(void)
 	// Put up splash screen for US!
     printf("-Make splash\n");
 	uiFlush();
-	//DrawSplashScreen(9002, TRUE);
-	SDLDraw();
+
+	//DrawSplashScreen(REF_IMG_bmOriginSplash, TRUE);
+	//SDLDraw();
 	
 	// Set the wait time for our screen
 	pause_time = TickCount();
@@ -513,6 +514,8 @@ void DrawSplashScreen(short id, Boolean fadeIn)
 	//CTabHandle		ctab;
 	extern void finish_pal_effect(byte id);
 	extern byte palfx_start_fade_up(uchar *new_pal);
+
+	//gr_clear(0xFF);
 
 	// First, clear the screen and load in the color table for this picture.
 	//gr_clear(0xFF);
