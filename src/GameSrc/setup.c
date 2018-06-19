@@ -408,7 +408,7 @@ errtype draw_username(int color, char *string)
    return(OK);
 }
 
-#define FLASH_TIME (CIT_CYCLE/4)
+#define FLASH_TIME (CIT_CYCLE/8)
 
 void flash_username(void)
 {
@@ -417,7 +417,10 @@ void flash_username(void)
    gr_set_fcolor(SELECTED_COLOR-4);
    res_draw_string(RES_citadelFont, DIFF_NAME, DIFF_NAME_X, DIFF_NAME_Y);
    flash_done=*tmd_ticks+FLASH_TIME;
-   while (*tmd_ticks<flash_done);
+   while (TickCount()<flash_done) {
+      extern void SDLDraw();
+      SDLDraw();
+   }
    gr_set_fcolor(KEYBOARD_FOCUS_COLOR);
    res_draw_string(RES_citadelFont, DIFF_NAME, DIFF_NAME_X, DIFF_NAME_Y);
    uiShowMouse(&name_rect);   
@@ -793,7 +796,6 @@ void go_and_start_the_game_already()
 #endif
    extern uchar mouseLefty;
    
-/* KLC - no longer needed
 #ifdef GAMEONLY
    if (strlen(start_name)==0)
     { flash_username(); return; }
@@ -802,7 +804,7 @@ void go_and_start_the_game_already()
    gr_set_fcolor(SELECTED_COLOR);
    res_draw_string(RES_citadelFont, DIFF_START, DIFF_DONE_X1 + 13, DIFF_DONE_Y1 + 2);
    uiShowMouse(NULL);
-*/
+
 //KLC - Mac cursor up at this point   begin_wait();
 
    journey_newgame_func();
