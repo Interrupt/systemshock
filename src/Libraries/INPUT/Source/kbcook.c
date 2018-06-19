@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Carbon/Carbon.h> // Handle
 #include "lg.h"
 #include "kbcook.h"
+#include "keydefs.h"
 //#include <kbmod.h>
 //#include <kbscan.h>
 
@@ -46,6 +47,20 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 	
 	*results = TRUE;
 	*cooked = ev.ascii;
+
+   if(ev.ascii == 0) {
+      // FIXME: Why don't the arrow keys translate properly?
+      if(ev.code == 125)
+         *cooked = KEY_DOWN;
+      else if(ev.code == 126)
+         *cooked = KEY_UP;
+      else if(ev.code == 123)
+         *cooked = KEY_LEFT;
+      else if(ev.code == 124)
+         *cooked = KEY_RIGHT;
+      else
+         *cooked = ev.code;
+   }
 	
 	*cooked |= (short)ev.state << KB_DOWN_SHF; // Add in the key-down state.
 

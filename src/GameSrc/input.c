@@ -1203,61 +1203,7 @@ Boolean	gShowMusicGlobals = FALSE;
 
 uchar MacQuitFunc(short keycode, ulong context, void* data)
 {
-	if (*tmd_ticks > (gGameSavedTime + (5 * CIT_CYCLE)))		// If the current game needs saving...
-	{
-		short					btn;
-		Boolean				savedOK;
-		//ModalFilterUPP	stdFilterProcPtr;
-		
-		uiHideMouse(NULL);								// Setup the environment for doing Mac stuff.
-		ShowCursor();
-
-		//CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
-
-		ShowMenuBar();
-		//stdFilterProcPtr = NewModalFilterProc(ShockAlertFilterProc);
- 		//btn = Alert((global_fullmap->cyber) ? 1010 :1009, stdFilterProcPtr);		// Want to save it first?
-		//DisposeRoutineDescriptor(stdFilterProcPtr);
-		HideMenuBar();
- 		
-		SetPort(gMainWindow);							// Update area behind the alert
-		//BeginUpdate(gMainWindow);
-
-  		//CopyBits(&gMainOffScreen.bits->portBits, &gMainWindow->portBits, &gOffActiveArea, &gActiveArea, srcCopy, 0L);
-
-		//EndUpdate(gMainWindow);
-
-		if (global_fullmap->cyber)						// In cyberspace, all you can do is end the game
-		{															// or just keep playing.
-			if (btn == 1)
-				gPlayingGame = FALSE;
-		}
-		else														// If in normal space, save the game first.
-		{
-	 		switch(btn)
-	 		{
-	 			case 1:											// Yeah, save it
-					if (gIsNewGame)
-					{
-						ShowMenuBar();
-					 	savedOK = DoSaveGameAs();
-						HideMenuBar();
-					}
-					else
-						savedOK = DoSaveGame();
-					if (!savedOK)
-						break;
-	 			case 2:											// No, don't save it
-					gPlayingGame = FALSE;
-	 				break;
-			}
-		}
-		
-		HideCursor();								// go back to Shock.
-		uiShowMouse(NULL);
-	}
-	else
-		gPlayingGame = FALSE;
+	gPlayingGame = FALSE;
 	return TRUE;
 }
 
