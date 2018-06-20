@@ -1314,6 +1314,7 @@ void setup_loop()
          break;
       case SETUP_CONTINUE:
          journey_continue_func(draw_stuff);
+         break;
       case SETUP_ANIM:
          // FIXME: What should this do?
       case SETUP_CREDITS:
