@@ -47,26 +47,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* set an unclipped pixel in bank-switched memory. */
 long flat8_get_upixel24(short x, short y) {
-  uchar *p;
-  long *r;
-  int i;
+    uchar *p;
+    long *r;
+    int i;
 
-  p = grd_canvas->bm.bits + grd_canvas->bm.row * y + x;
-  i = *p;
-  r = (long *)(grd_pal + 3 * i);
-  return *r & 0x00ffffff;
+    p = grd_canvas->bm.bits + grd_canvas->bm.row * y + x;
+    i = *p;
+    r = (long *)(grd_pal + 3 * i);
+    return *r & 0x00ffffff;
 }
 
 /* set a clipped pixel in bank-switched memory.  return the clip code. */
 long flat8_get_pixel24(short x, short y) {
-  uchar *p;
-  long *r;
-  int i;
+    uchar *p;
+    long *r;
+    int i;
 
-  if (x < grd_clip.left || x >= grd_clip.right || y < grd_clip.top || y >= grd_clip.bot)
-    return CLIP_ALL;
-  p = grd_canvas->bm.bits + grd_canvas->bm.row * y + x;
-  i = *p;
-  r = (long *)(grd_pal + 3 * i);
-  return *r & 0x00ffffff;
+    if (x < grd_clip.left || x >= grd_clip.right || y < grd_clip.top || y >= grd_clip.bot)
+        return CLIP_ALL;
+    p = grd_canvas->bm.bits + grd_canvas->bm.row * y + x;
+    i = *p;
+    r = (long *)(grd_pal + 3 * i);
+    return *r & 0x00ffffff;
 }

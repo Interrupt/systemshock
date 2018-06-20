@@ -62,74 +62,74 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* clut should be in _ns everywhere, it doesn't need its own function */
 
 void gri_flat8_uvline_ns(short x0, short y0, short y1, long c, long parm) {
-  uchar *p;
-  short t;
-  int grow = grd_bm.row;
+    uchar *p;
+    short t;
+    int grow = grd_bm.row;
 
-  if (y0 > y1) {
-    t = y0;
-    y0 = y1;
-    y1 = t;
-  }
-  if (gr_get_fill_type() == FILL_SOLID)
-    c = (uchar)parm;
+    if (y0 > y1) {
+        t = y0;
+        y0 = y1;
+        y1 = t;
+    }
+    if (gr_get_fill_type() == FILL_SOLID)
+        c = (uchar)parm;
 
-  p = grd_bm.bits + y0 * grow + x0;
-  for (; y0 <= y1; y0++) {
-    *p = c;
-    p += grow;
-  }
+    p = grd_bm.bits + y0 * grow + x0;
+    for (; y0 <= y1; y0++) {
+        *p = c;
+        p += grow;
+    }
 }
 
 void gri_flat8_uvline_clut(short x0, short y0, short y1, long c, long parm) {
-  uchar *p;
-  short t;
-  int grow = grd_bm.row;
+    uchar *p;
+    short t;
+    int grow = grd_bm.row;
 
-  if (y0 > y1) {
-    t = y0;
-    y0 = y1;
-    y1 = t;
-  }
-  c = (long)(((uchar *)parm)[c]);
-  p = grd_bm.bits + y0 * grow + x0;
-  for (; y0 <= y1; y0++) {
-    *p = c;
-    p += grow;
-  }
+    if (y0 > y1) {
+        t = y0;
+        y0 = y1;
+        y1 = t;
+    }
+    c = (long)(((uchar *)parm)[c]);
+    p = grd_bm.bits + y0 * grow + x0;
+    for (; y0 <= y1; y0++) {
+        *p = c;
+        p += grow;
+    }
 }
 
 void gri_flat8_uvline_xor(short x0, short y0, short y1, long c, long parm) {
-  uchar *p;
-  short t;
-  int grow = grd_bm.row;
+    uchar *p;
+    short t;
+    int grow = grd_bm.row;
 
-  if (y0 > y1) {
-    t = y0;
-    y0 = y1;
-    y1 = t;
-  }
-  p = grd_bm.bits + y0 * grow + x0;
-  for (; y0 <= y1; y0++) {
-    *p = *p ^ c;
-    p += grow;
-  }
+    if (y0 > y1) {
+        t = y0;
+        y0 = y1;
+        y1 = t;
+    }
+    p = grd_bm.bits + y0 * grow + x0;
+    for (; y0 <= y1; y0++) {
+        *p = *p ^ c;
+        p += grow;
+    }
 }
 
 /* punt */
 void gri_flat8_uvline_blend(short x0, short y0, short y1, long c, long parm) {
-  uchar *p;
-  short t;
-  int grow = grd_bm.row;
+    uchar *p;
+    short t;
+    int grow = grd_bm.row;
 
-  if (y0 > y1) {
-    t = y0;
-    y0 = y1;
-    y1 = t;
-  }
-  p = grd_bm.bits + y0 * grow + x0;
-  for (; y0 <= y1; y0++) {
-    *p = c;
-    p += grow;
-  }
+    if (y0 > y1) {
+        t = y0;
+        y0 = y1;
+        y1 = t;
+    }
+    p = grd_bm.bits + y0 * grow + x0;
+    for (; y0 <= y1; y0++) {
+        *p = c;
+        p += grow;
+    }
 }

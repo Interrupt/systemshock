@@ -56,32 +56,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 void flat8_flat8_ubitmap(grs_bitmap *bm, short x, short y) {
-  uchar *m_src;
-  uchar *m_dst;
-  int w = bm->w;
-  int h = bm->h;
-  int i;
-  int brow, grow;
+    uchar *m_src;
+    uchar *m_dst;
+    int w = bm->w;
+    int h = bm->h;
+    int i;
+    int brow, grow;
 
-  brow = bm->row;
-  grow = grd_bm.row;
+    brow = bm->row;
+    grow = grd_bm.row;
 
-  m_src = bm->bits;
-  m_dst = grd_bm.bits + grow * y + x;
+    m_src = bm->bits;
+    m_dst = grd_bm.bits + grow * y + x;
 
-  if (bm->flags & BMF_TRANS)
-    while (h--) {
-      for (i = 0; i < w; i++)
-        if (m_src[i] != 0)
-          m_dst[i] = m_src[i];
-      m_src += brow;
-      m_dst += grow;
-    }
-  else
-    while (h--) {
-      memmove(m_dst, m_src, w);
+    if (bm->flags & BMF_TRANS)
+        while (h--) {
+            for (i = 0; i < w; i++)
+                if (m_src[i] != 0)
+                    m_dst[i] = m_src[i];
+            m_src += brow;
+            m_dst += grow;
+        }
+    else
+        while (h--) {
+            memmove(m_dst, m_src, w);
 
-      m_src += brow;
-      m_dst += grow;
-    }
+            m_src += brow;
+            m_dst += grow;
+        }
 }

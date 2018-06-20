@@ -37,54 +37,54 @@ fix dr, dg, db, x_fix, dx;
 uchar *p;
 
 if (v1->y > v0->y) {
-  y = fix_cint(v0->y);
-  y_max = fix_cint(v1->y);
+    y = fix_cint(v0->y);
+    y_max = fix_cint(v1->y);
 } else {
-  y = fix_cint(v1->y);
-  y_max = fix_cint(v0->y);
+    y = fix_cint(v1->y);
+    y_max = fix_cint(v0->y);
 }
 p = grd_bm.bits + y * grd_bm.row;
 
 /* horizontal? */
 if (y_max - y <= 1) {
-  if (v1->x > v0->x) {
-    x_new = fix_cint(v1->x), x = fix_cint(v0->x);
-    r0 = fix_make(v0->u, 0), g0 = fix_make(v0->v, 0), b0 = fix_make(v0->w, 0);
-    r1 = fix_make(v1->u, 0), g1 = fix_make(v1->v, 0), b1 = fix_make(v1->w, 0);
-  } else {
-    x_new = fix_cint(v0->x), x = fix_cint(v1->x);
-    r0 = fix_make(v1->u, 0), g0 = fix_make(v1->v, 0), b0 = fix_make(v1->w, 0);
-    r1 = fix_make(v0->u, 0), g1 = fix_make(v0->v, 0), b1 = fix_make(v0->w, 0);
-  }
-  d = x_new - x;
-  if (d > 0) {
-    dr = (r1 - r0) / d;
-    dg = (g1 - g0) / d;
-    db = (b1 - b0) / d;
-    do_hline_inc_x;
-  }
-  return;
+    if (v1->x > v0->x) {
+        x_new = fix_cint(v1->x), x = fix_cint(v0->x);
+        r0 = fix_make(v0->u, 0), g0 = fix_make(v0->v, 0), b0 = fix_make(v0->w, 0);
+        r1 = fix_make(v1->u, 0), g1 = fix_make(v1->v, 0), b1 = fix_make(v1->w, 0);
+    } else {
+        x_new = fix_cint(v0->x), x = fix_cint(v1->x);
+        r0 = fix_make(v1->u, 0), g0 = fix_make(v1->v, 0), b0 = fix_make(v1->w, 0);
+        r1 = fix_make(v0->u, 0), g1 = fix_make(v0->v, 0), b1 = fix_make(v0->w, 0);
+    }
+    d = x_new - x;
+    if (d > 0) {
+        dr = (r1 - r0) / d;
+        dg = (g1 - g0) / d;
+        db = (b1 - b0) / d;
+        do_hline_inc_x;
+    }
+    return;
 }
 
 /* not horizontal */
 if (v1->y > v0->y) {
-  y0 = v0->y, x0 = v0->x;
-  r0 = fix_make(v0->u, 0), g0 = fix_make(v0->v, 0), b0 = fix_make(v0->w, 0);
-  y1 = v1->y, x1 = v1->x;
-  r1 = fix_make(v1->u, 0), g1 = fix_make(v1->v, 0), b1 = fix_make(v1->w, 0);
+    y0 = v0->y, x0 = v0->x;
+    r0 = fix_make(v0->u, 0), g0 = fix_make(v0->v, 0), b0 = fix_make(v0->w, 0);
+    y1 = v1->y, x1 = v1->x;
+    r1 = fix_make(v1->u, 0), g1 = fix_make(v1->v, 0), b1 = fix_make(v1->w, 0);
 } else {
-  y1 = v0->y, x1 = v0->x;
-  r1 = fix_make(v0->u, 0), g1 = fix_make(v0->v, 0), b1 = fix_make(v0->w, 0);
-  y0 = v1->y, x0 = v1->x;
-  r0 = fix_make(v1->u, 0), g0 = fix_make(v1->v, 0), b0 = fix_make(v1->w, 0);
+    y1 = v0->y, x1 = v0->x;
+    r1 = fix_make(v0->u, 0), g1 = fix_make(v0->v, 0), b1 = fix_make(v0->w, 0);
+    y0 = v1->y, x0 = v1->x;
+    r0 = fix_make(v1->u, 0), g0 = fix_make(v1->v, 0), b0 = fix_make(v1->w, 0);
 }
 dx = fix_div(x1 - x0, y1 - y0);
 if (fix_abs(dx) > FIX_UNIT) {
-  d = fix_cint(x1) - fix_cint(x0);
-  if (d < 0)
-    d = -d;
+    d = fix_cint(x1) - fix_cint(x0);
+    if (d < 0)
+        d = -d;
 } else {
-  d = y_max - y;
+    d = y_max - y;
 }
 dr = (r1 - r0) / d;
 dg = (g1 - g0) / d;
@@ -95,22 +95,22 @@ x_new = fix_cint(x_fix);
 
 /* draw line */
 if (dx >= 0) {
-  do_hline_inc_x;
-  do {
-    x = x_new;
-    x_new = fix_cint(x_fix += dx);
     do_hline_inc_x;
-    p += grd_bm.row;
-  } while ((++y) < y_max - 1);
-  x = x_new;
-  x_new = fix_cint(x1);
-  do_hline_inc_x;
+    do {
+        x = x_new;
+        x_new = fix_cint(x_fix += dx);
+        do_hline_inc_x;
+        p += grd_bm.row;
+    } while ((++y) < y_max - 1);
+    x = x_new;
+    x_new = fix_cint(x1);
+    do_hline_inc_x;
 } else {
-  do {
+    do {
+        do_hline_dec_x;
+        x_new = fix_cint(x_fix += dx);
+        p += grd_bm.row;
+    } while ((++y) < y_max - 1);
+    x_new = fix_cint(x1);
     do_hline_dec_x;
-    x_new = fix_cint(x_fix += dx);
-    p += grd_bm.row;
-  } while ((++y) < y_max - 1);
-  x_new = fix_cint(x1);
-  do_hline_dec_x;
 }

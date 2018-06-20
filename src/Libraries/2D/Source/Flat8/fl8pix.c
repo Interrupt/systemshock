@@ -49,38 +49,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* draws an unclipped pixel of the given color at (x, y) on the canvas. */
 void flat8_set_upixel(long color, short x, short y) {
-  uchar *p;
+    uchar *p;
 
-  p = grd_bm.bits + grd_bm.row * y + x;
-  *p = color;
+    p = grd_bm.bits + grd_bm.row * y + x;
+    *p = color;
 }
 
 void flat8_clut_set_upixel(long color, short x, short y) {
-  uchar *p;
+    uchar *p;
 
-  p = grd_bm.bits + grd_bm.row * y + x;
-  *p = ((uchar *)grd_gc.fill_parm)[color];
+    p = grd_bm.bits + grd_bm.row * y + x;
+    *p = ((uchar *)grd_gc.fill_parm)[color];
 }
 
 void flat8_xor_set_upixel(long color, short x, short y) {
-  uchar *p;
+    uchar *p;
 
-  p = grd_bm.bits + grd_bm.row * y + x;
-  *p = color ^ *p;
+    p = grd_bm.bits + grd_bm.row * y + x;
+    *p = color ^ *p;
 }
 
 void flat8_blend_set_upixel(long color, short x, short y) {
-  uchar *p;
+    uchar *p;
 
-  p = grd_bm.bits + grd_bm.row * y + x;
-  *p = gr_blend(color, *p, grd_gc.fill_parm);
+    p = grd_bm.bits + grd_bm.row * y + x;
+    *p = gr_blend(color, *p, grd_gc.fill_parm);
 }
 
 // MLA #pragma off (unreferenced)
 void flat8_solid_set_upixel(long color, short x, short y) {
-  uchar *p;
+    uchar *p;
 
-  p = grd_bm.bits + grd_bm.row * y + x;
-  *p = (uchar)grd_gc.fill_parm;
+    p = grd_bm.bits + grd_bm.row * y + x;
+    *p = (uchar)grd_gc.fill_parm;
 }
 // MLA #pragma on (unreferenced)

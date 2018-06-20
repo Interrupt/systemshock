@@ -42,38 +42,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 void flat8_tluc8_ubitmap(grs_bitmap *bm, short x, short y) {
-  uchar *src;
-  uchar *dst;
-  long w = bm->w;
-  long h = bm->h;
-  long i;
-  long grow = grd_bm.row;
-  long brow = bm->row;
+    uchar *src;
+    uchar *dst;
+    long w = bm->w;
+    long h = bm->h;
+    long i;
+    long grow = grd_bm.row;
+    long brow = bm->row;
 
-  src = bm->bits;
-  dst = grd_bm.bits + grow * y + x;
+    src = bm->bits;
+    dst = grd_bm.bits + grow * y + x;
 
-  if (bm->flags & BMF_TRANS)
-    while (h--) {
-      for (i = 0; i < w; i++)
-        if (src[i] != 0) {
-          if (tluc8tab[src[i]] == NULL)
-            dst[i] = src[i];
-          else
-            dst[i] = tluc8tab[src[i]][dst[i]];
+    if (bm->flags & BMF_TRANS)
+        while (h--) {
+            for (i = 0; i < w; i++)
+                if (src[i] != 0) {
+                    if (tluc8tab[src[i]] == NULL)
+                        dst[i] = src[i];
+                    else
+                        dst[i] = tluc8tab[src[i]][dst[i]];
+                }
+            src += brow;
+            dst += grow;
         }
-      src += brow;
-      dst += grow;
-    }
-  else
-    while (h--) {
-      for (i = 0; i < w; i++) {
-        if (tluc8tab[src[i]] == NULL)
-          dst[i] = src[i];
-        else
-          dst[i] = tluc8tab[src[i]][dst[i]];
-      }
-      src += brow;
-      dst += grow;
-    }
+    else
+        while (h--) {
+            for (i = 0; i < w; i++) {
+                if (tluc8tab[src[i]] == NULL)
+                    dst[i] = src[i];
+                else
+                    dst[i] = tluc8tab[src[i]][dst[i]];
+            }
+            src += brow;
+            dst += grow;
+        }
 }

@@ -67,29 +67,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #undef macro_plot_rgb
 #define macro_plot_rgb(x, p, i) \
-  do {                          \
-    p[x] = grd_ipal[i];         \
-  } while (0)
+    do {                        \
+        p[x] = grd_ipal[i];     \
+    } while (0)
 
 void gri_flat8_ucline_norm(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
 #include "fl8clin.h"
 }
 
 #undef macro_plot_rgb
-#define macro_plot_rgb(x, p, i)                    \
-  do {                                             \
-    p[x] = (long)(((uchar *)parm)[(grd_ipal[i])]); \
-  } while (0)
+#define macro_plot_rgb(x, p, i)                        \
+    do {                                               \
+        p[x] = (long)(((uchar *)parm)[(grd_ipal[i])]); \
+    } while (0)
 
 void gri_flat8_ucline_clut(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
 #include "fl8clin.h"
 }
 
 #undef macro_plot_rgb
-#define macro_plot_rgb(x, p, i)  \
-  do {                           \
-    p[x] = p[x] ^ (grd_ipal[i]); \
-  } while (0)
+#define macro_plot_rgb(x, p, i)      \
+    do {                             \
+        p[x] = p[x] ^ (grd_ipal[i]); \
+    } while (0)
 
 void gri_flat8_ucline_xor(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
 #include "fl8clin.h"
@@ -97,10 +97,10 @@ void gri_flat8_ucline_xor(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
 
 /* punt */
 #undef macro_plot_rgb
-#define macro_plot_rgb(x, p, i)                    \
-  do {                                             \
-    p[x] = (long)(((uchar *)parm)[(grd_ipal[i])]); \
-  } while (0)
+#define macro_plot_rgb(x, p, i)                        \
+    do {                                               \
+        p[x] = (long)(((uchar *)parm)[(grd_ipal[i])]); \
+    } while (0)
 
 void gri_flat8_ucline_blend(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
 #include "fl8clin.h"

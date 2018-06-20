@@ -45,47 +45,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* Assumes bm is flat, assumes canvas is big enough to
    hold it, as it is, unclipped */
 void flat8_filter2_ubitmap(grs_bitmap *bm) {
-  grs_rgb a;
-  int i, j;
-  uchar *src, *dst;
-  uchar *c;
-  int ds;
-  int dd;
+    grs_rgb a;
+    int i, j;
+    uchar *src, *dst;
+    uchar *c;
+    int ds;
+    int dd;
 
-  dst = grd_bm.bits;
-  src = bm->bits;
+    dst = grd_bm.bits;
+    src = bm->bits;
 
-  ds = 2 * bm->row - bm->w;
-  dd = grd_bm.row - grd_bm.w;
+    ds = 2 * bm->row - bm->w;
+    dd = grd_bm.row - grd_bm.w;
 
-  /* variables
-     a,src,dst,bm->row,grd_ipal,grd_bpal */
+    /* variables
+       a,src,dst,bm->row,grd_ipal,grd_bpal */
 
-  /* Cycle through rows and do horizontal strips */
-  for (j = bm->h; j > 0; j -= 2) {
-    for (i = bm->w; i > 0; i -= 2) {
-      a = (grd_bpal[*src] >> 2) & 0x3fc7f8ff;
-      src++;
-      a += (grd_bpal[*src] >> 2) & 0x3fc7f8ff;
-      src += bm->row;
-      a += (grd_bpal[*src] >> 2) & 0x3fc7f8ff;
-      src--;
-      a += (grd_bpal[*src] >> 2) & 0x3fc7f8ff;
-      src -= bm->row;
-      src += 2;
+    /* Cycle through rows and do horizontal strips */
+    for (j = bm->h; j > 0; j -= 2) {
+        for (i = bm->w; i > 0; i -= 2) {
+            a = (grd_bpal[*src] >> 2) & 0x3fc7f8ff;
+            src++;
+            a += (grd_bpal[*src] >> 2) & 0x3fc7f8ff;
+            src += bm->row;
+            a += (grd_bpal[*src] >> 2) & 0x3fc7f8ff;
+            src--;
+            a += (grd_bpal[*src] >> 2) & 0x3fc7f8ff;
+            src -= bm->row;
+            src += 2;
 
-      c = grd_ipal;
-      a = a >> 5;
-      c += a & 0x1f;
-      a = a >> 6;
-      c += a & 0x3e0;
-      a = a >> 6;
-      c += a & 0x7c00;
+            c = grd_ipal;
+            a = a >> 5;
+            c += a & 0x1f;
+            a = a >> 6;
+            c += a & 0x3e0;
+            a = a >> 6;
+            c += a & 0x7c00;
 
-      *dst = *c;
-      dst++;
+            *dst = *c;
+            dst++;
+        }
+        src += ds;
+        dst += dd;
     }
-    src += ds;
-    dst += dd;
-  }
 }

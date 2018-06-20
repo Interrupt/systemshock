@@ -41,32 +41,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 void gri_flat8_fill_clut_ubitmap(grs_bitmap *bm, short x, short y) {
-  gri_flat8_clut_ubitmap(bm, x, y, (uchar *)(grd_gc.fill_parm));
+    gri_flat8_clut_ubitmap(bm, x, y, (uchar *)(grd_gc.fill_parm));
 }
 
 void gri_flat8_clut_ubitmap(grs_bitmap *bm, short x, short y, uchar *cl) {
-  uchar *src, *dst, *srcf;
-  short w = bm->w;
-  short h = bm->h;
-  int ds = bm->row - w;
-  int dd = grd_bm.row - w;
+    uchar *src, *dst, *srcf;
+    short w = bm->w;
+    short h = bm->h;
+    int ds = bm->row - w;
+    int dd = grd_bm.row - w;
 
-  src = bm->bits;
-  dst = grd_bm.bits + grd_bm.row * y + x;
+    src = bm->bits;
+    dst = grd_bm.bits + grd_bm.row * y + x;
 
-  if (bm->flags & BMF_TRANS)
-    while (h--) {
-      for (srcf = src + w; src < srcf; src++, dst++)
-        if ((*src) != 0)
-          *dst = cl[*src];
-      src += ds;
-      dst += dd;
-    }
-  else
-    while (h--) {
-      for (srcf = src + w; src < srcf; src++, dst++)
-        *dst = cl[*src];
-      src += ds;
-      dst += dd;
-    }
+    if (bm->flags & BMF_TRANS)
+        while (h--) {
+            for (srcf = src + w; src < srcf; src++, dst++)
+                if ((*src) != 0)
+                    *dst = cl[*src];
+            src += ds;
+            dst += dd;
+        }
+    else
+        while (h--) {
+            for (srcf = src + w; src < srcf; src++, dst++)
+                *dst = cl[*src];
+            src += ds;
+            dst += dd;
+        }
 }

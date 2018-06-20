@@ -67,59 +67,59 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* clut should be in _ns everywhere, it doesn't need its own function */
 
 void gri_flat8_uhline_ns(short x0, short y0, short x1, long c, long parm) {
-  uchar *p;
-  short t;
+    uchar *p;
+    short t;
 
-  if (x0 > x1) {
-    t = x0;
-    x0 = x1;
-    x1 = t;
-  }
-  if (gr_get_fill_type() == FILL_SOLID)
-    c = (uchar)parm;
-  p = grd_bm.bits + y0 * grd_bm.row + x0;
-  memset(p, c, x1 - x0 + 1);
+    if (x0 > x1) {
+        t = x0;
+        x0 = x1;
+        x1 = t;
+    }
+    if (gr_get_fill_type() == FILL_SOLID)
+        c = (uchar)parm;
+    p = grd_bm.bits + y0 * grd_bm.row + x0;
+    memset(p, c, x1 - x0 + 1);
 }
 
 void gri_flat8_uhline_clut(short x0, short y0, short x1, long c, long parm) {
-  uchar *p;
-  short t;
+    uchar *p;
+    short t;
 
-  if (x0 > x1) {
-    t = x0;
-    x0 = x1;
-    x1 = t;
-  }
+    if (x0 > x1) {
+        t = x0;
+        x0 = x1;
+        x1 = t;
+    }
 
-  c = (long)(((uchar *)parm)[c]);
-  p = grd_bm.bits + y0 * grd_bm.row + x0;
-  memset(p, c, x1 - x0 + 1);
+    c = (long)(((uchar *)parm)[c]);
+    p = grd_bm.bits + y0 * grd_bm.row + x0;
+    memset(p, c, x1 - x0 + 1);
 }
 
 void gri_flat8_uhline_xor(short x0, short y0, short x1, long c, long parm) {
-  uchar *p;
-  short t;
+    uchar *p;
+    short t;
 
-  if (x0 > x1) {
-    t = x0;
-    x0 = x1;
-    x1 = t;
-  }
+    if (x0 > x1) {
+        t = x0;
+        x0 = x1;
+        x1 = t;
+    }
 
-  for (p = grd_bm.bits + y0 * grd_bm.row + x0; x0 <= x1; p++, x0++)
-    *p = *p ^ c;
+    for (p = grd_bm.bits + y0 * grd_bm.row + x0; x0 <= x1; p++, x0++)
+        *p = *p ^ c;
 }
 
 /* punt */
 void gri_flat8_uhline_blend(short x0, short y0, short x1, long c, long parm) {
-  uchar *p;
-  short t;
+    uchar *p;
+    short t;
 
-  if (x0 > x1) {
-    t = x0;
-    x0 = x1;
-    x1 = t;
-  }
-  p = grd_bm.bits + y0 * grd_bm.row + x0;
-  memset(p, c, x1 - x0 + 1);
+    if (x0 > x1) {
+        t = x0;
+        x0 = x1;
+        x1 = t;
+    }
+    p = grd_bm.bits + y0 * grd_bm.row + x0;
+    memset(p, c, x1 - x0 + 1);
 }

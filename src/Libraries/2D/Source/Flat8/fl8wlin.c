@@ -36,82 +36,82 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define gr_get_ipal_index(r, g, b) (long)((((r) >> 19) & 0x1f) | (((g) >> 14) & 0x3e0) | (((b) >> 9) & 0x7c00))
 #define do_hline_inc_x \
-  do {                 \
-    p[x] = c;          \
-    x++;               \
-  } while (x < x_new)
-#define do_hline_dec_x \
-  if (x == x_new) {    \
-    p[x] = c;          \
-  } else               \
     do {               \
-      x--;             \
-      p[x] = c;        \
-    } while (x > x_new)
+        p[x] = c;      \
+        x++;           \
+    } while (x < x_new)
+#define do_hline_dec_x \
+    if (x == x_new) {  \
+        p[x] = c;      \
+    } else             \
+        do {           \
+            x--;       \
+            p[x] = c;  \
+        } while (x > x_new)
 
 void gri_flat8_wire_poly_uline(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
-  int y, y_max, x, x_new;
-  fix x0, y0;
-  fix x1, y1;
-  fix x_fix, dx;
-  uchar *p;
+    int y, y_max, x, x_new;
+    fix x0, y0;
+    fix x1, y1;
+    fix x_fix, dx;
+    uchar *p;
 
-  if (gr_get_fill_type() == FILL_SOLID)
-    c = (uchar)parm;
-  else if (gr_get_fill_type() == FILL_CLUT)
-    c = ((uchar *)parm)[c];
-  if (v1->y > v0->y) {
-    y = fix_cint(v0->y);
-    y_max = fix_cint(v1->y);
-  } else {
-    y = fix_cint(v1->y);
-    y_max = fix_cint(v0->y);
-  }
-  p = grd_bm.bits + y * grd_bm.row;
-
-  /* horizontal? */
-  if (y_max - y <= 1) {
-    if (v1->x > v0->x) {
-      x_new = fix_cint(v1->x), x = fix_cint(v0->x);
+    if (gr_get_fill_type() == FILL_SOLID)
+        c = (uchar)parm;
+    else if (gr_get_fill_type() == FILL_CLUT)
+        c = ((uchar *)parm)[c];
+    if (v1->y > v0->y) {
+        y = fix_cint(v0->y);
+        y_max = fix_cint(v1->y);
     } else {
-      x_new = fix_cint(v0->x), x = fix_cint(v1->x);
+        y = fix_cint(v1->y);
+        y_max = fix_cint(v0->y);
     }
-    do_hline_inc_x;
-    return;
-  }
+    p = grd_bm.bits + y * grd_bm.row;
 
-  /* not horizontal */
-  if (v1->y > v0->y) {
-    y0 = v0->y, x0 = v0->x;
-    y1 = v1->y, x1 = v1->x;
-  } else {
-    y1 = v0->y, x1 = v0->x;
-    y0 = v1->y, x0 = v1->x;
-  }
-  dx = fix_div(x1 - x0, y1 - y0);
-  x = fix_cint(x0);
-  x_fix = x0 + fix_mul(fix_ceil(y0) - y0, dx);
-  x_new = fix_cint(x_fix);
+    /* horizontal? */
+    if (y_max - y <= 1) {
+        if (v1->x > v0->x) {
+            x_new = fix_cint(v1->x), x = fix_cint(v0->x);
+        } else {
+            x_new = fix_cint(v0->x), x = fix_cint(v1->x);
+        }
+        do_hline_inc_x;
+        return;
+    }
 
-  /* draw line */
-  if (dx >= 0) {
-    do_hline_inc_x;
-    do {
-      x = x_new;
-      x_new = fix_cint(x_fix += dx);
-      do_hline_inc_x;
-      p += grd_bm.row;
-    } while ((++y) < y_max - 1);
-    x = x_new;
-    x_new = fix_cint(x1);
-    do_hline_inc_x;
-  } else {
-    do {
-      do_hline_dec_x;
-      x_new = fix_cint(x_fix += dx);
-      p += grd_bm.row;
-    } while ((++y) < y_max - 1);
-    x_new = fix_cint(x1);
-    do_hline_dec_x;
-  }
+    /* not horizontal */
+    if (v1->y > v0->y) {
+        y0 = v0->y, x0 = v0->x;
+        y1 = v1->y, x1 = v1->x;
+    } else {
+        y1 = v0->y, x1 = v0->x;
+        y0 = v1->y, x0 = v1->x;
+    }
+    dx = fix_div(x1 - x0, y1 - y0);
+    x = fix_cint(x0);
+    x_fix = x0 + fix_mul(fix_ceil(y0) - y0, dx);
+    x_new = fix_cint(x_fix);
+
+    /* draw line */
+    if (dx >= 0) {
+        do_hline_inc_x;
+        do {
+            x = x_new;
+            x_new = fix_cint(x_fix += dx);
+            do_hline_inc_x;
+            p += grd_bm.row;
+        } while ((++y) < y_max - 1);
+        x = x_new;
+        x_new = fix_cint(x1);
+        do_hline_inc_x;
+    } else {
+        do {
+            do_hline_dec_x;
+            x_new = fix_cint(x_fix += dx);
+            p += grd_bm.row;
+        } while ((++y) < y_max - 1);
+        x_new = fix_cint(x1);
+        do_hline_dec_x;
+    }
 }

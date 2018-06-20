@@ -87,15 +87,15 @@ b1 = (uchar)(v1->w);
    case is excluded */
 
 if (x0 < x1) {
-  x1 -= 1; /* e.g. - epsilon */
+    x1 -= 1; /* e.g. - epsilon */
 } else if (x0 > x1) {
-  x0 -= 1;
+    x0 -= 1;
 }
 
 if (y0 < y1) {
-  y1 -= 1;
+    y1 -= 1;
 } else if (y0 > y1) {
-  y0 -= 1;
+    y0 -= 1;
 }
 
 dx = fix_trunc(x1) - fix_trunc(x0); /* x extent in pixels, (macro is flakey) */
@@ -104,7 +104,7 @@ dy = fix_trunc(y1) - fix_trunc(y0); /* y extent in pixels */
 dy = fix_abs(dy);
 
 if (dx == 0 && dy == 0)
-  return;
+    return;
 
 /* three cases: absolute value dx < = > dy
 
@@ -137,186 +137,186 @@ if (dx == 0 && dy == 0)
 
 if (dx > dy) {
 
-  x0 = fix_int(x0);
-  x1 = fix_int(x1);
+    x0 = fix_int(x0);
+    x1 = fix_int(x1);
 
-  if (x0 < x1) {
-    r = fix_make(r0, 0);
-    g = fix_make(g0, 0);
-    b = fix_make(b0, 0);
-    dr = fix_div(fix_make_nof(r1 - r0), dx);
-    dg = fix_div(fix_make_nof(g1 - g0), dx);
-    db = fix_div(fix_make_nof(b1 - b0), dx);
+    if (x0 < x1) {
+        r = fix_make(r0, 0);
+        g = fix_make(g0, 0);
+        b = fix_make(b0, 0);
+        dr = fix_div(fix_make_nof(r1 - r0), dx);
+        dg = fix_div(fix_make_nof(g1 - g0), dx);
+        db = fix_div(fix_make_nof(b1 - b0), dx);
 
-    p = grd_bm.bits + grd_bm.row * (fix_int(y0)); /* set canvas ptr */
+        p = grd_bm.bits + grd_bm.row * (fix_int(y0)); /* set canvas ptr */
 
-  } else {
-    t = x0;
-    x0 = x1;
-    x1 = t;
-    t = y0;
-    y0 = y1;
-    y1 = t;
+    } else {
+        t = x0;
+        x0 = x1;
+        x1 = t;
+        t = y0;
+        y0 = y1;
+        y1 = t;
 
-    r = fix_make(r1, 0);
-    g = fix_make(g1, 0);
-    b = fix_make(b1, 0);
-    dr = fix_div(fix_make_nof(r0 - r1), dx);
-    dg = fix_div(fix_make_nof(g0 - g1), dx);
-    db = fix_div(fix_make_nof(b0 - b1), dx);
+        r = fix_make(r1, 0);
+        g = fix_make(g1, 0);
+        b = fix_make(b1, 0);
+        dr = fix_div(fix_make_nof(r0 - r1), dx);
+        dg = fix_div(fix_make_nof(g0 - g1), dx);
+        db = fix_div(fix_make_nof(b0 - b1), dx);
 
-    p = grd_bm.bits + grd_bm.row * (fix_int(y0));
-  }
-
-  if ((fix_int(y0)) == (fix_int(y1))) {
-    while (x0 <= x1) {
-      i = macro_get_ipal(r, g, b);
-      macro_plot_rgb(x0, p, i);
-      x0++;
-      r += dr;
-      g += dg;
-      b += db;
+        p = grd_bm.bits + grd_bm.row * (fix_int(y0));
     }
-  } else if (y0 < y1) {
-    dy = fix_div((y1 - y0), dx);
-    while (x0 <= x1) {
-      i = macro_get_ipal(r, g, b);
-      macro_plot_rgb(x0, p, i);
-      x0++;
-      y0 += dy;
-      p += (grd_bm.row & (-(fix_frac(y0) < dy)));
-      r += dr;
-      g += dg;
-      b += db;
+
+    if ((fix_int(y0)) == (fix_int(y1))) {
+        while (x0 <= x1) {
+            i = macro_get_ipal(r, g, b);
+            macro_plot_rgb(x0, p, i);
+            x0++;
+            r += dr;
+            g += dg;
+            b += db;
+        }
+    } else if (y0 < y1) {
+        dy = fix_div((y1 - y0), dx);
+        while (x0 <= x1) {
+            i = macro_get_ipal(r, g, b);
+            macro_plot_rgb(x0, p, i);
+            x0++;
+            y0 += dy;
+            p += (grd_bm.row & (-(fix_frac(y0) < dy)));
+            r += dr;
+            g += dg;
+            b += db;
+        }
+    } else {
+        dy = fix_div((y0 - y1), dx);
+        while (x0 <= x1) {
+            i = macro_get_ipal(r, g, b);
+            macro_plot_rgb(x0, p, i);
+            x0++;
+            p -= (grd_bm.row & (-(fix_frac(y0) < dy)));
+            y0 -= dy;
+            r += dr;
+            g += dg;
+            b += db;
+        }
     }
-  } else {
-    dy = fix_div((y0 - y1), dx);
-    while (x0 <= x1) {
-      i = macro_get_ipal(r, g, b);
-      macro_plot_rgb(x0, p, i);
-      x0++;
-      p -= (grd_bm.row & (-(fix_frac(y0) < dy)));
-      y0 -= dy;
-      r += dr;
-      g += dg;
-      b += db;
-    }
-  }
 }
 
 else if (dy > dx) {
 
-  y0 = fix_int(y0);
-  y1 = fix_int(y1);
+    y0 = fix_int(y0);
+    y1 = fix_int(y1);
 
-  if (y0 < y1) {
-    r = fix_make(r0, 0);
-    g = fix_make(g0, 0);
-    b = fix_make(b0, 0);
-    dr = fix_div(fix_make_nof(r1 - r0), dy);
-    dg = fix_div(fix_make_nof(g1 - g0), dy);
-    db = fix_div(fix_make_nof(b1 - b0), dy);
+    if (y0 < y1) {
+        r = fix_make(r0, 0);
+        g = fix_make(g0, 0);
+        b = fix_make(b0, 0);
+        dr = fix_div(fix_make_nof(r1 - r0), dy);
+        dg = fix_div(fix_make_nof(g1 - g0), dy);
+        db = fix_div(fix_make_nof(b1 - b0), dy);
 
-    p = grd_bm.bits + grd_bm.row * y0;
+        p = grd_bm.bits + grd_bm.row * y0;
 
-  } else {
-    t = x0;
-    x0 = x1;
-    x1 = t;
-    t = y0;
-    y0 = y1;
-    y1 = t;
+    } else {
+        t = x0;
+        x0 = x1;
+        x1 = t;
+        t = y0;
+        y0 = y1;
+        y1 = t;
 
-    r = fix_make(r1, 0);
-    g = fix_make(g1, 0);
-    b = fix_make(b1, 0);
-    dr = fix_div(fix_make_nof(r0 - r1), dy);
-    dg = fix_div(fix_make_nof(g0 - g1), dy);
-    db = fix_div(fix_make_nof(b0 - b1), dy);
+        r = fix_make(r1, 0);
+        g = fix_make(g1, 0);
+        b = fix_make(b1, 0);
+        dr = fix_div(fix_make_nof(r0 - r1), dy);
+        dg = fix_div(fix_make_nof(g0 - g1), dy);
+        db = fix_div(fix_make_nof(b0 - b1), dy);
 
-    p = grd_bm.bits + grd_bm.row * y0;
-  }
-
-  if ((fix_int(x0)) == (fix_int(x1))) {
-    x0 = fix_int(x0);
-    while (y0 <= y1) {
-      i = macro_get_ipal(r, g, b);
-      macro_plot_rgb(x0, p, i);
-      y0++;
-      p += grd_bm.row;
-      r += dr;
-      g += dg;
-      b += db;
+        p = grd_bm.bits + grd_bm.row * y0;
     }
-  } else {
-    dx = fix_div((x1 - x0), dy);
-    while (y0 <= y1) {
-      i = macro_get_ipal(r, g, b);
-      macro_plot_rgb(fix_fint(x0), p, i);
-      x0 += dx;
-      y0++;
-      p += grd_bm.row;
-      r += dr;
-      g += dg;
-      b += db;
+
+    if ((fix_int(x0)) == (fix_int(x1))) {
+        x0 = fix_int(x0);
+        while (y0 <= y1) {
+            i = macro_get_ipal(r, g, b);
+            macro_plot_rgb(x0, p, i);
+            y0++;
+            p += grd_bm.row;
+            r += dr;
+            g += dg;
+            b += db;
+        }
+    } else {
+        dx = fix_div((x1 - x0), dy);
+        while (y0 <= y1) {
+            i = macro_get_ipal(r, g, b);
+            macro_plot_rgb(fix_fint(x0), p, i);
+            x0 += dx;
+            y0++;
+            p += grd_bm.row;
+            r += dr;
+            g += dg;
+            b += db;
+        }
     }
-  }
 } else { /* dy == dx, walk the x axis, all integers */
 
-  x0 = fix_int(x0);
-  x1 = fix_int(x1);
-  y0 = fix_int(y0);
-  y1 = fix_int(y1);
+    x0 = fix_int(x0);
+    x1 = fix_int(x1);
+    y0 = fix_int(y0);
+    y1 = fix_int(y1);
 
-  if (x0 < x1) {
-    r = fix_make(r0, 0);
-    g = fix_make(g0, 0);
-    b = fix_make(b0, 0);
-    dr = fix_div(fix_make_nof(r1 - r0), dx);
-    dg = fix_div(fix_make_nof(g1 - g0), dx);
-    db = fix_div(fix_make_nof(b1 - b0), dx);
+    if (x0 < x1) {
+        r = fix_make(r0, 0);
+        g = fix_make(g0, 0);
+        b = fix_make(b0, 0);
+        dr = fix_div(fix_make_nof(r1 - r0), dx);
+        dg = fix_div(fix_make_nof(g1 - g0), dx);
+        db = fix_div(fix_make_nof(b1 - b0), dx);
 
-    p = grd_bm.bits + grd_bm.row * y0; /* set canvas ptr */
+        p = grd_bm.bits + grd_bm.row * y0; /* set canvas ptr */
 
-  } else {
-    t = x0;
-    x0 = x1;
-    x1 = t;
-    t = y0;
-    y0 = y1;
-    y1 = t;
+    } else {
+        t = x0;
+        x0 = x1;
+        x1 = t;
+        t = y0;
+        y0 = y1;
+        y1 = t;
 
-    r = fix_make(r1, 0);
-    g = fix_make(g1, 0);
-    b = fix_make(b1, 0);
-    dr = fix_div(fix_make_nof(r0 - r1), dx);
-    dg = fix_div(fix_make_nof(g0 - g1), dx);
-    db = fix_div(fix_make_nof(b0 - b1), dx);
+        r = fix_make(r1, 0);
+        g = fix_make(g1, 0);
+        b = fix_make(b1, 0);
+        dr = fix_div(fix_make_nof(r0 - r1), dx);
+        dg = fix_div(fix_make_nof(g0 - g1), dx);
+        db = fix_div(fix_make_nof(b0 - b1), dx);
 
-    p = grd_bm.bits + grd_bm.row * y0;
-  }
-
-  if (y0 < y1) {
-    while (y0 <= y1) {
-      i = macro_get_ipal(r, g, b);
-      macro_plot_rgb(x0, p, i);
-      x0++;
-      y0++;
-      p += grd_bm.row;
-      r += dr;
-      g += dg;
-      b += db;
+        p = grd_bm.bits + grd_bm.row * y0;
     }
-  } else {
-    while (y0 >= y1) {
-      i = macro_get_ipal(r, g, b);
-      macro_plot_rgb(x0, p, i);
-      x0++;
-      y0--;
-      p -= grd_bm.row;
-      r += dr;
-      g += dg;
-      b += db;
+
+    if (y0 < y1) {
+        while (y0 <= y1) {
+            i = macro_get_ipal(r, g, b);
+            macro_plot_rgb(x0, p, i);
+            x0++;
+            y0++;
+            p += grd_bm.row;
+            r += dr;
+            g += dg;
+            b += db;
+        }
+    } else {
+        while (y0 >= y1) {
+            i = macro_get_ipal(r, g, b);
+            macro_plot_rgb(x0, p, i);
+            x0++;
+            y0--;
+            p -= grd_bm.row;
+            r += dr;
+            g += dg;
+            b += db;
+        }
     }
-  }
 }

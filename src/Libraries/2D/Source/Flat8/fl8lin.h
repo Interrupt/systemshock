@@ -41,15 +41,15 @@ y1 = v1->y;
    case is excluded */
 
 if (x0 < x1) {
-  x1 -= 1; /* e.g. - epsilon */
+    x1 -= 1; /* e.g. - epsilon */
 } else if (x0 > x1) {
-  x0 -= 1;
+    x0 -= 1;
 }
 
 if (y0 < y1) {
-  y1 -= 1;
+    y1 -= 1;
 } else if (y0 > y1) {
-  y0 -= 1;
+    y0 -= 1;
 }
 
 dx = fix_trunc(x1) - fix_trunc(x0); /* x extent in pixels, (macro is flakey) */
@@ -58,7 +58,7 @@ dy = fix_trunc(y1) - fix_trunc(y0); /* y extent in pixels */
 dy = fix_abs(dy);
 
 if (dx == 0 && dy == 0)
-  return;
+    return;
 
 flat8_pixel_fill_init;
 
@@ -93,102 +93,102 @@ flat8_pixel_fill_init;
 
 if (dx > dy) {
 
-  x0 = fix_int(x0);
-  x1 = fix_int(x1);
+    x0 = fix_int(x0);
+    x1 = fix_int(x1);
 
-  if (x0 > x1) {
-    t = x0;
-    x0 = x1;
-    x1 = t;
-    t = y0;
-    y0 = y1;
-    y1 = t;
-  }
-  p = grd_bm.bits + grd_bm.row * (fix_int(y0));
+    if (x0 > x1) {
+        t = x0;
+        x0 = x1;
+        x1 = t;
+        t = y0;
+        y0 = y1;
+        y1 = t;
+    }
+    p = grd_bm.bits + grd_bm.row * (fix_int(y0));
 
-  if ((fix_int(y0)) == (fix_int(y1))) {
-    flat8_pixel_fill_row;
-  } else if (y0 < y1) {
-    dy = fix_div((y1 - y0), dx);
-    while (x0 <= x1) {
-      flat8_pixel_fill_xi;
-      x0++;
-      y0 += dy;
-      p += (grd_bm.row & (-(fix_frac(y0) < dy)));
+    if ((fix_int(y0)) == (fix_int(y1))) {
+        flat8_pixel_fill_row;
+    } else if (y0 < y1) {
+        dy = fix_div((y1 - y0), dx);
+        while (x0 <= x1) {
+            flat8_pixel_fill_xi;
+            x0++;
+            y0 += dy;
+            p += (grd_bm.row & (-(fix_frac(y0) < dy)));
+        }
+    } else {
+        dy = fix_div((y0 - y1), dx);
+        while (x0 <= x1) {
+            flat8_pixel_fill_xi;
+            x0++;
+            p -= (grd_bm.row & (-(fix_frac(y0) < dy)));
+            y0 -= dy;
+        }
     }
-  } else {
-    dy = fix_div((y0 - y1), dx);
-    while (x0 <= x1) {
-      flat8_pixel_fill_xi;
-      x0++;
-      p -= (grd_bm.row & (-(fix_frac(y0) < dy)));
-      y0 -= dy;
-    }
-  }
 }
 
 else if (dy > dx) {
 
-  y0 = fix_int(y0);
-  y1 = fix_int(y1);
+    y0 = fix_int(y0);
+    y1 = fix_int(y1);
 
-  if (y0 > y1) {
-    t = x0;
-    x0 = x1;
-    x1 = t;
-    t = y0;
-    y0 = y1;
-    y1 = t;
-  }
-
-  p = grd_bm.bits + grd_bm.row * y0;
-
-  if ((fix_int(x0)) == (fix_int(x1))) {
-    x0 = fix_int(x0);
-    while (y0 <= y1) {
-      flat8_pixel_fill_xi;
-      y0++;
-      p += grd_bm.row;
+    if (y0 > y1) {
+        t = x0;
+        x0 = x1;
+        x1 = t;
+        t = y0;
+        y0 = y1;
+        y1 = t;
     }
-  } else {
-    dx = fix_div((x1 - x0), dy);
-    while (y0 <= y1) {
-      flat8_pixel_fill_xf;
-      x0 += dx;
-      y0++;
-      p += grd_bm.row;
+
+    p = grd_bm.bits + grd_bm.row * y0;
+
+    if ((fix_int(x0)) == (fix_int(x1))) {
+        x0 = fix_int(x0);
+        while (y0 <= y1) {
+            flat8_pixel_fill_xi;
+            y0++;
+            p += grd_bm.row;
+        }
+    } else {
+        dx = fix_div((x1 - x0), dy);
+        while (y0 <= y1) {
+            flat8_pixel_fill_xf;
+            x0 += dx;
+            y0++;
+            p += grd_bm.row;
+        }
     }
-  }
 } else { /* dy == dx, walk the x axis, all integers */
 
-  x0 = fix_int(x0);
-  x1 = fix_int(x1);
-  y0 = fix_int(y0);
-  y1 = fix_int(y1);
+    x0 = fix_int(x0);
+    x1 = fix_int(x1);
+    y0 = fix_int(y0);
+    y1 = fix_int(y1);
 
-  if (x0 > x1) {
-    t = x0;
-    x0 = x1;
-    x1 = t;
-    t = y0;
-    y0 = y1;
-    y1 = t;
-  }
-  p = grd_bm.bits + grd_bm.row * y0;
+    if (x0 > x1) {
+        t = x0;
+        x0 = x1;
+        x1 = t;
+        t = y0;
+        y0 = y1;
+        y1 = t;
+    }
+    p = grd_bm.bits + grd_bm.row * y0;
 
-  if (y0 < y1) {
-    while (y0 <= y1) {
-      flat8_pixel_fill_xi;
-      x0++;
-      y0++;
-      p += grd_bm.row;
+    if (y0 < y1) {
+        while (y0 <= y1) {
+            flat8_pixel_fill_xi;
+            x0++;
+            y0++;
+            p += grd_bm.row;
+        }
+    } else {
+        while (y0 >= y1) {
+            flat8_pixel_fill_xi;
+            x0++;
+            y0--;
+            p -= grd_bm.row;
+        }
     }
-  } else {
-    while (y0 >= y1) {
-      flat8_pixel_fill_xi;
-      x0++;
-      y0--;
-      p -= grd_bm.row;
-    }
-  }
 }

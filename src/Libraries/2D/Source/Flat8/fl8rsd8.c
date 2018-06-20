@@ -68,195 +68,195 @@ void gr_rsd8_blit(uchar *rsd_src, uchar *dst, int grd_bm_row, int bm_w);
 void gr_rsd8_blit(uchar *rsd_src, uchar *dst, int grd_bm_row, int bm_w) { DebugString("ask mark"); }
 
 void gri_flat8_rsd8_ubitmap(grs_bitmap *bm, short x, short y) {
-  /*   uchar *p_dst;
-     uchar *rsd_src;                     // rsd source buffer
+    /*   uchar *p_dst;
+       uchar *rsd_src;                     // rsd source buffer
 
-     rsd_src = bm->bits;
-     p_dst = grd_bm.bits + grd_bm.row*y + x;
-     gr_rsd8_blit(rsd_src,p_dst,grd_bm.row,bm->w);*/
-  unpack_rsd8_ubitmap(bm, x, y);
+       rsd_src = bm->bits;
+       p_dst = grd_bm.bits + grd_bm.row*y + x;
+       gr_rsd8_blit(rsd_src,p_dst,grd_bm.row,bm->w);*/
+    unpack_rsd8_ubitmap(bm, x, y);
 }
 
 int gri_flat8_rsd8_bitmap(grs_bitmap *bm, short x_left, short y_top) {
-  short x, y;           /* current destination position */
-  short x_right, y_bot; /* opposite edges of bitmap */
-  short x_off, y_off;   /* x,y offset for clip */
-  ulong start_byte;     /* byte to start drawing */
-  ulong cur_byte;       /* current position within rsd */
-  uchar *p_dst;
-  uchar *rsd_src;  /* rsd source buffer */
-  short rsd_code;  /* last rsd opcode */
-  short rsd_count; /* count for last opcode */
-  short op_count;  /* operational count */
-  int code;        /* clip code to return */
+    short x, y;           /* current destination position */
+    short x_right, y_bot; /* opposite edges of bitmap */
+    short x_off, y_off;   /* x,y offset for clip */
+    ulong start_byte;     /* byte to start drawing */
+    ulong cur_byte;       /* current position within rsd */
+    uchar *p_dst;
+    uchar *rsd_src;  /* rsd source buffer */
+    short rsd_code;  /* last rsd opcode */
+    short rsd_count; /* count for last opcode */
+    short op_count;  /* operational count */
+    int code;        /* clip code to return */
 
-  rsd_src = bm->bits;
-  x = x_left;
-  y = y_top;
-  x_off = y_off = cur_byte = rsd_count = 0;
-  x_right = x_left + bm->w;
-  y_bot = y_top + bm->h;
+    rsd_src = bm->bits;
+    x = x_left;
+    y = y_top;
+    x_off = y_off = cur_byte = rsd_count = 0;
+    x_right = x_left + bm->w;
+    y_bot = y_top + bm->h;
 
-  /* clip bitmap to rectangular clipping window. */
-  if (x_left > grd_clip.right || x_right <= grd_clip.left || y_top > grd_clip.bot || y_bot <= grd_clip.top)
-    /* completely clipped, forget it. */
-    return CLIP_ALL;
+    /* clip bitmap to rectangular clipping window. */
+    if (x_left > grd_clip.right || x_right <= grd_clip.left || y_top > grd_clip.bot || y_bot <= grd_clip.top)
+        /* completely clipped, forget it. */
+        return CLIP_ALL;
 
-  code = CLIP_NONE;
-  if (x_left < grd_clip.left) {
-    /* clipped off left edge. */
-    x_off = grd_clip.left - x_left;
-    x = grd_clip.left;
-    code |= CLIP_LEFT;
-  }
-  if (y < grd_clip.top) {
-    /* clipped off top edge. */
-    y_off = grd_clip.top - y_top;
-    y = grd_clip.top;
-    code |= CLIP_TOP;
-  }
-  if (x_right >= grd_clip.right) {
-    /* clipped off right edge. */
-    x_right = grd_clip.right;
-    code |= CLIP_RIGHT;
-  }
-  if (y_bot > grd_clip.bot) {
-    /* clipped off bottom edge. */
-    y_bot = grd_clip.bot;
-    code |= CLIP_BOT;
-  }
-
-  if (code == CLIP_NONE) {
-    gr_ubitmap(bm, x_left, y_top);
-    return CLIP_NONE;
-  }
-
-  if (y_off > 0 || x_off > 0) {
-    /* been clipped of left and/or top, so we need to skip from beginning
-       of rsd buffer to be at x_off,y_off within rsd bitmap. */
-    start_byte = y_off * bm->row + x_off;
-    while (cur_byte < start_byte) {
-      if (rsd_count == 0)
-        /* no pending opcodes, get a new one. */
-        RSD_GET_TOKEN();
-      if (cur_byte + rsd_count <= start_byte) {
-        /* current code doesn't hit start_byte yet, so skip all of it. */
-        switch (rsd_code) {
-        case RSD_RUN:
-          /* advance past 1 byte of run color. */
-          rsd_src++;
-          break;
-        case RSD_SKIP:
-          break;
-        default: /* RSD_DUMP */
-          /* advance past rsd_count bytes of dump pixel data. */
-          rsd_src += rsd_count;
-          break;
-        }
-        cur_byte += rsd_count;
-        rsd_count = 0;
-      } else {
-        /* current code goes past start_byte, so skip only enough to get
-           to start_byte. */
-        op_count = start_byte - cur_byte;
-        switch (rsd_code) {
-        case RSD_RUN:
-          break;
-        case RSD_SKIP:
-          break;
-        default: /* RSD_DUMP */
-          rsd_src += op_count;
-          break;
-        }
-        cur_byte += op_count;
-        rsd_count -= op_count;
-      }
+    code = CLIP_NONE;
+    if (x_left < grd_clip.left) {
+        /* clipped off left edge. */
+        x_off = grd_clip.left - x_left;
+        x = grd_clip.left;
+        code |= CLIP_LEFT;
     }
-  }
-
-  p_dst = grd_bm.bits + y * grd_bm.row + x;
-
-  /* process each scanline in two chunks. the first is the clipped section
-     from the right edge, wrapping around to to the left. the second is the
-     unclipped area in the middle. */
-  while (y < y_bot) {
-    /* clipped section. */
-    while (x < x_left + x_off) {
-      if (rsd_count == 0)
-        RSD_GET_TOKEN();
-      if (x + rsd_count <= x_left + x_off) {
-        switch (rsd_code) {
-        case RSD_RUN:
-          rsd_src++;
-          break;
-        case RSD_SKIP:
-          break;
-        default: /* RSD_DUMP */
-          rsd_src += rsd_count;
-          break;
-        }
-        x += rsd_count;
-        rsd_count = 0;
-      } else {
-        op_count = x_left + x_off - x;
-        switch (rsd_code) {
-        case RSD_RUN:
-          break;
-        case RSD_SKIP:
-          break;
-        default: /* RSD_DUMP */
-          rsd_src += op_count;
-          break;
-        }
-        rsd_count -= op_count;
-        x += op_count;
-      }
+    if (y < grd_clip.top) {
+        /* clipped off top edge. */
+        y_off = grd_clip.top - y_top;
+        y = grd_clip.top;
+        code |= CLIP_TOP;
+    }
+    if (x_right >= grd_clip.right) {
+        /* clipped off right edge. */
+        x_right = grd_clip.right;
+        code |= CLIP_RIGHT;
+    }
+    if (y_bot > grd_clip.bot) {
+        /* clipped off bottom edge. */
+        y_bot = grd_clip.bot;
+        code |= CLIP_BOT;
     }
 
-    /* section to draw. */
-    while (x < x_right) {
-      if (rsd_count == 0)
-        RSD_GET_TOKEN();
-      if (x + rsd_count <= x_right) {
-        switch (rsd_code) {
-        case RSD_RUN:
-          LG_memset(p_dst, *rsd_src, rsd_count);
-          rsd_src++;
-          break;
-        case RSD_SKIP:
-          break;
-        default: /* RSD_DUMP */
-          LG_memcpy(p_dst, rsd_src, rsd_count);
-          rsd_src += rsd_count;
-          break;
-        }
-        x += rsd_count;
-        p_dst += rsd_count;
-        rsd_count = 0;
-      } else {
-        op_count = x_right - x;
-        switch (rsd_code) {
-        case RSD_RUN:
-          LG_memset(p_dst, *rsd_src, op_count);
-          break;
-        case RSD_SKIP:
-          break;
-        default: /* RSD_DUMP */
-          LG_memcpy(p_dst, rsd_src, op_count);
-          rsd_src += op_count;
-          break;
-        }
-        x += op_count;
-        p_dst += op_count;
-        rsd_count -= op_count;
-      }
+    if (code == CLIP_NONE) {
+        gr_ubitmap(bm, x_left, y_top);
+        return CLIP_NONE;
     }
 
-    /* reset x to be beginning of line and set y to next scanline. */
-    x -= bm->w;
-    p_dst += grd_bm.row - (x_right - x_left) + x_off;
-    y++;
-  }
+    if (y_off > 0 || x_off > 0) {
+        /* been clipped of left and/or top, so we need to skip from beginning
+           of rsd buffer to be at x_off,y_off within rsd bitmap. */
+        start_byte = y_off * bm->row + x_off;
+        while (cur_byte < start_byte) {
+            if (rsd_count == 0)
+                /* no pending opcodes, get a new one. */
+                RSD_GET_TOKEN();
+            if (cur_byte + rsd_count <= start_byte) {
+                /* current code doesn't hit start_byte yet, so skip all of it. */
+                switch (rsd_code) {
+                case RSD_RUN:
+                    /* advance past 1 byte of run color. */
+                    rsd_src++;
+                    break;
+                case RSD_SKIP:
+                    break;
+                default: /* RSD_DUMP */
+                    /* advance past rsd_count bytes of dump pixel data. */
+                    rsd_src += rsd_count;
+                    break;
+                }
+                cur_byte += rsd_count;
+                rsd_count = 0;
+            } else {
+                /* current code goes past start_byte, so skip only enough to get
+                   to start_byte. */
+                op_count = start_byte - cur_byte;
+                switch (rsd_code) {
+                case RSD_RUN:
+                    break;
+                case RSD_SKIP:
+                    break;
+                default: /* RSD_DUMP */
+                    rsd_src += op_count;
+                    break;
+                }
+                cur_byte += op_count;
+                rsd_count -= op_count;
+            }
+        }
+    }
+
+    p_dst = grd_bm.bits + y * grd_bm.row + x;
+
+    /* process each scanline in two chunks. the first is the clipped section
+       from the right edge, wrapping around to to the left. the second is the
+       unclipped area in the middle. */
+    while (y < y_bot) {
+        /* clipped section. */
+        while (x < x_left + x_off) {
+            if (rsd_count == 0)
+                RSD_GET_TOKEN();
+            if (x + rsd_count <= x_left + x_off) {
+                switch (rsd_code) {
+                case RSD_RUN:
+                    rsd_src++;
+                    break;
+                case RSD_SKIP:
+                    break;
+                default: /* RSD_DUMP */
+                    rsd_src += rsd_count;
+                    break;
+                }
+                x += rsd_count;
+                rsd_count = 0;
+            } else {
+                op_count = x_left + x_off - x;
+                switch (rsd_code) {
+                case RSD_RUN:
+                    break;
+                case RSD_SKIP:
+                    break;
+                default: /* RSD_DUMP */
+                    rsd_src += op_count;
+                    break;
+                }
+                rsd_count -= op_count;
+                x += op_count;
+            }
+        }
+
+        /* section to draw. */
+        while (x < x_right) {
+            if (rsd_count == 0)
+                RSD_GET_TOKEN();
+            if (x + rsd_count <= x_right) {
+                switch (rsd_code) {
+                case RSD_RUN:
+                    LG_memset(p_dst, *rsd_src, rsd_count);
+                    rsd_src++;
+                    break;
+                case RSD_SKIP:
+                    break;
+                default: /* RSD_DUMP */
+                    LG_memcpy(p_dst, rsd_src, rsd_count);
+                    rsd_src += rsd_count;
+                    break;
+                }
+                x += rsd_count;
+                p_dst += rsd_count;
+                rsd_count = 0;
+            } else {
+                op_count = x_right - x;
+                switch (rsd_code) {
+                case RSD_RUN:
+                    LG_memset(p_dst, *rsd_src, op_count);
+                    break;
+                case RSD_SKIP:
+                    break;
+                default: /* RSD_DUMP */
+                    LG_memcpy(p_dst, rsd_src, op_count);
+                    rsd_src += op_count;
+                    break;
+                }
+                x += op_count;
+                p_dst += op_count;
+                rsd_count -= op_count;
+            }
+        }
+
+        /* reset x to be beginning of line and set y to next scanline. */
+        x -= bm->w;
+        p_dst += grd_bm.row - (x_right - x_left) + x_off;
+        y++;
+    }
 rsd_done:
-  return code;
+    return code;
 }
