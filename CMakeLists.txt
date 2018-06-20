@@ -175,6 +175,7 @@ set(GAME_SRC
 include_directories(
 	src/Libraries/2D/Source
 	src/Libraries/3D/Source
+	src/Libraries/AFILE/Source
 	src/Libraries/DSTRUCT/Source
 	src/Libraries/EDMS/Source
 	src/Libraries/FIXPP/Source
@@ -193,6 +194,16 @@ include_directories(
 )
 
 if(ENABLE_EXAMPLES)
+
+add_executable(movinfo
+	src/Libraries/AFILE/Tests/movinfo.c
+)
+
+target_link_libraries(movinfo
+	AFILE_LIB
+	FIX_LIB
+)
+
 add_executable(TestSimpleMain
 	src/Libraries/2D/TestSource/SimpleMain.c
 )
