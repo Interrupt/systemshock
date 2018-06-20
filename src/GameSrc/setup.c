@@ -777,6 +777,9 @@ errtype load_that_thar_game(int which_slot)
 //      if (curr_vol_lev != 0)
       startup_music = TRUE;
 //KLC      end_wait();
+
+      // CC: This fixed popups cursors drawing tiny after loading
+      gr2ss_override = OVERRIDE_ALL;
    }
    return(OK);
 }
