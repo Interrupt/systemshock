@@ -627,8 +627,9 @@ void *credits_txtscrn;
 
 void journey_credits_func(uchar draw_stuff)
 {
-   if (draw_stuff)
-      res_draw_string(RES_citadelFont, SETUP_STRING_BASE + 2, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT3_TOP + 2);
+   //if (draw_stuff)
+   //   res_draw_string(RES_citadelFont, SETUP_STRING_BASE + 2, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT3_TOP + 2);
+
    setup_mode = SETUP_CREDITS;
 
    // FIXME: What is scrntext? The credits screen?
@@ -639,8 +640,16 @@ void journey_credits_func(uchar draw_stuff)
       load_score_guts(7);
       grind_credits_music_ai();
 
+      // Hax: Just put something here, for now
+      res_draw_text(RES_coloraliasedFont, "Shockolate v0.5\n\n // consider them salted.\n\n www.github.com/\n Interrupt/systemshock", JOURNEY_OPT_LEFT, JOURNEY_OPT1_TOP);
+
       // FIXME: music!
       //mlimbs_preload_requested_timbres();
+   }
+   else {
+      if(credits_inp != 0) {
+         journey_credits_done();
+      }
    }
 }
 
@@ -664,8 +673,12 @@ void journey_credits_done()
    }
    else*/
    {
+      credits_inp = 0;
       uiShowMouse(NULL);
       journey_draw(0);
+
+      // CC: Force title screen music to play
+      start_setup_sound(0);
    }
 }
 
@@ -1089,7 +1102,7 @@ uchar intro_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
                case KEY_ENTER:
 //                  if (start_name[0] != '\0' && start_selected)
               // note go_and_start the game checks for null string and flashes, so it should get called
-                  if (start_selected)
+                  //if (start_selected)
                      go_and_start_the_game_already();
                   break;
                case KEY_ESC:
@@ -1280,9 +1293,13 @@ void splash_draw()
 
 void setup_loop()
 {
+   bool draw_stuff = FALSE;
+
    if(last_setup_mode != setup_mode) {
       uiHideMouse(NULL);
       gr_clear(0xFF);
+
+      draw_stuff = TRUE;
    }
 
    last_setup_mode = setup_mode;
@@ -1290,17 +1307,17 @@ void setup_loop()
    switch (setup_mode)
    {
       case SETUP_DIFFICULTY:
-         difficulty_draw(TRUE);
+         difficulty_draw(draw_stuff);
          break;
       case SETUP_JOURNEY:
-         journey_draw(0);
+         journey_draw(draw_stuff);
          break;
       case SETUP_CONTINUE:
-         journey_continue_func(TRUE);
+         journey_continue_func(draw_stuff);
       case SETUP_ANIM:
          // FIXME: What should this do?
       case SETUP_CREDITS:
-         // FIXME: What should this do?
+         journey_credits_func(draw_stuff);
          break;
    }
 }
