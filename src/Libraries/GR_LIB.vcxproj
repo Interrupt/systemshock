@@ -1,0 +1,275 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{54BE8A65-FE32-3A8D-B074-22BDF6BC7F2C}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>GR_LIB</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">E:\ss-msvc\src\Libraries\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">GR_LIB.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">GR_LIB</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">E:\ss-msvc\src\Libraries\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">GR_LIB.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">GR_LIB</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">E:\ss-msvc\src\Libraries\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">GR_LIB.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">GR_LIB</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">E:\ss-msvc\src\Libraries\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">GR_LIB.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">GR_LIB</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>powerc;SVGA_SUPPORT;SDL_MAIN_HANDLED;USE_SDL_MIXER=1;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;powerc;SVGA_SUPPORT;SDL_MAIN_HANDLED;USE_SDL_MIXER=1;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>NDEBUG;powerc;SVGA_SUPPORT;SDL_MAIN_HANDLED;USE_SDL_MIXER=1;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;powerc;SVGA_SUPPORT;SDL_MAIN_HANDLED;USE_SDL_MIXER=1;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>NDEBUG;powerc;SVGA_SUPPORT;SDL_MAIN_HANDLED;USE_SDL_MIXER=1;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;powerc;SVGA_SUPPORT;SDL_MAIN_HANDLED;USE_SDL_MIXER=1;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>NDEBUG;powerc;SVGA_SUPPORT;SDL_MAIN_HANDLED;USE_SDL_MIXER=1;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;powerc;SVGA_SUPPORT;SDL_MAIN_HANDLED;USE_SDL_MIXER=1;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\SDL2-2.0.8\include;E:\ss-msvc\build_ext\built_sdl_mixer\include\SDL2;E:\ss-msvc\src\stubs;E:\ss-msvc\src\MacSrc;E:\ss-msvc\src\Libraries\2D\Source\GR;E:\ss-msvc\src\Libraries\2D\Source\Clip;E:\ss-msvc\src\Libraries\2D\Source\Flat8;E:\ss-msvc\src\Libraries\2D\Source\Gen;E:\ss-msvc\src\Libraries\2D\Source\RSD;E:\ss-msvc\src\Libraries\2D\Source;E:\ss-msvc\src\Libraries\3D\Source;E:\ss-msvc\src\Libraries\DSTRUCT\Source;E:\ss-msvc\src\Libraries\H;E:\ss-msvc\src\Libraries\INPUT\Source;E:\ss-msvc\src\Libraries\FIX\Source;E:\ss-msvc\src\Libraries\LG\Source;E:\ss-msvc\src\Libraries\RES\Source;E:\ss-msvc\src\Libraries\FIXPP\Source;E:\ss-msvc\src\Libraries\EDMS\Source;E:\ss-msvc\src\Libraries\EDMS\Source\MODELS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\ss-msvc\src\Libraries\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule E:/ss-msvc/src/Libraries/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"E:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/ss-msvc -BE:/ss-msvc --check-stamp-file E:/ss-msvc/src/Libraries/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">E:/ss-msvc/src/Libraries/CMakeLists.txt;E:\ss-msvc\src\Libraries\CMakeLists.txt;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeDetermineASMCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeDetermineCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeFindBinUtils.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeASMCompiler.cmake.in;E:\ss-msvc\CMakeFiles\3.11.3\CMakeASMCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeASMInformation.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\Compiler\MSVC-ASM.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeTestASMCompiler.cmake;E:\ss-msvc\src\Libraries\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">E:\ss-msvc\src\Libraries\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule E:/ss-msvc/src/Libraries/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"E:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/ss-msvc -BE:/ss-msvc --check-stamp-file E:/ss-msvc/src/Libraries/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">E:/ss-msvc/src/Libraries/CMakeLists.txt;E:\ss-msvc\src\Libraries\CMakeLists.txt;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeDetermineASMCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeDetermineCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeFindBinUtils.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeASMCompiler.cmake.in;E:\ss-msvc\CMakeFiles\3.11.3\CMakeASMCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeASMInformation.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\Compiler\MSVC-ASM.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeTestASMCompiler.cmake;E:\ss-msvc\src\Libraries\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">E:\ss-msvc\src\Libraries\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule E:/ss-msvc/src/Libraries/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"E:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/ss-msvc -BE:/ss-msvc --check-stamp-file E:/ss-msvc/src/Libraries/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">E:/ss-msvc/src/Libraries/CMakeLists.txt;E:\ss-msvc\src\Libraries\CMakeLists.txt;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeDetermineASMCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeDetermineCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeFindBinUtils.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeASMCompiler.cmake.in;E:\ss-msvc\CMakeFiles\3.11.3\CMakeASMCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeASMInformation.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\Compiler\MSVC-ASM.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeTestASMCompiler.cmake;E:\ss-msvc\src\Libraries\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">E:\ss-msvc\src\Libraries\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule E:/ss-msvc/src/Libraries/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"E:\Program Files (x86)\CMake\bin\cmake.exe" -HE:/ss-msvc -BE:/ss-msvc --check-stamp-file E:/ss-msvc/src/Libraries/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">E:/ss-msvc/src/Libraries/CMakeLists.txt;E:\ss-msvc\src\Libraries\CMakeLists.txt;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeDetermineASMCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeDetermineCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeFindBinUtils.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeASMCompiler.cmake.in;E:\ss-msvc\CMakeFiles\3.11.3\CMakeASMCompiler.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeASMInformation.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\Compiler\MSVC-ASM.cmake;E:\Program Files (x86)\CMake\share\cmake-3.11\Modules\CMakeTestASMCompiler.cmake;E:\ss-msvc\src\Libraries\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">E:\ss-msvc\src\Libraries\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\2D\Source\GR\grd.c" />
+    <ClCompile Include="E:\ss-msvc\src\Libraries\2D\Source\GR\grilin.c" />
+    <ClCompile Include="E:\ss-msvc\src\Libraries\2D\Source\GR\grmalloc.c" />
+    <ClCompile Include="E:\ss-msvc\src\Libraries\2D\Source\GR\grnull.c" />
+    <ClCompile Include="E:\ss-msvc\src\Libraries\2D\Source\GR\gruilin.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:\ss-msvc\ZERO_CHECK.vcxproj">
+      <Project>{C4236897-5D41-3B3D-899A-EC0DFCA30471}</Project>
+      <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

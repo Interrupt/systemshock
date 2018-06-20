@@ -67,6 +67,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "citres.h"
 
 #include "game_screen.h" // was screen.h?
+#include "hotkey.h"
+#include "kbcook.h"
 
 //#include <inp6d.h>
 //#include <i6dvideo.h>

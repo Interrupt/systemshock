@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "render.h"
 #include "gr2ss.h"
 #include "criterr.h"
+#include "cursors.h"
 
 //#include <mprintf.h>
 //#define LOTS_O_SPEW

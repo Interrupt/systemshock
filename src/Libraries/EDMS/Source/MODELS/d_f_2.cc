@@ -26,7 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //      Auto-alignment...
 //      -----------------
+extern "C" {
 #include "ss_flet.h"
+}
 extern int      EDMS_BCD;
 
 

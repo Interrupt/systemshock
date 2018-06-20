@@ -55,6 +55,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "popups.h"
 
+#include "event.h"
+#include "kbcook.h"
+#include "Carbon/Carbon.h"
+
 /*
 #include <olhext.h>
 #include <inp6d.h>
@@ -1107,9 +1111,10 @@ void opanel_redraw(uchar back)
 {
    extern grs_bitmap inv_backgnd;
    int but;
-   Rect r = { { INVENTORY_PANEL_X, INVENTORY_PANEL_Y },
-      { INVENTORY_PANEL_X + INVENTORY_PANEL_WIDTH,
-        INVENTORY_PANEL_Y + INVENTORY_PANEL_HEIGHT}};
+   Rect r = { INVENTORY_PANEL_Y , INVENTORY_PANEL_X,
+        INVENTORY_PANEL_Y + INVENTORY_PANEL_HEIGHT,
+		INVENTORY_PANEL_X + INVENTORY_PANEL_WIDTH
+   };
 #ifdef SVGA_SUPPORT
    uchar old_over = gr2ss_override;
    gr2ss_override = OVERRIDE_ALL;     // Since we are really going straight to screen in our heart of hearts

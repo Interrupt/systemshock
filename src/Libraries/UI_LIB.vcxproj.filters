@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\butarray.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\curdrw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\cursors.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\event.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\gadgets.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\hotkey.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\menu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\monofont.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\plain.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\pushbutt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\qboxgadg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\realfont.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\region.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\slab.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\slider.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\textgadg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\texttool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\tngbarry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\tng.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\tngfont.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\tngmenu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\tngplain.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\tngpushb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\tngqbox.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\tngslidr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\tngtemp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\tngtextg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\uires.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\ss-msvc\src\Libraries\UI\Source\vmouse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\ss-msvc\src\Libraries\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{F26D4072-7D20-3D25-9B85-53DCF037624C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

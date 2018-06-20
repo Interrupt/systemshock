@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma pack(2)
 
+#include "lg_types.h"
+
 /*
 ** $Header: r:/prj/cit/src/inc/RCS/objects.h 1.18 1994/08/30 07:15:13 xemu Exp $
  * 

@@ -33,9 +33,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "edms_vt.h"
 #include "physhand.h"
 
-//extern "C" {
+extern "C" {
 #include "ss_flet.h"
-//}
+}
 
 //	Here is some stuff that the line finder needs that is stupid to pass around...
 //	==============================================================================

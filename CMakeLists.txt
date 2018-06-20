@@ -5,15 +5,17 @@ cmake_minimum_required(VERSION 3.1)
 # Required for stdbool.h
 set(CMAKE_C_STANDARD 99)
 
-set(CMAKE_C_FLAGS -m32)
-set(CMAKE_CXX_FLAGS -m32)
+# This was useful when figuring out what's going wrong
+# set(CMAKE_VERBOSE_MAKEFILE true)
 
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
 
-# HAAAAX!!
-add_definitions(-Dpowerc -DSVGA_SUPPORT)
+# TODO compile the main SDL and make a similar thing for it
+# right now my SDL installation is found via ${SDL2_DIR}
+set(SDL2_MIXER_PATH "build_ext/SDL_mixer/VisualC/Win32/Debug")
 
-add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
+# HAAAAX!!
+add_definitions(-Dpowerc -DSVGA_SUPPORT -DSDL_MAIN_HANDLED)
 
 # Find SDL, trying the easy way and then the hard way
 find_package(SDL2)
@@ -36,6 +38,10 @@ include_directories(
 
 message(STATUS "Found SDL2 Include:${SDL2_INCLUDE_DIRS} Library:${SDL2_LIBRARIES}")
 message(STATUS "Found SDL2_Mixer Include:${SDL2_MIXER_INCLUDE_DIRS} Library:${SDL2_MIXER_LIBRARIES}")
+
+# not actually sure if this does anything under MSVC...
+set(CMAKE_C_FLAGS "/I${SDL2_INCLUDE_DIRS}")
+
 
 # for now I'll put a Carbon/Carbon.h into src/stubs/
 # that defines Mac-specific types and provides stubs for used functions
@@ -256,8 +262,9 @@ target_link_libraries(FixPPTest
 endif()
 
 # Include magic header file, set struct packing size
+# Couldn't figure out a way to make this work, ended up doing it in the GUI instead
 add_definitions(
-	-include precompiled.h
+	#/FI"src/GameSrc/Headers/precompiled.h"
 )
 
 add_executable(systemshock

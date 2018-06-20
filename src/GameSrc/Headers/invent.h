@@ -29,6 +29,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Includes
 #include "invdims.h"
+#include "region.h"
+#include "rect.h"
+#include "lg_types.h"
 
 // C Library Includes
 

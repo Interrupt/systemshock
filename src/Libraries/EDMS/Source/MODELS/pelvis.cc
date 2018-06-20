@@ -35,15 +35,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	Super secret Church-Blackley Boundary Condition Descriptor (BCD)...
 //	===================================================================
-//extern "C" {
+extern "C" {
 
 #include "ss_flet.h"
-
+}
 Q       EDMS_CYBER_FLOW1X = 100;
 Q       EDMS_CYBER_FLOW2X = 200;
 Q       EDMS_CYBER_FLOW3X = 270;
 
 int     EDMS_BCD = 0;
+extern "C" int EDMS_pelvis_is_climbing;
 int     EDMS_pelvis_is_climbing = 0;
 int     edms_ss_head_bcd_flags;
 
@@ -52,7 +53,7 @@ fix     hacked_head_bob_1 = fix_make(1,0),
         hacked_head_bob_2 = fix_make(1,0);
 
 
-//}
+
 
 
 #define EDMS_DIV_ZERO_TOLERANCE .0005

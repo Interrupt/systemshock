@@ -51,6 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "invent.h"
 #include "invdims.h"
+#include "hotkey.h"
 
 /*
 KLC - stereo

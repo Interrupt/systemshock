@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybstrng.h"
 #include "gamestrn.h"
 
-#include <unistd.h>
+// #include <unistd.h>
 
 
 #include <mainloop.h>
@@ -1116,7 +1116,7 @@ errtype load_savegame_names()
    {
       Poke_SaveName(i);
 
-      if( access( save_game_name, F_OK ) != -1 ) {
+      if( access( save_game_name, 0 ) != -1 ) {
          file = ResOpenFile(save_game_name);
          if (ResInUse(OLD_SAVE_GAME_ID_BASE))
          {

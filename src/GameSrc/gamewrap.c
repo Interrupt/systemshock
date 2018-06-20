@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "otrip.h"
 
 #include <stdio.h>
-#include <unistd.h>
+// #include <unistd.h>
 
 
 /*
@@ -428,12 +428,17 @@ errtype load_game(char *fname)
    return(OK);
 }
 
+Id ResIdFromLevel(int level) {
+    return (SAVE_GAME_ID_BASE+(level*NUM_RESIDS_PER_LEVEL)+2);
+}
+
 
 errtype load_level_from_file(int level_num)
 {
 	errtype	retval;
 
    printf("load_level_from_file %x\n", ResIdFromLevel(level_num));
+   printf("load_level_from_file %d\n", ResIdFromLevel(level_num));
 
 	retval = load_current_map(ResIdFromLevel(level_num), NULL);
 

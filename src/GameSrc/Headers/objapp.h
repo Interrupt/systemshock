@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __OBJAPP_H
 
 #pragma pack(2)
+#include "rect.h"
 
 /*
 ** $Header: r:/prj/cit/src/inc/RCS/objapp.h 1.25 1994/08/30 07:15:21 xemu Exp $

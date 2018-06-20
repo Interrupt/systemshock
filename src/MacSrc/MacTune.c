@@ -64,7 +64,7 @@ int				gQueueTime;									// Amount of time (in millisecs) to wait to queue nex
 //---------------------------------------------------------------
 //  The following section is the time manager task for determining the next tune to play.
 //---------------------------------------------------------------
-#pragma require_prototypes off
+//#pragma require_prototypes off
 
 #ifndef __powerc
 //CalcTuneTaskPtr GetCalcTuneTask(void) = 0x2049;				// MOVE.L A1,A0
@@ -89,7 +89,7 @@ pascal void CalcTuneProc(void)
 	//SetA5(curA5);											// restore A5
 #endif
 }
-#pragma require_prototypes on
+// #pragma require_prototypes on
 
 
 //------------------------------------------------------------------------------

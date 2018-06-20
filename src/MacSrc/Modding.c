@@ -4,7 +4,7 @@
 #include "lg.h"
 
 #include <stdio.h>
-#include <dirent.h>
+// #include <dirent.h>
 
 int StringEndsWith( char *src, char *dst) {
 	char* s = strrchr(src, '.');
@@ -68,7 +68,7 @@ int ProcessModArgs(int argc, char** argv) {
 
 int ProcessModDirectory(char* dirname) {
 	// Check if this is a directory
-
+/*
 	printf("ProcessModDirectory %s\n", dirname);
 
 	DIR *dp = opendir(dirname);
@@ -97,6 +97,7 @@ int ProcessModDirectory(char* dirname) {
 		
 		closedir(dp);
 	}
+	*/
 }
 
 int LoadModFiles() {

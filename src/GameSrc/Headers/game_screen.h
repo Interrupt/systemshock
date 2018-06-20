@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // System Library Includes
 #include "frtypesx.h"
+#include "event.h"
 
 // Master Game Includes
 

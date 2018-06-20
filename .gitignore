@@ -48,6 +48,11 @@ TestSimpleMain
 # 3rd Party builds
 build_ext
 
+# Visual Studio
+.vs
+Debug
+**/.vscode
+
 # Save files
 CurrentGame.dat
 savgam*.dat
