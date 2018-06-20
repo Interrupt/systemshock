@@ -28,6 +28,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <SDL.h>
 
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
+
+static bool fullscreenActive = false;
+
+static void toggleFullScreen()
+{
+	fullscreenActive = !fullscreenActive;
+	SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+}
+
 // current state of the keys, based on the SystemShock/Mac Keycodes (sshockKeyStates[keyCode] has the state for that key)
 // set at the beginning of each frame in pump_events()
 uchar sshockKeyStates[256];
@@ -61,11 +72,31 @@ static void addKBevent(const kbs_event* ev)
 static mouse_event mouseEvents[kNumMouseEvents];
 static int nextMouseEvent = 0;
 
+// latest mouse state as input for MousePollProc() in mouse.c
+mouse_event latestMouseEvent;
+
 static void addMouseEvent(const mouse_event* ev)
 {
+	latestMouseEvent = *ev;
+
+	// confine the mouse coordinates to the game window
+	int width, height;
+	SDL_RenderGetLogicalSize(renderer, &width, &height);
+
+	if (latestMouseEvent.x < 0) latestMouseEvent.x = 0;
+	if (latestMouseEvent.x >= width) latestMouseEvent.x = width - 1;
+	if (latestMouseEvent.y < 0) latestMouseEvent.y = 0;
+	if (latestMouseEvent.y >= height) latestMouseEvent.y = height - 1;
+
+	// in fullscreen mode, do not allow the mouse to leave the window; might
+	// be smarter to use SDL relative mouse mode instead
+	if (fullscreenActive && (latestMouseEvent.x != ev->x || latestMouseEvent.y != ev->y)) {
+		mouse_put_xy(latestMouseEvent.x, latestMouseEvent.y);
+	}
+
 	if(nextMouseEvent < kNumMouseEvents)
 	{
-		mouseEvents[nextMouseEvent] = *ev;
+		mouseEvents[nextMouseEvent] = latestMouseEvent;
 		++nextMouseEvent;
 	}
 	else
@@ -73,7 +104,7 @@ static void addMouseEvent(const mouse_event* ev)
 		printf("WTF, the mouseEvents queue is full?!");
 		// drop the oldest event
 		memmove(&mouseEvents[0], &mouseEvents[1], sizeof(mouse_event)*(kNumMouseEvents-1));
-		mouseEvents[kNumMouseEvents-1] = *ev;
+		mouseEvents[kNumMouseEvents-1] = latestMouseEvent;
 	}
 }
 
@@ -254,6 +285,10 @@ void pump_events(void)
 
 					if(ev.key.state == SDL_PRESSED)
 					{
+						if (ev.key.keysym.sym == SDLK_RETURN && mod & KMOD_ALT) {
+							toggleFullScreen();
+							break;
+						}
 						keyEvent.state = KBS_DOWN;
 						sshockKeyStates[c] = keyEvent.modifiers | KB_MOD_PRESSED;
 						addKBevent(&keyEvent);
@@ -529,6 +564,47 @@ errtype mouse_flush(void)
 	//mouseQueueIn = mouseQueueOut = 0;
 	nextMouseEvent = 0;
 	// TODO: anything else?
+	return OK;
+}
+
+errtype mouse_get_xy(short* x, short* y)
+{
+	*x = latestMouseEvent.x;
+	*y = latestMouseEvent.y;
+	return OK;
+}
+
+errtype mouse_put_xy(short x, short y)
+{
+	latestMouseEvent.x = x;
+	latestMouseEvent.y = y;
+
+	// scale new mouse coordinates from logical (game resolution) to
+	// physical (SDL window size)
+
+	int physical_width, physical_height;
+	SDL_GetWindowSize(window, &physical_width, &physical_height);
+
+	int logical_width, logical_height;
+	SDL_RenderGetLogicalSize(renderer, &logical_width, &logical_height);
+
+	float scale_x = (float)physical_width / logical_width;
+	float scale_y = (float)physical_height / logical_height;
+
+	if (scale_x >= scale_y) {
+		// physical aspect ratio is wider; black borders left and right
+		int ofs_x = (physical_width - logical_width * scale_y + 1) / 2;
+		x = x * scale_y + ofs_x;
+		y = y * scale_y;
+	} else {
+		// physical aspect ratio is narrower; black borders at top and bottom
+		int ofs_y = (physical_height - logical_height * scale_x + 1) / 2;
+		x = x * scale_x;
+		y = y * scale_x + ofs_y;
+	}
+
+	SDL_WarpMouseInWindow(window, x, y);
+
 	return OK;
 }
 

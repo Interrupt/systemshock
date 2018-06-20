@@ -89,6 +89,7 @@ Boolean				gGameCompletedQuit;
 
 grs_screen  *cit_screen;
 SDL_Window* window;
+SDL_Renderer* renderer;
 
 extern grs_screen *svga_screen;
 extern 	frc *svga_render_context;
@@ -345,7 +346,7 @@ void InitSDL()
 
 	window = SDL_CreateWindow(
 		"System Shock - Shockolate 0.5", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN);
+		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
 	// Setup the screen
 
@@ -360,7 +361,8 @@ void InitSDL()
 
 	SDL_RaiseWindow(window);
 	
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+	renderer = SDL_CreateRenderer(window, -1, 0);
+	SDL_RenderSetLogicalSize(renderer, gScreenWide, gScreenHigh);
 
 	SDLDraw();
 }
@@ -387,10 +389,12 @@ void SetSDLPalette(int index, int count, uchar *pal)
 	SDL_SetSurfacePalette(offscreenDrawSurface, sdlPalette);
 }
 
-SDL_Rect destRect;
 void SDLDraw()
 {
-	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
-	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
-  	SDL_UpdateWindowSurface(window);
+	SDL_RenderClear(renderer);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, drawSurface);
+	SDL_Rect srcRect = { 0, 0, gScreenWide, gScreenHigh };
+	SDL_RenderCopy(renderer, texture, &srcRect, NULL);
+	SDL_DestroyTexture(texture);
+	SDL_RenderPresent(renderer);
 }
