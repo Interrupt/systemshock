@@ -194,23 +194,13 @@ MemStack temp_memstack;
 
 uchar pause_for_input(ulong wait_time)
 {
-	Boolean	gotInput = FALSE;
-	while (!gotInput && ((ulong)TickCount() < wait_time))
-	{
-		/*long		theKeys[4];
-#ifdef __MWERKS__
-		GetKeys((UInt32 *)theKeys);
-#else
-		GetKeys(theKeys);
-#endif
-		for (int i = 0; i < 4; i++)
-			if (theKeys[i] != 0)
-				gotInput = TRUE;
-		
-		if (Button()) {
-			gotInput = TRUE;
-		}*/
+	extern void pump_events(void);
+	bool gotInput = false;
 
+	ulong wait_until = TickCount() + wait_time;
+	while (!gotInput && ((ulong)TickCount() < wait_until))
+	{
+		pump_events();
 		SDLDraw();
 	}
 	
@@ -761,7 +751,6 @@ errtype init_pal_fx()
       LG_memcpy(tmppal_lower,ppall,32*3);
       LG_memset(ppall,0,32*3);
       gr_set_pal(0, 256, ppall);
-      SetSDLPalette(0, 256, ppall);
 
       gr_init_blend(1);                // we want 2 tables, really, basically, and all 
 

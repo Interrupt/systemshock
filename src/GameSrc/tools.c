@@ -249,7 +249,7 @@ errtype draw_full_res_bm(Ref id, int x, int y, uchar fade_in)
       pal_id=palfx_start_fade_up((uchar *) (temp_pall+2));
 
    f->bm.bits = (uchar *)(f+1);
-   ss_scale_bitmap(&f->bm, x, y, 640, 400);		// KLC  ss_bitmap(&f->bm, x, y);
+   ss_bitmap(&f->bm, x, y);		// KLC  ss_bitmap(&f->bm, x, y);
    RefUnlock(id);	
    ResDrop(REFID(id));
    if (fade_in)

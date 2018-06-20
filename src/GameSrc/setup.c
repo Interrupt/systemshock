@@ -291,6 +291,8 @@ errtype journey_continue_func(uchar draw_stuff);
 
 uchar setup_sound_on=FALSE;
 
+bool waiting_for_key = false;
+
 #define MAX_NAME_SIZE   sizeof(player_struct.name)
 #define start_name (player_struct.name)
 
@@ -886,6 +888,13 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
 #endif
    if (mev->action & MOUSE_LDOWN)
    {
+
+      // If in the splash screen, advance
+      if(waiting_for_key) {
+         waiting_for_key = false;
+         return OK;
+      }
+
       switch (setup_mode)
       {
          case SETUP_JOURNEY:
@@ -968,6 +977,12 @@ uchar intro_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
    
    if (kev->code & KB_FLAG_DOWN) 
    {
+      // If in the splash screen, advance
+      if(waiting_for_key) {
+         waiting_for_key = false;
+         return OK;
+      }
+
       switch (setup_mode)
       {
          case SETUP_JOURNEY:
@@ -1194,6 +1209,22 @@ errtype setup_init(void)
    return(OK);
 }
 
+void pause_for_key(ulong wait_time)
+{
+   extern void pump_events(void);
+   waiting_for_key = true;
+
+   ulong wait_until = TickCount() + wait_time;
+   while (waiting_for_key && ((ulong)TickCount() < wait_until))
+   {
+      input_chk();
+      pump_events();
+      SDLDraw();
+   }
+
+   waiting_for_key = false;
+}
+
 void splash_draw()
 {
    int      pal_file;
@@ -1211,33 +1242,30 @@ void splash_draw()
 
    // Set initial palette
 
-   uchar * splash_pal_loc = splash_pal;
-   gr_set_pal(0, 256, splash_pal_loc);
-   SetSDLPalette(0, 256, splash_pal_loc);
+   gr_set_pal(0, 256, splash_pal);
 
    // Draw Origin Logo
 
-   draw_raw_res_bm_extract(REF_IMG_bmOriginSplash, 0, 0);
-   SDLDraw();
-   SDL_Delay(1000);
+   uiHideMouse(NULL);
+   draw_full_res_bm(REF_IMG_bmOriginSplash, 0, 0, FALSE);
+   pause_for_key(500);
 
    // Draw LGS Logo
 
-   draw_raw_res_bm_extract(REF_IMG_bmLGSplash, 0, 0);
-   SDLDraw();
-   SDL_Delay(1000);
+   uiHideMouse(NULL);
+   draw_full_res_bm(REF_IMG_bmLGSplash, 0, 0, FALSE);
+   pause_for_key(500);
 
    // Draw System Shock title
 
-   draw_raw_res_bm_extract(REF_IMG_bmSystemShockTitle, 0, 0);
-   SDLDraw();
-   SDL_Delay(1000);
-
-   ResCloseFile(pal_file);
+   uiHideMouse(NULL);
+   draw_full_res_bm(REF_IMG_bmSystemShockTitle, 0, 0, FALSE);
+   pause_for_key(500);
 
    // Original palette
    gr_set_pal(0, 256, ppall);
-   SetSDLPalette(0, 256, ppall);
+
+   ResCloseFile(pal_file);
 }
 
 // -------------------------------------------------------------
