@@ -93,6 +93,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "map.h"
 #include "colors.h"
 #include "tilecam.h"
+#include "region.h"
+#include "event.h"
 
 // Defines
 extern long height_colors[MAP_HEIGHTS];

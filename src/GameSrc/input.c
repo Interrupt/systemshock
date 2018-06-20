@@ -87,6 +87,7 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "tools.h"
 #include "weapons.h"
 #include "mouselook.h"
+#include "kbcook.h"
 
 #ifdef NOT_YET //KLC - for VR headsets
 

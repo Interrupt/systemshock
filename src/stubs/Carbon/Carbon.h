@@ -38,6 +38,7 @@ typedef unsigned char Str255[256];
 typedef struct FSSpec
 {
 	// TODO: what's in it? what's it good for?
+	int something;
 } FSSpec;
 
 typedef struct Point {

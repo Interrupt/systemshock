@@ -31,6 +31,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "physics.h"
 #include "gamesys.h" 
 #include "weapons.h"
+#include "event.h"
+#include "region.h"
+#include "kbcook.h"
+#include "Carbon/Carbon.h"
 
 // Here we go, it's gruesome keyboard polling code.  
 

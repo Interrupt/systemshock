@@ -2,6 +2,8 @@
 #ifndef __MODDING_H
 #define __MODDING_H
 
+#include "lg_types.h"
+
 //--------------------
 // Defines
 //--------------------

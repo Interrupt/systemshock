@@ -19,8 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MAINLOOP_H
 #define __MAINLOOP_H
 
+#include "region.h"
 #include "gameloop.h"
 #include "frtypesx.h"
+#include "lg_types.h"
 
 #define QUIT_LOOP    -1
 #define GAME_LOOP     0

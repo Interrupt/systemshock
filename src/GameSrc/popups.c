@@ -39,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 
 #include "curdat.h"
+#include "Carbon/Carbon.h"
 
 #define BUF_SIZ 80
 #define EMAIL_CURS_WID 40

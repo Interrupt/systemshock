@@ -37,7 +37,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	Super secret Church-Blackley Boundary Condition Descriptor (BCD)...
 //	===================================================================
+extern "C" {
 #include "ss_flet.h"
+}
 
 extern Q	EDMS_CYBER_FLOW1X;
 extern Q	EDMS_CYBER_FLOW2X;

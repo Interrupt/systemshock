@@ -50,6 +50,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "wares.h"
 #include "gr2ss.h"
 
+#include "Carbon/Carbon.h"
+
 frc *hack_cam_frcs[MAX_CAMERAS_VISIBLE];
 grs_canvas hack_cam_canvases[MAX_CAMERAS_VISIBLE], static_canvas;
 grs_bitmap *hack_cam_bitmaps[MAX_CAMERAS_VISIBLE], *static_bitmap;

@@ -138,6 +138,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "FrUtils.h"
 #include "fullscrn.h"
 #include "star.h"
+#include "Carbon/Carbon.h"
 
 #ifdef STEREO_SUPPORT
 #include <inp6d.h>

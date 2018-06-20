@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybstrng.h"
 #include "gamestrn.h"
 
-#include <unistd.h>
+// #include <unistd.h>
 
 
 #include <mainloop.h>
@@ -78,6 +78,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Shock.h"
 
 #include <SDL.h>
+#include "hotkey.h"
+#include "kbcook.h"
 
 /*
 // Resource stuff
@@ -408,7 +410,7 @@ errtype difficulty_draw(uchar full)
 //
 //
 
-Rect name_rect={{DIFF_NAME_TEXT_X,DIFF_NAME_Y},{DIFF_NAME_X2,DIFF_NAME_Y2}};
+Rect name_rect = {DIFF_NAME_Y, DIFF_NAME_TEXT_X, DIFF_NAME_Y2, DIFF_NAME_X2};
 
 errtype draw_username(int color, char *string)
 {
@@ -1138,7 +1140,7 @@ errtype load_savegame_names()
    {
       Poke_SaveName(i);
 
-      if( access( save_game_name, F_OK ) != -1 ) {
+      if( access( save_game_name, 0 ) != -1 ) {
          file = ResOpenFile(save_game_name);
          if (ResInUse(OLD_SAVE_GAME_ID_BASE))
          {

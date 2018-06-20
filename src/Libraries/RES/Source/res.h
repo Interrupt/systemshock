@@ -112,11 +112,15 @@ void ResDelete(Id id);                 // delete resource forever
 //		ACCESS TO ITEMS IN COMPOUND RESOURCES (REF'S)  (refacc.c)
 //	------------------------------------------------------------
 
+#pragma pack(push,1)
 // Each compound resource starts with a Ref Table
-typedef struct __attribute__((packed)) {
+typedef struct 
+// __attribute__((packed)) 
+{
   RefIndex numRefs;  // # items in compound resource
   int32_t offset[1]; // offset to each item (numRefs + 1 of them)
 } RefTable;
+#pragma pack(pop)
 
 void *RefLock(Ref ref); // lock compound res, get ptr to item
 #define RefUnlock(ref) ResUnlock(REFID(ref)) // unlock compound res item
@@ -211,8 +215,10 @@ extern ResDesc2 *gResDesc2;
 
 extern Id resDescMax; // max id in res desc
 
+#define MAGICAL_ZERO_OFFSET 0x66E6E6E
+
 //	Information about resources
-#define ResInUse(id) (gResDesc[id].offset)
+#define ResInUse(id) (gResDesc[id].offset - MAGICAL_ZERO_OFFSET)
 #define ResPtr(id) (gResDesc[id].ptr)
 #define ResSize(id) (gResDesc[id].size)
 #define ResLocked(id) (gResDesc[id].lock)

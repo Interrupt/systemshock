@@ -44,9 +44,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tng.h"
 
 // Typedefs
+/*
 typedef struct {
 } TNG_GADGET_NAME;
-
+*/
 // Prototypes
 
 // Initializes the TNG 

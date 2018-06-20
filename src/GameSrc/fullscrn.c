@@ -55,6 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "wares.h"
 
 #include "game_screen.h" // was screen.h?
+#include "hotkey.h"
 
 #ifdef NOT_YET //KLC stereo 
 

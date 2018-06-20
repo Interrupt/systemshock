@@ -71,6 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "star.h"
 
 #include "curdat.h"
+#include "Carbon/Carbon.h"
 
 //#include <mprintf.h>
 

@@ -41,21 +41,22 @@
 #include "memall.h"
 #include "tmpalloc.h"
 
-#include "palette.h"
+// #include "palette.h"
 
 #include "res.h"
 #include "lzw.h"
 
-#include "rnd.h"
+// #include "rnd.h"
 
 // NO SOUND YET!
-#include "lgsndx.h"
+// #include "lgsndx.h"
 //#include "digi.h"
 //#include "midi.h"
 
 //#include "cursors.h"
 //#include "curtyp.h"
 //#include "curdat.h"
+/*
 #include "butarray.h"
 #include "event.h"
 #include "gadgets.h"
@@ -70,3 +71,4 @@
 #include "vmouse.h"
 
 #include "vox.h"
+*/

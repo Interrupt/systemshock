@@ -62,6 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 
 #include "vmail.h"
+#include "kbcook.h"
 
 #ifdef AUDIOLOGS
 #include "audiolog.h"

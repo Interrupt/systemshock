@@ -69,7 +69,7 @@ void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum,
   prd = RESDESC(id);
   prd2 = RESDESC2(id);
   // If resource has id, delete it
-  if (prd->offset) {
+  if (prd->offset - MAGICAL_ZERO_OFFSET) {
     ResDelete(id);
   }
 
