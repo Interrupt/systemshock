@@ -302,12 +302,15 @@ bool waiting_for_key = false;
 // -------------------------------------------------------------
 // start_setup_sound()
 //
-char *stp_themes[]={"titloop.xmi","endloop.xmi"};
+char *stp_themes[]={"titloop","endloop"};
 
 uchar start_setup_sound(int which)
 {
    if ((setup_sound_on)||(!music_on))
       return FALSE;
+
+   extern int MacTuneLoadTheme(char* theme_base, int themeID);
+   MacTuneLoadTheme(stp_themes[which], 0);
 
    // FIXME: start music here
    /*if (citmusic_swap_to_xmi(stp_themes[which])!=-1)
@@ -1266,6 +1269,9 @@ void splash_draw()
    gr_set_pal(0, 256, ppall);
 
    ResCloseFile(pal_file);
+
+   // Startup some music!
+   start_setup_sound(0);
 }
 
 // -------------------------------------------------------------
@@ -1428,7 +1434,6 @@ void setup_start()
       // FIXME: Cutscenes!
       //play_cutscene(START_CUTSCENE, TRUE);
    }
-
 }
 
 //#define SAFETY_PUPS_NIECE
