@@ -111,29 +111,8 @@ void mac_set_mode(void)
 // and ResetCTSeed).
 void mac_set_pal (int start, int n, uchar *pal_data)
  {
- 	/*
-        if (n)	// ignore if count == 0
- 	 {
- 	 	short			i;
- 	 	ColorSpec	*cSpec;
- 	 	
- 	 	// if we're starting at 0, skip it, we can't change that one
- 	 	if (!start) {start++; n--; pal_data+=3;}
- 	 	if (start+n>=255) n--; // can't set last entry either
- 	 	
- 	 	cSpec = &(*gMainColorHand)->ctTable[start];
- 	 	for (i=start; i<start+n; i++) 
- 	 	 {
- 	 	 	cSpec->rgb.red = (ushort) (*(pal_data++)) << 8;
- 	 	 	cSpec->rgb.green = (ushort) (*(pal_data++)) << 8;
- 	 	 	cSpec->rgb.blue = (ushort) (*(pal_data++)) << 8;
- 	 	 	cSpec++;
- 	 	 }
- 	 
-		SetEntries(start, n, &(**(gMainColorHand)).ctTable[start]);
-		ResetCTSeed();
- 	 }
-         */
+    extern void SetSDLPalette(int index, int count, uchar *pal);
+    SetSDLPalette(start, n, pal_data);
  }
  
 //------------------------------------------------------------------------
