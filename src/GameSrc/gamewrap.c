@@ -130,8 +130,8 @@ void closedown_game(uchar visible)
    extern void fr_closedown(void);
    extern void olh_closedown(void);
    extern void musicai_clear();
-   extern void drug_closedown(uchar visible);
-   extern void hardware_closedown(uchar visible);
+   extern void drug_closedown(bool visible);
+   extern void hardware_closedown(bool visible);
    extern void clear_digi_fx();
    extern void reset_schedules(void);
    extern void hud_shutdown_lines(void);

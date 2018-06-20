@@ -136,15 +136,12 @@ errtype init_player(Player *pplr)
 
    // QUESTBIT_ON(number);
 
-   printf(" 2\n");
-
    for (i=0; i < NUM_ON_QUESTBITS; i++)
       QUESTBIT_ON(turnon_questbits[i]);
 
    for (i=0; i < NUM_INIT_QV; i ++)
       QUESTVAR_SET(init_questvars[i][0], init_questvars[i][1]);
 
-   //printf("Skipping randomizing reactor combo, loops forever!\n");
    while(QUESTVAR_GET(REACTOR_COMBO_QVAR)==QUESTVAR_GET(REACTOR_COMBO_QVAR+1)) {
       // randomize reactor combination. use effect_rnd 'cause why not.
       j = (RndRange(&effect_rnd,0,9)<<8)|(RndRange(&effect_rnd,0,9)<<4)
@@ -185,35 +182,6 @@ errtype init_player(Player *pplr)
    pplr->email[26] = EMAIL_GOT;
    pplr->active_bio_tracks = 0xFF;
    pplr->actives[ACTIVE_EMAIL] = 0xFF;
-
-
-   return OK;
-   // HAX HAX HAX give he player everything!
-   {
-      for (i=0; i < NUM_HARDWAREZ; i++)
-      	pplr->hardwarez[i] = 1;
-
-      pplr->softs.misc[(TRIP2TY(GAMES_TRIPLE) + NUM_ONESHOT_SOFTWARE)] = 0xff;
-
-      pplr->weapons[0].type = 4;
-      pplr->weapons[0].subtype = 1;
-      pplr->weapons[2].ammo = 25;
-      pplr->weapons[1].type = 4;
-      pplr->weapons[1].subtype = 2;
-      pplr->weapons[2].type = 0;
-      pplr->weapons[2].subtype = 4;
-      pplr->weapons[2].ammo = 100;
-      pplr->weapons[3].type = 1;
-      pplr->weapons[3].subtype = 0;
-      pplr->weapons[3].ammo = 150;
-      pplr->weapons[4].type = 2;
-      pplr->weapons[4].subtype = 0;
-      pplr->weapons[4].ammo = 50;
-      pplr->weapons[5].type = 4;
-      pplr->weapons[5].subtype = 0;
-      pplr->weapons[6].type = 3;
-      pplr->weapons[6].subtype = 0;
-   }
 
    // init physics stuff
    player_reset_eye();

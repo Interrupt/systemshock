@@ -35,6 +35,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte but);
 extern uchar amap_scroll_handler(uiEvent* ev, 	LGRegion* r, void* user_data);
 
+extern grs_screen *svga_screen;
+extern grs_screen *cit_screen;
+
 // -------------------
 //  INTERNAL PROTOTYPES
 // -------------------
@@ -104,6 +107,7 @@ void amap_start()
    HotkeyContext = AMAP_CONTEXT;
    uiSetCurrentSlab(&amap_slab);
 
+   gr_set_screen(svga_screen);
    fsmap_startup();
    uiShowMouse(NULL);
 }
@@ -116,5 +120,6 @@ void amap_exit()
 {
    fsmap_free();
    uiHideMouse(NULL);
+   gr_set_screen(cit_screen);
 }
 
