@@ -1428,15 +1428,12 @@ uchar save_hotkey_func(short keycode, ulong context, void* data)
 	if (gIsNewGame)									// Do the save thang.
 	{
 		status_bio_end();
-		ShowMenuBar();
-	 	DoSaveGameAs();
-		HideMenuBar();
+
+      // Fixme: Save game here!
+
 		status_bio_start();
 	}
-	else
-	 	DoSaveGame();
 	
-	HideCursor();									// Go back to Shock.
 	uiShowMouse(NULL);
 	if (music_on)
 		MacTuneStartCurrentTheme();

@@ -50,7 +50,7 @@ find_path(SDL2_MIXER_INCLUDE_DIR SDL_mixer.h
         PATH_SUFFIXES SDL2
         # path suffixes to search inside ENV{SDLDIR}
         include/SDL2 include
-        PATHS ${SDL2_MIXER_PATH}
+        PATHS build_ext/built_sdl_mixer ${SDL2_MIXER_PATH}
         )
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -66,7 +66,7 @@ find_library(SDL2_MIXER_LIBRARY
         ENV SDL2MIXERDIR
         ENV SDL2DIR
         PATH_SUFFIXES lib ${VC_LIB_PATH_SUFFIX}
-        PATHS ${SDL2_MIXER_PATH}
+        PATHS build_ext/built_sdl_mixer ${SDL2_MIXER_PATH}
         )
 
 if(SDL2_MIXER_INCLUDE_DIR AND EXISTS "${SDL2_MIXER_INCLUDE_DIR}/SDL_MIXER.h")

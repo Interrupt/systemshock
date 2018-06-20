@@ -195,7 +195,7 @@ set(AFILE_SRC
 	AFILE/Source/afile.c
 	AFILE/Source/amov.c
 #	AFILE/Source/animconv.c
-	AFILE/Source/aqtm.c
+#	AFILE/Source/aqtm.c
 	AFILE/Source/compose.c
 #	AFILE/Source/DumpHex.c
 #	AFILE/Source/MovConv.c
@@ -359,11 +359,12 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/RSD
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/3D/Source
+	${CMAKE_SOURCE_DIR}/src/Libraries/AFILE/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/DSTRUCT/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/H
 	${CMAKE_SOURCE_DIR}/src/Libraries/INPUT/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/FIX/Source
-    ${CMAKE_SOURCE_DIR}/src/Libraries/LG/Source
+	${CMAKE_SOURCE_DIR}/src/Libraries/LG/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/RES/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/FIXPP/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/EDMS/Source
@@ -371,12 +372,15 @@ include_directories(
 )
 
 add_library(2D_LIB ${2D_SRC})
+target_link_libraries(2D_LIB LG_LIB)
 add_library(GR_LIB ${GR_SRC})
 add_library(3D_LIB ${3D_SRC})
 add_library(AFILE_LIB ${AFILE_SRC})
+target_link_libraries(AFILE_LIB 2D_LIB)
 add_library(PALETTE_LIB ${PALETTE_SRC})
 add_library(DSTRUCT_LIB ${DSTRUCT_SRC})
 add_library(FIX_LIB ${FIX_SRC})
+target_link_libraries(FIX_LIB m)
 add_library(INPUT_LIB ${INPUT_SRC})
 add_library(LG_LIB ${LG_SRC})
 add_library(RES_LIB ${RES_SRC})

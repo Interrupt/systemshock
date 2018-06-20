@@ -81,7 +81,10 @@ errtype setup_intro_draw();
 void go_and_start_the_game_already(void);
 
 // Call this when opening a saved game.
-errtype load_that_thar_game(FSSpec *loadSpec);
+errtype load_that_thar_game(int which_slot);
+
+// Show splash screens
+void splash_draw(void);
 
 // Globals
 

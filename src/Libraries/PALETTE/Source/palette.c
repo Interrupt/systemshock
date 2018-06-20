@@ -91,8 +91,6 @@ byte num_installed_shifts = 0;
 
 void palette_advance_all_fx(long timestamp)
 {
-   extern void SetSDLPalette(int index, int count, uchar *pal);
-
    static int	ts_remainder = 0;   
    int         	i, time_diff;
    short		c1, c2, t;
@@ -141,7 +139,8 @@ void palette_advance_all_fx(long timestamp)
 		gr_set_pal((int)c1, (int)(c2 - c1 +1), &local_smap[c1*3]);
    }
 
-   SetSDLPalette(0, 256, local_smap);
+   // CC: refresh the whole palette
+   gr_set_pal(0, 256, local_smap);
 }
 
 uchar c_off_stack[3];
