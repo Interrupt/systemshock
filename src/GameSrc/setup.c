@@ -72,6 +72,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <cybstrng.h>
 #include <faketime.h>
 #include "2d.h"
+#include "splash.h"
+#include "splshpal.h"
+
+#include "Shock.h"
+
+#include <SDL.h>
 
 /*
 // Resource stuff
@@ -102,6 +108,7 @@ uchar startup_music;
 int setup_mode;
 int last_setup_mode;
 int intro_num;
+int splash_num;
 int diff_sum = 0;
 
 extern char which_lang;
@@ -283,6 +290,8 @@ errtype draw_difficulty_description(int which_cat, int color);
 errtype journey_continue_func(uchar draw_stuff);
 
 uchar setup_sound_on=FALSE;
+
+bool waiting_for_key = false;
 
 #define MAX_NAME_SIZE   sizeof(player_struct.name)
 #define start_name (player_struct.name)
@@ -879,6 +888,13 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
 #endif
    if (mev->action & MOUSE_LDOWN)
    {
+
+      // If in the splash screen, advance
+      if(waiting_for_key) {
+         waiting_for_key = false;
+         return OK;
+      }
+
       switch (setup_mode)
       {
          case SETUP_JOURNEY:
@@ -961,6 +977,12 @@ uchar intro_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
    
    if (kev->code & KB_FLAG_DOWN) 
    {
+      // If in the splash screen, advance
+      if(waiting_for_key) {
+         waiting_for_key = false;
+         return OK;
+      }
+
       switch (setup_mode)
       {
          case SETUP_JOURNEY:
@@ -1187,6 +1209,65 @@ errtype setup_init(void)
    return(OK);
 }
 
+void pause_for_key(ulong wait_time)
+{
+   extern void pump_events(void);
+   waiting_for_key = true;
+
+   ulong wait_until = TickCount() + wait_time;
+   while (waiting_for_key && ((ulong)TickCount() < wait_until))
+   {
+      input_chk();
+      pump_events();
+      SDLDraw();
+   }
+
+   waiting_for_key = false;
+}
+
+void splash_draw()
+{
+   int      pal_file;
+   
+   // Need to load the splash palette file
+
+   printf("Loading splshpal.res\n");
+   pal_file = ResOpenFile("res/data/splshpal.res");
+
+   if (pal_file < 0)
+      printf("Could not open splshpal.res!\n");
+
+   uchar splash_pal[768];
+   ResExtract(RES_splashPalette, splash_pal);
+
+   // Set initial palette
+
+   gr_set_pal(0, 256, splash_pal);
+
+   // Draw Origin Logo
+
+   uiHideMouse(NULL);
+   draw_full_res_bm(REF_IMG_bmOriginSplash, 0, 0, FALSE);
+   pause_for_key(500);
+
+   // Draw LGS Logo
+
+   uiHideMouse(NULL);
+   draw_full_res_bm(REF_IMG_bmLGSplash, 0, 0, FALSE);
+   pause_for_key(500);
+
+   // Draw System Shock title
+
+   uiHideMouse(NULL);
+   draw_full_res_bm(REF_IMG_bmSystemShockTitle, 0, 0, FALSE);
+   pause_for_key(500);
+
+   // Original palette
+   gr_set_pal(0, 256, ppall);
+
+   ResCloseFile(pal_file);
+}
+
 // -------------------------------------------------------------
 // setup_loop()
 //
@@ -1294,6 +1375,9 @@ void setup_start()
    printf("Loading intro.res\n");
    intro_num = ResOpenFile("res/data/intro.res");
 
+   printf("Loading splash.res\n");
+   splash_num = ResOpenFile("res/data/splash.res");
+
    // slam in the right palette
    load_da_palette();
 
@@ -1361,6 +1445,7 @@ void setup_exit()
    extern void end_intro_sound(void);
 
    ResCloseFile(intro_num);
+   ResCloseFile(splash_num);
 
 #ifdef PALFX_FADES
    if (pal_fx_on) 
