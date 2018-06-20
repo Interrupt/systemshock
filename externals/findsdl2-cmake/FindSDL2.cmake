@@ -66,6 +66,7 @@
 #  License text for the above reference.)
 
 SET(SDL2_SEARCH_PATHS
+	build_ext/built_sdl # Local build
 	~/Library/Frameworks
 	/Library/Frameworks
 	/usr/lib/i386-linux-gnu
