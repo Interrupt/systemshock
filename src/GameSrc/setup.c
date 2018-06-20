@@ -72,6 +72,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <cybstrng.h>
 #include <faketime.h>
 #include "2d.h"
+#include "hotkey.h"
+#include "kbcook.h"
 
 /*
 // Resource stuff
@@ -399,7 +401,7 @@ errtype difficulty_draw(uchar full)
 //
 //
 
-Rect name_rect={{DIFF_NAME_TEXT_X,DIFF_NAME_Y},{DIFF_NAME_X2,DIFF_NAME_Y2}};
+Rect name_rect = {DIFF_NAME_Y, DIFF_NAME_TEXT_X, DIFF_NAME_Y2, DIFF_NAME_X2};
 
 errtype draw_username(int color, char *string)
 {

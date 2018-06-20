@@ -88,6 +88,8 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PreprocessorDefinitions>powerc;SVGA_SUPPORT;SDL_MAIN_HANDLED;USE_SDL_MIXER=1;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ForcedIncludeFiles>$(ProjectDir)src\GameSrc\Headers\precompiled.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;powerc;SVGA_SUPPORT;SDL_MAIN_HANDLED;USE_SDL_MIXER=1;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
