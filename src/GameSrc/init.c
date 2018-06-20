@@ -756,7 +756,6 @@ errtype init_pal_fx()
 
       LG_memcpy(ppall,tmppal_lower,32*3);
       gr_set_pal(0, 256, ppall);
-      SetSDLPalette(0, 256, ppall);
    }
 }
 

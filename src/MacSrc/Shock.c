@@ -89,6 +89,7 @@ Boolean				gGameCompletedQuit;
 
 grs_screen  *cit_screen;
 SDL_Window* window;
+SDL_Palette* sdlPalette;
 
 extern grs_screen *svga_screen;
 extern 	frc *svga_render_context;
@@ -349,6 +350,10 @@ void InitSDL()
 		"System Shock - Shockolate 0.5", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN);
 
+	// Create the palette
+
+	sdlPalette = SDL_AllocPalette(256);
+
 	// Setup the screen
 
     svga_screen = cit_screen = gr_alloc_screen(grd_cap->w, grd_cap->h);
@@ -367,9 +372,9 @@ void InitSDL()
 	SDLDraw();
 }
 
+SDL_Color gamePalette[256];
 void SetSDLPalette(int index, int count, uchar *pal)
 {
-	SDL_Color gamePalette[256];
 	for(int i = index; i < count; i++) {
 		gamePalette[index+i].r = *pal++;
 		gamePalette[index+i].g = *pal++;
@@ -383,7 +388,6 @@ void SetSDLPalette(int index, int count, uchar *pal)
 	gamePalette[255].b = 0x0;
 	gamePalette[255].a = 0xFF;
 
-	SDL_Palette* sdlPalette = SDL_AllocPalette(count);
 	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
 	SDL_SetSurfacePalette(drawSurface, sdlPalette);
 	SDL_SetSurfacePalette(offscreenDrawSurface, sdlPalette);

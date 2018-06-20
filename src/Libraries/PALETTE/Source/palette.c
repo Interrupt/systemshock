@@ -138,6 +138,9 @@ void palette_advance_all_fx(long timestamp)
 	if (Palette_Effects_Table[0].effect == CBANK) {
 		gr_set_pal((int)c1, (int)(c2 - c1 +1), &local_smap[c1*3]);
    }
+
+   // CC: refresh the whole palette
+   gr_set_pal(0, 256, local_smap);
 }
 
 uchar c_off_stack[3];

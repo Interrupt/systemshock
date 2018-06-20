@@ -109,7 +109,10 @@ void mac_set_mode(void)
 void mac_set_pal (int start, int n, uchar *pal_data)
  {
     extern void SetSDLPalette(int index, int count, uchar *pal);
-    SetSDLPalette(start, n, pal_data);
+
+    // HAX: Only update when given a whole palette!
+    if(start == 0 && n == 256)
+        SetSDLPalette(start, n, pal_data);
  }
  
 //------------------------------------------------------------------------
