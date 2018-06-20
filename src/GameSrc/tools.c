@@ -848,8 +848,14 @@ errtype end_wait()
 // --------------------------------------------------------------------
 // ZOOM BOXES 
 
-#define NUM_BOXES 8
-#define TICKS_PER_BOX 10
+/*
+ * Original zoom timing was 8 * 10 ticks at a timer frequency of 280 Hz, i.e.
+ * around 286 milliseconds. Assuming a refresh rate of 60 Hz that's around 17
+ * frames.
+ */
+//#define NUM_BOXES 8
+//#define TICKS_PER_BOX 10
+#define NUM_BOXES 17
 
 #define INTERP(s,f,i) (((f)*(i)+(s)*(NUM_BOXES-(i)-1))/(NUM_BOXES-1))
 
@@ -874,12 +880,7 @@ void zoom_rect(LGRect* start, LGRect* end)
       ss_box(ulx-1,uly-1,lrx+1,lry+1);
 
       extern SDLDraw(void);
-      for(int ii = 0; ii < TICKS_PER_BOX; ii++) {
-         SDLDraw();
-      }
-
-      // FIXME: nope!
-      //while(*tmd_ticks - last_time < TICKS_PER_BOX);
+      SDLDraw();
 
       ss_box(ulx,uly,lrx,lry);
       ss_box(ulx-1,uly-1,lrx+1,lry+1);
