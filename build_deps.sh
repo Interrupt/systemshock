@@ -4,7 +4,7 @@ set -e
 SDL_version=2.0.8
 SDL_mixer_version=2.0.2
 
-if [ -d ./built_ext/ ]; then
+if [ -d ./build_ext/ ]; then
 	echo A directory named build_ext already exists.
 	echo Please remove it if you want to recompile.
 	exit
@@ -20,7 +20,7 @@ function build_sdl {
 	tar xvf SDL2-${SDL_version}.tar.gz
 	pushd SDL2-${SDL_version}
 
-	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
+	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --prefix=${install_dir}/built_sdl
 	make
 	make install
 
@@ -33,7 +33,7 @@ function build_sdl_mixer {
 	#pushd SDL2_mixer-${SDL_mixer_version}
 	pushd SDL_mixer
 
-	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
+	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --prefix=${install_dir}/built_sdl_mixer
 	make
 	make install
 
