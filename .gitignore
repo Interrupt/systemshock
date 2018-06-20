@@ -53,6 +53,10 @@ build_ext
 Debug
 **/.vscode
 *.vcxproj*
+*.sln
+*.exp
+*.pdb
+*.sln
 
 # Save files
 CurrentGame.dat
