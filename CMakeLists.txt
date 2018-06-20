@@ -12,7 +12,12 @@ option(ENABLE_EXAMPLES "Enable example applications" OFF)
 
 # TODO compile the main SDL and make a similar thing for it
 # right now my SDL installation is found via ${SDL2_DIR}
-set(SDL2_MIXER_PATH "build_ext/SDL_mixer/VisualC/Win32/Debug")
+set(VC_LIB_PATH_SUFFIX VisualC/Win32/Debug)
+set(CMAKE_FIND_LIBRARY_PREFIXES "")
+set(CMAKE_FIND_LIBRARY_SUFFIXES .lib)
+
+set(SDL2_PATH "build_ext/SDL2-2.0.8/")
+set(SDL2_MIXER_PATH "build_ext/SDL_mixer")
 
 # HAAAAX!!
 add_definitions(-Dpowerc -DSVGA_SUPPORT -DSDL_MAIN_HANDLED)

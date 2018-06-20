@@ -66,7 +66,7 @@
 #  License text for the above reference.)
 
 SET(SDL2_SEARCH_PATHS
-	build_ext/SDL2-2.0.8 # Local build
+	${SDL2_PATH} # Local build
 	~/Library/Frameworks
 	/Library/Frameworks
 	/usr/lib/i386-linux-gnu
@@ -85,15 +85,6 @@ FIND_PATH(SDL2_INCLUDE_DIR SDL.h
 	PATH_SUFFIXES include/SDL2 include
 	PATHS ${SDL2_SEARCH_PATHS}
 )
-
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(VC_LIB_PATH_SUFFIX lib/x64)
-else()
-    set(VC_LIB_PATH_SUFFIX lib/x86)
-endif()
-
-set(CMAKE_FIND_LIBRARY_PREFIXES "")
-set(CMAKE_FIND_LIBRARY_SUFFIXES .lib)
 
 FIND_LIBRARY(SDL2_LIBRARY_TEMP
 	NAMES SDL2 
