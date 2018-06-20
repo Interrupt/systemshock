@@ -188,8 +188,6 @@ void ShockSetupLoop(void)
 
 	gr_clear(0xFF);
 
-	splash_draw();
-
 	while(_current_loop == SETUP_LOOP) {
 
 		gShockTicks = TickCount();

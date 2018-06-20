@@ -194,13 +194,23 @@ MemStack temp_memstack;
 
 uchar pause_for_input(ulong wait_time)
 {
-	extern void pump_events(void);
-	bool gotInput = false;
-
-	ulong wait_until = TickCount() + wait_time;
-	while (!gotInput && ((ulong)TickCount() < wait_until))
+	Boolean	gotInput = FALSE;
+	while (!gotInput && ((ulong)TickCount() < wait_time))
 	{
-		pump_events();
+		/*long		theKeys[4];
+#ifdef __MWERKS__
+		GetKeys((UInt32 *)theKeys);
+#else
+		GetKeys(theKeys);
+#endif
+		for (int i = 0; i < 4; i++)
+			if (theKeys[i] != 0)
+				gotInput = TRUE;
+		
+		if (Button()) {
+			gotInput = TRUE;
+		}*/
+
 		SDLDraw();
 	}
 	
@@ -396,9 +406,8 @@ void init_all(void)
 	// Put up splash screen for US!
     printf("-Make splash\n");
 	uiFlush();
-
-	//DrawSplashScreen(REF_IMG_bmOriginSplash, TRUE);
-	//SDLDraw();
+	//DrawSplashScreen(9002, TRUE);
+	SDLDraw();
 	
 	// Set the wait time for our screen
 	pause_time = TickCount();
@@ -504,8 +513,6 @@ void DrawSplashScreen(short id, Boolean fadeIn)
 	//CTabHandle		ctab;
 	extern void finish_pal_effect(byte id);
 	extern byte palfx_start_fade_up(uchar *new_pal);
-
-	//gr_clear(0xFF);
 
 	// First, clear the screen and load in the color table for this picture.
 	//gr_clear(0xFF);
@@ -751,6 +758,7 @@ errtype init_pal_fx()
       LG_memcpy(tmppal_lower,ppall,32*3);
       LG_memset(ppall,0,32*3);
       gr_set_pal(0, 256, ppall);
+      SetSDLPalette(0, 256, ppall);
 
       gr_init_blend(1);                // we want 2 tables, really, basically, and all 
 
