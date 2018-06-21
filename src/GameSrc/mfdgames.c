@@ -399,8 +399,7 @@ void games_expose_menu(MFD *m, ubyte control)
    ubyte cur_games=player_struct.softs.misc[MISC_SOFTWARE_GAMES];
    menu_state *ms = ((menu_state *) GAME_DATA);
    if (!full_game_3d)                   
-//KLC - chg for new art   draw_res_bm(REF_IMG_bmBlankMFD, 0,0);
-	 draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
+	 draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
    if (ms->save_time < TIME_TIL_SCREEN_SAVE) {
      ++ms->save_time;
      strcpy(buf,STRING(GamesMenu));
@@ -497,8 +496,7 @@ void games_expose_null(MFD *m, ubyte control)
    int  cur_games=0xff;
 
    if (!full_game_3d)
-//KLC - chg for new art   draw_res_bm(REF_IMG_bmBlankMFD, 0,0);
-	  draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
+	  draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
    ss_string(STRING(NotInstalled),10,20);
    ss_string(STRING(NotInstalled+1),15,35);
    mfd_add_rect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
@@ -700,8 +698,7 @@ void games_expose_pong(MFD *m, ubyte tac)
       }
    }
    if (!full_game_3d)
-//KLC - chg for new art   draw_res_bm(REF_IMG_bmBlankMFD, 0,0);
-	  draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
+	  draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
 
    gr_set_fcolor(ORANGE_YELLOW_BASE);
    ss_rect(cur_ps->c_pos-CMP_PADDLE_XRAD,PONG_BORDER,cur_ps->c_pos+CMP_PADDLE_XRAD,PONG_BORDER+CMP_PADDLE_YRAD*2);
@@ -908,8 +905,7 @@ void games_expose_road(MFD *m, ubyte tac)
       }
 
    if (!full_game_3d)
-//KLC - chg for new art   draw_res_bm(REF_IMG_bmBlankMFD, 0,0);
-	  draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
+	  draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
 
    {  // draw the game here, eh?
       int ledge, i, j;
@@ -1167,8 +1163,7 @@ void games_expose_bots(MFD *m, uchar control)
    }
 
    if (!full_game_3d)
-//KLC - chg for new art   draw_res_bm(REF_IMG_bmBlankMFD, 0,0);
-	  draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
+	  draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
 
    for (j=0; j < BOTS_NUM_ROWS; ++j) {
      gr_set_fcolor(WHITE);
@@ -1887,8 +1882,7 @@ void games_expose_15(MFD *m, ubyte control)
    if(full)
    {
       if (!full_game_3d)
-//KLC - chg for new art   draw_res_bm(REF_IMG_bmBlankMFD, 0,0);
-	 	draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
+		draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
       gr_set_fcolor(0xBF);
       ss_rect(PUZZ15_ULX-2,PUZZ15_ULY-2,PUZZ15_ULX+PUZZ15_WID+2,PUZZ15_ULY+PUZZ15_HGT+2);
       mfd_add_rect(0,0,MFD_VIEW_WID,MFD_VIEW_HGT);
@@ -2142,8 +2136,7 @@ void games_expose_ttt(MFD *m, ubyte control)
       Ref bm;
 
       if (!full_game_3d)
-//KLC - chg for new art   draw_res_bm(REF_IMG_bmBlankMFD, 0,0);
-	 	draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
+		draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
       gr_set_fcolor(RED_8_BASE+4);
       over=tictactoe_over(&(st->board));
       if(!over) {
@@ -3341,8 +3334,7 @@ static void wing_play_cutscene(char *s)
 {
   int anim;
   if (!full_game_3d)
-//KLC - chg for new art   draw_res_bm(REF_IMG_bmBlankMFD, 0,0);
-	  draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
+	  draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
   anim=(player_struct.game_time/WING_ANIM_CYCLE)%3;
   draw_res_bm(REF_IMG_GoofyNed + anim, 20, 2);
 
