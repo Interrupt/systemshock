@@ -337,7 +337,7 @@ static void undraw_meter_area(LGRect* r)
 	int	x,y;
 	
 	STORE_CLIP(a,b,c,d);
-	safe_set_cliprect(r->ul.x,r->ul.y,r->lr.x,r->lr.y);
+	ss_safe_set_cliprect(r->ul.x,r->ul.y,r->lr.x,r->lr.y);
 	x = EYEMETER_X();
 	y = EYEMETER_Y();
 
@@ -521,7 +521,7 @@ void update_lean_meter(uchar force)
 
 	if (force || last_lean_icon != -1)
 	{
-		r.ul = MakePoint(SCONV_X(LEANOMETER_X()), SCONV_Y(LEANOMETER_Y()));
+		r.ul = MakePoint(LEANOMETER_X(), LEANOMETER_Y());
 		r.lr = MakePoint(r.ul.x + 46, r.ul.y + 53);
 		undraw_meter_area(&r);
 	}
@@ -577,8 +577,8 @@ void draw_eye_bitmap(grs_bitmap *eye_bmap, LGPoint pos, int lasty)
 	char		saveMode;
 	
 	current_meter_region = PICK_METER_REGION(full_game_3d);
-	pos.x += SCONV_X(EYEMETER_X());
-	pos.y += SCONV_X(EYEMETER_Y());
+	pos.x += EYEMETER_X();
+	pos.y += EYEMETER_Y();
 	r.ul = pos;
 	r.lr.x = pos.x + eye_bmap->w;
 	r.ul.y = lasty;
@@ -590,7 +590,7 @@ void draw_eye_bitmap(grs_bitmap *eye_bmap, LGPoint pos, int lasty)
 	//saveMode = convert_use_mode;
 	//convert_use_mode = 0;
 	if (is_onscreen()) uiHideMouse(&r);
-	gr_bitmap(eye_bmap, r.ul.x, r.ul.y);
+	ss_bitmap(eye_bmap, r.ul.x, r.ul.y);
 	if (is_onscreen()) uiShowMouse(&r);
 	//convert_use_mode = saveMode;
 }
@@ -615,13 +615,13 @@ void update_eye_meter(uchar force)
    bool	saveBio;
 
    if (yang > FIXANG_PI) yang -= 2* FIXANG_PI;
-   y =  - (HIRES_EYEMETER_H * yang / (2*MAX_EYE_ANGLE) );
+   y =  - (EYEMETER_H * yang / (2*MAX_EYE_ANGLE) );
 
    // Hey, let's take gruesome advantange of the fact that 
    // booleans are zero or one.  
-   lefty = hires_eye_height[1 + (yang < 0) - (yang > 0)];
+   lefty = discrete_eye_height[1 + (yang < 0) - (yang > 0)];
    lefty -= (eye_lbmap->h)/2;
-   y +=  HIRES_EYEMETER_H/2 - 2 - (eye_rbmap->h/2)/2;
+   y +=  EYEMETER_H/2 - 2 - (eye_rbmap->h/2)/2;
 
    if (!force
       && y == last_y
@@ -635,12 +635,12 @@ void update_eye_meter(uchar force)
 
    if (force)
    {
-      LGRect r = { {0,0}, {SCONV_X(46),SCONV_Y(53)} };
-      RECT_MOVE(&r,MakePoint(SCONV_X(EYEMETER_X()), SCONV_Y(EYEMETER_Y())));
+      LGRect r = { {0,0}, {46,53} };
+      RECT_MOVE(&r,MakePoint(EYEMETER_X(), EYEMETER_Y()));
       undraw_meter_area(&r);
    }
-   draw_eye_bitmap(eye_lbmap,MakePoint(3,lefty),last_ly);
-   draw_eye_bitmap(eye_rbmap,MakePoint(38-eye_rbmap->w,y),last_y);
+   draw_eye_bitmap(eye_lbmap,MakePoint(2,lefty),last_ly);
+   draw_eye_bitmap(eye_rbmap,MakePoint(19-eye_rbmap->w,y),last_y);
    
    gBioInited = saveBio;
    
