@@ -84,7 +84,7 @@ static uchar    partition_type;
 static uchar    partition_cnt;
 
 static uint     cur_obj_num, draw_last_cnt;
-static uint     osort_zc, osort_yc, osort_xc;			// KLC - changed order for our compiler (it puts them in reverse order)
+static uint     osort_xc, osort_yc, osort_zc;
 
 // set up data space, 
 void render_sort_start(void)
@@ -209,7 +209,7 @@ int do_part_sort(int ptype, int lo, int hi, int ploc)
    part_obj=&objs[sq_Refs[ploc]];
    pdir=(ptype==PRT_VERT)?2:(part_obj->loc.h&0x40)?0:1;
    get_part_val(part_val,part_obj,pdir);
-   cam_val=*((&osort_xc)+pdir);
+   cam_val = pdir == 0 ? osort_xc : pdir == 1 ? osort_yc : osort_zc;
    near_f=(cam_val<part_val);
 
    if ((lo<=ploc)&&(ploc<hi))
