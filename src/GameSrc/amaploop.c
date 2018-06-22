@@ -776,7 +776,7 @@ uchar amap_kb_callback(curAMap *amptr, int code)
    
    if (cur_mapnote_ptr!=NULL)
    {
-//KLC - we'll do keydowns      if ((code&KB_FLAG_DOWN)==KB_FLAG_DOWN) return TRUE;
+      if (!(code & KB_FLAG_DOWN)) return TRUE;
       code = kb2ascii(code);
 //KLC      if ((code==KEY_ENTER)||(code==KEY_DEL))
       if (code==KEY_ENTER)												// If we've pressed Enter
