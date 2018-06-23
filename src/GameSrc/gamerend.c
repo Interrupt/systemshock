@@ -389,7 +389,7 @@ void gamesys_render_effects(void) {
 
             // Get the weapon art to draw.
             temp = get_handart(&deltax, &deltay, &beamx, mx, my);
-            if (temp != NULL) {
+            if (temp != ID_NULL) {
                 extern uchar ready_to_draw_handart(void);
 
                 if (handart_show != 1) // are we showing an attack frame?
@@ -564,7 +564,7 @@ short vhold_shift = 0;
 
 // returns whether to send the bitmap out in the render
 uchar gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y, int flags) {
-    extern hud_do_objs(short xtop, short ytop, short xwid, short ywid, uchar rev);
+    extern void hud_do_objs(short xtop, short ytop, short xwid, short ywid, uchar rev);
     grs_canvas *dest_canvas = (grs_canvas *)fake_dest_canvas;
     grs_bitmap *dest_bm = (grs_bitmap *)fake_dest_bm;
     uchar *orig_bits;

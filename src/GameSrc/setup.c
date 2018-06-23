@@ -1066,7 +1066,7 @@ uchar intro_key_handler(uiEvent *ev, LGRegion *r, void *user_data) {
 
 errtype load_savegame_names() {
     int i;
-    FILE *file;
+    int file;
 
     valid_save = 0;
 

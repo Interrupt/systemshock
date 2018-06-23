@@ -302,7 +302,7 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
 #endif
     {
         if (id != OBJ_NULL)
-            s_dprm.data = (void *)id;
+            s_dprm.data = (void *)(unsigned int)id;
         else if (x != 0)
             s_dprm.data = (void *)(0x80000000 | (x << 16) | y);
         else

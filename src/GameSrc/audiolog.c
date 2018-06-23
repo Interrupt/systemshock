@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "bark.h"
 
-typedef long Movie;
+typedef void * Movie;
 
 //-------------------
 //  PROTOTYPES

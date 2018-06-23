@@ -196,7 +196,7 @@ errtype obj_load_art(uchar flush_all) {
         FSSpec fSpec;
 
         objfnum = ResOpenFile("res/data/objart.res");
-        if (objfnum == NULL)
+        if (objfnum < 0)
             critical_error(CRITERR_RES | 5);
 
         // prt = (RefTable *)(frameBuffer+sizeof(frameBuffer)-APPROX_REF_TAB_SIZE);

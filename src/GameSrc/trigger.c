@@ -363,7 +363,7 @@ errtype trap_transmogrify_func(int p1, int p2, int p3, int p4) {
                 objs[p1].info.current_frame = MAX_BRIDGE_FRAME;
                 objBigstuffs[objs[p1].specID].cosmetic_value = MAX_BRIDGE_FRAME;
                 // counting backwards from zero
-                add_obj_to_animlist(p1, FALSE, TRUE, FALSE, 16, NULL, NULL, 0);
+                add_obj_to_animlist(p1, FALSE, TRUE, FALSE, 16, 0, NULL, 0);
                 if (source == NON_BRIDGE_TRIPLE) {
                     play_digi_fx_obj(SFX_FORCE_BRIDGE, 1, p1);
                 }
@@ -1363,7 +1363,7 @@ errtype real_animate_func(ObjID id, int p2, int p3, int p4) {
         real_instance_func(id, frames, -1, p3 & 0x7FFF);
         remove_obj_from_animlist(id);
         objs[id].info.current_frame = reverse ? frames - 1 : 0;
-        add_obj_to_animlist(id, TRUE, BIT_SET(p3, 15), BIT_SET(p3, 16), 0, NULL, NULL, 0);
+        add_obj_to_animlist(id, TRUE, BIT_SET(p3, 15), BIT_SET(p3, 16), 0, 0, NULL, 0);
     } else {
         reverse = BIT_SET(p2, 15);
         if (p2 & 0xF0000000)
@@ -1373,7 +1373,7 @@ errtype real_animate_func(ObjID id, int p2, int p3, int p4) {
         if (p3 != 0)
             retval = add_obj_to_animlist(id, FALSE, BIT_SET(p2, 15), BIT_SET(p2, 16), 0, 6, (void *)p3, ANIMCB_REMOVE);
         else
-            retval = add_obj_to_animlist(id, FALSE, BIT_SET(p2, 15), BIT_SET(p2, 16), 0, NULL, NULL, 0);
+            retval = add_obj_to_animlist(id, FALSE, BIT_SET(p2, 15), BIT_SET(p2, 16), 0, 0, NULL, 0);
     }
     return (retval);
 }
@@ -2107,7 +2107,7 @@ errtype check_deathwatch_triggers(ObjID id, uchar really_dead) {
     int comp;
     uchar dummy;
 
-    if (id == NULL)
+    if (id == OBJ_NULL)
         return (ERR_NOEFFECT);
 
     osid = objTraps[0].id;

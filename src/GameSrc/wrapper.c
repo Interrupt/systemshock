@@ -1401,7 +1401,7 @@ void soundopt_screen_init() {
 
     standard_button_rect(&r, i, 2, 2, 5);
     retkey = tolower(get_temp_string(REF_STR_AilThreeText)[0]);
-    multi_init(i, retkey, REF_STR_AilThreeText, REF_STR_DigiChannelState, NULL, sizeof(hack_digi_channels),
+    multi_init(i, retkey, REF_STR_AilThreeText, REF_STR_DigiChannelState, ID_NULL, sizeof(hack_digi_channels),
                &hack_digi_channels, 3, digichan_dealfunc, &r);
     i++;
 
@@ -1414,7 +1414,7 @@ void soundopt_screen_init() {
 #ifdef AUDIOLOGS
     standard_button_rect(&r, i, 2, 2, 5);
     retkey = tolower(get_temp_string(REF_STR_MusicText + 3)[0]);
-    multi_init(i, retkey, REF_STR_MusicText + 3, REF_STR_AudiologState, NULL, sizeof(audiolog_setting),
+    multi_init(i, retkey, REF_STR_MusicText + 3, REF_STR_AudiologState, ID_NULL, sizeof(audiolog_setting),
                &audiolog_setting, 3, audiolog_dealfunc, &r);
     i++;
 #endif
@@ -1512,7 +1512,7 @@ void screenmode_change(new_mode) {
     extern short mode_id;
     mode_id = new_mode;
     QUESTVAR_SET(SCREENMODE_QVAR, new_mode);
-    change_mode_func(0, 0, (void *)_current_loop);
+    change_mode_func(0, 0, (void *)(unsigned int)_current_loop);
     wrapper_screenmode_hack = TRUE;
 
     printf("Changed screen mode to %i\n", mode_id);
@@ -1674,8 +1674,8 @@ void joystick_screen_init(void) {
     clear_obuttons();
 
     standard_button_rect(&r, i, 2, 2, 1);
-    multi_init(i, keys[i], REF_STR_JoystickType, REF_STR_JoystickTypes, NULL, sizeof(wrap_joy_type), &wrap_joy_type, 4,
-               joystick_type_func, &r);
+    multi_init(i, keys[i], REF_STR_JoystickType, REF_STR_JoystickTypes, ID_NULL, sizeof(wrap_joy_type),
+               &wrap_joy_type, 4, joystick_type_func, &r);
     i++;
 
     standard_button_rect(&r, i, 2, 2, 1);
@@ -1830,16 +1830,16 @@ void headset_screen_init(void) {
 
     i++;
     standard_button_rect(&r, i, 2, 2, 2);
-    multi_init(i, keys[1], REF_STR_HeadsetText + 3, REF_STR_OffonText, NULL, sizeof(inp6d_stereo), &inp6d_stereo, 2,
-               headset_stereo_dealfunc, &r);
+    multi_init(i, keys[1], REF_STR_HeadsetText + 3, REF_STR_OffonText, ID_NULL, sizeof(inp6d_stereo),
+               &inp6d_stereo, 2, headset_stereo_dealfunc, &r);
 
     if (i6d_device == I6D_ALLPRO)
         dim_pushbutton(i);
 
     i++;
     standard_button_rect(&r, i, 2, 2, 2);
-    multi_init(i, keys[3], REF_STR_MoreHeadset + 1, REF_STR_OffonText, NULL, sizeof(headset_track), &headset_track, 2,
-               headset_tracking_dealfunc, &r);
+    multi_init(i, keys[3], REF_STR_MoreHeadset + 1, REF_STR_OffonText, ID_NULL, sizeof(headset_track),
+               &headset_track, 2, headset_tracking_dealfunc, &r);
 
     i++;
     standard_slider_rect(&r, i, 2, 2);
@@ -1923,14 +1923,14 @@ void options_screen_init(void) {
     i++;
 
     standard_button_rect(&r, 1, 2, 2, 2);
-    multi_init(i, keys[i], REF_STR_OnlineHelp, REF_STR_OffonText, NULL, sizeof(olh_temp), &olh_temp, 2, olh_dealfunc,
-               &r);
+    multi_init(i, keys[i], REF_STR_OnlineHelp, REF_STR_OffonText, ID_NULL, sizeof(olh_temp), &olh_temp, 2,
+               olh_dealfunc, &r);
     i++;
 
     i++;
 
     standard_button_rect(&r, 2, 2, 2, 2);
-    multi_init(i, keys[i], REF_STR_Language, REF_STR_Languages, NULL, sizeof(which_lang), &which_lang, 3,
+    multi_init(i, keys[i], REF_STR_Language, REF_STR_Languages, ID_NULL, sizeof(which_lang), &which_lang, 3,
                language_dealfunc, &r);
     i++;
 

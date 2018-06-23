@@ -883,7 +883,7 @@ void *amap_loc_get_note(void *map_sq) {
         cobjid = objRefs[curORef].obj;
         if (CitrefCheckHomeSq(curORef))
             if (ID2TRIP(cobjid) == MAPNOTE_TRIPLE)
-                return (void *)cobjid;
+                return (void *)(unsigned int)cobjid;
         curORef = objRefs[curORef].next;
     } // end of ORef loop
     return NULL;
@@ -1008,7 +1008,7 @@ void *amap_deal_with_map_click(curAMap *amptr, int *x, int *y) {
     datum = amap_loc_note_check(amptr, x, y, &todo);
     switch (todo) {
     case AMAP_NO_NOTE:
-        amptr->note_obj = NULL;
+        amptr->note_obj = 0;
         return datum;
     case AMAP_HAVE_NOTE:
         amptr->note_obj = (int)datum;
@@ -1066,7 +1066,7 @@ uchar amap_get_note(curAMap *amptr, char *buf) {
 // later, do this for real
 // ie base on the string stuff
 #ifdef USE_OBJ
-    if (amptr->note_obj != NULL) {
+    if (amptr->note_obj != 0) {
         strcpy(buf, "map note 0000");
         buf[9] = '0' + (((int)amptr->note_obj) / 1000) % 10;
         buf[10] = '0' + (((int)amptr->note_obj) / 100) % 10;
@@ -1074,7 +1074,7 @@ uchar amap_get_note(curAMap *amptr, char *buf) {
         buf[12] = '0' + (((int)amptr->note_obj) % 10);
     }
 #else
-    if (amptr->note_obj != NULL)
+    if (amptr->note_obj != 0)
         strcpy(buf, amap_note_string(amptr->note_obj));
 #endif
     else {

@@ -286,7 +286,7 @@ access_ok:
                 retval = TRUE;
             }
 
-            add_obj_to_animlist(id, FALSE, FALSE, FALSE, 32, NULL, NULL, 0); // play anim forwards
+            add_obj_to_animlist(id, FALSE, FALSE, FALSE, 32, 0, NULL, 0); // play anim forwards
             play_fx = TRUE;
 
             // remove render-blocking bit, since well, we're open.
@@ -311,7 +311,7 @@ access_ok:
         }
     } else {
         char real_frame = objs[id].info.current_frame;
-        add_obj_to_animlist(id, FALSE, TRUE, FALSE, 32, NULL, NULL, 0); // play anim backwards
+        add_obj_to_animlist(id, FALSE, TRUE, FALSE, 32, 0, NULL, 0); // play anim backwards
         play_fx = TRUE;
     }
     if (play_fx) {
@@ -589,7 +589,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
         extern uchar gump_get_useful(void);
         extern void gump_clear(void);
 
-        if (id == player_struct.panel_ref && object_on_cursor == NULL) {
+        if (id == player_struct.panel_ref && object_on_cursor == 0) {
             gump_get_useful();
             return TRUE;
         }
@@ -866,7 +866,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
             switch (objs[id].subclass) {
             case FIXTURE_SUBCLASS_RECEPTACLE:
             case FIXTURE_SUBCLASS_VENDING:
-                if ((cursor_obj != NULL) || (QUESTVAR_GET(MISSION_DIFF_QVAR) < 1)) {
+                if ((cursor_obj != OBJ_NULL) || (QUESTVAR_GET(MISSION_DIFF_QVAR) < 1)) {
                     if (ID2TRIP(id) == RETSCANNER_TRIPLE) {
                         int head_count = 0;
                         if (ID2TRIP(cursor_obj) == HEAD_TRIPLE)
@@ -1557,7 +1557,7 @@ errtype obj_screen_animate(ObjID id) {
                                          ANIMCB_REPEAT | ANIMCB_CYCLE);
         else
             retval = add_obj_to_animlist(id, TRUE, objBigstuffs[objs[id].specID].data1 & 0x2,
-                                         objBigstuffs[objs[id].specID].data1 & 0x1, 0, NULL, NULL, NULL);
+                                         objBigstuffs[objs[id].specID].data1 & 0x1, 0, 0, NULL, 0);
         break;
     case CLASS_SMALLSTUFF:
         if (objSmallstuffs[objs[id].specID].data2 >> 16)
@@ -1566,7 +1566,7 @@ errtype obj_screen_animate(ObjID id) {
                                          ANIMCB_REPEAT | ANIMCB_CYCLE);
         else
             retval = add_obj_to_animlist(id, TRUE, objBigstuffs[objs[id].specID].data1 & 0x2,
-                                         objBigstuffs[objs[id].specID].data1 & 0x1, 0, NULL, NULL, NULL);
+                                         objBigstuffs[objs[id].specID].data1 & 0x1, 0, 0, NULL, 0);
         break;
     }
     return (OK);

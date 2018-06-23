@@ -786,7 +786,7 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
 
     // Open the saved-game (or archive) file.
     fd = ResOpenFile(CURRENT_GAME_FNAME);
-    if (fd == NULL) {
+    if (fd < 0) {
         // Warning(("Could not load map file %s (%s) , rv = %d!\n",dpath_fn,fn,retval));
         printf("Could not load map file %d\n", retval);
         if (make_player)
@@ -1495,7 +1495,7 @@ obj_out:
                 obj_screen_animate(oid);
                 break;
             default:
-                add_obj_to_animlist(oid, REPEAT_3D(ObjProps[OPNUM(oid)].bitmap_3d), FALSE, FALSE, 0, NULL, NULL, 0);
+                add_obj_to_animlist(oid, REPEAT_3D(ObjProps[OPNUM(oid)].bitmap_3d), FALSE, FALSE, 0, 0, NULL, 0);
                 break;
             }
         }

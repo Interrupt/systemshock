@@ -345,7 +345,7 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
     Id useme;
     grs_bitmap *result;
 
-    if (*use_ref != NULL)
+    if (*use_ref != ID_NULL)
         *use_ref = 0;
 
     tpdata = tpdata & 0xFFF;
@@ -360,7 +360,7 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
             useme = 0;
         } else
             useme = TEXTURE_SMALL_ID + *index;
-        if (use_ref != NULL)
+        if (use_ref != ID_NULL)
             *use_ref = MKREF(useme, 0);
         return (lock_bitmap_from_ref_anchor(MKREF(useme, 0), NULL));
         break;
@@ -804,7 +804,7 @@ ObjID obj_create_base(int triple) {
                         dist = long_fast_pyth_dist(killobjloc.x - ploc.x, killobjloc.y - ploc.y);
                         if (dist >= maxdist) {
                             kill_obj = oid;
-                            kill_container = NULL;
+                            kill_container = OBJ_NULL;
                             maxdist = dist;
                         }
                     }
@@ -895,7 +895,7 @@ ObjID obj_create_base(int triple) {
             obj_screen_animate(new_id);
             break;
         default:
-            add_obj_to_animlist(new_id, REPEAT_3D(ObjProps[OPTRIP(triple)].bitmap_3d), FALSE, FALSE, 0, NULL, NULL, 0);
+            add_obj_to_animlist(new_id, REPEAT_3D(ObjProps[OPTRIP(triple)].bitmap_3d), FALSE, FALSE, 0, 0, NULL, 0);
             break;
         }
     }
@@ -1277,7 +1277,7 @@ errtype obj_create_player(ObjLoc *plr_loc) {
         return (ERR_NOEFFECT);
     }
     player_dos_obj = &(objs[PLAYER_OBJ]);
-    fr_camera_create(&player_cam, CAMTYPE_OBJ | CAMMOD_USEMOD, (fix *)player_struct.rep, 0);
+    fr_camera_create(&player_cam, CAMTYPE_OBJ | CAMMOD_USEMOD, (fix *)(unsigned int)player_struct.rep, 0);
     if (cam_mode == OBJ_PLAYER_CAMERA)
         fr_camera_setdef(&player_cam);
 

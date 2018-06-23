@@ -317,7 +317,7 @@ void do_explosion(ObjLoc loc, ObjID exclusion, ubyte special_effect, ExplosionDa
                         if ((affected_object != OBJ_NULL) && (affected_object != PLAYER_OBJ)) {
                             // saves time in dealing with damage!
                             if (!objs[affected_object].info.current_hp) {
-                                affected_object = NULL;
+                                affected_object = OBJ_NULL;
                             }
                         }
 
@@ -598,7 +598,7 @@ void activate_grenade(ObjSpecID osid) {
 uchar activate_grenade_on_cursor(void) {
     ObjID oc = object_on_cursor;
 
-    if (oc == NULL || objs[oc].obclass != CLASS_GRENADE)
+    if (oc == OBJ_NULL || objs[oc].obclass != CLASS_GRENADE)
         return FALSE;
 
     if (objGrenades[objs[oc].specID].flags & GREN_ACTIVE_FLAG)

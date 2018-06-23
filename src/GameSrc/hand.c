@@ -232,7 +232,7 @@ Ref get_handart(int *x_offset, int *y_offset, int *beam_x_offset, short mouse_x,
         if (mouse_y < 0)
             mouse_y = 0;
         else if (mouse_y > SCREEN_VIEW_HEIGHT)
-            return (NULL);
+            return (ID_NULL);
         else if (mouse_y > (SCREEN_VIEW_HEIGHT - 10))
             view_base_y++;
 

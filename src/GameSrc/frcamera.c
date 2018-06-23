@@ -110,7 +110,7 @@ uchar fr_camera_create(cams *cam, int camtype, void *arg1, void *arg2) {
     _cam->type = camtype;
 
     if (camtype & CAMBIT_OBJ)
-        _cam->obj_id = (ushort)arg1;
+        _cam->obj_id = (unsigned int)arg1;
     else
         LG_memcpy(_cam->coor, arg1, sizeof(fix) * CAM_COOR_CNT);
 
@@ -134,7 +134,7 @@ int fr_camera_update(cams *cam, void *arg1, int whicharg, void *arg2) {
     _cam_top(cam) FALSE;
     if (arg1 != NULL)
         if (_cam->type & CAMBIT_OBJ)
-            _cam->obj_id = (ushort)arg1;
+            _cam->obj_id = (unsigned int)arg1;
         else
             LG_memcpy(_cam->coor, arg1, sizeof(fix) * CAM_COOR_CNT);
     if (whicharg == CAM_UPDATE_ALL)

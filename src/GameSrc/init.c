@@ -626,7 +626,7 @@ errtype object_data_load(void) {
 
     // Make the objmode camera....
     printf("create camera\n");
-    fr_camera_create(&objmode_cam, CAMTYPE_OBJ, (fix *)player_struct.rep, NULL);
+    fr_camera_create(&objmode_cam, CAMTYPE_OBJ, (fix *)(unsigned int)player_struct.rep, NULL);
     AdvanceProgress();
 
     printf("load_dynamic_memory\n");

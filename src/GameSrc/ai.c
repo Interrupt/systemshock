@@ -691,7 +691,7 @@ errtype ai_attack_player(ObjSpecID osid, char a) {
 #ifdef PLAYTEST
             prevent_ray_spew = TRUE;
 #endif
-            if (hit_obj != NULL) {
+            if (hit_obj != OBJ_NULL) {
                 attack_object(hit_obj, CritterProps[cp_num].attacks[a].damage_type,
                               CritterProps[cp_num].attacks[a].damage_modifier,
                               CritterProps[cp_num].attacks[a].offense_value,

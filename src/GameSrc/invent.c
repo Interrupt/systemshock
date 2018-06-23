@@ -2796,7 +2796,7 @@ inv_display inv_display_list[] = {
      0, ITEMS_PER_PAGE, NUM_GENERAL_SLOTS,
      REF_STR_GeneralTitle,
      ACTIVE_GENERAL,
-     NULL,
+     0,
      MFD_INV_GENINV,
      NULL,
      NULL,
@@ -2816,7 +2816,7 @@ inv_display inv_display_list[] = {
      0, ITEMS_PER_PAGE, NUM_GENERAL_SLOTS,
      REF_STR_Null,
      ACTIVE_GENERAL,
-     NULL,
+     0,
      MFD_INV_GENINV,
      NULL,
      NULL,
@@ -3444,7 +3444,7 @@ uchar gen_inv_displays(int *i, inv_display **dp) {
 }
 
 void absorb_object_on_cursor(short keycode, ulong context, void *data) {
-    if (object_on_cursor == NULL)
+    if (object_on_cursor == 0)
         return;
 
     if (inventory_add_object(object_on_cursor, TRUE))

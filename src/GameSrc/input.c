@@ -928,7 +928,7 @@ uchar posture_hotkey_func(short keycode, ulong context, void *data) {
     ulong dummy;
     dummy = context + keycode;
 #endif
-    return player_set_posture((ubyte)data) == OK;
+    return player_set_posture((unsigned int)data) == OK;
 }
 
 uchar eye_hotkey_func(short keycode, ulong context, int data) {

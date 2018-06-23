@@ -106,7 +106,7 @@ errtype init_hack_cameras() {
     gr_clear(0);
     gr_pop_canvas();
 
-    fr_camera_create(&hack_cam, CAMTYPE_OBJ, (fix *)player_struct.rep, 0);
+    fr_camera_create(&hack_cam, CAMTYPE_OBJ, (fix *)(unsigned int)player_struct.rep, 0);
     for (i = 0; i < MAX_CAMERAS_VISIBLE; i++) {
         //      hack_cam_bitmaps[i] = gr_alloc_bitmap(BMT_FLAT8, 0, HACK_CAMERA_WIDTH, HACK_CAMERA_HEIGHT);
         //      gr_make_canvas(hack_cam_bitmaps[i], &hack_cam_canvases[i]);
@@ -173,7 +173,7 @@ errtype render_hack_cameras() {
                                (count == 1 || (((hack_cam_fr_count >> FRAME_PARITY_SHF) ^ camera_map[i]) & 1) == 0)))) {
             curr_hack_cam = camera_map[i] - 1;
             hack_frc_objs[curr_hack_cam] = hack_cam_objs[i];
-            fr_camera_update(&hack_cam, (void *)hack_cam_objs[i], 0, 0);
+            fr_camera_update(&hack_cam, (void *)(unsigned int)hack_cam_objs[i], 0, 0);
             fr_rend(hack_cam_frcs[camera_map[i] - 1]);
         }
     }
@@ -214,14 +214,14 @@ errtype hack_camera_takeover(int hack_cam) {
     hack_eye = eye_mods[1];
     eye_mods[1] = 0;
 
-    fr_camera_update(cam, (void *)hack_cam_objs[hack_cam], 0, 0);
+    fr_camera_update(cam, (void *)(unsigned int)hack_cam_objs[hack_cam], 0, 0);
     hack_takeover = hack_cam + 1;
     return (OK);
 }
 
 errtype hack_camera_relinquish() {
     cams *cam = fr_camera_getdef();
-    fr_camera_update(cam, (void *)PLAYER_OBJ, 0, 0);
+    fr_camera_update(cam, (void *)(unsigned int)PLAYER_OBJ, 0, 0);
 
     // force refresh of this hack camera.
     hack_frc_objs[camera_map[hack_takeover - 1] - 1] = OBJ_NULL;
