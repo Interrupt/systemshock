@@ -105,6 +105,8 @@ extern long height_colors[MAP_HEIGHTS];
 #define TEXTURE2COLOR(t) ((t)*2 + 32)
 #define CAMERA_COLOR (BROWN_BASE + 5)
 
+struct _tilemap;
+
 typedef uchar (*highlight_func)(FullMap *map, MapElem *elem, LGPoint square, void *data);
 
 typedef void (*tile_drawfunc)(struct _tilemap *t, LGPoint square, MapElem *elem, LGPoint pix);

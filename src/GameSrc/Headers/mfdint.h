@@ -113,6 +113,9 @@ extern ObjID panel_ref_unexpose(int mfd_id, int func);
 
 #define NUM_MFD_HANDLERS 4
 
+struct _mfd_handler;
+struct _MFD;
+
 typedef uchar (*MFD_handlerProc)(struct _MFD *mfd, uiEvent *ev, struct _mfd_handler *mh);
 typedef uchar (*MFD_SimpHandler)(struct _MFD *mfd, uiEvent *ev);
 

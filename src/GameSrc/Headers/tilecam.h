@@ -36,6 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Defines
 
+struct _tilecamera;
+
 typedef void (*camera_setfunc)(struct _tilecamera *tc);
 // Updates the state of the camera
 

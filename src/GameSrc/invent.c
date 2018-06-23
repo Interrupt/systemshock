@@ -229,6 +229,8 @@ typedef uchar (*color_func)(void *dp, int num);
 // list.
 typedef char *(*name_func)(void *dp, int num, char *buf);
 
+struct _inventory_display_list;
+
 // Get the string quantity of an item, given its rank in the
 // list,and its actual quantity.
 typedef char *(*quant_string_func)(struct _inventory_display_list *dp, int num, int quant, char *buf);
