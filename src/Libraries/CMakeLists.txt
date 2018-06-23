@@ -367,6 +367,7 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/src/Libraries/INPUT/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/FIX/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/LG/Source
+	${CMAKE_SOURCE_DIR}/src/Libraries/LG/Source/LOG/src
 	${CMAKE_SOURCE_DIR}/src/Libraries/RES/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/FIXPP/Source
 	${CMAKE_SOURCE_DIR}/src/Libraries/EDMS/Source
