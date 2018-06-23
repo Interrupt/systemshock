@@ -189,6 +189,7 @@ include_directories(
 	src/Libraries/SND/Source
 	src/Libraries/H
 	src/Libraries/LG/Source
+	src/Libraries/LG/Source/LOG/src
 	src/GameSrc/Headers
 	src/MacSrc
 )
