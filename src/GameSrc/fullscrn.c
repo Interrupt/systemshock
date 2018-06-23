@@ -409,7 +409,6 @@ void fullscreen_start() {
 // Restore all appropriate things to put us back in normal
 // screen mode
 void fullscreen_exit() {
-    extern wrapper_panel_close();
 #ifdef SVGA_SUPPORT
     uchar cur_pal[768];
     extern grs_screen *cit_screen;

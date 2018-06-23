@@ -410,7 +410,6 @@ short last_deltap = 0, last_deltah = 0;
 errtype physics_run(void) {
     int i;
     extern int avail_memory(int debug_src);
-    extern errtype TileMapUpdateCameras(struct _tilemap *);
 
     uchar update = FALSE;
     int deltat = player_struct.deltat;

@@ -324,7 +324,7 @@ grs_bitmap *game_fr_tmap_64(void) {
 grs_bitmap *game_fr_tmap_full(void) {
     grs_bitmap *draw_me;
     int loop = TEXTURE_128_INDEX, lmask;
-    register cur_drop = _frp.view.drop_rad[0] + textprops[_game_fr_tmap].distance_mod;
+    int cur_drop = _frp.view.drop_rad[0] + textprops[_game_fr_tmap].distance_mod;
 
     if (cur_drop < _fdt_dist) {
         cur_drop += _frp.view.drop_rad[1];

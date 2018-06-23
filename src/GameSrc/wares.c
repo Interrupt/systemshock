@@ -977,7 +977,7 @@ short energy_cost_vec[NUM_HARDWAREZ][MAX_VERSIONS] = {
 };
 
 uchar check_game(void) { return (!global_fullmap->cyber); }
-extern void mfd_games_turnon(bool, uchar real_s), mfd_games_turnoff(bool, uchar real_s);
+extern void mfd_games_turnon(uchar, uchar real_s), mfd_games_turnoff(uchar, uchar real_s);
 
 WARE Combat_SoftWare[NUM_COMBAT_SOFTS];
 WARE Defense_SoftWare[NUM_DEFENSE_SOFTS];

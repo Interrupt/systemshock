@@ -334,8 +334,6 @@ uchar fv;
     c = gr_get_clip_r();       \
     d = gr_get_clip_b()
 
-#define RESTORE_CLIP(a, b, c, d) gr_set_cliprect(a, b, c, d)
-
 // decides on a "standard" width for our widgets based on column count
 // of current screen.  Our desire is that uniform widgets of this size
 // should have certain margins between them independent of column count.
@@ -735,7 +733,7 @@ uchar keyslork_handler(uiEvent *ev, uchar butid) {
 }
 #pragma enable_message(202)
 
-void slork_init(uchar butid, uchar (*slork)(short code)) {
+void slork_init(uchar butid, slorker slork) {
     LG_memset(&OButtons[butid].rect, 0, sizeof(LGRect));
     *((slorker *)&(OButtons[butid].user)) = slork;
     OButtons[butid].evmask = UI_EVENT_KBD_COOKED;
@@ -1067,8 +1065,8 @@ void clear_obuttons() {
 void opanel_redraw(uchar back) {
     extern grs_bitmap inv_backgnd;
     int but;
-    Rect r = {{INVENTORY_PANEL_X, INVENTORY_PANEL_Y},
-              {INVENTORY_PANEL_X + INVENTORY_PANEL_WIDTH, INVENTORY_PANEL_Y + INVENTORY_PANEL_HEIGHT}};
+    LGRect r = {{INVENTORY_PANEL_X, INVENTORY_PANEL_Y},
+                {INVENTORY_PANEL_X + INVENTORY_PANEL_WIDTH, INVENTORY_PANEL_Y + INVENTORY_PANEL_HEIGHT}};
 #ifdef SVGA_SUPPORT
     uchar old_over = gr2ss_override;
     gr2ss_override = OVERRIDE_ALL; // Since we are really going straight to screen in our heart of hearts
@@ -1294,7 +1292,7 @@ uchar save_verify_slorker(uchar butid) {
 #pragma enable_message(202)
 
 void verify_screen_init(void (*verify)(uchar butid), slorker slork) {
-    Rect r;
+    LGRect r;
 
     clear_obuttons();
 
@@ -1302,7 +1300,7 @@ void verify_screen_init(void (*verify)(uchar butid), slorker slork) {
     pushbutton_init(0, tolower(get_temp_string(REF_STR_VerifyText)[0]), REF_STR_VerifyText, verify, &r);
 
     standard_button_rect(&r, 4, 2, 2, 5);
-    pushbutton_init(1, 0, tolower(REF_STR_VerifyText + 1), slork, &r);
+    pushbutton_init(1, 0, tolower(REF_STR_VerifyText + 1), (void (*)(uchar))slork, &r);
 
     slork_init(2, slork);
 
@@ -1393,7 +1391,7 @@ void digichan_dealfunc(short val) {
 
 #define SLIDER_OFFSET_3 0
 void soundopt_screen_init() {
-    Rect r;
+    LGRect r;
     char retkey;
     int i = 0;
 
@@ -1510,7 +1508,7 @@ void sound_screen_init(void) {
 
 #ifdef SVGA_SUPPORT
 uchar wrapper_screenmode_hack = FALSE;
-void screenmode_change(new_mode) {
+void screenmode_change(uchar new_mode) {
     extern short mode_id;
     mode_id = new_mode;
     QUESTVAR_SET(SCREENMODE_QVAR, new_mode);
@@ -1987,7 +1985,7 @@ void load_screen_init(void) {
 
     clear_obuttons();
 
-    textlist_init(0, comments, NUM_SAVE_SLOTS, SAVE_COMMENT_LEN, FALSE, 0, valid_save, valid_save, REF_STR_UnusedSave,
+    textlist_init(0, *comments, NUM_SAVE_SLOTS, SAVE_COMMENT_LEN, FALSE, 0, valid_save, valid_save, REF_STR_UnusedSave,
                   BUTTON_COLOR, WHITE, BUTTON_COLOR + 2, 0, load_dealfunc, NULL);
 
     // FIXME: Cannot pass a keycode with modifier flags as uchar
@@ -2017,7 +2015,7 @@ void save_screen_init(void) {
 
     clear_obuttons();
 
-    textlist_init(0, comments, NUM_SAVE_SLOTS, SAVE_COMMENT_LEN, TRUE, 0xFFFF, 0xFFFF, valid_save, REF_STR_UnusedSave,
+    textlist_init(0, *comments, NUM_SAVE_SLOTS, SAVE_COMMENT_LEN, TRUE, 0xFFFF, 0xFFFF, valid_save, REF_STR_UnusedSave,
                   BUTTON_COLOR, WHITE, BUTTON_COLOR + 2, REF_STR_EnterSaveString, save_dealfunc, NULL);
 
     // FIXME: Cannot pass a keycode with modifier flags as uchar

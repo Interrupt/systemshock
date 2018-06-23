@@ -36,7 +36,7 @@ static uchar *FauxStackPointer;
 static uint FauxStackSize;
 
 static uint PositionSize;
-static uchar (*generate_position)(void *parent, int index, uchar minimizer_moves);
+static uchar (*generate_position)(void *parent, int index, bool minimizer_moves);
 static int (*static_evaluator)(void *position);
 static uchar (*extend_horizon)(void *position);
 

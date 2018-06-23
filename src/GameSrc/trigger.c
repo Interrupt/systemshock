@@ -342,7 +342,7 @@ errtype trap_transmogrify_func(int p1, int p2, int p3, int p4) {
 #ifdef FIRST_SHODAN_MUG
     t2 = t1 ^ (p2 >> 16);
 #else
-    hey, look at me, I don't compile.  Look at me! t2 = (p2 >> 16);
+#error "hey, look at me, I don't compile.  Look at me! t2 = (p2 >> 16);"
 #endif
 
     if (((t1 > t2) ? t1 : t2) >= num_types(objs[p1].obclass, objs[p1].subclass)) {

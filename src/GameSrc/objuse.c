@@ -143,7 +143,7 @@ errtype obj_access_fail_message(int stringref, char access_level, char offset) {
 uchar door_moving(ObjID door, uchar dir) {
     uchar anim_data_from_id(ObjID id, bool *reverse, bool *cycle);
 
-    uchar moving, closing;
+    bool moving, closing;
 
     moving = anim_data_from_id(door, &closing, NULL);
     return (moving && (!closing == !dir));

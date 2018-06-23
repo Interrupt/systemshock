@@ -148,7 +148,7 @@ errtype load_small_texturemaps(void) {
 // but for now, we'll be lame
 
 extern uchar tmap_static_mem[];
-extern uchar *tmap_dynamic_mem = NULL;
+static uchar *tmap_dynamic_mem = NULL;
 
 #define get_tmap_128x128(i) ((uchar *)&tmap_dynamic_mem[i * (128 * 128)])
 #define get_tmap_64x64(i)   ((uchar *)&tmap_static_mem[i * SIZE_STATIC_TMAP])

@@ -105,7 +105,7 @@ extern uchar fullscrn_vitals;
 extern uchar fullscrn_icons;
 
 struct _field_data {
-    bool *var;
+    uchar *var;
     uchar fullscrn;
     int qvar;
 } checkbox_fields[] = {

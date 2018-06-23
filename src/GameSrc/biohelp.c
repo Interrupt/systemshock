@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdext.h"
 #include "mfddims.h"
 #include "mfdgadg.h"
-#include "status.h"
+//#include "status.h"
 #include "gamestrn.h"
 #include "mfdint.h"
 #include "tools.h"

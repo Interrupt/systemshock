@@ -2177,7 +2177,7 @@ uchar death_check(ObjID id, bool *b) {
 // special stuff.  Returns TRUE if the regular destruction process
 // should continue.
 uchar obj_combat_destroy(ObjID id) {
-    uchar retval = TRUE;
+    bool retval = TRUE;
     ObjSpecID osid = objs[id].specID;
     int i, *d1, *d2;
     extern ObjID hack_cam_objs[NUM_HACK_CAMERAS];

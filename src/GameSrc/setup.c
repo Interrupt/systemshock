@@ -370,7 +370,7 @@ errtype difficulty_draw(uchar full) {
 //
 //
 
-Rect name_rect = {{DIFF_NAME_TEXT_X, DIFF_NAME_Y}, {DIFF_NAME_X2, DIFF_NAME_Y2}};
+LGRect name_rect = {{DIFF_NAME_TEXT_X, DIFF_NAME_Y}, {DIFF_NAME_X2, DIFF_NAME_Y2}};
 
 errtype draw_username(int color, char *string) {
     gr_set_fcolor(color);
@@ -570,7 +570,7 @@ errtype journey_difficulty_func(uchar draw_stuff) {
 int credits_inp = 0;
 void *credits_txtscrn;
 
-void journey_credits_func(uchar draw_stuff) {
+errtype journey_credits_func(uchar draw_stuff) {
     // if (draw_stuff)
     //   res_draw_string(RES_citadelFont, SETUP_STRING_BASE + 2, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT3_TOP + 2);
 
@@ -595,6 +595,7 @@ void journey_credits_func(uchar draw_stuff) {
             journey_credits_done();
         }
     }
+    return (OK);
 }
 
 void journey_credits_done() {

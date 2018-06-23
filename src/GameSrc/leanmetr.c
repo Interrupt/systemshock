@@ -100,7 +100,7 @@ ubyte hires_eye_height[DISCRETE_EYE_POSITIONS] = {
 };
 LGPoint shield_offsets[9] = {{4, 3}, {4, 3}, {2, 3}, {4, 2}, {4, 2}, {2, 2}, {8, 1}, {4, 2}, {0, 1}};
 
-void EDMS_lean_o_meter(physics_handle ph, fix lean, fix crouch);
+void EDMS_lean_o_meter(physics_handle ph, fix *lean, fix *crouch);
 
 // -------
 // GLOBALS

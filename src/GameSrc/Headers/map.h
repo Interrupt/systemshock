@@ -148,11 +148,11 @@ typedef struct _map_element {
 
 #ifdef OLD_MAP
 typedef struct _omap_element {
-    struct _bitfields {
-        ushort tiletype : 6;
-        ushort flr_height : 5;
-        ushort ceil_height : 5;
-    };
+    //struct _bitfields {
+    //    ushort tiletype : 6;
+    //    ushort flr_height : 5;
+    //    ushort ceil_height : 5;
+    //};
     uchar param;
     struct _lighting {
         uchar floor : 4;

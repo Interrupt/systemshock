@@ -2303,7 +2303,7 @@ void mfd_setup_elevator(ushort levmask, ushort reachmask, ushort curlevel, uchar
     elev_data->shownlvls = levmask;
     elev_data->reachlvls = reachmask;
     elev_data->stat.currlev = curlevel;
-    elev_data->stat.selected = 0xFF;
+    elev_data->stat.selected = 0xF;
     curr_elev_special = special;
     mfd_notify_func(MFD_ELEV_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
 }

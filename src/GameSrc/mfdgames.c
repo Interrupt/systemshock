@@ -1983,7 +1983,7 @@ typedef struct {
 #define TTT_LRY      (TTT_ULY + TTT_PUZ_HGT)
 
 static void tictactoe_drawwin(ttt_state *st);
-uchar tictactoe_generator(void *pos, int index, uchar minimizer_moves);
+uchar tictactoe_generator(void *pos, int index, bool minimizer_moves);
 
 // ----------------------
 // TIC-TAC-TOE:
@@ -2238,7 +2238,7 @@ void tictactoe_drawwin(ttt_state *st) {
     }
 }
 
-uchar tictactoe_generator(void *pos, int index, uchar minimizer_moves) {
+uchar tictactoe_generator(void *pos, int index, bool minimizer_moves) {
     int i;
     tictactoe *t = (tictactoe *)pos;
     uchar empty = TRUE;
@@ -2375,7 +2375,7 @@ wing_star *wing_st = (wing_star *)(hideous_secret_game_storage + HIDEOUS_GAME_ST
 // so I note that all of these variables should be in the
 // player struct, that is in the mfd game state, and I'll
 // fix that later.
-static enum WingmanMode { WINGMAN_FORMATION, WINGMAN_ATTACK };
+enum WingmanMode { WINGMAN_FORMATION, WINGMAN_ATTACK };
 
 #if 0
 

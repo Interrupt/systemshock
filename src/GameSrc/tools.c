@@ -791,7 +791,7 @@ void zoom_rect(LGRect *start, LGRect *end) {
         ss_box(ulx, uly, lrx, lry);
         ss_box(ulx - 1, uly - 1, lrx + 1, lry + 1);
 
-        extern SDLDraw(void);
+        extern void SDLDraw(void);
         SDLDraw();
 
         ss_box(ulx, uly, lrx, lry);

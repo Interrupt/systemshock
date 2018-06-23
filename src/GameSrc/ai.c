@@ -67,7 +67,6 @@ errtype ai_fire_special(ObjID src, ObjID target, int proj_triple, ObjLoc src_loc
                         int duration);
 
 #define SLOW_PROJECTILE_DURATION 1000
-#define SLOW_PROJECTILE_GRAVITY  fix_make(0, 0x0C00)
 #define SLOW_PROJECTILE_SPEED    fix_make(5, 0)
 #define ATTACK_GRENADE_GRAVITY   fix_make(0, 0x8000)
 #define ATTACK_GRENADE_SPEED     fix_make(7, 0)
