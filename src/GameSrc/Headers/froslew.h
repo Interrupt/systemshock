@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 /*
  * FrOslew.h
@@ -30,10 +30,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Log: froslew.h $
  * Revision 1.2  1994/01/02  17:16:29  dc
  * Initial revision
- * 
+ *
  * Revision 1.1  1993/09/05  20:59:07  dc
  * Initial revision
- * 
+ *
  */
 
 #ifndef __FROSLEW_H
@@ -47,11 +47,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 long *fr_objslew_obj_to_fix(long *flist, Obj *cobj, int count);
-Obj  *fr_objslew_fix_to_obj(long *flist, Obj *cobj, int count);
-uchar  fr_objslew_tele_to(Obj *cobj, int x, int y);
-uchar  fr_objslew_allowed(Obj *cobj, long *eye);
-uchar  fr_objslew_moveone(Obj *objp, ObjID objnum, int which, int how, uchar conform);
-uchar  fr_objslew_go_real_height(Obj *cobj, long *eye);
+Obj *fr_objslew_fix_to_obj(long *flist, Obj *cobj, int count);
+uchar fr_objslew_tele_to(Obj *cobj, int x, int y);
+uchar fr_objslew_allowed(Obj *cobj, long *eye);
+uchar fr_objslew_moveone(Obj *objp, ObjID objnum, int which, int how, uchar conform);
+uchar fr_objslew_go_real_height(Obj *cobj, long *eye);
 uchar fr_objslew_setone(int which, int l_new);
 
 #ifndef __FROSLEW_SRC
@@ -60,4 +60,3 @@ extern uchar slew_conform_to_terrain, slew_full_3d;
 #endif
 
 #endif
-

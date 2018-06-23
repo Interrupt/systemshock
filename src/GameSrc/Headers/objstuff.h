@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 #ifndef __OBJSTUFF_H
 #define __OBJSTUFF_H
@@ -33,111 +33,111 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Instance typedefs
 typedef struct {
-//   COMMON_OBJSPEC_FIELDS;
-   union {
-		ObjID id;
-		ObjSpecID headused;
-	};
-	union {
-		ObjSpecID next;
-		ObjSpecID headfree; 
-	};
-	ObjSpecID prev;
-   short cosmetic_value;
-   int data1;
-   int data2;
+    //   COMMON_OBJSPEC_FIELDS;
+    union {
+        ObjID id;
+        ObjSpecID headused;
+    };
+    union {
+        ObjSpecID next;
+        ObjSpecID headfree;
+    };
+    ObjSpecID prev;
+    short cosmetic_value;
+    int data1;
+    int data2;
 } ObjBigstuff;
 
 typedef struct {
-//   COMMON_OBJSPEC_FIELDS;
-   union {
-		ObjID id;
-		ObjSpecID headused;
-	};
-	union {
-		ObjSpecID next;
-		ObjSpecID headfree; 
-	};
-	ObjSpecID prev;
-   short cosmetic_value;
-   int data1;
-   int data2;
+    //   COMMON_OBJSPEC_FIELDS;
+    union {
+        ObjID id;
+        ObjSpecID headused;
+    };
+    union {
+        ObjSpecID next;
+        ObjSpecID headfree;
+    };
+    ObjSpecID prev;
+    short cosmetic_value;
+    int data1;
+    int data2;
 } ObjSmallstuff;
 
 // Class typedefs
 typedef struct _BigstuffProp {
-   int data;
+    int data;
 } BigstuffProp;
 
 typedef struct _SmallstuffProp {
-   short uses_flags;
+    short uses_flags;
 } SmallstuffProp;
 
 // Subclass typedefs
 typedef struct _ElectronicBigstuffProp {
-   ubyte dummy;
+    ubyte dummy;
 } ElectronicBigstuffProp;
 
 typedef struct _FurnishingBigstuffProp {
-   ubyte dummy;
+    ubyte dummy;
 } FurnishingBigstuffProp;
 
 typedef struct _OnthewallBigstuffProp {
-   ubyte dummy;
+    ubyte dummy;
 } OnthewallBigstuffProp;
 
 typedef struct _LightBigstuffProp {
-   ubyte dummy;
-} LightBigstuffProp ;
+    ubyte dummy;
+} LightBigstuffProp;
 
 typedef struct _LabgearBigstuffProp {
-   ubyte dummy;
-} LabgearBigstuffProp ;
+    ubyte dummy;
+} LabgearBigstuffProp;
 
 typedef struct _TechnoBigstuffProp {
-   ubyte dummy;
-} TechnoBigstuffProp ;
+    ubyte dummy;
+} TechnoBigstuffProp;
 
 typedef struct _DecorBigstuffProp {
-   ubyte dummy;
-} DecorBigstuffProp ;
+    ubyte dummy;
+} DecorBigstuffProp;
 
 typedef struct _TerrainBigstuffProp {
-   ubyte dummy;
-} TerrainBigstuffProp ;
+    ubyte dummy;
+} TerrainBigstuffProp;
 
 typedef struct _UselessSmallstuffProp {
-   ubyte dummy;
-} UselessSmallstuffProp ;
+    ubyte dummy;
+} UselessSmallstuffProp;
 
 typedef struct _BrokenSmallstuffProp {
-   ubyte dummy;
-} BrokenSmallstuffProp ;
+    ubyte dummy;
+} BrokenSmallstuffProp;
 
 typedef struct _CorpselikeSmallstuffProp {
-   ubyte dummy;
-} CorpselikeSmallstuffProp ;
+    ubyte dummy;
+} CorpselikeSmallstuffProp;
 
 typedef struct _GearSmallstuffProp {
-   ubyte dummy;
-} GearSmallstuffProp ;
+    ubyte dummy;
+} GearSmallstuffProp;
 
 typedef struct _CardsSmallstuffProp {
-   ubyte dummy;
-} CardsSmallstuffProp ;
+    ubyte dummy;
+} CardsSmallstuffProp;
 
-#define NUM_SMALLSTUFF_VCOLORS   6
+#define NUM_SMALLSTUFF_VCOLORS 6
 typedef struct _CyberSmallstuffProp {
-   uchar vcolors[NUM_SMALLSTUFF_VCOLORS];
-} CyberSmallstuffProp ;
+    uchar vcolors[NUM_SMALLSTUFF_VCOLORS];
+} CyberSmallstuffProp;
 
 typedef struct _OnthewallSmallstuffProp {
-   ubyte dummy;
-} OnthewallSmallstuffProp ;
+    ubyte dummy;
+} OnthewallSmallstuffProp;
 
 typedef struct _PlotSmallstuffProp {
-   ObjID target;
-} PlotSmallstuffProp ;
+    ObjID target;
+} PlotSmallstuffProp;
 
 // Big Stuff
 #define NUM_ELECTRONIC_BIGSTUFF 9
@@ -159,12 +159,13 @@ typedef struct _PlotSmallstuffProp {
 #define NUM_ONTHEWALL_SMALLSTUFF 9
 #define NUM_PLOT_SMALLSTUFF 8
 
+#define NUM_BIGSTUFF                                                                                   \
+    (NUM_ELECTRONIC_BIGSTUFF + NUM_FURNISHING_BIGSTUFF + NUM_ONTHEWALL_BIGSTUFF + NUM_LIGHT_BIGSTUFF + \
+     NUM_LABGEAR_BIGSTUFF + NUM_TECHNO_BIGSTUFF + NUM_DECOR_BIGSTUFF + NUM_TERRAIN_BIGSTUFF)
 
-#define NUM_BIGSTUFF (NUM_ELECTRONIC_BIGSTUFF + NUM_FURNISHING_BIGSTUFF + NUM_ONTHEWALL_BIGSTUFF + NUM_LIGHT_BIGSTUFF + NUM_LABGEAR_BIGSTUFF + \
-   NUM_TECHNO_BIGSTUFF + NUM_DECOR_BIGSTUFF + NUM_TERRAIN_BIGSTUFF)
-
-#define NUM_SMALLSTUFF (NUM_USELESS_SMALLSTUFF + NUM_BROKEN_SMALLSTUFF + NUM_CORPSELIKE_SMALLSTUFF + NUM_GEAR_SMALLSTUFF + NUM_CARDS_SMALLSTUFF + \
-      NUM_CYBER_SMALLSTUFF + NUM_ONTHEWALL_SMALLSTUFF + NUM_PLOT_SMALLSTUFF)
+#define NUM_SMALLSTUFF                                                                                  \
+    (NUM_USELESS_SMALLSTUFF + NUM_BROKEN_SMALLSTUFF + NUM_CORPSELIKE_SMALLSTUFF + NUM_GEAR_SMALLSTUFF + \
+     NUM_CARDS_SMALLSTUFF + NUM_CYBER_SMALLSTUFF + NUM_ONTHEWALL_SMALLSTUFF + NUM_PLOT_SMALLSTUFF)
 
 // Enumeration of subclasses
 // Furniture
@@ -244,5 +245,3 @@ extern ObjSmallstuff default_smallstuff;
 #endif
 
 #endif // __OBJSTUFF_H
-
-

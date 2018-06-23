@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 /*
  * $Source: r:/prj/cit/src/inc/RCS/ss_flet.h $
@@ -24,19 +24,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 typedef struct {
-   fix norm[3];   // unit normal 
-   fix att;       // attentuation
-   fix comp;      // compression
-   int flags;     // flag field, BCD, Primary, Which type, so on
+    fix norm[3]; // unit normal
+    fix att;     // attentuation
+    fix comp;    // compression
+    int flags;   // flag field, BCD, Primary, Which type, so on
 } ss_facelet_return;
 
 // globals
 #define SS_MAX_FACELETS 16
 extern ss_facelet_return ss_edms_facelets[SS_MAX_FACELETS];
-extern uchar             ss_edms_facelet_cnt;
-extern int               ss_edms_bcd_flags;
-extern int               ss_edms_bcd_param;
-extern uchar             ss_edms_stupid_flag;
+extern uchar ss_edms_facelet_cnt;
+extern int ss_edms_bcd_flags;
+extern int ss_edms_bcd_param;
+extern uchar ss_edms_stupid_flag;
 
 // bitfield values
 // 0bEtttttttRRRRCCCC00FF00MM00TT0PPP
@@ -73,15 +73,15 @@ extern uchar             ss_edms_stupid_flag;
 #define SS_BCD_FRIC_HIGH  0x3000
 
 #define SS_BCD_CURR_SHF   16
-#define SS_BCD_CURR_ON    0xC0000   // mask with this to see if any current
-#define SS_BCD_CURR_DIR   0x30000   // this gives the direction
+#define SS_BCD_CURR_ON    0xC0000 // mask with this to see if any current
+#define SS_BCD_CURR_DIR   0x30000 // this gives the direction
 #define SS_BCD_CURR_N     0x00000
 #define SS_BCD_CURR_E     0x10000
 #define SS_BCD_CURR_S     0x20000
 #define SS_BCD_CURR_W     0x30000
-#define SS_BCD_CURR_SPD   0xC0000   // this gives "speed"
-#define SS_BCD_CURR_NULL  0x00000   // null is no current
-#define SS_BCD_CURR_LOW   0x40000   // low-high as expected
+#define SS_BCD_CURR_SPD   0xC0000 // this gives "speed"
+#define SS_BCD_CURR_NULL  0x00000 // null is no current
+#define SS_BCD_CURR_LOW   0x40000  // low-high as expected
 #define SS_BCD_CURR_MID   0x80000
 #define SS_BCD_CURR_HIGH  0xC0000
 
@@ -98,9 +98,9 @@ extern uchar             ss_edms_stupid_flag;
 #define SS_BCD_REPUL_SPD  0x800000
 #define SS_BCD_REPUL_NORM 0x000000
 #define SS_BCD_REPUL_FAST 0x800000
-                                 
-#define SS_BCD_EOF        (1<<31)
-#define TF_FLG_HPARAM     (1<<31)
+
+#define SS_BCD_EOF        (1 << 31)
+#define TF_FLG_HPARAM     (1 << 31)
 
 #define TF_FLG_BOX_MASK   0x30000000
 #define TF_FLG_BOX_NONE   0x00000000
@@ -124,5 +124,3 @@ extern uchar             ss_edms_stupid_flag;
 #define TFD_FULL  0
 #define TFD_RCAST 1
 #define TFD_BCD   2
-
-
