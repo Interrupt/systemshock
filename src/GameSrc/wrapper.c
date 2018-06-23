@@ -1423,7 +1423,8 @@ void soundopt_screen_init() {
     retkey = tolower(get_temp_string(REF_STR_MusicText + 2)[0]);
     pushbutton_init(RETURN_BUTTON, retkey, REF_STR_MusicText + 2, wrapper_pushbutton_func, &r);
 
-    keywidget_init(QUIT_BUTTON, KB_FLAG_ALT | 'x', wrapper_pushbutton_func);
+    // FIXME: Cannot pass a keycode with modifier flags as uchar
+    keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
     opanel_redraw(TRUE);
 }
 
@@ -1487,7 +1488,8 @@ void sound_screen_init(void) {
     retkey = tolower(get_temp_string(REF_STR_MusicText + 2)[0]);
     pushbutton_init(RETURN_BUTTON, retkey, REF_STR_MusicText + 2, wrapper_pushbutton_func, &r);
 
-    keywidget_init(QUIT_BUTTON, KB_FLAG_ALT | 'x', wrapper_pushbutton_func);
+    // FIXME: Cannot pass a keycode with modifier flags as uchar
+    keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
 
     opanel_redraw(TRUE);
 }
@@ -1696,7 +1698,8 @@ void joystick_screen_init(void) {
     standard_button_rect(&r, 5, 2, 2, 1);
     pushbutton_init(RETURN_BUTTON, keys[i], REF_STR_OptionsText + 5, wrapper_pushbutton_func, &r);
 
-    keywidget_init(QUIT_BUTTON, KB_FLAG_ALT | 'x', wrapper_pushbutton_func);
+    // FIXME: Cannot pass a keycode with modifier flags as uchar
+    keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
 
     opanel_redraw(TRUE);
 }
@@ -1742,7 +1745,8 @@ void input_screen_init(void) {
     pushbutton_init(i, keys[2], REF_STR_Joystick, joystick_button_func, &r);
     i++;
 
-    keywidget_init(QUIT_BUTTON, KB_FLAG_ALT | 'x', wrapper_pushbutton_func);
+    // FIXME: Cannot pass a keycode with modifier flags as uchar
+    keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
 
     opanel_redraw(TRUE);
 }
@@ -1797,7 +1801,8 @@ void video_screen_init(void) {
     standard_button_rect(&r, 5, 2, 2, 2);
     pushbutton_init(RETURN_BUTTON, keys[3], REF_STR_OptionsText + 5, wrapper_pushbutton_func, &r);
 
-    keywidget_init(QUIT_BUTTON, KB_FLAG_ALT | 'x', wrapper_pushbutton_func);
+    // FIXME: Cannot pass a keycode with modifier flags as uchar
+    keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
 
     opanel_redraw(TRUE);
 }
@@ -1893,7 +1898,8 @@ void screenmode_screen_init(void) {
     standard_button_rect(&r, 5, 2, 2, 2);
     pushbutton_init(RETURN_BUTTON, keys[2], REF_STR_OptionsText + 5, wrapper_pushbutton_func, &r);
 
-    keywidget_init(QUIT_BUTTON, KB_FLAG_ALT | 'x', wrapper_pushbutton_func);
+    // FIXME: Cannot pass a keycode with modifier flags as uchar
+    keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
 
     opanel_redraw(TRUE);
 }
@@ -1938,7 +1944,8 @@ void options_screen_init(void) {
     r.lr.x += 2;
     pushbutton_init(RETURN_BUTTON, keys[i], REF_STR_OptionsText + 5, wrapper_pushbutton_func, &r);
 
-    keywidget_init(QUIT_BUTTON, KB_FLAG_ALT | 'x', wrapper_pushbutton_func);
+    // FIXME: Cannot pass a keycode with modifier flags as uchar
+    keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
 
     opanel_redraw(TRUE);
 }
@@ -1983,7 +1990,8 @@ void load_screen_init(void) {
     textlist_init(0, comments, NUM_SAVE_SLOTS, SAVE_COMMENT_LEN, FALSE, 0, valid_save, valid_save, REF_STR_UnusedSave,
                   BUTTON_COLOR, WHITE, BUTTON_COLOR + 2, 0, load_dealfunc, NULL);
 
-    keywidget_init(QUIT_BUTTON, KB_FLAG_ALT | 'x', wrapper_pushbutton_func);
+    // FIXME: Cannot pass a keycode with modifier flags as uchar
+    keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
 
     opanel_redraw(TRUE);
 }
@@ -2012,7 +2020,8 @@ void save_screen_init(void) {
     textlist_init(0, comments, NUM_SAVE_SLOTS, SAVE_COMMENT_LEN, TRUE, 0xFFFF, 0xFFFF, valid_save, REF_STR_UnusedSave,
                   BUTTON_COLOR, WHITE, BUTTON_COLOR + 2, REF_STR_EnterSaveString, save_dealfunc, NULL);
 
-    keywidget_init(QUIT_BUTTON, KB_FLAG_ALT | 'x', wrapper_pushbutton_func);
+    // FIXME: Cannot pass a keycode with modifier flags as uchar
+    keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
 
     opanel_redraw(TRUE);
 }
