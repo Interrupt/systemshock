@@ -109,6 +109,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
 */
 
+#include <string.h>
+
+#include "log.h"
+
+// Relative path workaround
+#define THIS_FILE ((strrchr(__FILE__, '/') ?: __FILE__ - 1) + 1)
+
+/**
+ * Main function for logging
+ * @param level log level (LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL)
+ * @param string printf-like string with format
+ * @example LOGGER(LOG_TRACE, "My name is %s", name);
+**/
+#define LOGGER(level, ...) log_log(level, THIS_FILE, __LINE__, __VA_ARGS__)
 
 // CC: Turns SPEW_ON, on, if you want debug output
 //#define SPEW_ON
