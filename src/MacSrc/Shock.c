@@ -153,7 +153,7 @@ int main(int argc, char** argv)
 	// Start the main loop
 
 	printf("Showing main menu, starting game loop\n");
-	ShockMain();
+	mainloop(argc, argv);
 
 	status_bio_end();
     stop_music();

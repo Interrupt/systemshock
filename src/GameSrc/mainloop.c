@@ -116,7 +116,7 @@ void loopmode_enter(short loopmode)
    (*enter_modes[loopmode])();
 }
 
-void ShockMain(void)
+void mainloop(int argc, char *argv[])
 {
     extern void SDLDraw(void);
     extern long gShockTicks;
