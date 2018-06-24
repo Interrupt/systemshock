@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include "tmapint.h"
+
 /* polygon edges */
 extern void gri_x_edge(grs_tmap_loop_info *info, grs_vertex **p, grs_vertex **p_prev, int side);
 extern void gri_ix_edge(grs_tmap_loop_info *info, grs_vertex **p, grs_vertex **p_prev, int side);
