@@ -5,6 +5,8 @@
 #ifdef USE_SDL_MIXER
 
 #include <SDL_mixer.h>
+#include "error.h"
+#include "lgsndx.h"
 
 static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
 static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];

@@ -66,6 +66,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "status.h"
 #include "statics.h"
+#include "hotkey.h"
+#include "Carbon/Carbon.h"
 
 #ifdef AUDIOLOGS
 #include "audiolog.h"

@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __OLHEXT_H
 #define __OLHEXT_H
 
+#include "lg_types.h"
+
 /*
  * $Source: r:/prj/cit/src/inc/RCS/olhext.h $
  * $Revision: 1.2 $

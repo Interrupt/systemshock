@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //      This matrix is for Douggie and his magic circus...
 //      ==================================================
+extern "C" fix     EDMS_Dirac_basis[9];
 fix     EDMS_Dirac_basis[9];
 
 //	Here we need include files for each and every model that we'll be using...

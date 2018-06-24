@@ -54,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frprotox.h"
 #include "frflags.h"
 #include "game_screen.h"
+#include "kbcook.h"
 
 // octant-wise, that is...
 #define NORTH 0

@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "popups.h"
 #include "olhext.h"
+#include "lg_types.h"
 
 void SetShockGlobals(void);
 

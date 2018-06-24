@@ -31,7 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <string.h>
-#include <unistd.h>
+// #include <unistd.h>
+#include <io.h>
 
 #include "lg.h"
 #include "lzw.h"
@@ -314,8 +315,9 @@ int32_t ResPack(int32_t filenum) {
   // write directory on closing)
 
   // FIXME Non-portable
-  ftruncate(fileno(prf->fd), dataWrite);
-
+  //ftruncate(fileno(prf->fd), dataWrite);
+  _chsize(_fileno(prf->fd), dataWrite);
+  
   // Return # bytes reclaimed
   /* Spew(DSRC_RES_Write, ("ResPack: reclaimed %d bytes\n", sizeReclaimed)); */
 

@@ -62,6 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objload.h"
 
 #include "ai.h"
+#include "vox.h"
 
 #ifdef DOOM_EMULATION_MODE
 #include "diffq.h"

@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mainloop.h"
 #include "amaploop.h"
 #include "lvldata.h"
+#include "hotkey.h"
                         
 extern uchar amap_ms_callback(curAMap *amptr,int x,int y,short action,ubyte but);
 extern uchar amap_scroll_handler(uiEvent* ev, 	LGRegion* r, void* user_data);

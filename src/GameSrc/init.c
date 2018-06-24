@@ -72,11 +72,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "dynmem.h"
 #include "citres.h"
+#include "kb.h"
 
 #include "version.h"	// for system shock version number
 
 #include "Modding.h"
 #include <SDL.h>
+
 
 /*
 #define AIL_SOUND

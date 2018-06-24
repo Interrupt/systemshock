@@ -30,6 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Includes
 #include "objwpn.h"    // for GUN_SUBCLASS_BEAM
 #include "player.h"
+#include "lg_types.h"
+#include "region.h"
 
 // Defines
 

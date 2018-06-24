@@ -36,11 +36,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "edms_chk.h"
 
-//extern "C" {
+extern "C" {
 //#include <i86.h>   
 //#include <dpmi.h>   
 #include "ss_flet.h"
-//}
+}
 
 //	State information and utilities...
 //	==================================

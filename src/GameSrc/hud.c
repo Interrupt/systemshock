@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "diffq.h"
 
 #include "game_screen.h" //was screen.h?
-
+#include "Carbon/Carbon.h"
 
 LGRect target_screen_rect;
 

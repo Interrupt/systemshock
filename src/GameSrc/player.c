@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "physics.h"
 #include "palfx.h"
 #include "emailbit.h"
+#include "Carbon/Carbon.h"
 
 /*
 #include <config.h>
