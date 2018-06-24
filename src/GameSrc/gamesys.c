@@ -984,9 +984,14 @@ void do_stuff_every_second()
 		if(remain<CIT_CYCLE)
 		{
 			secret_render_fx=0;
-//KLC            play_cutscene(ENDGAME_CUTSCENE,TRUE);
-			gDeadPlayerQuit = TRUE;											// Pretend the player is dead.
-			gPlayingGame = FALSE;											// Hop out of the game loop.
+         //play_cutscene(ENDGAME_CUTSCENE,TRUE);
+
+         // CC: Back to the main menu until there's a real endgame cutscene again
+         _new_mode = SETUP_LOOP;
+         chg_set_flg(GL_CHG_LOOP);
+
+			//gDeadPlayerQuit = TRUE;											// Pretend the player is dead.
+			//gPlayingGame = FALSE;											// Hop out of the game loop.
 		}
 	}
 

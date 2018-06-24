@@ -64,6 +64,7 @@ void mainloop(int argc, char *argv[]);
 void loopmode_switch(short *cmode);
 errtype static_change_copy();
 void loopmode_exit(short loopmode);
+void loopmode_enter(short loopmode);
 
 #ifdef __MAINLOOP_SRC
 frc *_current_fr_context;

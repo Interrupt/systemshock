@@ -450,9 +450,11 @@ uchar kill_player(void)
    if (quick_death)
    {
       amap_reset();
-     secret_render_fx=0;
-     gDeadPlayerQuit = TRUE;
-	 gPlayingGame = FALSE;															// Hop out of the game loop.
+      secret_render_fx=0;
+
+      // CC: Go back to the main menu, should really play the death custcene here
+      _new_mode = SETUP_LOOP;
+      chg_set_flg(GL_CHG_LOOP);
    }
 
    return(quick_death | alternate_death);
