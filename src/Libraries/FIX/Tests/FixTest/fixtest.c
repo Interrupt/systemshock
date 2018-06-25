@@ -143,7 +143,7 @@ void parse(char *str, uint8_t command) {
         c++;
     if (command)
         cmd = CMD_NONE;
-    if (*c == NULL)
+    if (*c == '\0')
         return;
 
     // Look for matching commands, and then skip over it
@@ -171,7 +171,7 @@ void parse(char *str, uint8_t command) {
     } else
         args_neg[0] = neg = false;
 
-    while (*c != NULL) {
+    while (*c != '\0') {
         // We have now gotten to the next non-whitespace char
         if (isdigit(*c)) {
             // Update our numbers
