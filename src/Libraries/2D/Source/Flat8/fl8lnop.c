@@ -36,7 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "poly.h"
 #include "tmapint.h"
 #include "vtab.h"
-#include <stdio.h>
 
 // prototypes
 int gri_lin_umap_loop(grs_tmap_loop_info *tli);
@@ -173,12 +172,11 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
                 }
                 break;
             case GRL_OPAQUE | GRL_LOG2:
-                for (; x > 0; x--) {
+                for (; x > 0 && v >= 0; x--) {
                     k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
                     *(p_dest++) = t_bits[k]; // gr_fill_upixel(t_bits[k],x,y);
                     u += du;
                     v += dv;
-                    if (v < 0) printf("potential V overflow threat detected\n");                    
                 }
                 break;
             case GRL_TRANS | GRL_LOG2:
@@ -218,14 +216,13 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
                         }
                         break;*/
             case GRL_TRANS | GRL_LOG2 | GRL_CLUT:
-                for (; x > 0; x--) {
+                for (; x > 0 && v >= 0; x--) {
                     k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
                     if (k = t_bits[k])
                         *p_dest = t_clut[k]; // gr_fill_upixel(tli->clut[k],x,y);
                     p_dest++;
                     u += du;
                     v += dv;
-                    if (v < 0) printf("potential V overflow threat detected\n");
                 }
                 break;
             }
