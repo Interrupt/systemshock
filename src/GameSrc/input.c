@@ -87,6 +87,7 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "tools.h"
 #include "weapons.h"
 #include "mouselook.h"
+#include "wrapper.h"
 
 #ifdef NOT_YET //KLC - for VR headsets
 
@@ -99,7 +100,6 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #endif
 
 #include <paintbit.h>
-#include <wrapper.h>
 #include <editscrn.h>
 #include <frcamera.h>
 #include <frprotox.h>
@@ -1410,7 +1410,7 @@ void init_input(void)
    hotkey_add(DOWN('u'),DEMO_CONTEXT,toggle_giveall_func,(void *)TRUE);
    hotkey_add(DOWN('7'),DEMO_CONTEXT,toggle_up_level_func,(void *)TRUE);
    hotkey_add(DOWN('8'),DEMO_CONTEXT,toggle_down_level_func,(void *)TRUE);
-   hotkey_add(DOWN(KEY_ESC),DEMO_CONTEXT,pause_game_func,(void *)TRUE);
+   hotkey_add(DOWN(KEY_ESC),DEMO_CONTEXT,wrapper_options_func,(void *)TRUE);
    for (i = 0; i < NUM_POSTURES; i++)
    {
       hotkey_add(DOWN(posture_keys[i]),DEMO_CONTEXT,posture_hotkey_func,(void*)i);
