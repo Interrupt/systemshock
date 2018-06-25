@@ -92,15 +92,11 @@ fix g3_vec_mag(g3s_vector *v) {
 
 // compute dot product of vectors at [esi] & [edi]
 fix g3_vec_dotprod(g3s_vector *v0, g3s_vector *v1) {
-  AWide result, result2;
+  int64_t result = fix64_mul(v0->gX, v1->gX) +
+                   fix64_mul(v0->gY, v1->gY) +
+                   fix64_mul(v0->gZ, v1->gZ);
 
-  AsmWideMultiply(v0->gX, v1->gX, &result);
-  AsmWideMultiply(v0->gY, v1->gY, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(v0->gZ, v1->gZ, &result2);
-  AsmWideAdd(&result, &result2);
-  fix r = ((result.hi << 16) | (((ulong)result.lo) >> 16));
-  return ((result.hi << 16) | (((ulong)result.lo) >> 16));
+  return ((fix64_int(result) << 16) | (fix64_frac(result) >> 16));
 }
 
 // compute normalized surface normal from three points.

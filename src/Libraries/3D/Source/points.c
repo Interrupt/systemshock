@@ -379,40 +379,20 @@ v->gZ-_view_position.gZ,x,y,z);
 // does the rotate with the view matrix.
 // takes <x,y,z> = <esi,edi,ebp>, returns <x,y,z> = <ecx,esi,eax>
 void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz) {
-  AWide result, result2;
   // this matrix multiply here will someday be optimized for zero and one terms
-
-  // printf("do_rotate: %f %f %f\n", fix_float(x), fix_float(y), fix_float(z));
-  // printf(" matrix: %f %f %f : %f %f %f : %f %f %f\n", fix_float(vm1),
-  // fix_float(vm2), fix_float(vm3), fix_float(vm4), fix_float(vm5),
-  // fix_float(vm6), fix_float(vm7), fix_float(vm8), fix_float(vm9));
-
+  int64_t r;
   // first column
-  AsmWideMultiply(x, vm1, &result);
-  AsmWideMultiply(y, vm4, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(z, vm7, &result2);
-  AsmWideAdd(&result, &result2);
-  *rx = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(x, vm1) + fix64_mul(y, vm4) + fix64_mul(z, vm7);
+  *rx = ((fix64_int(r) << 16) | (fix64_frac(r) >> 16));
 
   // second column
-  AsmWideMultiply(x, vm2, &result);
-  AsmWideMultiply(y, vm5, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(z, vm8, &result2);
-  AsmWideAdd(&result, &result2);
-  *ry = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(x, vm2) + fix64_mul(y, vm5) + fix64_mul(z, vm8);
+  *ry = ((fix64_int(r) << 16) | (fix64_frac(r) >> 16));
 
   // third column
-  AsmWideMultiply(x, vm3, &result);
-  AsmWideMultiply(y, vm6, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(z, vm9, &result2);
-  AsmWideAdd(&result, &result2);
-  *rz = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(x, vm3) + fix64_mul(y, vm6) + fix64_mul(z, vm9);
+  *rz = ((fix64_int(r) << 16) | (fix64_frac(r) >> 16));
 
-  // printf("rotated to: %f %f %f\n", fix_float(*rx), fix_float(*ry),
-  // fix_float(*rz));
 }
 
 // rotate an x delta. takes edi=dest vector, eax=dx
