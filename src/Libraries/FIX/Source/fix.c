@@ -493,6 +493,10 @@ fix fix_pow(fix x, fix y) {
     return ans;
 }
 
+int32_t fix64_div(int64_t a, int32_t b) {
+    return (int32_t) (a / b);
+}
+
 AWide *AsmWideAdd(AWide *target, const AWide *source) {
     int64_t t, s;
     ASSIGN_WIDE_TO_64(t, target);
@@ -509,15 +513,6 @@ AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target) {
     a *= b;
     ASSIGN_64_TO_WIDE(target, a);
     return target;
-}
-
-int32_t AsmWideDivide(int32_t hi, uint32_t lo, int32_t divisor) {
-    int64_t x;
-    AWide w;
-    w.lo = lo;
-    w.hi = hi;
-    ASSIGN_WIDE_TO_64(x, &w);
-    return (int)(x / (int64_t)divisor);
 }
 
 AWide *AsmWideNegate(AWide *target) {

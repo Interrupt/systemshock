@@ -390,6 +390,15 @@ typedef int64_t fix64;
 
 #define fix64_make(a, b) ((((int64_t)(a)) << 32) | (b))
 
+// fix64 algebraic functions
+/**
+ * Divide two numbers. There no divide by zero check!
+ * @param a dividend
+ * @param b divisor
+ * @return int32_t result of division
+ */
+extern int32_t fix64_div(int64_t a, int32_t b);
+
 struct AWide {
     unsigned int lo;
     int hi;
@@ -404,7 +413,6 @@ typedef struct AWide AWide;
 
 extern AWide *AsmWideAdd(AWide *target, const AWide *source);
 extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);
-extern int32_t AsmWideDivide(int32_t hi, uint32_t lo, int32_t den);
 // New functions
 extern AWide *AsmWideNegate(AWide *target);
 extern AWide *AsmWideBitShift(AWide *target, int count);

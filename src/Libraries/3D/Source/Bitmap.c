@@ -111,10 +111,10 @@ grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p);
 //   ecx: v scale factor
 void g3_set_bitmap_scale(fix u_scale, fix v_scale) {
   _g3d_bitmap_x_scale = fix_mul(fix_mul(_matrix_scale.gX, u_scale), _scrw);
-  _g3d_bitmap_x_iscale = AsmWideDivide(1, 0, _g3d_bitmap_x_scale);
+  _g3d_bitmap_x_iscale = fix64_div(fix64_make(1, 0), _g3d_bitmap_x_scale);
 
   _g3d_bitmap_y_scale = fix_mul(fix_mul(_matrix_scale.gY, v_scale), _scrh);
-  _g3d_bitmap_y_iscale = AsmWideDivide(1, 0, _g3d_bitmap_y_scale);
+  _g3d_bitmap_y_iscale = fix64_div(fix64_make(1, 0), _g3d_bitmap_y_scale);
 }
 
 grs_vertex **g3_full_light_bitmap(grs_bitmap *bm, grs_vertex **p) {
