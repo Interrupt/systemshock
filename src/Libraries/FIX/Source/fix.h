@@ -389,6 +389,8 @@ fix24 fix24_div(fix24 a, fix24 b);
 typedef int64_t fix64;
 
 #define fix64_make(a, b) ((((int64_t)(a)) << 32) | (b))
+#define fix64_int(n) ((int32_t)((n) >> 32))
+#define fix64_frac(n) ((uint32_t)((n) & 0xffffffff))
 
 // fix64 algebraic functions
 /**
@@ -398,6 +400,14 @@ typedef int64_t fix64;
  * @return int32_t result of division
  */
 extern int32_t fix64_div(int64_t a, int32_t b);
+
+/**
+ * Multiply two numbers.
+ * @param a number
+ * @param b number
+ * @return result of multiplication
+ */
+extern int64_t fix64_mul(int32_t a, int32_t b);
 
 struct AWide {
     unsigned int lo;

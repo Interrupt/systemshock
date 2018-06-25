@@ -38,6 +38,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 //#include <FixMath.h>
+
+#include <math.h> // sqrtl()
+
 #include "3d.h"
 #include "GlobalV.h"
 #include "fix.h"
@@ -81,17 +84,10 @@ void g3_vec_scale(g3s_vector *dest, g3s_vector *src, fix s) {
 // fix mag(vector *v)
 // takes esi = v. returns mag in eax. trashes all but ebp
 fix g3_vec_mag(g3s_vector *v) {
-  AWide result, result2;
-
-  AsmWideMultiply(v->gX, v->gX, &result);
-  AsmWideMultiply(v->gY, v->gY, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(v->gZ, v->gZ, &result2);
-  AsmWideAdd(&result, &result2);
-
-  return (quad_sqrt(result.hi, result.lo));
-
-  //	return(quad_sqrt(result.hi, result.lo));
+  int64_t result = fix64_mul(v->gX, v->gX) +
+                   fix64_mul(v->gY, v->gY) +
+                   fix64_mul(v->gZ, v->gZ);
+  return (fix)sqrtl(result);
 }
 
 // compute dot product of vectors at [esi] & [edi]
@@ -103,6 +99,7 @@ fix g3_vec_dotprod(g3s_vector *v0, g3s_vector *v1) {
   AsmWideAdd(&result, &result2);
   AsmWideMultiply(v0->gZ, v1->gZ, &result2);
   AsmWideAdd(&result, &result2);
+  fix r = ((result.hi << 16) | (((ulong)result.lo) >> 16));
   return ((result.hi << 16) | (((ulong)result.lo) >> 16));
 }
 

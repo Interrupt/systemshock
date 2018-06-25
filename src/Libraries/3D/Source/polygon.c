@@ -89,17 +89,13 @@ extern void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0, g3s_vector *v
 // takes 3 rotated points: eax,edx,ebx.
 // returns al=true (& s flag set) if facing. trashes all but ebp
 bool g3_check_poly_facing(g3s_phandle p0, g3s_phandle p1, g3s_phandle p2) {
-  AWide result, result2;
-
   g3_compute_normal_quick(&temp_vector, (g3s_vector *)p0, (g3s_vector *)p1, (g3s_vector *)p2);
 
-  AsmWideMultiply(p0->gX, temp_vector.gX, &result);
-  AsmWideMultiply(p0->gY, temp_vector.gY, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(p0->gZ, temp_vector.gZ, &result2);
-  AsmWideAdd(&result, &result2);
+  int64_t result = fix64_mul(p0->gX, temp_vector.gX) +
+                   fix64_mul(p0->gY, temp_vector.gY) +
+                   fix64_mul(p0->gZ, temp_vector.gZ);
 
-  return (result.hi < 0);
+  return (fix64_int(result) < 0);
 }
 
 // takes same input as draw_poly, but first checks if facing
@@ -526,13 +522,9 @@ int draw_line_common(g3s_phandle p0, g3s_phandle p1) {
 // takes esi=point on surface, edi=surface normal (can be unnormalized)
 // trashes eax,ebx,ecx,edx. returns al=true & sign set, if facing
 bool g3_check_normal_facing(g3s_vector *v, g3s_vector *normal) {
-  AWide result, result2;
+int64_t result = fix64_mul(v->gX - _view_position.gX, normal->gX) +
+                 fix64_mul(v->gY - _view_position.gY, normal->gY) +
+                 fix64_mul(v->gZ - _view_position.gZ, normal->gZ);
 
-  AsmWideMultiply(v->gX - _view_position.gX, normal->gX, &result);
-  AsmWideMultiply(v->gY - _view_position.gY, normal->gY, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(v->gZ - _view_position.gZ, normal->gZ, &result2);
-  AsmWideAdd(&result, &result2);
-
-  return (result.hi < 0);
+  return (fix64_int(result) < 0);
 }

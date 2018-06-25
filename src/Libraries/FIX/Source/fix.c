@@ -497,6 +497,10 @@ int32_t fix64_div(int64_t a, int32_t b) {
     return (int32_t) (a / b);
 }
 
+int64_t fix64_mul(int32_t a, int32_t b) {
+    return (int64_t)a * (int64_t)b;
+}
+
 AWide *AsmWideAdd(AWide *target, const AWide *source) {
     int64_t t, s;
     ASSIGN_WIDE_TO_64(t, target);
