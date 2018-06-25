@@ -373,6 +373,7 @@ typedef int32_t fix24;
 #define fix24_round(n) (((n) + 128) & 0xffffff00)
 #define fix24_int(n) ((n) >> 8)
 #define fix24_frac(n) ((n)&0xff)
+#define fix24_float(n) ((float)(fix24_int(n)) + (float)(fix24_frac(n)) / 256.0)
 
 #define fix24_from_fix16(n) ((n) >> 8)
 #define fix16_from_fix24(n) ((n) << 8)

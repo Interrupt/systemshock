@@ -222,48 +222,39 @@ void parse(char *str, uint8_t command) {
 
 void test_add(void) {
     fix a, b, c;
-    char ans[80];
 
     if (!check_args(4))
         return;
     a = fix_make(args[0], args[1]);
     b = fix_make(args[2], args[3]);
     c = a + b;
-    fix_sprint(ans, c);
-    puts(ans);
+    printf("%f\n", fix_float(c));
 }
 
 void test_sub(void) {
     fix a, b, c;
-    char ans[80];
 
     if (!check_args(4))
         return;
     a = fix_make(args[0], args[1]);
     b = fix_make(args[2], args[3]);
     c = a - b;
-    fix_sprint(ans, c);
-    puts(ans);
+    printf("%f\n", fix_float(c));
 }
 
 void test_mul(void) {
     fix a, b, c;
-    char ans[80];
 
     if (!check_args(4))
         return;
     a = fix_make(args[0], args[1]);
     b = fix_make(args[2], args[3]);
     c = fix_mul(a, b);
-    fix_sprint(ans, c);
-    puts(ans);
+    printf("%f\n", fix_float(c));
 }
 
 void test_div(void) {
     fix a, b, c;
-    char ans[80];
-    // wide	d;
-    long rem;
 
     if (!check_args(4))
         return;
@@ -271,13 +262,11 @@ void test_div(void) {
     b = fix_make(args[2], args[3]);
     c = fix_div(a, b);
     printf("0x%08x    %d   ", c, gOVResult);
-    fix_sprint(ans, c);
-    puts(ans);
+    printf("%f\n", fix_float(c));
 }
 
 void test_mul_div(void) {
     fix a, b, c, d;
-    char ans[80];
 
     if (!check_args(6))
         return;
@@ -285,21 +274,18 @@ void test_mul_div(void) {
     b = fix_make(args[2], args[3]);
     c = fix_make(args[4], args[5]);
     d = fix_mul_div(a, b, c);
-    fix_sprint(ans, d);
-    puts(ans);
+    printf("%f\n", fix_float(d));
 }
 
 void test_mul24(void) {
     fix24 a, b, c;
-    char ans[80];
 
     if (!check_args(4))
         return;
     a = fix24_make(args[0], args[1]);
     b = fix24_make(args[2], args[3]);
     c = fix24_mul(a, b);
-    fix24_sprint(ans, c);
-    puts(ans);
+    printf("%f\n", fix24_float(c));
 }
 
 void test_div24(void) {
@@ -311,62 +297,53 @@ void test_div24(void) {
     a = fix24_make(args[0], args[1]);
     b = fix24_make(args[2], args[3]);
     c = fix24_div(a, b);
-    fix24_sprint(ans, c);
+    sprintf(ans, "%f", fix24_float(c));
     puts(ans);
 }
 
 void test_sincos(void) {
     fixang th;
     fix s, c;
-    char sstr[80], cstr[80];
 
     if (!check_args(1))
         return;
     th = args[0] * 0x10000 / 360;
     fix_sincos(th, &s, &c);
-    fix_sprint(sstr, s);
-    fix_sprint(cstr, c);
-    printf("sin %s cos %s\n", sstr, cstr);
+
+    printf("sin %f, cos %f\n", fix_float(s), fix_float(c));
 }
 
 void test_sin(void) {
     fixang th;
     fix s;
-    char sstr[80];
 
     if (!check_args(1))
         return;
     th = args[0] * 0x10000 / 360;
     s = fix_sin(th);
-    fix_sprint(sstr, s);
-    printf("sin %s\n", sstr);
+    printf("sin %f\n", fix_float(s));
 }
 
 void test_cos(void) {
     fixang th;
     fix c;
-    char cstr[80];
 
     if (!check_args(1))
         return;
     th = args[0] * 0x10000 / 360;
     c = fix_cos(th);
-    fix_sprint(cstr, c);
-    printf("cos %s\n", cstr);
+    printf("cos %f\n", fix_float(c));
 }
 
 void test_fastsincos(void) {
     fixang th;
     fix s, c;
-    char sstr[80], cstr[80];
 
     if (!check_args(1))
         return;
     th = args[0] * 0x10000 / 360;
     fix_fastsincos(th, &s, &c);
-    fix_sprint(sstr, s);
-    fix_sprint(cstr, c);
-    printf("sin %s cos %s\n", sstr, cstr);
+    printf("sin %f, cos %f\n", fix_float(s), fix_float(c));
 }
 
 void test_atan2(void) {
@@ -382,28 +359,24 @@ void test_atan2(void) {
 
 void test_dist(void) {
     fix a, b, c;
-    char ans[80];
 
     if (!check_args(4))
         return;
     a = fix_make(args[0], args[1]);
     b = fix_make(args[2], args[3]);
     c = fix_pyth_dist(a, b);
-    fix_sprint(ans, c);
-    puts(ans);
+    printf("%f\n", fix_float(c));
 }
 
 void test_fastdist(void) {
     fix a, b, c;
-    char ans[80];
 
     if (!check_args(4))
         return;
     a = fix_make(args[0], args[1]);
     b = fix_make(args[2], args[3]);
     c = fix_fast_pyth_dist(a, b);
-    fix_sprint(ans, c);
-    puts(ans);
+    printf("%f\n", fix_float(c));
 }
 
 void test_asin(void) {
@@ -428,14 +401,12 @@ void test_acos(void) {
 
 void test_sqrt(void) {
     fix a, c;
-    char ans[80];
 
     if (!check_args(2))
         return;
     a = fix_make(args[0], args[1]);
     c = fix_sqrt(a);
-    fix_sprint(ans, c);
-    puts(ans);
+    printf("%f\n", fix_float(c));
 }
 
 void test_float(void) {
@@ -457,8 +428,7 @@ void test_exp(void) {
         return;
     a = fix_make(args[0], args[1]);
     c = fix_exp(a);
-    fix_sprint(ans, c);
-    puts(ans);
+    printf("%f\n", fix_float(c));
 }
 
 void help() {
