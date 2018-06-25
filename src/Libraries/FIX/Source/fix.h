@@ -390,16 +390,16 @@ typedef int64_t fix64;
 #define fix64_make(a, b) ((((int64_t)(a)) << 32) | (b))
 
 struct AWide {
-  unsigned int lo;
-  int hi;
+    unsigned int lo;
+    int hi;
 };
 typedef struct AWide AWide;
 
 // Custom Wide assignment macros
 #define ASSIGN_WIDE_TO_64(x, w) x = (uint64_t)(w)->lo + (((int64_t)(w)->hi) << 32)
 #define ASSIGN_64_TO_WIDE(w, x) \
-  (w)->lo = x & 0xFFFFFFFF;     \
-  (w)->hi = x >> 32
+    (w)->lo = x & 0xFFFFFFFF;   \
+    (w)->hi = x >> 32
 
 extern AWide *AsmWideAdd(AWide *target, const AWide *source);
 extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);

@@ -37,26 +37,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // does no range checking whatsoever
 //
 fix fix_exp(fix x) {
-  int32_t int_part = fix_int(x);
-  fix exp_int_part;
-  int32_t basex, fracx;
-  fix loy, hiy;
-  fix exp_frac_part;
+    int32_t int_part = fix_int(x);
+    fix exp_int_part;
+    int32_t basex, fracx;
+    fix loy, hiy;
+    fix exp_frac_part;
 
-  // If our exponent is so small that it goes off the small end of the table,
-  // just return 0.
+    // If our exponent is so small that it goes off the small end of the table,
+    // just return 0.
 
-  if (int_part + INTEGER_EXP_OFFSET < 0)
-    return 0;
+    if (int_part + INTEGER_EXP_OFFSET < 0)
+        return 0;
 
-  exp_int_part = expinttab[int_part + INTEGER_EXP_OFFSET];
+    exp_int_part = expinttab[int_part + INTEGER_EXP_OFFSET];
 
-  basex = fix_frac(x) >> 12;
-  fracx = x & 0x0fff;
+    basex = fix_frac(x) >> 12;
+    fracx = x & 0x0fff;
 
-  loy = expfractab[basex];
-  hiy = expfractab[basex + 1];
+    loy = expfractab[basex];
+    hiy = expfractab[basex + 1];
 
-  exp_frac_part = loy + (hiy - loy) * fracx / 0x1000;
-  return (fix_mul(exp_int_part, exp_frac_part));
+    exp_frac_part = loy + (hiy - loy) * fracx / 0x1000;
+    return (fix_mul(exp_int_part, exp_frac_part));
 }
