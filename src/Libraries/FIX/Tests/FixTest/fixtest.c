@@ -62,12 +62,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 typedef struct command {
     char *str;
-    uchar cmd;
+    uint8_t cmd;
 } command;
 
-int num_args;
-int args[MAX_ARGS];
-int args_neg[MAX_ARGS];
+int32_t num_args;
+int32_t args[MAX_ARGS];
+int32_t args_neg[MAX_ARGS];
 char cmd;
 
 #define CMD_NONE 0
@@ -118,23 +118,23 @@ command cmd_list[] = {
         "?",    CMD_HELP,       "help",       CMD_HELP,
         "q",    CMD_QUIT,       "quit",       CMD_QUIT,       "exit",  CMD_QUIT};
 
-uchar check_args(int num) {
+bool check_args(int num) {
     if (num_args >= num)
-        return TRUE;
+        return true;
     else {
         printf("Need %d args\n", num);
-        return FALSE;
+        return false;
     }
 }
 
 // okay, this is now hairy enough that I should probably comment it
-void parse(char *str, uchar command) {
+void parse(char *str, uint8_t command) {
     char *c;            // pointer to current char in str
-    int val;            // value of current arg
-    uchar neg = FALSE;  // is this arg negative?
-    uchar frac = FALSE; // is this arg really a fraction (after decimal point)?
-    int i;              // counter
-    int den;            // denominator of fraction
+    int32_t val;        // value of current arg
+    bool neg;           // is this arg negative?
+    bool frac = false;  // is this arg really a fraction (after decimal point)?
+    int32_t i;          // counter
+    int32_t den;        // denominator of fraction
 
     // Prepare for death
     num_args = 0;
@@ -149,7 +149,7 @@ void parse(char *str, uchar command) {
     // Look for matching commands, and then skip over it
     if (command) {
         for (i = 0; i < NUM_CMD_STRS; i++) {
-            //			if (strnicmp (cmd_list[i].str, c, strlen (cmd_list[i].str)) == 0 &&
+            // if (strnicmp (cmd_list[i].str, c, strlen (cmd_list[i].str)) == 0 &&
             if (strncmp(cmd_list[i].str, c, strlen(cmd_list[i].str)) == 0 && isspace(*(c + strlen(cmd_list[i].str))))
                 break;
         }
@@ -166,10 +166,10 @@ void parse(char *str, uchar command) {
     // Stupid first time around stuff
     val = 0;
     if (*c == '-') {
-        args_neg[0] = neg = TRUE;
+        args_neg[0] = neg = true;
         c++;
     } else
-        args_neg[0] = neg = FALSE;
+        args_neg[0] = neg = false;
 
     while (*c != NULL) {
         // We have now gotten to the next non-whitespace char
@@ -195,21 +195,21 @@ void parse(char *str, uchar command) {
 
             // are we about to do a decimal part?
             if (*c == '.') {
-                frac = TRUE;
+                frac = true;
                 den = 1;
             } else
-                frac = FALSE;
+                frac = false;
 
             // prepare for the next argument
             c++;
-            args_neg[num_args] = neg = FALSE;
+            args_neg[num_args] = neg = false;
             if (num_args == MAX_ARGS)
                 break;
             while (isspace(*c))
                 c++;
             val = 0;
             if (*c == '-') {
-                args_neg[num_args] = neg = TRUE;
+                args_neg[num_args] = neg = true;
                 c++;
             }
         }
@@ -488,10 +488,10 @@ void main() {
     printf("+ 5.0 3.14\n* 0.324 -15.1\n\n");
     printf("'?' for more help, 'cmd-Q' to quit\n\n");
 
-    while (TRUE) {
+    while (true) {
         printf(": ");
         fgets(ans, sizeof(ans), stdin);
-        parse(ans, TRUE);
+        parse(ans, true);
         if (cmd != CMD_NONE) {
             switch (cmd) {
             case CMD_ADD:
