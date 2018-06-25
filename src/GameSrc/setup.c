@@ -1286,7 +1286,7 @@ void splash_draw()
 
    ResCloseFile(pal_file);
 
-   // Startup some music!
+   // Startup music
    start_setup_sound(0);
 }
 
@@ -1350,7 +1350,7 @@ void setup_start()
    save_game_exists = (valid_save != 0);
 
    // FIXME: Should fix play_intro_anim
-   start_first_time = FALSE;
+   // start_first_time = FALSE;
 
    if (setup_mode != SETUP_CREDITS)
    {
@@ -1369,6 +1369,7 @@ void setup_start()
    {
 //      start_setup_sound();
       closedown_game(TRUE);
+      start_setup_sound(0);
    }
    start_first_time = FALSE;
 
@@ -1454,6 +1455,9 @@ void setup_start()
 
       // FIXME: Cutscenes!
       //play_cutscene(START_CUTSCENE, TRUE);
+
+      // CC: Just play some music for now instead
+      start_setup_sound(0);
    }
 }
 
