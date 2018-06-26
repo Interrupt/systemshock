@@ -1300,7 +1300,6 @@ uchar MacHelpFunc(short keycode, ulong context, void* data)
 
 	//CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
 
-	ShowMenuBar();
 	ShowCursor();
 
 	//ShowShockHelp();
@@ -1313,7 +1312,6 @@ uchar MacHelpFunc(short keycode, ulong context, void* data)
 	//EndUpdate(gMainWindow);
 
 	HideCursor();										// go back to Shock.
-	HideMenuBar();
 	uiShowMouse(NULL);
 	status_bio_start();
 	if (music_on)

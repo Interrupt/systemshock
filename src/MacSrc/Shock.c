@@ -151,12 +151,12 @@ int main(int argc, char** argv)
 	load_da_palette();
 	gr_clear(0xFF);
 
-	printf("Showing splash screen\n");
+	INFO("Showing splash screen");
 	splash_draw();
 
 	// Start the main loop
 
-	printf("Showing main menu, starting game loop\n");
+	INFO("Showing main menu, starting game loop");
 	mainloop(argc, argv);
 
 	status_bio_end();
@@ -239,7 +239,7 @@ void InitSDL()
 
     gr_set_mode(GRM_640x480x8, TRUE);
 
-    printf("Setting up screen and render contexts\n");
+    INFO("Setting up screen and render contexts");
 
     // Open our window!
 
