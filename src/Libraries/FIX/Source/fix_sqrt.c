@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Includes
 //--------------------
 #include "fix.h"
+#include "lg.h"
 #include <math.h>
 #include <stdio.h>
 
@@ -46,24 +47,6 @@ fix fix_sqrt(fix num) {
 }
 
 //-----------------------------------------------------------------
-//  Calculate the square root of a wide (64-bit) number.
-//-----------------------------------------------------------------
-int32_t quad_sqrt(int32_t hi, uint32_t lo) {
-    // Parameter checking
-    // WH dunno, needed?
-    if (lo == 0) // If lo word is zero, return 0.
-        return (0);
-
-    // If a negative number, return 0.
-    if (hi < 0) {
-        printf("quad_sqrt of negative number!\n");
-        return (0);
-    }
-
-    return (uint32_t)sqrtl(fix64_make(hi, lo));
-}
-
-//-----------------------------------------------------------------
 //  Calculate the square root of a long number.
 //-----------------------------------------------------------------
 int long_sqrt(int num) {
@@ -72,7 +55,7 @@ int long_sqrt(int num) {
         return (0);
     // A bit of error checking.
     if (num < 0) {
-        printf("long_sqrt of negative number!\n");
+        ERROR("long_sqrt of negative number!");
         return (0);
     }
 
