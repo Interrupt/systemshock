@@ -410,24 +410,6 @@ extern int32_t fix64_div(int64_t a, int32_t b);
  */
 extern int64_t fix64_mul(int32_t a, int32_t b);
 
-struct AWide {
-    unsigned int lo;
-    int hi;
-};
-typedef struct AWide AWide;
-
-// Custom Wide assignment macros
-#define ASSIGN_WIDE_TO_64(x, w) x = (uint64_t)(w)->lo + (((int64_t)(w)->hi) << 32)
-#define ASSIGN_64_TO_WIDE(w, x) \
-    (w)->lo = x & 0xFFFFFFFF;   \
-    (w)->hi = x >> 32
-
-extern AWide *AsmWideAdd(AWide *target, const AWide *source);
-extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);
-// New functions
-extern AWide *AsmWideNegate(AWide *target);
-extern AWide *AsmWideBitShift(AWide *target, int count);
-
 //============================================
 //
 //  Other multiply/div/add variants used by 2D and 3D.

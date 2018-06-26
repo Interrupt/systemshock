@@ -749,7 +749,6 @@ g3s_phandle g3_copy_add_delta_xz(g3s_phandle src, fix dx, fix dz) {
 // trashes eax,ebx,ecx,edx,esi
 g3s_phandle g3_copy_add_delta_yz(g3s_phandle src, fix dy, fix dz) {
   g3s_point *point;
-  AWide result, result2;
   int64_t r;
 
   getpnt(point);
