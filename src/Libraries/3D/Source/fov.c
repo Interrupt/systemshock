@@ -48,17 +48,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // trashes eax,ebx,ecx,edx,edi
 // formula is fov = acos( (x-z) / (x+z) ) where x,z are the matrix scale values
 void g3_get_FOV(fixang *x, fixang *y) {
-  fix X2, Y2, Z2;
+    fix X2, Y2, Z2;
 
-  Z2 = fix_mul(_matrix_scale.gZ, _matrix_scale.gZ); // get z squared
+    Z2 = fix_mul(_matrix_scale.gZ, _matrix_scale.gZ); // get z squared
 
-  // compute y
-  Y2 = fix_mul(_matrix_scale.gY, _matrix_scale.gY); // get y squared
-  *y = fix_acos(fix_div(Y2 - Z2, Y2 + Z2));
+    // compute y
+    Y2 = fix_mul(_matrix_scale.gY, _matrix_scale.gY); // get y squared
+    *y = fix_acos(fix_div(Y2 - Z2, Y2 + Z2));
 
-  // compute x
-  X2 = fix_mul(_matrix_scale.gX, _matrix_scale.gX); // get z squared
-  *x = fix_acos(fix_div(X2 - Z2, X2 + Z2));
+    // compute x
+    X2 = fix_mul(_matrix_scale.gX, _matrix_scale.gX); // get z squared
+    *x = fix_acos(fix_div(X2 - Z2, X2 + Z2));
 }
 
 // returns zoom for a desired FOV.
@@ -66,35 +66,35 @@ void g3_get_FOV(fixang *x, fixang *y) {
 // returns in eax. trashes all but ebp
 
 fix g3_get_zoom(char axis, fixang angle, int window_width, int window_height) {
-  fix sin_val, cos_val;
-  fix unscalezoom, temp1;
-  long templong;
+    fix sin_val, cos_val;
+    fix unscalezoom, temp1;
+    long templong;
 
-  fix_sincos(angle, &sin_val, &cos_val); // call	fix_sincos	;angle in
-                                         // bx
-  temp1 = fix_div(f1_0 - cos_val, cos_val + f1_0);
+    fix_sincos(angle, &sin_val, &cos_val); // call	fix_sincos	;angle in
+                                           // bx
+    temp1 = fix_div(f1_0 - cos_val, cos_val + f1_0);
 
-  unscalezoom = fix_sqrt(temp1); // 	call	fix_sqrt_	;eax = unscaled zoom
+    unscalezoom = fix_sqrt(temp1); // 	call	fix_sqrt_	;eax = unscaled zoom
 
-  // now, temp1 would be zoom if not for window and pixel matrix scaling.
-  // correct for these
+    // now, temp1 would be zoom if not for window and pixel matrix scaling.
+    // correct for these
 
-  // get pixel ratio
-  pixel_ratio = grd_cap->aspect;
+    // get pixel ratio
+    pixel_ratio = grd_cap->aspect;
 
-  // get matrix scale value for given window size
-  templong = fix_mul_div(window_height, pixel_ratio,
-                         window_width); // imul	pixel_ratio	;height * pixrat
-                                        // 	idiv	ebx	;eax = h * pixrat / w
-  // window and pixrat scaling affects y. see if y FOV requested
-  if (templong <= f1_0) // cmp	eax,f1_0	;< 1.0? jle	scale_x	;scale x
-  {
-    if (axis != 'X')
-      return (unscalezoom);
-    return (fix_mul(unscalezoom, templong));
-  } else {
-    if (axis != 'Y')
-      return (unscalezoom);
-    return (fix_div(unscalezoom, templong));
-  }
+    // get matrix scale value for given window size
+    templong = fix_mul_div(window_height, pixel_ratio,
+                           window_width); // imul	pixel_ratio	;height * pixrat
+                                          // 	idiv	ebx	;eax = h * pixrat / w
+    // window and pixrat scaling affects y. see if y FOV requested
+    if (templong <= f1_0) // cmp	eax,f1_0	;< 1.0? jle	scale_x	;scale x
+    {
+        if (axis != 'X')
+            return (unscalezoom);
+        return (fix_mul(unscalezoom, templong));
+    } else {
+        if (axis != 'Y')
+            return (unscalezoom);
+        return (fix_div(unscalezoom, templong));
+    }
 }
