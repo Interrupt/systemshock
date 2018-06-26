@@ -114,7 +114,11 @@ errtype CheckFreeSpace(short	checkRefNum);
 //		Main function.
 //------------------------------------------------------------------------------------
 int main(int argc, char** argv)
-{  
+{
+	// FIXME externalize this
+	log_set_quiet(0);
+	log_set_level(LOG_TRACE);
+
 	InitMac();															// init mac managers
 
 	SetDefaultPrefs();													// Initialize the preferences file.

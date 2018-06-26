@@ -179,11 +179,15 @@ void InitMac(void)
 	gMenusHid = FALSE;*/
 
 	//GetDateTime(&gRandSeed);								// Start off with a random seed
+
+	LOGGER(LOG_INFO, "Starting Shockolate");
+
 	gRandSeed = TickCount();
 	gRandSeed += TickCount()<<8;
 
+	LOGGER(LOG_TRACE, "InstallShockTimers");
 	InstallShockTimers(); // needed for the tick pointer
-	printf("InstallShockTimers\n");
+
  }
 
 //------------------------------------------------------------------------------------
