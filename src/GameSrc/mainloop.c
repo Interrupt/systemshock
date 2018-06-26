@@ -116,6 +116,7 @@ void loopmode_enter(short loopmode)
    (*enter_modes[loopmode])();
 }
 
+extern pascal void MousePollProc(void);
 void mainloop(int argc, char *argv[])
 {
     extern void SDLDraw(void);
@@ -147,6 +148,8 @@ void mainloop(int argc, char *argv[])
 #endif
 		// OR in the static change flags...
 		chg_set_flg(_static_change);
+
+		MousePollProc();		// update the cursor, was 35 times/sec originally
 
         if(_current_loop != SETUP_LOOP)
             status_bio_update();
