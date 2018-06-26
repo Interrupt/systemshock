@@ -100,8 +100,8 @@ grs_tmap_info tmap_info;
 char _g3d_enable_blend = 0;
 
 // prototypes
-char SubLongWithOverflow(long *result, long src, long dest);
-char AddLongWithOverflow(long *result, long src, long dest);
+bool SubLongWithOverflow(int32_t *result, int32_t src, int32_t dest);
+bool AddLongWithOverflow(int32_t *result, int32_t src, int32_t dest);
 
 grs_vertex **do_bitmap(grs_bitmap *bm, g3s_phandle p);
 grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p);
@@ -169,12 +169,12 @@ grs_vertex **do_bitmap(grs_bitmap *bm, g3s_phandle p) {
 
 grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p) {
   fix tempF, tempF2;
-  long tempL, tempL2;
-  short tempS, tempS2;
+  int32_t tempL, tempL2;
+  int16_t tempS, tempS2;
   fix sintemp, costemp;
   grs_vertex *tempG1, *tempG2;
   fix tempResult;
-  long bm_w, bm_h;
+  int32_t bm_w, bm_h;
   fix dx, dy;
 
   // MLA- these were globals, I made them locals for PPC speed, they aren't
@@ -405,7 +405,7 @@ grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p) {
 
 // subtract two longs, put the result in result, and return true if overflow
 // result = src-dest;
-char SubLongWithOverflow(long *result, long src, long dest) {
+bool SubLongWithOverflow(int32_t *result, int32_t src, int32_t dest) {
   long tempres;
 
   *result = tempres = src - dest;
@@ -417,7 +417,7 @@ char SubLongWithOverflow(long *result, long src, long dest) {
 
 // add two longs, put the result in result, and return true if overflow
 // result = src+dest;
-char AddLongWithOverflow(long *result, long src, long dest) {
+bool AddLongWithOverflow(int32_t *result, int32_t src, int32_t dest) {
   long tempres;
 
   *result = tempres = src + dest;

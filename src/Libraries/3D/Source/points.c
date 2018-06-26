@@ -41,8 +41,8 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
   do_rotate(v->gX - _view_position.gX, v->gY - _view_position.gY, v->gZ - _view_position.gZ, x, y, z)
 
 extern int code_point(g3s_point *pt);
-extern char SubLongWithOverflow(long *result, long src, long dest);
-extern char AddLongWithOverflow(long *result, long src, long dest);
+extern char SubLongWithOverflow(int32_t *result, int32_t src, int32_t dest);
+extern bool AddLongWithOverflow(int32_t *result, int32_t src, int32_t dest);
 
 // for temp use in rotate_list, etc.
 g3s_codes g_codes;
