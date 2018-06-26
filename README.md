@@ -25,8 +25,6 @@ The end goal for this project is something like what Chocolate Doom is for Doom:
 - Music
   - SDL_Mixer can't play the multi track XMI midi files, need to find another solution for those
   - There is basic midi music support if there are .mid files in `/res/data/music` like `thm0.mid`
-- Main Menu
-  - the original main menu should be revived, instead of the Mac version
 - Video Files / Audiologs
   - Need to revive the old movie rendering code in AFile
 
