@@ -101,13 +101,13 @@ errtype copy_file(char *src_fname, char *dest_fname)
    FILE *fsrc, *fdst;
    printf("copy_file: %s to %s\n", src_fname, dest_fname);
 
-   fsrc=fopen(src_fname, "rb");
+   fsrc=fopen_caseless(src_fname, "rb");
    if(fsrc == NULL)
    {
       return ERR_FOPEN;
    }
 
-   fdst=fopen(dest_fname, "wb");
+   fdst=fopen_caseless(dest_fname, "wb");
    if(fdst == NULL)
    {
       return ERR_FOPEN;
