@@ -391,6 +391,7 @@ typedef int64_t fix64;
 #define fix64_make(a, b) ((((int64_t)(a)) << 32) | (b))
 #define fix64_int(n) ((int32_t)((n) >> 32))
 #define fix64_frac(n) ((uint32_t)((n) & 0xffffffff))
+#define fix64_to_fix(n) (fix64_int(n) << 16 | fix64_frac(n) >> 16)
 
 // fix64 algebraic functions
 /**

@@ -383,15 +383,15 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz) {
   int64_t r;
   // first column
   r = fix64_mul(x, vm1) + fix64_mul(y, vm4) + fix64_mul(z, vm7);
-  *rx = ((fix64_int(r) << 16) | (fix64_frac(r) >> 16));
+  *rx = fix64_to_fix(r);
 
   // second column
   r = fix64_mul(x, vm2) + fix64_mul(y, vm5) + fix64_mul(z, vm8);
-  *ry = ((fix64_int(r) << 16) | (fix64_frac(r) >> 16));
+  *ry = fix64_to_fix(r);
 
   // third column
   r = fix64_mul(x, vm3) + fix64_mul(y, vm6) + fix64_mul(z, vm9);
-  *rz = ((fix64_int(r) << 16) | (fix64_frac(r) >> 16));
+  *rz = fix64_to_fix(r);
 
 }
 

@@ -96,7 +96,7 @@ fix g3_vec_dotprod(g3s_vector *v0, g3s_vector *v1) {
                    fix64_mul(v0->gY, v1->gY) +
                    fix64_mul(v0->gZ, v1->gZ);
 
-  return ((fix64_int(result) << 16) | (fix64_frac(result) >> 16));
+  return fix64_to_fix(result);
 }
 
 // compute normalized surface normal from three points.
