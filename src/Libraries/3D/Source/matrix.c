@@ -288,7 +288,7 @@ void process_view_matrix(void) {
 
 // performs various scaling and other operations on the view matrix
 void scale_view_matrix(void) {
-  long temp_long;
+  int32_t temp_long;
   fix temp_fix;
 
   // set matrix scale vector based on zoom
@@ -370,36 +370,24 @@ int code_point(g3s_point *pt) {
 // general matrix multiply. takes esi=src vector, edi=matrix, ebx=dest vector
 // src and dest vectors can be the same
 void g3_vec_rotate(g3s_vector *dest, g3s_vector *src, g3s_matrix *m) {
-  AWide result, result2;
-  long srcX, srcY, srcZ; // in locals for PPC speed
+  int32_t srcX, srcY, srcZ; // in locals for PPC speed
+  int64_t r;
 
   srcX = src->gX;
   srcY = src->gY;
   srcZ = src->gZ;
 
   // first column
-  AsmWideMultiply(srcX, m->m1, &result);
-  AsmWideMultiply(srcY, m->m4, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(srcZ, m->m7, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gX = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(srcX, m->m1) + fix64_mul(srcY, m->m4) + fix64_mul(srcZ, m->m7);
+  dest->gX = fix64_to_fix(r);
 
   // second column
-  AsmWideMultiply(srcX, m->m2, &result);
-  AsmWideMultiply(srcY, m->m5, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(srcZ, m->m8, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gY = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(srcX, m->m2) + fix64_mul(srcY, m->m5) + fix64_mul(srcZ, m->m8);
+  dest->gY = fix64_to_fix(r);
 
   // third column
-  AsmWideMultiply(srcX, m->m3, &result);
-  AsmWideMultiply(srcY, m->m6, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(srcZ, m->m9, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gZ = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(srcX, m->m3) + fix64_mul(srcY, m->m6) + fix64_mul(srcZ, m->m9);
+  dest->gZ = fix64_to_fix(r);
 }
 
 // transpose a matrix at esi in place
@@ -430,16 +418,20 @@ void g3_copy_transpose(g3s_matrix *dest, g3s_matrix *src) // copy and transpose
 }
 
 // MLA- oh no I've got LookingGlass disease, I'm making multi-line #defines!
+// No worries, WH comes to help!
+fix mxm_mul(fix s1_1, fix s1_2, fix s1_3, fix s2_1, fix s2_2, fix s2_3) {
+    int64_t r = fix64_mul(s1_1, s2_1) + fix64_mul(s1_2, s2_2) + fix64_mul(s1_3, s2_3);
+    return fix64_to_fix(r);
+}
+/*
 #define mxm_mul(dst, s1_1, s1_2, s1_3, s2_1, s2_2, s2_3)        \
   {                                                             \
-    AWide result, result2;                                      \
-    AsmWideMultiply(src1->s1_1, src2->s2_1, &result);           \
-    AsmWideMultiply(src1->s1_2, src2->s2_2, &result2);          \
-    AsmWideAdd(&result, &result2);                              \
-    AsmWideMultiply(src1->s1_3, src2->s2_3, &result2);          \
-    AsmWideAdd(&result, &result2);                              \
-    dest->dst = (result.hi << 16) | (((ulong)result.lo) >> 16); \
+    int64_t r = fix64_mul(src1->s1_1, src2->s2_1) +             \
+                fix64_mul(src1->s1_2, src2->s2_2) +             \
+                fix64_mul(src1->s1_3, src2->s2_3);              \
+    dest->dst = fix64_to_fix(r);                                \
   }
+*/
 
 // matrix by matrix multiply:  ebx = esi * edi
 // does ebx = edi * esi
@@ -451,24 +443,24 @@ void g3_copy_transpose(g3s_matrix *dest, g3s_matrix *src) // copy and transpose
 //
 // dest = bx, src1 = si, src2 = di
 void g3_matrix_x_matrix(g3s_matrix *dest, g3s_matrix *src1, g3s_matrix *src2) {
-  mxm_mul(m1, m1, m2, m3, m1, m4, m7);
-  mxm_mul(m2, m1, m2, m3, m2, m5, m8);
-  mxm_mul(m3, m1, m2, m3, m3, m6, m9);
+  dest->m1 = mxm_mul(src1->m1, src1->m2, src1->m3, src2->m1, src2->m4, src2->m7);
+  dest->m2 = mxm_mul(src1->m1, src1->m2, src1->m3, src2->m2, src2->m5, src2->m8);
+  dest->m3 = mxm_mul(src1->m1, src1->m2, src1->m3, src2->m3, src2->m6, src2->m9);
 
-  mxm_mul(m4, m4, m5, m6, m1, m4, m7);
-  mxm_mul(m5, m4, m5, m6, m2, m5, m8);
-  mxm_mul(m6, m4, m5, m6, m3, m6, m9);
+  dest->m4 = mxm_mul(src1->m4, src1->m5, src1->m6, src2->m1, src2->m4, src2->m7);
+  dest->m5 = mxm_mul(src1->m4, src1->m5, src1->m6, src2->m2, src2->m5, src2->m8);
+  dest->m6 = mxm_mul(src1->m4, src1->m5, src1->m6, src2->m3, src2->m6, src2->m9);
 
-  mxm_mul(m7, m7, m8, m9, m1, m4, m7);
-  mxm_mul(m8, m7, m8, m9, m2, m5, m8);
-  mxm_mul(m9, m7, m8, m9, m3, m6, m9);
+  dest->m7 = mxm_mul(src1->m7, src1->m8, src1->m9, src2->m1, src2->m4, src2->m7);
+  dest->m8 = mxm_mul(src1->m7, src1->m8, src1->m9, src2->m2, src2->m5, src2->m8);
+  dest->m9 = mxm_mul(src1->m7, src1->m8, src1->m9, src2->m3, src2->m6, src2->m9);
 }
 
 static int64_t cross(int v1, int v2, int v3, int v4) { return (int64_t)v1 * v2 - (int64_t)v3 * v4; }
 
 // fills in edi with vector. takes deltas set
 void get_pyr_vector(g3s_vector *corners) {
-  AWide wide_den, wide2;
+  int64_t r;
 
   // calculate denominators, divide each by the longest of the three
   int64_t den_x = cross(d46, d89, d56, d79);
@@ -493,12 +485,8 @@ void get_pyr_vector(g3s_vector *corners) {
   g3_vec_normalize(corners);
 
   // make sure vector points right way
-  AsmWideMultiply(corners->gX, vm3, &wide_den);
-  AsmWideMultiply(corners->gY, vm6, &wide2);
-  AsmWideAdd(&wide_den, &wide2);
-  AsmWideMultiply(corners->gZ, vm9, &wide2);
-  AsmWideAdd(&wide_den, &wide2);
-  if (wide_den.hi < 0) {
+  r = fix64_mul(corners->gX, vm3) + fix64_mul(corners->gY, vm6) + fix64_mul(corners->gZ, vm9);
+  if (fix64_int(r) < 0) {
     corners->gX = -corners->gX;
     corners->gY = -corners->gY;
     corners->gZ = -corners->gZ;
