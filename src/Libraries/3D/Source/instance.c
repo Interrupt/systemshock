@@ -143,25 +143,16 @@ uchar start_obj_common(g3s_vector *p, g3s_angvec *o, int rotation_order) {
 }
 
 // dest=c1*s1+c2*s2
-#define update_m(dest, c1, s1, c2, s2)                     \
-  {                                                        \
-    AWide result, result2;                                 \
-    AsmWideMultiply(c1, s1, &result);                      \
-    AsmWideMultiply(c2, s2, &result2);                     \
-    AsmWideAdd(&result, &result2);                         \
-    dest = (result.hi << 16) | (((ulong)result.lo) >> 16); \
-  }
+fix update_m(fix c1, fix s1, fix c2, fix s2) {
+  int64_t r = fix64_mul(c1, s1) + fix64_mul(c2, s2);
+  return fix64_to_fix(r);
+}
 
 // dest=c1*s1-c2*s2
-#define update_ms(dest, c1, s1, c2, s2)                    \
-  {                                                        \
-    AWide result, result2;                                 \
-    AsmWideMultiply(c1, s1, &result);                      \
-    AsmWideMultiply(c2, s2, &result2);                     \
-    AsmWideNegate(&result2);                               \
-    AsmWideAdd(&result, &result2);                         \
-    dest = (result.hi << 16) | (((ulong)result.lo) >> 16); \
-  }
+fix update_ms(fix c1, fix s1, fix c2, fix s2) {
+  int64_t r = fix64_mul(c1, s1) - fix64_mul(c2, s2);
+  return fix64_to_fix(r);
+}
 
 // rotate around the specified axis. angle = ebx
 // takes esi=position,
@@ -179,36 +170,28 @@ uchar g3_start_object_angles_y(g3s_vector *p, fixang ty) {
 
 // get sin & cos - angles still in ebx
 uchar instance_y(fixang ty) {
-  fix temp;
-  fix sin_y;
-  fix cos_y;
-  fix temp1;
-  fix temp2;
-  fix temp3;
-  AWide result, result2;
+  fix sin_y, cos_y;
+  fix temp1, temp2, temp3;
+  int64_t r;
 
   fix_sincos(ty, &sin_y, &cos_y);
 
   // rotate viewer vars
-  AsmWideMultiply(_view_position.gZ, sin_y, &result);
-  AsmWideMultiply(_view_position.gX, cos_y, &result2);
-  AsmWideNegate(&result);
-  AsmWideAdd(&result, &result2);
-  temp = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(_view_position.gX, cos_y) - fix64_mul(_view_position.gZ, sin_y);
+  temp1 = fix64_to_fix(r);
 
-  AsmWideMultiply(_view_position.gX, sin_y, &result);
-  _view_position.gX = temp;
-  AsmWideMultiply(_view_position.gZ, cos_y, &result);
-  AsmWideAdd(&result, &result2);
-  _view_position.gZ = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(_view_position.gX, sin_y) + fix64_mul(_view_position.gZ, cos_y);
+
+  _view_position.gX = temp1;
+  _view_position.gZ = fix64_to_fix(r);
 
   // now modify matrix
-  update_ms(temp1, cos_y, vm1, sin_y, vm7);
-  update_ms(temp2, cos_y, vm2, sin_y, vm8);
-  update_ms(temp3, cos_y, vm3, sin_y, vm9);
-  update_m(vm7, sin_y, vm1, cos_y, vm7);
-  update_m(vm8, sin_y, vm2, cos_y, vm8);
-  update_m(vm9, sin_y, vm3, cos_y, vm9);
+  temp1 = update_ms(cos_y, vm1, sin_y, vm7);
+  temp2 = update_ms(cos_y, vm2, sin_y, vm8);
+  temp3 = update_ms(cos_y, vm3, sin_y, vm9);
+  vm7 = update_m(sin_y, vm1, cos_y, vm7);
+  vm8 = update_m(sin_y, vm2, cos_y, vm8);
+  vm9 = update_m(sin_y, vm3, cos_y, vm9);
   vm1 = temp1;
   vm2 = temp2;
   vm3 = temp3;
@@ -233,37 +216,28 @@ uchar g3_start_object_angles_x(g3s_vector *p, fixang tx) {
 
 // get sin & cos - angles still in ebx
 uchar instance_x(fixang tx) {
-  fix temp;
-  fix temp1;
-  fix temp2;
-  fix temp3;
-  fix sin_x;
-  fix cos_x;
-  AWide result, result2;
+  fix temp1, temp2, temp3;
+  fix sin_x, cos_x;
+  int64_t r;
 
   fix_sincos(tx, &sin_x, &cos_x);
 
   // rotate viewer vars
-  AsmWideMultiply(_view_position.gZ, sin_x, &result);
-  AsmWideMultiply(_view_position.gY, cos_x, &result2);
-  AsmWideAdd(&result, &result2);
-  temp = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(_view_position.gZ, sin_x) + fix64_mul(_view_position.gY, cos_x);
+  temp1 = fix64_to_fix(r);
 
-  AsmWideMultiply(_view_position.gY, sin_x, &result);
-  _view_position.gY = temp;
-  AsmWideMultiply(_view_position.gZ, cos_x, &result);
-  AsmWideNegate(&result);
-  AsmWideAdd(&result, &result2);
-  _view_position.gZ = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(_view_position.gZ, cos_x) - fix64_mul(_view_position.gY, sin_x);
+  _view_position.gY = temp1;
+  _view_position.gZ = fix64_to_fix(r);
 
   // now modify matrix
 
-  update_m(temp1, cos_x, vm4, sin_x, vm7);
-  update_m(temp2, cos_x, vm5, sin_x, vm8);
-  update_m(temp3, cos_x, vm6, sin_x, vm9);
-  update_ms(vm7, cos_x, vm7, sin_x, vm4);
-  update_ms(vm8, cos_x, vm8, sin_x, vm5);
-  update_ms(vm9, cos_x, vm9, sin_x, vm6);
+  temp1 = update_m(cos_x, vm4, sin_x, vm7);
+  temp2 = update_m(cos_x, vm5, sin_x, vm8);
+  temp3 = update_m(cos_x, vm6, sin_x, vm9);
+  vm7 = update_ms(cos_x, vm7, sin_x, vm4);
+  vm8 = update_ms(cos_x, vm8, sin_x, vm5);
+  vm9 = update_ms(cos_x, vm9, sin_x, vm6);
   vm4 = temp1;
   vm5 = temp2;
   vm6 = temp3;
@@ -288,36 +262,27 @@ uchar g3_start_object_angles_z(g3s_vector *p, fixang tz) {
 
 // get sin & cos - angles still in ebx
 uchar instance_z(fixang tz) {
-  fix temp;
-  fix temp1;
-  fix temp2;
-  fix temp3;
-  fix sin_z;
-  fix cos_z;
-  AWide result, result2;
+  fix temp1, temp2, temp3;
+  fix sin_z, cos_z;
+  int64_t r;
 
   fix_sincos(tz, &sin_z, &cos_z);
 
   // rotate viewer vars
-  AsmWideMultiply(_view_position.gY, sin_z, &result);
-  AsmWideMultiply(_view_position.gX, cos_z, &result2);
-  AsmWideAdd(&result, &result2);
-  temp = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(_view_position.gY, sin_z) + fix64_mul(_view_position.gX, cos_z);
+  temp1 = fix64_to_fix(r);
 
-  AsmWideMultiply(_view_position.gX, sin_z, &result);
-  _view_position.gX = temp;
-  AsmWideMultiply(_view_position.gY, cos_z, &result);
-  AsmWideNegate(&result);
-  AsmWideAdd(&result, &result2);
-  _view_position.gY = (result.hi << 16) | (((ulong)result.lo) >> 16);
+  r = fix64_mul(_view_position.gY, cos_z) - fix64_mul(_view_position.gX, sin_z);
+  _view_position.gX = temp1;
+  _view_position.gY = fix64_to_fix(r);
 
   // now modify matrix
-  update_m(temp1, cos_z, vm1, sin_z, vm4);
-  update_m(temp2, cos_z, vm2, sin_z, vm5);
-  update_m(temp3, cos_z, vm3, sin_z, vm6);
-  update_ms(vm4, cos_z, vm4, sin_z, vm1);
-  update_ms(vm5, cos_z, vm5, sin_z, vm2);
-  update_ms(vm6, cos_z, vm6, sin_z, vm3);
+  temp1 = update_m(cos_z, vm1, sin_z, vm4);
+  temp2 = update_m(cos_z, vm2, sin_z, vm5);
+  temp3 = update_m(cos_z, vm3, sin_z, vm6);
+  vm4 = update_ms(cos_z, vm4, sin_z, vm1);
+  vm5 = update_ms(cos_z, vm5, sin_z, vm2);
+  vm6 = update_ms(cos_z, vm6, sin_z, vm3);
   vm1 = temp1;
   vm2 = temp2;
   vm3 = temp3;
