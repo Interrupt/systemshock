@@ -584,15 +584,15 @@ errtype journey_newgame_func()
 
    clear_player_data = TRUE;
 
-   printf("Load object data\n");
+   INFO("Load object data");
    object_data_load();
 
    player_struct.level = 0xFF;
 
-   printf("Create initial game\n");
+   INFO("Create initial game");
    create_initial_game_func(0,0,0);
 
-   printf("Started!\n");
+   INFO("Started!");
 
    change_mode_func(0,0,(void *)GAME_LOOP);
 
@@ -747,7 +747,7 @@ extern void check_and_update_initial(void);
 
 errtype load_that_thar_game(int which_slot)
 {
-   printf("load_that_thar_game %i\n", which_slot);
+   INFO("load_that_thar_game %i", which_slot);
 
    errtype retval;
    if (valid_save & (1 << which_slot))
@@ -811,7 +811,7 @@ char diff_qvars[4] = { COMBAT_DIFF_QVAR, MISSION_DIFF_QVAR, PUZZLE_DIFF_QVAR, CY
 
 void go_and_start_the_game_already()
 {
-   printf("New Journey\n");
+   INFO("New Journey");
    char i;
    extern char curr_vol_lev;
    extern char curr_sfx_vol;
@@ -1151,7 +1151,7 @@ errtype load_savegame_names()
 
    valid_save = 0;
 
-   printf("Grabbing save game names\n");
+   INFO("Grabbing save game names");
 
    for (i=0; i<NUM_SAVE_SLOTS; i++)
    {
@@ -1250,11 +1250,11 @@ void splash_draw()
    
    // Need to load the splash palette file
 
-   printf("Loading splshpal.res\n");
+   INFO("Loading splshpal.res");
    pal_file = ResOpenFile("res/data/splshpal.res");
 
    if (pal_file < 0)
-      printf("Could not open splshpal.res!\n");
+      INFO("Could not open splshpal.res!");
 
    uchar splash_pal[768];
    ResExtract(RES_splashPalette, splash_pal);
@@ -1400,10 +1400,10 @@ void setup_start()
    kb_flush();
    mouse_flush();
 
-   printf("Loading intro.res\n");
+   INFO("Loading intro.res");
    intro_num = ResOpenFile("res/data/intro.res");
 
-   printf("Loading splash.res\n");
+   INFO("Loading splash.res");
    splash_num = ResOpenFile("res/data/splash.res");
 
    // slam in the right palette
