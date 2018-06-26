@@ -127,7 +127,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "3d.h"
 #include "GlobalV.h"
 #include "lg.h"
-#include <stdio.h> // printf()
 
 extern void per_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 extern void h_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
@@ -197,7 +196,6 @@ int g3_light_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_v
 
 int g3_draw_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                       grs_bitmap *bm) {
-  printf("g3_draw_tmap_tile\n");
   tmap_func = (void *)&per_umap;
   ti.tmap_type = GRC_PER;
   ti.flags = 0;
