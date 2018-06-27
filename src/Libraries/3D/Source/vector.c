@@ -108,58 +108,48 @@ void g3_vec_normalize(g3s_vector *v) {
 // trashes eax,ebx,ecx,edx,esi
 // the quick version does not normalize
 void g3_compute_normal_quick(g3s_vector *v, g3s_vector *v0, g3s_vector *v1, g3s_vector *v2) {
-    int64_t rX, rY, rZ;
+    int64_t r_temp, r[3];
     g3s_vector temp_v0;
     g3s_vector temp_v1;
-    int32_t temp_long;
+    int32_t temp_long = 0;
     int32_t shiftcount;
 
     g3_vec_sub(&temp_v0, v1, v0);
     g3_vec_sub(&temp_v1, v2, v1);
 
     // dest->x = v1z * v0y - v1y * v0z;
-    rX = fix64_mul(temp_v1.gZ, temp_v0.gY) - fix64_mul(temp_v1.gY, temp_v0.gZ);
-    v->gX = fix64_frac(rX);
+    r[0] = fix64_mul(temp_v1.gZ, temp_v0.gY) - fix64_mul(temp_v1.gY, temp_v0.gZ);
+    v->gX = fix64_frac(r[0]);
 
     // dest->y = v1x * v0z - v1z * v0x;
-    rY = fix64_mul(temp_v1.gX, temp_v0.gZ) - fix64_mul(temp_v1.gZ, temp_v0.gX);
-    v->gY = fix64_frac(rY);
+    r[1] = fix64_mul(temp_v1.gX, temp_v0.gZ) - fix64_mul(temp_v1.gZ, temp_v0.gX);
+    v->gY = fix64_frac(r[1]);
 
     // dest->z = v1y * v0x - v1x * v0y;
-    rZ = fix64_mul(temp_v1.gY, temp_v0.gX) - fix64_mul(temp_v1.gX, temp_v0.gY);
-    v->gZ = fix64_frac(rZ);
+    r[2] = fix64_mul(temp_v1.gY, temp_v0.gX) - fix64_mul(temp_v1.gX, temp_v0.gY);
+    v->gZ = fix64_frac(r[2]);
 
     // see if fit into a longword
-    if (rX < 0)
-        rX = -rX;
-    temp_long = fix64_int(2 * rX);
-
-    if (rY < 0)
-        rY = -rY;
-    temp_long |= fix64_int(2 * rY);
-
-    if (rZ < 0)
-        rZ = -rZ;
-    temp_long |= fix64_int(2 * rZ);
-
+    for(int i = 0; i < 3; i++) {
+        r_temp = r[i];
+        if (r_temp < 0)
+            r_temp = -r_temp;
+        temp_long |= fix64_int(2 * r_temp);
+    }
     if (!temp_long)
         return; // everything fits in the low longword. hurrah. see ya.
 
     // see how far to shift to fit in a longword
     shiftcount = 0;
-    while (((uint32_t)temp_long) >= 0x0100) {
+    while (temp_long >= 0x0100) {
         shiftcount += 8;
         temp_long >>= 8;
     }
     shiftcount += shift_table[temp_long];
 
     // now get the results
-    rX >>= shiftcount;
-    v->gX = fix64_frac(rX);
-
-    rY >>= shiftcount;
-    v->gY = fix64_frac(rY);
-
-    rZ >>= shiftcount;
-    v->gZ = fix64_frac(rZ);
+    for (int i = 0; i < 3; i++) {
+        r[i] >>= shiftcount;
+        v->xyz[i] = fix64_frac(r[i]);
+    }
 }
