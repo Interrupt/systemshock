@@ -54,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "player.h"
 #include "popups.h"
+#include "Prefs.h"
 
 /*
 #include <olhext.h>
@@ -1187,6 +1188,7 @@ errtype wrapper_panel_close(uchar clear_message)
    if (clear_message)
       message_info("");
    wrapper_panel_on = FALSE;
+   SavePrefs(0);
    inventory_page = inv_last_page;
    if (inventory_page < 0 && inventory_page != INV_3DVIEW_PAGE)
       inventory_page = 0;

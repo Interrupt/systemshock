@@ -59,8 +59,11 @@ char which_lang;
 void init_strings(void)
 {
 	// Open the string resource file.
-   printf("Loading cybstrng.res\n");
-	string_res_file = ResOpenFile("res/data/cybstrng.res");
+	if (which_lang < 0 || which_lang >= sizeof(language_files) / sizeof(*language_files))
+		which_lang = 0;
+	const uchar *lang_file = language_files[which_lang];
+	printf("Loading %s\n", lang_file);
+	string_res_file = ResOpenFile(lang_file);
 	
 	if (string_res_file < 0)
 		critical_error(CRITERR_RES|0);

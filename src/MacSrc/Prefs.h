@@ -46,6 +46,7 @@ typedef struct
 	short		soMusicVolume;
 	
 	// Display Options
+	short		doVideoMode;
 	short		doResolution;			// 0 - High, 1 - Low
 	short		doDetail;				// 0 - Min, 1-Low, 2-High, 3-Max
 	short		doGamma;
@@ -68,4 +69,3 @@ extern ShockPrefs		gShockPrefs;
 void SetDefaultPrefs(void);
 OSErr LoadPrefs(ResType resID);
 OSErr SavePrefs(ResType resID);
-OSErr GetPrefsDir(short *vRef, long *parID);
