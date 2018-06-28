@@ -9,9 +9,14 @@ set(CMAKE_C_FLAGS -m32)
 set(CMAKE_CXX_FLAGS -m32)
 
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
+option(ENABLE_DEBUG_BLIT "Enable debugging blitter" OFF)
 
 # HAAAAX!!
 add_definitions(-Dpowerc -DSVGA_SUPPORT)
+
+if(ENABLE_DEBUG_BLIT)
+	add_definitions(-DDEBUGGING_BLIT)
+endif()
 
 add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
 
