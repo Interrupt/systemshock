@@ -28,15 +28,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
-//#include <GestaltEqu.h>
-//#include <Folders.h>
 #include "Shock.h"
 #include "Prefs.h"
 
 #include "popups.h"
 #include "olhext.h"
 
-void SetShockGlobals(void);
+static void SetShockGlobals(void);
 
 //--------------------
 //  Globals
@@ -48,11 +46,18 @@ uchar sfx_on = TRUE;
 //--------------------
 //  Externs
 //--------------------
-//extern uchar 	sfx_on;
 extern int 		_fr_global_detail;
 extern Boolean	DoubleSize;
 extern Boolean	SkipLines;
+extern short mode_id;
 
+static const char *PREFS_FILENAME = "prefs.txt";
+
+static const char *PREF_LANGUAGE     = "language";
+static const char *PREF_SOUNDFX      = "sound-effects";
+static const char *PREF_VIDEOMODE    = "video-mode";
+static const char *PREF_HALFRES      = "half-resoultion";
+static const char *PREF_DETAIL       = "detail";
 
 //--------------------------------------------------------------------
 //	  Initialize the preferences to their default settings.
@@ -71,6 +76,7 @@ void SetDefaultPrefs(void)
 	gShockPrefs.soSoundFX = true;
 	gShockPrefs.soMusicVolume = 33;				// Figure out when sound is put in.
 
+	gShockPrefs.doVideoMode = 3;
 	gShockPrefs.doResolution = 0;				// High-res.
 	gShockPrefs.doDetail = 3;					// Max detail.
 	gShockPrefs.doGamma = 29;					// Default gamma (29 out of 100).
@@ -79,127 +85,102 @@ void SetDefaultPrefs(void)
 	SetShockGlobals();
 }
 
+static FILE *open_prefs(const char *mode) {
+    char fullname[512];
+    char *path = SDL_GetPrefPath("Interrupt", "SystemShock");
+    snprintf(fullname, sizeof(fullname), "%s%s", path, PREFS_FILENAME);
+    free(path);
+    return fopen(fullname, mode);
+}
+
+static char *trim(char *s) {
+    while (*s && isspace(*s)) s++;
+    char *c = &s[strlen(s) - 1];
+    while (c >= s && isspace(*c)) *(c--) = '\0';
+    return s;
+}
+
+static bool is_true(const char *s) {
+    return strcasecmp(s, "yes") == 0 || strcasecmp(s, "true") == 0 || strcmp(s, "1") == 0;
+}
+
 //--------------------------------------------------------------------
 //	  Locate the preferences file and load them to set our global pref settings.
 //--------------------------------------------------------------------
-OSErr LoadPrefs(ResType resID)
-{
-	OSErr					err;
-	/*Handle					prefHdl;
-	short						prefVRef;
-	long						prefParID;
-	short						fRef;
-	HParamBlockRec		info;
-	
-	err = GetPrefsDir(&prefVRef, &prefParID);
-	if (err == noErr)
-	{
-		fRef = HOpenResFile(prefVRef, prefParID, kPrefsFileName, fsRdPerm);		// Open the prefs file.
-		if (fRef == -1)																						// If not there, then create it
-		{																											// with default values.
-			HCreateResFile(prefVRef, prefParID, kPrefsFileName);
-			err = ResError();
-			if (err == noErr)
-			{
-				info.ioParam.ioCompletion = 0L;
-				info.ioParam.ioVRefNum = prefVRef;
-				info.ioParam.ioNamePtr = kPrefsFileName;
-				info.fileParam.ioDirID = prefParID;
-				info.fileParam.ioFDirIndex = -1;
-				err = PBHGetFInfo(&info, FALSE);
-				if (err == noErr)
-				{
-					info.fileParam.ioDirID = prefParID;
-					info.fileParam.ioFDirIndex = -1;
-					info.fileParam.ioFlFndrInfo.fdCreator = kAppFileType;
-					info.fileParam.ioFlFndrInfo.fdType = kPrefsFileType;
-					PBHSetFInfoSync(&info);
-				}
-				SavePrefs(resID);
-			}
-		}
-		else																				// Else set the global preferences struct
-		{																					// from the prefs resource.
-			prefHdl = GetResource(resID, 128);
-			if (prefHdl)
-			{
-				BlockMove(*prefHdl, &gShockPrefs, sizeof(ShockPrefs));				
-				ReleaseResource(prefHdl);
-				SetShockGlobals();
-			}
-			CloseResFile(fRef);
-		}
-	}*/
-	return(err);
+OSErr LoadPrefs(ResType resID) {
+    FILE *f = open_prefs("r");
+    if (!f) {
+        // file can't be open, write default preferences
+        return SavePrefs(resID);
+    }
+
+    char line[64];
+    while (fgets(line, sizeof(line), f)) {
+        char *eq = strchr(line, '=');
+        if (!eq)
+            continue;
+
+        *eq = '\0';
+        const char *key = trim(line);
+        const char *value = trim(eq + 1);
+
+        if (strcasecmp(key, PREF_LANGUAGE) == 0) {
+            int lang = atoi(value);
+            if (lang >= 0 && lang <= 2)
+                gShockPrefs.goLanguage = lang;
+        } else if (strcasecmp(key, PREF_SOUNDFX) == 0) {
+            gShockPrefs.soSoundFX = is_true(value);
+        } else if (strcasecmp(key, PREF_VIDEOMODE) == 0) {
+            int mode = atoi(value);
+            if (mode >= 0 && mode <= 4)
+                gShockPrefs.doVideoMode = mode;
+        } else if (strcasecmp(key, PREF_HALFRES) == 0) {
+            gShockPrefs.doResolution = is_true(value);
+        } else if (strcasecmp(key, PREF_DETAIL) == 0) {
+            int detail = atoi(value);
+            if (detail >= 0 && detail <= 3)
+                gShockPrefs.doDetail = detail;
+        }
+    }
+
+    fclose(f);
+    SetShockGlobals();
+    return 0;
 }
 
 //--------------------------------------------------------------------
 //	  Save global settings in the preferences file.
 //--------------------------------------------------------------------
-OSErr SavePrefs(ResType resID)
-{
-	OSErr		err;
-	/*Handle		prefHdl;
-	short			prefVRef;
-	long			prefParID;
-	short			fRef;
-	
-	err = GetPrefsDir(&prefVRef, &prefParID);
-	if (err == noErr)
-	{
-		fRef = HOpenResFile(prefVRef, prefParID, kPrefsFileName, fsRdWrPerm);
-		if (fRef != -1)
-		{
-			prefHdl = GetResource(resID, 128);										// Get the prefs resource
-			if (!prefHdl)																		// If there is no resource in the file, then
-			{																						// add one.
-				prefHdl = NewHandle(sizeof(ShockPrefs));
-				if (prefHdl)
-					AddResource(prefHdl, resID, 128, "");
-			}
-			
-			BlockMove(&gShockPrefs, *prefHdl, sizeof(ShockPrefs));		// Set prefs handle from our global.
-			
-			ChangedResource(prefHdl);													// Write out the changed resource.
-			WriteResource(prefHdl);
-			ReleaseResource(prefHdl);
-			UpdateResFile(fRef);
-			CloseResFile(fRef);
-		}
-	}*/
-	return (err);
-}
+OSErr SavePrefs(ResType resID)  {
+    printf("Saving preferences\n");
+    FILE *f = open_prefs("w");
+    if (!f) {
+        printf("ERROR: Failed to open preferences file\n");
+        return -1;
+    }
 
-//--------------------------------------------------------------------
-//	  Get a reference to the Preferences folder.
-//--------------------------------------------------------------------
-OSErr GetPrefsDir(short *vRef, long *parID)
-{
-	OSErr	err;
-	/*long		fm;
-	
-	err = Gestalt(gestaltFindFolderAttr, &fm);
-	err |= (fm & (1 << gestaltFindFolderPresent)) == 0;
-	
-	if (err == noErr)												// If folder mgr present, then find
-	{																		// the 'Preferences' folder
-		err = FindFolder(kOnSystemDisk, kPreferencesFolderType, kCreateFolder, vRef, parID);
-	}
-	*/
-	return (err);
+    fprintf(f, "%s = %d\n", PREF_LANGUAGE, which_lang);
+    fprintf(f, "%s = %s\n", PREF_SOUNDFX, sfx_on ? "yes" : "no");
+    fprintf(f, "%s = %d\n", PREF_VIDEOMODE, mode_id);
+    fprintf(f, "%s = %s\n", PREF_HALFRES, DoubleSize ? "yes" : "no");
+    fprintf(f, "%s = %d\n", PREF_DETAIL, _fr_global_detail);
+    fclose(f);
+
+    return 0;
 }
 
 //--------------------------------------------------------------------
 //  Set the corresponding Shock globals from the prefs structure.
 //--------------------------------------------------------------------
-void SetShockGlobals(void)
+static void SetShockGlobals(void)
 {
 	popup_cursors = gShockPrefs.goPopupLabels;
 	olh_active = gShockPrefs.goOnScreenHelp;
-	which_lang = 0;													// always English
+	which_lang = gShockPrefs.goLanguage;
 
 	sfx_on = gShockPrefs.soSoundFX;
 	
+	mode_id = gShockPrefs.doVideoMode;
 	DoubleSize = (gShockPrefs.doResolution == 1);		// Set this True for low-res.
 	SkipLines = gShockPrefs.doUseQD;
 	_fr_global_detail = gShockPrefs.doDetail;
