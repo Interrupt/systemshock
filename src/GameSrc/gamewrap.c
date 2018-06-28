@@ -342,8 +342,6 @@ errtype interpret_qvars(void)
 
    language_change(QUESTVAR_GET(LANGUAGE_QVAR));
 
-   chg_set_flg(GL_CHG_LOOP);
-
    return(OK);
 }
 

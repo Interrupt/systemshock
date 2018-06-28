@@ -873,6 +873,9 @@ void go_and_start_the_game_already()
       setup_bio_started = FALSE;
    }
 
+   // CC: This fixed popups cursors drawing tiny
+   gr2ss_override = OVERRIDE_ALL;
+
 //KLC   end_wait();
 }
 
