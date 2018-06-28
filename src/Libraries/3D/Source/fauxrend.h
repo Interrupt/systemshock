@@ -25,10 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // structures
 typedef struct {
-  grs_canvas *draw_canvas;
-  uchar double_buffer;
-  int xtop, ytop;
-  fix viewer_zoom;
+    grs_canvas *draw_canvas;
+    uchar double_buffer;
+    int xtop, ytop;
+    fix viewer_zoom;
 } fauxrend_context;
 
 // fauxrend.c

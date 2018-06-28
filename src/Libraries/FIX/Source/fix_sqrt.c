@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Includes
 //--------------------
 #include "fix.h"
+#include "lg.h"
 #include <math.h>
 #include <stdio.h>
 
@@ -36,45 +37,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Calculate the square root of a fixed-point number.
 //-----------------------------------------------------------------
 fix fix_sqrt(fix num) {
-  // fix	res = long_sqrt(num);
+    // fix	res = long_sqrt(num);
 
-  float f = fix_float(num);
-  f = sqrtf(f);
+    float f = fix_float(num);
+    f = sqrtf(f);
 
-  // Make the number a fix and return it
-  return fix_from_float(f);
-}
-
-//-----------------------------------------------------------------
-//  Calculate the square root of a wide (64-bit) number.
-//-----------------------------------------------------------------
-int32_t quad_sqrt(int32_t hi, uint32_t lo) {
-  // Parameter checking
-  // WH dunno, needed?
-  if (lo == 0) // If lo word is zero, return 0.
-    return (0);
-
-  // If a negative number, return 0.
-  if (hi < 0) {
-    printf("quad_sqrt of negative number!\n");
-    return (0);
-  }
-
-  return (uint32_t)sqrtl(fix64_make(hi, lo));
+    // Make the number a fix and return it
+    return fix_from_float(f);
 }
 
 //-----------------------------------------------------------------
 //  Calculate the square root of a long number.
 //-----------------------------------------------------------------
 int long_sqrt(int num) {
-  // WH dunno, needed?
-  if (num == 0)
-    return (0);
-  // A bit of error checking.
-  if (num < 0) {
-    printf("long_sqrt of negative number!\n");
-    return (0);
-  }
+    // WH dunno, needed?
+    if (num == 0)
+        return (0);
+    // A bit of error checking.
+    if (num < 0) {
+        ERROR("long_sqrt of negative number!");
+        return (0);
+    }
 
-  return (int32_t)sqrt(num);
+    return (int32_t)sqrt(num);
 }

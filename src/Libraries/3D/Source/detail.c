@@ -30,11 +30,11 @@ void (*g3_tmap_func)() = (void (*)())g3_draw_tmap;
 void (*g3_lit_tmap_func)() = (void (*)())g3_light_tmap;
 
 void g3_set_tmaps_linear(void) {
-  g3_tmap_func = (void (*)())g3_draw_lmap;
-  g3_lit_tmap_func = (void (*)())g3_light_lmap;
+    g3_tmap_func = (void (*)())g3_draw_lmap;
+    g3_lit_tmap_func = (void (*)())g3_light_lmap;
 }
 
 void g3_reset_tmaps(void) {
-  g3_tmap_func = (void (*)())g3_draw_tmap;
-  g3_lit_tmap_func = (void (*)())g3_light_tmap;
+    g3_tmap_func = (void (*)())g3_draw_tmap;
+    g3_lit_tmap_func = (void (*)())g3_light_tmap;
 }
