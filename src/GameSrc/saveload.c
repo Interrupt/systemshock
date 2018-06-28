@@ -881,6 +881,8 @@ errtype load_current_map(Id id_num, FSSpec* spec)
       AdvanceProgress();
    }
 
+   printf("Loading schedules\n");
+
    // Load schedules, performing some voodoo. 
    global_fullmap->sched[0].queue.vec = schedvec;
    global_fullmap->sched[0].queue.comp = compare_events;
@@ -891,8 +893,15 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    global_fullmap->sched[0].queue.elemsize = sizeof(SchedEvent);
 
    int queue_size = ResSize(id_num + idx);
+
    if (queue_size > 0)      // KLC - no need to read in vec if none there.
    {
+      // Might have to allocate more memory for the queue
+      if(queue_size > schedsize) {
+         schedule_free(&global_fullmap->sched);
+         schedule_init(&global_fullmap->sched,queue_size,FALSE);
+      }
+
       uchar* dst_ptr = global_fullmap->sched[0].queue.vec;
       memmove(dst_ptr, ResLock(id_num + idx), queue_size);
       ResUnlock(id_num + idx++);
@@ -900,6 +909,8 @@ errtype load_current_map(Id id_num, FSSpec* spec)
    }
    else
      idx++;
+
+   printf("Loading tiles\n");
 
    //KLC��� Big hack!  Force the schedule to growable.
    global_fullmap->sched[0].queue.grow = TRUE;
