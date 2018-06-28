@@ -342,11 +342,6 @@ errtype interpret_qvars(void)
 
    language_change(QUESTVAR_GET(LANGUAGE_QVAR));
 
-   //KLC - can't ever change screenmode in Mac version
-   mode_id = QUESTVAR_GET(SCREENMODE_QVAR);
-   if (mode_id != convert_use_mode)
-      chg_set_flg(GL_CHG_LOOP);
-
    return(OK);
 }
 
