@@ -123,6 +123,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @example LOGGER(LOG_TRACE, "My name is %s", name);
 **/
 #define LOGGER(level, ...) log_log(level, THIS_FILE, __LINE__, __VA_ARGS__)
+#define TRACE(...) log_log(LOG_TRACE, THIS_FILE, __LINE__, __VA_ARGS__)
 #define DEBUG(...) log_log(LOG_DEBUG, THIS_FILE, __LINE__, __VA_ARGS__)
 #define INFO(...) log_log(LOG_INFO, THIS_FILE, __LINE__, __VA_ARGS__)
 #define WARN(...) log_log(LOG_WARN, THIS_FILE, __LINE__, __VA_ARGS__)
