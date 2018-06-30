@@ -56,9 +56,9 @@ void ComposeInit(grs_bitmap *pcompose, int32_t bmtype, int32_t w, int32_t h) {
     case BMT_FLAT8:
         pcompose->row = sizeof(uint8_t) * w;
         break;
-    //		case BMT_FLAT24:
-    //			pcompose->row = 3 * w;
-    //			break;
+    case BMT_FLAT24:
+        pcompose->row = 3 * sizeof(uint8_t) * w;
+        break;
     default:
         printf("ComposeInit: invalid bitmap type: %d\n", bmtype);
         return;

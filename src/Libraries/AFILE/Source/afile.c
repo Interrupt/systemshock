@@ -421,9 +421,9 @@ int32_t AfileBitmapLength(Afile *paf) { return (paf->frameLen); }
 
 //	-------------------------------------------------------------
 //
-//	AfileAudioLength() computes the length of the buffer needed
-//	to store audio data.  Hope it all fits into ram!
-
+// AfileAudioLength() computes the length of the buffer needed
+// to store audio data.  Hope it all fits into ram!
+// Please note, you need multiply return value with 8192!
 int32_t AfileAudioLength(Afile *paf) {
     if (paf->a.numChans == 0)
         return (0);

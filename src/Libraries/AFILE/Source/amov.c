@@ -130,6 +130,11 @@ int32_t AmovReadHeader(Afile *paf) {
         memcpy(paf->v.pal.rgb, pmi->movieHdr.palette, 256 * 3);
     }
 
+    // Audio information
+    paf->a.numChans = pmi->movieHdr.audioNumChans;
+    paf->a.sampleRate = pmi->movieHdr.audioSampleRate;
+    paf->a.sampleSize = pmi->movieHdr.audioSampleSize;
+
     // Read in chunk offsets
     pmi->pmc = (MovieChunk *)malloc(pmi->movieHdr.sizeChunks);
     fread(pmi->pmc, pmi->movieHdr.sizeChunks, 1, paf->fp);
@@ -139,6 +144,8 @@ int32_t AmovReadHeader(Afile *paf) {
     for (pchunk = pmi->pmc; pchunk->chunkType != MOVIE_CHUNK_END; pchunk++) {
         if (pchunk->chunkType == MOVIE_CHUNK_VIDEO)
             paf->v.numFrames++;
+        if (pchunk->chunkType == MOVIE_CHUNK_AUDIO)
+            paf->a.numSamples++;
     }
 
     // No new palette
