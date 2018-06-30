@@ -104,7 +104,7 @@ int AfileOpen(Afile *paf, char *filename) {
 
     //	Spew
 
-    //	Spew(DSRC_2D_Afile, ("AfileOpen: trying to open: %s\n", filename));
+    DEBUG("%s: trying to open: %s", __FUNCTION__, filename);
 
     //	Extract file extension, get type
 
@@ -116,7 +116,7 @@ int AfileOpen(Afile *paf, char *filename) {
         aftype = AfileLookupType(p);
     }
     if (aftype == AFILE_BAD) {
-        printf("AfileOpen: unknown extension\n");
+        ERROR("%s: unknown extension", __FUNCTION__);
         return (-1);
     }
 
@@ -125,7 +125,7 @@ int AfileOpen(Afile *paf, char *filename) {
     //	fp = DatapathOpen(pdp, filename, "rb");
     fp = fopen(filename, "rb");
     if (fp == NULL) {
-        printf("AfileOpen: can't open file\n");
+        ERROR("%s: can't open file", __FUNCTION__);
         return -2;
     }
 
@@ -140,14 +140,14 @@ int AfileOpen(Afile *paf, char *filename) {
 
     //	Call method to read header
 
-    //	Spew(DSRC_2D_Afile, ("AfileOpen: reading header\n"));
+    TRACE("%s: reading header", __FUNCTION__);
 
     if ((*paf->pm->f_ReadHeader)(paf) < 0) {
-        printf("AfileOpen: bad header\n");
+        ERROR("%s: bad header", __FUNCTION__);
         return -3;
     }
 
-    //	Figure bitmap type and frame length
+    // Figure bitmap type and frame length
 
     if (paf->v.numBits == 8) {
         bmtype = BMT_FLAT8;
@@ -157,25 +157,22 @@ int AfileOpen(Afile *paf, char *filename) {
         paf->frameLen = (int32_t)paf->v.width * paf->v.height * 3;
     }
 
-    //	Spew(DSRC_2D_Afile, ("AfileOpen: numBits: %d  w,h: %d,%d  frameLen: %d\n",
-    //		paf->v.numBits, paf->v.width, paf->v.height, paf->frameLen));
+    TRACE("%s: numBits: %d  w,h: %d,%d  frameLen: %d", __FUNCTION__, paf->v.numBits, paf->v.width, paf->v.height,
+          paf->frameLen);
 
-    //	Set up work buffer, compose buffer, and prev buffer
-
-    //	Spew(DSRC_2D_Afile, ("AfileOpen: initing work buffer of size: %d\n",
-    //		BM_PLENTY_SIZE(paf->frameLen)));
+    // Set up work buffer, compose buffer, and prev buffer
+    TRACE("%s: initing work buffer of size: %d", __FUNCTION__, BM_PLENTY_SIZE(paf->frameLen));
 
     gr_init_bitmap(&paf->bmWork, (uchar *)malloc(BM_PLENTY_SIZE(paf->frameLen)), bmtype, 0, paf->v.width,
                    paf->v.height);
 
-    //	Spew(DSRC_2D_Afile, ("AfileOpen: initing compose buffer and prev buffer\n"));
+    TRACE("%s: initing compose buffer and prev buffer", __FUNCTION__);
 
     ComposeInit(&paf->bmCompose, bmtype, paf->v.width, paf->v.height);
     ComposeInit(&paf->bmPrev, bmtype, paf->v.width, paf->v.height);
 
     //	Return ok
-
-    //	Spew(DSRC_2D_Afile, ("AfileOpen: successful open\n"));
+    DEBUG("%s: successful open", __FUNCTION__);
 
     return 0;
 }
@@ -345,7 +342,7 @@ int AfileGetAudio(Afile *paf, void *paudio) {
     //	Spew(DSRC_2D_Afile, ("AfileGetAudio: getting audio\n"));
 
     if (paf->pm->f_ReadAudio == NULL) {
-        printf("AfileGetAudio: anim file format doesn't support audio\n");
+        ERROR("%s: anim file format doesn't support audio", __FUNCTION__);
         return (-1);
     }
 
