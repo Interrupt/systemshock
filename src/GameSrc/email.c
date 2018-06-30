@@ -152,7 +152,7 @@ void set_email_flags(int n);
 char *get_email_title_string(int n, char *text, int siz);
 void apply_email_macros(char *text, char *newval);
 void email_intercept(void);
-char *email_draw_string(char *text, short *x, short *y, uchar last);
+char *email_draw_string(char *text, short *x, short *y, bool last);
 void free_email_buffer(void);
 void draw_more_string(int x, int y, uchar footermask);
 void email_draw_text(short email_id, uchar really_an_email);
@@ -336,7 +336,7 @@ void email_intercept(void) {
     }
 }
 
-char *email_draw_string(char *text, short *x, short *y, uchar last) {
+char *email_draw_string(char *text, short *x, short *y, bool last) {
     short w, h;
     gr_set_fcolor(MESSAGE_COLOR);
     gr_char_size('X', &w, &h);
@@ -517,7 +517,7 @@ void email_draw_text(short email_id, uchar really_an_email) {
     while (remains == NULL || gr_string_width(remains) < INVENTORY_PANEL_WIDTH) {
         int len;
         char *next;
-        uchar last;
+        bool last;
         char tmp[256];
         ubyte line = EMAIL_MESSAGE_IDX + next_text_line++;
         if (remains == NULL)
@@ -535,7 +535,7 @@ void email_draw_text(short email_id, uchar really_an_email) {
         if (!isspace(buf[len - 1]))
             strcpy(buf + len, " ");
         next = get_temp_string(MKREF(email_id, line + 1));
-        last = next[0] == '\0';
+        last = (next == NULL);
         remains = email_draw_string(buf, &x, &y, last);
         if (last) {
             if (remains == NULL) {
