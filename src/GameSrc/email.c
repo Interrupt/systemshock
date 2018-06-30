@@ -141,7 +141,7 @@ static uchar email_flags;
 #define EMAIL_FLAG_BEEN_READ 0x1
 #define EMAIL_FLAG_TRANSITORY 0x2
 
-int email_font = RES_tinyTechFont;
+Id email_font = RES_tinyTechFont;
 
 // ------------
 //  PROTOTYPES
@@ -155,7 +155,7 @@ void email_intercept(void);
 char *email_draw_string(char *text, short *x, short *y, bool last);
 void free_email_buffer(void);
 void draw_more_string(int x, int y, uchar footermask);
-void email_draw_text(short email_id, uchar really_an_email);
+void email_draw_text(Id email_id, bool really_an_email);
 void email_page_exit(void);
 uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *r, void *data);
 void parse_email_mugs(char *mug, uchar *mcolor, ushort mugnums[NUM_MFDS], uchar setup);
@@ -224,7 +224,7 @@ char *get_email_title_string(int n, char *text, int siz) {
     return text;
 }
 
-#define EMAIL_MACRO_PAD_CHARS 20
+//#define EMAIL_MACRO_PAD_CHARS 20
 void apply_email_macros(char *text, char *newval) {
     short cold = 0, cnew = 0, len;
     char buf[256];
@@ -451,7 +451,7 @@ void draw_more_string(int x, int y, uchar footermask) {
     }
 }
 
-void email_draw_text(short email_id, uchar really_an_email) {
+void email_draw_text(Id email_id, bool really_an_email) {
     short x = 0, y = 0;
     char *remains = NULL;
     char buf[256] = "";
@@ -498,9 +498,9 @@ void email_draw_text(short email_id, uchar really_an_email) {
     if (*email_buffer != '\0') {
         ubyte line = EMAIL_MESSAGE_IDX + next_text_line;
         char *next = get_temp_string(MKREF(email_id, line));
-        uchar last;
+        bool last;
 
-        last = (next == NULL || next[0] == '\0');
+        last = (next == NULL);
         if ((remains = email_draw_string(email_buffer, &x, &y, last)) != NULL) {
             strncpy(buf, remains, sizeof(buf));
             remains = buf;
@@ -588,10 +588,10 @@ done:
 #endif
 }
 
-#define BAD_EMAIL_KEYFLAGS (KB_FLAG_SHIFT | KB_FLAG_CTRL | KB_FLAG_ALT | KB_FLAG_SPECIAL)
+//#define BAD_EMAIL_KEYFLAGS (KB_FLAG_SHIFT | KB_FLAG_CTRL | KB_FLAG_ALT | KB_FLAG_SPECIAL)
 
 void email_page_exit(void) {
-    int mid;
+    uint8_t mid;
 
     current_email = EMAIL_INACTIVE;
     pop_inventory_cursors();
@@ -648,7 +648,8 @@ uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *region, void *v) {
 
 void parse_email_mugs(char *mug, uchar *mcolor, ushort mugnums[NUM_MFDS], uchar setup) {
     short i, fwid;
-    char *s, *sfront;
+    char *s;
+    //char *sfront;
     short lastmug = -1;
     uchar esc_param, different;
     extern void cap_mfds_with_func(uchar func, uchar max);
@@ -656,7 +657,7 @@ void parse_email_mugs(char *mug, uchar *mcolor, ushort mugnums[NUM_MFDS], uchar 
     char buf[64];
 
     s = buf;
-    sfront = s;
+    //sfront = s;
     strcpy(s, mug);
 
     if (mug && *mug) {
@@ -688,6 +689,8 @@ void parse_email_mugs(char *mug, uchar *mcolor, ushort mugnums[NUM_MFDS], uchar 
                 if (!(email_flags & EMAIL_FLAG_BEEN_READ))
                     intercept_hack_num = esc_param;
                 break;
+            default:
+                ;
             }
             s += fwid + 1;
             while (!isalpha(*s) && !isdigit(*s) && *s != '\0')
