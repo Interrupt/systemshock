@@ -72,6 +72,7 @@ typedef struct {
 int32_t AmovReadHeader(Afile *paf);
 int32_t AmovReadFrame(Afile *paf, grs_bitmap *pbm, fix *ptime);
 int32_t AmovReadFramePal(Afile *paf, Apalette *ppal);
+int32_t AmovReadAudio(Afile *paf, void *audio);
 int32_t AmovReadReset(Afile *paf);
 int32_t AmovReadClose(Afile *paf);
 
@@ -83,7 +84,7 @@ Amethods movMethods = {
     AmovReadHeader,   // Read header
     AmovReadFrame,    // Read frame
     AmovReadFramePal, // Read frame palette
-    NULL,             // f_ReadAudio
+    AmovReadAudio,    // f_ReadAudio
     AmovReadReset,
     AmovReadClose,
     AmovWriteBegin,
@@ -282,6 +283,12 @@ int32_t AmovReadFramePal(Afile *paf, Apalette *ppal) {
     return false;
 }
 
+// Read audio data to buffer
+int32_t AmovReadAudio(Afile *paf, void *audio) {
+    ERROR("%s: not implemented yet!", __FUNCTION__);
+    return -1;
+}
+
 //	----------------------------------------------------------
 //
 //	AmovReadReset() resets the movie for reading.
@@ -315,7 +322,7 @@ int32_t AmovReadClose(Afile *paf) {
 //	AmovWriteBegin() starts up writer.
 
 int32_t AmovWriteBegin(Afile *paf) {
-    printf("AmovWriteBegin not implemented yet!\n");
+    ERROR("%s: not implemented yet!", __FUNCTION__);
     return -1;
     /*
             AmovInfo *pmi;
@@ -354,7 +361,7 @@ int32_t AmovWriteBegin(Afile *paf) {
 //	AmovWriteFrame() writes out next frame.
 
 int32_t AmovWriteFrame(Afile *paf, grs_bitmap *pbm, int32_t bmlength, fix time) {
-    printf("AmovWriteFrame not implemented yet!\n");
+    ERROR("%s: not implemented yet!", __FUNCTION__);
     return -1;
     /*
             AmovInfo *pmi;
@@ -401,7 +408,7 @@ int32_t AmovWriteFrame(Afile *paf, grs_bitmap *pbm, int32_t bmlength, fix time) 
 //	AmovWriteClose() closes output .mov
 
 int32_t AmovWriteClose(Afile *paf) {
-    printf("AmovWriteClose not implemented yet!\n");
+    ERROR("%s: not implemented yet!", __FUNCTION__);
     return -1;
     /*
             AmovInfo *pmi;
