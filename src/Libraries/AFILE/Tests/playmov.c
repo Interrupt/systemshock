@@ -15,11 +15,14 @@ int main(int argc, char *argv[]) {
     int32_t audio_length, bitmap_length;
     MovieChunk *pmc, *pmcBase;
     char *infile;
+    char *buffer;
 
     char *chunk;
 
     Mix_Chunk *_sample[2];
 
+    log_set_quiet(0);
+    log_set_level(LOG_DEBUG);
 
     if (argc < 2) {
         printf("Usage:  movinfo file.mov\n");
@@ -34,4 +37,9 @@ int main(int argc, char *argv[]) {
     bitmap_length = AfileBitmapLength(afile);
     audio_length = AfileAudioLength(afile) * 8192;
 
+    buffer = malloc(audio_length);
+
+    AfileGetAudio(afile, buffer);
+
+    return 0;
 }
