@@ -44,6 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "lg.h"
 //#include <rsd.h>
@@ -322,38 +323,29 @@ int32_t AmovReadClose(Afile *paf) {
 //	AmovWriteBegin() starts up writer.
 
 int32_t AmovWriteBegin(Afile *paf) {
-    ERROR("%s: not implemented yet!", __FUNCTION__);
-    return -1;
-    /*
-            AmovInfo *pmi;
+    AmovInfo *pmi;
 
     //	Allocate type-specific info
 
-            paf->pspec = Calloc(sizeof(AmovInfo));
-            pmi = paf->pspec;
-            pmi->pmc = Calloc(MAX_MOV_FRAMES * sizeof(MovieChunk));
+    paf->pspec = calloc(1, sizeof(AmovInfo));
+    pmi = paf->pspec;
+    pmi->pmc = calloc(MAX_MOV_FRAMES, sizeof(MovieChunk));
 
-    //	Current chunk is first one
+    // Current chunk is first one
+    pmi->pcurrChunk = pmi->pmc;
 
-            pmi->pcurrChunk = pmi->pmc;
+    // We want rsd!
+    paf->writerWantsRsd = true;
 
-    //	We want rsd!
+    // Open temp file
+    pmi->fpTemp = fopen(MOV_TEMP_FILENAME, "wb");
+    if (pmi->fpTemp == NULL) {
+        Warning(("AmovWriteBegin: can't open temp file\n"));
+        return (-1);
+    }
 
-            paf->writerWantsRsd = TRUE;
-
-    //	Open temp file
-
-            pmi->fpTemp = fopen(MOV_TEMP_FILENAME, "wb");
-            if (pmi->fpTemp == NULL)
-                    {
-                    Warning(("AmovWriteBegin: can't open temp file\n"));
-                    return(-1);
-                    }
-
-    //	Return
-
-            return(0);
-    */
+    // Return
+    return (0);
 }
 
 //	------------------------------------------------------
@@ -361,46 +353,37 @@ int32_t AmovWriteBegin(Afile *paf) {
 //	AmovWriteFrame() writes out next frame.
 
 int32_t AmovWriteFrame(Afile *paf, grs_bitmap *pbm, int32_t bmlength, fix time) {
-    ERROR("%s: not implemented yet!", __FUNCTION__);
-    return -1;
-    /*
-            AmovInfo *pmi;
-            Rect area;
+    AmovInfo *pmi;
+    LGRect area;
 
-            pmi = paf->pspec;
+    pmi = paf->pspec;
 
-    //	Error-check
+    // Error-check
 
-            if (paf->currFrame >= MAX_MOV_FRAMES)
-                    {
-                    Warning(("AmovWriteFrame: exceeded max # frames\n"));
-                    return(-1);
-                    }
+    if (paf->currFrame >= MAX_MOV_FRAMES) {
+        WARN("%s: exceeded max # frames", __FUNCTION__);
+        return (-1);
+    }
 
-    //	Set current chunk
-
-            pmi->pcurrChunk->time = time;
-            pmi->pcurrChunk->chunkType = MOVIE_CHUNK_VIDEO;
-            pmi->pcurrChunk->flags = pbm->type;
-            pmi->pcurrChunk->offset = ftell(pmi->fpTemp);
+    // Set current chunk
+    pmi->pcurrChunk->time = time;
+    pmi->pcurrChunk->chunkType = MOVIE_CHUNK_VIDEO;
+    pmi->pcurrChunk->flags = pbm->type;
+    pmi->pcurrChunk->offset = ftell(pmi->fpTemp);
 
     //	Write update area
+    area.ul.x = 0;
+    area.ul.y = 0;
+    area.lr.x = pbm->w;
+    area.lr.y = pbm->h;
+    fwrite(&area, sizeof(area), 1, pmi->fpTemp);
 
-            area.ul.x = 0;
-            area.ul.y = 0;
-            area.lr.x = pbm->w;
-            area.lr.y = pbm->h;
-            fwrite(&area, sizeof(area), 1, pmi->fpTemp);
+    // Write bitmap
+    fwrite(pbm->bits, bmlength, 1, pmi->fpTemp);
 
-    //	Write bitmap
-
-            fwrite(pbm->bits, bmlength, 1, pmi->fpTemp);
-
-    //	Update stuff
-
-            pmi->pcurrChunk++;
-            return(0);
-    */
+    // Update stuff
+    pmi->pcurrChunk++;
+    return (0);
 }
 
 //	-------------------------------------------------------
@@ -408,96 +391,79 @@ int32_t AmovWriteFrame(Afile *paf, grs_bitmap *pbm, int32_t bmlength, fix time) 
 //	AmovWriteClose() closes output .mov
 
 int32_t AmovWriteClose(Afile *paf) {
-    ERROR("%s: not implemented yet!", __FUNCTION__);
-    return -1;
-    /*
-            AmovInfo *pmi;
-            int32_t nc,numBlocks,numExtra;
-            int32_t i;
-            MovieChunk *pmc;
-            uint8_t buff[2048];
+    AmovInfo *pmi;
+    int32_t nc, numBlocks, numExtra;
+    int32_t i;
+    MovieChunk *pmc;
+    uint8_t buff[2048];
 
-            pmi = paf->pspec;
+    pmi = paf->pspec;
 
-    //	Set end chunk
+    // Set end chunk
+    nc = pmi->pcurrChunk - pmi->pmc;
+    if (nc == 0)
+        pmi->pcurrChunk->time = 0;
+    else if (nc == 1)
+        pmi->pcurrChunk->time = (pmi->pcurrChunk - 1)->time * 2;
+    else
+        pmi->pcurrChunk->time =
+            (pmi->pcurrChunk - 1)->time + ((pmi->pcurrChunk - 1)->time - (pmi->pcurrChunk - 2)->time);
+    pmi->pcurrChunk->chunkType = MOVIE_CHUNK_END;
+    pmi->pcurrChunk->flags = 0;
+    pmi->pcurrChunk->offset = ftell(pmi->fpTemp);
+    pmi->pcurrChunk++;
 
-            nc = pmi->pcurrChunk - pmi->pmc;
-            if (nc == 0)
-                    pmi->pcurrChunk->time = 0;
-            else if (nc == 1)
-                    pmi->pcurrChunk->time = (pmi->pcurrChunk - 1)->time * 2;
-            else
-                    pmi->pcurrChunk->time = (pmi->pcurrChunk - 1)->time +
-                            ((pmi->pcurrChunk - 1)->time - (pmi->pcurrChunk -
-    2)->time);
-            pmi->pcurrChunk->chunkType = MOVIE_CHUNK_END;
-            pmi->pcurrChunk->flags = 0;
-            pmi->pcurrChunk->offset = ftell(pmi->fpTemp);
-            pmi->pcurrChunk++;
-
-    //	Set movie header and write out
-
-            pmi->movieHdr.magicId = MOVI_MAGIC_ID;
-            pmi->movieHdr.numChunks = pmi->pcurrChunk - pmi->pmc;
-            pmi->movieHdr.sizeChunks = ((pmi->movieHdr.numChunks *
-    sizeof(MovieChunk))
-                    + 1023) & 0xFFFFFC00L;
-            if ((pmi->movieHdr.sizeChunks & 0x400) == 0)
-                    pmi->movieHdr.sizeChunks += 0x0400;	// 1K, 3K, 5K, etc.
-            pmi->movieHdr.sizeData = ftell(pmi->fpTemp);
-            pmi->movieHdr.totalTime = (pmi->pcurrChunk - 1)->time;
-            pmi->movieHdr.frameRate = paf->v.frameRate;
-            pmi->movieHdr.frameWidth = paf->v.width;
-            pmi->movieHdr.frameHeight = paf->v.height;
-            pmi->movieHdr.gfxNumBits = paf->v.numBits;
-            pmi->movieHdr.isPalette = paf->v.pal.numcols != 0;
+    // Set movie header and write out
+    pmi->movieHdr.magicId = MOVI_MAGIC_ID;
+    pmi->movieHdr.numChunks = pmi->pcurrChunk - pmi->pmc;
+    pmi->movieHdr.sizeChunks = ((pmi->movieHdr.numChunks * sizeof(MovieChunk)) + 1023) & 0xFFFFFC00L;
+    if ((pmi->movieHdr.sizeChunks & 0x400) == 0)
+        pmi->movieHdr.sizeChunks += 0x0400; // 1K, 3K, 5K, etc.
+    pmi->movieHdr.sizeData = ftell(pmi->fpTemp);
+    pmi->movieHdr.totalTime = (pmi->pcurrChunk - 1)->time;
+    pmi->movieHdr.frameRate = paf->v.frameRate;
+    pmi->movieHdr.frameWidth = paf->v.width;
+    pmi->movieHdr.frameHeight = paf->v.height;
+    pmi->movieHdr.gfxNumBits = paf->v.numBits;
+    pmi->movieHdr.isPalette = paf->v.pal.numcols != 0;
 
     // Skip audio for now
 
-            if (pmi->movieHdr.isPalette)
-                    memcpy(&pmi->movieHdr.palette, &paf->v.pal.rgb[0], 768);
+    if (pmi->movieHdr.isPalette)
+        memcpy(&pmi->movieHdr.palette, &paf->v.pal.rgb[0], 768);
 
-    //	Adjust offsets
+    // Adjust offsets
+    for (pmc = pmi->pmc;; pmc++) {
+        pmc->offset += (sizeof(MovieHeader) + pmi->movieHdr.sizeChunks);
+        if (pmc->chunkType == MOVIE_CHUNK_END)
+            break;
+    }
 
-            for (pmc = pmi->pmc; ; pmc++)
-                    {
-                    pmc->offset += (sizeof(MovieHeader) +
-    pmi->movieHdr.sizeChunks);
-                    if (pmc->chunkType == MOVIE_CHUNK_END)
-                            break;
-                    }
+    // Now close temp file, reopen, and copy to real file
+    fclose(pmi->fpTemp);
+    pmi->fpTemp = fopen(MOV_TEMP_FILENAME, "rb");
+    if (pmi->fpTemp == NULL)
+        WARN("%s: can't reopen temp file", __FUNCTION__);
+    else {
+        fwrite(&pmi->movieHdr, sizeof(MovieHeader), 1, paf->fp);
+        fwrite(pmi->pmc, pmi->movieHdr.sizeChunks, 1, paf->fp);
+        numBlocks = pmi->movieHdr.sizeData / sizeof(buff);
+        numExtra = pmi->movieHdr.sizeData % sizeof(buff);
+        for (i = 0; i < numBlocks; i++) {
+            fread(buff, sizeof(buff), 1, pmi->fpTemp);
+            fwrite(buff, sizeof(buff), 1, paf->fp);
+        }
+        if (numExtra) {
+            fread(buff, numExtra, 1, pmi->fpTemp);
+            fwrite(buff, numExtra, 1, paf->fp);
+        }
+    }
 
-    //	Now close temp file, reopen, and copy to real file
-
-            fclose(pmi->fpTemp);
-            pmi->fpTemp = fopen(MOV_TEMP_FILENAME, "rb");
-            if (pmi->fpTemp == NULL)
-                    Warning(("AmovWriteClose: can't reopen temp file\n"));
-            else
-                    {
-                    fwrite(&pmi->movieHdr, sizeof(MovieHeader), 1, paf->fp);
-                    fwrite(pmi->pmc, pmi->movieHdr.sizeChunks, 1, paf->fp);
-                    numBlocks = pmi->movieHdr.sizeData / sizeof(buff);
-                    numExtra = pmi->movieHdr.sizeData % sizeof(buff);
-                    for (i = 0; i < numBlocks; i++)
-                            {
-                            fread(buff, sizeof(buff), 1, pmi->fpTemp);
-                            fwrite(buff, sizeof(buff), 1, paf->fp);
-                            }
-                    if (numExtra)
-                            {
-                            fread(buff, numExtra, 1, pmi->fpTemp);
-                            fwrite(buff, numExtra, 1, paf->fp);
-                            }
-                    }
-
-    //	Free up stuff
-
-            Free(pmi->pmc);
-            Free(pmi);
-            fclose(pmi->fpTemp);
-            fclose(paf->fp);
-            unlink(MOV_TEMP_FILENAME);
-            return(0);
-    */
+    // Free up stuff
+    free(pmi->pmc);
+    free(pmi);
+    fclose(pmi->fpTemp);
+    fclose(paf->fp);
+    unlink(MOV_TEMP_FILENAME);
+    return (0);
 }
