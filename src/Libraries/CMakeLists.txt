@@ -252,6 +252,7 @@ set(PALETTE_SRC
 )
 
 set(RES_SRC
+	RES/Source/caseless.c
 	RES/Source/lzw.c
 	RES/Source/refacc.c
 	RES/Source/resacc.c
