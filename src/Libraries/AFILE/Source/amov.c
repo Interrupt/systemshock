@@ -73,7 +73,7 @@ typedef struct {
 int32_t AmovReadHeader(Afile *paf);
 int32_t AmovReadFrame(Afile *paf, grs_bitmap *pbm, fix *ptime);
 int32_t AmovReadFramePal(Afile *paf, Apalette *ppal);
-int32_t AmovReadAudio(Afile *paf, void *audio);
+int32_t AmovReadAudio(Afile *paf, void *paudio);
 int32_t AmovReadReset(Afile *paf);
 int32_t AmovReadClose(Afile *paf);
 
@@ -285,9 +285,27 @@ int32_t AmovReadFramePal(Afile *paf, Apalette *ppal) {
 }
 
 // Read audio data to buffer
-int32_t AmovReadAudio(Afile *paf, void *audio) {
-    ERROR("%s: not implemented yet!", __FUNCTION__);
-    return -1;
+int32_t AmovReadAudio(Afile *paf, void *paudio) {
+
+    AmovInfo *pmi;
+    uint32_t i = 0;
+    void *p = (uint8_t *)malloc(MOVIE_DEFAULT_BLOCKLEN);
+
+    pmi = (AmovInfo *)paf->pspec;
+    while (pmi->pcurrChunk->chunkType != MOVIE_CHUNK_END) {
+        // Got audio chunk
+        if (pmi->pcurrChunk->chunkType == MOVIE_CHUNK_AUDIO) {
+            TRACE("%s: got audio chunk in 0x%08x offset", __FUNCTION__, pmi->pcurrChunk->offset);
+            fseek(paf->fp, pmi->pcurrChunk->offset, SEEK_SET);
+            fread(p, MOVIE_DEFAULT_BLOCKLEN, 1, paf->fp);
+            memcpy(paudio + i, p, MOVIE_DEFAULT_BLOCKLEN);
+            i += MOVIE_DEFAULT_BLOCKLEN;
+        }
+        pmi->pcurrChunk++;
+    }
+    free(p);
+
+    return 0;
 }
 
 //	----------------------------------------------------------

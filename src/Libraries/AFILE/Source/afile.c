@@ -155,7 +155,7 @@ int AfileOpen(Afile *paf, char *filename) {
     // Set up work buffer, compose buffer, and prev buffer
     TRACE("%s: initing work buffer of size: %d", __FUNCTION__, BM_PLENTY_SIZE(paf->frameLen));
 
-    gr_init_bitmap(&paf->bmWork, (uchar *)malloc(BM_PLENTY_SIZE(paf->frameLen)), bmtype, 0, paf->v.width,
+    gr_init_bitmap(&paf->bmWork, (uint8_t *)malloc(BM_PLENTY_SIZE(paf->frameLen)), bmtype, 0, paf->v.width,
                    paf->v.height);
 
     TRACE("%s: initing compose buffer and prev buffer", __FUNCTION__);
@@ -313,7 +313,7 @@ bool AfileGetFramePal(Afile *paf, Apalette *ppal) {
 //	Returns: 0 if ok, -1 if error
 
 int AfileGetAudio(Afile *paf, void *paudio) {
-    TRACE("%s: getting audio");
+    TRACE("%s: getting audio", __FUNCTION__);
 
     if (paf->pm->f_ReadAudio == NULL) {
         ERROR("%s: anim file format doesn't support audio", __FUNCTION__);
