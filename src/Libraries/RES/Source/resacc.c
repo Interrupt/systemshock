@@ -54,41 +54,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  return ptr.
 
 void *ResLock(Id id) {
-  ResDesc *prd;
+    ResDesc *prd;
 
-  //	Check if valid id
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
+    //	Check if valid id
+    //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
 
-  //	Add to cumulative stats
-  //	CUMSTATS(id,numLocks);
+    //	Add to cumulative stats
+    //	CUMSTATS(id,numLocks);
 
-  prd = RESDESC(id);
+    prd = RESDESC(id);
 
-  // CC: If already loaded, use the existing bytes
-  if(prd->ptr != NULL) {
+    // CC: If already loaded, use the existing bytes
+    if (prd->ptr != NULL) {
+        prd->lock++;
+        return prd->ptr;
+    }
+
+    // If resource not loaded, load it now
+    if (ResLoadResource(id) == NULL) {
+        ERROR("ResLock: Could not load %x", id);
+        return (NULL);
+    } else if (prd->lock == 0)
+        ResRemoveFromLRU(prd);
+
+    //	Tally stats, check for over-lock
+
+    //	DBG(DSRC_RES_Stat, {if (prd->lock == 0) resStat.numLocked++;});
+
+    //	Increment lock count, check for overlock
+
+    //	DBG(DSRC_RES_ChkLock, {if (prd->lock == RES_MAXLOCK) prd->lock--;});
     prd->lock++;
-    return prd->ptr;
-  }
 
-  // If resource not loaded, load it now
-  if (ResLoadResource(id) == NULL) {
-    ERROR("ResLock: Could not load %x", id);
-    return (NULL);
-  } else if (prd->lock == 0)
-    ResRemoveFromLRU(prd);
+    //	Return ptr
 
-  //	Tally stats, check for over-lock
-
-  //	DBG(DSRC_RES_Stat, {if (prd->lock == 0) resStat.numLocked++;});
-
-  //	Increment lock count, check for overlock
-
-  //	DBG(DSRC_RES_ChkLock, {if (prd->lock == RES_MAXLOCK) prd->lock--;});
-  prd->lock++;
-
-  //	Return ptr
-
-  return (prd->ptr);
+    return (prd->ptr);
 }
 
 //	---------------------------------------------------------
@@ -100,35 +100,35 @@ void *ResLock(Id id) {
 //  For Mac version:  Change 'ptr' refs to 'hdl', unlock resource handle.
 
 void ResUnlock(Id id) {
-  ResDesc *prd;
+    ResDesc *prd;
 
-  //	Check if valid id
-  //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
+    //	Check if valid id
+    //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
 
-  //	Check for under-lock
+    //	Check for under-lock
 
-  prd = RESDESC(id);
+    prd = RESDESC(id);
 
-  if (prd->lock == 0) {
-    DEBUG("ResUnlock: id $%x already unlocked", id);
-    return;
-  }
+    if (prd->lock == 0) {
+        DEBUG("ResUnlock: id $%x already unlocked", id);
+        return;
+    }
 
-  //	DBG(DSRC_RES_ChkLock, {if (prd->lock == 0) { \
+    //	DBG(DSRC_RES_ChkLock, {if (prd->lock == 0) { \
 //		Warning(("ResUnlock: id $%x already unlocked\n", id)); return;} });
 
-  //	Else decrement lock, if 0 move to tail and tally stats
+    //	Else decrement lock, if 0 move to tail and tally stats
 
-  if (prd->lock > 0)
-    prd->lock--;
+    if (prd->lock > 0)
+        prd->lock--;
 
-  if (prd->lock == 0) {
-    // CC: Should we free the prd ptr here?
+    if (prd->lock == 0) {
+        // CC: Should we free the prd ptr here?
 
-    //		HUnlock(prd->hdl);
-    ResAddToTail(prd);
-    //		DBG(DSRC_RES_Stat, {resStat.numLocked--;});
-  }
+        //		HUnlock(prd->hdl);
+        ResAddToTail(prd);
+        //		DBG(DSRC_RES_Stat, {resStat.numLocked--;});
+    }
 }
 
 //	-------------------------------------------------------------
@@ -142,38 +142,38 @@ void ResUnlock(Id id) {
 //	---------------------------------------------------------
 
 void *ResGet(Id id) {
-  ResDesc *prd;
+    ResDesc *prd;
 
-  //  Check if valid id
+    //  Check if valid id
 
-  // ValidateRes(id);
+    // ValidateRes(id);
 
-  /*DBG(DSRC_RES_ChkIdRef,
-  {
-      if (!ResCheckId(id))
-          return NULL;
-  });*/
+    /*DBG(DSRC_RES_ChkIdRef,
+    {
+        if (!ResCheckId(id))
+            return NULL;
+    });*/
 
-  //  Add to cumulative stats
+    //  Add to cumulative stats
 
-  // CUMSTATS(id, numGets);
+    // CUMSTATS(id, numGets);
 
-  //  Load resource or move to tail
+    //  Load resource or move to tail
 
-  prd = RESDESC(id);
-  if (prd->ptr == NULL) {
-    if (ResLoadResource(id) == NULL) {
-      return (NULL);
+    prd = RESDESC(id);
+    if (prd->ptr == NULL) {
+        if (ResLoadResource(id) == NULL) {
+            return (NULL);
+        }
+        ResAddToTail(prd);
+    } else if (prd->lock == 0) {
+        ResMoveToTail(prd);
     }
-    ResAddToTail(prd);
-  } else if (prd->lock == 0) {
-    ResMoveToTail(prd);
-  }
 
-  // ValidateRes(id);
+    // ValidateRes(id);
 
-  //  Return ptr
-  return (prd->ptr);
+    //  Return ptr
+    return (prd->ptr);
 }
 
 //	---------------------------------------------------------
@@ -189,14 +189,14 @@ void *ResGet(Id id) {
 //  For Mac version:  Copies information from resource handle into the buffer.
 
 void *ResExtract(Id id, void *buffer) {
-  // Retrieve the data into the buffer, please
-  if (ResRetrieve(id, buffer)) {
-    return (buffer);
-  }
+    // Retrieve the data into the buffer, please
+    if (ResRetrieve(id, buffer)) {
+        return (buffer);
+    }
 
-  ERROR("ResExtract failed for %x", id);
-  // If ResRetreive failed, return NULL ptr
-  return (NULL);
+    ERROR("ResExtract failed for %x", id);
+    // If ResRetreive failed, return NULL ptr
+    return (NULL);
 }
 
 //	----------------------------------------------------------
@@ -209,47 +209,47 @@ void *ResExtract(Id id, void *buffer) {
 //  handle.
 
 void ResDrop(Id id) {
-  ResDesc *prd;
+    ResDesc *prd;
 
-  // Check for locked
-  // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResCheckId(id))
-    return;
-  //});
+    // Check for locked
+    // DBG(DSRC_RES_ChkIdRef, {
+    if (!ResCheckId(id))
+        return;
+    //});
 
-  prd = RESDESC(id);
-  // DBG(DSRC_RES_ChkLock, {if (prd->lock) \
+    prd = RESDESC(id);
+    // DBG(DSRC_RES_ChkLock, {if (prd->lock) \
   // Warning(("ResDrop: Block $%x is locked, dropping anyway\n", id));});
-  // DBG(DSRC_RES_ChkLock, {if (prd->flags & RDF_NODROP) \
+    // DBG(DSRC_RES_ChkLock, {if (prd->flags & RDF_NODROP) \
   // Warning(("ResDrop: Block $%x has NODROP flag set, dropping anyway\n", id));});
-  // Spew(DSRC_RES_DelDrop, ("ResDrop: dropping $%x\n", id));
+    // Spew(DSRC_RES_DelDrop, ("ResDrop: dropping $%x\n", id));
 
-  // Remove from LRU chain
-  if (prd->lock == 0)
-    ResRemoveFromLRU(prd);
+    // Remove from LRU chain
+    if (prd->lock == 0)
+        ResRemoveFromLRU(prd);
 
-  // Tally stats
-  // DBG(DSRC_RES_Stat, {resStat.totMemAlloc -= prd->size;
-  //		resStat.numLoaded--;
-  //		Spew(DSRC_RES_Stat, ("ResDrop: free %d, total now %d bytes\n",
-  //			prd->size, resStat.totMemAlloc));});
+    // Tally stats
+    // DBG(DSRC_RES_Stat, {resStat.totMemAlloc -= prd->size;
+    //		resStat.numLoaded--;
+    //		Spew(DSRC_RES_Stat, ("ResDrop: free %d, total now %d bytes\n",
+    //			prd->size, resStat.totMemAlloc));});
 
-  //	Free memory and set ptr to NULL
+    //	Free memory and set ptr to NULL
 
-  if (prd->ptr == NULL) {
-    DEBUG("DoResDrop: Block $%x not in memory, ignoring request", id);
-    return;
-  }
+    if (prd->ptr == NULL) {
+        DEBUG("DoResDrop: Block $%x not in memory, ignoring request", id);
+        return;
+    }
 
-  if (prd->lock != 0) {
-    DEBUG("DoResDrop: Dropping resource 0x%x that's in use.", id);
-    prd->lock = 0;
-  }
+    if (prd->lock != 0) {
+        DEBUG("DoResDrop: Dropping resource 0x%x that's in use.", id);
+        prd->lock = 0;
+    }
 
-  if (prd->ptr != NULL) {
-    free(prd->ptr);
-    prd->ptr = NULL;
-  }
+    if (prd->ptr != NULL) {
+        free(prd->ptr);
+        prd->ptr = NULL;
+    }
 }
 
 //	-------------------------------------------------------
@@ -262,45 +262,45 @@ void ResDrop(Id id) {
 //  null. The next ResLoadResource on the resource will load it back in.
 
 void ResDelete(Id id) {
-  ResDesc *prd;
+    ResDesc *prd;
 
-  // If locked, issue warning
-  // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResCheckId(id))
-    return;
-  //});
+    // If locked, issue warning
+    // DBG(DSRC_RES_ChkIdRef, {
+    if (!ResCheckId(id))
+        return;
+    //});
 
-  prd = RESDESC(id);
-  // DBG(DSRC_RES_ChkLock, {if (prd->lock) \
+    prd = RESDESC(id);
+    // DBG(DSRC_RES_ChkLock, {if (prd->lock) \
   // Warning(("ResDelete: Block $%x is locked!\n", id));});
 
-  // If in use: if in ram, free memory & LRU, then in any case zap entry
-  if (prd->offset) {
-    // Spew(DSRC_RES_DelDrop, ("ResDelete: deleting $%x\n", id));
-    if (prd->ptr) {
-      // Spew(DSRC_RES_DelDrop, ("ResDelete: freeing memory for $%x\n", id));
-      // DBG(DSRC_RES_Stat,
-      // {resStat.totMemAlloc -= prd->size;
-      // resStat.numLoaded--;
-      // Spew(DSRC_RES_Stat, ("ResDelete: free %d, total now %d bytes\n",
-      // prd->size, resStat.totMemAlloc));
-      // });
+    // If in use: if in ram, free memory & LRU, then in any case zap entry
+    if (prd->offset) {
+        // Spew(DSRC_RES_DelDrop, ("ResDelete: deleting $%x\n", id));
+        if (prd->ptr) {
+            // Spew(DSRC_RES_DelDrop, ("ResDelete: freeing memory for $%x\n", id));
+            // DBG(DSRC_RES_Stat,
+            // {resStat.totMemAlloc -= prd->size;
+            // resStat.numLoaded--;
+            // Spew(DSRC_RES_Stat, ("ResDelete: free %d, total now %d bytes\n",
+            // prd->size, resStat.totMemAlloc));
+            // });
 
-      // ReleaseResource(prd->hdl); // release the resource.
+            // ReleaseResource(prd->hdl); // release the resource.
 
-      if (prd->lock == 0)
-        ResRemoveFromLRU(prd);
+            if (prd->lock == 0)
+                ResRemoveFromLRU(prd);
 
-      ResDrop(id);
+            ResDrop(id);
+        }
+        memset(prd, 0, sizeof(ResDesc));
     }
-    memset(prd, 0, sizeof(ResDesc));
-  }
 
-  // Else if not in use, spew to whoever's listening
-  // else
-  // {
-  // Spew(DSRC_RES_DelDrop, ("ResDelete: $%x not in use\n", id));
-  // }
+    // Else if not in use, spew to whoever's listening
+    // else
+    // {
+    // Spew(DSRC_RES_DelDrop, ("ResDelete: $%x not in use\n", id));
+    // }
 }
 
 //	--------------------------------------------------------
@@ -314,13 +314,13 @@ void ResDelete(Id id) {
 //	Returns: TRUE if id ok, FALSE if invalid & prints warning
 
 bool ResCheckId(Id id) {
-  if (id < ID_MIN) {
-    DEBUG("ResCheckId: id $%x invalid\n", id);
-    return false;
-  }
-  if (id > resDescMax) {
-    DEBUG("ResCheckId: id $%x exceeds table\n", id);
-    return false;
-  }
-  return true;
+    if (id < ID_MIN) {
+        DEBUG("ResCheckId: id $%x invalid\n", id);
+        return false;
+    }
+    if (id > resDescMax) {
+        DEBUG("ResCheckId: id $%x exceeds table\n", id);
+        return false;
+    }
+    return true;
 }

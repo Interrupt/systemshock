@@ -46,8 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 bool ResEraseIfInFile(Id id);
 
 //  Internal prototypes
-static void ResCopyBytes(FILE *fd, int32_t writePos, int32_t readPos,
-                         int32_t size);
+static void ResCopyBytes(FILE *fd, int32_t writePos, int32_t readPos, int32_t size);
 
 //  -------------------------------------------------------
 //
@@ -59,27 +58,27 @@ static void ResCopyBytes(FILE *fd, int32_t writePos, int32_t readPos,
 
 void ResSetComment(int32_t filenum, char *comment) {
 
-  ResFileHeader *phead;
-  /*
-  DBG(DSRC_RES_ChkIdRef, {
-    if (resFile[filenum].pedit == NULL) {
-      return;
-    }
-  });
+    ResFileHeader *phead;
+    /*
     DBG(DSRC_RES_ChkIdRef, {
       if (resFile[filenum].pedit == NULL) {
-      Warning(("ResSetComment: file %d not open for writing\n", filenum));
-      return;}
+        return;
+      }
     });
-  Spew(DSRC_RES_General,
-       ("ResSetComment: setting comment for filenum %d to:\n%s\n", filenum,
-        comment));
-  */
+      DBG(DSRC_RES_ChkIdRef, {
+        if (resFile[filenum].pedit == NULL) {
+        Warning(("ResSetComment: file %d not open for writing\n", filenum));
+        return;}
+      });
+    Spew(DSRC_RES_General,
+         ("ResSetComment: setting comment for filenum %d to:\n%s\n", filenum,
+          comment));
+    */
 
-  phead = &resFile[filenum].pedit->hdr;
-  memset(phead->comment, 0, sizeof(phead->comment));
-  strncpy(phead->comment, comment, sizeof(phead->comment) - 2);
-  phead->comment[strlen(phead->comment)] = CTRL_Z;
+    phead = &resFile[filenum].pedit->hdr;
+    memset(phead->comment, 0, sizeof(phead->comment));
+    strncpy(phead->comment, comment, sizeof(phead->comment) - 2);
+    phead->comment[strlen(phead->comment)] = CTRL_Z;
 }
 
 //  -------------------------------------------------------
@@ -98,109 +97,106 @@ void ResSetComment(int32_t filenum, char *comment) {
 #define EXTRA 250
 
 int32_t ResWrite(Id id) {
-  static uint8_t pad[] = {0, 0, 0, 0, 0, 0, 0, 0};
-  ResDesc *prd;
-  ResDesc2 *prd2;
-  ResFile *prf;
-  ResDirEntry *pDirEntry;
-  uint8_t *p;
-  uint32_t size, sizeTable;
-  void *pcompbuff;
-  int32_t compsize, padBytes;
+    static uint8_t pad[] = {0, 0, 0, 0, 0, 0, 0, 0};
+    ResDesc *prd;
+    ResDesc2 *prd2;
+    ResFile *prf;
+    ResDirEntry *pDirEntry;
+    uint8_t *p;
+    uint32_t size, sizeTable;
+    void *pcompbuff;
+    int32_t compsize, padBytes;
 
-  // Check for errors
-  // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResCheckId(id))
-    return -1;
-  //});
+    // Check for errors
+    // DBG(DSRC_RES_ChkIdRef, {
+    if (!ResCheckId(id))
+        return -1;
+    //});
 
-  prd = RESDESC(id);
-  prf = &resFile[prd->filenum];
+    prd = RESDESC(id);
+    prf = &resFile[prd->filenum];
 
-  // DBG(DSRC_RES_Write, {
-  if (prf->pedit == NULL) {
-    // Warning(("ResWrite: file %d not open for writing\n", prd->filenum));
-    ERROR("File %i not open for writing!\n", prd->filenum);
-    return -1;
-  }
-  //});
-
-  // Check if item already in directory, if so erase it
-  ResEraseIfInFile(id);
-
-  // If directory full, grow it
-  if (prf->pedit->pdir->numEntries == prf->pedit->numAllocDir) {
-    /* Spew(DSRC_RES_Write, ("ResWrite: growing directory of filenum %d\n ",
-     * prd->filenum)); */
-
-    prf->pedit->numAllocDir += DEFAULT_RES_GROWDIRENTRIES;
-    prf->pedit->pdir = realloc(
-        prf->pedit->pdir,
-        sizeof(ResDirHeader) + (sizeof(ResDirEntry) * prf->pedit->numAllocDir));
-  }
-
-  // Set resource's file offset
-  prd->offset = RES_OFFSET_REAL2DESC(prf->pedit->currDataOffset);
-
-  // Fill in directory entry
-  pDirEntry =
-      ((ResDirEntry *)(prf->pedit->pdir + 1)) + prf->pedit->pdir->numEntries;
-
-  pDirEntry->id = id;
-  prd2 = RESDESC2(id);
-  pDirEntry->flags = prd2->flags;
-  pDirEntry->type = prd2->type;
-  pDirEntry->size = prd->size;
-
-  /* Spew(DSRC_RES_Write, ("ResWrite: writing $%x\n", id)); */
-
-  // If compound, write out reftable without compression
-  fseek(prf->fd, prf->pedit->currDataOffset, SEEK_SET);
-  p = prd->ptr;
-  sizeTable = 0;
-  size = prd->size;
-
-  if (prd2->flags & RDF_COMPOUND) {
-    sizeTable = REFTABLESIZE(((RefTable *)p)->numRefs);
-    fwrite(p, sizeTable, 1, prf->fd);
-    p += sizeTable;
-    size -= sizeTable;
-  }
-
-  // If compression, try it (may not work out)
-  if (pDirEntry->flags & RDF_LZW) {
-    pcompbuff = malloc(size + EXTRA);
-    compsize = LzwCompressBuff2Buff(p, size, pcompbuff, size);
-    if (compsize < 0) {
-      pDirEntry->flags &= ~RDF_LZW;
-    } else {
-      pDirEntry->csize = sizeTable + compsize;
-      fwrite(pcompbuff, compsize, 1, prf->fd);
+    // DBG(DSRC_RES_Write, {
+    if (prf->pedit == NULL) {
+        // Warning(("ResWrite: file %d not open for writing\n", prd->filenum));
+        ERROR("File %i not open for writing!\n", prd->filenum);
+        return -1;
     }
-    free(pcompbuff);
-  }
+    //});
 
-  // If no compress (or failed to compress well), just write out
-  if (!(pDirEntry->flags & RDF_LZW)) {
-    pDirEntry->csize = prd->size;
-    fwrite(p, size, 1, prf->fd);
-  }
+    // Check if item already in directory, if so erase it
+    ResEraseIfInFile(id);
 
-  // Pad to align on data boundary
-  padBytes = RES_OFFSET_PADBYTES(pDirEntry->csize);
-  if (padBytes)
-    fwrite(pad, padBytes, 1, prf->fd);
+    // If directory full, grow it
+    if (prf->pedit->pdir->numEntries == prf->pedit->numAllocDir) {
+        /* Spew(DSRC_RES_Write, ("ResWrite: growing directory of filenum %d\n ",
+         * prd->filenum)); */
 
-  // FIXME Error handling
-  //  if (ftell(prf->fd) & 3)
-  //    Warning(("ResWrite: misaligned writing!\n"));
+        prf->pedit->numAllocDir += DEFAULT_RES_GROWDIRENTRIES;
+        prf->pedit->pdir =
+            realloc(prf->pedit->pdir, sizeof(ResDirHeader) + (sizeof(ResDirEntry) * prf->pedit->numAllocDir));
+    }
 
-  // Advance dir num entries, current data offset
-  prf->pedit->pdir->numEntries++;
-  prf->pedit->currDataOffset =
-      RES_OFFSET_ALIGN(prf->pedit->currDataOffset + pDirEntry->csize);
+    // Set resource's file offset
+    prd->offset = RES_OFFSET_REAL2DESC(prf->pedit->currDataOffset);
 
-  return 0;
+    // Fill in directory entry
+    pDirEntry = ((ResDirEntry *)(prf->pedit->pdir + 1)) + prf->pedit->pdir->numEntries;
+
+    pDirEntry->id = id;
+    prd2 = RESDESC2(id);
+    pDirEntry->flags = prd2->flags;
+    pDirEntry->type = prd2->type;
+    pDirEntry->size = prd->size;
+
+    /* Spew(DSRC_RES_Write, ("ResWrite: writing $%x\n", id)); */
+
+    // If compound, write out reftable without compression
+    fseek(prf->fd, prf->pedit->currDataOffset, SEEK_SET);
+    p = prd->ptr;
+    sizeTable = 0;
+    size = prd->size;
+
+    if (prd2->flags & RDF_COMPOUND) {
+        sizeTable = REFTABLESIZE(((RefTable *)p)->numRefs);
+        fwrite(p, sizeTable, 1, prf->fd);
+        p += sizeTable;
+        size -= sizeTable;
+    }
+
+    // If compression, try it (may not work out)
+    if (pDirEntry->flags & RDF_LZW) {
+        pcompbuff = malloc(size + EXTRA);
+        compsize = LzwCompressBuff2Buff(p, size, pcompbuff, size);
+        if (compsize < 0) {
+            pDirEntry->flags &= ~RDF_LZW;
+        } else {
+            pDirEntry->csize = sizeTable + compsize;
+            fwrite(pcompbuff, compsize, 1, prf->fd);
+        }
+        free(pcompbuff);
+    }
+
+    // If no compress (or failed to compress well), just write out
+    if (!(pDirEntry->flags & RDF_LZW)) {
+        pDirEntry->csize = prd->size;
+        fwrite(p, size, 1, prf->fd);
+    }
+
+    // Pad to align on data boundary
+    padBytes = RES_OFFSET_PADBYTES(pDirEntry->csize);
+    if (padBytes)
+        fwrite(pad, padBytes, 1, prf->fd);
+
+    // FIXME Error handling
+    //  if (ftell(prf->fd) & 3)
+    //    Warning(("ResWrite: misaligned writing!\n"));
+
+    // Advance dir num entries, current data offset
+    prf->pedit->pdir->numEntries++;
+    prf->pedit->currDataOffset = RES_OFFSET_ALIGN(prf->pedit->currDataOffset + pDirEntry->csize);
+
+    return 0;
 }
 
 //  -------------------------------------------------------------
@@ -214,35 +210,35 @@ int32_t ResWrite(Id id) {
 //  the resource handle into a normal handle.
 
 void ResKill(Id id) {
-  ResDesc *prd = RESDESC(id);
+    ResDesc *prd = RESDESC(id);
 
-  if (prd->ptr) {
-    if (prd->lock == 0)
-      ResRemoveFromLRU(prd);
-  }
-  memset(prd, 0, sizeof(ResDesc));
+    if (prd->ptr) {
+        if (prd->lock == 0)
+            ResRemoveFromLRU(prd);
+    }
+    memset(prd, 0, sizeof(ResDesc));
 
-  // Check for valid id
-  // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResCheckId(id))
-    return;
-  // });
-  // Spew(DSRC_RES_Write, ("ResKill: killing $%x\n", id));
+    // Check for valid id
+    // DBG(DSRC_RES_ChkIdRef, {
+    if (!ResCheckId(id))
+        return;
+    // });
+    // Spew(DSRC_RES_Write, ("ResKill: killing $%x\n", id));
 
-  // Delete it
-  ResDelete(id);
+    // Delete it
+    ResDelete(id);
 
-  // Make sure file is writeable
-  prd = RESDESC(id);
-  // DBG(DSRC_RES_Write, {
-  if (resFile[prd->filenum].pedit == NULL) {
-    // Warning(("ResKill: file %d not open for writing\n", prd->filenum));
-    return;
-  }
-  //});
+    // Make sure file is writeable
+    prd = RESDESC(id);
+    // DBG(DSRC_RES_Write, {
+    if (resFile[prd->filenum].pedit == NULL) {
+        // Warning(("ResKill: file %d not open for writing\n", prd->filenum));
+        return;
+    }
+    //});
 
-  // If so, erase it
-  ResEraseIfInFile(id);
+    // If so, erase it
+    ResEraseIfInFile(id);
 }
 
 //  -------------------------------------------------------------
@@ -255,92 +251,91 @@ void ResKill(Id id) {
 //  Returns: # bytes reclaimed
 
 int32_t ResPack(int32_t filenum) {
-  ResFile *prf;
-  ResDirEntry *pDirEntry;
-  int32_t numReclaimed, sizeReclaimed;
-  int32_t dataRead, dataWrite;
-  int32_t i;
-  ResDirEntry *peWrite;
+    ResFile *prf;
+    ResDirEntry *pDirEntry;
+    int32_t numReclaimed, sizeReclaimed;
+    int32_t dataRead, dataWrite;
+    int32_t i;
+    ResDirEntry *peWrite;
 
-  // Check for errors
-  prf = &resFile[filenum];
-  if (prf->pedit == NULL) {
-    ERROR("ResPack: filenum %d not open for editing\n", filenum);
-    return (0);
-  }
-
-  // Set up
-  sizeReclaimed = numReclaimed = 0;
-  dataRead = dataWrite = prf->pedit->pdir->dataOffset;
-
-  // Scan thru directory, copying over all empty entries
-  pDirEntry = (ResDirEntry *)(prf->pedit->pdir + 1);
-  for (i = 0; i < prf->pedit->pdir->numEntries; i++) {
-    if (pDirEntry->id == 0) {
-      numReclaimed++;
-      sizeReclaimed += pDirEntry->csize;
-    } else {
-      if (gResDesc[pDirEntry->id].offset > RES_OFFSET_PENDING)
-        gResDesc[pDirEntry->id].offset = RES_OFFSET_REAL2DESC(dataWrite);
-      if (dataRead != dataWrite)
-        ResCopyBytes(prf->fd, dataWrite, dataRead, pDirEntry->csize);
-      dataWrite = RES_OFFSET_ALIGN(dataWrite + pDirEntry->csize);
+    // Check for errors
+    prf = &resFile[filenum];
+    if (prf->pedit == NULL) {
+        ERROR("ResPack: filenum %d not open for editing\n", filenum);
+        return (0);
     }
-    dataRead = RES_OFFSET_ALIGN(dataRead + pDirEntry->csize);
-    pDirEntry++;
-  }
 
-  // Now pack directory itself
-  pDirEntry = (ResDirEntry *)(prf->pedit->pdir + 1);
-  peWrite = pDirEntry;
-  for (i = 0; i < prf->pedit->pdir->numEntries; i++) {
-    if (pDirEntry->id) {
-      if (pDirEntry != peWrite)
-        *peWrite = *pDirEntry;
-      peWrite++;
+    // Set up
+    sizeReclaimed = numReclaimed = 0;
+    dataRead = dataWrite = prf->pedit->pdir->dataOffset;
+
+    // Scan thru directory, copying over all empty entries
+    pDirEntry = (ResDirEntry *)(prf->pedit->pdir + 1);
+    for (i = 0; i < prf->pedit->pdir->numEntries; i++) {
+        if (pDirEntry->id == 0) {
+            numReclaimed++;
+            sizeReclaimed += pDirEntry->csize;
+        } else {
+            if (gResDesc[pDirEntry->id].offset > RES_OFFSET_PENDING)
+                gResDesc[pDirEntry->id].offset = RES_OFFSET_REAL2DESC(dataWrite);
+            if (dataRead != dataWrite)
+                ResCopyBytes(prf->fd, dataWrite, dataRead, pDirEntry->csize);
+            dataWrite = RES_OFFSET_ALIGN(dataWrite + pDirEntry->csize);
+        }
+        dataRead = RES_OFFSET_ALIGN(dataRead + pDirEntry->csize);
+        pDirEntry++;
     }
-    pDirEntry++;
-  }
-  prf->pedit->pdir->numEntries -= numReclaimed;
 
-  // Set new current data offset
-  prf->pedit->currDataOffset = dataWrite;
-  fseek(prf->fd, dataWrite, SEEK_SET);
-  prf->pedit->flags &= ~RFF_NEEDSPACK;
+    // Now pack directory itself
+    pDirEntry = (ResDirEntry *)(prf->pedit->pdir + 1);
+    peWrite = pDirEntry;
+    for (i = 0; i < prf->pedit->pdir->numEntries; i++) {
+        if (pDirEntry->id) {
+            if (pDirEntry != peWrite)
+                *peWrite = *pDirEntry;
+            peWrite++;
+        }
+        pDirEntry++;
+    }
+    prf->pedit->pdir->numEntries -= numReclaimed;
 
-  // Truncate file to just header & data (will be extended later when
-  // write directory on closing)
+    // Set new current data offset
+    prf->pedit->currDataOffset = dataWrite;
+    fseek(prf->fd, dataWrite, SEEK_SET);
+    prf->pedit->flags &= ~RFF_NEEDSPACK;
 
-  // FIXME Non-portable
-  ftruncate(fileno(prf->fd), dataWrite);
+    // Truncate file to just header & data (will be extended later when
+    // write directory on closing)
 
-  // Return # bytes reclaimed
-  /* Spew(DSRC_RES_Write, ("ResPack: reclaimed %d bytes\n", sizeReclaimed)); */
+    // FIXME Non-portable
+    ftruncate(fileno(prf->fd), dataWrite);
 
-  return (sizeReclaimed);
+    // Return # bytes reclaimed
+    /* Spew(DSRC_RES_Write, ("ResPack: reclaimed %d bytes\n", sizeReclaimed)); */
+
+    return (sizeReclaimed);
 }
 
 #define SIZE_RESCOPY 32768
 
-static void ResCopyBytes(FILE *fd, int32_t writePos, int32_t readPos,
-                         int32_t size) {
-  int32_t sizeCopy;
-  uint8_t *buff;
+static void ResCopyBytes(FILE *fd, int32_t writePos, int32_t readPos, int32_t size) {
+    int32_t sizeCopy;
+    uint8_t *buff;
 
-  buff = malloc(SIZE_RESCOPY);
+    buff = malloc(SIZE_RESCOPY);
 
-  while (size > 0) {
-    sizeCopy = lg_min(SIZE_RESCOPY, size);
-    fseek(fd, readPos, SEEK_SET);
-    fread(buff, sizeCopy, 1, fd);
-    fseek(fd, writePos, SEEK_SET);
-    fwrite(buff, sizeCopy, 1, fd);
-    readPos += sizeCopy;
-    writePos += sizeCopy;
-    size -= sizeCopy;
-  }
+    while (size > 0) {
+        sizeCopy = lg_min(SIZE_RESCOPY, size);
+        fseek(fd, readPos, SEEK_SET);
+        fread(buff, sizeCopy, 1, fd);
+        fseek(fd, writePos, SEEK_SET);
+        fwrite(buff, sizeCopy, 1, fd);
+        readPos += sizeCopy;
+        writePos += sizeCopy;
+        size -= sizeCopy;
+    }
 
-  free(buff);
+    free(buff);
 }
 
 //  --------------------------------------------------------
@@ -354,26 +349,26 @@ static void ResCopyBytes(FILE *fd, int32_t writePos, int32_t readPos,
 //  Returns: TRUE if found & erased, FALSE otherwise
 
 bool ResEraseIfInFile(Id id) {
-  ResDesc *prd;
-  ResFile *prf;
-  ResDirEntry *pDirEntry;
-  int32_t i;
+    ResDesc *prd;
+    ResFile *prf;
+    ResDirEntry *pDirEntry;
+    int32_t i;
 
-  prd = RESDESC(id);
-  prf = &resFile[prd->filenum];
-  pDirEntry = (ResDirEntry *)(prf->pedit->pdir + 1);
+    prd = RESDESC(id);
+    prf = &resFile[prd->filenum];
+    pDirEntry = (ResDirEntry *)(prf->pedit->pdir + 1);
 
-  for (i = 0; i < prf->pedit->pdir->numEntries; i++) {
-    if (id == pDirEntry->id) {
-      /* Spew(DSRC_RES_Write, ("ResEraseIfInFile: $%x beingerased\n", id)); */
-      pDirEntry->id = 0;
-      prf->pedit->flags |= RFF_NEEDSPACK;
-      if (prf->pedit->flags & RFF_AUTOPACK)
-        ResPack(prd->filenum);
-      return true;
+    for (i = 0; i < prf->pedit->pdir->numEntries; i++) {
+        if (id == pDirEntry->id) {
+            /* Spew(DSRC_RES_Write, ("ResEraseIfInFile: $%x beingerased\n", id)); */
+            pDirEntry->id = 0;
+            prf->pedit->flags |= RFF_NEEDSPACK;
+            if (prf->pedit->flags & RFF_AUTOPACK)
+                ResPack(prd->filenum);
+            return true;
+        }
+        pDirEntry++;
     }
-    pDirEntry++;
-  }
 
-  return false;
+    return false;
 }

@@ -66,11 +66,11 @@ extern Id idBeingLoaded;
 
 void ResGrowResDescTable(Id id);
 
-#define ResExtendDesc(id)                                                      \
-  {                                                                            \
-    if ((id) > resDescMax)                                                     \
-      ResGrowResDescTable(id);                                                 \
-  }
+#define ResExtendDesc(id)            \
+    {                                \
+        if ((id) > resDescMax)       \
+            ResGrowResDescTable(id); \
+    }
 
 #define DEFAULT_RES_GROWDIRENTRIES 128 // must be power of 2
 
@@ -89,27 +89,27 @@ void ResGrowResDescTable(Id id);
 
 //	LRU chain link management macros
 
-#define ResRemoveFromLRU(prd)                                                  \
-  {                                                                            \
-    gResDesc[(prd)->next].prev = (prd)->prev;                                  \
-    gResDesc[(prd)->prev].next = (prd)->next;                                  \
-  }
+#define ResRemoveFromLRU(prd)                     \
+    {                                             \
+        gResDesc[(prd)->next].prev = (prd)->prev; \
+        gResDesc[(prd)->prev].next = (prd)->next; \
+    }
 
-#define ResAddToTail(prd)                                                      \
-  {                                                                            \
-    (prd)->prev = gResDesc[ID_TAIL].prev;                                      \
-    (prd)->next = ID_TAIL;                                                     \
-    gResDesc[(prd)->prev].next = RESDESC_ID(prd);                              \
-    gResDesc[ID_TAIL].prev = RESDESC_ID(prd);                                  \
-  }
+#define ResAddToTail(prd)                             \
+    {                                                 \
+        (prd)->prev = gResDesc[ID_TAIL].prev;         \
+        (prd)->next = ID_TAIL;                        \
+        gResDesc[(prd)->prev].next = RESDESC_ID(prd); \
+        gResDesc[ID_TAIL].prev = RESDESC_ID(prd);     \
+    }
 
-#define ResMoveToTail(prd)                                                     \
-  {                                                                            \
-    if ((prd)->next != ID_TAIL) {                                              \
-      ResRemoveFromLRU(prd);                                                   \
-      ResAddToTail(prd);                                                       \
-    }                                                                          \
-  }
+#define ResMoveToTail(prd)            \
+    {                                 \
+        if ((prd)->next != ID_TAIL) { \
+            ResRemoveFromLRU(prd);    \
+            ResAddToTail(prd);        \
+        }                             \
+    }
 /*
 
 //	Statistics tables

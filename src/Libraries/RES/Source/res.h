@@ -114,13 +114,13 @@ void ResDelete(Id id);                 // delete resource forever
 
 // Each compound resource starts with a Ref Table
 typedef struct __attribute__((packed)) {
-  RefIndex numRefs;  // # items in compound resource
-  int32_t offset[1]; // offset to each item (numRefs + 1 of them)
+    RefIndex numRefs;  // # items in compound resource
+    int32_t offset[1]; // offset to each item (numRefs + 1 of them)
 } RefTable;
 
-void *RefLock(Ref ref); // lock compound res, get ptr to item
+void *RefLock(Ref ref);                      // lock compound res, get ptr to item
 #define RefUnlock(ref) ResUnlock(REFID(ref)) // unlock compound res item
-void *RefGet(Ref ref); // get ptr to item in comp. res (dangerous!)
+void *RefGet(Ref ref);                       // get ptr to item in comp. res (dangerous!)
 
 RefTable *ResReadRefTable(Id id);        // alloc & read ref table
 #define ResFreeRefTable(prt) (free(prt)) // free ref table
@@ -134,8 +134,7 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff); // extract ref
 // returns the number of refs in a resource, extracting if necessary.
 int32_t ResNumRefs(Id id);
 
-#define REFTABLESIZE(numrefs)                                                  \
-  (sizeof(RefIndex) + (((numrefs) + 1) * sizeof(int32_t)))
+#define REFTABLESIZE(numrefs) (sizeof(RefIndex) + (((numrefs) + 1) * sizeof(int32_t)))
 #define REFPTR(prt, index) (((uint8_t *)prt) + prt->offset[index])
 
 /*
@@ -175,20 +174,20 @@ size;
 } ResDesc;*/
 
 typedef struct {
-  void *ptr;             // ptr to resource in memory, or NULL if on disk
-  uint32_t lock : 8;     // lock count
-  uint32_t size : 24;    // size of resource in bytes (1 Mb max)
-  uint32_t filenum : 5;  // file number 0-31
-  uint32_t offset : 27;  // offset in file
-  Id next;               // next resource in LRU order
-  Id prev;               // previous resource in LRU order
-  /*uint32_t flags;*/    // misc flags (RDF_XXX, see below)
-  /*uint16_t type : 8;*/ // resource type (RTYPE_XXX, see restypes.h)
+    void *ptr;             // ptr to resource in memory, or NULL if on disk
+    uint32_t lock : 8;     // lock count
+    uint32_t size : 24;    // size of resource in bytes (1 Mb max)
+    uint32_t filenum : 5;  // file number 0-31
+    uint32_t offset : 27;  // offset in file
+    Id next;               // next resource in LRU order
+    Id prev;               // previous resource in LRU order
+    /*uint32_t flags;*/    // misc flags (RDF_XXX, see below)
+    /*uint16_t type : 8;*/ // resource type (RTYPE_XXX, see restypes.h)
 } ResDesc;
 
 typedef struct {
-  uint16_t flags : 8; // misc flags (RDF_XXX, see below)
-  uint16_t type : 8;  // resource type (RTYPE_XXX, see restypes.h)
+    uint16_t flags : 8; // misc flags (RDF_XXX, see below)
+    uint16_t type : 8;  // resource type (RTYPE_XXX, see restypes.h)
 } ResDesc2;
 
 #define RESDESC(id) (&gResDesc[id])      // convert id to resource desc ptr
@@ -237,10 +236,10 @@ void ResTerm(); // term Res (done auto via atexit)
 //	------------------------------------------------------------
 
 typedef enum {
-  ROM_READ,       // open for reading only
-  ROM_EDIT,       // open for editing (r/w) only
-  ROM_EDITCREATE, // open for editing, create if not found
-  ROM_CREATE      // open for creation (deletes existing)
+    ROM_READ,       // open for reading only
+    ROM_EDIT,       // open for editing (r/w) only
+    ROM_EDITCREATE, // open for editing, create if not found
+    ROM_CREATE      // open for creation (deletes existing)
 } ResOpenMode;
 
 void ResAddPath(char *path); // add search path for resfiles
@@ -248,8 +247,7 @@ int32_t ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo);
 void ResCloseFile(int32_t filenum); // close res file
 
 #define ResOpenFile(fname) ResOpenResFile(fname, ROM_READ, FALSE)
-#define ResEditFile(fname, creat)                                              \
-  ResOpenResFile(fname, (creat) ? ROM_EDITCREATE : ROM_EDIT, TRUE)
+#define ResEditFile(fname, creat) ResOpenResFile(fname, (creat) ? ROM_EDITCREATE : ROM_EDIT, TRUE)
 #define ResCreateFile(fname) ResOpenResFile(fname, ROM_CREATE, TRUE)
 
 #define MAX_RESFILENUM 31 // maximum file number
@@ -290,8 +288,7 @@ proper DBG bit set
 //	----------------------------------------------------------
 
 // make resource from data block
-void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum,
-             uint8_t flags);
+void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint8_t flags);
 // make empty compound resource
 void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags);
 // add item to compound
@@ -306,41 +303,41 @@ void ResUnmake(Id id);
 //	Resource-file disk format:  header, data, dir
 
 typedef struct {
-  char signature[16];   // "LG ResFile v2.0\n",
-  char comment[96];     // user comment, terminated with '\z'
-  uint8_t reserved[12]; // reserved for future use, must be 0
-  int32_t dirOffset;    // file offset of directory
-} ResFileHeader;        // total 128 bytes (why not?)
+    char signature[16];   // "LG ResFile v2.0\n",
+    char comment[96];     // user comment, terminated with '\z'
+    uint8_t reserved[12]; // reserved for future use, must be 0
+    int32_t dirOffset;    // file offset of directory
+} ResFileHeader;          // total 128 bytes (why not?)
 
 typedef struct {
-  uint16_t numEntries; // # items referred to by directory
-  int32_t dataOffset;  // file offset at which data resides
-                       // directory entries follow immediately
-                       // (numEntries of them)
+    uint16_t numEntries; // # items referred to by directory
+    int32_t dataOffset;  // file offset at which data resides
+                         // directory entries follow immediately
+                         // (numEntries of them)
 } ResDirHeader;
 
 typedef struct {
-  Id id;               // resource id (if 0, entry is deleted)
-  uint32_t size : 24;  // uncompressed size (size in ram)
-  uint32_t flags : 8;  // resource flags (RDF_XXX)
-  uint32_t csize : 24; // compressed size (size on disk)
-                       // (this size is valid disk size even if not comp.)
-  uint32_t type : 8;   // resource type
+    Id id;               // resource id (if 0, entry is deleted)
+    uint32_t size : 24;  // uncompressed size (size in ram)
+    uint32_t flags : 8;  // resource flags (RDF_XXX)
+    uint32_t csize : 24; // compressed size (size on disk)
+                         // (this size is valid disk size even if not comp.)
+    uint32_t type : 8;   // resource type
 } ResDirEntry;
 
 // Active resource file table
 
 typedef struct {
-  uint16_t flags;         // RFF_XXX
-  ResFileHeader hdr;      // file header
-  ResDirHeader *pdir;     // ptr to resource directory
-  uint16_t numAllocDir;   // # dir entries allocated
-  int32_t currDataOffset; // current data offset in file
+    uint16_t flags;         // RFF_XXX
+    ResFileHeader hdr;      // file header
+    ResDirHeader *pdir;     // ptr to resource directory
+    uint16_t numAllocDir;   // # dir entries allocated
+    int32_t currDataOffset; // current data offset in file
 } ResEditInfo;
 
 typedef struct {
-  FILE *fd;           // file descriptor (from open())
-  ResEditInfo *pedit; // editing info, or NULL if read-only file
+    FILE *fd;           // file descriptor (from open())
+    ResEditInfo *pedit; // editing info, or NULL if read-only file
 } ResFile;
 
 #define RFF_NEEDSPACK 0x0001 // resfile has holes, needs packing
@@ -353,9 +350,8 @@ extern ResFile resFile[MAX_RESFILENUM + 1];
 #define RESFILE_HASDIR(filenum) (resFile[filenum].pedit)
 #define RESFILE_DIRPTR(filenum) (resFile[filenum].pedit->pdir)
 #define RESFILE_DIRENTRY(pdir, n) ((ResDirEntry *)((pdir) + 1) + (n))
-#define RESFILE_FORALLINDIR(pdir, pde)                                         \
-  for (pde = RESFILE_DIRENTRY(pdir, 0);                                        \
-       pde < RESFILE_DIRENTRY(pdir, pdir->numEntries); pde++)
+#define RESFILE_FORALLINDIR(pdir, pde) \
+    for (pde = RESFILE_DIRENTRY(pdir, 0); pde < RESFILE_DIRENTRY(pdir, pdir->numEntries); pde++)
 
 extern char resFileSignature[16]; // magic header
 
@@ -365,14 +361,14 @@ extern char resFileSignature[16]; // magic header
 
 void ResSetComment(int32_t filenum, char *comment); // set comment
 int32_t ResWrite(Id id);                            // write resource to file
-void ResKill(Id id);              // delete resource & remove from file
-int32_t ResPack(int32_t filenum); // remove empty entries
+void ResKill(Id id);                                // delete resource & remove from file
+int32_t ResPack(int32_t filenum);                   // remove empty entries
 
 //#define ResAutoPackOn(filenum) (resFile[filenum].pedit->flags |= RFF_AUTOPACK)
 //#define ResAutoPackOff(filenum) (resFile[filenum].pedit->flags &=
 //~RFF_AUTOPACK) #define ResNeedsPacking(filenum) (resFile[filenum].pedit->flags
 //& RFF_NEEDSPACK)
 // DG: a case-insensitive fopen()-wrapper (see resfile.c)
-extern FILE *fopen_caseless(const char* path, const char* mode);
+extern FILE *fopen_caseless(const char *path, const char *mode);
 
 #endif
