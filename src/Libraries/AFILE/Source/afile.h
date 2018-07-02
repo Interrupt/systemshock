@@ -48,68 +48,68 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	Animation file types
 
 typedef enum {
-  AFILE_FLC,   // .flc, .fli, .cel (Autodesk Animator Pro)
-  AFILE_ANM,   // .anm (DeluxePaint Anim)
-  AFILE_QTM,   // .qtm (QuickTime, brought over from Mac)
-  AFILE_MOV,   // .mov (LookingGlass movie)
-  AFILE_GFILE, // set of gfiles (.pcx, .gif, etc.)
-  AFILE_BAD    // unknown/bad type
+    AFILE_FLC,   // .flc, .fli, .cel (Autodesk Animator Pro)
+    AFILE_ANM,   // .anm (DeluxePaint Anim)
+    AFILE_QTM,   // .qtm (QuickTime, brought over from Mac)
+    AFILE_MOV,   // .mov (LookingGlass movie)
+    AFILE_GFILE, // set of gfiles (.pcx, .gif, etc.)
+    AFILE_BAD    // unknown/bad type
 } AfileType;
 
 //	Structures used in dealing with anim files
 
 typedef struct {
-  int16_t index;        // index at which to start writing
-  int16_t numcols;      // number of colors to write
-  uint8_t rgb[3 * 256]; // 0-256 rgb entries
+    int16_t index;        // index at which to start writing
+    int16_t numcols;      // number of colors to write
+    uint8_t rgb[3 * 256]; // 0-256 rgb entries
 } Apalette;
 
 typedef struct {
-  int32_t numFrames; // number of frames of video
-  fix frameRate;     // frame rate in frames per second
-  int16_t width;     // width in pixels
-  int16_t height;    // height in pixels
-  int16_t numBits;   // number of bits per pixel (8, 15, 24)
-  Apalette pal;      // (base) palette
+    int32_t numFrames; // number of frames of video
+    fix frameRate;     // frame rate in frames per second
+    int16_t width;     // width in pixels
+    int16_t height;    // height in pixels
+    int16_t numBits;   // number of bits per pixel (8, 15, 24)
+    Apalette pal;      // (base) palette
 } AvideoInfo;
 
 typedef struct {
-  int16_t numChans;   // 0 = no audio, 1 = mono, 2 = stereo
-  int16_t sampleSize; // 1 = 8-bit, 2 = 16-bit
-  fix sampleRate;     // in Khz
-  int32_t numSamples; // total number of samples (per channel)
+    int16_t numChans;   // 0 = no audio, 1 = mono, 2 = stereo
+    int16_t sampleSize; // 1 = 8-bit, 2 = 16-bit
+    fix sampleRate;     // in Khz
+    int32_t numSamples; // total number of samples (per channel)
 } AaudioInfo;
 
 struct Amethods_;
 
 typedef struct Afile_ {
-  FILE *fp;               // file access ptr
-  AfileType type;         // file type
-  uint8_t writing;        // if TRUE, opened for write (FALSE = read)
-  uint8_t writerWantsRsd; // if TRUE, writer wants rsd frames
-  struct Amethods_ *pm;   // ptr to access method ptrs
-  AvideoInfo v;           // video info
-  AaudioInfo a;           // audio info
-  void *pspec;            // ptr to type-specific info
-  int32_t currFrame;      // current frame index
-  int32_t frameLen;       // length of frame (width & height * sizeof(pixel))
-  grs_bitmap bmCompose;   // compose buffer
-  grs_bitmap bmPrev;      // previous compose buffer
-  grs_bitmap bmWork;      // working buffer bitmap
+    FILE *fp;               // file access ptr
+    AfileType type;         // file type
+    uint8_t writing;        // if TRUE, opened for write (FALSE = read)
+    uint8_t writerWantsRsd; // if TRUE, writer wants rsd frames
+    struct Amethods_ *pm;   // ptr to access method ptrs
+    AvideoInfo v;           // video info
+    AaudioInfo a;           // audio info
+    void *pspec;            // ptr to type-specific info
+    int32_t currFrame;      // current frame index
+    int32_t frameLen;       // length of frame (width & height * sizeof(pixel))
+    grs_bitmap bmCompose;   // compose buffer
+    grs_bitmap bmPrev;      // previous compose buffer
+    grs_bitmap bmWork;      // working buffer bitmap
 } Afile;
 
 typedef struct Amethods_ {
-  int32_t (*f_ReadHeader)(Afile *paf);
-  int32_t (*f_ReadFrame)(Afile *paf, grs_bitmap *pbm, fix *ptime);
-  int32_t (*f_ReadFramePal)(Afile *paf, Apalette *ppal);
-  int32_t (*f_ReadAudio)(Afile *paf, void *paudio);
-  int32_t (*f_ReadReset)(Afile *paf);
-  int32_t (*f_ReadClose)(Afile *paf);
-  int32_t (*f_WriteBegin)(Afile *paf);
-  int32_t (*f_WriteAudio)(Afile *paf, void *paudio);
-  int32_t (*f_WriteFrame)(Afile *paf, grs_bitmap *pbm, int32_t bmlength, fix time);
-  int32_t (*f_WriteFramePal)(Afile *paf, Apalette *ppal);
-  int32_t (*f_WriteClose)(Afile *paf);
+    int32_t (*f_ReadHeader)(Afile *paf);
+    int32_t (*f_ReadFrame)(Afile *paf, grs_bitmap *pbm, fix *ptime);
+    int32_t (*f_ReadFramePal)(Afile *paf, Apalette *ppal);
+    int32_t (*f_ReadAudio)(Afile *paf, void *paudio);
+    int32_t (*f_ReadReset)(Afile *paf);
+    int32_t (*f_ReadClose)(Afile *paf);
+    int32_t (*f_WriteBegin)(Afile *paf);
+    int32_t (*f_WriteAudio)(Afile *paf, void *paudio);
+    int32_t (*f_WriteFrame)(Afile *paf, grs_bitmap *pbm, int32_t bmlength, fix time);
+    int32_t (*f_WriteFramePal)(Afile *paf, Apalette *ppal);
+    int32_t (*f_WriteClose)(Afile *paf);
 } Amethods;
 
 //	Function prototypes: reading anim files

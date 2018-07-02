@@ -38,10 +38,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 typedef struct {
-  uint8_t *buff;    // ptr to circular buffer
-  uint8_t *buffEnd; // end of buffer
-  uint8_t *pput;    // ptr to put data to
-  uint8_t *pget;    // ptr to get data from
+    uint8_t *buff;    // ptr to circular buffer
+    uint8_t *buffEnd; // end of buffer
+    uint8_t *pput;    // ptr to put data to
+    uint8_t *pget;    // ptr to get data from
 } CircBuff;
 
 void CircBuffInit(CircBuff *pcb, uint8_t *buff, int32_t length);
