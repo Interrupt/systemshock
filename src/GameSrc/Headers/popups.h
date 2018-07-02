@@ -38,7 +38,7 @@ void init_popups(void);
 // initalizes popup cursors
 
 void make_popup_cursor(LGCursor* c, grs_bitmap* bm, char* string, uint tmplt, uchar allocate, LGPoint offset);
-void make_email_cursor(LGCursor* c, grs_bitmap* bm, uchar page, uchar init);
+void make_email_cursor(LGCursor *c, grs_bitmap *bm, uchar page, bool init);
 
 /* Modifies c and bm to be a cursor built from the specified 
  string and tmplt.  if allocate is true the bits for the cursor bitmap

@@ -150,7 +150,7 @@ static char cursor_buf[4096];
 static char cursor_buf[512];
 #endif
 
-void make_email_cursor(LGCursor* c, grs_bitmap* bm, uchar page, uchar init)
+void make_email_cursor(LGCursor *c, grs_bitmap *bm, uchar page, bool init)
 {
    grs_canvas gc;
    short x,y,w,h;
