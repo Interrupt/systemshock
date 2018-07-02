@@ -79,6 +79,14 @@ static void addMouseEvent(const mouse_event* ev)
 {
 	latestMouseEvent = *ev;
 
+	// Fill out the buttons
+	uint mouse_state = SDL_GetMouseState(NULL, NULL);
+	latestMouseEvent.buttons = 0;
+	if (mouse_state & SDL_BUTTON_LMASK)
+		latestMouseEvent.buttons |= (1 << MOUSE_LBUTTON);
+	if (mouse_state & SDL_BUTTON_RMASK)
+		latestMouseEvent.buttons |= (1 << MOUSE_RBUTTON);
+
 	// confine the mouse coordinates to the game window
 	int width, height;
 	SDL_RenderGetLogicalSize(renderer, &width, &height);
@@ -323,12 +331,10 @@ void pump_events(void)
 						//       was pressed at the same time - do the same? (=> could check sshockKeyStates[])
 
 						mouseEvent.type = down ? MOUSE_LDOWN : MOUSE_LUP;
-						mouseEvent.buttons = 1;
 						break;
 
 					case SDL_BUTTON_RIGHT:
 						mouseEvent.type = down ? MOUSE_RDOWN : MOUSE_RUP;
-						mouseEvent.buttons = 2;
 						break;
 
 					//case SDL_BUTTON_MIDDLE: // TODO: is this MOUSE_CDOWN/UP ?
@@ -354,17 +360,7 @@ void pump_events(void)
 				mouseEvent.type = MOUSE_MOTION;
 				mouseEvent.x = ev.motion.x; // TODO: relative mode?
 				mouseEvent.y = ev.motion.y;
-				mouseEvent.buttons = 0;
 				mouseEvent.timestamp = mouse_get_time();
-
-				// Fill out the buttons
-				uint mouse_state = SDL_GetMouseState(NULL, NULL);
-				if(mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-					mouseEvent.buttons = 1;
-				}
-				if(mouse_state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-					mouseEvent.buttons = 2;
-				}
 
 				addMouseEvent(&mouseEvent);
 				break;
