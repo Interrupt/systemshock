@@ -228,16 +228,16 @@ void InitSDL()
 	// Point the renderer at the screen bytes
 	gScreenRowbytes = drawSurface->w;
 	gScreenAddress = drawSurface->pixels;
-	gScreenWide = 640;
-	gScreenHigh = 480;
+	gScreenWide = 320;
+	gScreenHigh = 200;
 	gActiveLeft = 0;
 	gActiveTop = 0;
-	gActiveWide = 640;
-	gActiveHigh = 480;
+	gActiveWide = 320;
+	gActiveHigh = 200;
 
 	gr_init();
 
-    gr_set_mode(GRM_640x480x8, TRUE);
+    gr_set_mode(GRM_320x200x8, TRUE);
 
     INFO("Setting up screen and render contexts");
 
