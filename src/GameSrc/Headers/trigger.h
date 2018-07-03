@@ -51,7 +51,7 @@ typedef struct {
 #define HEIGHT_STEP_TIME 3
 #define HEIGHT_TIME_UNIT 10
 
-#define NUM_HEIGHT_SEMAPHORS 16
+#define NUM_HEIGHT_SEMAPHORS 32
 #define MAX_HSEM_KEY 63
 
 typedef struct {
