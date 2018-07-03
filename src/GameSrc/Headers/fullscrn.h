@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 #ifndef __FULLSCRN_H
 #define __FULLSCRN_H
@@ -28,16 +28,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Log: fullscrn.h $
  * Revision 1.4  1994/05/17  02:32:03  tjs
  * Save\restore mfd in fullscreen fix.
- * 
+ *
  * Revision 1.3  1994/03/04  07:05:02  mahk
  * Full screen mania.
- * 
+ *
  * Revision 1.2  1993/09/22  00:46:57  xemu
  * added raising & lowering of invent * mfd regions
- * 
+ *
  * Revision 1.1  1993/09/19  19:06:26  xemu
  * Initial revision
- * 
+ *
  *
  */
 
@@ -46,17 +46,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Defines
 
-#define FULL_VIEW_X   0
-#define FULL_VIEW_Y   0
+#define FULL_VIEW_X      0
+#define FULL_VIEW_Y      0
 #define FULL_VIEW_HEIGHT 200
-#define FULL_VIEW_WIDTH  320  
+#define FULL_VIEW_WIDTH  320
 
-// Note, these have been kludged to parallel the 
+// Note, these have been kludged to parallel the
 // view360 context numbers.
-#define FULL_R_MFD_MASK    0x01
-#define FULL_L_MFD_MASK    0x02
-#define FULL_INVENT_MASK   0x04
-#define FULL_MFD_MASK(id) (((id)==0)?FULL_L_MFD_MASK:FULL_R_MFD_MASK)
+#define FULL_R_MFD_MASK   0x01
+#define FULL_L_MFD_MASK   0x02
+#define FULL_INVENT_MASK  0x04
+#define FULL_MFD_MASK(id) (((id) == 0) ? FULL_L_MFD_MASK : FULL_R_MFD_MASK)
 
 // Typedefs
 
@@ -86,4 +86,3 @@ extern uchar full_visible;
 #endif
 
 #endif // __FULLSCRN_H
-

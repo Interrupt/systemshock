@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 #ifndef __WEAPONS_H
 #define __WEAPONS_H
@@ -28,43 +28,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Includes
-#include "objwpn.h"    // for GUN_SUBCLASS_BEAM
+#include "objwpn.h" // for GUN_SUBCLASS_BEAM
 #include "player.h"
 
 // Defines
 
-#define MAX_HEAT             100
-#define OVERHEAT_THRESHOLD    80
-#define MINIMUM_OVERLOAD      30
-#define WARM_THRESHOLD        45
+#define MAX_HEAT           100
+#define OVERHEAT_THRESHOLD 80
+#define MINIMUM_OVERLOAD   30
+#define WARM_THRESHOLD     45
 
-#define MIN_ENERGY_USE        10
+#define MIN_ENERGY_USE 10
 
-#define OVERLOAD_VALUE(X)     (X & 0x80)
-#define OVERLOAD_SET(X)       (X |= 0x80)
-#define OVERLOAD_RESET(X)     (X &= ~0x80)
-#define BEAM_SETTING_VAL(X)   (X & 0x7F)
-#define BEAM_SETTING(X, Y)    (OVERLOAD_VALUE(X) | (BEAM_SETTING_VAL(Y)))
+#define OVERLOAD_VALUE(X)   (X & 0x80)
+#define OVERLOAD_SET(X)     (X |= 0x80)
+#define OVERLOAD_RESET(X)   (X &= ~0x80)
+#define BEAM_SETTING_VAL(X) (X & 0x7F)
+#define BEAM_SETTING(X, Y)  (OVERLOAD_VALUE(X) | (BEAM_SETTING_VAL(Y)))
 
 // moved WEAPON_COOL_OFF_TIME to weapons.c for easier tweaking
-#define MAX_WEAPON_TYPE       6
-#define MAX_WEAPON_SUBTYPE    5
+#define MAX_WEAPON_TYPE    6
+#define MAX_WEAPON_SUBTYPE 5
 
 // slow projectile flags
-#define PROJ_LIGHT_FLAG             0x01
-#define PROJ_PRESERVE_WALL          0x02
-#define PROJ_PRESERVE_HIT           0x04
-#define PROJ_PRESERVE_PROJ_HIT      0x08
+#define PROJ_LIGHT_FLAG        0x01
+#define PROJ_PRESERVE_WALL     0x02
+#define PROJ_PRESERVE_HIT      0x04
+#define PROJ_PRESERVE_PROJ_HIT 0x08
 
 // extern char ammo_type_letters[];
-#define AMMO_TYPE_LETTER(l) (get_temp_string(REF_STR_AmmoTypeLetters)[l])
-#define is_energy_weapon(wtype) (wtype == GUN_SUBCLASS_BEAM)
+#define AMMO_TYPE_LETTER(l)         (get_temp_string(REF_STR_AmmoTypeLetters)[l])
+#define is_energy_weapon(wtype)     (wtype == GUN_SUBCLASS_BEAM)
 #define is_handtohand_weapon(wtype) (wtype == GUN_SUBCLASS_HANDTOHAND)
 
 #define AMMO_SUBCLASSES num_subclasses[CLASS_AMMO]
 
-#define AMMOTYPE_SUBCLASS(X)   ((X) >= (AMMO_SUBCLASSES << 4) ? AMMO_SUBCLASSES-1 : (X) >> 4)
-#define AMMOTYPE_TYPE(X)       ((X) & 0xF)
+#define AMMOTYPE_SUBCLASS(X) ((X) >= (AMMO_SUBCLASSES << 4) ? AMMO_SUBCLASSES - 1 : (X) >> 4)
+#define AMMOTYPE_TYPE(X) ((X)&0xF)
 
 #define set_shield_rate(X) (player_struct.shield_absorb_rate = (X))
 #define get_shield_rate(X) (player_struct.shield_absorb_rate)
@@ -77,25 +77,25 @@ uchar handart_fire = FALSE;
 extern ubyte handart_show;
 extern ubyte handart_remainder;
 extern uchar handart_fire;
-//extern handart_frame_info handart_info[NUM_HANDART_ANIM][HANDART_FRAMES];
+// extern handart_frame_info handart_info[NUM_HANDART_ANIM][HANDART_FRAMES];
 extern ubyte weapon_to_handart[NUM_GUN];
 #endif
 
 // Prototypes
 // Get the name of a weapon, given its type and subtype
-char* get_weapon_name(int type, int subtype, char* buf);
-char* get_weapon_long_name(int type, int subtype, char *buf);
+char *get_weapon_name(int type, int subtype, char *buf);
+char *get_weapon_long_name(int type, int subtype, char *buf);
 
 // Get the fire rate of a weapon, given its type and subtype
 #define weapon_fire_rate(WTYPE, SUBTYPE) (GunProps[CPTRIP(MAKETRIP(CLASS_GUN, WTYPE, SUBTYPE))].fire_rate)
 
 // Fire the player's current weapon.  Pos is the cursor position,
-// the routine will translate by itself into the x & y angles of 
-// direction to fire, 
-// in units of -100-+100 spanning the view cone. 
+// the routine will translate by itself into the x & y angles of
+// direction to fire,
+// in units of -100-+100 spanning the view cone.
 // pull is true if the  trigger was just pulled.
 // returns - TRUE if player fired weapon
-uchar fire_player_weapon(LGPoint *pos,LGRegion *r,uchar pull);
+uchar fire_player_weapon(LGPoint *pos, LGRegion *r, uchar pull);
 
 // Set the maximum charge on a beam weapon.  index is into player_struct.weapons,
 // max_charge can't be higher than 100
@@ -125,4 +125,3 @@ uchar gun_takes_ammo(int guntrip, int ammotrip);
 // Globals
 
 #endif // __WEAPONS_H
-
