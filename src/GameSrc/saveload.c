@@ -905,7 +905,7 @@ errtype load_current_map(Id id_num, FSSpec* spec)
       uchar* dst_ptr = global_fullmap->sched[0].queue.vec;
       memmove(dst_ptr, ResLock(id_num + idx), queue_size);
       ResUnlock(id_num + idx++);
-      global_fullmap->sched[0].queue.fullness = queue_size / sizeof(SchedEvent);
+      global_fullmap->sched[0].queue.fullness = (queue_size / sizeof(SchedEvent)) - 1;
    }
    else
      idx++;
