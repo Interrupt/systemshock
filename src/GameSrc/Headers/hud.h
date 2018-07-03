@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 #ifndef __HUD_H
 #define __HUD_H
@@ -40,7 +40,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Game Library Includes
 
 // Game Object Includes
-
 
 // Defines
 #define HUD_RADIATION   0x00000001 // Are we in radiation
@@ -78,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Update the HUD.  If redraw_whole is TRUE, better draw the
 // whole durned thing.
-errtype hud_update(uchar redraw_whole,frc* context);
+errtype hud_update(uchar redraw_whole, frc *context);
 errtype cyber_hud_update(uchar redraw_whole);
 
 // Set the data being displayed by the HUD.
@@ -91,8 +90,4 @@ extern LGRect target_screen_rect;
 extern ubyte hud_colors[HUD_COLOR_BANKS][HUD_COLORS_PER_BANK];
 extern ubyte hud_color_bank;
 
-
-
-
 #endif // __HUD_H
-

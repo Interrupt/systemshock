@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 
 #ifndef __OBJECTS_H
@@ -24,9 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
 ** $Header: r:/prj/cit/src/inc/RCS/objects.h 1.18 1994/08/30 07:15:13 xemu Exp $
- * 
+*
 */
-
 
 // The overriding concept: there is a master array of all objects in the game.
 // This is an array of the Obj structure.  Every object has a distinct ID
@@ -54,7 +53,7 @@ typedef uchar ObjSubClass;
 // reserved for storing special information.
 
 typedef short ObjID;
-#define OBJ_NULL 0		// null object
+#define OBJ_NULL 0 // null object
 
 typedef short ObjRefID;
 #define OBJ_REF_NULL 0
@@ -69,43 +68,42 @@ typedef short ObjSpecID;
 
 // The common data for all objects
 typedef struct Obj {
-	uchar active;								// does this object really exist?
-	ObjClass obclass;							// what class this is
-	ObjSubClass subclass;					// subclass within that class
-	ObjSpecID specID;							// ID within that class
-	union {
-		ObjRefID ref;							// what refers to this
-		ObjID headused;
-	};
-	union {
-		ObjID next;								// next Obj in free chain or used chain
-		ObjID headfree;
-	};
-	ObjID prev;									// prev Obj in used chain
-	ObjLoc loc;									// location
-	ObjInfo info;								// extra, application-specific information
+    uchar active;         // does this object really exist?
+    ObjClass obclass;     // what class this is
+    ObjSubClass subclass; // subclass within that class
+    ObjSpecID specID;     // ID within that class
+    union {
+        ObjRefID ref; // what refers to this
+        ObjID headused;
+    };
+    union {
+        ObjID next; // next Obj in free chain or used chain
+        ObjID headfree;
+    };
+    ObjID prev;   // prev Obj in used chain
+    ObjLoc loc;   // location
+    ObjInfo info; // extra, application-specific information
 } Obj;
 
 typedef struct old_Obj {
-	uchar active;								// does this object really exist?
-	ObjClass obclass;							// what class this is
-	ObjSubClass subclass;					// subclass within that class
-	ObjSpecID specID;							// ID within that class
-	union {
-		ObjRefID ref;							// what refers to this
-		ObjID headused;
-	};
-	union {
-		ObjID next;								// next Obj in free chain or used chain
-		ObjID headfree;
-	};
-	ObjID prev;									// prev Obj in used chain
-	ObjLoc loc;									// location
-	old_ObjInfo info;								// extra, application-specific information
+    uchar active;         // does this object really exist?
+    ObjClass obclass;     // what class this is
+    ObjSubClass subclass; // subclass within that class
+    ObjSpecID specID;     // ID within that class
+    union {
+        ObjRefID ref; // what refers to this
+        ObjID headused;
+    };
+    union {
+        ObjID next; // next Obj in free chain or used chain
+        ObjID headfree;
+    };
+    ObjID prev;       // prev Obj in used chain
+    ObjLoc loc;       // location
+    old_ObjInfo info; // extra, application-specific information
 } old_Obj;
 
-#define FORALLOBJS(pmo) for(pmo = (objs[OBJ_NULL]).headused; \
-	pmo != OBJ_NULL; pmo = objs[pmo].next)
+#define FORALLOBJS(pmo) for (pmo = (objs[OBJ_NULL]).headused; pmo != OBJ_NULL; pmo = objs[pmo].next)
 
 // The "next" field of object 0 is the ID of the first element of the chain
 // of "free" objects; objects that are not currently in the world.  The "next"
@@ -119,9 +117,9 @@ typedef struct old_Obj {
 
 // The header for an array of class-specific data
 typedef struct ObjSpecHeader {
-	uchar size;									// size of array
-	uchar struct_size;						// size of each element
-	char *data;									// pointer to array of class-specific data
+    uchar size;        // size of array
+    uchar struct_size; // size of each element
+    char *data;        // pointer to array of class-specific data
 } ObjSpecHeader;
 
 // The common part of any class-specific structure.  You can cast any class-specific
@@ -132,18 +130,18 @@ typedef struct ObjSpecHeader {
 // as appropriate.
 
 typedef struct ObjSpec {
-	union {
-		struct {
-			ObjID id : 15;						// ID in master list
-			ushort tile : 1;					// look in tiled array?
-		} bits;	
-		ObjSpecID headused;
-	};
-	union {
-		ObjSpecID next;						// next struct in free or used chain
-		ObjSpecID headfree;
-	};
-	ObjSpecID prev;							// prev struct in used chain
+    union {
+        struct {
+            ObjID id : 15;   // ID in master list
+            ushort tile : 1; // look in tiled array?
+        } bits;
+        ObjSpecID headused;
+    };
+    union {
+        ObjSpecID next; // next struct in free or used chain
+        ObjSpecID headfree;
+    };
+    ObjSpecID prev; // prev struct in used chain
 } ObjSpec;
 
 // This macro permutes the ObjSpecID pmo through all of the ObjSpecs in the
@@ -151,10 +149,9 @@ typedef struct ObjSpec {
 // Note that the "tile =" line in the third part refers to the pmo that
 // has been set earlier that line.
 //
-#define FORALLOBJSPECS(pmo,tiled,objspec) for(\
-	pmo = (objspec[OBJ_SPEC_NULL]).id, tiled = objspec[pmo].tile;\
-	pmo != OBJ_SPEC_NULL;\
-	pmo = objspec[pmo].next, tiled = objspec[pmo].tile)
+#define FORALLOBJSPECS(pmo, tiled, objspec)                                                  \
+    for (pmo = (objspec[OBJ_SPEC_NULL]).id, tiled = objspec[pmo].tile; pmo != OBJ_SPEC_NULL; \
+         pmo = objspec[pmo].next, tiled = objspec[pmo].tile)
 
 // The master array of objects
 extern Obj objs[NUM_OBJECTS];
@@ -179,10 +176,10 @@ extern /*const*/ ObjSpecHeader objSpecHeaders[NUM_CLASSES];
 // Obj itself and does not need to be put out in the ObjRef.
 
 typedef struct ObjRef {
-	ObjRefState state;						// location
-	ObjID obj;									// what Obj this refers to
-	ObjRefID next;								// next ObjRef in this square, or OBJ_REF_NULL if last
-	ObjRefID nextref;							// next ObjRef to refer to the same Obj
+    ObjRefState state; // location
+    ObjID obj;         // what Obj this refers to
+    ObjRefID next;     // next ObjRef in this square, or OBJ_REF_NULL if last
+    ObjRefID nextref;  // next ObjRef to refer to the same Obj
 } ObjRef;
 
 extern ObjRef objRefs[NUM_REF_OBJECTS];
@@ -191,25 +188,34 @@ extern ObjRef objRefs[NUM_REF_OBJECTS];
 //
 // Routines to make it easy to deal with objects only once
 
-extern uchar objsDealt[NUM_OBJECTS/8];
+extern uchar objsDealt[NUM_OBJECTS / 8];
 
-#define ObjsClearDealt() do {LG_memset (objsDealt, 0, NUM_OBJECTS/8);} while (0)
-#define ObjSetDealt(x) do {objsDealt[(x) >> 3] |= (1 << ((x) & 7));} while (0)
-#define ObjClearDealt(x) do {objsDealt[(x) >> 3] &= ~(1 << ((x) & 7));} while (0)
-#define ObjCheckDealt(x) (objsDealt[(x) >> 3] & (1 << ((x) & 7)))
+#define ObjsClearDealt()                          \
+    do {                                          \
+        LG_memset(objsDealt, 0, NUM_OBJECTS / 8); \
+    } while (0)
+#define ObjSetDealt(x)                         \
+    do {                                       \
+        objsDealt[(x) >> 3] |= (1 << ((x)&7)); \
+    } while (0)
+#define ObjClearDealt(x)                        \
+    do {                                        \
+        objsDealt[(x) >> 3] &= ~(1 << ((x)&7)); \
+    } while (0)
+#define ObjCheckDealt(x) (objsDealt[(x) >> 3] & (1 << ((x)&7)))
 
 //////////////////////////////
 //
 // Here is a structure by which an object's location is specified.
 // Physics will use it to tell the object manager how to update the world.
 
-#define MAX_REFS_PER_OBJ 12				// set as appropriate
-#define MAX_OBJS_CHANGING 20				// ditto
+#define MAX_REFS_PER_OBJ 12  // set as appropriate
+#define MAX_OBJS_CHANGING 20 // ditto
 
 typedef struct ObjLocState {
-	ObjID obj;									// which obj is this?
-	ObjLoc loc;
-	ObjRefState refs[MAX_REFS_PER_OBJ+1];	// list of points extended into
+    ObjID obj; // which obj is this?
+    ObjLoc loc;
+    ObjRefState refs[MAX_REFS_PER_OBJ + 1]; // list of points extended into
 } ObjLocState;
 
 // refs is a list of map elements that the Obj extends into; i.e., the bins
@@ -239,8 +245,8 @@ extern uchar numObjLocStates;
 typedef short ObjHashElemID;
 
 typedef struct ObjHashElem {
-  ObjRefID ref;
-  ObjHashElemID next;
+    ObjRefID ref;
+    ObjHashElemID next;
 } ObjHashElem;
 
 // The entries which can actually be accessed by the hash function
@@ -264,17 +270,17 @@ extern ObjHashElem objHashTable[OBJ_HASH_ENTRIES];
 // The global variable is a pain but I don't see a way to get rid of it.
 
 #ifdef USE_FUNCTION_FOR_HASH_GET
-ObjHashElemID ObjGetHashElem (ObjRefStateBin thebin, uchar create);
+ObjHashElemID ObjGetHashElem(ObjRefStateBin thebin, uchar create);
 #else
-extern ObjHashElemID HASHENTRY;	       // global, found in objects.c
-#define ObjGetHashElem(thebin,create) \
- (HASHENTRY = OBJ_HASH_FUNC(thebin),\
-  (objHashTable[HASHENTRY].ref == OBJ_REF_NULL ?\
-    (create ? HASHENTRY : 0) :\
-    (ObjRefStateBinEqual(objRefs[objHashTable[HASHENTRY].ref].state.bin,thebin) ?\
-      HASHENTRY :\
-      ObjGetHashElemFromChain(thebin,create,HASHENTRY))))
-ObjHashElemID ObjGetHashElemFromChain (ObjRefStateBin bin, uchar create, ObjHashElemID firstentry);
+extern ObjHashElemID HASHENTRY; // global, found in objects.c
+#define ObjGetHashElem(thebin, create)                                                   \
+    (HASHENTRY = OBJ_HASH_FUNC(thebin),                                                  \
+     (objHashTable[HASHENTRY].ref == OBJ_REF_NULL                                        \
+          ? (create ? HASHENTRY : 0)                                                     \
+          : (ObjRefStateBinEqual(objRefs[objHashTable[HASHENTRY].ref].state.bin, thebin) \
+                 ? HASHENTRY                                                             \
+                 : ObjGetHashElemFromChain(thebin, create, HASHENTRY))))
+ObjHashElemID ObjGetHashElemFromChain(ObjRefStateBin bin, uchar create, ObjHashElemID firstentry);
 #endif
 
 #endif // HASH_OBJECTS
@@ -284,24 +290,24 @@ ObjHashElemID ObjGetHashElemFromChain (ObjRefStateBin bin, uchar create, ObjHash
 // Public functions
 //
 
-void ObjsInit (void);
-uchar ObjAndSpecGrab (ObjClass obclass, ObjID *id, ObjSpecID *specid);
-uchar ObjPlace (ObjID id, ObjLoc *loc);
-ObjID ObjRefDel (ObjRefID ref);
-ObjRefID ObjRefMake (ObjID obj, ObjRefState refstate);
-uchar ObjDel (ObjID obj);
-uchar ObjChangeClass (ObjID obj, ObjClass obclass);
-uchar ObjUpdateLocs (ObjLocState *olsp);
-uchar ObjsUpdateLocs (void);
-void ObjPossibleCollisions (ObjID obj, ObjID *colls);
+void ObjsInit(void);
+uchar ObjAndSpecGrab(ObjClass obclass, ObjID *id, ObjSpecID *specid);
+uchar ObjPlace(ObjID id, ObjLoc *loc);
+ObjID ObjRefDel(ObjRefID ref);
+ObjRefID ObjRefMake(ObjID obj, ObjRefState refstate);
+uchar ObjDel(ObjID obj);
+uchar ObjChangeClass(ObjID obj, ObjClass obclass);
+uchar ObjUpdateLocs(ObjLocState *olsp);
+uchar ObjsUpdateLocs(void);
+void ObjPossibleCollisions(ObjID obj, ObjID *colls);
 
-void ObjBinPrint (ObjRefStateBin bin);
-uchar ObjSysOkay (void);
-void ObjPrintRefs (ObjID obj);
+void ObjBinPrint(ObjRefStateBin bin);
+uchar ObjSysOkay(void);
+void ObjPrintRefs(ObjID obj);
 
 //////////////
 
-uchar ObjInstInit (ObjID id, ObjSpecID specid, ObjSubClass subclass);
+uchar ObjInstInit(ObjID id, ObjSpecID specid, ObjSubClass subclass);
 
 //////////////////////////////
 

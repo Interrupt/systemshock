@@ -71,6 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Defines
 
+struct _cursor;
 
 typedef void (*CursorDrawFunc)(int cmd, LGRegion* r, struct _cursor* c, LGPoint pos);
 //  A cursor drawfunc executes the command specified by cmd to draw and undraw cursor

@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 #ifndef __AMAP_H
 #define __AMAP_H
@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define AMAP_SHOW_ALL  0x0400
 #define AMAP_SHOW_SENS 0x0800
 
-#define AMAP_AVAIL_ALWAYS (AMAP_SHOW_SENS|AMAP_SHOW_FLR|AMAP_FULL_MSG)
+#define AMAP_AVAIL_ALWAYS (AMAP_SHOW_SENS | AMAP_SHOW_FLR | AMAP_FULL_MSG)
 
 #define AMAP_SET       1
 #define AMAP_UNSET     0
@@ -59,16 +59,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // really should live in the player structure....
 typedef struct {
-   uchar   init;
-   uchar  zoom;
-   int    xf, yf;
-   ushort lw, lh;
-   ushort obj_to_follow, sensor_obj;
-   ushort note_obj;
-   ushort flags;
-   ushort avail_flags;
-   uchar  version_id;
-   ushort sensor_rad;   // in obj coords
+    uchar init;
+    uchar zoom;
+    int xf, yf;
+    ushort lw, lh;
+    ushort obj_to_follow, sensor_obj;
+    ushort note_obj;
+    ushort flags;
+    ushort avail_flags;
+    uchar version_id;
+    ushort sensor_rad; // in obj coords
 } curAMap;
 
 // prototypes
@@ -78,11 +78,11 @@ void amap_version_set(int id, int new_ver);
 void automap_init(int version, int id);
 void amap_invalidate(int id);
 void *amap_loc_note_check(curAMap *amptr, int *x, int *y, int *to_do); // note the void is really a MapElem
-uchar amap_flags(curAMap *amptr, int flags, int set);                 // set -1 to toggle
+uchar amap_flags(curAMap *amptr, int flags, int set);                  // set -1 to toggle
 uchar amap_zoom(curAMap *amptr, uchar set, int zoom_delta);
-void amap_pan(curAMap *amptr, int dir, int* dist);
+void amap_pan(curAMap *amptr, int dir, int *dist);
 uchar amap_get_note(curAMap *amptr, char *buf);
-void amap_settings_copy(curAMap* from, curAMap* to);
+void amap_settings_copy(curAMap *from, curAMap *to);
 
 // this is a mess
 // it modifies x and y to be map location of click
@@ -99,7 +99,7 @@ void amap_str_delete(char *toast_str);
 void amap_str_startup(int magic_num);
 
 #define MFD_FULLSCR_MAP 2
-#define NUM_O_AMAP      MFD_FULLSCR_MAP+1
+#define NUM_O_AMAP MFD_FULLSCR_MAP + 1
 
 // globals
 // for now
@@ -107,13 +107,16 @@ void amap_str_startup(int magic_num);
 #define oAMap(mid) (&(level_gamedata.auto_maps[mid]))
 //#define oAMap(mid) (auto_maps[mid])
 
-#define amap_reset() \
-do { int i; for(i=0;i<NUM_O_AMAP;i++) amap_invalidate(i); } while(0)
+#define amap_reset()                     \
+    do {                                 \
+        int i;                           \
+        for (i = 0; i < NUM_O_AMAP; i++) \
+            amap_invalidate(i);          \
+    } while (0)
 
 #define amap_note_value(objid)  (objTraps[objs[objid].specID].p4)
 #define amap_note_string(objid) (amap_str_reref(amap_note_value(objid)))
 
-#define AMAP_STRING_SIZE   2048
+#define AMAP_STRING_SIZE 2048
 
 #endif
-

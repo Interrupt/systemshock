@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 #ifndef __AUTOMAP_H
 #define __AUTOMAP_H
@@ -28,20 +28,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Log: automap.h $
  * Revision 1.5  1993/09/02  23:06:30  xemu
  * angle me baby
- * 
+ *
  * Revision 1.4  1993/08/09  20:45:21  spaz
  * Changed some #define's.
- * 
- * 
+ *
+ *
  * Revision 1.3  1993/08/09  14:33:12  mahk
  * Fixed syntax errors
- * 
+ *
  * Revision 1.2  1993/08/09  13:27:47  spaz
  * Linked automap stub functions to the MFD system.
- * 
+ *
  * Revision 1.1  1993/05/03  11:51:58  xemu
  * Initial revision
- * 
+ *
  *
  */
 
@@ -57,18 +57,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Game Object Includes
 
-
 // Defines
-typedef struct _AutoText{
-   char *letters;
-   Point coordinate;
-   int color;
-   struct _AutoText *next_entry;
+typedef struct _AutoText {
+    char *letters;
+    Point coordinate;
+    int color;
+    struct _AutoText *next_entry;
 } AutoText;
 
 #define AUTOMAP_TERRAIN       0x0001
 #define AUTOMAP_ELEVATION     0x0002
-#define AUTOMAP_SECURITY      0x0004   
+#define AUTOMAP_SECURITY      0x0004
 #define AUTOMAP_CRITTERS      0x0008
 #define AUTOMAP_INFORMATION   0x0010
 #define AUTOMAP_ALIGNMENT     0x0020
@@ -104,4 +103,3 @@ uchar mfd_map_handler(MFD *m, uiEvent *e);
 // Globals
 
 #endif // __AUTOMAP_H
-
