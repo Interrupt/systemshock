@@ -205,7 +205,7 @@ uchar set_sample_pan_gain(snd_digi_parms *sdp) {
     vol = volumes[sdp->snd_ref - SFX_BASE];
     if (vol == -1)
         vol = 127;
-    //   vol = vol  * curr_sfx_vol / 100;
+    vol = vol * curr_sfx_vol / 100;
     sdp->vol = vol * temp_vol / VOL_FULL;
     snd_sample_reload_parms(sdp);
     return (FALSE);
@@ -297,7 +297,7 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
 #ifdef AUDIOLOGS
     if (sfx_code != real_code) {
         s_dprm.data = NULL;
-        s_dprm.vol = volumes[sfx_code]; //* curr_sfx_vol / 100;
+        s_dprm.vol = volumes[sfx_code] * curr_sfx_vol / 100;
     } else
 #endif
     {

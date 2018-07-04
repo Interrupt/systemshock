@@ -88,6 +88,11 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) {
 	Mix_SetPanning(channel, 254 - right, right);
 }
 
+void MacTuneUpdateVolume(void) {
+	extern uchar curr_vol_lev;
+	Mix_VolumeMusic(curr_vol_lev * 128 / 100);
+}
+
 int MacTuneLoadTheme(char* theme_base, int themeID) {
 	char filename[30];
 
@@ -105,8 +110,8 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 
 	Mix_Music *music;
 	music = Mix_LoadMUS(filename);
-	Mix_VolumeMusic(128);
 	Mix_PlayMusic(music, -1);
+	MacTuneUpdateVolume();
 
 	return OK;
 }

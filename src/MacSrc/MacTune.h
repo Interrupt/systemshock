@@ -91,3 +91,4 @@ void	MacTunePurgeCurrentTheme(void);
 void 	MacTunePlayTune(int tune);
 void 	MacTuneQueueTune(int tune);
 void	MacTunePrimeTimer(void);
+void	MacTuneUpdateVolume(void);
