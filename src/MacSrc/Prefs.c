@@ -51,10 +51,16 @@ extern Boolean	DoubleSize;
 extern Boolean	SkipLines;
 extern short mode_id;
 
+extern uchar curr_vol_lev;
+extern uchar curr_sfx_vol;
+extern uchar curr_alog_vol;
+
 static const char *PREFS_FILENAME = "prefs.txt";
 
 static const char *PREF_LANGUAGE     = "language";
-static const char *PREF_SOUNDFX      = "sound-effects";
+static const char *PREF_MUSIC_VOL    = "music-volume";
+static const char *PREF_SFX_VOL      = "sfx-volume";
+static const char *PREF_ALOG_VOL     = "alog-volume";
 static const char *PREF_VIDEOMODE    = "video-mode";
 static const char *PREF_HALFRES      = "half-resoultion";
 static const char *PREF_DETAIL       = "detail";
@@ -74,7 +80,9 @@ void SetDefaultPrefs(void)
 
 	gShockPrefs.soBackMusic = true;
 	gShockPrefs.soSoundFX = true;
-	gShockPrefs.soMusicVolume = 33;				// Figure out when sound is put in.
+	gShockPrefs.soMusicVolume = 100;
+	gShockPrefs.soSfxVolume = 100;
+	gShockPrefs.soAudioLogVolume = 100;
 
 	gShockPrefs.doVideoMode = 3;
 	gShockPrefs.doResolution = 0;				// High-res.
@@ -128,8 +136,22 @@ OSErr LoadPrefs(ResType resID) {
             int lang = atoi(value);
             if (lang >= 0 && lang <= 2)
                 gShockPrefs.goLanguage = lang;
-        } else if (strcasecmp(key, PREF_SOUNDFX) == 0) {
-            gShockPrefs.soSoundFX = is_true(value);
+        } else if (strcasecmp(key, PREF_MUSIC_VOL) == 0) {
+            int vol = atoi(value);
+            if (vol >= 0 && vol <= 100) {
+                gShockPrefs.soBackMusic = vol > 0;
+                gShockPrefs.soMusicVolume = vol;
+            }
+        } else if (strcasecmp(key, PREF_SFX_VOL) == 0) {
+            int vol = atoi(value);
+            if (vol >= 0 && vol <= 100) {
+                gShockPrefs.soSoundFX = vol > 0;
+                gShockPrefs.soSfxVolume = vol;
+            }
+        } else if (strcasecmp(key, PREF_ALOG_VOL) == 0) {
+            int vol = atoi(value);
+            if (vol >= 0 && vol <= 100)
+                gShockPrefs.soAudioLogVolume = vol;
         } else if (strcasecmp(key, PREF_VIDEOMODE) == 0) {
             int mode = atoi(value);
             if (mode >= 0 && mode <= 4)
@@ -160,7 +182,9 @@ OSErr SavePrefs(ResType resID)  {
     }
 
     fprintf(f, "%s = %d\n", PREF_LANGUAGE, which_lang);
-    fprintf(f, "%s = %s\n", PREF_SOUNDFX, sfx_on ? "yes" : "no");
+    fprintf(f, "%s = %d\n", PREF_MUSIC_VOL, curr_vol_lev);
+    fprintf(f, "%s = %d\n", PREF_SFX_VOL, sfx_on ? curr_sfx_vol : 0);
+    fprintf(f, "%s = %d\n", PREF_ALOG_VOL, curr_alog_vol);
     fprintf(f, "%s = %d\n", PREF_VIDEOMODE, mode_id);
     fprintf(f, "%s = %s\n", PREF_HALFRES, DoubleSize ? "yes" : "no");
     fprintf(f, "%s = %d\n", PREF_DETAIL, _fr_global_detail);
@@ -179,7 +203,10 @@ static void SetShockGlobals(void)
 	which_lang = gShockPrefs.goLanguage;
 
 	sfx_on = gShockPrefs.soSoundFX;
-	
+	curr_vol_lev = gShockPrefs.soMusicVolume;
+	curr_sfx_vol = gShockPrefs.soSfxVolume;
+	curr_alog_vol = gShockPrefs.soAudioLogVolume;
+
 	mode_id = gShockPrefs.doVideoMode;
 	DoubleSize = (gShockPrefs.doResolution == 1);		// Set this True for low-res.
 	SkipLines = gShockPrefs.doUseQD;

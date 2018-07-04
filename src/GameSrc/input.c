@@ -1242,7 +1242,7 @@ void init_input(void) {
     uiDoubleClicksOn[MOUSE_LBUTTON] = TRUE; // turn on left double clicks
     uiAltDoubleClick = TRUE;
     i = 1;
-    uiSetMouseMotionPolling(TRUE);
+    //uiSetMouseMotionPolling(TRUE);
 
     // Load cursors
 

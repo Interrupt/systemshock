@@ -71,6 +71,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mfdart.h" // for the slider bar
 
+#include "MacTune.h"
+
 extern void text_button(char *text, int xc, int yc, int col, int shad, int w, int h);
 
 #define LOAD_BUTTON          0
@@ -104,7 +106,7 @@ uchar clear_panel = TRUE, wrapper_panel_on = FALSE;
 grs_font *opt_font;
 uchar olh_temp;
 uchar sfx_on;
-uchar digi_gain;
+static bool digi_gain = true; // enable sfx volume slider
 errtype (*wrapper_cb)(int num_clicked);
 errtype (*slot_callback)(int num_clicked);
 static uchar cursor_loaded = FALSE;
@@ -450,42 +452,16 @@ uchar slider_handler(uiEvent *ev, uchar butid) {
 
     switch (ev->type) {
     case UI_EVENT_MOUSE_MOVE:
-        if (st->active) {
-            st->sliderpos = mev->pos.x - (BR(butid).ul.x + 1);
-            if (st->smooth)
-                slider_deal(butid, FALSE);
+        if (mev->buttons) {
+            st->sliderpos = mev->pos.x - BR(butid).ul.x;
+            slider_deal(butid, TRUE);
+            draw_button(butid);
         }
         break;
     case UI_EVENT_MOUSE:
-        if (st->active && !(mev->buttons)) {
-            st->sliderpos = mev->pos.x - (BR(butid).ul.x + 1);
-            st->active = FALSE;
-            slider_deal(butid, TRUE);
-            uiPopGlobalCursor();
-            mouse_unconstrain();
-            draw_button(butid);
-        } else if (!st->active && (ev->subtype & MOUSE_DOWN)) {
-            short tmpy;
-
-            st->active = TRUE;
-            st->sliderpos = mev->pos.x - (BR(butid).ul.x + 1);
-            slider_cursor.hotspot.x = slider_cursor_bmap.w / 2;
-            tmpy = mev->pos.y - ((BR(butid).ul.y + BR(butid).lr.y) / 2);
-#ifdef SVGA_SUPPORT
-            {
-                short duh;
-                ss_point_convert(&duh, &tmpy, FALSE);
-            }
-#endif
-            slider_cursor.hotspot.y = (slider_cursor_bmap.h / 2) + tmpy;
-            uiPushGlobalCursor(&slider_cursor);
-            draw_button(butid);
-            // -2's are because our lr coorodinate is immediately OUTSIDE the box
-            // we draw, so two pixels up and left is one pixel INSIDE the box.
-            ui_mouse_constrain_xy(
-                BR(butid).ul.x + inventory_region->r->ul.x + 1, mev->pos.y + inventory_region->r->ul.y,
-                BR(butid).lr.x + inventory_region->r->ul.x - 2, mev->pos.y + inventory_region->r->ul.y);
-        }
+        st->sliderpos = mev->pos.x - BR(butid).ul.x;
+        slider_deal(butid, TRUE);
+        draw_button(butid);
         return TRUE;
     default:
         break;
@@ -1329,6 +1305,7 @@ void recompute_music_level(ushort vol) {
         }
         // mlimbs_change_master_volume(curr_vol_lev);
     }
+    MacTuneUpdateVolume();
 }
 
 void recompute_digifx_level(ushort vol) {
@@ -1338,7 +1315,12 @@ void recompute_digifx_level(ushort vol) {
 #ifdef DEMO
         play_digi_fx(73, 1);
 #else
-        play_digi_fx(SFX_NEAR_1, 1);
+        // play a sample (if not alreay playing)
+        if (!digi_fx_playing(SFX_NEAR_1, NULL))
+            play_digi_fx(SFX_NEAR_1, 1);
+        // update volume (main loop is not running at this point)
+        extern void sound_frame_update(void);
+        sound_frame_update();
 #endif
     } else {
 #ifdef AUDIOLOGS
@@ -1349,7 +1331,9 @@ void recompute_digifx_level(ushort vol) {
 }
 
 #ifdef AUDIOLOGS
-void recompute_audiolog_level(ushort vol) { curr_alog_vol = QVAR_TO_VOLUME(vol); }
+void recompute_audiolog_level(ushort vol) {
+    curr_alog_vol = QVAR_TO_VOLUME(vol);
+}
 #endif
 
 #pragma disable_message(202)
