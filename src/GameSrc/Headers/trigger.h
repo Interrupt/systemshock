@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 #ifndef __TRIGGER_H
 #define __TRIGGER_H
@@ -32,57 +32,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objects.h"
 
 // Defines
-#define ENTRY_TRIGGER_TYPE              0
-#define NULL_TRIGGER_TYPE               1
-#define FLOOR_TRIGGER_TYPE              2
-#define PLAYER_DEATH_TRIGGER_TYPE       3
-#define DEATHWATCH_TRIGGER_TYPE         4
-#define AREA_ENTRY_TRIGGER_TYPE         5
-#define AREA_CONTINUOUS_TRIGGER_TYPE    6
-
-
+#define ENTRY_TRIGGER_TYPE           0
+#define NULL_TRIGGER_TYPE            1
+#define FLOOR_TRIGGER_TYPE           2
+#define PLAYER_DEATH_TRIGGER_TYPE    3
+#define DEATHWATCH_TRIGGER_TYPE      4
+#define AREA_ENTRY_TRIGGER_TYPE      5
+#define AREA_CONTINUOUS_TRIGGER_TYPE 6
 
 // Typedefs
-typedef struct
-{
-   ushort timestamp;
-   ushort type;
-   ObjID target_id;
-   ObjID source_id;
+typedef struct {
+    ushort timestamp;
+    ushort type;
+    ObjID target_id;
+    ObjID source_id;
 } TrapSchedEvent;
 
 #define HEIGHT_STEP_TIME 3
 #define HEIGHT_TIME_UNIT 10
 
-#define NUM_HEIGHT_SEMAPHORS 16
+#define NUM_HEIGHT_SEMAPHORS 32
 #define MAX_HSEM_KEY 63
 
-typedef struct
-{
-   ushort timestamp;
-   ushort type;
-   char semaphor;
-   char key;
-   char steps_remaining;
-   char sfx_code;
+typedef struct {
+    ushort timestamp;
+    ushort type;
+    char semaphor;
+    char key;
+    char steps_remaining;
+    char sfx_code;
 } HeightSchedEvent;
 
-// sfx_codes -- 
+// sfx_codes --
 // 0x1 for no terrain sound
 
 typedef struct {
-   uchar x;
-   uchar y;
-   uchar floor:1;
-   uchar key:7;
-   char inuse;
+    uchar x;
+    uchar y;
+    uchar floor : 1;
+    uchar key : 7;
+    char inuse;
 } height_semaphor;
 
-typedef struct _EmailSchedEvent
-{
-   ushort timestamp;
-   ushort type;
-   short datamunge;
+typedef struct _EmailSchedEvent {
+    ushort timestamp;
+    ushort type;
+    short datamunge;
 } EmailSchedEvent;
 
 // Prototypes
@@ -102,7 +97,6 @@ errtype location_trigger_activate(ObjID id);
 uchar trap_activate(ObjID id, uchar *use_message);
 
 #define is_trap(id) (objs[(id)].class == CLASS_TRAP)
-
 
 // Use these functions to directly access trap-like functions
 errtype trap_teleport_func(int targ_x, int targ_y, int targ_z, int targlevel);
@@ -125,4 +119,3 @@ errtype do_multi_stuff(ObjID id);
 extern char *trapname_strings[];
 
 #endif // __TRIGGER_H
-

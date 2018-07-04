@@ -97,86 +97,76 @@ static Amethods *methods[] = {
 //				-3 = bad file format
 
 int AfileOpen(Afile *paf, char *filename) {
-  AfileType aftype;
-  uint8_t bmtype;
-  FILE *fp;
-  char *p;
+    AfileType aftype;
+    uint8_t bmtype;
+    FILE *fp;
+    char *p;
 
-  //	Spew
+    DEBUG("%s: trying to open: %s", __FUNCTION__, filename);
 
-  //	Spew(DSRC_2D_Afile, ("AfileOpen: trying to open: %s\n", filename));
+    // Extract file extension, get type
+    aftype = AFILE_BAD;
+    p = strchr(filename, '.');
+    if (p) {
+        p++;
+        *(p + 3) = 0;
+        aftype = AfileLookupType(p);
+    }
+    if (aftype == AFILE_BAD) {
+        ERROR("%s: unknown extension", __FUNCTION__);
+        return (-1);
+    }
 
-  //	Extract file extension, get type
+    // Open file
+    fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        ERROR("%s: can't open file", __FUNCTION__);
+        return -2;
+    }
 
-  aftype = AFILE_BAD;
-  p = strchr(filename, '.');
-  if (p) {
-    p++;
-    *(p + 3) = 0;
-    aftype = AfileLookupType(p);
-  }
-  if (aftype == AFILE_BAD) {
-    printf("AfileOpen: unknown extension\n");
-    return (-1);
-  }
+    // If opened successfully, set up afile struct
+    memset(paf, 0, sizeof(Afile));
+    paf->fp = fp;
+    paf->type = aftype;
+    paf->writing = false;
+    paf->pm = methods[paf->type];
+    paf->currFrame = 0;
 
-  //	Open file
+    // Call method to read header
+    TRACE("%s: reading header", __FUNCTION__);
 
-  //	fp = DatapathOpen(pdp, filename, "rb");
-  fp = fopen(filename, "rb");
-  if (fp == NULL) {
-    printf("AfileOpen: can't open file\n");
-    return -2;
-  }
+    if ((*paf->pm->f_ReadHeader)(paf) < 0) {
+        ERROR("%s: bad header", __FUNCTION__);
+        return -3;
+    }
 
-  //	If opened successfully, set up afile struct
+    // Figure bitmap type and frame length
+    if (paf->v.numBits == 8) {
+        bmtype = BMT_FLAT8;
+        paf->frameLen = (int32_t)paf->v.width * paf->v.height;
+    } else {
+        bmtype = BMT_FLAT24;
+        paf->frameLen = (int32_t)paf->v.width * paf->v.height * 3;
+    }
 
-  memset(paf, 0, sizeof(Afile));
-  paf->fp = fp;
-  paf->type = aftype;
-  paf->writing = false;
-  paf->pm = methods[paf->type];
-  paf->currFrame = 0;
+    TRACE("%s: numBits: %d  w,h: %d,%d  frameLen: %d", __FUNCTION__, paf->v.numBits, paf->v.width, paf->v.height,
+          paf->frameLen);
 
-  //	Call method to read header
+    // Set up work buffer, compose buffer, and prev buffer
+    TRACE("%s: initing work buffer of size: %d", __FUNCTION__, BM_PLENTY_SIZE(paf->frameLen));
 
-  //	Spew(DSRC_2D_Afile, ("AfileOpen: reading header\n"));
+    gr_init_bitmap(&paf->bmWork, (uint8_t *)malloc(BM_PLENTY_SIZE(paf->frameLen)), bmtype, 0, paf->v.width,
+                   paf->v.height);
 
-  if ((*paf->pm->f_ReadHeader)(paf) < 0) {
-    printf("AfileOpen: bad header\n");
-    return -3;
-  }
+    TRACE("%s: initing compose buffer and prev buffer", __FUNCTION__);
 
-  //	Figure bitmap type and frame length
+    ComposeInit(&paf->bmCompose, bmtype, paf->v.width, paf->v.height);
+    ComposeInit(&paf->bmPrev, bmtype, paf->v.width, paf->v.height);
 
-  if (paf->v.numBits == 8) {
-    bmtype = BMT_FLAT8;
-    paf->frameLen = (int32_t)paf->v.width * paf->v.height;
-  } else {
-    bmtype = BMT_FLAT24;
-    paf->frameLen = (int32_t)paf->v.width * paf->v.height * 3;
-  }
+    // Return ok
+    DEBUG("%s: successful open", __FUNCTION__);
 
-  //	Spew(DSRC_2D_Afile, ("AfileOpen: numBits: %d  w,h: %d,%d  frameLen: %d\n",
-  //		paf->v.numBits, paf->v.width, paf->v.height, paf->frameLen));
-
-  //	Set up work buffer, compose buffer, and prev buffer
-
-  //	Spew(DSRC_2D_Afile, ("AfileOpen: initing work buffer of size: %d\n",
-  //		BM_PLENTY_SIZE(paf->frameLen)));
-
-  gr_init_bitmap(&paf->bmWork, (uchar *)malloc(BM_PLENTY_SIZE(paf->frameLen)), bmtype, 0, paf->v.width, paf->v.height);
-
-  //	Spew(DSRC_2D_Afile, ("AfileOpen: initing compose buffer and prev buffer\n"));
-
-  ComposeInit(&paf->bmCompose, bmtype, paf->v.width, paf->v.height);
-  ComposeInit(&paf->bmPrev, bmtype, paf->v.width, paf->v.height);
-
-  //	Return ok
-
-  //	Spew(DSRC_2D_Afile, ("AfileOpen: successful open\n"));
-
-  return 0;
+    return 0;
 }
 
 //	-------------------------------------------------------------
@@ -190,56 +180,49 @@ int AfileOpen(Afile *paf, char *filename) {
 //	Returns: size of frame, or -1 if error
 
 int32_t AfileReadFullFrame(Afile *paf, grs_bitmap *pbm, fix *ptime) {
-  int32_t len;
-  fix time;
+    int32_t len;
+    fix time;
 
-  //	Hey, did we hit end?
+    // Hey, did we hit end?
+    TRACE("%s: reading frame: %d", __FUNCTION__, paf->currFrame);
 
-  //	Spew(DSRC_2D_Afile, ("AfileReadFullFrame: reading frame: %d\n",
-  //		paf->currFrame));
-
-  if (paf->currFrame >= paf->v.numFrames) {
-    return (-1);
-  }
-
-  //	Read bitmap from reader into working buffer
-
-  len = (*paf->pm->f_ReadFrame)(paf, &paf->bmWork, &time);
-  if (ptime)
-    *ptime = time;
-  if (len <= 0) {
-    printf("AfileReadFullFrame: problem reading frame\n");
-    return (len);
-  }
-  //	Spew(DSRC_2D_Afile, ("AfileReadFullFrame: read frame, len: %d\n", len));
-
-  //	Add to compose buffer
-
-  //	Spew(DSRC_2D_Afile, ("AfileReadFullFrame: adding to compose buffer\n"));
-  ComposeAdd(&paf->bmCompose, &paf->bmWork);
-
-  //	Make sure bitmap has memory
-
-  if (pbm->bits == NULL) {
-    //		Spew(DSRC_2D_Afile, ("AfileReadFullFrame: mallocing bitmap\n"));
-    pbm->bits = (uchar *)malloc(paf->frameLen);
-    if (pbm->bits == NULL) {
-      printf("AfileReadFullFrame: can't find memory for bitmap\n");
-      return (0);
+    if (paf->currFrame >= paf->v.numFrames) {
+        return (-1);
     }
-  }
 
-  //	Copy current compose buffer to caller
+    // Read bitmap from reader into working buffer
+    len = (*paf->pm->f_ReadFrame)(paf, &paf->bmWork, &time);
+    if (ptime)
+        *ptime = time;
+    if (len <= 0) {
+        ERROR("%s: problem reading frame", __FUNCTION__);
+        return (len);
+    }
+    TRACE("%s: read frame, len: %d", __FUNCTION__, len);
 
-  gr_init_bm(pbm, pbm->bits, paf->bmCompose.type, 0, paf->v.width, paf->v.height);
-  memcpy(pbm->bits, paf->bmCompose.bits, paf->frameLen);
+    // Add to compose buffer
+    TRACE("%s: adding to compose buffer", __FUNCTION__);
+    ComposeAdd(&paf->bmCompose, &paf->bmWork);
 
-  //	Return length
+    // Make sure bitmap has memory
+    if (pbm->bits == NULL) {
+        TRACE("%s: mallocing bitmap", __FUNCTION__);
+        pbm->bits = (uchar *)malloc(paf->frameLen);
+        if (pbm->bits == NULL) {
+            ERROR("%s: can't find memory for bitmap", __FUNCTION__);
+            return -1;
+        }
+    }
 
-  paf->currFrame++;
-  return (paf->frameLen);
+    // Copy current compose buffer to caller
+    gr_init_bm(pbm, pbm->bits, paf->bmCompose.type, 0, paf->v.width, paf->v.height);
+    memcpy(pbm->bits, paf->bmCompose.bits, paf->frameLen);
+
+    // Return length
+    paf->currFrame++;
+    return (paf->frameLen);
 }
-/*
+
 //	-------------------------------------------------------------
 //
 //	AfileReadDiffFrame() reads the next frame in the sequence, diff style.
@@ -250,66 +233,55 @@ int32_t AfileReadFullFrame(Afile *paf, grs_bitmap *pbm, fix *ptime) {
 //
 //	Returns: size of frame, or -1 if error
 
-long AfileReadDiffFrame(Afile *paf, grs_bitmap *pbm, fix *ptime)
-{
-        long len;
-        fix time;
+int32_t AfileReadDiffFrame(Afile *paf, grs_bitmap *pbm, fix *ptime) {
+    int32_t len;
+    fix time;
 
-//	Hey, did we hit end?
+    // Hey, did we hit end?
+    TRACE("%s: reading frame: %d", __FUNCTION__, paf->currFrame);
 
-        Spew(DSRC_2D_Afile, ("AfileReadDiffFrame: reading frame: %d\n",
-                paf->currFrame));
+    if (paf->currFrame >= paf->v.numFrames) {
+        return (-1);
+    }
 
-        if (paf->currFrame >= paf->v.numFrames)
-                {
-                return(-1);
-                }
+    // Read bitmap from reader into working buffer
+    len = (*paf->pm->f_ReadFrame)(paf, &paf->bmWork, &time);
+    if (ptime)
+        *ptime = time;
+    if (len <= 0) {
+        WARN("%s: problem reading frame", __FUNCTION__);
+        return (len);
+    }
+    TRACE("%s: read frame, len: %d", __FUNCTION__, len);
 
-//	Read bitmap from reader into working buffer
+    // Move compose buffer to previous
+    if (paf->currFrame > 0)
+        memcpy(paf->bmPrev.bits, paf->bmCompose.bits, paf->frameLen);
 
-        len = (*paf->pm->f_ReadFrame)(paf, &paf->bmWork, &time);
-        if (ptime)
-                *ptime = time;
-        if (len <= 0)
-                {
-                Warning(("AfileReadDiffFrame: problem reading frame\n"));
-                return(len);
-                }
-        Spew(DSRC_2D_Afile, ("AfileReadDiffFrame: read frame, len: %d\n", len));
+    // Add to compose buffer
+    ComposeAdd(&paf->bmCompose, &paf->bmWork);
 
-//	Move compose buffer to previous
+    // Make sure bitmap has memory, init it
 
-        if (paf->currFrame > 0)
-                memcpy(paf->bmPrev.bits, paf->bmCompose.bits, paf->frameLen);
+    if (pbm->bits == NULL) {
+        TRACE("%s: mallocing bitmap", __FUNCTION__);
+        pbm->bits = malloc(paf->frameLen);
+        if (pbm->bits == NULL) {
+            WARN("AfileReadDiffFrame: can't find memory for bitmap");
+            return (0);
+        }
+    }
 
-//	Add to compose buffer
+    // Extract difference into bitmap
+    TRACE("%s: finding diff with compose buff", __FUNCTION__);
+    len = ComposeDiff(&paf->bmPrev, &paf->bmCompose, pbm);
 
-        ComposeAdd(&paf->bmCompose, &paf->bmWork);
+    // Return length
 
-//	Make sure bitmap has memory, init it
-
-        if (pbm->bits == NULL)
-                {
-                Spew(DSRC_2D_Afile, ("AfileReadDiffFrame: mallocing bitmap\n"));
-                pbm->bits = Malloc(paf->frameLen);
-                if (pbm->bits == NULL)
-                        {
-                        Warning(("AfileReadDiffFrame: can't find memory for bitmap\n"));
-                        return(0);
-                        }
-                }
-
-//	Extract difference into bitmap
-
-        Spew(DSRC_2D_Afile, ("AfileReadDiffFrame: finding diff with compose buff\n"));
-        len = ComposeDiff(&paf->bmPrev, &paf->bmCompose, pbm);
-
-//	Return length
-
-        paf->currFrame++;
-        return(len);
+    paf->currFrame++;
+    return (len);
 }
-*/
+
 //	--------------------------------------------------------------
 //
 //	AfileGetFramePal() gets a (partial) palette associated with this
@@ -321,13 +293,13 @@ long AfileReadDiffFrame(Afile *paf, grs_bitmap *pbm, fix *ptime)
 //	Returns: TRUE if palette for this frame, FALSE if none
 
 bool AfileGetFramePal(Afile *paf, Apalette *ppal) {
-  //	Spew(DSRC_2D_Afile, ("AfileGetFramePal: getting pal\n"));
+    TRACE("AfileGetFramePal: getting pal", __FUNCTION__);
 
-  if (paf->pm->f_ReadFramePal == NULL)
-    return false;
+    if (paf->pm->f_ReadFramePal == NULL)
+        return false;
 
-  (*paf->pm->f_ReadFramePal)(paf, ppal);
-  return (ppal->numcols != 0);
+    (*paf->pm->f_ReadFramePal)(paf, ppal);
+    return (ppal->numcols != 0);
 }
 
 //	--------------------------------------------------------------
@@ -341,30 +313,29 @@ bool AfileGetFramePal(Afile *paf, Apalette *ppal) {
 //	Returns: 0 if ok, -1 if error
 
 int AfileGetAudio(Afile *paf, void *paudio) {
-  //	Spew(DSRC_2D_Afile, ("AfileGetAudio: getting audio\n"));
+    TRACE("%s: getting audio", __FUNCTION__);
 
-  if (paf->pm->f_ReadAudio == NULL) {
-    printf("AfileGetAudio: anim file format doesn't support audio\n");
-    return (-1);
-  }
+    if (paf->pm->f_ReadAudio == NULL) {
+        ERROR("%s: anim file format doesn't support audio", __FUNCTION__);
+        return (-1);
+    }
 
-  return ((*paf->pm->f_ReadAudio)(paf, paudio));
+    return ((*paf->pm->f_ReadAudio)(paf, paudio));
 }
-/*
+
 //	--------------------------------------------------------------
 //
 //	AfileReadReset() resets to frame 0.
 
-int AfileReadReset(Afile *paf)
-{
-        Spew(DSRC_2D_Afile, ("AfileReadReset: resetting\n"));
+int AfileReadReset(Afile *paf) {
+    TRACE("%s: resetting", __FUNCTION__);
 
-        paf->currFrame = 0;
-        memset(paf->bmCompose.bits, 0, paf->bmCompose.row * paf->bmCompose.h);
-        memset(paf->bmPrev.bits, 0, paf->bmPrev.row * paf->bmPrev.h);
-        return((*paf->pm->f_ReadReset)(paf));
+    paf->currFrame = 0;
+    memset(paf->bmCompose.bits, 0, paf->bmCompose.row * paf->bmCompose.h);
+    memset(paf->bmPrev.bits, 0, paf->bmPrev.row * paf->bmPrev.h);
+    return ((*paf->pm->f_ReadReset)(paf));
 }
-*/
+
 //	--------------------------------------------------------------
 //
 //	AfileClose() closes animfile.
@@ -372,28 +343,26 @@ int AfileReadReset(Afile *paf)
 //		paf = ptr to animfile struct
 
 void AfileClose(Afile *paf) {
-  //	Close properly based on whether writing or reading
+    // Close properly based on whether writing or reading
 
-  //	Spew(DSRC_2D_Afile, ("AfileClose: closing file\n"));
+    DEBUG("%s: closing file", __FUNCTION__);
 
-  if (paf->writing) {
-    paf->v.numFrames = paf->currFrame;
-    (*paf->pm->f_WriteClose)(paf);
-  } else
-    (*paf->pm->f_ReadClose)(paf);
+    if (paf->writing) {
+        paf->v.numFrames = paf->currFrame;
+        (*paf->pm->f_WriteClose)(paf);
+    } else
+        (*paf->pm->f_ReadClose)(paf);
 
-  //	Free up buffers
+    // Free up buffers
+    if (paf->bmCompose.bits)
+        free(paf->bmCompose.bits);
+    if (paf->bmWork.bits)
+        free(paf->bmWork.bits);
+    if (paf->bmPrev.bits)
+        free(paf->bmPrev.bits);
 
-  if (paf->bmCompose.bits)
-    free(paf->bmCompose.bits);
-  if (paf->bmWork.bits)
-    free(paf->bmWork.bits);
-  if (paf->bmPrev.bits)
-    free(paf->bmPrev.bits);
-
-  //	Close file
-
-  fclose(paf->fp);
+    // Close file
+    fclose(paf->fp);
 }
 
 //	--------------------------------------------------------------
@@ -403,13 +372,13 @@ void AfileClose(Afile *paf) {
 //	AfileLookupType() looks up anim file type given extension.
 
 AfileType AfileLookupType(char *ext) {
-  int itype = 0;
-  while (afExts[itype]) {
-    if (strcmp(ext, afExts[itype]) == 0)
-      return (afTypes[itype]);
-    ++itype;
-  }
-  return (AFILE_BAD);
+    int itype = 0;
+    while (afExts[itype]) {
+        if (strcmp(ext, afExts[itype]) == 0)
+            return (afTypes[itype]);
+        ++itype;
+    }
+    return (AFILE_BAD);
 }
 
 //	--------------------------------------------------------------
@@ -420,14 +389,14 @@ int32_t AfileBitmapLength(Afile *paf) { return (paf->frameLen); }
 
 //	-------------------------------------------------------------
 //
-//	AfileAudioLength() computes the length of the buffer needed
-//	to store audio data.  Hope it all fits into ram!
-
+// AfileAudioLength() computes the length of the buffer needed
+// to store audio data.  Hope it all fits into ram!
+// Please note, you need multiply return value with 8192!
 int32_t AfileAudioLength(Afile *paf) {
-  if (paf->a.numChans == 0)
-    return (0);
-  else
-    return (paf->a.numChans * paf->a.sampleSize * paf->a.numSamples);
+    if (paf->a.numChans == 0)
+        return (0);
+    else
+        return (paf->a.numChans * paf->a.sampleSize * paf->a.numSamples);
 }
 
 //	-------------------------------------------------------------
@@ -447,62 +416,55 @@ int32_t AfileAudioLength(Afile *paf) {
 //				-3 = can't open file
 
 int AfileCreate(Afile *paf, char *filename, fix frameRate) {
-  AfileType aftype;
-  FILE *fp;
-  char *p;
+    AfileType aftype;
+    FILE *fp;
+    char *p;
 
-  //	Extract file extension, get type
+    // Extract file extension, get type
+    DEBUG("%s: creating %s", __FUNCTION__, filename);
 
-  //	Spew(DSRC_2D_Afile, ("AfileCreate: creating %s\n", filename));
+    aftype = AFILE_BAD;
+    p = strchr(filename, '.');
+    if (p) {
+        p++;
+        *(p + 3) = 0;
+        aftype = AfileLookupType(p);
+    }
+    if (aftype == AFILE_BAD) {
+        ERROR("%s: unknown extension", __FUNCTION__);
+        return (-1);
+    }
 
-  aftype = AFILE_BAD;
-  p = strchr(filename, '.');
-  if (p) {
-    p++;
-    *(p + 3) = 0;
-    aftype = AfileLookupType(p);
-  }
-  if (aftype == AFILE_BAD) {
-    printf("AfileCreate: unknown extension\n");
-    return (-1);
-  }
+    // Check if writer
+    if (methods[aftype]->f_WriteBegin == NULL) {
+        ERROR("%s: anim file format doesn't support writing", __FUNCTION__);
+        return (-2);
+    }
 
-  //	Check if writer
+    // Open file
+    fp = fopen(filename, "wb");
+    if (fp == NULL) {
+        ERROR("%s: can't open file", __FUNCTION__);
+        return (-3);
+    }
 
-  if (methods[aftype]->f_WriteBegin == NULL) {
-    printf("AfileCreate: anim file format doesn't support writing\n");
-    return (-2);
-  }
+    // If opened successfully, set up afile struct
+    memset(paf, 0, sizeof(Afile));
+    paf->fp = fp;
+    paf->type = aftype;
+    paf->writing = true;
+    paf->pm = methods[paf->type];
+    paf->v.frameRate = frameRate;
 
-  //	Open file
+    //	Call method to begin writing
+    TRACE("%s: initializing anim file", __FUNCTION__);
 
-  fp = fopen(filename, "wb");
-  if (fp == NULL) {
-    printf("AfileCreate: can't open file\n");
-    return (-3);
-  }
+    (*paf->pm->f_WriteBegin)(paf);
 
-  //	If opened successfully, set up afile struct
+    // Return ok
+    DEBUG("%s: successful create", __FUNCTION__);
 
-  memset(paf, 0, sizeof(Afile));
-  paf->fp = fp;
-  paf->type = aftype;
-  paf->writing = true;
-  paf->pm = methods[paf->type];
-
-  paf->v.frameRate = frameRate;
-
-  //	Call method to begin writing
-
-  //	Spew(DSRC_2D_Afile, ("AfileCreate: initializing anim file\n"));
-
-  (*paf->pm->f_WriteBegin)(paf);
-
-  //	Return ok
-
-  //	Spew(DSRC_2D_Afile, ("AfileCreate: successful create\n"));
-
-  return 0;
+    return 0;
 }
 
 //	-----------------------------------------------------------
@@ -511,22 +473,19 @@ int AfileCreate(Afile *paf, char *filename, fix frameRate) {
 //	Call this before writing any frames.
 
 int AfilePutAudio(Afile *paf, AaudioInfo *pai, void *paudio) {
-  //	Can we do audio?
+    // Can we do audio?
+    TRACE("%s: putting audio", __FUNCTION__);
 
-  //	Spew(DSRC_2D_Afile, ("AfilePutAudio: putting audio\n"));
+    if (*paf->pm->f_WriteAudio == NULL) {
+        ERROR("%s: anim file doesn't support writing audio", __FUNCTION__);
+        return (-1);
+    }
 
-  if (*paf->pm->f_WriteAudio == NULL) {
-    printf("AfilePutAudio: anim file doesn't support writing audio\n");
-    return (-1);
-  }
+    // Set audio section of animfile struct
+    paf->a = *pai;
 
-  //	Set audio section of animfile struct
-
-  paf->a = *pai;
-
-  //	Hand off to function
-
-  return ((*paf->pm->f_WriteAudio)(paf, paudio));
+    // Hand off to function
+    return ((*paf->pm->f_WriteAudio)(paf, paudio));
 }
 
 //	------------------------------------------------------------
@@ -534,99 +493,87 @@ int AfilePutAudio(Afile *paf, AaudioInfo *pai, void *paudio) {
 //	AfileWriteFrame() writes frame out to writer.
 
 int AfileWriteFrame(Afile *paf, grs_bitmap *pbm, fix time) {
-  int32_t bmtype;
-  int32_t len;
-  int32_t ret;
+    int32_t bmtype;
+    int32_t len;
+    int32_t ret;
 
-  //	Spew(DSRC_2D_Afile, ("AfileWriteFrame: writing frame: %d\n",
-  //		paf->currFrame));
+    TRACE("%s: writing frame: %d", __FUNCTION__, paf->currFrame);
 
-  //	If 1st frame, init some vars.
-  //	Set up work buffer, compose buffer, and prev buffer
-
-  if (paf->currFrame == 0) {
-    paf->v.width = pbm->w;
-    paf->v.height = pbm->h;
-    if ((pbm->type == BMT_FLAT8) || (pbm->type == BMT_RSD8)) {
-      paf->v.numBits = 8;
-      bmtype = BMT_FLAT8;
-      paf->frameLen = (int32_t)paf->v.width * paf->v.height;
-    } else {
-      paf->v.numBits = 24;
-      bmtype = BMT_FLAT24;
-      paf->frameLen = (int32_t)paf->v.width * paf->v.height * 3;
-    }
-    //		Spew(DSRC_2D_Afile, ("AfileWriteFrame: numBits: %d  w,h: %d,%d  frameLen: %d\n",
-    //			paf->v.numBits, paf->v.width, paf->v.height, paf->frameLen));
-
-    //		Spew(DSRC_2D_Afile, ("AfileWriteFrame: initing work buffer of size: %d\n",
-    //			BM_PLENTY_SIZE(paf->frameLen)));
-
-    gr_init_bitmap(&paf->bmWork, (uchar *)malloc(BM_PLENTY_SIZE(paf->frameLen)), bmtype, 0, paf->v.width,
-                   paf->v.height);
-
-    //		Spew(DSRC_2D_Afile, ("AfileWriteFrame: initing compose buffers\n"));
-
-    ComposeInit(&paf->bmCompose, bmtype, paf->v.width, paf->v.height);
-    ComposeInit(&paf->bmPrev, bmtype, paf->v.width, paf->v.height);
-  }
-
-  //	Else for other frames, copy current to previous
-
-  else {
-    //		if ((pbm->w != paf->v.width) || (pbm->h != paf->v.height))
-    //		{
-    //			Warning(("AfileWriteFrame: new w,h: %d,%d (was: %d,%d)\n",
-    //				pbm->w, pbm->h, paf->v.width, paf->v.height));
-    //		}
-    memcpy(paf->bmPrev.bits, paf->bmCompose.bits, paf->frameLen);
-    if (time == 0)
-      time = paf->currFrame * fix_div(FIX_UNIT, paf->v.frameRate);
-  }
-
-  //	Now put current frame into compose buffer
-
-  //	Spew(DSRC_2D_Afile, ("AfileWriteFrame: adding to compose buff\n"));
-
-  ComposeAdd(&paf->bmCompose, pbm);
-
-  //	If writer wants rsd, give rsd-encoded frame (diff if past frame 0)
-
-  if (paf->writerWantsRsd) {
-    //		Spew(DSRC_2D_Afile, ("AfileWriteFrame: converting to rsd\n"));
-
+    // If 1st frame, init some vars.
+    // Set up work buffer, compose buffer, and prev buffer
     if (paf->currFrame == 0) {
-      if (paf->bmCompose.type == BMT_FLAT8)
-        paf->bmWork.type = BMT_RSD8;
-      else
-        //				paf->bmWork.type = BMT_RSD24;		// no rsd24 support yet
-        paf->bmWork.type = BMT_FLAT24;
-      len = ComposeConvert(&paf->bmCompose, &paf->bmWork);
-    } else {
-      // The next 3 lines should be unnecessary, but rsd24 broken
-      if (paf->bmCompose.type == BMT_FLAT24)
-        len = ComposeConvert(&paf->bmCompose, &paf->bmWork);
-      else
-        len = ComposeDiff(&paf->bmPrev, &paf->bmCompose, &paf->bmWork);
+        paf->v.width = pbm->w;
+        paf->v.height = pbm->h;
+        if ((pbm->type == BMT_FLAT8) || (pbm->type == BMT_RSD8)) {
+            paf->v.numBits = 8;
+            bmtype = BMT_FLAT8;
+            paf->frameLen = (int32_t)paf->v.width * paf->v.height;
+        } else {
+            paf->v.numBits = 24;
+            bmtype = BMT_FLAT24;
+            paf->frameLen = (int32_t)paf->v.width * paf->v.height * 3;
+        }
+        TRACE("%s: numBits: %d  w,h: %d,%d  frameLen: %d", __FUNCTION__, paf->v.numBits, paf->v.width, paf->v.height,
+              paf->frameLen);
+
+        TRACE("%s: initing work buffer of size: %d", BM_PLENTY_SIZE(paf->frameLen));
+
+        gr_init_bitmap(&paf->bmWork, (uchar *)malloc(BM_PLENTY_SIZE(paf->frameLen)), bmtype, 0, paf->v.width,
+                       paf->v.height);
+
+        TRACE("%s: initing compose buffers", __FUNCTION__);
+
+        ComposeInit(&paf->bmCompose, bmtype, paf->v.width, paf->v.height);
+        ComposeInit(&paf->bmPrev, bmtype, paf->v.width, paf->v.height);
     }
-    //		Spew(DSRC_2D_Afile, ("AfileWriteFrame: writing, rsd len = %d\n", len));
+    // Else for other frames, copy current to previous
+    else {
+        if ((pbm->w != paf->v.width) || (pbm->h != paf->v.height)) {
+            WARN("%s: new w,h: %d,%d (was: %d,%d)", __FUNCTION__, pbm->w, pbm->h, paf->v.width, paf->v.height);
+        }
+        memcpy(paf->bmPrev.bits, paf->bmCompose.bits, paf->frameLen);
+        if (time == 0)
+            time = paf->currFrame * fix_div(FIX_UNIT, paf->v.frameRate);
+    }
 
-    ret = (*paf->pm->f_WriteFrame)(paf, &paf->bmWork, len, time);
-  }
+    // Now put current frame into compose buffer
+    TRACE("%s: adding to compose buff", __FUNCTION__);
 
-  //	Else just write flat frame
+    ComposeAdd(&paf->bmCompose, pbm);
 
-  else {
-    //		Spew(DSRC_2D_Afile, ("AfileWriteFrame: writing, len = %d\n",
-    //			paf->frameLen));
-    ret = (*paf->pm->f_WriteFrame)(paf, &paf->bmCompose, paf->frameLen, time);
-  }
+    // If writer wants rsd, give rsd-encoded frame (diff if past frame 0)
+    if (paf->writerWantsRsd) {
+        TRACE("%s: converting to rsd", __FUNCTION__);
 
-  //	Bump frame counter and return
+        if (paf->currFrame == 0) {
+            if (paf->bmCompose.type == BMT_FLAT8)
+                paf->bmWork.type = BMT_RSD8;
+            else
+                // paf->bmWork.type = BMT_RSD24;		// no rsd24 support yet
+                paf->bmWork.type = BMT_FLAT24;
+            len = ComposeConvert(&paf->bmCompose, &paf->bmWork);
+        } else {
+            // The next 3 lines should be unnecessary, but rsd24 broken
+            if (paf->bmCompose.type == BMT_FLAT24)
+                len = ComposeConvert(&paf->bmCompose, &paf->bmWork);
+            else
+                len = ComposeDiff(&paf->bmPrev, &paf->bmCompose, &paf->bmWork);
+        }
+        TRACE("%s: writing, rsd len = %d", __FUNCTION__, len);
 
-  if (ret >= 0)
-    paf->currFrame++;
-  return (ret);
+        ret = (*paf->pm->f_WriteFrame)(paf, &paf->bmWork, len, time);
+    }
+    // Else just write flat frame
+    else {
+        TRACE("%s: writing, len = %d", __FUNCTION__, paf->frameLen);
+        ret = (*paf->pm->f_WriteFrame)(paf, &paf->bmCompose, paf->frameLen, time);
+    }
+
+    //	Bump frame counter and return
+
+    if (ret >= 0)
+        paf->currFrame++;
+    return (ret);
 }
 
 //	-------------------------------------------------------------
@@ -635,9 +582,9 @@ int AfileWriteFrame(Afile *paf, grs_bitmap *pbm, fix time) {
 //	Call this before writing any frames.
 
 void AfileSetPal(Afile *paf, Apalette *ppal) {
-  //	Spew(DSRC_2D_Afile, ("AfileSetPal: setting palette\n"));
+    TRACE("%s: setting palette", __FUNCTION__);
 
-  memcpy(&paf->v.pal, ppal, sizeof(Apalette));
+    memcpy(&paf->v.pal, ppal, sizeof(Apalette));
 }
 
 //	-------------------------------------------------------------
@@ -645,9 +592,9 @@ void AfileSetPal(Afile *paf, Apalette *ppal) {
 //	AfileSetFramePal() sets palette for upcoming frame.
 
 int AfileSetFramePal(Afile *paf, Apalette *ppal) {
-  //	Spew(DSRC_2D_Afile, ("AfileSetFramePal: setting frame pal\n"));
+    TRACE("%s: setting frame pal", __FUNCTION__);
 
-  if (paf->pm->f_WriteFramePal == NULL)
-    return (-1);
-  return ((*paf->pm->f_WriteFramePal)(paf, ppal));
+    if (paf->pm->f_WriteFramePal == NULL)
+        return (-1);
+    return ((*paf->pm->f_WriteFramePal)(paf, ppal));
 }

@@ -201,8 +201,18 @@ include_directories(
 
 if(ENABLE_EXAMPLES)
 
+add_executable(playmov
+	src/Libraries/AFILE/Tests/playmov.c
+)
 add_executable(movinfo
 	src/Libraries/AFILE/Tests/movinfo.c
+)
+
+target_link_libraries(playmov
+	AFILE_LIB
+	FIX_LIB
+	${SDL2_LIBRARIES}
+	${SDL2_MIXER_LIBRARIES}
 )
 
 target_link_libraries(movinfo

@@ -133,9 +133,9 @@ static void BlockMove(const void* srcPtr, void* destPtr, Size byteCount)
 // so I added them here to make my compiler happy
 // at least the Movie stuff is from QuickTime, so I assume the rest is Mac specific as well
 
-void StopMovie(long);
+void StopMovie(void * m);
 void StartMovie(void * m);
-Boolean IsMovieDone(long);
+Boolean IsMovieDone(void * m);
 
 void HideCursor(void);
 void ShowCursor(void);
