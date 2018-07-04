@@ -6,6 +6,7 @@
 #include "froslew.h"
 #include "objsim.h"
 #include <stdio.h>
+#include <SDL.h>
 
 int mlook_enabled = FALSE;
 int mlook_hsens = 250;
@@ -14,8 +15,8 @@ int mlook_vsens = 50;
 int mouse_look_xvel;
 int mouse_look_yvel;
 
+extern void pump_events();
 extern void player_set_eye_fixang(int ang);
-extern int player_get_eye_fixang(void);
 extern void physics_set_relax(int axis, uchar relax);
 extern void player_set_eye(byte);
 extern byte player_get_eye();
@@ -97,8 +98,14 @@ void center_mouse() {
 void mouse_look_toggle() {
     mlook_enabled = !mlook_enabled;
 
-    if (mlook_enabled)
+    if (mlook_enabled) {
+        // Flush mouse events, because we don't care about the past anymore
+        pump_events();
+        mouse_flush();
+
+        // Now we can center the mouse
         center_mouse();
+    }
 }
 
 void mouse_look_off() { mlook_enabled = FALSE; }
