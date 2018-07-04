@@ -14,6 +14,9 @@ int mlook_vsens = 50;
 int mouse_look_xvel;
 int mouse_look_yvel;
 
+extern void player_set_eye_fixang(int ang);
+extern int player_get_eye_fixang(void);
+extern void physics_set_relax(int axis, uchar relax);
 extern void player_set_eye(byte);
 extern byte player_get_eye();
 
@@ -62,13 +65,9 @@ void mouse_look_physics() {
 
         if (mvely != 0) {
             // Moving the eye up angle is easy
-            fix pos = eye_mods[1];
-
-            pos += mvely;
-            pos = lg_min(pos, 14500);
-            pos = lg_max(pos, -14500);
-
-            fr_objslew_setone(EYE_P, pos);
+            fix pos = player_struct.eye_pos + mvely;
+            player_set_eye_fixang(pos);
+            physics_set_relax(CONTROL_YZROT, FALSE);
         }
 
         if (mvelx != 0) {
