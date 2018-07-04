@@ -110,6 +110,7 @@ int   snd_stop_midi(void);
 
 int   snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dprm);
 void  snd_end_sample(int hnd_id);
+bool  snd_sample_playing(int hnd_id);
 struct snd_digi_parms *snd_sample_parms(int hnd_id);
 //void *snd_get_sample(int hnd_id);
 void  snd_kill_all_samples(void);

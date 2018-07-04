@@ -324,32 +324,25 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
         return -3;
     }
     return retval; // which sample id
-    return -3;
 }
 
 // scan through the whole list
 uchar digi_fx_playing(int fx_id, int *handle_ptr) {
-    /*int 			i;
-    SCStatus	stat;
     snd_digi_parms *sdp;
 
     if (fx_id == -1)
-            return(FALSE);
+        return FALSE;
 
     // should scan all current sfx's for snd_ref=fx_id+SFX_BASE
-    for (i=0; i < _snd_smp_cnt; i++)
-    {
-            SndChannelStatus(_snd_smp_prm[i].sndChan, sizeof(SCStatus), &stat);
-            if (stat.scChannelBusy || stat.scChannelPaused)
-            {
-                    sdp = snd_sample_parms(i);
-                    if (sdp->snd_ref == fx_id + SFX_BASE)
-                    {
-                            if (handle_ptr != NULL)
-                                    *handle_ptr = i;
-                            return(TRUE);
-                    }
+    for (int i = 0; i < SND_MAX_SAMPLES; i++) {
+        if (snd_sample_playing(i)) {
+            sdp = snd_sample_parms(i);
+            if (sdp->snd_ref == fx_id + SFX_BASE) {
+                if (handle_ptr != NULL)
+                    *handle_ptr = i;
+                return TRUE;
             }
-    }*/
+        }
+    }
     return FALSE;
 }

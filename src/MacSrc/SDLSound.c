@@ -48,6 +48,7 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 
 	samples_by_channel[channel] = sample;
 	digi_parms_by_channel[channel] = *dprm;
+	snd_sample_reload_parms(&digi_parms_by_channel[channel]);
 
 	return channel;
 }
@@ -58,6 +59,10 @@ void snd_end_sample(int hnd_id) {
 		Mix_FreeChunk(samples_by_channel[hnd_id]);
 		samples_by_channel[hnd_id] = NULL;
 	}
+}
+
+bool snd_sample_playing(int hnd_id) {
+	return Mix_Playing(hnd_id);
 }
 
 snd_digi_parms *snd_sample_parms(int hnd_id)
