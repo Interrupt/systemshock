@@ -71,6 +71,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mfdart.h" // for the slider bar
 
+#include "MacTune.h"
+
 extern void text_button(char *text, int xc, int yc, int col, int shad, int w, int h);
 
 #define LOAD_BUTTON          0
@@ -104,7 +106,7 @@ uchar clear_panel = TRUE, wrapper_panel_on = FALSE;
 grs_font *opt_font;
 uchar olh_temp;
 uchar sfx_on;
-uchar digi_gain;
+static bool digi_gain = true; // enable sfx volume slider
 errtype (*wrapper_cb)(int num_clicked);
 errtype (*slot_callback)(int num_clicked);
 static uchar cursor_loaded = FALSE;
@@ -1303,6 +1305,7 @@ void recompute_music_level(ushort vol) {
         }
         // mlimbs_change_master_volume(curr_vol_lev);
     }
+    MacTuneUpdateVolume();
 }
 
 void recompute_digifx_level(ushort vol) {
@@ -1312,7 +1315,12 @@ void recompute_digifx_level(ushort vol) {
 #ifdef DEMO
         play_digi_fx(73, 1);
 #else
-        play_digi_fx(SFX_NEAR_1, 1);
+        // play a sample (if not alreay playing)
+        if (!digi_fx_playing(SFX_NEAR_1, NULL))
+            play_digi_fx(SFX_NEAR_1, 1);
+        // update volume (main loop is not running at this point)
+        extern void sound_frame_update(void);
+        sound_frame_update();
 #endif
     } else {
 #ifdef AUDIOLOGS
@@ -1323,7 +1331,9 @@ void recompute_digifx_level(ushort vol) {
 }
 
 #ifdef AUDIOLOGS
-void recompute_audiolog_level(ushort vol) { curr_alog_vol = QVAR_TO_VOLUME(vol); }
+void recompute_audiolog_level(ushort vol) {
+    curr_alog_vol = QVAR_TO_VOLUME(vol);
+}
 #endif
 
 #pragma disable_message(202)
