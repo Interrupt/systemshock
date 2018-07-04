@@ -175,6 +175,7 @@ set(GAME_SRC
 include_directories(
 	src/Libraries/2D/Source
 	src/Libraries/3D/Source
+	src/Libraries/AFILE/Source
 	src/Libraries/DSTRUCT/Source
 	src/Libraries/EDMS/Source
 	src/Libraries/FIXPP/Source
@@ -188,11 +189,32 @@ include_directories(
 	src/Libraries/SND/Source
 	src/Libraries/H
 	src/Libraries/LG/Source
+	src/Libraries/LG/Source/LOG/src
 	src/GameSrc/Headers
 	src/MacSrc
 )
 
 if(ENABLE_EXAMPLES)
+
+add_executable(playmov
+	src/Libraries/AFILE/Tests/playmov.c
+)
+add_executable(movinfo
+	src/Libraries/AFILE/Tests/movinfo.c
+)
+
+target_link_libraries(playmov
+	AFILE_LIB
+	FIX_LIB
+	${SDL2_LIBRARIES}
+	${SDL2_MIXER_LIBRARIES}
+)
+
+target_link_libraries(movinfo
+	AFILE_LIB
+	FIX_LIB
+)
+
 add_executable(TestSimpleMain
 	src/Libraries/2D/TestSource/SimpleMain.c
 )

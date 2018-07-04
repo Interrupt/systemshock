@@ -89,6 +89,8 @@ Boolean				gGameCompletedQuit;
 
 grs_screen  *cit_screen;
 SDL_Window* window;
+SDL_Palette* sdlPalette;
+SDL_Renderer* renderer;
 
 extern grs_screen *svga_screen;
 extern 	frc *svga_render_context;
@@ -101,9 +103,8 @@ extern void inv_change_fullscreen(uchar on);
 extern void object_data_flush(void);
 //extern Boolean IsFullscreenWareOn(void);
 extern errtype load_da_palette(void);
+extern void ShockMain(void);
 
-void ShockGameLoop(void);
-void ShockSetupLoop(void);
 void InitSDL();
 void SDLDraw(void);
 errtype CheckFreeSpace(short	checkRefNum);
@@ -113,11 +114,15 @@ errtype CheckFreeSpace(short	checkRefNum);
 //		Main function.
 //------------------------------------------------------------------------------------
 int main(int argc, char** argv)
-{  
+{
+	// FIXME externalize this
+	log_set_quiet(0);
+	log_set_level(LOG_TRACE);
+
 	InitMac();															// init mac managers
 
 	SetDefaultPrefs();													// Initialize the preferences file.
-	//LoadPrefs(kPrefsResID);
+	LoadPrefs(kPrefsResID);
 	
 #ifdef TESTING
 	SetupTests();
@@ -130,154 +135,34 @@ int main(int argc, char** argv)
 	// Initialize
 
 	init_all();
-	
-	/*if (gShockPrefs.prefPlayIntro)
-	{
-		extern void PlayIntroCutScene(void);
-		PlayIntroCutScene();
-		gShockPrefs.prefPlayIntro = 0;
-		SavePrefs(kPrefsResID);
-	}*/
-
-	extern errtype load_savegame_names(void);
-	load_savegame_names();
-	
-	printf("Showing title screen\n");
-
-	ShockSetupLoop();
-
-	ShockGameLoop();
-
-	return 0;
-}
-
-//------------------------------------------------------------------------------------
-//		Handle Quit menu command/apple event.
-//------------------------------------------------------------------------------------
-void DoQuit(void)
-{
-//	if (AskToSave(1))
-//	{
-//		if (modeflag!=-1)
-//			EndGame(false);
-		gDone = true;
-//	}
-}
-
-//--------------------------------------------------------------------
-//  The main game loop for System Shock.
-//--------------------------------------------------------------------
-extern pascal void MousePollProc(void);
-extern void pump_events(void);
-extern long gShockTicks;
-
-void ShockSetupLoop(void)
-{
-	// CC: Should unify all loops together into one master loop, like they used to be
-	_new_mode = _current_loop = SETUP_LOOP;
-
 	setup_init();
-	setup_start();
-	load_da_palette();		// KLC - added here.  Used to be in setup_start().
 
-	/*if (startup_music)
-	{
-		start_music();
-	}*/
-
-	gr_clear(0xFF);
-
-	while(_current_loop == SETUP_LOOP) {
-
-		gShockTicks = TickCount();
-
-		if (!(_change_flag&(ML_CHG_BASE<<1)))
-			input_chk();
-		
-		// DG: at the beginning of each frame, get all the events from SDL
-		pump_events();
-
-		if (globalChanges)
-		{
-			if (_change_flag&(ML_CHG_BASE<<3))
-				loopmode_switch(&_current_loop);
-			chg_unset_flg(ML_CHG_BASE<<3);
-		}
-
-		if(_current_loop == SETUP_LOOP) {
-			setup_loop();
-		}
-
-		chg_set_flg(_static_change);
-
-		MousePollProc();		// update the cursor, was 35 times/sec originally
-
-		// FIXME: should draw this bio bar again
-		// status_bio_update();	// draw the biometer
-
-		SDLDraw();
-	}
-}
-
-void ShockGameLoop(void)
-{
 	gPlayingGame = TRUE;
 	gDeadPlayerQuit = FALSE;
 	gGameCompletedQuit = FALSE;
 
-	gr_clear(0x0);
-	load_da_palette();		// KLC - added here.  Used to be in setup_start().
+	// Start in the Main Menu loop
 
-	if (IsFullscreenWareOn())
-	{
-		fullscreen_start();
-		_new_mode = _current_loop = FULLSCREEN_LOOP;
-	}
-	else
-	{
-		screen_start();											// Initialize the screen for slot view.
-		_new_mode = _current_loop = GAME_LOOP;
-	}
+	_new_mode = _current_loop = SETUP_LOOP;
+	loopmode_enter(SETUP_LOOP);
 
-	while (gPlayingGame)
-	{	
-		gShockTicks = TickCount();
+	// Draw the splash screen
 
-		if (!(_change_flag&(ML_CHG_BASE<<1)))
-			input_chk();
-		
-		// DG: at the beginning of each frame, get all the events from SDL
-		pump_events();
+	load_da_palette();
+	gr_clear(0xFF);
 
-		if (globalChanges)
-		{
-			if (_change_flag&(ML_CHG_BASE<<3))
-				loopmode_switch(&_current_loop);
-			chg_unset_flg(ML_CHG_BASE<<3);
-		}
-		
-		if (_current_loop == SETUP_LOOP)
-			setup_loop();
-		else if (_current_loop == AUTOMAP_LOOP)
-			automap_loop();									// Do the fullscreen map loop.
-		else {
-			game_loop();										// Run the game!
-		}
-		
-		chg_set_flg(_static_change);
+	INFO("Showing splash screen");
+	splash_draw();
 
-		MousePollProc();		// update the cursor, was 35 times/sec originally
-		status_bio_update();	// draw the biometer
+	// Start the main loop
 
-		SDLDraw();
-	}
+	INFO("Showing main menu, starting game loop");
+	mainloop(argc, argv);
 
-	if(gGameCompletedQuit) {
-		// FIXME: Revive the old cutscenes!
-		printf("SHODAN has been defeated!\n");
-	}
+	status_bio_end();
+    stop_music();
 
-	/*
+    /*
 	// We're through playing now.
 	uiHideMouse(NULL);
 	loopmode_exit(_current_loop);
@@ -304,6 +189,21 @@ void ShockGameLoop(void)
 
 	closedown_game(TRUE);
 	*/
+
+	return 0;
+}
+
+//------------------------------------------------------------------------------------
+//		Handle Quit menu command/apple event.
+//------------------------------------------------------------------------------------
+void DoQuit(void)
+{
+//	if (AskToSave(1))
+//	{
+//		if (modeflag!=-1)
+//			EndGame(false);
+		gDone = true;
+//	}
 }
 
 #define NEEDED_DISKSPACE   700000
@@ -328,24 +228,28 @@ void InitSDL()
 	// Point the renderer at the screen bytes
 	gScreenRowbytes = drawSurface->w;
 	gScreenAddress = drawSurface->pixels;
-	gScreenWide = 640;
-	gScreenHigh = 480;
+	gScreenWide = 320;
+	gScreenHigh = 200;
 	gActiveLeft = 0;
 	gActiveTop = 0;
-	gActiveWide = 640;
-	gActiveHigh = 480;
+	gActiveWide = 320;
+	gActiveHigh = 200;
 
 	gr_init();
 
-    gr_set_mode(GRM_640x480x8, TRUE);
+    gr_set_mode(GRM_320x200x8, TRUE);
 
-    printf("Setting up screen and render contexts\n");
+    INFO("Setting up screen and render contexts");
 
     // Open our window!
 
 	window = SDL_CreateWindow(
 		"System Shock - Shockolate 0.5", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN);
+		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+
+	// Create the palette
+
+	sdlPalette = SDL_AllocPalette(256);
 
 	// Setup the screen
 
@@ -360,14 +264,15 @@ void InitSDL()
 
 	SDL_RaiseWindow(window);
 	
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+	SDL_RenderSetLogicalSize(renderer, gScreenWide, gScreenHigh);
 
 	SDLDraw();
 }
 
+SDL_Color gamePalette[256];
 void SetSDLPalette(int index, int count, uchar *pal)
 {
-	SDL_Color gamePalette[256];
 	for(int i = index; i < count; i++) {
 		gamePalette[index+i].r = *pal++;
 		gamePalette[index+i].g = *pal++;
@@ -381,16 +286,17 @@ void SetSDLPalette(int index, int count, uchar *pal)
 	gamePalette[255].b = 0x0;
 	gamePalette[255].a = 0xFF;
 
-	SDL_Palette* sdlPalette = SDL_AllocPalette(count);
 	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
 	SDL_SetSurfacePalette(drawSurface, sdlPalette);
 	SDL_SetSurfacePalette(offscreenDrawSurface, sdlPalette);
 }
 
-SDL_Rect destRect;
 void SDLDraw()
 {
-	SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
-	SDL_BlitSurface(drawSurface, NULL, screenSurface, NULL);
-  	SDL_UpdateWindowSurface(window);
+	SDL_RenderClear(renderer);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, drawSurface);
+	SDL_Rect srcRect = { 0, 0, gScreenWide, gScreenHigh };
+	SDL_RenderCopy(renderer, texture, &srcRect, NULL);
+	SDL_DestroyTexture(texture);
+	SDL_RenderPresent(renderer);
 }

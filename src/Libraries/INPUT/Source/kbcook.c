@@ -58,8 +58,8 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
          *cooked = KEY_LEFT;
       else if(ev.code == 124)
          *cooked = KEY_RIGHT;
-      else
-         *cooked = ev.code;
+      else if(ev.code == 13)
+         *cooked = KEY_ENTER;
    }
 	
 	*cooked |= (short)ev.state << KB_DOWN_SHF; // Add in the key-down state.

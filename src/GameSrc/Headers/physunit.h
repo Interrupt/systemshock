@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 #ifndef __PHYSUNIT_H
 #define __PHYSUNIT_H
@@ -31,25 +31,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Includes
 
 // Defines
-#define PHYSICS_RADIUS_UNIT 96    // radius units per square
-#define PHYS_PEP_UNIT 1           // Objprop units per physics unit
-#define PHYS_HARDNESS_UNIT 1      // Objprop units per physics unit
-#define PHYS_ROUGHNESS_UNIT   1   // Objprop units per physics unit
+#define PHYSICS_RADIUS_UNIT 96 // radius units per square
+#define PHYS_PEP_UNIT        1 // Objprop units per physics unit
+#define PHYS_HARDNESS_UNIT   1 // Objprop units per physics unit
+#define PHYS_ROUGHNESS_UNIT  1 // Objprop units per physics unit
 
 // 10 is much more correct
 #define BROKEN_NEW_WAY
 #ifdef BROKEN_NEW_WAY
-#define PHYS_MASS_UNIT    10
-#define PHYS_MASS_C_NUM   80
-#define PHYS_MASS_C_DEN   33
+#define PHYS_MASS_UNIT  10
+#define PHYS_MASS_C_NUM 80
+#define PHYS_MASS_C_DEN 33
 #endif
 
 //#define BROKEN_OLD_WAY
 #ifdef BROKEN_OLD_WAY
 // what in hell is this...?
-#define PHYS_MASS_UNIT  1000       // tenths of kilograms to players
-#define PHYS_MASS_C_NUM    1
-#define PHYS_MASS_C_DEN    1
+#define PHYS_MASS_UNIT 1000 // tenths of kilograms to players
+#define PHYS_MASS_C_NUM   1
+#define PHYS_MASS_C_DEN   1
 #endif
 
 // Prototypes
@@ -57,4 +57,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Globals
 
 #endif // __PHYSUNIT_H
-

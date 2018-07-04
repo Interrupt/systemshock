@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 //		CIRCBUFF.H		Circular buffer
 //		Rex E. Bradford
@@ -27,8 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Log: circbuff.h $
  * Revision 1.1  1994/07/22  13:21:07  rex
  * Initial revision
- * 
-*/
+ *
+ */
 
 #ifndef __CIRCBUFF_H
 #define __CIRCBUFF_H
@@ -38,23 +38,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 typedef struct {
-	uchar *buff;				// ptr to circular buffer
-	uchar *buffEnd;			// end of buffer
-	uchar *pput;				// ptr to put data to
-	uchar *pget;				// ptr to get data from
+    uint8_t *buff;    // ptr to circular buffer
+    uint8_t *buffEnd; // end of buffer
+    uint8_t *pput;    // ptr to put data to
+    uint8_t *pget;    // ptr to get data from
 } CircBuff;
 
-void CircBuffInit(CircBuff *pcb, uchar *buff, long length);
+void CircBuffInit(CircBuff *pcb, uint8_t *buff, int32_t length);
 void CircBuffReset(CircBuff *pcb);
-ulong CircBuffRoom(CircBuff *pcb);
-ulong CircBuffUsed(CircBuff *pcb);
-void CircBuffAdvancePut(CircBuff *pcb, long amt);
-void CircBuffAdvanceGet(CircBuff *pcb, long amt);
-uchar CircBuffBetween(uchar *ptest, uchar *pbeg, uchar *pend);
+uint32_t CircBuffRoom(CircBuff *pcb);
+uint32_t CircBuffUsed(CircBuff *pcb);
+void CircBuffAdvancePut(CircBuff *pcb, int32_t amt);
+void CircBuffAdvanceGet(CircBuff *pcb, int32_t amt);
+uint8_t CircBuffBetween(uint8_t *ptest, uint8_t *pbeg, uint8_t *pend);
 
-#define CircBuffEmpty(pcb) ((pcb)->pput==(pcb)->pget)
-#define CircBuffHitEnd(pcb,p) ((p)>=(pcb)->buffEnd)
+#define CircBuffEmpty(pcb) ((pcb)->pput == (pcb)->pget)
+#define CircBuffHitEnd(pcb, p) ((p) >= (pcb)->buffEnd)
 
 #endif
-
-

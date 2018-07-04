@@ -41,6 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tmaps.h"
 #include "tmaptab.h"
 
+// FIXME Move to FIX
 extern int gri_per_umap_setup(int n, grs_vertex **vpl, grs_per_setup *ps);
 
 uchar grd_enable_quad_blend=FALSE;

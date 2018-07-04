@@ -5,9 +5,9 @@
 
 Boolean				gTuneDone;
 
-void StopMovie(long x) { }
+void StopMovie(void * x) { }
 void StartMovie(void * m) { }
-Boolean IsMovieDone(long x) { return true; }
+Boolean IsMovieDone(void * x) { return true; }
 
 void HideCursor(void) { }
 void ShowCursor(void) { }
