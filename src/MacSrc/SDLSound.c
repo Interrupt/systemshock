@@ -95,7 +95,7 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) {
 
 void MacTuneUpdateVolume(void) {
 	extern uchar curr_vol_lev;
-	Mix_VolumeMusic(curr_vol_lev * 128 / 100);
+	Mix_VolumeMusic((curr_vol_lev * curr_vol_lev) * 128 / 10000);
 }
 
 int MacTuneLoadTheme(char* theme_base, int themeID) {
