@@ -143,10 +143,10 @@ extern void rendedit_process_tilemap(FullMap *fmap, LGRect *r, uchar newMap);
 extern void mac_get_pal(int start, int n, uchar *pal_data);
 
 errtype init_pal_fx();
+void byebyemessage(void);
 /*
 errtype init_kb();
 errtype init_debug();
-void byebyemessage(void);
 
 extern void load_weapons_data(void);
 extern errtype setup_init(void);
@@ -257,6 +257,9 @@ void init_all(void) {
         critical_error(CRITERR_MEM | 1);
 
     printf("Start mem: %i\n", start_mem);
+
+    // register the bye message
+    atexit(byebyemessage);
 
     ResInit();
     // Where are these defined?
@@ -906,5 +909,5 @@ void byebyemessage(void) {
         printf("Thanks for playing System Shock Shockolate %s.\n", SYSTEM_SHOCK_VERSION);
 #endif
     else
-        printf("Our system has been shocked!!!\b But rememeber to Salt The Fries\n");
+        printf("Our system has been shocked!!!\b But remember to Salt The Fries\n");
 }

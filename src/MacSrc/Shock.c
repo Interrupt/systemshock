@@ -104,7 +104,6 @@ extern void object_data_flush(void);
 //extern Boolean IsFullscreenWareOn(void);
 extern errtype load_da_palette(void);
 extern void ShockMain(void);
-extern void byebyemessage(void);
 
 void InitSDL();
 void SDLDraw(void);
@@ -162,8 +161,6 @@ int main(int argc, char** argv)
 
 	status_bio_end();
     stop_music();
-
-    byebyemessage();
 
     /*
 	// We're through playing now.
