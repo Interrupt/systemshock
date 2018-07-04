@@ -79,6 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rendfx.h"
 #include "statics.h"
 #include "citres.h"
+#include "setploop.h"
 
 #ifdef OLD_TELEPORT_BETWEEN_LEVELS
 #include <gamewrap.h>
@@ -1192,13 +1193,18 @@ extern Boolean gGameCompletedQuit;
 
 errtype trap_cutscene_func(int p1, int p2, int p3, int p4) {
     short cs = qdata_get(p1);
-    //	if (qdata_get(p1) == 0)							// KLC - if we are to play the endgame
-    //cutscene
-    //	{
-    gGameCompletedQuit = TRUE;
-    gPlayingGame = FALSE; // Hop out of the game loop.
-                          // KLC   play_cutscene(qdata_get(p1), qdata_get(p2));
-    //	}
+    if (qdata_get(p1) == 0)				// KLC - if we are to play the endgame cutscene
+    {
+        //gGameCompletedQuit = TRUE;
+        //gPlayingGame = FALSE; // Hop out of the game loop.
+        // KLC   play_cutscene(qdata_get(p1), qdata_get(p2));
+
+        // CC: Show the credits, should really play the win cutscene here
+        _new_mode = SETUP_LOOP;
+        chg_set_flg(GL_CHG_LOOP);
+        journey_credits_func(FALSE);
+    }
+
     alternate_death = (qdata_get(p2) != 0);
     return (OK);
 }
@@ -1659,7 +1665,11 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
             secret_pending_hack = 1;
         else {
             gDeadPlayerQuit = TRUE; // The player is dead.
-            gPlayingGame = FALSE;   // Hop out of the game loop.
+            //gPlayingGame = FALSE;   // Hop out of the game loop.
+
+            // CC: Go back to the main menu, should really play the death custcene here
+            _new_mode = SETUP_LOOP;
+            chg_set_flg(GL_CHG_LOOP);
         }
         break;
     }

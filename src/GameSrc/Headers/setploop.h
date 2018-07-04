@@ -66,6 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Prototypes
 void setup_loop(void);
 void journey_credits_done(void);
+errtype journey_credits_func(uchar draw_stuff);
 
 // Globals
 extern int setup_mode;
