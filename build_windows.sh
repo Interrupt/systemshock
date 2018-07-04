@@ -6,7 +6,6 @@ SDL_mixer_version=2.0.2
 CMAKE_version=3.11.3
 #CMAKE_architecture=win64-x64
 CMAKE_architecture=win32-x86
-install_dir=`pwd -W`
 
 # Removing the mwindows linker option lets us get console output
 function remove_mwindows {
@@ -18,7 +17,7 @@ function build_sdl {
 	tar xvf SDL2-${SDL_version}.tar.gz
 	pushd SDL2-${SDL_version}
 
-	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
+	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --prefix=${install_dir}/built_sdl
 	remove_mwindows
 	make
 	make install
@@ -30,7 +29,7 @@ function build_sdl_mixer {
 	git clone https://github.com/SDL-mirror/SDL_mixer.git
 	pushd SDL_mixer
 
-	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
+	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --prefix=${install_dir}/built_sdl_mixer
 	remove_mwindows
 	make
 	make install
@@ -60,6 +59,7 @@ rm -rf CMakeCache.txt
 cp windows/make.exe /usr/bin/
 mkdir ./build_ext/
 cd ./build_ext/
+install_dir=`pwd -W`
 
 build_sdl
 build_sdl_mixer
@@ -71,11 +71,12 @@ fi
 
 # Back to the root directory, copy SDL DLL files for the executable
 cd ..
-cp /usr/local/bin/*.dll .
+cp /usr/local/bin/SDL*.dll .
 
 # Set up build.bat
 # TODO: conditional on whether CMake was downloaded
-echo "@set PATH=%PATH%;${CMAKE_ROOT}
+echo "@echo off
+set PATH=%PATH%;${CMAKE_ROOT}
 cmake -G \"MinGW Makefiles\" .
 mingw32-make systemshock" >build.bat
 
