@@ -66,6 +66,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h> // for FILE*
 #include <stdlib.h>
 
+#include "lg.h"
+
 //#ifndef DATAPATH_H
 //#include <datapath.h>
 //#endif

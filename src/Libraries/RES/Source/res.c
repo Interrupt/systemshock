@@ -68,23 +68,16 @@ here static bool resPushedAllocators;	// did we push our allocators?
 //	ResInit() initializes resource manager.
 
 void ResInit() {
-    // char *p;
     int32_t i;
 
     // We must exit cleanly
-    // FIXME Segfault at exit
-    // atexit(ResTerm);
-    /*
-    // Set memory allocator, init LZW system
-    MemPushAllocator(ResMalloc, ResRealloc, ResFree);
-    resPushedAllocators = TRUE;
-    */
+    atexit(ResTerm);
 
+    // init LZW system
     LzwInit();
 
     // Allocate initial resource descriptor table, default size (can't fail)
-
-    INFO("ResInit");
+    TRACE("%s: RES system initialization", __FUNCTION__);
 
     resDescMax = DEFAULT_RESMAX;
     gResDesc = (ResDesc *)malloc((DEFAULT_RESMAX + 1) * (sizeof(ResDesc) + sizeof(ResDesc2)));
@@ -103,11 +96,13 @@ void ResInit() {
 
     // Add directory pointed to by RES env var to search path
 
-    /*p = getenv("RES");
+    /*
+    p = getenv("RES");
     if (p)
             ResAddPath(p);
+    */
 
-    Spew(DSRC_RES_General, ("ResInit: res system initialized\n"));*/
+    TRACE("%s: RES system initialized", __FUNCTION__);
 
     // Install default pager
     // ResInstallPager(ResDefaultPager);
@@ -125,9 +120,6 @@ void ResTerm() {
             ResCloseFile(i);
     }
 
-    // Spew out cumulative stats if want them
-    // DBG(DSRC_RES_CumStat, {ResSpewCumStats();});
-
     // Free up resource descriptor table
 
     if (gResDesc) {
@@ -136,17 +128,8 @@ void ResTerm() {
         gResDesc2 = NULL;
         resDescMax = 0;
     }
-    /*
-    // Pop allocators
-            if (resPushedAllocators)
-                    {
-                    MemPopAllocator();
-                    resPushedAllocators = FALSE;
-                    }
-
     // We're outta here
-    Spew(DSRC_RES_General, ("ResTerm: res system terminated\n"));
-    */
+    TRACE("%s: RES system terminated", __FUNCTION__);
 }
 
 //	---------------------------------------------------------
@@ -171,16 +154,12 @@ void ResGrowResDescTable(Id id) {
     // If need to grow, do it, clearing new entries
 
     if (newAmt > currAmt) {
-        //		Spew(DSRC_RES_General,
-        //			("ResGrowResDescTable: extending to $%x entries\n",
-        // newAmt));
-
-        printf("ResGrowResDescTable\n");
+        WARN("%s: extending to $%x entries", __FUNCTION__, newAmt);
 
         // Realloc double-array buffer and check for error
         gResDesc = (ResDesc *)realloc(gResDesc, newAmt * (sizeof(ResDesc) + sizeof(ResDesc2)));
         if (gResDesc == NULL) {
-            // Warning(("ResGrowDescTable: RES DESCRIPTOR TABLE BAD!!!\n"));
+            ERROR("%s: RES DESCRIPTOR TABLE BAD!!!", __FUNCTION__);
             return;
         }
 
@@ -201,23 +180,7 @@ void ResGrowResDescTable(Id id) {
 
         resDescMax = newAmt - 1;
 
-        // Grow cumulative stats table too
 
-        /*
-        DBG(DSRC_RES_CumStat, {
-          if (pCumStatId == NULL)
-            ResAllocCumStatTable();
-          else {
-            pCumStatId = Realloc(pCumStatId, newAmt * sizeof(ResCumStat));
-            if (pCumStatId == NULL) {
-              Warning(("ResGrowDescTable: RES CUMSTAT TABLE BAD!!!\n"));
-              return;
-            }
-            memset(pCumStatId + currAmt, 0,
-                   (newAmt - currAmt) * sizeof(ResCumStat));
-          }
-        });
-        */
     }
 }
 

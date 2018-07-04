@@ -59,21 +59,12 @@ static void ResCopyBytes(FILE *fd, int32_t writePos, int32_t readPos, int32_t si
 void ResSetComment(int32_t filenum, char *comment) {
 
     ResFileHeader *phead;
-    /*
-    DBG(DSRC_RES_ChkIdRef, {
-      if (resFile[filenum].pedit == NULL) {
+    if (resFile[filenum].pedit == NULL) {
+        WARN("%s: file %d not open for writing", __FUNCTION__, filenum);
         return;
-      }
-    });
-      DBG(DSRC_RES_ChkIdRef, {
-        if (resFile[filenum].pedit == NULL) {
-        Warning(("ResSetComment: file %d not open for writing\n", filenum));
-        return;}
-      });
-    Spew(DSRC_RES_General,
-         ("ResSetComment: setting comment for filenum %d to:\n%s\n", filenum,
-          comment));
-    */
+    }
+    TRACE("%s: setting comment for filenum %d to: %s", __FUNCTION__, filenum, comment);
+
 
     phead = &resFile[filenum].pedit->hdr;
     memset(phead->comment, 0, sizeof(phead->comment));
@@ -91,9 +82,6 @@ void ResSetComment(int32_t filenum, char *comment) {
 //
 //    id = id to write
 //  -------------------------------------------------------
-//  For Mac version:  This is why we're using the Mac Resource Mgr.
-//  Simply get the resource handle and write it out.  If resource is
-//      compressed, do that first before writing.
 #define EXTRA 250
 
 int32_t ResWrite(Id id) {
@@ -107,19 +95,15 @@ int32_t ResWrite(Id id) {
     void *pcompbuff;
     int32_t compsize, padBytes;
 
-    // Check for errors
-    // DBG(DSRC_RES_ChkIdRef, {
+    TRACE("%s: writing", __FUNCTION__);
     if (!ResCheckId(id))
         return -1;
-    //});
 
     prd = RESDESC(id);
     prf = &resFile[prd->filenum];
 
-    // DBG(DSRC_RES_Write, {
     if (prf->pedit == NULL) {
-        // Warning(("ResWrite: file %d not open for writing\n", prd->filenum));
-        ERROR("File %i not open for writing!\n", prd->filenum);
+        ERROR("%s: file %i not open for writing!", __FUNCTION__, prd->filenum);
         return -1;
     }
     //});
@@ -129,8 +113,7 @@ int32_t ResWrite(Id id) {
 
     // If directory full, grow it
     if (prf->pedit->pdir->numEntries == prf->pedit->numAllocDir) {
-        /* Spew(DSRC_RES_Write, ("ResWrite: growing directory of filenum %d\n ",
-         * prd->filenum)); */
+        TRACE("%s: growing directory of filenum %d", __FUNCTION__, prd->filenum);
 
         prf->pedit->numAllocDir += DEFAULT_RES_GROWDIRENTRIES;
         prf->pedit->pdir =
@@ -149,7 +132,7 @@ int32_t ResWrite(Id id) {
     pDirEntry->type = prd2->type;
     pDirEntry->size = prd->size;
 
-    /* Spew(DSRC_RES_Write, ("ResWrite: writing $%x\n", id)); */
+    TRACE("%s: writing $%x\n", __FUNCTION__, id);
 
     // If compound, write out reftable without compression
     fseek(prf->fd, prf->pedit->currDataOffset, SEEK_SET);
@@ -219,23 +202,19 @@ void ResKill(Id id) {
     memset(prd, 0, sizeof(ResDesc));
 
     // Check for valid id
-    // DBG(DSRC_RES_ChkIdRef, {
     if (!ResCheckId(id))
         return;
-    // });
-    // Spew(DSRC_RES_Write, ("ResKill: killing $%x\n", id));
+    TRACE("%s: killing $%x\n", __FUNCTION__, id);
 
     // Delete it
     ResDelete(id);
 
     // Make sure file is writeable
     prd = RESDESC(id);
-    // DBG(DSRC_RES_Write, {
     if (resFile[prd->filenum].pedit == NULL) {
-        // Warning(("ResKill: file %d not open for writing\n", prd->filenum));
+        WARN("%s: file %d not open for writing", __FUNCTION__, prd->filenum);
         return;
     }
-    //});
 
     // If so, erase it
     ResEraseIfInFile(id);
@@ -261,7 +240,7 @@ int32_t ResPack(int32_t filenum) {
     // Check for errors
     prf = &resFile[filenum];
     if (prf->pedit == NULL) {
-        ERROR("ResPack: filenum %d not open for editing\n", filenum);
+        ERROR("%s: filenum %d not open for editing", __FUNCTION__, filenum);
         return (0);
     }
 
@@ -311,7 +290,7 @@ int32_t ResPack(int32_t filenum) {
     ftruncate(fileno(prf->fd), dataWrite);
 
     // Return # bytes reclaimed
-    /* Spew(DSRC_RES_Write, ("ResPack: reclaimed %d bytes\n", sizeReclaimed)); */
+    TRACE("%s: reclaimed %d bytes", __FUNCTION__, sizeReclaimed);
 
     return (sizeReclaimed);
 }
@@ -360,7 +339,7 @@ bool ResEraseIfInFile(Id id) {
 
     for (i = 0; i < prf->pedit->pdir->numEntries; i++) {
         if (id == pDirEntry->id) {
-            /* Spew(DSRC_RES_Write, ("ResEraseIfInFile: $%x beingerased\n", id)); */
+            TRACE("%s: $%x being erased\n", __FUNCTION__, id);
             pDirEntry->id = 0;
             prf->pedit->flags |= RFF_NEEDSPACK;
             if (prf->pedit->flags & RFF_AUTOPACK)

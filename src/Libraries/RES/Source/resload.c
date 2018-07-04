@@ -57,52 +57,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //		id = resource id
 //	-----------------------------------------------------------
-//  For Mac version:  Call Resource Mgr call LoadResource.
 
 void *ResLoadResource(Id id) {
     ResDesc *prd;
-    ResDesc2 *prd2;
 
     // If doesn't exit, forget it
-
-    // DBG(DSRC_RES_ChkIdRef, {
     if (!ResInUse(id))
         return NULL;
-    //});
-    // DBG(DSRC_RES_ChkIdRef, {
     if (!ResCheckId(id))
         return NULL;
-    //});
 
-    SpewArgs("resload", "ResLoadResource: loading $%x\n", id);
+    TRACE("%s loading $%x", __FUNCTION__, id);
 
     prd = RESDESC(id);
-    prd2 = RESDESC2(id);
 
     if (prd->size == 0) {
         return NULL;
     }
 
     // Allocate memory, setting magic id so pager can tell who it is if need be.
-
     prd->ptr = malloc(prd->size);
     if (prd->ptr == NULL)
         return (NULL);
 
-    // Tally memory allocated to resources
-
-    // DBG(DSRC_RES_Stat, {resStat.totMemAlloc += prd->size;});
-    // Spew(DSRC_RES_Stat, ("ResLoadResource: loading id: $%x, alloc %d, total
-    // now %d bytes\n", 		id, prd->size, resStat.totMemAlloc));
-
-    // Add to cumulative stats
-    // CUMSTATS(id,numLoads);
-
     // Load from disk
     ResRetrieve(id, prd->ptr);
-
-    // Tally stats
-    // DBG(DSRC_RES_Stat, {resStat.numLoaded++;});
 
     // Return ptr
     return (prd->ptr);
@@ -126,11 +105,8 @@ bool ResRetrieve(Id id, void *buffer) {
     RefIndex numRefs;
 
     // Check id and file number
-
-    // DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return FALSE;});
-
     if (!ResCheckId(id)) {
-        printf("ResRetrieve failed ResCheckId! %x\n", id);
+        TRACE("%s: failed ResCheckId! %x\n", __FUNCTION__, id);
         return false;
     }
 
@@ -138,12 +114,10 @@ bool ResRetrieve(Id id, void *buffer) {
     prd2 = RESDESC2(id);
     fd = resFile[prd->filenum].fd;
 
-    //	DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
-//		Warning(("ResRetrieve: id $%x doesn't exist\n", id)); \
-//		return FALSE; \
-//		}});
-    if (fd == NULL)
+    if (fd == NULL) {
+        WARN("%s: id $%x doesn't exist", __FUNCTION__, id);
         return false;
+    }
 
     // Seek to data, set up
     fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
@@ -153,7 +127,7 @@ bool ResRetrieve(Id id, void *buffer) {
     // If compound, read in ref table
     if (prd2->flags & RDF_COMPOUND) {
         fread(p, sizeof(int16_t), 1, fd);
-        numRefs = *(int16_t *)p;
+        numRefs = *(uint16_t *)p;
         p += sizeof(int16_t);
         fread(p, sizeof(int32_t), (numRefs + 1), fd);
         p += sizeof(int32_t) * (numRefs + 1);

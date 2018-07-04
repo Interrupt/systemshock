@@ -55,6 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint8_t flags) {
 
+    TRACE("%s: Making id $%x", __FUNCTION__, id);
     ResDesc *prd;
     ResDesc2 *prd2;
 
@@ -94,7 +95,7 @@ void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags) {
     int32_t sizeTable;
 
     // Build empty compound resource in allocated memory
-    // Spew(DSRC_RES_Make, ("ResMake: making compound resource $%x\n", id));
+    TRACE("%s: making compound resource $%x", __FUNCTION__, id);
 
     sizeTable = REFTABLESIZE(0);
     prt = (RefTable *)malloc(sizeTable);
@@ -114,8 +115,6 @@ void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags) {
 //			resource)
 //		itemSize = size of item
 //	---------------------------------------------------------------
-//  For Mac version:  Change references from 'ptr' to 'hdl'.  Use Mac memory
-//  allocating routines.
 
 void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
     ResDesc *prd;
@@ -124,13 +123,11 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
     int32_t sizeItemOffsets, oldSize, sizeDiff;
 
     // Error check
-    // DBG(DSRC_RES_ChkIdRef, {
     if (!RefCheckRef(ref))
         return;
-    //});
 
     // Get vital info (and get into memory if not already)
-    // Spew(DSRC_RES_Make, ("ResAddRef: adding ref $%x\n", ref));
+    TRACE("%s: adding ref $%x\n", __FUNCTION__, ref);
 
     prd = RESDESC(REFID(ref));
 

@@ -110,53 +110,5 @@ void ResGrowResDescTable(Id id);
             ResAddToTail(prd);        \
         }                             \
     }
-/*
-
-//	Statistics tables
-
-#ifdef DBG_ON
-
-typedef struct {
-        uint32_t numGets;				// # ResGet()'s or
-RefGet()'s uint32_t numLocks;			// # ResLock()'s or RefLock()'s
-        uint16_t numExtracts;		// # ResExtract()'s or RefExtract()'s
-        uint16_t numLoads;			// # ResLoad()'s
-        uint16_t numOverwrites;	// # times resource overwritten by one in
-new file uint16_t numPageouts;		// # times paged out of ram }
-ResCumStat;
-
-extern ResCumStat *pCumStatId;						//
-ptr to cumulative stats by id extern ResCumStat cumStatType[NUM_RESTYPENAMES];
-// table of cum. stats by type
-
-#define CUMSTATS(id,field) DBG(DSRC_RES_CumStat, { \
-        ResCumStat *prcs;				\
-        if (pCumStatId == NULL)		\
-                ResAllocCumStatTable();	\
-        prcs = pCumStatId + (id);	\
-        prcs->field++;					\
-        prcs = &cumStatType[RESDESC(id)->type]; \
-        prcs->field++;					\
-        })
-
-typedef struct {
-        uint16_t numPageouts;			// # times ResPageOut() called
-        uint32_t totSizeNeeded;			// total # bytes asked for
-across calls
-        uint32_t totSizeGotten;			// total # bytes paged out
-across calls } ResPageStats;
-
-extern ResPageStats resPageStats;	// paging statistics
-
-void ResAllocCumStatTable();			// internal stat routine
-prototypes
-void ResSpewCumStats();					// these are in rescum.c
-
-#else
-
-#define CUMSTATS(id,field)
-
-#endif
-*/
 
 #endif
