@@ -237,12 +237,12 @@ void ResDrop(Id id) {
   //	Free memory and set ptr to NULL
 
   if (prd->ptr == NULL) {
-    INFO("DoResDrop: Block $%x not in memory, ignoring request", id);
+    DEBUG("DoResDrop: Block $%x not in memory, ignoring request", id);
     return;
   }
 
   if (prd->lock != 0) {
-    INFO("DoResDrop: Dropping resource 0x%x that's in use.", id);
+    DEBUG("DoResDrop: Dropping resource 0x%x that's in use.", id);
     prd->lock = 0;
   }
 

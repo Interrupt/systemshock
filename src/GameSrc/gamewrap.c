@@ -95,7 +95,7 @@ errtype interpret_qvars(void);
 
 errtype copy_file(char *src_fname, char *dest_fname) {
     FILE *fsrc, *fdst;
-    printf("copy_file: %s to %s\n", src_fname, dest_fname);
+    DEBUG("copy_file: %s to %s", src_fname, dest_fname);
 
     fsrc = fopen_caseless(src_fname, "rb");
     if (fsrc == NULL) {
@@ -188,7 +188,7 @@ errtype save_game(char *fname, char *comment) {
     // KLC - this does nothing now.		check_save_game_wackiness();
     // Why is this done???			closedown_game(FALSE);
 
-    printf("starting save_game\n");
+    DEBUG("starting save_game");
 
     // KLC  do it the Mac way						i = flush_resource_cache();
     // Size	dummy;
@@ -198,7 +198,7 @@ errtype save_game(char *fname, char *comment) {
     // FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
     filenum = ResEditFile(CURRENT_GAME_FNAME, FALSE);
     if (filenum < 0) {
-        DebugString("Couldn't open Current Game\n");
+        ERROR("Couldn't open Current Game");
         return ERR_FOPEN;
     }
 
@@ -217,7 +217,6 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum,
     // RDF_LZW);
 
-    printf("Writing player\n");
     ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, 0);
     ResWrite(idx);
     ResUnmake(idx);
@@ -230,7 +229,6 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum,
     // RDF_LZW);
 
-    printf("Writing schedule\n");
     ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, 0);
     ResWrite(idx);
     ResUnmake(idx);
@@ -253,14 +251,14 @@ errtype save_game(char *fname, char *comment) {
     // Save current level
     retval = write_level_to_disk(ResIdFromLevel(player_struct.level), TRUE);
     if (retval) {
-        DebugString("Return value from write_level_to_disk is non-zero!\n"); //
+        ERROR("Return value from write_level_to_disk is non-zero!"); //
         critical_error(CRITERR_FILE | 3);
     }
 
     // Copy current game out to save game slot
     if (copy_file(CURRENT_GAME_FNAME, fname) != OK) {
         // Put up some alert here.
-        DebugString("No good copy, dude!\n");
+        ERROR("No good copy, dude!");
         //		string_message_info(REF_STR_SaveGameFail);
     }
     // KLC	else
@@ -343,7 +341,7 @@ errtype load_game(char *fname) {
     extern void player_set_eye_fixang(int ang);
     extern uint dynmem_mask;
 
-    printf("load_game %s\n", fname);
+    INFO("load_game %s", fname);
 
     closedown_game(TRUE);
     // KLC - don't do this here   stop_music();

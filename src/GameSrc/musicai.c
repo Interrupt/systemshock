@@ -466,7 +466,7 @@ void load_score_guts(char score_playing) {
 
     rv = MacTuneLoadTheme(base, score_playing);
 
-    if (rv == 1)
+    if (rv == 0)
         musicai_reset(TRUE);
     else // handle this a better way.
         DebugString("Load theme failed!");

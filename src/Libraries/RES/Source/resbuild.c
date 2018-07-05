@@ -108,8 +108,6 @@ int32_t ResWrite(Id id) {
   void *pcompbuff;
   int32_t compsize, padBytes;
 
-  printf("ResWrite\n");
-
   // Check for errors
   // DBG(DSRC_RES_ChkIdRef, {
   if (!ResCheckId(id))
@@ -122,7 +120,7 @@ int32_t ResWrite(Id id) {
   // DBG(DSRC_RES_Write, {
   if (prf->pedit == NULL) {
     // Warning(("ResWrite: file %d not open for writing\n", prd->filenum));
-    printf("File %i not open for writing!\n", prd->filenum);
+    ERROR("File %i not open for writing!\n", prd->filenum);
     return -1;
   }
   //});
@@ -267,7 +265,7 @@ int32_t ResPack(int32_t filenum) {
   // Check for errors
   prf = &resFile[filenum];
   if (prf->pedit == NULL) {
-    printf("ResPack: filenum %d not open for editing\n", filenum);
+    ERROR("ResPack: filenum %d not open for editing\n", filenum);
     return (0);
   }
 

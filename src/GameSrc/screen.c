@@ -235,8 +235,6 @@ void screen_start() {
     inventory_region = inventory_region_game;
     pagebutton_region = pagebutton_region_game;
 
-    printf("screen_start screen_start screen_start!\n");
-
     // A rather strange function for a Mac program, but we'll keep it.
     change_svga_screen_mode();
 
@@ -327,8 +325,6 @@ errtype screen_draw(void) {
     status_vitals_update(TRUE);
     update_meters(TRUE);
     uiShowMouse(NULL);
-
-    printf("screen_draw\n");
 
     return (OK);
 }
