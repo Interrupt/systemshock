@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdext.h"
 #include "mfddims.h"
 #include "mfdgadg.h"
-//#include "status.h"
+#include "status.h"
 #include "gamestrn.h"
 #include "mfdint.h"
 #include "tools.h"
@@ -98,8 +98,6 @@ errtype biohelp_create_mouse_region(LGRegion *root);
 #define LAST_USED_BITS(mfd)   (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][mfd + 6])
 #define BIOHELP_PAGE          (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][2])
 #define NUM_TRACKS            (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][3])
-
-#define NUM_BIO_TRACKS        (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][3])
 
 void mfd_biohelp_expose(MFD *mfd, ubyte control) {
     uchar full = control & MFD_EXPOSE_FULL;
