@@ -309,47 +309,47 @@ void init_all(void) {
     kb_init(NULL);
 
     // Initialize map
-    INFO("- Map Startup");
+    DEBUG("- Map Startup");
     map_init();
 
-    INFO("- Physics Startup");
+    DEBUG("- Physics Startup");
     physics_init();
     //	 KLC - done in InitMac.c.
     //   atexit(free_all);
 
-    INFO("- Load Resources");
+    DEBUG("- Load Resources");
     init_load_resources();
 
-    INFO("- 3d Objects Startup");
+    DEBUG("- 3d Objects Startup");
     init_3d_objects();
 
-    INFO("- Popups Startup");
+    DEBUG("- Popups Startup");
     init_popups();
 
-    INFO("- Gamesys Startup");
+    DEBUG("- Gamesys Startup");
     init_gamesys();
 
     // Start up the 3d...
-    INFO("- Renderer Startup");
+    DEBUG("- Renderer Startup");
     fr_startup();
     game_fr_startup();
 
     // initialize renderer
-    INFO("- SDL Startup");
+    DEBUG("- SDL Startup");
     InitSDL();
 
     // Initialize the main game screen
-    INFO("- Main game screen Startup");
+    DEBUG("- Main game screen Startup");
     region_begin_sequence();
 
-    INFO("- Sound startup");
+    DEBUG("- Sound startup");
     snd_startup();
     snd_start_digital();
     music_init();
     digifx_init();
 
     // Initialize the palette effects (for fades and color cycling)
-    INFO("- PAL startup");
+    DEBUG("- PAL startup");
     palfx_init();
 
     // Initialize animation callbacks
@@ -375,23 +375,23 @@ void init_all(void) {
     }
 #endif
 
-    INFO("- Screen init");
+    DEBUG("- Screen init");
     screen_init();
     fullscreen_init();
     amap_init();
     init_side_icon_popups(); // KLC - new call.
 
-    INFO("- Input init");
+    DEBUG("- Input init");
     init_input(); // KLC - moved here, after uiInit (in screen_init)
 
     uiHideMouse(NULL); // KLC - added to hide mouse cursor
 
-    INFO("- VR init");
+    DEBUG("- VR init");
     view360_init();
     // KLC - no longer needed   olh_init();
 
     // Put up splash screen for US!
-    INFO("- Make splash");
+    DEBUG("- Make splash");
     uiFlush();
 
     // DrawSplashScreen(REF_IMG_bmOriginSplash, TRUE);
@@ -404,22 +404,22 @@ void init_all(void) {
     else
         pause_time += MIN_WAIT_TIME;
 
-    INFO("- Start vitals");
+    DEBUG("- Start vitals");
     status_vitals_start();
 
     for (i = 0; i < NUM_LOADED_TEXTURES; i++)
         loved_textures[i] = i;
 
-    INFO("- Gamerenderer startup");
+    DEBUG("- Gamerenderer startup");
     gamerend_init();
 
-    INFO("- Cameras startup");
+    DEBUG("- Cameras startup");
     init_hack_cameras();
 
-    INFO("- End Sequence");
+    DEBUG("- End Sequence");
     region_end_sequence(FALSE);
 
-    INFO("- Lighting startup");
+    DEBUG("- Lighting startup");
     Init_Lighting();
 
     // set default difficulty levels for player
@@ -592,21 +592,21 @@ errtype object_data_load(void) {
     // KLC - Mac cursor showing at this time   begin_wait();
 
     // Initialize DOS (Doofy Object System)
-    INFO("ObjsInit");
+    DEBUG("ObjsInit");
     ObjsInit();
     AdvanceProgress();
 
     obj_init();
 
     // initialize player struct
-    INFO("Initialize player");
+    DEBUG("Initialize player");
     if (clear_player_data)
         init_player(&player_struct);
     clear_player_data = TRUE;
     AdvanceProgress();
 
     // Start up some subsystems
-    INFO("init mfd");
+    DEBUG("init mfd");
     init_newmfd();
 
     /*
@@ -619,16 +619,16 @@ errtype object_data_load(void) {
     bounds.lr.x = global_fullmap->x_size;
     bounds.lr.y = global_fullmap->y_size;
 
-    INFO("process tilemap");
+    DEBUG("process tilemap");
     rendedit_process_tilemap(global_fullmap, &bounds, TRUE);
     AdvanceProgress();
 
     // Make the objmode camera....
-    INFO("create camera");
+    DEBUG("create camera");
     fr_camera_create(&objmode_cam, CAMTYPE_OBJ, (fix *)(unsigned int)player_struct.rep, NULL);
     AdvanceProgress();
 
-    INFO("load_dynamic_memory");
+    DEBUG("load_dynamic_memory");
     objdata_loaded = TRUE;
     load_dynamic_memory(DYNMEM_ALL);
 
