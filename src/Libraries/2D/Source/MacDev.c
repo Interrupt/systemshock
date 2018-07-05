@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "bitmap.h"
 #include "fcntab.h"
 #include "lintab.h"
+#include "dbg.h"
 // #include "ShockBitmap.h"
 
 #include <SDL.h>
@@ -81,7 +82,7 @@ extern Ptr		gScreenAddress;
 //
 void mac_set_mode(void)
  {
-    printf("mac_set_mode\n");
+    INFO("Initializing graphics mode");
  	grd_mode_cap.vbase = (uchar *) gScreenAddress;
  	
  	grd_canvas_table_list[BMT_DEVICE] = flat8_canvas_table;

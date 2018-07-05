@@ -230,8 +230,6 @@ void change_svga_screen_mode() {
     if (convert_use_mode != mode_id)
         mode_change = TRUE;
     if (mode_change) {
-        printf(" Changing screen mode\n");
-
         int retval = -1;
 
         ui_mouse_get_xy(&mx, &my);
@@ -255,6 +253,8 @@ void change_svga_screen_mode() {
         convert_use_mode = mode_id;
         cur_w = grd_mode_cap.w;
         cur_h = grd_mode_cap.h;
+
+        INFO("Changing screen mode to %i x %i", cur_w, cur_h);
 
         // CRASHES!
         /*if (svga_screen!=NULL)

@@ -317,7 +317,7 @@ errtype Init_Lighting(void) {
         shading_table[i] = 0xFF; // i love our shading table
     }
 
-    DebugString("Set Light Table");
+    DEBUG("Set Light Table");
     gr_set_light_tab(shading_table);
 
     // now read bw shading table

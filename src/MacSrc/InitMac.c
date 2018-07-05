@@ -103,7 +103,6 @@ void InitMac(void)
 	gRandSeed = TickCount();
 	gRandSeed += TickCount()<<8;
 
-	INFO("InstallShockTimers");
 	InstallShockTimers(); // needed for the tick pointer
 }
 
