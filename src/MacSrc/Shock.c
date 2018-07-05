@@ -122,7 +122,7 @@ int main(int argc, char** argv)
 	InitMac();															// init mac managers
 
 	SetDefaultPrefs();													// Initialize the preferences file.
-	LoadPrefs(kPrefsResID);
+	LoadPrefs();
 	
 #ifdef TESTING
 	SetupTests();

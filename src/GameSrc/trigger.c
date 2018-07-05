@@ -1121,7 +1121,7 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4) {
         olh_active = FALSE; // KLC - this is kept in a global now.
 
         gShockPrefs.goOnScreenHelp = FALSE; // Yeah, got to update this one too and
-        SavePrefs(kPrefsResID);             // save the prefs out to disk.
+        SavePrefs();                        // save the prefs out to disk.
         return (OK);
     }
 

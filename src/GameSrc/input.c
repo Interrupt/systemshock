@@ -1114,7 +1114,7 @@ uchar MacResFunc(short keycode, ulong context, void *data) {
     }
     gShockPrefs.doResolution = (DoubleSize) ? 1 : 0; // KLC - Yeah, got to update this one too
     gShockPrefs.doUseQD = SkipLines;                 // KLC - and this one
-    SavePrefs(kPrefsResID);                          // KLC - and save the prefs out to disk.
+    SavePrefs();                                     // KLC - and save the prefs out to disk.
 
     return TRUE;
 }
@@ -1127,7 +1127,7 @@ uchar MacSkiplinesFunc(short keycode, ulong context, void *data) {
     }
     SkipLines = !SkipLines;
     gShockPrefs.doUseQD = SkipLines;
-    SavePrefs(kPrefsResID);
+    SavePrefs();
     return TRUE;
 }
 
@@ -1145,7 +1145,7 @@ uchar MacDetailFunc(short keycode, ulong context, void *data) {
     _fr_global_detail = _frc->detail; // Update the global guy.
 
     gShockPrefs.doDetail = _frc->detail; // Update and save our prefs.
-    SavePrefs(kPrefsResID);
+    SavePrefs();
 
     switch (_frc->detail) // Show a nice, informative message.
     {
