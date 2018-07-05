@@ -375,8 +375,6 @@ errtype load_game(char *fname) {
         dynmem_mask = DYNMEM_PARTIAL;
     }
 
-    printf("Load level: %i\n", player_struct.level);
-
     load_level_from_file(player_struct.level);
     obj_load_art(FALSE); // KLC - added here (removed from load_level_data)
     // KLC   string_message_info(REF_STR_LoadGameLoaded);
@@ -409,12 +407,11 @@ errtype load_game(char *fname) {
 errtype load_level_from_file(int level_num) {
     errtype retval;
 
-    printf("load_level_from_file %x\n", ResIdFromLevel(level_num));
+    INFO("Loading save %i", level_num);
 
     retval = load_current_map(ResIdFromLevel(level_num), NULL);
 
     if (retval == OK) {
-        printf(" loaded!\n");
         player_struct.level = level_num;
 
         compute_shodometer_value(FALSE);
@@ -462,8 +459,8 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void *undefin
     short plr_obj;
     extern errtype do_level_entry_triggers();
 
-    printf("create_initial_game_func\n\n");
-    printf("Game archive at %s\n", ARCHIVE_FNAME);
+    INFO("Starting game");
+    DEBUG("Game archive at %s", ARCHIVE_FNAME);
 
     // Copy archive into local current game file.
 
@@ -482,13 +479,11 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void *undefin
 
     player_struct.rep = OBJ_NULL;
 
-    printf("--- Starting Load level: %i ---\n\n", player_struct.level);
     load_level_from_file(player_struct.level);
 
     obj_load_art(FALSE); // KLC - added here (removed from load_level_data)
     amap_reset();
 
-    printf("player_create_initial\n");
     player_create_initial();
 
     LG_memcpy(player_struct.name, tmpname, sizeof(player_struct.name));
@@ -498,13 +493,10 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void *undefin
     // KLC - not needed any longer ResCloseFile(filenum);
 
     // Reset MFDs to be consistent with starting setup
-    printf("init_newmfd\n");
     init_newmfd();
 
     // No time elapsed, really, honest
     old_ticks = *tmd_ticks;
-
-    printf("init_music\n");
 
     // Setup some start-game stuff
     // Music
@@ -518,7 +510,6 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void *undefin
         load_score_for_location(PLAYER_BIN_X, PLAYER_BIN_Y); // KLC - added here
     }
 
-    printf("load_dynamic_memory\n");
     load_dynamic_memory(DYNMEM_ALL);
 
     // KLC - if not already on, turn on-line help on.
@@ -529,10 +520,7 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void *undefin
     // Hmm, do we actually want to call this any time we restore
     // a saved game or whatever?  No, probably not....hmmm.....
 
-    printf("do_level_entry_triggers\n");
     do_level_entry_triggers();
-
-    printf("Player starting at x: %i, y: %i\n", PLAYER_BIN_X, PLAYER_BIN_Y);
 
     // turn on help overlay.
     olh_overlay_on = olh_active;
@@ -547,8 +535,6 @@ errtype write_level_to_disk(int idnum, uchar flush_mem) {
     // the save game resource, but for now we will always do so...
 
     // FSMakeFSSpec(gDataVref, gDataDirID, CURRENT_GAME_FNAME, &currSpec);
-
-    printf("write_level_to_disk\n");
 
     // char* currSpec = "saves/save.dat";
     return (save_current_map(CURRENT_GAME_FNAME, idnum, flush_mem, TRUE));

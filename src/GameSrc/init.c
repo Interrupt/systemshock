@@ -256,8 +256,6 @@ void init_all(void) {
     if (start_mem < MINIMUM_GAME_THRESHOLD)
         critical_error(CRITERR_MEM | 1);
 
-    printf("Start mem: %i\n", start_mem);
-
     // register the bye message
     atexit(byebyemessage);
 
@@ -311,47 +309,47 @@ void init_all(void) {
     kb_init(NULL);
 
     // Initialize map
-    printf("- Map Startup\n");
+    INFO("- Map Startup");
     map_init();
 
-    printf("- Physics Startup\n");
+    INFO("- Physics Startup");
     physics_init();
     //	 KLC - done in InitMac.c.
     //   atexit(free_all);
 
-    printf("- Load Resources\n");
+    INFO("- Load Resources");
     init_load_resources();
 
-    printf("- 3d Objects Startup\n");
+    INFO("- 3d Objects Startup");
     init_3d_objects();
 
-    printf("- Popups Startup\n");
+    INFO("- Popups Startup");
     init_popups();
 
-    printf("- Gamesys Startup\n");
+    INFO("- Gamesys Startup");
     init_gamesys();
 
     // Start up the 3d...
-    printf("- Renderer Startup\n");
+    INFO("- Renderer Startup");
     fr_startup();
     game_fr_startup();
 
     // initialize renderer
-    printf("- SDL Startup\n");
+    INFO("- SDL Startup");
     InitSDL();
 
     // Initialize the main game screen
-    printf("- Main game screen Startup\n");
+    INFO("- Main game screen Startup");
     region_begin_sequence();
 
-    printf("- Sound startup\n");
+    INFO("- Sound startup");
     snd_startup();
     snd_start_digital();
     music_init();
     digifx_init();
 
     // Initialize the palette effects (for fades and color cycling)
-    printf("- PAL startup\n");
+    INFO("- PAL startup");
     palfx_init();
 
     // Initialize animation callbacks
@@ -377,23 +375,23 @@ void init_all(void) {
     }
 #endif
 
-    printf("-Screen init\n");
+    INFO("- Screen init");
     screen_init();
     fullscreen_init();
     amap_init();
     init_side_icon_popups(); // KLC - new call.
 
-    printf("-Input init\n");
+    INFO("- Input init");
     init_input(); // KLC - moved here, after uiInit (in screen_init)
 
     uiHideMouse(NULL); // KLC - added to hide mouse cursor
 
-    printf("-VR init\n");
+    INFO("- VR init");
     view360_init();
     // KLC - no longer needed   olh_init();
 
     // Put up splash screen for US!
-    printf("-Make splash\n");
+    INFO("- Make splash");
     uiFlush();
 
     // DrawSplashScreen(REF_IMG_bmOriginSplash, TRUE);
@@ -406,22 +404,22 @@ void init_all(void) {
     else
         pause_time += MIN_WAIT_TIME;
 
-    printf("-Start vitals\n");
+    INFO("- Start vitals");
     status_vitals_start();
 
     for (i = 0; i < NUM_LOADED_TEXTURES; i++)
         loved_textures[i] = i;
 
-    printf("-Gamerenderer startup\n");
+    INFO("- Gamerenderer startup");
     gamerend_init();
 
-    printf("-Cameras startup\n");
+    INFO("- Cameras startup");
     init_hack_cameras();
 
-    printf("-End Sequence\n");
+    INFO("- End Sequence");
     region_end_sequence(FALSE);
 
-    printf("-Lighting startup\n");
+    INFO("- Lighting startup");
     Init_Lighting();
 
     // set default difficulty levels for player
@@ -486,8 +484,6 @@ void init_all(void) {
 
     uiFlush();
     init_done = TRUE;
-
-    printf("Finished Initializing!\n");
 }
 
 //-----------------------------------------------------------
@@ -596,21 +592,21 @@ errtype object_data_load(void) {
     // KLC - Mac cursor showing at this time   begin_wait();
 
     // Initialize DOS (Doofy Object System)
-    printf("ObjsInit\n");
+    INFO("ObjsInit");
     ObjsInit();
     AdvanceProgress();
-    printf("obj_init\n");
+
     obj_init();
 
     // initialize player struct
-    printf("Initialize player\n");
+    INFO("Initialize player");
     if (clear_player_data)
         init_player(&player_struct);
     clear_player_data = TRUE;
     AdvanceProgress();
 
     // Start up some subsystems
-    printf("init mfd\n");
+    INFO("init mfd");
     init_newmfd();
 
     /*
@@ -623,16 +619,16 @@ errtype object_data_load(void) {
     bounds.lr.x = global_fullmap->x_size;
     bounds.lr.y = global_fullmap->y_size;
 
-    printf("process tilemap\n");
+    INFO("process tilemap");
     rendedit_process_tilemap(global_fullmap, &bounds, TRUE);
     AdvanceProgress();
 
     // Make the objmode camera....
-    printf("create camera\n");
+    INFO("create camera");
     fr_camera_create(&objmode_cam, CAMTYPE_OBJ, (fix *)(unsigned int)player_struct.rep, NULL);
     AdvanceProgress();
 
-    printf("load_dynamic_memory\n");
+    INFO("load_dynamic_memory");
     objdata_loaded = TRUE;
     load_dynamic_memory(DYNMEM_ALL);
 
@@ -666,7 +662,6 @@ errtype init_kb() {
 errtype load_da_palette(void) {
     int pal_file;
 
-    printf("Loading gamepal.res\n");
     pal_file = ResOpenFile("res/data/gamepal.res");
     if (pal_file < 0)
         critical_error(CRITERR_RES | 4);
@@ -761,7 +756,7 @@ void shock_alloc_ipal() {
 
     FILE *temp = fopen_caseless("res/data/ipal.dat", "rb");
     if (temp == NULL) {
-        printf("Failed to open ipal.dat\n");
+        ERROR("Failed to open ipal.dat");
         return;
     }
     fread(grd_ipal, 1, 32768, temp);
@@ -806,27 +801,22 @@ errtype obj_3d_shutdown() {
 
 errtype init_load_resources() {
     // Open the screen resource stuff
-    printf("Loading gamescr.res\n");
     if (ResOpenFile("res/data/gamescr.res") < 0)
         critical_error(CRITERR_RES | 1);
 
     // Open the appropriate mfd art file
-    printf("Loading mfdart.res\n");
     if ((mfdart_res_file = ResOpenFile("res/data/mfdart.res")) < 0)
         critical_error(CRITERR_RES | 2);
 
     // Open the 3d objects
-    printf("Loading obj3d.res\n");
     if (ResOpenFile("res/data/obj3d.res") < 0)
         critical_error(CRITERR_RES | 9);
 
     // Open the Citadel materials file
-    printf("Loading citmat.res\n");
     if (ResOpenFile("res/data/citmat.res") < 0)
         critical_error(CRITERR_RES | 9);
 
     // Open the Digital sound FX file
-    printf("Loading digifx.res\n");
     if (ResOpenFile("res/data/digifx.res") < 0)
         critical_error(CRITERR_RES | 9);
 

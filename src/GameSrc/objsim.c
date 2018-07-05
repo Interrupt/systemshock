@@ -1008,7 +1008,7 @@ void place_obj_at_objloc(ObjID id, ObjLoc *newloc, ushort xsize, ushort ysize) {
     ObjRefID refid, origref;
 
     if ((xsize > MAX_PLACE_SIZE) || (ysize > MAX_PLACE_SIZE)) {
-        printf("place_obj_at_objloc: obj %d size too large!! (xsize = 0x%x  ysize = 0x%x)\n", id, xsize, ysize);
+        //printf("place_obj_at_objloc: obj %d size too large!! (xsize = 0x%x  ysize = 0x%x)\n", id, xsize, ysize);
         xsize = lg_min(0x200, xsize);
         ysize = lg_min(0x200, ysize);
     }
@@ -1269,8 +1269,6 @@ errtype obj_create_player(ObjLoc *plr_loc) {
 #endif
     fix pos_list[3];
 
-    printf("obj_create_player\n");
-
     player_struct.rep = obj_create_base(PLAYER_TRIP);
     if (player_struct.rep == OBJ_NULL) {
         Warning(("MAJOR BADNESS!! Could not create player!\n"));
@@ -1446,7 +1444,7 @@ errtype obj_load_properties() {
     cp += 4;
     // SwapLongBytes(&version);
     if (version != OBJPROP_VERSION_NUMBER) {
-        printf("Bad version!\n");
+        ERROR("Bad version!");
         critical_error(CRITERR_MISC | 0);
     }
 

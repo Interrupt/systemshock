@@ -331,7 +331,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     State player_edms;
     int verify_cookie = 0;
 
-    printf("Save current map: %s\n", fname);
+    INFO("Save current map: %s", fname);
 
     begin_wait();
 
@@ -364,7 +364,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     // Open the file we're going to save into.
     fd = ResEditFile(CURRENT_GAME_FNAME, TRUE);
     if (fd < 0) {
-        printf("No file!\n");
+        ERROR("No file!");
         end_wait();
         return ERR_FOPEN;
     }
@@ -382,7 +382,6 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     for (i = 0; i < NUM_MAP_SCHEDULES; i++) {
         int sz = lg_min(global_fullmap->sched[i].queue.fullness + 1, global_fullmap->sched[i].queue.size);
         REF_WRITE_RAW(id_num, idx++, global_fullmap->sched[i].queue.vec, sizeof(SchedEvent) * sz);
-        printf("Saved %i schedule items!\n", sz);
     }
     REF_WRITE(id_num, idx++, loved_textures);
 
@@ -478,7 +477,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
         // what does this do???      spoof_mouse_event();
     }
 
-    printf("Saved level.\n");
+    INFO("Saved level.");
 
     return OK;
 }
@@ -770,6 +769,8 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
 
     //   _MARK_("load_current_map:Start");
 
+    INFO("Loading map %x", id_num);
+
     begin_wait();
     free_dynamic_memory(dynmem_mask);
     trigger_check = FALSE;
@@ -788,7 +789,7 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
     fd = ResOpenFile(CURRENT_GAME_FNAME);
     if (fd < 0) {
         // Warning(("Could not load map file %s (%s) , rv = %d!\n",dpath_fn,fn,retval));
-        printf("Could not load map file %d\n", retval);
+        ERROR("Could not load map file %d", retval);
         if (make_player)
             obj_create_player(&plr_loc);
         trigger_check = TRUE;
@@ -812,11 +813,9 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
     REF_READ(id_num, idx++, version);
     map_version = version;
 
-    printf("Map Version: %i\n", version);
-
     // Check the version number of the map for this level.
     if (version < MAP_VERSION_NUMBER) {
-        printf("OLD MAP FORMAT!\n");
+        INFO("OLD MAP FORMAT!");
     }
 
     //  object version number!
@@ -840,8 +839,6 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
         ResExtract(id_num + idx++, MAP_MAP);
         AdvanceProgress();
     }
-
-    printf("Loading schedules\n");
 
     // Load schedules, performing some voodoo.
     global_fullmap->sched[0].queue.vec = schedvec;
@@ -868,8 +865,6 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
         global_fullmap->sched[0].queue.fullness = (queue_size / sizeof(SchedEvent)) - 1;
     } else
         idx++;
-
-    printf("Loading tiles\n");
 
     // KLC��� Big hack!  Force the schedule to growable.
     global_fullmap->sched[0].queue.grow = TRUE;
@@ -960,7 +955,6 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
     // REF_READ(id_num, idx++, objs);
 
     // Read in and convert the object refs.
-    printf("Sizeof obj: %i\n", sizeof(Obj));
     REF_READ(id_num, idx++, objRefs);
     /* for (i=0; i < NUM_REF_OBJECTS; i++)
        {
@@ -1537,7 +1531,6 @@ out:
 
     trigger_check = TRUE;
 
-    printf("load_dynamic_memory\n");
     load_dynamic_memory(dynmem_mask);
     load_level_data();
 
@@ -1550,6 +1543,7 @@ out:
     reload_motion_cursors(global_fullmap->cyber);
 
     // Debug print the map
+#ifdef DEBUG_MAP_PRINT
     for (int y = 0; y < 64; y++) {
         for (int x = 0; x < 64; x++) {
             uchar tiletype = global_fullmap->map[x + y * 64].tiletype;
@@ -1560,6 +1554,7 @@ out:
         }
         printf("\n");
     }
+#endif
 
     // KLC   physics_warmup();
 
