@@ -49,9 +49,8 @@ void amap_exit(void);
 
 uchar amap_mouse_handler(uiEvent *ev, LGRegion *reg, void *v) {
     uiMouseEvent *mev = (uiMouseEvent *)ev;
-    if (mev->action & ~MOUSE_MOTION)
-        if (mev->action < 8)
-            return amap_ms_callback(oAMap(MFD_FULLSCR_MAP), mev->pos.x, mev->pos.y, mev->action, mev->buttons);
+    if (mev->action & (MOUSE_LDOWN | MOUSE_LUP | MOUSE_WHEELUP | MOUSE_WHEELDN))
+        return amap_ms_callback(oAMap(MFD_FULLSCR_MAP), mev->pos.x, mev->pos.y, mev->action, mev->buttons);
     return (TRUE);
 }
 

@@ -365,7 +365,16 @@ void pump_events(void)
 				addMouseEvent(&mouseEvent);
 				break;
 			}
-
+			case SDL_MOUSEWHEEL:
+				if (ev.wheel.y != 0) {
+					mouse_event mouseEvent = {0};
+					mouseEvent.type = ev.wheel.y < 0 ? MOUSE_WHEELDN : MOUSE_WHEELUP;
+					mouseEvent.x = latestMouseEvent.x;
+					mouseEvent.y = latestMouseEvent.y;
+					mouseEvent.timestamp = mouse_get_time();
+					addMouseEvent(&mouseEvent);
+				}
+				break;
 			// TODO: maybe handle other events as well..
 		}
 	}
