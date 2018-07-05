@@ -57,6 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <dpaths.h>
 #include <cybmem.h>
 #include <status.h>
+#include "cutsloop.h"
 //#include <cutscene.h>
 #include <wrapper.h>
 #include <mlimbs.h>
@@ -515,8 +516,7 @@ errtype journey_intro_func(uchar draw_stuff) {
         res_draw_string(RES_citadelFont, SETUP_STRING_BASE, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT1_TOP + 2);
     uiShowMouse(NULL); // need to leave it hidden
 
-    // FIXME: Cutscenes!
-    // return(play_cutscene(START_CUTSCENE, TRUE));
+    return(play_cutscene(START_CUTSCENE, TRUE));
     return OK;
 #endif
 }

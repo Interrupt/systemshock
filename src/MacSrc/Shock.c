@@ -63,6 +63,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Modding.h"
 
+#include "cutsloop.h"
+
 #include <stdint.h>
 #include <SDL.h>
 

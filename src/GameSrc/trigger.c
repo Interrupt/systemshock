@@ -80,6 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "statics.h"
 #include "citres.h"
 #include "setploop.h"
+#include "cutsloop.h"
 
 #ifdef OLD_TELEPORT_BETWEEN_LEVELS
 #include <gamewrap.h>
@@ -1198,14 +1199,12 @@ errtype trap_cutscene_func(int p1, int p2, int p3, int p4) {
 
     //if (qdata_get(p1) == 0)				// KLC - if we are to play the endgame cutscene
     //{
-        //gGameCompletedQuit = TRUE;
+        gGameCompletedQuit = TRUE;
+
         //gPlayingGame = FALSE; // Hop out of the game loop.
         // KLC   play_cutscene(qdata_get(p1), qdata_get(p2));
 
-        // CC: Show the credits, should really play the win cutscene here
-        _new_mode = SETUP_LOOP;
-        chg_set_flg(GL_CHG_LOOP);
-        journey_credits_func(FALSE);
+        play_cutscene(qdata_get(p1), qdata_get(p2));
     //}
 
     alternate_death = (qdata_get(p2) != 0);
@@ -1671,10 +1670,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
             //gPlayingGame = FALSE;   // Hop out of the game loop.
 
             INFO("GAME OVER!\n");
-
-            // CC: Go back to the main menu, should really play the death custcene here
-            _new_mode = SETUP_LOOP;
-            chg_set_flg(GL_CHG_LOOP);
+            play_cutscene(DEATH_CUTSCENE, TRUE);
         }
         break;
     }
