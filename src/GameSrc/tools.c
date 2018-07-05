@@ -723,8 +723,12 @@ errtype begin_wait() {
         uiHideMouse(NULL);
         retval = uiPushGlobalCursor(&wait_cursor);
         uiShowMouse(NULL);
+
+        extern void SDLDraw(void);
+        SDLDraw();
     }
     wait_count++;
+
     return (retval);
 }
 

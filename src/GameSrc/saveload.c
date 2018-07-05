@@ -333,7 +333,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
 
     printf("Save current map: %s\n", fname);
 
-    // KLC - Mac cursor showing at this time   begin_wait();
+    begin_wait();
 
     // make pathfinding state stable by fulfilling PF requests
     check_requests(FALSE);
@@ -365,7 +365,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     fd = ResEditFile(CURRENT_GAME_FNAME, TRUE);
     if (fd < 0) {
         printf("No file!\n");
-        // KLC      end_wait();
+        end_wait();
         return ERR_FOPEN;
     }
     AdvanceProgress();
@@ -472,7 +472,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     //      load_dynamic_memory(DYNMEM_PARTIAL);
     EDMS_holistic_teleport(objs[PLAYER_OBJ].info.ph, &player_edms);
 
-    // KLC   end_wait();
+    end_wait();
     {
         extern void spoof_mouse_event();
         // what does this do???      spoof_mouse_event();
@@ -770,7 +770,7 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
 
     //   _MARK_("load_current_map:Start");
 
-    // KLC - Mac cursor showing at this time   begin_wait();
+    begin_wait();
     free_dynamic_memory(dynmem_mask);
     trigger_check = FALSE;
     if (PLAYER_OBJ != OBJ_NULL) {
@@ -793,7 +793,7 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
             obj_create_player(&plr_loc);
         trigger_check = TRUE;
         load_dynamic_memory(dynmem_mask);
-        // KLC    end_wait();
+        end_wait();
 
         return ERR_FOPEN;
     }
@@ -1563,7 +1563,7 @@ out:
 
     // KLC   physics_warmup();
 
-    // KLC   end_wait();
+    end_wait();
     /*���   {
           extern void spoof_mouse_event();
           spoof_mouse_event();
