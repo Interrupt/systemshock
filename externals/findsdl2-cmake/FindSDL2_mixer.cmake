@@ -42,8 +42,12 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
+unset(SDL2_MIXER_INCLUDE_DIR CACHE)
+unset(SDL2_MIXER_LIBRARY CACHE)
+
 find_path(SDL2_MIXER_INCLUDE_DIR SDL_mixer.h
         HINTS
+        NO_DEFAULT_PATH
         $ENV{SDL2_MIXER_DIR}
         ENV SDL2MIXERDIR
         ENV SDL2DIR
@@ -52,6 +56,18 @@ find_path(SDL2_MIXER_INCLUDE_DIR SDL_mixer.h
         include/SDL2 include
         PATHS build_ext/built_sdl_mixer ${SDL2_MIXER_PATH}
         )
+
+if(NOT SDL2_MIXER_INCLUDE_DIR)
+find_path(SDL2_MIXER_INCLUDE_DIR SDL_mixer.h
+        HINTS
+        $ENV{SDL2_MIXER_DIR}
+        ENV SDL2MIXERDIR
+        ENV SDL2DIR
+        PATH_SUFFIXES SDL2
+        # path suffixes to search inside ENV{SDLDIR}
+        include/SDL2 include
+        )
+endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(VC_LIB_PATH_SUFFIX lib/x64)
@@ -62,12 +78,24 @@ endif()
 find_library(SDL2_MIXER_LIBRARY
         NAMES SDL2_mixer
         HINTS
+        NO_DEFAULT_PATH
+        $ENV{SDL2_MIXER_DIR}
+        ENV SDL2MIXERDIR
+        ENV SDL2DIR
+        PATH_SUFFIXES lib ${VC_LIB_PATH_SUFFIX}
+        )
+
+if(NOT SDL2_MIXER_LIBRARY)
+find_library(SDL2_MIXER_LIBRARY
+        NAMES SDL2_mixer
+        HINTS
         $ENV{SDL2_MIXER_DIR}
         ENV SDL2MIXERDIR
         ENV SDL2DIR
         PATH_SUFFIXES lib ${VC_LIB_PATH_SUFFIX}
         PATHS build_ext/built_sdl_mixer ${SDL2_MIXER_PATH}
         )
+endif()
 
 if(SDL2_MIXER_INCLUDE_DIR AND EXISTS "${SDL2_MIXER_INCLUDE_DIR}/SDL_MIXER.h")
     file(STRINGS "${SDL2_MIXER_INCLUDE_DIR}/SDL_MIXER.h" SDL2_MIXER_VERSION_MAJOR_LINE REGEX "^#define[ \t]+SDL_MIXER_MAJOR_VERSION[ \t]+[0-9]+$")
