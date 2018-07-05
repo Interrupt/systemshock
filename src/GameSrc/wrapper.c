@@ -1119,7 +1119,7 @@ errtype wrapper_panel_close(uchar clear_message) {
     if (clear_message)
         message_info("");
     wrapper_panel_on = FALSE;
-    SavePrefs(0);
+    SavePrefs();
     inventory_page = inv_last_page;
     if (inventory_page < 0 && inventory_page != INV_3DVIEW_PAGE)
         inventory_page = 0;

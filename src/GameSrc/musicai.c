@@ -729,7 +729,7 @@ errtype music_init() {
         } else // else turn off the music globals and prefs
         {
             gShockPrefs.soBackMusic = FALSE;
-            SavePrefs(kPrefsResID);
+            SavePrefs();
             music_on = mlimbs_on = FALSE;
         }
         //	}

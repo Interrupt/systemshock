@@ -6,15 +6,15 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 */
 //====================================================================================
 //
@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //		Prefs.c	-	Handles saving and loading preferences.
 //
 //====================================================================================
-
 
 //--------------------
 //  Includes
@@ -39,16 +38,16 @@ static void SetShockGlobals(void);
 //--------------------
 //  Globals
 //--------------------
-ShockPrefs		gShockPrefs;
-char		which_lang;
+ShockPrefs gShockPrefs;
+char which_lang;
 uchar sfx_on = TRUE;
 
 //--------------------
 //  Externs
 //--------------------
-extern int 		_fr_global_detail;
-extern Boolean	DoubleSize;
-extern Boolean	SkipLines;
+extern int _fr_global_detail;
+extern Boolean DoubleSize;
+extern Boolean SkipLines;
 extern short mode_id;
 
 extern uchar curr_vol_lev;
@@ -68,29 +67,28 @@ static const char *PREF_DETAIL       = "detail";
 //--------------------------------------------------------------------
 //	  Initialize the preferences to their default settings.
 //--------------------------------------------------------------------
-void SetDefaultPrefs(void)
-{
-	gShockPrefs.prefVer = 0;
-	gShockPrefs.prefPlayIntro = 1;				// First time through, play the intro
-	
-	gShockPrefs.goMsgLength = 0;				// Normal
-	gShockPrefs.goPopupLabels = true;
-	gShockPrefs.goOnScreenHelp = true;
-	gShockPrefs.goLanguage = 0;					// English
+void SetDefaultPrefs(void) {
+    gShockPrefs.prefVer = 0;
+    gShockPrefs.prefPlayIntro = 1;      // First time through, play the intro
 
-	gShockPrefs.soBackMusic = true;
-	gShockPrefs.soSoundFX = true;
-	gShockPrefs.soMusicVolume = 100;
-	gShockPrefs.soSfxVolume = 100;
-	gShockPrefs.soAudioLogVolume = 100;
+    gShockPrefs.goMsgLength = 0;        // Normal
+    gShockPrefs.goPopupLabels = true;
+    gShockPrefs.goOnScreenHelp = true;
+    gShockPrefs.goLanguage = 0;         // English
 
-	gShockPrefs.doVideoMode = 3;
-	gShockPrefs.doResolution = 0;				// High-res.
-	gShockPrefs.doDetail = 3;					// Max detail.
-	gShockPrefs.doGamma = 29;					// Default gamma (29 out of 100).
-	gShockPrefs.doUseQD = false;
+    gShockPrefs.soBackMusic = true;
+    gShockPrefs.soSoundFX = true;
+    gShockPrefs.soMusicVolume = 100;
+    gShockPrefs.soSfxVolume = 100;
+    gShockPrefs.soAudioLogVolume = 100;
 
-	SetShockGlobals();
+    gShockPrefs.doVideoMode = 3;
+    gShockPrefs.doResolution = 0;       // High-res.
+    gShockPrefs.doDetail = 3;           // Max detail.
+    gShockPrefs.doGamma = 29;           // Default gamma (29 out of 100).
+    gShockPrefs.doUseQD = false;
+
+    SetShockGlobals();
 }
 
 static FILE *open_prefs(const char *mode) {
@@ -102,9 +100,11 @@ static FILE *open_prefs(const char *mode) {
 }
 
 static char *trim(char *s) {
-    while (*s && isspace(*s)) s++;
+    while (*s && isspace(*s))
+        s++;
     char *c = &s[strlen(s) - 1];
-    while (c >= s && isspace(*c)) *(c--) = '\0';
+    while (c >= s && isspace(*c))
+        *(c--) = '\0';
     return s;
 }
 
@@ -115,11 +115,11 @@ static bool is_true(const char *s) {
 //--------------------------------------------------------------------
 //	  Locate the preferences file and load them to set our global pref settings.
 //--------------------------------------------------------------------
-OSErr LoadPrefs(ResType resID) {
+OSErr LoadPrefs(void) {
     FILE *f = open_prefs("r");
     if (!f) {
         // file can't be open, write default preferences
-        return SavePrefs(resID);
+        return SavePrefs();
     }
 
     char line[64];
@@ -173,8 +173,8 @@ OSErr LoadPrefs(ResType resID) {
 //--------------------------------------------------------------------
 //	  Save global settings in the preferences file.
 //--------------------------------------------------------------------
-OSErr SavePrefs(ResType resID)  {
-    printf("Saving preferences\n");
+OSErr SavePrefs(void) {
+    INFO("Saving preferences\n");
     FILE *f = open_prefs("w");
     if (!f) {
         printf("ERROR: Failed to open preferences file\n");
@@ -196,19 +196,18 @@ OSErr SavePrefs(ResType resID)  {
 //--------------------------------------------------------------------
 //  Set the corresponding Shock globals from the prefs structure.
 //--------------------------------------------------------------------
-static void SetShockGlobals(void)
-{
-	popup_cursors = gShockPrefs.goPopupLabels;
-	olh_active = gShockPrefs.goOnScreenHelp;
-	which_lang = gShockPrefs.goLanguage;
+static void SetShockGlobals(void) {
+    popup_cursors = gShockPrefs.goPopupLabels;
+    olh_active = gShockPrefs.goOnScreenHelp;
+    which_lang = gShockPrefs.goLanguage;
 
-	sfx_on = gShockPrefs.soSoundFX;
-	curr_vol_lev = gShockPrefs.soMusicVolume;
-	curr_sfx_vol = gShockPrefs.soSfxVolume;
-	curr_alog_vol = gShockPrefs.soAudioLogVolume;
+    sfx_on = gShockPrefs.soSoundFX;
+    curr_vol_lev = gShockPrefs.soMusicVolume;
+    curr_sfx_vol = gShockPrefs.soSfxVolume;
+    curr_alog_vol = gShockPrefs.soAudioLogVolume;
 
-	mode_id = gShockPrefs.doVideoMode;
-	DoubleSize = (gShockPrefs.doResolution == 1);		// Set this True for low-res.
-	SkipLines = gShockPrefs.doUseQD;
-	_fr_global_detail = gShockPrefs.doDetail;
+    mode_id = gShockPrefs.doVideoMode;
+    DoubleSize = (gShockPrefs.doResolution == 1); // Set this True for low-res.
+    SkipLines = gShockPrefs.doUseQD;
+    _fr_global_detail = gShockPrefs.doDetail;
 }

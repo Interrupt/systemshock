@@ -291,7 +291,7 @@ void start_music(void) {
         MacTuneStartCurrentTheme();
     } else {
         gShockPrefs.soBackMusic = FALSE;
-        SavePrefs(kPrefsResID);
+        SavePrefs();
     }
     //   }
 }
@@ -319,7 +319,7 @@ uchar toggle_music_func(short keycode, ulong context, void *data) {
     }
 
     gShockPrefs.soBackMusic = music_on;
-    SavePrefs(kPrefsResID);
+    SavePrefs();
 
     return (FALSE);
 }

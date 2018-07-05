@@ -502,7 +502,7 @@ uchar toggle_olh_func(short keycode, ulong context, void *data) {
         ResUnlock(RES_olh_strings); // KLC - added to free strings.
     }
     gShockPrefs.goOnScreenHelp = olh_active; // KLC - Yeah, got to update this one too and
-    SavePrefs(kPrefsResID);                  // KLC - save the prefs out to disk.
+    SavePrefs();                             // KLC - save the prefs out to disk.
     return TRUE;
 }
 
