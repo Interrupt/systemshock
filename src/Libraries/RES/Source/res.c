@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <stdlib.h>
 #include <string.h>
 
-//#include <lg.h>
+#include <lg.h>
 #include "lzw.h"
 #include "res.h"
 #include "res_.h"
@@ -84,13 +84,13 @@ void ResInit() {
 
   // Allocate initial resource descriptor table, default size (can't fail)
 
-  printf("ResInit\n");
+  INFO("ResInit");
 
   resDescMax = DEFAULT_RESMAX;
   gResDesc = (ResDesc *)malloc((DEFAULT_RESMAX + 1) *
                                (sizeof(ResDesc) + sizeof(ResDesc2)));
   if (gResDesc == NULL)
-    printf("ResInit: Can't allocate the global resource descriptor table.\n");
+    ERROR("ResInit: Can't allocate the global resource descriptor table.");
   gResDesc2 = (ResDesc2 *)(gResDesc + (DEFAULT_RESMAX + 1));
   gResDesc[ID_HEAD].prev = 0;
   gResDesc[ID_HEAD].next = ID_TAIL;

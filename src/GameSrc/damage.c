@@ -412,7 +412,7 @@ uchar kill_player(void) {
     uchar dummy;
     extern uchar clear_player_data;
 
-    INFO("Player died!");
+    INFO("Player died!\n");
 
     // Look for a player death trigger.  If so, do it.
     // If not, play appropriate dying cutscene.

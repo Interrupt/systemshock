@@ -174,7 +174,7 @@ OSErr LoadPrefs(void) {
 //	  Save global settings in the preferences file.
 //--------------------------------------------------------------------
 OSErr SavePrefs(void) {
-    INFO("Saving preferences\n");
+    INFO("Saving preferences");
     FILE *f = open_prefs("w");
     if (!f) {
         printf("ERROR: Failed to open preferences file\n");

@@ -105,7 +105,7 @@ void fr_camera_setdef(cams *cam) { _def_cam = cam; }
 cams *fr_camera_getdef(void) { return _def_cam; }
 
 uchar fr_camera_create(cams *cam, int camtype, void *arg1, void *arg2) {
-    printf("fr_camera_create\n");
+    DEBUG("Creating camera");
     _cam_top(cam) FALSE;
     _cam->type = camtype;
 

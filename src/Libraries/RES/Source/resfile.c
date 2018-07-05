@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include "lg.h"
 #include "res.h"
 #include "res_.h"
 
@@ -392,7 +393,7 @@ int32_t ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo) {
   //	return error except if mode 2 (edit/create), in which case
   //	drop thru to create case by faking mode 3.
 
-  printf("ResOpenResFile: %s\n", fname);
+  DEBUG("Opening resource %s", fname);
 
   if (mode != ROM_CREATE) {
     //		fd = DatapathFDOpen(&gDatapath, fname, openMode[mode]);
@@ -627,12 +628,6 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum,
   prd2->type = pDirEntry->type;
   prd->next = 0;
   prd->prev = 0;
-
-  if (pDirEntry->id == 0x268) {
-    printf("res: id: %x, flags: %x, type: %x offset: %i size: %i csize: %i\n",
-           pDirEntry->id, prd2->flags, prd2->type, prd->offset, prd->size,
-           pDirEntry->csize);
-  }
 
   // If loadonopen flag set, load resource
 

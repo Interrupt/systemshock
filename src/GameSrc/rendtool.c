@@ -394,8 +394,6 @@ void game_fr_startup(void) {
     short curr, index;
     extern int std_alias_size;
 
-    printf("game_fr_startup\n");
-
     // we know that the main screen we support is 320x200, so.....
     // KLC   frameBufferFreePtr=frameBuffer;
     // has to fixed, clearly

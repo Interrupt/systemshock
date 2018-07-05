@@ -56,8 +56,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum,
              uint8_t flags) {
 
-  printf("ResMake\n");	
-
   ResDesc *prd;
   ResDesc2 *prd2;
 

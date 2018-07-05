@@ -531,12 +531,12 @@ errtype journey_newgame_func() {
 
     clear_player_data = TRUE;
 
-    INFO("Load object data");
+    DEBUG("Load object data");
     object_data_load();
 
     player_struct.level = 0xFF;
 
-    INFO("Create initial game");
+    DEBUG("Create initial game");
     create_initial_game_func(0, 0, 0);
 
     INFO("Started!");
@@ -685,7 +685,7 @@ errtype draw_savegame_names() {
 extern void check_and_update_initial(void);
 
 errtype load_that_thar_game(int which_slot) {
-    INFO("load_that_thar_game %i", which_slot);
+    DEBUG("load_that_thar_game %i", which_slot);
 
     errtype retval;
     if (valid_save & (1 << which_slot)) {
@@ -1071,7 +1071,7 @@ errtype load_savegame_names() {
 
     valid_save = 0;
 
-    INFO("Grabbing save game names");
+    DEBUG("Grabbing save game names");
 
     for (i = 0; i < NUM_SAVE_SLOTS; i++) {
         Poke_SaveName(i);

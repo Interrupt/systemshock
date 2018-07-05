@@ -259,7 +259,6 @@ void load_textures(void) {
     AdvanceProgress();
 
     // Copy the appropriate things into textprops
-    printf("Loading textprops\n");
     for (i = 0; i < NUM_LOADED_TEXTURES; i++)
         textprops[i] = texture_properties[loved_textures[i]];
     AdvanceProgress();
@@ -317,7 +316,7 @@ errtype Init_Lighting(void) {
         shading_table[i] = 0xFF; // i love our shading table
     }
 
-    DebugString("Set Light Table");
+    DEBUG("Set Light Table");
     gr_set_light_tab(shading_table);
 
     // now read bw shading table
@@ -344,7 +343,7 @@ errtype load_master_texture_properties(void) {
     // Load Properties from disk
     clear_texture_properties();
 
-    printf("load_master_texture_properties\n");
+    DEBUG("Loading texture properties");
 
     FILE *f = fopen_caseless("res/data/textprop.dat", "rb");
 
@@ -371,7 +370,7 @@ errtype load_master_texture_properties(void) {
                 cp += 11;
             }
         } else {
-            printf("Skipping loading textprops.dat, bad version!\n");
+            ERROR("Skipping loading textprops.dat, bad version!");
         }
     }
 

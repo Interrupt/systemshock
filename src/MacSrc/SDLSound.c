@@ -111,7 +111,7 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 	strcat(filename, theme_base);
 	strcat(filename, ".mid");
 
-	printf("Playing music %s\n", filename);
+	DEBUG("Playing music %s", filename);
 
 	Mix_Music *music;
 	music = Mix_LoadMUS(filename);

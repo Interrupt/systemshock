@@ -168,8 +168,6 @@ errtype obj_load_art(uchar flush_all) {
     extern uchar empty_bitmap(grs_bitmap * bmp);
     uchar ref_buffer_used = TRUE;
 
-    printf("obj_load_art!\n");
-
     if (flush_all)
         ObjLoadMeClearAll();
     else
@@ -214,7 +212,7 @@ errtype obj_load_art(uchar flush_all) {
 
         // Read out the infamous bitmap zero
         if (!bitmap_zero_loaded) {
-            printf("Read Bitmap Zero\n");
+            DEBUG("Read Bitmap Zero");
             bitmaps_3d[count_3d] = get_objbitmap_from_pool(count_3d, 1); // KLC - added here.
             load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, prt, TRUE, &dummy_anchor, NULL);
             bitmap_zero_loaded = TRUE;

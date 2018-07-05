@@ -1194,7 +1194,7 @@ extern Boolean gGameCompletedQuit;
 errtype trap_cutscene_func(int p1, int p2, int p3, int p4) {
     short cs = qdata_get(p1);
 
-    INFO("Playing cutscene %i %i", cs, qdata_get(p2));
+    INFO("Playing cutscene %i %i\n", cs, qdata_get(p2));
 
     //if (qdata_get(p1) == 0)				// KLC - if we are to play the endgame cutscene
     //{
@@ -1670,7 +1670,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
             gDeadPlayerQuit = TRUE; // The player is dead.
             //gPlayingGame = FALSE;   // Hop out of the game loop.
 
-            INFO("GAME OVER!");
+            INFO("GAME OVER!\n");
 
             // CC: Go back to the main menu, should really play the death custcene here
             _new_mode = SETUP_LOOP;

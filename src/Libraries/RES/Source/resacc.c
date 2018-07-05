@@ -38,6 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "res.h"
 #include "res_.h"
+#include "lg.h"
 #include <stdlib.h> // free()
 #include <string.h>
 
@@ -71,7 +72,7 @@ void *ResLock(Id id) {
 
   // If resource not loaded, load it now
   if (ResLoadResource(id) == NULL) {
-    printf("ResLock: Could not load %x\n", id);
+    ERROR("ResLock: Could not load %x", id);
     return (NULL);
   } else if (prd->lock == 0)
     ResRemoveFromLRU(prd);
@@ -109,7 +110,7 @@ void ResUnlock(Id id) {
   prd = RESDESC(id);
 
   if (prd->lock == 0) {
-    printf("ResUnlock: id $%x already unlocked\n", id);
+    DEBUG("ResUnlock: id $%x already unlocked", id);
     return;
   }
 
@@ -193,7 +194,7 @@ void *ResExtract(Id id, void *buffer) {
     return (buffer);
   }
 
-  printf("ResExtract failed for %x\n", id);
+  ERROR("ResExtract failed for %x", id);
   // If ResRetreive failed, return NULL ptr
   return (NULL);
 }
@@ -236,12 +237,12 @@ void ResDrop(Id id) {
   //	Free memory and set ptr to NULL
 
   if (prd->ptr == NULL) {
-    printf("DoResDrop: Block $%x not in memory, ignoring request\n", id);
+    DEBUG("DoResDrop: Block $%x not in memory, ignoring request", id);
     return;
   }
 
   if (prd->lock != 0) {
-    printf("DoResDrop: Dropping resource 0x%x that's in use.\n", id);
+    DEBUG("DoResDrop: Dropping resource 0x%x that's in use.", id);
     prd->lock = 0;
   }
 
@@ -314,11 +315,11 @@ void ResDelete(Id id) {
 
 bool ResCheckId(Id id) {
   if (id < ID_MIN) {
-    printf("ResCheckId: id $%x invalid\n", id);
+    DEBUG("ResCheckId: id $%x invalid\n", id);
     return false;
   }
   if (id > resDescMax) {
-    printf("ResCheckId: id $%x exceeds table\n", id);
+    DEBUG("ResCheckId: id $%x exceeds table\n", id);
     return false;
   }
   return true;
