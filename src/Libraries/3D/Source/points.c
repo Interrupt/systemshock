@@ -38,11 +38,11 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
 
 // void xlate_rotate_point(g3s_vector *v, fix *x, fix *y, fix *z);
 #define xlate_rotate_point(v, x, y, z) \
-  do_rotate(v->gX - _view_position.gX, v->gY - _view_position.gY, v->gZ - _view_position.gZ, x, y, z)
+    do_rotate(v->gX - _view_position.gX, v->gY - _view_position.gY, v->gZ - _view_position.gZ, x, y, z)
 
 extern int code_point(g3s_point *pt);
-extern char SubLongWithOverflow(long *result, long src, long dest);
-extern char AddLongWithOverflow(long *result, long src, long dest);
+extern char SubLongWithOverflow(int32_t *result, int32_t src, int32_t dest);
+extern bool AddLongWithOverflow(int32_t *result, int32_t src, int32_t dest);
 
 // for temp use in rotate_list, etc.
 g3s_codes g_codes;
@@ -50,188 +50,188 @@ g3s_codes g_codes;
 // rotate a normal or gradient vector. esi=vector, returns edi=point, bl=codes.
 // assumes perspective mapper scale factor will be set to _scrw.
 g3s_phandle g3_rotate_norm(g3s_vector *v) {
-  fix x, y, z;
-  fix temp, temp2, temp3;
-  g3s_point *point;
+    fix x, y, z;
+    fix temp, temp2, temp3;
+    g3s_point *point;
 
-  rotate_norm(v, &x, &y, &z);
+    rotate_norm(v, &x, &y, &z);
 
-  temp = fix_div(z, _matrix_scale.gZ);
-  temp2 = fix_div(x, _matrix_scale.gX);
-  temp3 = fix_div(y, _matrix_scale.gY);
+    temp = fix_div(z, _matrix_scale.gZ);
+    temp2 = fix_div(x, _matrix_scale.gX);
+    temp3 = fix_div(y, _matrix_scale.gY);
 
-  temp3 = -fix_mul_div(temp3, _scrw, _scrh); // because projecting negates too, of course. Grrr.
+    temp3 = -fix_mul_div(temp3, _scrw, _scrh); // because projecting negates too, of course. Grrr.
 
-  getpnt(point);
-  point->gX = temp2;
-  point->gY = temp3;
-  point->gZ = temp;
-  point->p3_flags = 0;
+    getpnt(point);
+    point->gX = temp2;
+    point->gY = temp3;
+    point->gZ = temp;
+    point->p3_flags = 0;
 
-  return (point);
+    return (point);
 }
 
 g3s_phandle g3_rotate_point(g3s_vector *v) {
-  g3s_point *point;
+    g3s_point *point;
 
-  getpnt(point);
-  xlate_rotate_point(v, &point->gX, &point->gY, &point->gZ);
-  point->p3_flags = 0;
+    getpnt(point);
+    xlate_rotate_point(v, &point->gX, &point->gY, &point->gZ);
+    point->p3_flags = 0;
 
-  code_point(point);
-  return (point);
+    code_point(point);
+    return (point);
 }
 
 // matrix multiply and project a point. esi=vector, returns edi=point
 g3s_phandle g3_transform_point(g3s_vector *v) {
-  g3s_phandle tempH;
+    g3s_phandle tempH;
 
-  // printf("g3_transform_point\n");
+    // printf("g3_transform_point\n");
 
-  tempH = g3_rotate_point(v);
-  g3_project_point(tempH);
-  return (tempH);
+    tempH = g3_rotate_point(v);
+    g3_project_point(tempH);
+    return (tempH);
 }
 
 // takes edi = ptr to point. projects, fills in sx,sy, sets flag.
 // returns 0 if z<=0, 1 if z>0.
 // trashes eax,ecx,edx.
 int g3_project_point(g3s_phandle p) {
-  fix x, y, z, res;
+    fix x, y, z, res;
 
 #ifdef stereo_on
-  test _g3d_stereo,
-      1 jz no_stereo1
-          // is this a sister point?
-          cmp edi,
-      _g3d_stereo_list jl not_sister
+    test _g3d_stereo,
+        1 jz no_stereo1
+            // is this a sister point?
+            cmp edi,
+        _g3d_stereo_list jl not_sister
 
-          // debug_brk 'yo, found projecting sister'
+            // debug_brk 'yo, found projecting sister'
 
-          // copy the point and add
-          mov esi,
-      edi sub esi, _g3d_stereo_base mov ecx,
-      (size g3s_point) / 4 rep movsd
+            // copy the point and add
+            mov esi,
+        edi sub esi, _g3d_stereo_base mov ecx,
+        (size g3s_point) / 4 rep movsd
 
-                             mov eax,
-      _g3d_eyesep sub edi,
-      (size g3s_point) // restore edi
-      add[edi]
-          .x,
-      eax
+                               mov eax,
+        _g3d_eyesep sub edi,
+        (size g3s_point) // restore edi
+        add[edi]
+            .x,
+        eax
 
-          // call clip encoder on this point
-          mov ecx,
-      ebx call code_point mov ebx,
-      ecx
+            // call clip encoder on this point
+            mov ecx,
+        ebx call code_point mov ebx,
+        ecx
 
-          // project point like a normal point
-          mov _g3d_stereo,
-      0 pop esi call g3_project_point mov _g3d_stereo,
-      1
+            // project point like a normal point
+            mov _g3d_stereo,
+        0 pop esi call g3_project_point mov _g3d_stereo,
+        1
 
-      ret
+        ret
 
-          not_sister :
-      // copy the point
-      mov esi,
-      edi add edi,
-      _g3d_stereo_base mov ecx,
-      (size g3s_point) / 4 rep movsd mov eax,
-      _g3d_eyesep sub edi,
-      (size g3s_point) // restore edi
-      add[edi]
-          .x,
-      eax
+            not_sister :
+        // copy the point
+        mov esi,
+        edi add edi,
+        _g3d_stereo_base mov ecx,
+        (size g3s_point) / 4 rep movsd mov eax,
+        _g3d_eyesep sub edi,
+        (size g3s_point) // restore edi
+        add[edi]
+            .x,
+        eax
 
-          // call clip encoder
-          mov ecx,
-      ebx call code_point mov ebx,
-      ecx
+            // call clip encoder
+            mov ecx,
+        ebx call code_point mov ebx,
+        ecx
 
-          sub edi,
-      _g3d_stereo_base no_stereo1 :
+            sub edi,
+        _g3d_stereo_base no_stereo1 :
 #endif
 
-      /*printf("g3_project_point\n");
+        /*printf("g3_project_point\n");
 
-      char printy[100];
-      fix_sprint(printy, p->gX);
-      printf("%s\n", printy);
+        char printy[100];
+        fix_sprint(printy, p->gX);
+        printf("%s\n", printy);
 
-      fix_sprint(printy, p->gY);
-      printf("%s\n", printy);
+        fix_sprint(printy, p->gY);
+        printf("%s\n", printy);
 
-      fix_sprint(printy, p->gZ);
-      printf("%s\n", printy);*/
+        fix_sprint(printy, p->gZ);
+        printf("%s\n", printy);*/
 
-      // check if this point is in front of the back plane.
-      z = p->gZ;
-  if (z <= 0)
-    return 0;
-  x = p->gX;
-  y = p->gY;
+        // check if this point is in front of the back plane.
+        z = p->gZ;
+    if (z <= 0)
+        return 0;
+    x = p->gX;
+    y = p->gY;
 
-  // point is in front of back plane---do projection.
-  // project y coordinate.
-  res = fix_mul_div(y, _scrh, z);
-  if (gOVResult) {
-    p->codes |= CC_CLIP_OVERFLOW;
-    return 1;
-  }
-  res = -res;
-  if (AddLongWithOverflow(&res, res, _biasy)) {
-    p->codes |= CC_CLIP_OVERFLOW;
-    return 1;
-  }
-  p->sy = res;
+    // point is in front of back plane---do projection.
+    // project y coordinate.
+    res = fix_mul_div(y, _scrh, z);
+    if (gOVResult) {
+        p->codes |= CC_CLIP_OVERFLOW;
+        return 1;
+    }
+    res = -res;
+    if (AddLongWithOverflow(&res, res, _biasy)) {
+        p->codes |= CC_CLIP_OVERFLOW;
+        return 1;
+    }
+    p->sy = res;
 
-  // now project x point
-  res = fix_mul_div(x, _scrw, z);
-  if (gOVResult) {
-    p->codes |= CC_CLIP_OVERFLOW;
-    return 1;
-  }
-  if (AddLongWithOverflow(&res, res, _biasx)) {
-    p->codes |= CC_CLIP_OVERFLOW;
-    return 1;
-  }
-  p->sx = res;
+    // now project x point
+    res = fix_mul_div(x, _scrw, z);
+    if (gOVResult) {
+        p->codes |= CC_CLIP_OVERFLOW;
+        return 1;
+    }
+    if (AddLongWithOverflow(&res, res, _biasx)) {
+        p->codes |= CC_CLIP_OVERFLOW;
+        return 1;
+    }
+    p->sx = res;
 
-  // modify point flags to indicate projection.
-  p->p3_flags |= PF_PROJECTED;
+    // modify point flags to indicate projection.
+    p->p3_flags |= PF_PROJECTED;
 
 #ifdef stereo_on
-  test _g3d_stereo, 1 jz no_stereo2 mov eax,
-      [edi].sy // copy over old sy
-          add edi,
-      _g3d_stereo_base // load twin address
-          mov[edi]
-              .sy,
-      eax // make new sy, could add the .5 addition here too
+    test _g3d_stereo, 1 jz no_stereo2 mov eax,
+        [edi].sy // copy over old sy
+            add edi,
+        _g3d_stereo_base // load twin address
+            mov[edi]
+                .sy,
+        eax // make new sy, could add the .5 addition here too
 
-          mov eax,
-      [edi].x
-          // reproject the x coord
-          imul _scrw                //* screen width
-              proj_div_2 : idiv ecx /// z
-                               add eax,
-      _biasx //+center
-          mov[edi]
-              .sx,
-      eax // save
+            mov eax,
+        [edi].x
+            // reproject the x coord
+            imul _scrw                //* screen width
+                proj_div_2 : idiv ecx /// z
+                                 add eax,
+        _biasx //+center
+            mov[edi]
+                .sx,
+        eax // save
 
-          // indicate projection
-          or [edi].p3_flags,
-      PF_PROJECTED
+            // indicate projection
+            or [edi].p3_flags,
+        PF_PROJECTED
 
-          // restore edi
-          sub edi,
-      _g3d_stereo_base no_stereo2 :
+            // restore edi
+            sub edi,
+        _g3d_stereo_base no_stereo2 :
 #endif
 
-      // point has been projected.
-      return 1;
+        // point has been projected.
+        return 1;
 }
 
 // MLA - all the divide exception handler overflow stuff was removed, and
@@ -269,67 +269,67 @@ endif
 // takes esi=ptr to array of vectors, edi=ptr to list for point handles,
 // ecx=count
 g3s_codes g3_transform_list(short n, g3s_phandle *dest_list, g3s_vector *v) {
-  int i;
-  g3s_phandle temphand;
+    int i;
+    g3s_phandle temphand;
 
-  g_codes.or_ = 0;
-  g_codes.and_ = 0xff;
+    g_codes.or_ = 0;
+    g_codes.and_ = 0xff;
 
-  for (i = n; i > 0; i--) {
-    temphand = g3_transform_point(v++);
-    g_codes.or_ |= temphand->codes;
-    g_codes.and_ &= temphand->codes;
+    for (i = n; i > 0; i--) {
+        temphand = g3_transform_point(v++);
+        g_codes.or_ |= temphand->codes;
+        g_codes.and_ &= temphand->codes;
 
-    *(dest_list++) = temphand;
-  }
-  return (g_codes);
+        *(dest_list++) = temphand;
+    }
+    return (g_codes);
 }
 
 // takes esi=ptr to array of vectors, edi=ptr to list for point handles,
 // ecx=count  returns bh=codes and, bl=codes or
 g3s_codes g3_rotate_list(short n, g3s_phandle *dest_list, g3s_vector *v) {
-  int i;
-  g3s_phandle temphand;
+    int i;
+    g3s_phandle temphand;
 
-  g_codes.or_ = 0;
-  g_codes.and_ = 0xff;
+    g_codes.or_ = 0;
+    g_codes.and_ = 0xff;
 
-  for (i = n; i > 0; i--) {
-    temphand = g3_rotate_point(v++);
-    g_codes.or_ |= temphand->codes;
-    g_codes.and_ &= temphand->codes;
+    for (i = n; i > 0; i--) {
+        temphand = g3_rotate_point(v++);
+        g_codes.or_ |= temphand->codes;
+        g_codes.and_ &= temphand->codes;
 
-    *(dest_list++) = temphand;
-  }
-  return (g_codes);
+        *(dest_list++) = temphand;
+    }
+    return (g_codes);
 }
 
 // takes esi=ptr to array of point handles, ecx=count
 g3s_codes g3_project_list(short n, g3s_phandle *point_list) {
-  int i;
-  g3s_phandle temphand;
+    int i;
+    g3s_phandle temphand;
 
-  g_codes.or_ = 0;
-  g_codes.and_ = 0xff;
+    g_codes.or_ = 0;
+    g_codes.and_ = 0xff;
 
-  for (i = n; i > 0; i--) {
-    temphand = *(point_list++);
-    g_codes.or_ |= temphand->codes;
-    g_codes.and_ &= temphand->codes;
+    for (i = n; i > 0; i--) {
+        temphand = *(point_list++);
+        g_codes.or_ |= temphand->codes;
+        g_codes.and_ &= temphand->codes;
 
-    g3_project_point(temphand);
-  }
+        g3_project_point(temphand);
+    }
 
-  return (g_codes);
+    return (g_codes);
 }
 
 // takes esi=ptr to array of vectors, edi=ptr to dest vectors
 g3s_phandle g3_rotate_light_norm(g3s_vector *v) {
-  g3s_point *point;
+    g3s_point *point;
 
-  getpnt(point);
-  do_rotate(v->gX, v->gY, v->gZ, &point->gX, &point->gY, &point->gZ);
-  return (point);
+    getpnt(point);
+    do_rotate(v->gX, v->gY, v->gZ, &point->gX, &point->gY, &point->gZ);
+    return (point);
 }
 
 // takes esi=ptr to normal vector. returns in <ecx,esi,eax>. trashes all regs
@@ -338,34 +338,22 @@ void rotate_norm(g3s_vector *v, fix *x, fix *y, fix *z) { do_norm_rotate(v->gX, 
 // does the rotate with the view matrix.
 // takes <x,y,z> = <esi,edi,ebp>, returns <x,y,z> = <ecx,esi,eax>
 void do_norm_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz) {
-  AWide result, result2;
+    int64_t r;
 
-  // this matrix multiply here will someday be optimized for zero and one terms
-  // uses unscaled rotation matrix.
+    // this matrix multiply here will someday be optimized for zero and one terms
+    // uses unscaled rotation matrix.
 
-  // first column
-  AsmWideMultiply(x, uvm1, &result);
-  AsmWideMultiply(y, uvm4, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(z, uvm7, &result2);
-  AsmWideAdd(&result, &result2);
-  *rx = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // first column
+    r = fix64_mul(x, uvm1) + fix64_mul(y, uvm4) + fix64_mul(z, uvm7);
+    *rx = fix64_to_fix(r);
 
-  // second column
-  AsmWideMultiply(x, uvm2, &result);
-  AsmWideMultiply(y, uvm5, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(z, uvm8, &result2);
-  AsmWideAdd(&result, &result2);
-  *ry = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // second column
+    r = fix64_mul(x, uvm2) + fix64_mul(y, uvm5) + fix64_mul(z, uvm8);
+    *ry = fix64_to_fix(r);
 
-  // third column
-  AsmWideMultiply(x, uvm3, &result);
-  AsmWideMultiply(y, uvm6, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(z, uvm9, &result2);
-  AsmWideAdd(&result, &result2);
-  *rz = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // third column
+    r = fix64_mul(x, uvm3) + fix64_mul(y, uvm6) + fix64_mul(z, uvm9);
+    *rz = fix64_to_fix(r);
 }
 
 // made this a define - MLA
@@ -379,497 +367,422 @@ v->gZ-_view_position.gZ,x,y,z);
 // does the rotate with the view matrix.
 // takes <x,y,z> = <esi,edi,ebp>, returns <x,y,z> = <ecx,esi,eax>
 void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz) {
-  AWide result, result2;
-  // this matrix multiply here will someday be optimized for zero and one terms
+    // this matrix multiply here will someday be optimized for zero and one terms
+    int64_t r;
+    // first column
+    r = fix64_mul(x, vm1) + fix64_mul(y, vm4) + fix64_mul(z, vm7);
+    *rx = fix64_to_fix(r);
 
-  // printf("do_rotate: %f %f %f\n", fix_float(x), fix_float(y), fix_float(z));
-  // printf(" matrix: %f %f %f : %f %f %f : %f %f %f\n", fix_float(vm1),
-  // fix_float(vm2), fix_float(vm3), fix_float(vm4), fix_float(vm5),
-  // fix_float(vm6), fix_float(vm7), fix_float(vm8), fix_float(vm9));
+    // second column
+    r = fix64_mul(x, vm2) + fix64_mul(y, vm5) + fix64_mul(z, vm8);
+    *ry = fix64_to_fix(r);
 
-  // first column
-  AsmWideMultiply(x, vm1, &result);
-  AsmWideMultiply(y, vm4, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(z, vm7, &result2);
-  AsmWideAdd(&result, &result2);
-  *rx = (result.hi << 16) | (((ulong)result.lo) >> 16);
-
-  // second column
-  AsmWideMultiply(x, vm2, &result);
-  AsmWideMultiply(y, vm5, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(z, vm8, &result2);
-  AsmWideAdd(&result, &result2);
-  *ry = (result.hi << 16) | (((ulong)result.lo) >> 16);
-
-  // third column
-  AsmWideMultiply(x, vm3, &result);
-  AsmWideMultiply(y, vm6, &result2);
-  AsmWideAdd(&result, &result2);
-  AsmWideMultiply(z, vm9, &result2);
-  AsmWideAdd(&result, &result2);
-  *rz = (result.hi << 16) | (((ulong)result.lo) >> 16);
-
-  // printf("rotated to: %f %f %f\n", fix_float(*rx), fix_float(*ry),
-  // fix_float(*rz));
+    // third column
+    r = fix64_mul(x, vm3) + fix64_mul(y, vm6) + fix64_mul(z, vm9);
+    *rz = fix64_to_fix(r);
 }
 
 // rotate an x delta. takes edi=dest vector, eax=dx
 // trashes eax,ebx,edx
 void g3_rotate_delta_x(g3s_vector *dest, fix dx) {
-  dest->gX = fix_mul(dx, vm1);
-  dest->gY = fix_mul(dx, vm2);
-  dest->gZ = fix_mul(dx, vm3);
+    dest->gX = fix_mul(dx, vm1);
+    dest->gY = fix_mul(dx, vm2);
+    dest->gZ = fix_mul(dx, vm3);
 }
 
 // rotate a y delta. takes edi=dest vector, eax=dy
 // trashes eax,ebx,edx
 void g3_rotate_delta_y(g3s_vector *dest, fix dy) {
-  dest->gX = fix_mul(dy, vm4);
-  dest->gY = fix_mul(dy, vm5);
-  dest->gZ = fix_mul(dy, vm6);
+    dest->gX = fix_mul(dy, vm4);
+    dest->gY = fix_mul(dy, vm5);
+    dest->gZ = fix_mul(dy, vm6);
 }
 
 // rotate a z delta. takes edi=dest vector, eax=dz
 // trashes eax,ebx,edx
 void g3_rotate_delta_z(g3s_vector *dest, fix dz) {
-  dest->gX = fix_mul(dz, vm7);
-  dest->gY = fix_mul(dz, vm8);
-  dest->gZ = fix_mul(dz, vm9);
+    dest->gX = fix_mul(dz, vm7);
+    dest->gY = fix_mul(dz, vm8);
+    dest->gZ = fix_mul(dz, vm9);
 }
 
 // rotate an xz delta. takes edi=dest vector, eax=dx, ebx=dz
 // trashes eax,ebx,edx
 void g3_rotate_delta_xz(g3s_vector *dest, fix dx, fix dz) {
-  AWide result, result2;
+    int64_t r;
 
-  // first column
-  AsmWideMultiply(dx, vm1, &result);
-  AsmWideMultiply(dz, vm7, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gX = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // first column
+    r = fix64_mul(dx, vm1) + fix64_mul(dz, vm7);
+    dest->gX = fix64_to_fix(r);
 
-  // second column
-  AsmWideMultiply(dx, vm2, &result);
-  AsmWideMultiply(dz, vm8, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gY = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // second column
+    r = fix64_mul(dx, vm2) + fix64_mul(dz, vm8);
+    dest->gY = fix64_to_fix(r);
 
-  // third column
-  AsmWideMultiply(dx, vm3, &result);
-  AsmWideMultiply(dz, vm9, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gZ = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // third column
+    r = fix64_mul(dx, vm3) + fix64_mul(dz, vm9);
+    dest->gZ = fix64_to_fix(r);
 }
 
 // rotate an xy delta. takes edi=dest vector, eax=dx, ebx=dy
 // trashes eax,ebx,edx
 void g3_rotate_delta_xy(g3s_vector *dest, fix dx, fix dy) {
-  AWide result, result2;
+    int64_t r;
 
-  // first column
-  AsmWideMultiply(dx, vm1, &result);
-  AsmWideMultiply(dy, vm4, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gX = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // first column
+    r = fix64_mul(dx, vm1) + fix64_mul(dy, vm4);
+    dest->gX = fix64_to_fix(r);
 
-  // second column
-  AsmWideMultiply(dx, vm2, &result);
-  AsmWideMultiply(dy, vm5, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gY = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // second column
+    r = fix64_mul(dx, vm2) + fix64_mul(dy, vm5);
+    dest->gY = fix64_to_fix(r);
 
-  // third column
-  AsmWideMultiply(dx, vm3, &result);
-  AsmWideMultiply(dy, vm6, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gZ = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // third column
+    r = fix64_mul(dx, vm3) + fix64_mul(dy, vm6);
+    dest->gZ = fix64_to_fix(r);
 }
 
 // rotate a yz delta. takes edi=dest vector, eax=dy, ebx=dz
 // trashes eax,ebx,edx
 void g3_rotate_delta_yz(g3s_vector *dest, fix dy, fix dz) {
-  AWide result, result2;
+    int64_t r;
 
-  // first column
-  AsmWideMultiply(dy, vm4, &result);
-  AsmWideMultiply(dz, vm7, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gX = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // first column
+    r = fix64_mul(dy, vm4) + fix64_mul(dz, vm7);
+    dest->gX = fix64_to_fix(r);
 
-  // second column
-  AsmWideMultiply(dy, vm5, &result);
-  AsmWideMultiply(dz, vm8, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gY = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // second column
+    r = fix64_mul(dy, vm5) + fix64_mul(dz, vm8);
+    dest->gY = fix64_to_fix(r);
 
-  // third column
-  AsmWideMultiply(dy, vm6, &result);
-  AsmWideMultiply(dz, vm9, &result2);
-  AsmWideAdd(&result, &result2);
-  dest->gZ = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // third column
+    r = fix64_mul(dy, vm6) + fix64_mul(dz, vm9);
+    dest->gZ = fix64_to_fix(r);
 }
 
 // rotate a delta vector. takes edi=dest, eax,ebx,ecx=dx,dy,dz
 // trashes all but ebp,edi
 void g3_rotate_delta_xyz(g3s_vector *dest, fix dx, fix dy, fix dz) {
-  do_rotate(dx, dy, dz, &dest->gX, &dest->gY, &dest->gZ);
+    do_rotate(dx, dy, dz, &dest->gX, &dest->gY, &dest->gZ);
 }
 
 // rotate a delta vector. takes edi=dest, esi=src
 // trashes all but ebp,edi
 void g3_rotate_delta_v(g3s_vector *dest, g3s_vector *src) {
-  do_rotate(src->gX, src->gY, src->gZ, &dest->gX, &dest->gY, &dest->gZ);
+    do_rotate(src->gX, src->gY, src->gZ, &dest->gX, &dest->gY, &dest->gZ);
 }
 
 // like add_delta, but creates and returns a new point
 // takes esi=src, ebx=delta, returns edi=new point
 // trashes eax,ebx
 g3s_phandle g3_copy_add_delta_v(g3s_phandle src, g3s_vector *delta) {
-  g3s_point *point;
+    g3s_point *point;
 
-  getpnt(point);
-  point->gX = src->gX + delta->gX;
-  point->gY = src->gY + delta->gY;
-  point->gZ = src->gZ + delta->gZ;
-  point->p3_flags = 0;
-  code_point(point);
-  return (point);
+    getpnt(point);
+    point->gX = src->gX + delta->gX;
+    point->gY = src->gY + delta->gY;
+    point->gZ = src->gZ + delta->gZ;
+    point->p3_flags = 0;
+    code_point(point);
+    return (point);
 }
 
 // adds a delta vector (created by rotate delta) to a point
 // takes edi=point, esi=delta. clears projected bit, computes codes
 // trashes eax,esi,bl
 void g3_add_delta_v(g3s_phandle p, g3s_vector *delta) {
-  p->gX += delta->gX;
-  p->gY += delta->gY;
-  p->gZ += delta->gZ;
+    p->gX += delta->gX;
+    p->gY += delta->gY;
+    p->gZ += delta->gZ;
 
-  p->p3_flags &= ~PF_PROJECTED;
-  code_point(p);
+    p->p3_flags &= ~PF_PROJECTED;
+    code_point(p);
 }
 
 // add an x delta to a point. takes edi=point, eax=dx
 // trashes eax,ebx,edx
 void g3_add_delta_x(g3s_phandle p, fix dx) {
-  p->gX += fix_mul(vm1, dx);
-  p->gY += fix_mul(vm2, dx);
-  p->gZ += fix_mul(vm3, dx);
-  p->p3_flags &= ~PF_PROJECTED;
+    p->gX += fix_mul(vm1, dx);
+    p->gY += fix_mul(vm2, dx);
+    p->gZ += fix_mul(vm3, dx);
+    p->p3_flags &= ~PF_PROJECTED;
 
-  code_point(p);
+    code_point(p);
 }
 
 // add a y delta to a point. takes edi=point, eax=dy
 // trashes eax,ebx,edx
 void g3_add_delta_y(g3s_phandle p, fix dy) {
-  p->gX += fix_mul(vm4, dy);
-  p->gY += fix_mul(vm5, dy);
-  p->gZ += fix_mul(vm6, dy);
-  p->p3_flags &= ~PF_PROJECTED;
+    p->gX += fix_mul(vm4, dy);
+    p->gY += fix_mul(vm5, dy);
+    p->gZ += fix_mul(vm6, dy);
+    p->p3_flags &= ~PF_PROJECTED;
 
-  code_point(p);
+    code_point(p);
 }
 
 // add a z delta to a point. takes edi=point, eax=dz
 // trashes eax,ebx,edx
 void g3_add_delta_z(g3s_phandle p, fix dz) {
-  p->gX += fix_mul(vm7, dz);
-  p->gY += fix_mul(vm8, dz);
-  p->gZ += fix_mul(vm9, dz);
-  p->p3_flags &= ~PF_PROJECTED;
+    p->gX += fix_mul(vm7, dz);
+    p->gY += fix_mul(vm8, dz);
+    p->gZ += fix_mul(vm9, dz);
+    p->p3_flags &= ~PF_PROJECTED;
 
-  code_point(p);
+    code_point(p);
 }
 
 // add an xy delta to a point. takes edi=point, eax=dx, ebx=dy
 // trashes eax,ebx,ecx,edx,esi
 void g3_add_delta_xy(g3s_phandle p, fix dx, fix dy) {
-  AWide result, result2;
+    int64_t r;
 
-  // first column
-  AsmWideMultiply(dx, vm1, &result);
-  AsmWideMultiply(dy, vm4, &result2);
-  AsmWideAdd(&result, &result2);
-  p->gX += (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // first column
+    r = fix64_mul(dx, vm1) + fix64_mul(dy, vm4);
+    p->gX += fix64_to_fix(r);
 
-  // second column
-  AsmWideMultiply(dx, vm2, &result);
-  AsmWideMultiply(dy, vm5, &result2);
-  AsmWideAdd(&result, &result2);
-  p->gY += (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // second column
+    r = fix64_mul(dx, vm2) + fix64_mul(dy, vm5);
+    p->gY += fix64_to_fix(r);
 
-  // third column
-  AsmWideMultiply(dx, vm3, &result);
-  AsmWideMultiply(dy, vm6, &result2);
-  AsmWideAdd(&result, &result2);
-  p->gZ += (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // third column
+    r = fix64_mul(dx, vm3) + fix64_mul(dy, vm6);
+    p->gZ += fix64_to_fix(r);
 
-  p->p3_flags &= ~PF_PROJECTED;
-  code_point(p);
+    p->p3_flags &= ~PF_PROJECTED;
+    code_point(p);
 }
 
 // add an xz delta to a point. takes edi=point, eax=dx, ebx=dz
 // trashes eax,ebx,ecx,edx,esi
 void g3_add_delta_xz(g3s_phandle p, fix dx, fix dz) {
-  AWide result, result2;
+    int64_t r;
 
-  // first column
-  AsmWideMultiply(dx, vm1, &result);
-  AsmWideMultiply(dz, vm7, &result2);
-  AsmWideAdd(&result, &result2);
-  p->gX += (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // first column
+    r = fix64_mul(dx, vm1) + fix64_mul(dz, vm7);
+    p->gX += fix64_to_fix(r);
 
-  // second column
-  AsmWideMultiply(dx, vm2, &result);
-  AsmWideMultiply(dz, vm8, &result2);
-  AsmWideAdd(&result, &result2);
-  p->gY += (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // second column
+    r = fix64_mul(dx, vm2) + fix64_mul(dz, vm8);
+    p->gY += fix64_to_fix(r);
 
-  // third column
-  AsmWideMultiply(dx, vm3, &result);
-  AsmWideMultiply(dz, vm9, &result2);
-  AsmWideAdd(&result, &result2);
-  p->gZ += (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // third column
+    r = fix64_mul(dx, vm3) + fix64_mul(dz, vm9);
+    p->gZ += fix64_to_fix(r);
 
-  p->p3_flags &= ~PF_PROJECTED;
-  code_point(p);
+    p->p3_flags &= ~PF_PROJECTED;
+    code_point(p);
 }
 
 // add an yz delta to a point. takes edi=point, eax=dy, ebx=dz
 // trashes eax,ebx,ecx,edx,esi
 void g3_add_delta_yz(g3s_phandle p, fix dy, fix dz) {
-  AWide result, result2;
+    int64_t r;
 
-  // first column
-  AsmWideMultiply(dy, vm4, &result);
-  AsmWideMultiply(dz, vm7, &result2);
-  AsmWideAdd(&result, &result2);
-  p->gX += (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // first column
+    r = fix64_mul(dy, vm4) + fix64_mul(dz, vm7);
+    p->gX += fix64_to_fix(r);
 
-  // second column
-  AsmWideMultiply(dy, vm5, &result);
-  AsmWideMultiply(dz, vm8, &result2);
-  AsmWideAdd(&result, &result2);
-  p->gY += (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // second column
+    r = fix64_mul(dy, vm5) + fix64_mul(dz, vm8);
+    p->gY += fix64_to_fix(r);
 
-  // third column
-  AsmWideMultiply(dy, vm6, &result);
-  AsmWideMultiply(dz, vm9, &result2);
-  AsmWideAdd(&result, &result2);
-  p->gZ += (result.hi << 16) | (((ulong)result.lo) >> 16);
+    // third column
+    r = fix64_mul(dy, vm6) + fix64_mul(dz, vm9);
+    p->gZ += fix64_to_fix(r);
 
-  p->p3_flags &= ~PF_PROJECTED;
-  code_point(p);
+    p->p3_flags &= ~PF_PROJECTED;
+    code_point(p);
 }
 
 // add an xyz delta to a point. takes edi=point, eax=dx, ebx=dy, ecx=dz
 // trashes eax,ebx,ecx,edx,esi
 void g3_add_delta_xyz(g3s_phandle p, fix dx, fix dy, fix dz) {
-  fix rx, ry, rz;
+    fix rx, ry, rz;
 
-  do_rotate(dx, dy, dz, &rx, &ry, &rz);
+    do_rotate(dx, dy, dz, &rx, &ry, &rz);
 
-  p->gX += rx;
-  p->gY += ry;
-  p->gZ += rz;
+    p->gX += rx;
+    p->gY += ry;
+    p->gZ += rz;
 
-  p->p3_flags &= ~PF_PROJECTED;
-  code_point(p);
+    p->p3_flags &= ~PF_PROJECTED;
+    code_point(p);
 }
 
 // like add_delta, but creates and returns a new point in edi
 // add an x delta to a point. takes esi=point, eax=dx
 // trashes eax,ebx,edx
 g3s_phandle g3_copy_add_delta_x(g3s_phandle src, fix dx) {
-  g3s_point *point;
+    g3s_point *point;
 
-  getpnt(point);
-  point->gX = src->gX + fix_mul(dx, vm1);
-  point->gY = src->gY + fix_mul(dx, vm2);
-  point->gZ = src->gZ + fix_mul(dx, vm3);
-  point->p3_flags = 0;
-  code_point(point);
-  return (point);
+    getpnt(point);
+    point->gX = src->gX + fix_mul(dx, vm1);
+    point->gY = src->gY + fix_mul(dx, vm2);
+    point->gZ = src->gZ + fix_mul(dx, vm3);
+    point->p3_flags = 0;
+    code_point(point);
+    return (point);
 }
 
 // like add_delta, but creates and returns a new point in edi
 // add a y delta to a point. takes esi=point, eax=dy
 // trashes eax,ebx,edx
 g3s_phandle g3_copy_add_delta_y(g3s_phandle src, fix dy) {
-  g3s_point *point;
+    g3s_point *point;
 
-  getpnt(point);
-  point->gX = src->gX + fix_mul(dy, vm4);
-  point->gY = src->gY + fix_mul(dy, vm5);
-  point->gZ = src->gZ + fix_mul(dy, vm6);
-  point->p3_flags = 0;
-  code_point(point);
-  return (point);
+    getpnt(point);
+    point->gX = src->gX + fix_mul(dy, vm4);
+    point->gY = src->gY + fix_mul(dy, vm5);
+    point->gZ = src->gZ + fix_mul(dy, vm6);
+    point->p3_flags = 0;
+    code_point(point);
+    return (point);
 }
 
 // like add_delta, but creates and returns a new point in edi
 // add a z delta to a point. takes esi=point, eax=dz
 // trashes eax,ebx,edx
 g3s_phandle g3_copy_add_delta_z(g3s_phandle src, fix dz) {
-  g3s_point *point;
+    g3s_point *point;
 
-  getpnt(point);
-  point->gX = src->gX + fix_mul(dz, vm7);
-  point->gY = src->gY + fix_mul(dz, vm8);
-  point->gZ = src->gZ + fix_mul(dz, vm9);
-  point->p3_flags = 0;
-  code_point(point);
-  return (point);
+    getpnt(point);
+    point->gX = src->gX + fix_mul(dz, vm7);
+    point->gY = src->gY + fix_mul(dz, vm8);
+    point->gZ = src->gZ + fix_mul(dz, vm9);
+    point->p3_flags = 0;
+    code_point(point);
+    return (point);
 }
 
 // like add_delta, but modifies an existing point in edi
 // add an x delta to a point. takes esi=src point, edi=replace point, ax=dx
 // trashes eax,ebx,edx
 g3s_phandle g3_replace_add_delta_x(g3s_phandle src, g3s_phandle dst, fix dx) {
-  dst->gX = src->gX + fix_mul(dx, vm1);
-  dst->gY = src->gY + fix_mul(dx, vm2);
-  dst->gZ = src->gZ + fix_mul(dx, vm3);
-  dst->p3_flags = 0;
-  code_point(dst);
-  return (dst);
+    dst->gX = src->gX + fix_mul(dx, vm1);
+    dst->gY = src->gY + fix_mul(dx, vm2);
+    dst->gZ = src->gZ + fix_mul(dx, vm3);
+    dst->p3_flags = 0;
+    code_point(dst);
+    return (dst);
 }
 
 // like add_delta, but modifies an existing point in edi
 // add a y delta to a point. takes esi=src point, edi=replace point, ax=dy
 // trashes eax,ebx,edx
 g3s_phandle g3_replace_add_delta_y(g3s_phandle src, g3s_phandle dst, fix dy) {
-  dst->gX = src->gX + fix_mul(dy, vm4);
-  dst->gY = src->gY + fix_mul(dy, vm5);
-  dst->gZ = src->gZ + fix_mul(dy, vm6);
-  dst->p3_flags = 0;
-  code_point(dst);
-  return (dst);
+    dst->gX = src->gX + fix_mul(dy, vm4);
+    dst->gY = src->gY + fix_mul(dy, vm5);
+    dst->gZ = src->gZ + fix_mul(dy, vm6);
+    dst->p3_flags = 0;
+    code_point(dst);
+    return (dst);
 }
 
 // like add_delta, but modifies an existing point in edi
 // add a z delta to a point. takes esi=src point, edi=replace point, ax=dz
 // trashes eax,ebx,edx
 g3s_phandle g3_replace_add_delta_z(g3s_phandle src, g3s_phandle dst, fix dz) {
-  dst->gX = src->gX + fix_mul(dz, vm7);
-  dst->gY = src->gY + fix_mul(dz, vm8);
-  dst->gZ = src->gZ + fix_mul(dz, vm9);
-  dst->p3_flags = 0;
-  code_point(dst);
-  return (dst);
+    dst->gX = src->gX + fix_mul(dz, vm7);
+    dst->gY = src->gY + fix_mul(dz, vm8);
+    dst->gZ = src->gZ + fix_mul(dz, vm9);
+    dst->p3_flags = 0;
+    code_point(dst);
+    return (dst);
 }
 
 // like add_delta, but creates and returns a new point in edi
 // add an xy delta to a point. takes edi=point, eax=dx, ebx=dy
 // trashes eax,ebx,ecx,edx,esi
 g3s_phandle g3_copy_add_delta_xy(g3s_phandle src, fix dx, fix dy) {
-  g3s_point *point;
-  AWide result, result2;
+    g3s_point *point;
+    int64_t r;
 
-  getpnt(point);
+    getpnt(point);
 
-  // first column
-  AsmWideMultiply(dx, vm1, &result);
-  AsmWideMultiply(dy, vm4, &result2);
-  AsmWideAdd(&result, &result2);
-  point->gX = src->gX + ((result.hi << 16) | (((ulong)result.lo) >> 16));
+    // first column
+    r = fix64_mul(dx, vm1) + fix64_mul(dy, vm4);
+    point->gX = src->gX + fix64_to_fix(r);
 
-  // second column
-  AsmWideMultiply(dx, vm2, &result);
-  AsmWideMultiply(dy, vm5, &result2);
-  AsmWideAdd(&result, &result2);
-  point->gY = src->gY + ((result.hi << 16) | (((ulong)result.lo) >> 16));
+    // second column
+    r = fix64_mul(dx, vm2) + fix64_mul(dy, vm5);
+    point->gY = src->gY + fix64_to_fix(r);
 
-  // third column
-  AsmWideMultiply(dx, vm3, &result);
-  AsmWideMultiply(dy, vm6, &result2);
-  AsmWideAdd(&result, &result2);
-  point->gZ = src->gZ + ((result.hi << 16) | (((ulong)result.lo) >> 16));
+    // third column
+    r = fix64_mul(dx, vm3) + fix64_mul(dy, vm6);
+    point->gZ = src->gZ + fix64_to_fix(r);
 
-  point->p3_flags = 0;
-  code_point(point);
-  return (point);
+    point->p3_flags = 0;
+    code_point(point);
+    return (point);
 }
 
 // like add_delta, but creates and returns a new point in edi
 // add an xz delta to a point. takes edi=point, eax=dx, ebx=dz
 // trashes eax,ebx,ecx,edx,esi
 g3s_phandle g3_copy_add_delta_xz(g3s_phandle src, fix dx, fix dz) {
-  g3s_point *point;
-  AWide result, result2;
+    g3s_point *point;
+    int64_t r;
 
-  getpnt(point);
+    getpnt(point);
 
-  // first column
-  AsmWideMultiply(dx, vm1, &result);
-  AsmWideMultiply(dz, vm7, &result2);
-  AsmWideAdd(&result, &result2);
-  point->gX = src->gX + ((result.hi << 16) | (((ulong)result.lo) >> 16));
+    // first column
+    r = fix64_mul(dx, vm1) + fix64_mul(dz, vm7);
+    point->gX = src->gX + fix64_to_fix(r);
 
-  // second column
-  AsmWideMultiply(dx, vm2, &result);
-  AsmWideMultiply(dz, vm8, &result2);
-  AsmWideAdd(&result, &result2);
-  point->gY = src->gY + ((result.hi << 16) | (((ulong)result.lo) >> 16));
+    // second column
+    r = fix64_mul(dx, vm2) + fix64_mul(dz, vm8);
+    point->gY = src->gY + fix64_to_fix(r);
 
-  // third column
-  AsmWideMultiply(dx, vm3, &result);
-  AsmWideMultiply(dz, vm9, &result2);
-  AsmWideAdd(&result, &result2);
-  point->gZ = src->gZ + ((result.hi << 16) | (((ulong)result.lo) >> 16));
+    // third column
+    r = fix64_mul(dx, vm3) + fix64_mul(dz, vm9);
+    point->gZ = src->gZ + fix64_to_fix(r);
 
-  point->p3_flags = 0;
-  code_point(point);
-  return (point);
+    point->p3_flags = 0;
+    code_point(point);
+    return (point);
 }
 
 // like add_delta, but creates and returns a new point in edi
 // add an yz delta to a point. takes edi=point, eax=dy, ebx=dz
 // trashes eax,ebx,ecx,edx,esi
 g3s_phandle g3_copy_add_delta_yz(g3s_phandle src, fix dy, fix dz) {
-  g3s_point *point;
-  AWide result, result2;
+    g3s_point *point;
+    int64_t r;
 
-  getpnt(point);
+    getpnt(point);
 
-  // first column
-  AsmWideMultiply(dy, vm4, &result);
-  AsmWideMultiply(dz, vm7, &result2);
-  AsmWideAdd(&result, &result2);
-  point->gX = src->gX + ((result.hi << 16) | (((ulong)result.lo) >> 16));
+    // first column
+    r = fix64_mul(dy, vm4) + fix64_mul(dz, vm7);
+    point->gX = src->gX + fix64_to_fix(r);
 
-  // second column
-  AsmWideMultiply(dy, vm5, &result);
-  AsmWideMultiply(dz, vm8, &result2);
-  AsmWideAdd(&result, &result2);
-  point->gY = src->gY + ((result.hi << 16) | (((ulong)result.lo) >> 16));
+    // second column
+    r = fix64_mul(dy, vm5) + fix64_mul(dz, vm8);
+    point->gY = src->gY + fix64_to_fix(r);
 
-  // third column
-  AsmWideMultiply(dy, vm6, &result);
-  AsmWideMultiply(dz, vm9, &result2);
-  AsmWideAdd(&result, &result2);
-  point->gZ = src->gZ + ((result.hi << 16) | (((ulong)result.lo) >> 16));
+    // third column
+    r = fix64_mul(dy, vm6) + fix64_mul(dz, vm9);
+    point->gZ = src->gZ + fix64_to_fix(r);
 
-  point->p3_flags = 0;
-  code_point(point);
-  return (point);
+    point->p3_flags = 0;
+    code_point(point);
+    return (point);
 }
 
 // like add_delta, but creates and returns a new point in edi
 // add an xyz delta to a point. takes edi=point, eax=dx, ebx=dy, ecx=dz
 // trashes eax,ebx,ecx,edx,esi
 g3s_phandle g3_copy_add_delta_xyz(g3s_phandle src, fix dx, fix dy, fix dz) {
-  g3s_point *point;
+    g3s_point *point;
 
-  getpnt(point);
-  do_rotate(dx, dy, dz, &point->gX, &point->gY, &point->gZ);
+    getpnt(point);
+    do_rotate(dx, dy, dz, &point->gX, &point->gY, &point->gZ);
 
-  point->gX += src->gX;
-  point->gY += src->gY;
-  point->gZ += src->gZ;
+    point->gX += src->gX;
+    point->gY += src->gY;
+    point->gZ += src->gZ;
 
-  point->p3_flags = 0;
-  code_point(point);
-  return (point);
+    point->p3_flags = 0;
+    code_point(point);
+    return (point);
 }

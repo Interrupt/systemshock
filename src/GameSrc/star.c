@@ -420,11 +420,7 @@ void star_rand(uchar col, uchar range) {
 
 extern g3s_point *first_free;
 extern g3s_matrix view_matrix;
-#if (defined(powerc) || defined(__powerc))
 extern int code_point(g3s_point *pt);
-#else
-extern asm int code_point(g3s_point *pt);
-#endif
 
 // matrix rotate and code a star point.  Project if clip codes
 // are not set, rotate fully if in front of viewer
@@ -433,19 +429,15 @@ extern asm int code_point(g3s_point *pt);
 // returns point
 g3s_phandle star_transform_point(g3s_vector *v) {
     g3s_point *point;
-    AWide result, result2;
+    int64_t r;
     fix temp;
 
     getpnt(point);
     point->p3_flags = 0;
 
     // third column (z)
-    AsmWideMultiply(v->gX, vm3, &result);
-    AsmWideMultiply(v->gY, vm6, &result2);
-    AsmWideAdd(&result, &result2);
-    AsmWideMultiply(v->gZ, vm9, &result2);
-    AsmWideAdd(&result, &result2);
-    temp = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    r =  fix64_mul(v->gX, vm3) + fix64_mul(v->gY, vm6) + fix64_mul(v->gZ, vm9);
+    temp = fix64_to_fix(r);
 
     // check out z, see if behind
     if (temp < std_min_z) {
@@ -456,20 +448,12 @@ g3s_phandle star_transform_point(g3s_vector *v) {
     point->gZ = temp; // save z
 
     // first column (x)
-    AsmWideMultiply(v->gX, vm1, &result);
-    AsmWideMultiply(v->gY, vm4, &result2);
-    AsmWideAdd(&result, &result2);
-    AsmWideMultiply(v->gZ, vm7, &result2);
-    AsmWideAdd(&result, &result2);
-    point->gX = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    r =  fix64_mul(v->gX, vm1) + fix64_mul(v->gY, vm4) + fix64_mul(v->gZ, vm7);
+    point->gX = fix64_to_fix(r);
 
     // second column (y)
-    AsmWideMultiply(v->gX, vm2, &result);
-    AsmWideMultiply(v->gY, vm5, &result2);
-    AsmWideAdd(&result, &result2);
-    AsmWideMultiply(v->gZ, vm8, &result2);
-    AsmWideAdd(&result, &result2);
-    point->gY = (result.hi << 16) | (((ulong)result.lo) >> 16);
+    r =  fix64_mul(v->gX, vm2) + fix64_mul(v->gY, vm5) + fix64_mul(v->gZ, vm8);
+    point->gY = fix64_to_fix(r);
 
     // call clip codes
     if (code_point(point))

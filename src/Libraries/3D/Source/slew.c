@@ -43,24 +43,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // takes eax=size, ebx,ecx,edi=x,y, & z vectors
 // trashes eax,edx,esi
 void g3_get_slew_step(fix step_size, g3s_vector *x_step, g3s_vector *y_step, g3s_vector *z_step) {
-  // x vector
-  if (x_step) {
-    x_step->gX = fix_mul(step_size, unscaled_matrix.m1);
-    x_step->gY = fix_mul(step_size, unscaled_matrix.m4);
-    x_step->gZ = fix_mul(step_size, unscaled_matrix.m7);
-  }
+    // x vector
+    if (x_step) {
+        x_step->gX = fix_mul(step_size, unscaled_matrix.m1);
+        x_step->gY = fix_mul(step_size, unscaled_matrix.m4);
+        x_step->gZ = fix_mul(step_size, unscaled_matrix.m7);
+    }
 
-  // y vector
-  if (y_step) {
-    y_step->gX = fix_mul(step_size, unscaled_matrix.m2);
-    y_step->gY = fix_mul(step_size, unscaled_matrix.m5);
-    y_step->gZ = fix_mul(step_size, unscaled_matrix.m8);
-  }
+    // y vector
+    if (y_step) {
+        y_step->gX = fix_mul(step_size, unscaled_matrix.m2);
+        y_step->gY = fix_mul(step_size, unscaled_matrix.m5);
+        y_step->gZ = fix_mul(step_size, unscaled_matrix.m8);
+    }
 
-  // z vector
-  if (z_step) {
-    z_step->gX = fix_mul(step_size, unscaled_matrix.m3);
-    z_step->gY = fix_mul(step_size, unscaled_matrix.m6);
-    z_step->gZ = fix_mul(step_size, unscaled_matrix.m9);
-  }
+    // z vector
+    if (z_step) {
+        z_step->gX = fix_mul(step_size, unscaled_matrix.m3);
+        z_step->gY = fix_mul(step_size, unscaled_matrix.m6);
+        z_step->gZ = fix_mul(step_size, unscaled_matrix.m9);
+    }
 }
