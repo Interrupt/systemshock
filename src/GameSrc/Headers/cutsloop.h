@@ -16,7 +16,7 @@
 
 // Defines
 
-// CC: These are all wrong
+// CC: These are all wrong, should find the right resource IDs
 #define START_CUTSCENE 0
 #define DEATH_CUTSCENE 1
 #define WIN_CUTSCENE   2
@@ -26,7 +26,7 @@
 void cutscene_loop(void);
 void cutscene_start(void);
 void cutscene_exit(void);
-short play_cutscene(int id, bool something);
+short play_cutscene(int id, bool show_credits);
 
 // Globals
 

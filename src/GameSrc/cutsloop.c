@@ -10,10 +10,13 @@
 #include "tools.h"
 #include "faketime.h"
 #include "setploop.h"
+#include "hkeyfunc.h"
 
 uiSlab cutscene_slab;
 LGRegion cutscene_root_region;
+
 int current_cutscene;
+bool should_show_credits;
 
 uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, void *user_data) {
 	uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
@@ -28,9 +31,7 @@ uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, void *user_data) {
             _new_mode = SETUP_LOOP;
 			chg_set_flg(GL_CHG_LOOP);
 
-			// Show credits at endgame
-			extern Boolean gGameCompletedQuit;
-			if(gGameCompletedQuit) {
+			if(should_show_credits) {
 				journey_credits_func(FALSE);
 			}
 
@@ -45,6 +46,14 @@ uchar cutscene_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data) {
 
 void cutscene_start() {
 	DEBUG("Cutscene start");
+
+	#ifdef SVGA_SUPPORT
+    	extern void change_svga_screen_mode();
+    	change_svga_screen_mode();
+	#endif
+
+    _new_mode = SETUP_LOOP;
+	chg_set_flg(GL_CHG_LOOP);
 
 	generic_reg_init(TRUE, &cutscene_root_region, NULL, &cutscene_slab, cutscene_key_handler, cutscene_mouse_handler);
 
@@ -66,17 +75,32 @@ void cutscene_loop() {
 	char buff[100];
 	sprintf(buff, "Cutscene #%i should go here!", current_cutscene);
 
-	res_draw_text(RES_coloraliasedFont, buff, 50, 70 - ymov);
-	res_draw_text(RES_coloraliasedFont, "Press space to continue hacking.", 36, 90 - ymov);
+	switch(current_cutscene) {
+		case DEATH_CUTSCENE:
+			res_draw_text(RES_coloraliasedFont, "Game Over, Hacker.", 30, 70 - ymov);
+			break;
+		case WIN_CUTSCENE:
+			res_draw_text(RES_coloraliasedFont, "It's over. Shodan is dust.", 30, 70 - ymov);
+			break;
+		case START_CUTSCENE:
+			res_draw_text(RES_coloraliasedFont, "Welcome back to Citadel Station", 30, 70 - ymov);
+			break;
+		default:
+			res_draw_text(RES_coloraliasedFont, buff, 50, 70 - ymov);
+	}
+	
+	res_draw_text(RES_coloraliasedFont, "[ Press space to continue ]", 30, 90 - ymov);
 
 }
 
-short play_cutscene(int id, bool something) {
-	DEBUG("Playing Cutscene %i", id);
+short play_cutscene(int id, bool show_credits) {
+	INFO("Playing Cutscene %i", id);
+
 	_new_mode = CUTSCENE_LOOP;
 	chg_set_flg(GL_CHG_LOOP);
 
 	current_cutscene = id;
+	should_show_credits = show_credits;
 
 	return 1;
 }

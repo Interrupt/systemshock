@@ -1199,12 +1199,12 @@ errtype trap_cutscene_func(int p1, int p2, int p3, int p4) {
 
     //if (qdata_get(p1) == 0)				// KLC - if we are to play the endgame cutscene
     //{
-        gGameCompletedQuit = TRUE;
+        //gGameCompletedQuit = TRUE;
 
         //gPlayingGame = FALSE; // Hop out of the game loop.
         // KLC   play_cutscene(qdata_get(p1), qdata_get(p2));
 
-        play_cutscene(qdata_get(p1), qdata_get(p2));
+        play_cutscene(WIN_CUTSCENE, TRUE);
     //}
 
     alternate_death = (qdata_get(p2) != 0);
@@ -1670,7 +1670,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
             //gPlayingGame = FALSE;   // Hop out of the game loop.
 
             INFO("GAME OVER!\n");
-            play_cutscene(DEATH_CUTSCENE, TRUE);
+            play_cutscene(DEATH_CUTSCENE, FALSE);
         }
         break;
     }

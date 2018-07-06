@@ -143,11 +143,6 @@ int main(int argc, char** argv)
 	gDeadPlayerQuit = FALSE;
 	gGameCompletedQuit = FALSE;
 
-	// Start in the Main Menu loop
-
-	_new_mode = _current_loop = SETUP_LOOP;
-	loopmode_enter(SETUP_LOOP);
-
 	// Draw the splash screen
 
 	load_da_palette();
@@ -155,6 +150,11 @@ int main(int argc, char** argv)
 
 	INFO("Showing splash screen");
 	splash_draw();
+
+	// Start in the Main Menu loop
+
+	_new_mode = _current_loop = SETUP_LOOP;
+	loopmode_enter(SETUP_LOOP);
 
 	// Start the main loop
 

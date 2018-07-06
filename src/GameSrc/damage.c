@@ -435,7 +435,7 @@ uchar kill_player(void) {
     if (quick_death) {
         amap_reset();
         secret_render_fx = 0;
-        play_cutscene(DEATH_CUTSCENE, TRUE);
+        play_cutscene(DEATH_CUTSCENE, FALSE);
     }
 
     return (quick_death | alternate_death);

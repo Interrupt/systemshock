@@ -516,7 +516,7 @@ errtype journey_intro_func(uchar draw_stuff) {
         res_draw_string(RES_citadelFont, SETUP_STRING_BASE, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT1_TOP + 2);
     uiShowMouse(NULL); // need to leave it hidden
 
-    return(play_cutscene(START_CUTSCENE, TRUE));
+    return(play_cutscene(START_CUTSCENE, FALSE));
     return OK;
 #endif
 }
@@ -573,6 +573,8 @@ void *credits_txtscrn;
 errtype journey_credits_func(uchar draw_stuff) {
     // if (draw_stuff)
     //   res_draw_string(RES_citadelFont, SETUP_STRING_BASE + 2, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT3_TOP + 2);
+
+    DEBUG("Showing credits");
 
     setup_mode = SETUP_CREDITS;
 
@@ -1161,6 +1163,9 @@ void splash_draw() {
     INFO("Loading splshpal.res");
     pal_file = ResOpenFile("res/data/splshpal.res");
 
+    INFO("Loading splash.res");
+    splash_num = ResOpenFile("res/data/splash.res");
+
     if (pal_file < 0)
         INFO("Could not open splshpal.res!");
 
@@ -1170,6 +1175,19 @@ void splash_draw() {
     // Set initial palette
 
     gr_set_pal(0, 256, splash_pal);
+
+    // Set screen mode
+
+    #ifdef SVGA_SUPPORT
+        extern void change_svga_screen_mode();
+        change_svga_screen_mode();
+    #endif
+
+    // clear the screen
+    gr_clear(0);
+
+    HotkeyContext = SETUP_CONTEXT;
+    uiSetCurrentSlab(&setup_slab);
 
     // Draw Origin Logo
 
@@ -1193,9 +1211,6 @@ void splash_draw() {
     gr_set_pal(0, 256, ppall);
 
     ResCloseFile(pal_file);
-
-    // Startup music
-    start_setup_sound(0);
 }
 
 // -------------------------------------------------------------
@@ -1210,6 +1225,8 @@ void setup_loop() {
         gr_clear(0xFF);
 
         draw_stuff = TRUE;
+
+        DEBUG("setup_loop %i", setup_mode);
     }
 
     last_setup_mode = setup_mode;
@@ -1226,6 +1243,7 @@ void setup_loop() {
         break;
     case SETUP_ANIM:
         // FIXME: What should this do?
+        break;
     case SETUP_CREDITS:
         journey_credits_func(draw_stuff);
         break;
@@ -1253,9 +1271,6 @@ void setup_start() {
 
     startup_music = FALSE;
     save_game_exists = (valid_save != 0);
-
-    // FIXME: Should fix play_intro_anim
-    // start_first_time = FALSE;
 
     if (setup_mode != SETUP_CREDITS) {
         if (!save_game_exists && start_first_time) {
@@ -1303,23 +1318,10 @@ void setup_start() {
     INFO("Loading intro.res");
     intro_num = ResOpenFile("res/data/intro.res");
 
-    INFO("Loading splash.res");
-    splash_num = ResOpenFile("res/data/splash.res");
-
     // slam in the right palette
     load_da_palette();
 
-    // wacky initial savegame hackiness
-    {
-        int i = 2;
-        int dvec[2];
-
-        // config_get_value(CFG_INIT_SVG,CONFIG_INT_TYPE,dvec,&i);
-        if (i > 0)
-            do_i_svg = dvec[0];
-        if (i > 1)
-            i_invuln = dvec[1];
-    }
+    DEBUG("STARTING %i\n", play_intro_anim);
 
     if (do_i_svg != -1) {
 #ifdef PLAYTEST
@@ -1347,11 +1349,10 @@ void setup_start() {
     } else {
         direct_into_cutscene = TRUE;
 
-        // FIXME: Cutscenes!
-        // play_cutscene(START_CUTSCENE, TRUE);
+        DEBUG("Intro cutscene!");
 
-        // CC: Just play some music for now instead
-        start_setup_sound(0);
+        // FIXME: Cutscenes!
+        play_cutscene(START_CUTSCENE, FALSE);
     }
 }
 
