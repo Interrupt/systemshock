@@ -63,6 +63,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Modding.h"
 
+#include "cutsloop.h"
+
 #include <stdint.h>
 #include <SDL.h>
 
@@ -141,18 +143,18 @@ int main(int argc, char** argv)
 	gDeadPlayerQuit = FALSE;
 	gGameCompletedQuit = FALSE;
 
+	load_da_palette();
+	gr_clear(0xFF);
+
+	// Draw the splash screen
+
+	INFO("Showing splash screen");
+	splash_draw();
+
 	// Start in the Main Menu loop
 
 	_new_mode = _current_loop = SETUP_LOOP;
 	loopmode_enter(SETUP_LOOP);
-
-	// Draw the splash screen
-
-	load_da_palette();
-	gr_clear(0xFF);
-
-	INFO("Showing splash screen");
-	splash_draw();
 
 	// Start the main loop
 

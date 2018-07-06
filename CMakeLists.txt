@@ -80,6 +80,7 @@ set(GAME_SRC
 	src/GameSrc/cybermfd.c
 	src/GameSrc/cybmem.c
 	src/GameSrc/cybrnd.c
+	src/GameSrc/cutsloop.c
 	src/GameSrc/damage.c
 	src/GameSrc/digifx.c
 	src/GameSrc/drugs.c

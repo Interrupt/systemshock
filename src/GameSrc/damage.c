@@ -67,6 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "amap.h"
 #include "target.h"
 #include "status.h"
+#include "cutsloop.h"
 
 #define SQUARE(x) ((x) * (x))
 #define PLAYER_DEFENSE_VALUE 4
@@ -434,10 +435,7 @@ uchar kill_player(void) {
     if (quick_death) {
         amap_reset();
         secret_render_fx = 0;
-
-        // CC: Go back to the main menu, should really play the death custcene here
-        _new_mode = SETUP_LOOP;
-        chg_set_flg(GL_CHG_LOOP);
+        play_cutscene(DEATH_CUTSCENE, FALSE);
     }
 
     return (quick_death | alternate_death);
