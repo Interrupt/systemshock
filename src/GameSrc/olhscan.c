@@ -129,8 +129,7 @@ ushort olh_scan_objs(void) {
 
     xl = yl = 0;
 
-//#define CRAZY_DEBUGGING_BLIT
-#ifdef CRAZY_DEBUGGING_BLIT
+#ifdef DEBUGGING_BLIT
     gr_push_canvas(grd_screen_canvas);
     gr_bitmap(&fr->draw_canvas.bm, 0, 200 - fr->draw_canvas.bm.h);
     gr_pop_canvas();

@@ -114,45 +114,45 @@ fix fix_mul(fix a, fix b) { return (fix)(((int64_t)(a) * (int64_t)(b)) >> 16); }
 fix fast_fix_mul_int(fix a, fix b) { return (fix)(((int64_t)(a) * (int64_t)(b)) >> 32); }
 
 fix fix_mul_asm_safe(fix a, fix b) {
-  int64_t intermediate = (int64_t)(a) * (int64_t)(b);
-  // Apparently PowerPC and Motorola 68000 codes differ here
-  // PowerPC will check if the lower 32 bits of the intemerdiate result are
-  // equal to -1 (cmpi 1,r6,-1), while 68K will check if the lower *16* bits of
-  // the intermediate result are equal to -1 (cmp.w #-1,d2). The result should
-  // be the same because bits 31:16 of the intermediate result already are
-  // tested for being equal to -1, but I'm leaving this comment here anyway for
-  // future reference
-  // int16_t d2 = intermediate & 0xFFFF;         // 68K code
-  int32_t d2 = intermediate & 0xFFFFFFFF; // PPC code
-  fix result = (fix)(intermediate >> 16);
-  if (result == -1 && d2 != -1) {
-    return 0;
-  }
-  return result;
+    int64_t intermediate = (int64_t)(a) * (int64_t)(b);
+    // Apparently PowerPC and Motorola 68000 codes differ here
+    // PowerPC will check if the lower 32 bits of the intemerdiate result are
+    // equal to -1 (cmpi 1,r6,-1), while 68K will check if the lower *16* bits of
+    // the intermediate result are equal to -1 (cmp.w #-1,d2). The result should
+    // be the same because bits 31:16 of the intermediate result already are
+    // tested for being equal to -1, but I'm leaving this comment here anyway for
+    // future reference
+    // int16_t d2 = intermediate & 0xFFFF;         // 68K code
+    int32_t d2 = intermediate & 0xFFFFFFFF; // PPC code
+    fix result = (fix)(intermediate >> 16);
+    if (result == -1 && d2 != -1) {
+        return 0;
+    }
+    return result;
 }
 
 // fix fix_div(fix a, fix b)
 fix fix_div(fix a, fix b) {
-  if (b == 0) {
-    gOVResult = 2;
-    fix r = 0x7FFFFFFF;
-    if (a >= 0) {
-      return r;
+    if (b == 0) {
+        gOVResult = 2;
+        fix r = 0x7FFFFFFF;
+        if (a >= 0) {
+            return r;
+        }
+        return -r;
     }
-    return -r;
-  }
-  gOVResult = 0;
-  int64_t r64 = ((int64_t)(a) << 16) / (int64_t)(b);
-  int32_t r32 = (int32_t)(r64 & 0xFFFFFFFF);
-  if (r64 != (int64_t)r32) {
-    gOVResult = 1;
-    fix r = 0x7FFFFFFF;
-    if (a >= 0) {
-      return r;
+    gOVResult = 0;
+    int64_t r64 = ((int64_t)(a) << 16) / (int64_t)(b);
+    int32_t r32 = (int32_t)(r64 & 0xFFFFFFFF);
+    if (r64 != (int64_t)r32) {
+        gOVResult = 1;
+        fix r = 0x7FFFFFFF;
+        if (a >= 0) {
+            return r;
+        }
+        return -r;
     }
-    return -r;
-  }
-  return r32;
+    return r32;
 }
 
 // fix fix_div_int(fix a, fix b)
@@ -160,9 +160,9 @@ fix fix_div(fix a, fix b) {
 //    return (fix)(((int64_t)(a) << 16) / (int64_t)(b));
 //}
 fix fix_div_int(fix a, fix b) {
-  int64_t r64 = ((int64_t)(a) << 16) / (int64_t)(b);
-  int32_t r32 = (int32_t)((r64 >> 16) & 0xFFFFFFFF);
-  return r32;
+    int64_t r64 = ((int64_t)(a) << 16) / (int64_t)(b);
+    int32_t r32 = (int32_t)((r64 >> 16) & 0xFFFFFFFF);
+    return r32;
 }
 
 // fix fix_div_safe_cint(fix a, fix b)
@@ -170,12 +170,12 @@ fix fix_div_int(fix a, fix b) {
 //    return (fix)(((int64_t)(a) << 16) / (int64_t)(b));
 //}
 fix fix_div_safe_cint(fix a, fix b) {
-  int64_t r64 = ((int64_t)(a) << 16) / (int64_t)(b);
-  int32_t r32 = (int32_t)((r64 >> 16) & 0xFFFFFFFF);
-  if ((r64 & 0xFFFF) != 0) {
-    return r32 + 1;
-  }
-  return r32;
+    int64_t r64 = ((int64_t)(a) << 16) / (int64_t)(b);
+    int32_t r32 = (int32_t)((r64 >> 16) & 0xFFFFFFFF);
+    if ((r64 & 0xFFFF) != 0) {
+        return r32 + 1;
+    }
+    return r32;
 }
 
 //----------------------------------------------------------------------------
@@ -183,52 +183,52 @@ fix fix_div_safe_cint(fix a, fix b) {
 //----------------------------------------------------------------------------
 
 fix fix_mul_div(fix m0, fix m1, fix d) {
-  // return (fix)(((int64_t)(m0) * (int64_t)(m1)) / (int64_t)(d));
-  int64_t mr = ((int64_t)(m0) * (int64_t)(m1));
-  if (d == 0) {
-    gOVResult = 2;
-    fix r = 0x7FFFFFFF;
-    if (mr >= 0) {
-      return r;
+    // return (fix)(((int64_t)(m0) * (int64_t)(m1)) / (int64_t)(d));
+    int64_t mr = ((int64_t)(m0) * (int64_t)(m1));
+    if (d == 0) {
+        gOVResult = 2;
+        fix r = 0x7FFFFFFF;
+        if (mr >= 0) {
+            return r;
+        }
+        return -r;
     }
-    return -r;
-  }
-  gOVResult = 0;
-  int64_t r64 = mr / (int64_t)(d);
-  int32_t r32 = (int32_t)(r64 & 0xFFFFFFFF);
-  if (r64 != (int64_t)r32) {
-    gOVResult = 1;
-    fix r = 0x7FFFFFFF;
-    if (mr >= 0) {
-      return r;
+    gOVResult = 0;
+    int64_t r64 = mr / (int64_t)(d);
+    int32_t r32 = (int32_t)(r64 & 0xFFFFFFFF);
+    if (r64 != (int64_t)r32) {
+        gOVResult = 1;
+        fix r = 0x7FFFFFFF;
+        if (mr >= 0) {
+            return r;
+        }
+        return -r;
     }
-    return -r;
-  }
-  return r32;
+    return r32;
 }
 
 //----------------------------------------------------------------------------
 // Returns the distance from (0,0) to (a,b)
 //----------------------------------------------------------------------------
 fix fix_pyth_dist(fix a, fix b) {
-  gOVResult = 100;
+    gOVResult = 100;
 
-  // @@@should check for overflow!
-  return fix_sqrt(fix_mul(a, a) + fix_mul(b, b));
+    // @@@should check for overflow!
+    return fix_sqrt(fix_mul(a, a) + fix_mul(b, b));
 }
 
 //----------------------------------------------------------------------------
 // Returns an approximation to the distance from (0,0) to (a,b)
 //----------------------------------------------------------------------------
 fix fix_fast_pyth_dist(fix a, fix b) {
-  if (a < 0)
-    a = -a;
-  if (b < 0)
-    b = -b;
-  if (a > b)
-    return (a + b / 2);
-  else
-    return (b + a / 2);
+    if (a < 0)
+        a = -a;
+    if (b < 0)
+        b = -b;
+    if (a > b)
+        return (a + b / 2);
+    else
+        return (b + a / 2);
 }
 
 //----------------------------------------------------------------------------
@@ -248,89 +248,89 @@ int long_fast_pyth_dist(int a, int b) { return (fix_fast_pyth_dist(a, b)); }
 // Development 27 (1983).  Good for them.
 //----------------------------------------------------------------------------
 fix fix_safe_pyth_dist(fix a, fix b) {
-  fix tmp;
+    fix tmp;
 
-  a = abs(a);
-  b = abs(b); // works fine since they're really longs
-  if (a < b) {
-    tmp = a;
-    a = b;
-    b = tmp;
-  } // now 0 <= b <= a
-  if (a > 0) {
-    if (a > 0x2fffffff) {
-      //			ssWarning (("Overflow in
-      // fix_safe_pyth_dist\n"));  DebugStr("\pOverflow in fix_safe_pyth_dist");
-      DebugString("Overflow in fix_safe_pyth_dist");
-      return 0;
+    a = abs(a);
+    b = abs(b); // works fine since they're really longs
+    if (a < b) {
+        tmp = a;
+        a = b;
+        b = tmp;
+    } // now 0 <= b <= a
+    if (a > 0) {
+        if (a > 0x2fffffff) {
+            //			ssWarning (("Overflow in
+            // fix_safe_pyth_dist\n"));  DebugStr("\pOverflow in fix_safe_pyth_dist");
+            DebugString("Overflow in fix_safe_pyth_dist");
+            return 0;
+        }
+        for (;;) {
+            // This is a quick way of doing the reflection
+            tmp = fix_div(b, a);
+            tmp = fix_mul(tmp, tmp);
+            if (tmp == 0)
+                break;
+            tmp = fix_div(tmp, tmp + fix_make(4, 0));
+            a += fix_mul(2 * a, tmp);
+            b = fix_mul(b, tmp);
+        }
     }
-    for (;;) {
-      // This is a quick way of doing the reflection
-      tmp = fix_div(b, a);
-      tmp = fix_mul(tmp, tmp);
-      if (tmp == 0)
-        break;
-      tmp = fix_div(tmp, tmp + fix_make(4, 0));
-      a += fix_mul(2 * a, tmp);
-      b = fix_mul(b, tmp);
-    }
-  }
-  return a;
+    return a;
 }
 
 //----------------------------------------------------------------------------
 // Computes sin and cos of theta
 //----------------------------------------------------------------------------
 void fix_sincos(fixang theta, fix *sin, fix *cos) {
-  uint8_t baseth, fracth;                // high and low bytes of the
-  uint16_t lowsin, lowcos, hisin, hicos; // table lookups
+    uint8_t baseth, fracth;                // high and low bytes of the
+    uint16_t lowsin, lowcos, hisin, hicos; // table lookups
 
-  // divide the angle into high and low bytes
-  // we will do a table lookup with the high byte and
-  // interpolate with the low byte
-  baseth = (uint8_t)(theta >> 8);
-  fracth = (uint8_t)(theta & 0xff);
+    // divide the angle into high and low bytes
+    // we will do a table lookup with the high byte and
+    // interpolate with the low byte
+    baseth = (uint8_t)(theta >> 8);
+    fracth = (uint8_t)(theta & 0xff);
 
-  // use the identity [cos x = sin (x + PI/2)] to look up
-  // cosines in the sine table
-  lowsin = sintab[baseth];
-  hisin = sintab[baseth + 1];
-  lowcos = sintab[baseth + 64];
-  hicos = sintab[baseth + 65];
+    // use the identity [cos x = sin (x + PI/2)] to look up
+    // cosines in the sine table
+    lowsin = sintab[baseth];
+    hisin = sintab[baseth + 1];
+    lowcos = sintab[baseth + 64];
+    hicos = sintab[baseth + 65];
 
-  // interpolate between low___ and hi___ according to fracth
-  *sin = ((int16_t)(lowsin + ((((int16_t)hisin - (int16_t)lowsin) * fracth) >> 8))) << 2;
-  *cos = ((int16_t)(lowcos + ((((int16_t)hicos - (int16_t)lowcos) * fracth) >> 8))) << 2;
+    // interpolate between low___ and hi___ according to fracth
+    *sin = ((int16_t)(lowsin + ((((int16_t)hisin - (int16_t)lowsin) * fracth) >> 8))) << 2;
+    *cos = ((int16_t)(lowcos + ((((int16_t)hicos - (int16_t)lowcos) * fracth) >> 8))) << 2;
 
-  return;
+    return;
 }
 
 //----------------------------------------------------------------------------
 // Computes sin of theta
 //----------------------------------------------------------------------------
 fix fix_sin(fixang theta) {
-  uint8_t baseth, fracth;
-  uint16_t lowsin, hisin;
+    uint8_t baseth, fracth;
+    uint16_t lowsin, hisin;
 
-  baseth = (uint8_t)(theta >> 8);
-  fracth = (uint8_t)(theta & 0xff);
-  lowsin = sintab[baseth];
-  hisin = sintab[baseth + 1];
-  return ((int16_t)(lowsin + ((((int16_t)hisin - (int16_t)lowsin) * fracth) >> 8))) << 2;
+    baseth = (uint8_t)(theta >> 8);
+    fracth = (uint8_t)(theta & 0xff);
+    lowsin = sintab[baseth];
+    hisin = sintab[baseth + 1];
+    return ((int16_t)(lowsin + ((((int16_t)hisin - (int16_t)lowsin) * fracth) >> 8))) << 2;
 }
 
 //----------------------------------------------------------------------------
 // Computes cos of theta
 //----------------------------------------------------------------------------
 fix fix_cos(fixang theta) {
-  uint8_t baseth, fracth;
-  uint16_t lowcos, hicos;
+    uint8_t baseth, fracth;
+    uint16_t lowcos, hicos;
 
-  baseth = (uint8_t)(theta >> 8);
-  fracth = (uint8_t)(theta & 0xff);
-  lowcos = sintab[baseth + 64];
-  hicos = sintab[baseth + 65];
-  return ((int16_t)(lowcos + ((((int16_t)hicos - (int16_t)lowcos) * fracth) >> 8))) << 2;
+    baseth = (uint8_t)(theta >> 8);
+    fracth = (uint8_t)(theta & 0xff);
+    lowcos = sintab[baseth + 64];
+    hicos = sintab[baseth + 65];
+    return ((int16_t)(lowcos + ((((int16_t)hicos - (int16_t)lowcos) * fracth) >> 8))) << 2;
 }
 
 //----------------------------------------------------------------------------
@@ -338,12 +338,12 @@ fix fix_cos(fixang theta) {
 // Faster than fix_sincos() but not as accurate (does not interpolate)
 //----------------------------------------------------------------------------
 void fix_fastsincos(fixang theta, fix *sin, fix *cos) {
-  // use the identity [cos x = sin (x + PI/2)] to look up
-  // cosines in the sine table
-  *sin = (((int16_t)(sintab[theta >> 8])) << 2);
-  *cos = (((int16_t)(sintab[(theta >> 8) + 64])) << 2);
+    // use the identity [cos x = sin (x + PI/2)] to look up
+    // cosines in the sine table
+    *sin = (((int16_t)(sintab[theta >> 8])) << 2);
+    *cos = (((int16_t)(sintab[(theta >> 8) + 64])) << 2);
 
-  return;
+    return;
 }
 
 //----------------------------------------------------------------------------
@@ -362,21 +362,21 @@ fix fix_fastcos(fixang theta) { return (((int16_t)(sintab[(theta >> 8) + 64])) <
 // Returns 0xc000..0x4000 (-PI/2..PI/2)
 //----------------------------------------------------------------------------
 fixang fix_asin(fix x) {
-  uint8_t basex, fracx; // high and low bytes of x
-  fixang lowy, hiy;   // table lookups
+    uint8_t basex, fracx; // high and low bytes of x
+    fixang lowy, hiy;     // table lookups
 
-  // divide x into high and low bytes
-  // lookup with the high byte, interpolate with the low
-  // We shift basex around to make it continuous; see trigtab.h
+    // divide x into high and low bytes
+    // lookup with the high byte, interpolate with the low
+    // We shift basex around to make it continuous; see trigtab.h
 
-  basex = (uint8_t)(((x >> 2) >> 8) + 0x40);
-  fracx = (uint8_t)((x >> 2) & 0xff);
+    basex = (uint8_t)(((x >> 2) >> 8) + 0x40);
+    fracx = (uint8_t)((x >> 2) & 0xff);
 
-  lowy = asintab[basex];
-  hiy = asintab[basex + 1];
+    lowy = asintab[basex];
+    hiy = asintab[basex + 1];
 
-  // interpolate between lowy and hiy according to fracx
-  return (lowy + ((((int16_t)hiy - (int16_t)lowy) * fracx) >> 8));
+    // interpolate between lowy and hiy according to fracx
+    return (lowy + ((((int16_t)hiy - (int16_t)lowy) * fracx) >> 8));
 }
 
 //----------------------------------------------------------------------------
@@ -384,82 +384,82 @@ fixang fix_asin(fix x) {
 // Returns 0x0000..0x8000 (0..PI)
 //----------------------------------------------------------------------------
 fixang fix_acos(fix x) {
-  uint8_t basex, fracx;
-  uint16_t lowy, hiy;
-  fixang asin_answer;
+    uint8_t basex, fracx;
+    uint16_t lowy, hiy;
+    fixang asin_answer;
 
-  // acos(x) = PI/2 - asin(x)
+    // acos(x) = PI/2 - asin(x)
 
-  basex = (uint8_t)(((x >> 2) >> 8) + 0x40);
-  fracx = (uint8_t)((x >> 2) & 0xff);
+    basex = (uint8_t)(((x >> 2) >> 8) + 0x40);
+    fracx = (uint8_t)((x >> 2) & 0xff);
 
-  lowy = asintab[basex];
-  hiy = asintab[basex + 1];
+    lowy = asintab[basex];
+    hiy = asintab[basex + 1];
 
-  asin_answer = (lowy + ((((int16_t)hiy - (int16_t)lowy) * fracx) >> 8));
-  return ((fixang)0x4000 - asin_answer);
+    asin_answer = (lowy + ((((int16_t)hiy - (int16_t)lowy) * fracx) >> 8));
+    return ((fixang)0x4000 - asin_answer);
 }
 
 //----------------------------------------------------------------------------
 // Computes the atan of y/x, in the correct quadrant and everything
 //----------------------------------------------------------------------------
 fixang fix_atan2(fix y, fix x) {
-  fix hyp;   // hypotenuse
-  fix s, c;  // sine, cosine
-  fixang th; // our answer
+    fix hyp;   // hypotenuse
+    fix s, c;  // sine, cosine
+    fixang th; // our answer
 
-  // Get special cases out of the way so we don't have to deal
-  // with things like making sure 1 gets converted to 0x7fff and
-  // not 0x8000.  Note that we grab the y = x = 0 case here
-  if (y == 0) {
-    if (x >= 0)
-      return 0x0000;
-    else
-      return 0x8000;
-  } else if (x == 0) {
-    if (y >= 0)
-      return 0x4000;
-    else
-      return 0xc000;
-  }
-
-  if ((hyp = fix_pyth_dist(x, y)) == 0) {
-    //		printf ("hey, dist was 0\n");
-
-    return 0;
-  }
-
-  // Use fix_asin or fix_acos depending on where we are.  We don't want to use
-  // fix_asin if the sin is close to 1 or -1
-  s = fix_div(y, hyp);
-  if ((uint32_t)s < 0x00004000 || (uint32_t)s > 0xffffc000) { // range is good, use asin
-    th = fix_asin(s);
-    if (x < 0) {
-      if (th < 0x4000)
-        th = 0x8000 - th;
-      else
-        th = ~th + 0x8000; // that is, 0xffff - th + 0x8000
+    // Get special cases out of the way so we don't have to deal
+    // with things like making sure 1 gets converted to 0x7fff and
+    // not 0x8000.  Note that we grab the y = x = 0 case here
+    if (y == 0) {
+        if (x >= 0)
+            return 0x0000;
+        else
+            return 0x8000;
+    } else if (x == 0) {
+        if (y >= 0)
+            return 0x4000;
+        else
+            return 0xc000;
     }
-  } else { // use acos instead
-    c = fix_div(x, hyp);
-    th = fix_acos(c);
-    if (y < 0) {
-      th = ~th; // that is, 0xffff - th
-    }
-  }
 
-    // The above (x < 0) and (y < 0) conditionals should take care of placing us
-    // in the correct quadrant, so we shouldn't need the code below.
-    // Additionally, the code below can cause rounding errors when (th & 0x3fff
-    // == 0).  So let's try omitting it.
+    if ((hyp = fix_pyth_dist(x, y)) == 0) {
+        //		printf ("hey, dist was 0\n");
+
+        return 0;
+    }
+
+    // Use fix_asin or fix_acos depending on where we are.  We don't want to use
+    // fix_asin if the sin is close to 1 or -1
+    s = fix_div(y, hyp);
+    if ((uint32_t)s < 0x00004000 || (uint32_t)s > 0xffffc000) { // range is good, use asin
+        th = fix_asin(s);
+        if (x < 0) {
+            if (th < 0x4000)
+                th = 0x8000 - th;
+            else
+                th = ~th + 0x8000; // that is, 0xffff - th + 0x8000
+        }
+    } else { // use acos instead
+        c = fix_div(x, hyp);
+        th = fix_acos(c);
+        if (y < 0) {
+            th = ~th; // that is, 0xffff - th
+        }
+    }
+
+        // The above (x < 0) and (y < 0) conditionals should take care of placing us
+        // in the correct quadrant, so we shouldn't need the code below.
+        // Additionally, the code below can cause rounding errors when (th & 0x3fff
+        // == 0).  So let's try omitting it.
 
 #ifdef NO_NEED
-  // set high bits based on what quadrant we are in
-  th &= 0x3fff;
-  th |= (y > 0 ? (x > 0 ? 0x0000 : 0x4000) : (x > 0 ? 0xc000 : 0x8000));
+    // set high bits based on what quadrant we are in
+    th &= 0x3fff;
+    th |= (y > 0 ? (x > 0 ? 0x0000 : 0x4000) : (x > 0 ? 0xc000 : 0x8000));
 #endif
 
-  return th;
+    return th;
 }
 
 fix24 fix24_mul(fix24 a, fix24 b) { return (fix24)(((int64_t)a * (int64_t)b) >> 8); }
@@ -467,75 +467,36 @@ fix24 fix24_mul(fix24 a, fix24 b) { return (fix24)(((int64_t)a * (int64_t)b) >> 
 fix24 fix24_div(fix24 a, fix24 b) { return (fix24)(((int64_t)a << 8) / (int64_t)b); }
 
 fix fix_pow(fix x, fix y) {
-  int i;
-  fix ans;
-  fix rh, rl;
-  uint16_t yh, yl;
+    int i;
+    fix ans;
+    fix rh, rl;
+    uint16_t yh, yl;
 
-  ans = FIX_UNIT;
-  yh = (uint16_t)(fix_int(y));
-  yl = fix_frac(y);
-  rh = rl = x;
+    ans = FIX_UNIT;
+    yh = (uint16_t)(fix_int(y));
+    yl = fix_frac(y);
+    rh = rl = x;
 
-  // calculate hi part, leave when done
-  for (i = 0; i < 16; ++i) {
-    if (yh & 1)
-      ans = fix_mul(ans, rh);
-    if (yh != 0)
-      rh = fix_mul(rh, rh);
-    yh = yh >> 1;
-    if (yl != 0)
-      rl = fix_sqrt(rl);
-    if (yl & 0x8000)
-      ans = fix_mul(ans, rl);
-    yl = yl << 1;
-  }
-  return ans;
+    // calculate hi part, leave when done
+    for (i = 0; i < 16; ++i) {
+        if (yh & 1)
+            ans = fix_mul(ans, rh);
+        if (yh != 0)
+            rh = fix_mul(rh, rh);
+        yh = yh >> 1;
+        if (yl != 0)
+            rl = fix_sqrt(rl);
+        if (yl & 0x8000)
+            ans = fix_mul(ans, rl);
+        yl = yl << 1;
+    }
+    return ans;
 }
 
-AWide *AsmWideAdd(AWide *target, const AWide *source) {
-  int64_t t, s;
-  ASSIGN_WIDE_TO_64(t, target);
-  ASSIGN_WIDE_TO_64(s, source);
-  t += s;
-  ASSIGN_64_TO_WIDE(target, t);
-  return target;
+int32_t fix64_div(int64_t a, int32_t b) {
+    return (int32_t) (a / b);
 }
 
-AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target) {
-  int64_t a, b;
-  a = multiplicand;
-  b = multiplier;
-  a *= b;
-  ASSIGN_64_TO_WIDE(target, a);
-  return target;
-}
-
-int32_t AsmWideDivide(int32_t hi, uint32_t lo, int32_t divisor) {
-  int64_t x;
-  AWide w;
-  w.lo = lo;
-  w.hi = hi;
-  ASSIGN_WIDE_TO_64(x, &w);
-  return (int)(x / (int64_t)divisor);
-}
-
-AWide *AsmWideNegate(AWide *target) {
-  int64_t x;
-  ASSIGN_WIDE_TO_64(x, target);
-  x = -x;
-  ASSIGN_64_TO_WIDE(target, x);
-  return target;
-}
-
-AWide *AsmWideBitShift(AWide *target, int shift) {
-  int64_t x;
-  ASSIGN_WIDE_TO_64(x, target);
-  if (shift < 0) {
-    x <<= -shift;
-  } else {
-    x >>= shift;
-  }
-  ASSIGN_64_TO_WIDE(target, x);
-  return target;
+int64_t fix64_mul(int32_t a, int32_t b) {
+    return (int64_t)a * (int64_t)b;
 }

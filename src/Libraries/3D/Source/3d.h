@@ -156,12 +156,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma pack(2)
 
 // MLA defines
-#define SwapFix(x, y) \
-  {                   \
-    fix temp = (x);   \
-    (x) = (y);        \
-    (y) = temp;       \
-  }
+#define SwapFix(x, y)   \
+    {                   \
+        fix temp = (x); \
+        (x) = (y);      \
+        (y) = temp;     \
+    }
 #define vm1 view_matrix.m1
 #define vm2 view_matrix.m2
 #define vm3 view_matrix.m3
@@ -190,22 +190,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define f0_25 fix_make(0, 0x4000)
 
 // gets the next available pnt in reg.
-#define getpnt(res)           \
-  {                           \
-    g3s_point *scratch;       \
-    if ((res = first_free)) { \
-      scratch = res->next;    \
-      first_free = scratch;   \
-    }                         \
-  }
+#define getpnt(res)               \
+    {                             \
+        g3s_point *scratch;       \
+        if ((res = first_free)) { \
+            scratch = res->next;  \
+            first_free = scratch; \
+        }                         \
+    }
 
 // frees the point in the specified register. uses ebx as scratch
-#define freepnt(src)                 \
-  {                                  \
-    g3s_point *scratch = first_free; \
-    src->next = scratch;             \
-    first_free = src;                \
-  }
+#define freepnt(src)                     \
+    {                                    \
+        g3s_point *scratch = first_free; \
+        src->next = scratch;             \
+        first_free = src;                \
+    }
 
 // FIXME Move to FIX
 // new types:
@@ -214,16 +214,16 @@ typedef short sfix;
 #define sfix_make(a, b) ((((short)(a)) << 8) | (b))
 #define fix_from_sfix(a) (((fix)(a)) << 8)
 
-#define g3_set_i(pnt, ii)      \
-  do {                         \
-    pnt->i = sfix_make(ii, 0); \
-    pnt->p3_flags |= PF_I;     \
-  } while (0);
-#define g3_set_rgb(pnt, r, g, b)     \
-  do {                               \
-    pnt->rgb = gr_bind_rgb(r, g, b); \
-    pnt->p3_flags |= PF_RGB;         \
-  } while (0);
+#define g3_set_i(pnt, ii)          \
+    do {                           \
+        pnt->i = sfix_make(ii, 0); \
+        pnt->p3_flags |= PF_I;     \
+    } while (0);
+#define g3_set_rgb(pnt, r, g, b)         \
+    do {                                 \
+        pnt->rgb = gr_bind_rgb(r, g, b); \
+        pnt->p3_flags |= PF_RGB;         \
+    } while (0);
 
 // constants
 
@@ -257,12 +257,12 @@ typedef struct g3s_vector {
 #if 0 // MLA #ifdef __cplusplus
 	fix x,y,z;
 #else
-  union {
-    struct {
-      fix x, y, z;
+    union {
+        struct {
+            fix x, y, z;
+        };
+        fix xyz[3];
     };
-    fix xyz[3];
-  };
 #endif
 } g3s_vector;
 
@@ -271,7 +271,7 @@ typedef struct g3s_vector {
 #define gZ xyz[2]
 
 typedef struct g3s_angvec {
-  fixang tx, ty, tz;
+    fixang tx, ty, tz;
 } g3s_angvec;
 
 // This transformation matrix is row based, ie
@@ -282,7 +282,7 @@ typedef struct g3s_angvec {
 // but of course the incoming y coordinates
 // are inverted, have a nice day
 typedef struct g3s_matrix {
-  fix m1, m2, m3, m4, m5, m6, m7, m8, m9;
+    fix m1, m2, m3, m4, m5, m6, m7, m8, m9;
 } g3s_matrix;
 
 // typedef short g3s_phandle;    //used to refer to points, equal to pntnum * 4
@@ -292,30 +292,30 @@ typedef struct g3s_point {
 #if 0 // #ifdef __cplusplus
 	fix x,y,z;
 #else
-  union { // rotated 3d coords, use as vector or elements
-    g3s_vector vec;
-    struct {
-      fix x, y, z;
+    union { // rotated 3d coords, use as vector or elements
+        g3s_vector vec;
+        struct {
+            fix x, y, z;
+        };
+        fix xyz[3];
+        g3s_phandle next; // next in free list, when point is unused
     };
-    fix xyz[3];
-    g3s_phandle next; // next in free list, when point is unused
-  };
 #endif
 
-  fix sx, sy;     // screen coords
-  byte codes;     // clip codes
-  ubyte p3_flags; // misc flags
-#if 0             // #ifdef __cplusplus
+    fix sx, sy;     // screen coords
+    byte codes;     // clip codes
+    ubyte p3_flags; // misc flags
+#if 0               // #ifdef __cplusplus
 	sfix u,v;
 #else
-  union {
-    struct {
-      sfix u, v;
-    } uv;        // for texturing, etc.
-    grs_rgb rgb; // for RGB-space gouraud shading
-  };
+    union {
+        struct {
+            sfix u, v;
+        } uv;        // for texturing, etc.
+        grs_rgb rgb; // for RGB-space gouraud shading
+    };
 #endif
-  sfix i; // gouraud shading & lighting
+    sfix i; // gouraud shading & lighting
 } g3s_point;
 
 // clip codes
@@ -362,8 +362,8 @@ extern g3s_vector g3d_view_vec, g3d_light_vec;
 // DG: my compiler was not happy about the names "or" and "and", so I appended a
 // _
 typedef struct g3s_codes {
-  byte or_;
-  byte and_;
+    byte or_;
+    byte and_;
 } g3s_codes;
 
 /*

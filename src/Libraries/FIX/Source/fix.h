@@ -373,6 +373,7 @@ typedef int32_t fix24;
 #define fix24_round(n) (((n) + 128) & 0xffffff00)
 #define fix24_int(n) ((n) >> 8)
 #define fix24_frac(n) ((n)&0xff)
+#define fix24_float(n) ((float)(fix24_int(n)) + (float)(fix24_frac(n)) / 256.0)
 
 #define fix24_from_fix16(n) ((n) >> 8)
 #define fix16_from_fix24(n) ((n) << 8)
@@ -388,25 +389,26 @@ fix24 fix24_div(fix24 a, fix24 b);
 typedef int64_t fix64;
 
 #define fix64_make(a, b) ((((int64_t)(a)) << 32) | (b))
+#define fix64_int(n) ((int32_t)((n) >> 32))
+#define fix64_frac(n) ((uint32_t)((n) & 0xffffffff))
+#define fix64_to_fix(n) (fix64_int(n) << 16 | fix64_frac(n) >> 16)
 
-struct AWide {
-  unsigned int lo;
-  int hi;
-};
-typedef struct AWide AWide;
+// fix64 algebraic functions
+/**
+ * Divide two numbers. There no divide by zero check!
+ * @param a dividend
+ * @param b divisor
+ * @return int32_t result of division
+ */
+extern int32_t fix64_div(int64_t a, int32_t b);
 
-// Custom Wide assignment macros
-#define ASSIGN_WIDE_TO_64(x, w) x = (uint64_t)(w)->lo + (((int64_t)(w)->hi) << 32)
-#define ASSIGN_64_TO_WIDE(w, x) \
-  (w)->lo = x & 0xFFFFFFFF;     \
-  (w)->hi = x >> 32
-
-extern AWide *AsmWideAdd(AWide *target, const AWide *source);
-extern AWide *AsmWideMultiply(int multiplicand, int multiplier, AWide *target);
-extern int32_t AsmWideDivide(int32_t hi, uint32_t lo, int32_t den);
-// New functions
-extern AWide *AsmWideNegate(AWide *target);
-extern AWide *AsmWideBitShift(AWide *target, int count);
+/**
+ * Multiply two numbers.
+ * @param a number
+ * @param b number
+ * @return result of multiplication
+ */
+extern int64_t fix64_mul(int32_t a, int32_t b);
 
 //============================================
 //

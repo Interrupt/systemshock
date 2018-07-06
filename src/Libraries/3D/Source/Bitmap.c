@@ -83,8 +83,8 @@ extern int h_map(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 
 fix _g3d_bitmap_x_scale = 0x010000;
 fix _g3d_bitmap_y_scale = 0x010000;
-fix _g3d_bitmap_x_iscale = 0x010000;
-fix _g3d_bitmap_y_iscale = 0x010000;
+// fix _g3d_bitmap_x_iscale = 0x010000;
+// fix _g3d_bitmap_y_iscale = 0x010000;
 long _g3d_bitmap_u_anchor = 0;
 long _g3d_bitmap_v_anchor = 0;
 fix _g3d_roll_matrix[6];
@@ -100,8 +100,8 @@ grs_tmap_info tmap_info;
 char _g3d_enable_blend = 0;
 
 // prototypes
-char SubLongWithOverflow(long *result, long src, long dest);
-char AddLongWithOverflow(long *result, long src, long dest);
+bool SubLongWithOverflow(int32_t *result, int32_t src, int32_t dest);
+bool AddLongWithOverflow(int32_t *result, int32_t src, int32_t dest);
 
 grs_vertex **do_bitmap(grs_bitmap *bm, g3s_phandle p);
 grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p);
@@ -110,319 +110,319 @@ grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p);
 //   ebx: u scale factor
 //   ecx: v scale factor
 void g3_set_bitmap_scale(fix u_scale, fix v_scale) {
-  _g3d_bitmap_x_scale = fix_mul(fix_mul(_matrix_scale.gX, u_scale), _scrw);
-  _g3d_bitmap_x_iscale = AsmWideDivide(1, 0, _g3d_bitmap_x_scale);
+    _g3d_bitmap_x_scale = fix_mul(fix_mul(_matrix_scale.gX, u_scale), _scrw);
+    // _g3d_bitmap_x_iscale = fix64_div(fix64_make(1, 0), _g3d_bitmap_x_scale);
 
-  _g3d_bitmap_y_scale = fix_mul(fix_mul(_matrix_scale.gY, v_scale), _scrh);
-  _g3d_bitmap_y_iscale = AsmWideDivide(1, 0, _g3d_bitmap_y_scale);
+    _g3d_bitmap_y_scale = fix_mul(fix_mul(_matrix_scale.gY, v_scale), _scrh);
+    // _g3d_bitmap_y_iscale = fix64_div(fix64_make(1, 0), _g3d_bitmap_y_scale);
 }
 
 grs_vertex **g3_full_light_bitmap(grs_bitmap *bm, grs_vertex **p) {
-  _g3d_light_flag = 1;
-  _g3d_bitmap_poly = p;
-  return (do_bitmap(bm, (g3s_phandle)p));
+    _g3d_light_flag = 1;
+    _g3d_bitmap_poly = p;
+    return (do_bitmap(bm, (g3s_phandle)p));
 }
 
 grs_vertex **g3_full_light_anchor_bitmap(grs_bitmap *bm, grs_vertex **p, short u_anchor, short v_anchor) {
-  _g3d_light_flag = 1;
-  _g3d_bitmap_u_anchor = u_anchor;
-  _g3d_bitmap_v_anchor = v_anchor;
-  _g3d_bitmap_poly = p;
-  return (g3_bitmap_common(bm, (g3s_phandle)p));
+    _g3d_light_flag = 1;
+    _g3d_bitmap_u_anchor = u_anchor;
+    _g3d_bitmap_v_anchor = v_anchor;
+    _g3d_bitmap_poly = p;
+    return (g3_bitmap_common(bm, (g3s_phandle)p));
 }
 
 grs_vertex **g3_light_anchor_bitmap(grs_bitmap *bm, g3s_phandle p, short u_anchor, short v_anchor) {
-  _g3d_light_flag = 2;
-  _g3d_bitmap_u_anchor = u_anchor;
-  _g3d_bitmap_v_anchor = v_anchor;
-  _g3d_bitmap_clut = (p->i & 0x00ff00) + grd_screen->ltab;
-  _g3d_bitmap_poly = vpl;
-  return (g3_bitmap_common(bm, p));
+    _g3d_light_flag = 2;
+    _g3d_bitmap_u_anchor = u_anchor;
+    _g3d_bitmap_v_anchor = v_anchor;
+    _g3d_bitmap_clut = (p->i & 0x00ff00) + grd_screen->ltab;
+    _g3d_bitmap_poly = vpl;
+    return (g3_bitmap_common(bm, p));
 }
 
 grs_vertex **g3_light_bitmap(grs_bitmap *bm, g3s_phandle p) {
-  _g3d_light_flag = 2;
-  _g3d_bitmap_clut = (p->i & 0x00ff00) + grd_screen->ltab;
-  _g3d_bitmap_poly = vpl;
-  return (do_bitmap(bm, p));
+    _g3d_light_flag = 2;
+    _g3d_bitmap_clut = (p->i & 0x00ff00) + grd_screen->ltab;
+    _g3d_bitmap_poly = vpl;
+    return (do_bitmap(bm, p));
 }
 
 grs_vertex **g3_anchor_bitmap(grs_bitmap *bm, g3s_phandle p, short u_anchor, short v_anchor) {
-  _g3d_light_flag = 0;
-  _g3d_bitmap_u_anchor = u_anchor;
-  _g3d_bitmap_v_anchor = v_anchor;
-  _g3d_bitmap_poly = vpl;
-  return (g3_bitmap_common(bm, p));
+    _g3d_light_flag = 0;
+    _g3d_bitmap_u_anchor = u_anchor;
+    _g3d_bitmap_v_anchor = v_anchor;
+    _g3d_bitmap_poly = vpl;
+    return (g3_bitmap_common(bm, p));
 }
 
 grs_vertex **g3_bitmap(grs_bitmap *bm, g3s_phandle p) {
-  _g3d_light_flag = 0;
-  _g3d_bitmap_poly = vpl;
-  return (do_bitmap(bm, p));
+    _g3d_light_flag = 0;
+    _g3d_bitmap_poly = vpl;
+    return (do_bitmap(bm, p));
 }
 
 grs_vertex **do_bitmap(grs_bitmap *bm, g3s_phandle p) {
-  _g3d_bitmap_u_anchor = bm->w >> 1;
-  _g3d_bitmap_v_anchor = bm->h - 1;
-  return (g3_bitmap_common(bm, p));
+    _g3d_bitmap_u_anchor = bm->w >> 1;
+    _g3d_bitmap_v_anchor = bm->h - 1;
+    return (g3_bitmap_common(bm, p));
 }
 
 grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p) {
-  fix tempF, tempF2;
-  long tempL, tempL2;
-  short tempS, tempS2;
-  fix sintemp, costemp;
-  grs_vertex *tempG1, *tempG2;
-  fix tempResult;
-  long bm_w, bm_h;
-  fix dx, dy;
+    fix tempF, tempF2;
+    int32_t tempL, tempL2;
+    int16_t tempS, tempS2;
+    fix sintemp, costemp;
+    grs_vertex *tempG1, *tempG2;
+    fix tempResult;
+    int32_t bm_w, bm_h;
+    fix dx, dy;
 
-  // MLA- these were globals, I made them locals for PPC speed, they aren't
-  // referenced externally
-  long rm0;
-  long rm1;
-  long rm2;
-  long rm3;
+    // MLA- these were globals, I made them locals for PPC speed, they aren't
+    // referenced externally
+    long rm0;
+    long rm1;
+    long rm2;
+    long rm3;
 
 #ifdef stereo_on
-  if (_g3d_stereo & 1) {
+    if (_g3d_stereo & 1) {
 
-    ;
-    edi is point handle pushm edi,
-        esi call g3_bitmap_common_raw set_rt_canv
+        ;
+        edi is point handle pushm edi,
+            esi call g3_bitmap_common_raw set_rt_canv
 
-            popm edi,
-        esi add edi,
-        _g3d_stereo_base call g3_bitmap_common_raw set_lt_canv
+                popm edi,
+            esi add edi,
+            _g3d_stereo_base call g3_bitmap_common_raw set_lt_canv
 
-            ret
+                ret
 
-                g3_bitmap_common_raw:
-  }
+                    g3_bitmap_common_raw:
+    }
 #endif
 
-  if ((p->p3_flags & PF_PROJECTED) == 0)
-    if (g3_project_point(p) == 0)
-      p->codes |= CC_CLIP_OVERFLOW;
+    if ((p->p3_flags & PF_PROJECTED) == 0)
+        if (g3_project_point(p) == 0)
+            p->codes |= CC_CLIP_OVERFLOW;
 
-  if ((p->codes & CC_CLIP_OVERFLOW) != 0)
-    return (0L);
+    if ((p->codes & CC_CLIP_OVERFLOW) != 0)
+        return (0L);
 
-  // copy a few things into locals
-  bm_w = bm->w;
-  bm_h = bm->h;
+    // copy a few things into locals
+    bm_w = bm->w;
+    bm_h = bm->h;
 
-  tempL = p->gZ;     //     mov     eax,[edi].z
-  tempL <<= 8;       //     sal     eax,8                   ;should be
-                     //     16-log(max(bitmap_width, bitmap_height))
-  tempF = view_bank; //     mov     ebx,view_bank
+    tempL = p->gZ;     //     mov     eax,[edi].z
+    tempL <<= 8;       //     sal     eax,8                   ;should be
+                       //     16-log(max(bitmap_width, bitmap_height))
+    tempF = view_bank; //     mov     ebx,view_bank
 
-  if ((p->gZ & 0xff000000) == 0) // ;skip checks if z large enough
-  {
-    if (tempL < _g3d_bitmap_x_scale)
-      return (0L);
-    if (tempL < _g3d_bitmap_y_scale)
-      return (0L);
-  }
-
-  // compute polygon for bitmap
-  // args: ebx=bank, esi=bitmap, edi=anchor pt.
-  // gb_compute_poly:
-
-  fix_sincos((fixang)tempF, &sintemp, &costemp); //    call    fix_sincos
-
-  tempL = p->gZ;
-
-  //  rm0 = cos(bank)*_g3d_bitmap_x_scale/z
-  rm0 = fix_mul_div(costemp, _g3d_bitmap_x_scale, tempL);
-
-  // rm1 = sin(bank)*_g3d_bitmap_x_scale/z
-  rm1 = fix_mul_div(sintemp, _g3d_bitmap_x_scale, tempL);
-
-  // rm2 = -sin(bank)*_g3d_bitmap_y_scale/z
-  rm2 = -fix_mul_div(sintemp, _g3d_bitmap_y_scale, tempL);
-
-  // rm3 = cos(bank)*_g3d_bitmap_y_scale/z
-  rm3 = fix_mul_div(costemp, _g3d_bitmap_y_scale, tempL);
-
-  // 0 x, 1 y, 2 u, 3 v, 4 w, 5 i
-  tempG1 = _g3d_bitmap_poly[0];
-
-  // vpl[0][0] = x-u_anchor*rm0-v_anchor*rm1
-  tempL2 = p->sx;
-  tempL = _g3d_bitmap_u_anchor * rm0;
-  if (SubLongWithOverflow(&tempL2, tempL2, tempL))
-    return 0; // tempL2 -= tempL
-
-  tempL = _g3d_bitmap_v_anchor * rm1;
-  if (SubLongWithOverflow(&tempL2, tempL2, tempL))
-    return 0; // tempL2 -= tempL
-  tempG1->x = tempL2;
-
-  // vpl[0][1] = y-u_anchor*rm2-v_anchor*rm3
-  tempL2 = p->sy;
-  tempL = _g3d_bitmap_u_anchor * rm2;
-  if (SubLongWithOverflow(&tempL2, tempL2, tempL))
-    return 0; // tempL2 -= tempL
-
-  tempL = _g3d_bitmap_v_anchor * rm3;
-  if (SubLongWithOverflow(&tempL2, tempL2, tempL))
-    return 0; // tempL2 -= tempL
-  tempG1->y = tempL2;
-
-  //  vpl[0][2] = 0
-  tempG1->u = 0;
-
-  //  vpl[0][3] = 0
-  tempG1->v = 0;
-
-  //  vpl[0][4] undefined
-
-  //  vpl[0][5] provided
-
-  tempG2 = tempG1;
-  tempG1 = _g3d_bitmap_poly[1];
-
-  //  vpl[1][0] = vpl[0][0]+rm0*w
-  tempL2 = tempG2->x;
-  tempL = rm0 * bm_w;
-  if (AddLongWithOverflow(&tempL2, tempL2, tempL))
-    return 0; // tempL2 += tempL
-  tempG1->x = tempL2;
-
-  //  vpl[1][1] = vpl[0][1]+rm2*w
-  tempL2 = tempG2->y;
-  tempL = rm2 * bm_w;
-  if (AddLongWithOverflow(&tempL2, tempL2, tempL))
-    return 0; // tempL2 += tempL
-  tempG1->y = tempL2;
-
-  //  vpl[1][2] = bitmap.w-1
-  tempG1->u = (bm_w - 1) << 16;
-
-  //  vpl[1][3] = 0
-  tempG1->v = 0;
-
-  //  vpl[1][4] undefined
-
-  //  vpl[1][5] provided
-
-  tempG2 = tempG1;
-  tempG1 = _g3d_bitmap_poly[2];
-
-  //  vpl[2][0] = vpl[1][0]+rm1*h
-  tempL2 = tempG2->x;
-  tempL = rm1 * bm_h;
-  if (AddLongWithOverflow(&tempL2, tempL2, tempL))
-    return 0; // tempL2 += tempL
-  tempG1->x = tempL2;
-
-  //  vpl[2][1] = vpl[1][1]+rm3*h
-  tempL2 = tempG2->y;
-  tempL = rm3 * bm_h;
-  if (AddLongWithOverflow(&tempL2, tempL2, tempL))
-    return 0; // tempL2 += tempL
-  tempG1->y = tempL2;
-
-  //  vpl[2][2] = bitmap.w-1
-  tempG1->u = (bm_w - 1) << 16;
-
-  //  vpl[2][3] = bitmap.h-1
-  tempG1->v = (bm_h - 1) << 16;
-
-  // vpl[2][4] undefined
-
-  // vpl[2][5] provided
-
-  tempG2 = _g3d_bitmap_poly[0];
-  tempG1 = _g3d_bitmap_poly[3];
-
-  //  vpl[3][0] = vpl[0][0]+rm1*h
-  tempL2 = tempG2->x;
-  tempL = rm1 * bm_h;
-  if (AddLongWithOverflow(&tempL2, tempL2, tempL))
-    return 0; // tempL2 += tempL
-  tempG1->x = tempL2;
-
-  //  vpl[3][1] = vpl[0][1]+rm3*h
-  tempL2 = tempG2->y;
-  tempL = rm3 * bm_h;
-  if (AddLongWithOverflow(&tempL2, tempL2, tempL))
-    return 0; // tempL2 += tempL
-  tempG1->y = tempL2;
-
-  // vpl[3][2] = 0
-  tempG1->u = 0;
-
-  // vpl[3][3] = bitmap.h
-  tempG1->v = bm_h << 16;
-
-  // vpl[3][4] undefined
-
-  // vpl[3][5] provided
-  tmap_info.flags = 0;
-  // do blending?
-  if (_g3d_light_flag == 2) {
-    tmap_info.clut = _g3d_bitmap_clut;
-    tmap_info.flags = TMF_CLUT;
-
-    if (_g3d_enable_blend) {
-
-      // only blend if no translucent or no compressed translucent bitmap
-      if ((bm->type != BMT_TLUC8) || (bm->flags != BMF_TLUC8)) {
-        // check for bitmap width<polygon width, if so, blend
-
-        // MLA - have no idea how this code could ever work, so I'm trying my own code
-        dx = fix_abs(_g3d_bitmap_poly[0]->x - _g3d_bitmap_poly[2]->x);
-        dy = fix_abs(_g3d_bitmap_poly[0]->y - _g3d_bitmap_poly[2]->y);
-
-        if (dy > dx)
-          dx = dy; // get max value in dx
-
-        // shift down because bm_w isn't fixed, and we only double when twice the size
-        dx >>= 0x11;
-
-        // make sure doubled bitmap won't overflow unpack buffer (that's roughly 1/5 of 64k)
-        if ((bm_w <= dx) && (bm_w * bm_h <= 12000)) {
-          // first fix all u's and v's
-          for (tempL = 0; tempL < 4; tempL++) {
-            _g3d_bitmap_poly[tempL]->u <<= 1;
-            _g3d_bitmap_poly[tempL]->v <<= 1;
-          }
-
-          tmap_info.tmap_type = GRC_POLY;
-          h_map(bm, 4, _g3d_bitmap_poly, &tmap_info);
-          return (_g3d_bitmap_poly);
-        }
-      }
+    if ((p->gZ & 0xff000000) == 0) // ;skip checks if z large enough
+    {
+        if (tempL < _g3d_bitmap_x_scale)
+            return (0L);
+        if (tempL < _g3d_bitmap_y_scale)
+            return (0L);
     }
-  }
-  tmap_info.tmap_type = (_g3d_light_flag << 1) + GRC_BILIN;
-  h_map(bm, 4, _g3d_bitmap_poly, &tmap_info);
 
-  return (_g3d_bitmap_poly);
+    // compute polygon for bitmap
+    // args: ebx=bank, esi=bitmap, edi=anchor pt.
+    // gb_compute_poly:
+
+    fix_sincos((fixang)tempF, &sintemp, &costemp); //    call    fix_sincos
+
+    tempL = p->gZ;
+
+    //  rm0 = cos(bank)*_g3d_bitmap_x_scale/z
+    rm0 = fix_mul_div(costemp, _g3d_bitmap_x_scale, tempL);
+
+    // rm1 = sin(bank)*_g3d_bitmap_x_scale/z
+    rm1 = fix_mul_div(sintemp, _g3d_bitmap_x_scale, tempL);
+
+    // rm2 = -sin(bank)*_g3d_bitmap_y_scale/z
+    rm2 = -fix_mul_div(sintemp, _g3d_bitmap_y_scale, tempL);
+
+    // rm3 = cos(bank)*_g3d_bitmap_y_scale/z
+    rm3 = fix_mul_div(costemp, _g3d_bitmap_y_scale, tempL);
+
+    // 0 x, 1 y, 2 u, 3 v, 4 w, 5 i
+    tempG1 = _g3d_bitmap_poly[0];
+
+    // vpl[0][0] = x-u_anchor*rm0-v_anchor*rm1
+    tempL2 = p->sx;
+    tempL = _g3d_bitmap_u_anchor * rm0;
+    if (SubLongWithOverflow(&tempL2, tempL2, tempL))
+        return 0; // tempL2 -= tempL
+
+    tempL = _g3d_bitmap_v_anchor * rm1;
+    if (SubLongWithOverflow(&tempL2, tempL2, tempL))
+        return 0; // tempL2 -= tempL
+    tempG1->x = tempL2;
+
+    // vpl[0][1] = y-u_anchor*rm2-v_anchor*rm3
+    tempL2 = p->sy;
+    tempL = _g3d_bitmap_u_anchor * rm2;
+    if (SubLongWithOverflow(&tempL2, tempL2, tempL))
+        return 0; // tempL2 -= tempL
+
+    tempL = _g3d_bitmap_v_anchor * rm3;
+    if (SubLongWithOverflow(&tempL2, tempL2, tempL))
+        return 0; // tempL2 -= tempL
+    tempG1->y = tempL2;
+
+    //  vpl[0][2] = 0
+    tempG1->u = 0;
+
+    //  vpl[0][3] = 0
+    tempG1->v = 0;
+
+    //  vpl[0][4] undefined
+
+    //  vpl[0][5] provided
+
+    tempG2 = tempG1;
+    tempG1 = _g3d_bitmap_poly[1];
+
+    //  vpl[1][0] = vpl[0][0]+rm0*w
+    tempL2 = tempG2->x;
+    tempL = rm0 * bm_w;
+    if (AddLongWithOverflow(&tempL2, tempL2, tempL))
+        return 0; // tempL2 += tempL
+    tempG1->x = tempL2;
+
+    //  vpl[1][1] = vpl[0][1]+rm2*w
+    tempL2 = tempG2->y;
+    tempL = rm2 * bm_w;
+    if (AddLongWithOverflow(&tempL2, tempL2, tempL))
+        return 0; // tempL2 += tempL
+    tempG1->y = tempL2;
+
+    //  vpl[1][2] = bitmap.w-1
+    tempG1->u = (bm_w - 1) << 16;
+
+    //  vpl[1][3] = 0
+    tempG1->v = 0;
+
+    //  vpl[1][4] undefined
+
+    //  vpl[1][5] provided
+
+    tempG2 = tempG1;
+    tempG1 = _g3d_bitmap_poly[2];
+
+    //  vpl[2][0] = vpl[1][0]+rm1*h
+    tempL2 = tempG2->x;
+    tempL = rm1 * bm_h;
+    if (AddLongWithOverflow(&tempL2, tempL2, tempL))
+        return 0; // tempL2 += tempL
+    tempG1->x = tempL2;
+
+    //  vpl[2][1] = vpl[1][1]+rm3*h
+    tempL2 = tempG2->y;
+    tempL = rm3 * bm_h;
+    if (AddLongWithOverflow(&tempL2, tempL2, tempL))
+        return 0; // tempL2 += tempL
+    tempG1->y = tempL2;
+
+    //  vpl[2][2] = bitmap.w-1
+    tempG1->u = (bm_w - 1) << 16;
+
+    //  vpl[2][3] = bitmap.h-1
+    tempG1->v = (bm_h - 1) << 16;
+
+    // vpl[2][4] undefined
+
+    // vpl[2][5] provided
+
+    tempG2 = _g3d_bitmap_poly[0];
+    tempG1 = _g3d_bitmap_poly[3];
+
+    //  vpl[3][0] = vpl[0][0]+rm1*h
+    tempL2 = tempG2->x;
+    tempL = rm1 * bm_h;
+    if (AddLongWithOverflow(&tempL2, tempL2, tempL))
+        return 0; // tempL2 += tempL
+    tempG1->x = tempL2;
+
+    //  vpl[3][1] = vpl[0][1]+rm3*h
+    tempL2 = tempG2->y;
+    tempL = rm3 * bm_h;
+    if (AddLongWithOverflow(&tempL2, tempL2, tempL))
+        return 0; // tempL2 += tempL
+    tempG1->y = tempL2;
+
+    // vpl[3][2] = 0
+    tempG1->u = 0;
+
+    // vpl[3][3] = bitmap.h
+    tempG1->v = bm_h << 16;
+
+    // vpl[3][4] undefined
+
+    // vpl[3][5] provided
+    tmap_info.flags = 0;
+    // do blending?
+    if (_g3d_light_flag == 2) {
+        tmap_info.clut = _g3d_bitmap_clut;
+        tmap_info.flags = TMF_CLUT;
+
+        if (_g3d_enable_blend) {
+
+            // only blend if no translucent or no compressed translucent bitmap
+            if ((bm->type != BMT_TLUC8) || (bm->flags != BMF_TLUC8)) {
+                // check for bitmap width<polygon width, if so, blend
+
+                // MLA - have no idea how this code could ever work, so I'm trying my own code
+                dx = fix_abs(_g3d_bitmap_poly[0]->x - _g3d_bitmap_poly[2]->x);
+                dy = fix_abs(_g3d_bitmap_poly[0]->y - _g3d_bitmap_poly[2]->y);
+
+                if (dy > dx)
+                    dx = dy; // get max value in dx
+
+                // shift down because bm_w isn't fixed, and we only double when twice the size
+                dx >>= 0x11;
+
+                // make sure doubled bitmap won't overflow unpack buffer (that's roughly 1/5 of 64k)
+                if ((bm_w <= dx) && (bm_w * bm_h <= 12000)) {
+                    // first fix all u's and v's
+                    for (tempL = 0; tempL < 4; tempL++) {
+                        _g3d_bitmap_poly[tempL]->u <<= 1;
+                        _g3d_bitmap_poly[tempL]->v <<= 1;
+                    }
+
+                    tmap_info.tmap_type = GRC_POLY;
+                    h_map(bm, 4, _g3d_bitmap_poly, &tmap_info);
+                    return (_g3d_bitmap_poly);
+                }
+            }
+        }
+    }
+    tmap_info.tmap_type = (_g3d_light_flag << 1) + GRC_BILIN;
+    h_map(bm, 4, _g3d_bitmap_poly, &tmap_info);
+
+    return (_g3d_bitmap_poly);
 }
 
 // subtract two longs, put the result in result, and return true if overflow
 // result = src-dest;
-char SubLongWithOverflow(long *result, long src, long dest) {
-  long tempres;
+bool SubLongWithOverflow(int32_t *result, int32_t src, int32_t dest) {
+    long tempres;
 
-  *result = tempres = src - dest;
-  if ((dest >= 0 && src < 0 && tempres >= 0) || (dest < 0 && src >= 0 && tempres < 0))
-    return true;
-  else
-    return false;
+    *result = tempres = src - dest;
+    if ((dest >= 0 && src < 0 && tempres >= 0) || (dest < 0 && src >= 0 && tempres < 0))
+        return true;
+    else
+        return false;
 }
 
 // add two longs, put the result in result, and return true if overflow
 // result = src+dest;
-char AddLongWithOverflow(long *result, long src, long dest) {
-  long tempres;
+bool AddLongWithOverflow(int32_t *result, int32_t src, int32_t dest) {
+    long tempres;
 
-  *result = tempres = src + dest;
-  if ((dest >= 0 && src >= 0 && tempres < 0) || (dest < 0 && src < 0 && tempres >= 0))
-    return true;
-  else
-    return false;
+    *result = tempres = src + dest;
+    if ((dest >= 0 && src >= 0 && tempres < 0) || (dest < 0 && src < 0 && tempres >= 0))
+        return true;
+    else
+        return false;
 }

@@ -127,7 +127,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "3d.h"
 #include "GlobalV.h"
 #include "lg.h"
-#include <stdio.h> // printf()
 
 extern void per_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 extern void h_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
@@ -170,215 +169,214 @@ extern long _n_verts;
 // edi=ptr to bitmap
 int g3_draw_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                       grs_bitmap *bm) {
-  tmap_func = (void *)&h_umap;
-  ti.tmap_type = GRC_BILIN;
-  ti.flags = 0;
-  light_flag = 0;
-  return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
+    tmap_func = (void *)&h_umap;
+    ti.tmap_type = GRC_BILIN;
+    ti.flags = 0;
+    light_flag = 0;
+    return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
 }
 
 int g3_light_lmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                        grs_bitmap *bm) {
-  tmap_func = (void *)&h_umap;
-  ti.tmap_type = GRC_LIT_BILIN;
-  ti.flags = 0;
-  light_flag = 1;
-  return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
+    tmap_func = (void *)&h_umap;
+    ti.tmap_type = GRC_LIT_BILIN;
+    ti.flags = 0;
+    light_flag = 1;
+    return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
 }
 
 int g3_light_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                        grs_bitmap *bm) {
-  tmap_func = (void *)&per_umap;
-  ti.tmap_type = GRC_LIT_PER;
-  ti.flags = 0;
-  light_flag = 1;
-  return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
+    tmap_func = (void *)&per_umap;
+    ti.tmap_type = GRC_LIT_PER;
+    ti.flags = 0;
+    light_flag = 1;
+    return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
 }
 
 int g3_draw_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                       grs_bitmap *bm) {
-  printf("g3_draw_tmap_tile\n");
-  tmap_func = (void *)&per_umap;
-  ti.tmap_type = GRC_PER;
-  ti.flags = 0;
-  light_flag = 0;
-  return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
+    tmap_func = (void *)&per_umap;
+    ti.tmap_type = GRC_PER;
+    ti.flags = 0;
+    light_flag = 0;
+    return (do_tmap_tile(upperleft, u_vec, v_vec, nverts, vp, bm));
 }
 
 int do_tmap_tile(g3s_phandle upperleft, g3s_vector *u_vec, g3s_vector *v_vec, int nverts, g3s_phandle *vp,
                  grs_bitmap *bm) {
-  byte andcode, orcode;
-  int i;
-  g3s_phandle *src;
-  g3s_phandle tempHand;
-  fix x10;
-  fix y10;
-  fix z10;
-  fix x20;
-  fix y20;
-  fix z20;
+    byte andcode, orcode;
+    int i;
+    g3s_phandle *src;
+    g3s_phandle tempHand;
+    fix x10;
+    fix y10;
+    fix z10;
+    fix x20;
+    fix y20;
+    fix z20;
 
-  // get codes for this polygon
-  andcode = 0xff;
-  orcode = 0;
-  src = vp;
-  for (i = nverts; i > 0; i--) {
-    tempHand = *(src++);
-    andcode &= tempHand->codes;
-    orcode |= tempHand->codes;
-  }
+    // get codes for this polygon
+    andcode = 0xff;
+    orcode = 0;
+    src = vp;
+    for (i = nverts; i > 0; i--) {
+        tempHand = *(src++);
+        andcode &= tempHand->codes;
+        orcode |= tempHand->codes;
+    }
 
-  // check codes for trivial reject.
-  if (andcode)
-    return CLIP_ALL;
+    // check codes for trivial reject.
+    if (andcode)
+        return CLIP_ALL;
 
-  // upper left handle of 0 means reuse old warp matrix.
+    // upper left handle of 0 means reuse old warp matrix.
 
-  // store elements of u difference vector as 10 warp differences.
-  x10 = u_vec->gX;
-  y10 = u_vec->gY;
-  z10 = u_vec->gZ;
+    // store elements of u difference vector as 10 warp differences.
+    x10 = u_vec->gX;
+    y10 = u_vec->gY;
+    z10 = u_vec->gZ;
 
-  // store elements of v difference vector as 20 warp differences.
-  x20 = v_vec->gX;
-  y20 = v_vec->gY;
-  z20 = v_vec->gZ;
+    // store elements of v difference vector as 20 warp differences.
+    x20 = v_vec->gX;
+    y20 = v_vec->gY;
+    z20 = v_vec->gZ;
 
-  // do warp matrix calculations
-  calc_warp_matrix2(upperleft, x10, x20, y10, y20, z10, z20, bm);
+    // do warp matrix calculations
+    calc_warp_matrix2(upperleft, x10, x20, y10, y20, z10, z20, bm);
 
-  src = vp;
-  for (i = nverts; i > 0; i--) {
-    fix a, b;
-    fix blah1;
-    fix blah2;
-    fix blah3;
+    src = vp;
+    for (i = nverts; i > 0; i--) {
+        fix a, b;
+        fix blah1;
+        fix blah2;
+        fix blah3;
 
-    tempHand = *(src++);
-    a = fix_div(tempHand->gX, tempHand->gZ);
-    b = fix_div(tempHand->gY, tempHand->gZ);
+        tempHand = *(src++);
+        a = fix_div(tempHand->gX, tempHand->gZ);
+        b = fix_div(tempHand->gY, tempHand->gZ);
 
-    blah1 = fix_mul(warp[0], a) + fix_mul(warp[1], b) + warp[2];
-    blah2 = fix_mul(warp[3], a) + fix_mul(warp[4], b) + warp[5];
-    blah3 = fix_mul(warp[6], a) + fix_mul(warp[7], b) + warp[8];
+        blah1 = fix_mul(warp[0], a) + fix_mul(warp[1], b) + warp[2];
+        blah2 = fix_mul(warp[3], a) + fix_mul(warp[4], b) + warp[5];
+        blah3 = fix_mul(warp[6], a) + fix_mul(warp[7], b) + warp[8];
 
-    tempHand->uv.u = fix_div(blah1, blah3) >> 8;
-    tempHand->uv.v = fix_div(blah2, blah3) >> 8;
-    tempHand->p3_flags |= PF_U | PF_V;
-  }
+        tempHand->uv.u = fix_div(blah1, blah3) >> 8;
+        tempHand->uv.v = fix_div(blah2, blah3) >> 8;
+        tempHand->p3_flags |= PF_U | PF_V;
+    }
 
-  return (draw_tmap_common(nverts, vp, bm));
+    return (draw_tmap_common(nverts, vp, bm));
 }
 
 int g3_check_and_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
-  tmap_func = (void *)&h_umap;
-  ti.tmap_type = GRC_BILIN;
-  ti.flags = 0;
-  light_flag = 0;
-  return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
+    tmap_func = (void *)&h_umap;
+    ti.tmap_type = GRC_BILIN;
+    ti.flags = 0;
+    light_flag = 0;
+    return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
 int g3_check_and_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
-  tmap_func = (void *)&h_umap;
-  ti.tmap_type = GRC_LIT_BILIN;
-  ti.flags = 0;
-  light_flag = 1;
-  return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
+    tmap_func = (void *)&h_umap;
+    ti.tmap_type = GRC_LIT_BILIN;
+    ti.flags = 0;
+    light_flag = 1;
+    return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
 int g3_check_and_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
-  tmap_func = (void *)&per_umap;
-  ti.tmap_type = GRC_LIT_PER;
-  ti.flags = 0;
-  light_flag = 1;
-  return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
+    tmap_func = (void *)&per_umap;
+    ti.tmap_type = GRC_LIT_PER;
+    ti.flags = 0;
+    light_flag = 1;
+    return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
 int g3_check_and_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
-  tmap_func = (void *)&per_umap;
-  ti.tmap_type = GRC_PER;
-  ti.flags = 0;
-  light_flag = 0;
-  return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
+    tmap_func = (void *)&per_umap;
+    ti.tmap_type = GRC_PER;
+    ti.flags = 0;
+    light_flag = 0;
+    return (do_check_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
 int do_check_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
-  if (g3_check_poly_facing(vp[0], vp[1], vp[2]))
-    return do_tmap_quad_tile(vp, bm, width_count, height_count);
-  else
-    return CLIP_ALL;
+    if (g3_check_poly_facing(vp[0], vp[1], vp[2]))
+        return do_tmap_quad_tile(vp, bm, width_count, height_count);
+    else
+        return CLIP_ALL;
 }
 
 // takes eax=nverts edx=ptr to points, ebx=ptr to bitmap
 int g3_draw_floor_map(int n, g3s_phandle *vp, grs_bitmap *bm) {
-  tmap_func = (void *)&h_umap;
-  ti.tmap_type = GRC_FLOOR;
-  ti.flags = TMF_FLOOR;
-  light_flag = 0;
-  return (do_tmap(n, vp, bm));
+    tmap_func = (void *)&h_umap;
+    ti.tmap_type = GRC_FLOOR;
+    ti.flags = TMF_FLOOR;
+    light_flag = 0;
+    return (do_tmap(n, vp, bm));
 }
 
 int g3_light_floor_map(int n, g3s_phandle *vp, grs_bitmap *bm) {
-  tmap_func = (void *)&h_umap;
-  ti.tmap_type = GRC_LIT_FLOOR;
-  ti.flags = TMF_FLOOR;
-  light_flag = 1;
-  return (do_tmap(n, vp, bm));
+    tmap_func = (void *)&h_umap;
+    ti.tmap_type = GRC_LIT_FLOOR;
+    ti.flags = TMF_FLOOR;
+    light_flag = 1;
+    return (do_tmap(n, vp, bm));
 }
 
 int g3_draw_wall_map(int n, g3s_phandle *vp, grs_bitmap *bm) {
-  tmap_func = (void *)&v_umap;
-  ti.tmap_type = GRC_WALL1D;
-  ti.flags = TMF_WALL;
-  light_flag = 0;
-  return (do_tmap(n, vp, bm));
+    tmap_func = (void *)&v_umap;
+    ti.tmap_type = GRC_WALL1D;
+    ti.flags = TMF_WALL;
+    light_flag = 0;
+    return (do_tmap(n, vp, bm));
 }
 
 int g3_light_wall_map(int n, g3s_phandle *vp, grs_bitmap *bm) {
-  tmap_func = (void *)&v_umap;
-  ti.tmap_type = GRC_LIT_WALL1D;
-  ti.flags = TMF_WALL;
-  light_flag = 1;
-  return (do_tmap(n, vp, bm));
+    tmap_func = (void *)&v_umap;
+    ti.tmap_type = GRC_LIT_WALL1D;
+    ti.flags = TMF_WALL;
+    light_flag = 1;
+    return (do_tmap(n, vp, bm));
 }
 
 int g3_draw_lmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
-  tmap_func = (void *)&h_umap;
-  ti.tmap_type = GRC_BILIN;
-  ti.flags = 0;
-  light_flag = 0;
-  return (do_tmap(n, vp, bm));
+    tmap_func = (void *)&h_umap;
+    ti.tmap_type = GRC_BILIN;
+    ti.flags = 0;
+    light_flag = 0;
+    return (do_tmap(n, vp, bm));
 }
 
 int g3_light_lmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
-  tmap_func = (void *)&h_umap;
-  ti.tmap_type = GRC_LIT_BILIN;
-  ti.flags = 0;
-  light_flag = 1;
-  return (do_tmap(n, vp, bm));
+    tmap_func = (void *)&h_umap;
+    ti.tmap_type = GRC_LIT_BILIN;
+    ti.flags = 0;
+    light_flag = 1;
+    return (do_tmap(n, vp, bm));
 }
 
 int g3_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
-  tmap_func = (void *)&per_umap;
-  ti.tmap_type = GRC_LIT_PER;
-  ti.flags = 0;
-  light_flag = 1;
-  return (do_tmap(n, vp, bm));
+    tmap_func = (void *)&per_umap;
+    ti.tmap_type = GRC_LIT_PER;
+    ti.flags = 0;
+    light_flag = 1;
+    return (do_tmap(n, vp, bm));
 }
 
 int g3_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
-  tmap_func = (void *)&per_umap;
-  ti.tmap_type = GRC_PER;
-  ti.flags = 0;
-  light_flag = 0;
-  return (do_tmap(n, vp, bm));
+    tmap_func = (void *)&per_umap;
+    ti.tmap_type = GRC_PER;
+    ti.flags = 0;
+    light_flag = 0;
+    return (do_tmap(n, vp, bm));
 }
 
 int do_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
-  byte andcode, orcode;
-  int i;
-  g3s_phandle *src;
-  g3s_phandle tempHand;
+    byte andcode, orcode;
+    int i;
+    g3s_phandle *src;
+    g3s_phandle tempHand;
 
 // clang-format off
 #ifdef stereo_on
@@ -423,249 +421,251 @@ do_tmap_raw:
 no_stereo1:
 #endif
 
-// clang-format on
+        // clang-format on
 
-  // convert RSD bitmap to normal
-  if (bm->type == BMT_RSD8) {
-    if (gr_rsd8_convert(bm, &unpack_bm) != GR_UNPACK_RSD8_OK)
-      return CLIP_ALL;
-    else
-      bm = &unpack_bm;
-  }
+        // convert RSD bitmap to normal
+        if (bm->type == BMT_RSD8) {
+        if (gr_rsd8_convert(bm, &unpack_bm) != GR_UNPACK_RSD8_OK)
+            return CLIP_ALL;
+        else
+            bm = &unpack_bm;
+    }
 
-  // get codes for this polygon
-  andcode = 0xff;
-  orcode = 0;
-  src = vp;
-  for (i = n; i > 0; i--) {
-    tempHand = *(src++);
-    andcode &= tempHand->codes;
-    orcode |= tempHand->codes;
-  }
+    // get codes for this polygon
+    andcode = 0xff;
+    orcode = 0;
+    src = vp;
+    for (i = n; i > 0; i--) {
+        tempHand = *(src++);
+        andcode &= tempHand->codes;
+        orcode |= tempHand->codes;
+    }
 
-  // check codes for trivial reject.
-  if (andcode)
-    return CLIP_ALL;
+    // check codes for trivial reject.
+    if (andcode)
+        return CLIP_ALL;
 
-  return (draw_tmap_common(n, vp, bm));
+    return (draw_tmap_common(n, vp, bm));
 }
 
 // draws a square texture map, where the corners of the 3d quad match the
 // corners of the bitmap
 // takes esi=ptr to points, edi=ptr to bitmap, eax=width count, ebx=height count
 int g3_draw_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
-  tmap_func = (void *)&h_umap;
-  ti.tmap_type = GRC_BILIN;
-  ti.flags = 0;
-  light_flag = 0;
-  return (do_tmap_quad_tile(vp, bm, width_count, height_count));
+    tmap_func = (void *)&h_umap;
+    ti.tmap_type = GRC_BILIN;
+    ti.flags = 0;
+    light_flag = 0;
+    return (do_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
 int g3_light_lmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
-  tmap_func = (void *)&h_umap;
-  ti.tmap_type = GRC_LIT_BILIN;
-  ti.flags = 0;
-  light_flag = 1;
-  return (do_tmap_quad_tile(vp, bm, width_count, height_count));
+    tmap_func = (void *)&h_umap;
+    ti.tmap_type = GRC_LIT_BILIN;
+    ti.flags = 0;
+    light_flag = 1;
+    return (do_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
 int g3_light_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
-  tmap_func = (void *)&per_umap;
-  ti.tmap_type = GRC_LIT_PER;
-  ti.flags = 0;
-  light_flag = 1;
-  return (do_tmap_quad_tile(vp, bm, width_count, height_count));
+    tmap_func = (void *)&per_umap;
+    ti.tmap_type = GRC_LIT_PER;
+    ti.flags = 0;
+    light_flag = 1;
+    return (do_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
 int g3_draw_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
-  tmap_func = (void *)&per_umap;
-  ti.tmap_type = GRC_PER;
-  ti.flags = 0;
-  light_flag = 0;
-  return (do_tmap_quad_tile(vp, bm, width_count, height_count));
+    tmap_func = (void *)&per_umap;
+    ti.tmap_type = GRC_PER;
+    ti.flags = 0;
+    light_flag = 0;
+    return (do_tmap_quad_tile(vp, bm, width_count, height_count));
 }
 
 int do_tmap_quad_tile(g3s_phandle *vp, grs_bitmap *bm, int width_count, int height_count) {
-  int temp_w, temp_h;
-  byte andcode, orcode;
-  int i;
-  g3s_phandle *src;
-  g3s_phandle tempHand;
+    int temp_w, temp_h;
+    byte andcode, orcode;
+    int i;
+    g3s_phandle *src;
+    g3s_phandle tempHand;
 
-  temp_w = width_count << 8;
-  temp_h = height_count << 8;
-  _n_verts = 4;
+    temp_w = width_count << 8;
+    temp_h = height_count << 8;
+    _n_verts = 4;
 
-  vp[0]->uv.u = vp[0]->uv.v = 0;
-  vp[0]->p3_flags |= PF_U | PF_V;
+    vp[0]->uv.u = vp[0]->uv.v = 0;
+    vp[0]->p3_flags |= PF_U | PF_V;
 
-  vp[1]->uv.u = temp_w;
-  vp[1]->uv.v = 0;
-  vp[1]->p3_flags |= PF_U | PF_V;
+    vp[1]->uv.u = temp_w;
+    vp[1]->uv.v = 0;
+    vp[1]->p3_flags |= PF_U | PF_V;
 
-  vp[2]->uv.u = temp_w;
-  vp[2]->uv.v = temp_h;
-  vp[2]->p3_flags |= PF_U | PF_V;
+    vp[2]->uv.u = temp_w;
+    vp[2]->uv.v = temp_h;
+    vp[2]->p3_flags |= PF_U | PF_V;
 
-  vp[3]->uv.u = 0;
-  vp[3]->uv.v = temp_h;
-  vp[3]->p3_flags |= PF_U | PF_V;
+    vp[3]->uv.u = 0;
+    vp[3]->uv.v = temp_h;
+    vp[3]->p3_flags |= PF_U | PF_V;
 
-  // first, go though points and get codes
-  andcode = 0xff;
-  orcode = 0;
-  src = vp;
-  for (i = 4; i > 0; i--) {
-    tempHand = *(src++);
-    andcode &= tempHand->codes;
-    orcode |= tempHand->codes;
-  }
+    // first, go though points and get codes
+    andcode = 0xff;
+    orcode = 0;
+    src = vp;
+    for (i = 4; i > 0; i--) {
+        tempHand = *(src++);
+        andcode &= tempHand->codes;
+        orcode |= tempHand->codes;
+    }
 
-  // check codes for trivial reject.
-  if (andcode)
-    return CLIP_ALL;
+    // check codes for trivial reject.
+    if (andcode)
+        return CLIP_ALL;
 
-  return (draw_tmap_common(4, vp, bm));
+    return (draw_tmap_common(4, vp, bm));
 }
 
 int draw_tmap_common(int n, g3s_phandle *vp, grs_bitmap *bm) {
-  int branch_to_copy = 0;
-  int hlog, wlog;
-  g3s_phandle temphand;
-  int i, temp;
-  grs_vertex *cur_vert;
+    int branch_to_copy = 0;
+    int hlog, wlog;
+    g3s_phandle temphand;
+    int i, temp;
+    grs_vertex *cur_vert;
 
-  // always clip for now
-  // copy to temp buffer for clipping
-  // BlockMove(vp,vbuf,n*4);
-  memmove(vbuf, vp, n * 4);
+    // always clip for now
+    // copy to temp buffer for clipping
+    // BlockMove(vp,vbuf,n*4);
+    memmove(vbuf, vp, n * 4);
 
-  _n_verts = n = g3_clip_polygon(n, vbuf, _vbuf2);
-  if (n == 0)
-    return CLIP_ALL;
-  if (ti.tmap_type >= GRC_CLUT_BILIN + 2)
-    branch_to_copy = check_linear(n);
-  else
-    branch_to_copy = 1;
-
-  // check if bitmap is power of 2
-  wlog = bm->wlog;
-  hlog = bm->hlog;
-
-  if (((1 << wlog) != bm->w) || ((1 << hlog) != bm->h))
-    return CLIP_ALL;
-
-  wlog += 8;
-  hlog += 8;
-
-  // now, copy 2d points to buffer for tmap call, projecting if neccesary
-  //	for (i=n-1; i--; i>=0)
-  for (i = 0; i < n; i++) {
-    temphand = _vbuf2[i];
-    p_vpl[i] = cur_vert = &p_vlist[i];
-
-    // check if this point has been projected
-    if ((temphand->p3_flags & PF_PROJECTED) == 0)
-      g3_project_point(temphand);
-
-    cur_vert->x = temphand->sx;
-    cur_vert->y = temphand->sy;
-
-    temp = temphand->uv.u;
-    if (temp <= 0)
-      temp++;
+    _n_verts = n = g3_clip_polygon(n, vbuf, _vbuf2);
+    if (n == 0)
+        return CLIP_ALL;
+    if (ti.tmap_type >= GRC_CLUT_BILIN + 2)
+        branch_to_copy = check_linear(n);
     else
-      temp--;
-    cur_vert->u = temp << wlog;
+        branch_to_copy = 1;
 
-    temp = temphand->uv.v;
-    if (temp <= 0)
-      temp++;
-    else
-      temp--;
-    cur_vert->v = temp << hlog;
+    // check if bitmap is power of 2
+    wlog = bm->wlog;
+    hlog = bm->hlog;
 
-    cur_vert->i = temphand->i << 8;
+    if (((1 << wlog) != bm->w) || ((1 << hlog) != bm->h))
+        return CLIP_ALL;
 
-    if (!branch_to_copy) // fix Z
-    {
-      temp = temphand->gZ;
-      cur_vert->w = fix_div(0x010000, temp); // 1/Z
-    }
-  }
+    wlog += 8;
+    hlog += 8;
 
-  if (!light_flag) {
-    ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti)) tmap_func)(bm, _n_verts, p_vpl, &ti);
-    return CLIP_NONE;
-  } else {
-    extern fix gr_clut_lit_tol;
-    int temp_n;
-    fix imax, imin, temp_i;
-    grs_vertex *temp_p_vlist;
+    // now, copy 2d points to buffer for tmap call, projecting if neccesary
+    //	for (i=n-1; i--; i>=0)
+    for (i = 0; i < n; i++) {
+        temphand = _vbuf2[i];
+        p_vpl[i] = cur_vert = &p_vlist[i];
 
-    temp_p_vlist = p_vlist;
-    temp_n = n - 1;
-    imax = imin = temp_p_vlist[temp_n].i;
-    while (--n >= 0) {
-      temp_i = temp_p_vlist[n].i;
-      if (temp_i < imin)
-        imin = temp_i;
-      if (temp_i > imax)
-        imax = temp_i;
+        // check if this point has been projected
+        if ((temphand->p3_flags & PF_PROJECTED) == 0)
+            g3_project_point(temphand);
+
+        cur_vert->x = temphand->sx;
+        cur_vert->y = temphand->sy;
+
+        temp = temphand->uv.u;
+        if (temp <= 0)
+            temp++;
+        else
+            temp--;
+        cur_vert->u = temp << wlog;
+
+        temp = temphand->uv.v;
+        if (temp <= 0)
+            temp++;
+        else
+            temp--;
+        cur_vert->v = temp << hlog;
+
+        cur_vert->i = temphand->i << 8;
+
+        if (!branch_to_copy) // fix Z
+        {
+            temp = temphand->gZ;
+            cur_vert->w = fix_div(0x010000, temp); // 1/Z
+        }
     }
 
-    temp_i = imax - imin;
-    if (temp_i >= gr_clut_lit_tol) {
-      ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti)) tmap_func)(bm, _n_verts, p_vpl, &ti);
-      return CLIP_NONE;
+    if (!light_flag) {
+        ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti)) tmap_func)(bm, _n_verts, p_vpl, &ti);
+        return CLIP_NONE;
     } else {
-      uchar *temp_ptr;
+        extern fix gr_clut_lit_tol;
+        int temp_n;
+        fix imax, imin, temp_i;
+        grs_vertex *temp_p_vlist;
 
-      imin += imax;
-      imin >>= 9;
-      imin &= 0xff00;
-      temp_ptr = gr_get_light_tab() + imin;
-      ti.clut = temp_ptr;
-      ti.tmap_type += 2;
-      ti.flags |= TMF_CLUT;
+        temp_p_vlist = p_vlist;
+        temp_n = n - 1;
+        imax = imin = temp_p_vlist[temp_n].i;
+        while (--n >= 0) {
+            temp_i = temp_p_vlist[n].i;
+            if (temp_i < imin)
+                imin = temp_i;
+            if (temp_i > imax)
+                imax = temp_i;
+        }
 
-      ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti)) tmap_func)(bm, _n_verts, p_vpl, &ti);
-      return CLIP_NONE;
+        temp_i = imax - imin;
+        if (temp_i >= gr_clut_lit_tol) {
+            ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti)) tmap_func)(bm, _n_verts, p_vpl,
+                                                                                                &ti);
+            return CLIP_NONE;
+        } else {
+            uchar *temp_ptr;
+
+            imin += imax;
+            imin >>= 9;
+            imin &= 0xff00;
+            temp_ptr = gr_get_light_tab() + imin;
+            ti.clut = temp_ptr;
+            ti.tmap_type += 2;
+            ti.flags |= TMF_CLUT;
+
+            ((void (*)(grs_bitmap * bm, int n, grs_vertex **vpl, grs_tmap_info *ti)) tmap_func)(bm, _n_verts, p_vpl,
+                                                                                                &ti);
+            return CLIP_NONE;
+        }
     }
-  }
 }
 
 // return 1 if punt (ignore Z), 0 if use it
 int check_linear(int n) {
-  extern ubyte flat8_per_ltol;
-  g3s_phandle temphand;
-  fix zmin, zmax;
-  fix temp;
-  g3s_phandle *temp_vbuf2;
+    extern ubyte flat8_per_ltol;
+    g3s_phandle temphand;
+    fix zmin, zmax;
+    fix temp;
+    g3s_phandle *temp_vbuf2;
 
-  temp_vbuf2 = _vbuf2;
-  n--;
-  temphand = temp_vbuf2[n];
-  zmax = zmin = temphand->gZ;
-
-  while (--n >= 0) {
+    temp_vbuf2 = _vbuf2;
+    n--;
     temphand = temp_vbuf2[n];
-    temp = temphand->gZ;
+    zmax = zmin = temphand->gZ;
 
-    if (temp < zmin)
-      zmin = temp;
-    if (temp > zmax)
-      zmax = temp;
-  }
+    while (--n >= 0) {
+        temphand = temp_vbuf2[n];
+        temp = temphand->gZ;
 
-  zmax -= zmin;
-  temp = zmin >> flat8_per_ltol;
-  if (temp >= zmax) {
-    ti.tmap_type = GRC_BILIN + (light_flag << 1);
-    tmap_func = (void *)&h_umap;
-    return 1; // punt
-  } else
-    return 0; // use Z
+        if (temp < zmin)
+            zmin = temp;
+        if (temp > zmax)
+            zmax = temp;
+    }
+
+    zmax -= zmin;
+    temp = zmin >> flat8_per_ltol;
+    if (temp >= zmax) {
+        ti.tmap_type = GRC_BILIN + (light_flag << 1);
+        tmap_func = (void *)&h_umap;
+        return 1; // punt
+    } else
+        return 0; // use Z
 }
 
 // compute warp matrix with deltas already set.
@@ -674,21 +674,21 @@ int check_linear(int n) {
 //   pointer to bitmap in bm_ptr
 //   esi=basis 0
 void calc_warp_matrix2(g3s_phandle upperleft, fix x10, fix x20, fix y10, fix y20, fix z10, fix z20, grs_bitmap *bm) {
-  fix x0 = upperleft->gX;
-  fix y0 = upperleft->gY;
-  fix z0 = upperleft->gZ;
+    fix x0 = upperleft->gX;
+    fix y0 = upperleft->gY;
+    fix z0 = upperleft->gZ;
 
-  // compute the actual matrix.
+    // compute the actual matrix.
 
-  warp[0] = fix_mul(y20, z0) - fix_mul(y0, z20);
-  warp[1] = fix_mul(x0, z20) - fix_mul(x20, z0);
-  warp[2] = fix_mul(x20, y0) - fix_mul(x0, y20);
-  warp[3] = fix_mul(y0, z10) - fix_mul(y10, z0);
-  warp[4] = fix_mul(x10, z0) - fix_mul(x0, z10);
-  warp[5] = fix_mul(x0, y10) - fix_mul(x10, y0);
-  warp[6] = fix_mul(y10, z20) - fix_mul(y20, z10);
-  warp[7] = fix_mul(x20, z10) - fix_mul(x10, z20);
-  warp[8] = fix_mul(x10, y20) - fix_mul(x20, y10);
+    warp[0] = fix_mul(y20, z0) - fix_mul(y0, z20);
+    warp[1] = fix_mul(x0, z20) - fix_mul(x20, z0);
+    warp[2] = fix_mul(x20, y0) - fix_mul(x0, y20);
+    warp[3] = fix_mul(y0, z10) - fix_mul(y10, z0);
+    warp[4] = fix_mul(x10, z0) - fix_mul(x0, z10);
+    warp[5] = fix_mul(x0, y10) - fix_mul(x10, y0);
+    warp[6] = fix_mul(y10, z20) - fix_mul(y20, z10);
+    warp[7] = fix_mul(x20, z10) - fix_mul(x10, z20);
+    warp[8] = fix_mul(x10, y20) - fix_mul(x20, y10);
 }
 
 // ------------------------------------------------------------------------------------------------
