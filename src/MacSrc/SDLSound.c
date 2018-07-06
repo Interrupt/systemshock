@@ -1,6 +1,7 @@
 
 #include <Carbon/Carbon.h>
 #include "musicai.h"
+#include "adlmidi.h"
 
 #ifdef USE_SDL_MIXER
 
@@ -8,6 +9,11 @@
 
 static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
 static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
+
+#define SAMPLE_RATE 44100
+
+struct ADL_MIDIPlayer *adlDevice;
+struct ADLMIDI_AudioFormat g_audioFormat;
 
 int snd_start_digital(void) {
 
@@ -17,9 +23,17 @@ int snd_start_digital(void) {
 		DebugString("SDL_Mixer: Init failed");
 	}
 
-	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
+	if(Mix_OpenAudio(SAMPLE_RATE, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
 		DebugString("SDL_Mixer: Couldn't open audio device");	
 	}
+
+	adlDevice = adl_init(SAMPLE_RATE);
+
+	if(adlDevice == NULL) {
+		ERROR("Could not open ADLMIDI");
+	}
+
+	adl_setNumChips(adlDevice, 4);
 
 	Mix_AllocateChannels(SND_MAX_SAMPLES);
 
@@ -98,6 +112,30 @@ void MacTuneUpdateVolume(void) {
 	Mix_VolumeMusic((curr_vol_lev * curr_vol_lev) * 128 / 10000);
 }
 
+short adl_buffer[4096];
+int is_playing = 0;
+
+static void SDL_MidiAudioCallbackX(void *adl_midi_player, Uint8 *stream, int len)
+{
+	struct ADL_MIDIPlayer* p = (struct ADL_MIDIPlayer*)adl_midi_player;
+
+    /* Convert bytes length into total count of samples in all channels */
+    int samples_count = len / 2;
+
+    /* Take some samples from the ADLMIDI */
+    samples_count = adl_play(p, samples_count, (short*)adl_buffer);
+
+    if(samples_count <= 0)
+    {
+        is_playing = 0;
+        SDL_memset(stream, 0, len);
+        return;
+    }
+
+    /* Send buffer to the audio device */
+    SDL_memcpy(stream, (Uint8*)adl_buffer, samples_count * 2);
+}
+
 int MacTuneLoadTheme(char* theme_base, int themeID) {
 	char filename[30];
 
@@ -108,14 +146,41 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 
 	// Build the file name
 	strcpy(filename, "res/music/");
-	strcat(filename, theme_base);
+	strcat(filename, theme_base - 0);
 	strcat(filename, ".mid");
 
 	DEBUG("Playing music %s", filename);
 
-	Mix_Music *music;
+    SDL_AudioSpec spec;
+    SDL_AudioSpec obtained;
+
+    spec.freq = SAMPLE_RATE;
+    spec.format = AUDIO_S16SYS;
+    spec.channels = 2;
+    spec.samples = 2048;
+    spec.callback = SDL_MidiAudioCallbackX;
+    spec.userdata = adlDevice;
+
+    g_audioFormat.type = ADLMIDI_SampleType_F32;
+    g_audioFormat.containerSize = sizeof(float);
+    g_audioFormat.sampleOffset = sizeof(float) * 2;
+
+    if(SDL_OpenAudio(&spec, &obtained) < 0) {
+    	ERROR("Could not open audio for music!\n\n");
+    }
+
+    adl_setLoopEnabled(adlDevice, 1);
+
+    if(adl_openFile(adlDevice, filename) != 0)
+    {
+    	ERROR("Could not open music file for ADL");
+    }
+
+    SDL_PauseAudio(0);
+
+	/*Mix_Music *music;
 	music = Mix_LoadMUS(filename);
-	Mix_PlayMusic(music, -1);
+	Mix_PlayMusic(music, -1);*/
 	MacTuneUpdateVolume();
 
 	return OK;

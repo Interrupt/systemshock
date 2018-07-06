@@ -196,6 +196,7 @@ include_directories(
 	src/Libraries/H
 	src/Libraries/LG/Source
 	src/Libraries/LG/Source/LOG/src
+	src/Libraries/adlmidi
 	src/GameSrc/Headers
 	src/MacSrc
 )
@@ -312,6 +313,7 @@ target_link_libraries(systemshock
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
+	ADLMIDI_LIB
 	${SDL2_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
 )

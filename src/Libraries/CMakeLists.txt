@@ -344,6 +344,30 @@ set(EDMS_SRC
 	EDMS/Source/MODELS/d_f_2.cc
 )
 
+set(ADLMIDI_SRC
+	adlmidi/adlmidi_bankmap.tcc
+	adlmidi/chips/dosbox/dbopl.cpp
+	adlmidi/chips/dosbox_opl3.cpp
+	adlmidi/chips/nuked_opl3_v174.cpp
+	adlmidi/chips/nuked/nukedopl3_174.c
+	adlmidi/chips/nuked/nukedopl3.c
+	adlmidi/chips/opl_chip_base.tcc
+	adlmidi/chips/nuked_opl3.cpp
+	adlmidi/wopl/wopl_file.c
+	adlmidi/adlmidi_private.hpp
+	adlmidi/adlmidi_ptr.hpp
+	adlmidi/adlmidi_opl3.cpp
+	adlmidi/adlmidi.hpp
+	adlmidi/adldata.hh
+	adlmidi/adlmidi_xmi2mid.hpp
+	adlmidi/adlmidi_mus2mid.hpp
+	adlmidi/adlmidi_private.cpp
+	adlmidi/adlmidi_midiplay.cpp
+	adlmidi/adlmidi.cpp
+	adlmidi/adlmidi_load.cpp
+	adlmidi/adldata.cpp
+	adlmidi/fraction.hpp
+)
 
 set(VOX_SRC
 	VOX/Source/vox2d.c
@@ -353,6 +377,7 @@ set(VOX_SRC
 
 include_directories(
 	${CMAKE_SOURCE_DIR}/src/MacSrc
+	${CMAKE_SOURCE_DIR}/src/Libraries/adlmidi
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/GR
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/Clip
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/Flat8
@@ -393,4 +418,4 @@ add_library(UI_LIB ${UI_SRC})
 add_library(VOX_LIB ${VOX_SRC})
 add_library(FIXPP_LIB ${FIXPP_SRC})
 add_library(EDMS_LIB ${EDMS_SRC})
-
+add_library(ADLMIDI_LIB ${ADLMIDI_SRC})
