@@ -13,7 +13,6 @@ static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
 #define SAMPLE_RATE 44100
 
 struct ADL_MIDIPlayer *adlDevice;
-struct ADLMIDI_AudioFormat g_audioFormat;
 
 int snd_start_digital(void) {
 
@@ -26,14 +25,6 @@ int snd_start_digital(void) {
 	if(Mix_OpenAudio(SAMPLE_RATE, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
 		DebugString("SDL_Mixer: Couldn't open audio device");	
 	}
-
-	adlDevice = adl_init(SAMPLE_RATE);
-
-	if(adlDevice == NULL) {
-		ERROR("Could not open ADLMIDI");
-	}
-
-	adl_setNumChips(adlDevice, 4);
 
 	Mix_AllocateChannels(SND_MAX_SAMPLES);
 
@@ -115,7 +106,7 @@ void MacTuneUpdateVolume(void) {
 short adl_buffer[4096];
 int is_playing = 0;
 
-static void SDL_MidiAudioCallbackX(void *adl_midi_player, Uint8 *stream, int len)
+static void SDL_MidiAudioCallback(void *adl_midi_player, Uint8 *stream, int len)
 {
 	struct ADL_MIDIPlayer* p = (struct ADL_MIDIPlayer*)adl_midi_player;
 
@@ -151,6 +142,16 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 
 	DEBUG("Playing music %s", filename);
 
+	if(adlDevice != NULL) {
+		SDL_CloseAudio();
+	}
+
+	adlDevice = adl_init(SAMPLE_RATE);
+
+	if(adlDevice == NULL) {
+		ERROR("Could not open ADLMIDI");
+	}
+
     SDL_AudioSpec spec;
     SDL_AudioSpec obtained;
 
@@ -158,12 +159,12 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
     spec.format = AUDIO_S16SYS;
     spec.channels = 2;
     spec.samples = 2048;
-    spec.callback = SDL_MidiAudioCallbackX;
+
+    spec.callback = SDL_MidiAudioCallback;
     spec.userdata = adlDevice;
 
-    g_audioFormat.type = ADLMIDI_SampleType_F32;
-    g_audioFormat.containerSize = sizeof(float);
-    g_audioFormat.sampleOffset = sizeof(float) * 2;
+    // Bank 45 is System Shock?
+    adl_setBank(adlDevice, 45);
 
     if(SDL_OpenAudio(&spec, &obtained) < 0) {
     	ERROR("Could not open audio for music!\n\n");
