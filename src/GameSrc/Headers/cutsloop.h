@@ -19,7 +19,8 @@
 // CC: These are all wrong, should find the right resource IDs
 #define START_CUTSCENE 0
 #define DEATH_CUTSCENE 1
-#define WIN_CUTSCENE   2
+#define WIN_CUTSCENE 2
+#define ENDGAME_CUTSCENE 3
 
 // Prototypes
 

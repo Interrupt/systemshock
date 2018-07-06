@@ -1209,8 +1209,6 @@ void splash_draw() {
 
     // Original palette
     gr_set_pal(0, 256, ppall);
-
-    ResCloseFile(pal_file);
 }
 
 // -------------------------------------------------------------

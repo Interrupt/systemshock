@@ -143,10 +143,10 @@ int main(int argc, char** argv)
 	gDeadPlayerQuit = FALSE;
 	gGameCompletedQuit = FALSE;
 
-	// Draw the splash screen
-
 	load_da_palette();
 	gr_clear(0xFF);
+
+	// Draw the splash screen
 
 	INFO("Showing splash screen");
 	splash_draw();

@@ -75,6 +75,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "visible.h"
 #include "wares.h"
 #include "weapons.h"
+#include "cutsloop.h"
 
 // -------
 // DEFINES
@@ -867,11 +868,7 @@ void do_stuff_every_second() {
 
             if (remain < CIT_CYCLE) {
                 secret_render_fx = 0;
-                // play_cutscene(ENDGAME_CUTSCENE,TRUE);
-
-                // CC: Back to the main menu until there's a real endgame cutscene again
-                _new_mode = SETUP_LOOP;
-                chg_set_flg(GL_CHG_LOOP);
+                play_cutscene(ENDGAME_CUTSCENE,TRUE);
 
                 // gDeadPlayerQuit = TRUE;											// Pretend the player
                 // is dead.

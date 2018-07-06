@@ -52,9 +52,6 @@ void cutscene_start() {
     	change_svga_screen_mode();
 	#endif
 
-    _new_mode = SETUP_LOOP;
-	chg_set_flg(GL_CHG_LOOP);
-
 	generic_reg_init(TRUE, &cutscene_root_region, NULL, &cutscene_slab, cutscene_key_handler, cutscene_mouse_handler);
 
 	_current_view = &cutscene_root_region;
