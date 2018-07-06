@@ -209,7 +209,7 @@ set(AFILE_SRC
 #	AFILE/Source/quiktime.c
 #	AFILE/Source/quikwrit.c
 #	AFILE/Source/SubTitles.c
-)
+        AFILE/Source/movie.c)
 
 set(DSTRUCT_SRC
 	DSTRUCT/Source/array.c
