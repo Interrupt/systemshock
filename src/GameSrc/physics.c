@@ -1550,7 +1550,8 @@ errtype collide_objects(ObjID collision, ObjID victim, int bad) {
         damage_sound_fx = -1;
     } else if ((ID2TRIP(collision) == ENERGY_MINE_TRIPLE) && (victim == PLAYER_OBJ)) {
         player_struct.energy = lg_max(0, player_struct.energy - ENERGY_MINE_DRAIN);
-        play_digi_fx(SFX_ENERGY_DRAIN, 1);
+        if (!digi_fx_playing(SFX_ENERGY_DRAIN, NULL))
+            play_digi_fx(SFX_ENERGY_DRAIN, 1);
         chg_set_flg(VITALS_UPDATE);
     }
     return (OK);
