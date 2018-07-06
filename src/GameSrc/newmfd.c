@@ -719,7 +719,7 @@ uchar mfd_yield_func(int func, int *mfd_id) {
 
 void mfd_zoom_rect(LGRect *start, int mfdnum) {
     extern void zoom_rect(LGRect * start, LGRect * end);
-    printf("mfd_zoom_rect\n");
+    DEBUG("Zooming mfd %i", mfdnum);
     LGRect r1, r2;
     play_digi_fx(SFX_ZOOM_BOX, 1);
     r1 = *start;

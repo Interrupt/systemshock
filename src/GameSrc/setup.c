@@ -539,7 +539,7 @@ errtype journey_newgame_func() {
     DEBUG("Create initial game");
     create_initial_game_func(0, 0, 0);
 
-    INFO("Started!");
+    INFO("Started new game!");
 
     change_mode_func(0, 0, (void *)GAME_LOOP);
 
@@ -1223,8 +1223,6 @@ void setup_loop() {
         gr_clear(0xFF);
 
         draw_stuff = TRUE;
-
-        DEBUG("setup_loop %i", setup_mode);
     }
 
     last_setup_mode = setup_mode;
@@ -1313,13 +1311,10 @@ void setup_start() {
     kb_flush();
     mouse_flush();
 
-    INFO("Loading intro.res");
     intro_num = ResOpenFile("res/data/intro.res");
 
     // slam in the right palette
     load_da_palette();
-
-    DEBUG("STARTING %i\n", play_intro_anim);
 
     if (do_i_svg != -1) {
 #ifdef PLAYTEST
@@ -1346,8 +1341,6 @@ void setup_start() {
             start_setup_sound(1);
     } else {
         direct_into_cutscene = TRUE;
-
-        DEBUG("Intro cutscene!");
 
         // FIXME: Cutscenes!
         play_cutscene(START_CUTSCENE, FALSE);
