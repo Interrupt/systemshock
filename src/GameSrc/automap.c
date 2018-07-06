@@ -139,6 +139,14 @@ uchar mfd_map_handler(MFD *m, uiEvent *e) {
         return FALSE;
 
     mouse = (uiMouseEvent *)e;
+
+    if (mouse->action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
+        if (!digi_fx_playing(SFX_MAP_ZOOM, NULL))
+            play_digi_fx(SFX_MAP_ZOOM, 1);
+        amap_zoom(oAMap(mapid), FALSE, mouse->action & MOUSE_WHEELUP ? 1 : -1);
+        return TRUE;
+    }
+
     if (!(mouse->action & MOUSE_LDOWN))
         return FALSE; // ignore click releases
 

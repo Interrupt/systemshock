@@ -558,6 +558,13 @@ uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
     extern void mouse_unconstrain(void);
     int scregion = 0;
 
+    if (action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
+        if (zoom_deal(amptr, action & MOUSE_WHEELUP ? BTN_ZOOMIN : BTN_ZOOMOUT))
+            chg_set_flg(AMAP_MAP_EV);
+        pend_check();
+        return TRUE;
+    }
+
     if (action & MOUSE_UPS) {
         mouse_unconstrain();
         if (map_scroll_code != 0) {

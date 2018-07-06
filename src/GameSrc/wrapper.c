@@ -91,6 +91,7 @@ extern void text_button(char *text, int xc, int yc, int col, int shad, int w, in
 #define MOUSE_DOWN (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE)
 #define MOUSE_UP   (MOUSE_LUP | MOUSE_RUP)
 #define MOUSE_LEFT (MOUSE_LDOWN | UI_MOUSE_LDOUBLE)
+#define MOUSE_WHEEL (MOUSE_WHEELUP | MOUSE_WHEELDN)
 
 #define STATUS_X      4
 #define STATUS_Y      1
@@ -459,7 +460,14 @@ uchar slider_handler(uiEvent *ev, uchar butid) {
         }
         break;
     case UI_EVENT_MOUSE:
-        st->sliderpos = mev->pos.x - BR(butid).ul.x;
+        if (mev->action & MOUSE_WHEELUP) {
+            st->sliderpos = st->sliderpos <= 5 ? 0 : st->sliderpos - 5;
+        } else if (mev->action & MOUSE_WHEELDN) {
+            uchar max = BR(butid).lr.x - BR(butid).ul.x - 3;
+            st->sliderpos = lg_min(st->sliderpos + 5, max);
+        } else {
+            st->sliderpos = mev->pos.x - BR(butid).ul.x;
+        }
         slider_deal(butid, TRUE);
         draw_button(butid);
         return TRUE;
@@ -990,7 +998,7 @@ uchar opanel_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data) {
 
     if (!ev->type && (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE))
         return FALSE;
-    if (ev->type == UI_EVENT_MOUSE && !(ev->subtype & (MOUSE_DOWN | MOUSE_UP)))
+    if (ev->type == UI_EVENT_MOUSE && !(ev->subtype & (MOUSE_DOWN | MOUSE_UP | MOUSE_WHEEL)))
         return FALSE;
 
     mev.pos.x -= inventory_region->r->ul.x;

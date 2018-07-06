@@ -61,17 +61,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 #include "error.h"
 #include <stdbool.h>
+#include <stdint.h>
 //#include <Carbon/Carbon.h>
 
 typedef struct _mouse_event
 {
    short x;    				// position
    short y;
-   uchar type; 				// Event mask, bits defined below
+   uint16_t type;			// Event mask, bits defined below
    ulong timestamp;
    uchar buttons;
    uchar modifiers;			// Added for Mac version
-   char pad[5];  			// pad to sixteen bytes
+   char pad[4];  			// pad to sixteen bytes
 } mouse_event;
 
 #define MOUSE_MOTION    1	// Event mask bits
@@ -81,6 +82,9 @@ typedef struct _mouse_event
 #define MOUSE_RUP      16
 #define MOUSE_CDOWN    32
 #define MOUSE_CUP      64
+// bits 7..9 are used for double click events, see UI/Source/event.h
+#define MOUSE_WHEELUP (1 << 10)
+#define MOUSE_WHEELDN (1 << 11)
 
 
 // Mask of events that are allowed into the queue. 
