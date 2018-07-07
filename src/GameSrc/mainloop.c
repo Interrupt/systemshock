@@ -147,8 +147,7 @@ void mainloop(int argc, char *argv[]) {
 
         MousePollProc(); // update the cursor, was 35 times/sec originally
 
-        if (_current_loop != SETUP_LOOP)
-            status_bio_update();
+        status_bio_update();
 
         SDLDraw();
     }
