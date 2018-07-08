@@ -42,6 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sfxlist.h"
 #include "tools.h"
 
+#include "adlmidi.h"
+
 /*
 #include <mainloop.h>
 #include <_audio.h>
@@ -95,6 +97,7 @@ extern errtype make_request(int chunk_num, int piece_ID);
 extern int digifx_volume_shift(short x, short y, short z, short phi, short theta, short basevol);
 extern int digifx_pan_shift(short x, short y, short z, short phi, short theta);
 extern uchar mai_semaphor;
+extern volatile void (*mlimbs_AI)();
 
 uchar park_random = 75;
 uchar park_playing = 0;
@@ -151,6 +154,7 @@ void musicai_clear() {
     mlimbs_combat = 0;
 }
 
+long count = 0;
 void mlimbs_do_ai() {
     //   extern uchar mlimbs_semaphore;
     extern errtype check_asynch_ai(uchar new_score_ok);
@@ -219,6 +223,8 @@ void mlimbs_do_ai() {
             cyber_play = play_me;
         }
 
+        gReadyToQueue = (count++ % 300) == 0;
+
         // This is all pretty temporary right now, but here's what's happening.
         // If the gReadyToQueue flag is set, that means the 6-second timer has
         // fired.  So we call check_asynch_ai() to determine the next tune to play
@@ -227,13 +233,16 @@ void mlimbs_do_ai() {
         if (gReadyToQueue) {
             if (!global_fullmap->cyber)
                 check_asynch_ai(TRUE);
-            int pid = current_request[0].pieceID;
-            if (pid != 255) // If there is a theme to play,
+
+            /*int pid = current_request[0].pieceID;
+            if (pid != 255 && pid != -1) // If there is a theme to play,
             {
-                MacTuneQueueTune(pid); // Queue it up.
-                mlimbs_counter++;      // Tell mlimbs we've queued another tune.
+                //MacTuneQueueTune(pid); // Queue it up.
+                //mlimbs_counter++;      // Tell mlimbs we've queued another tune.
                 gReadyToQueue = FALSE;
-            }
+            }*/
+
+            gReadyToQueue = FALSE;
         }
 
         // If a tune has finished playing, then another has just started, so prime the
@@ -327,7 +336,7 @@ errtype mlimbs_AI_init(void) {
     tmode_time = 1; // KLC - was 4
     current_score = actual_score = last_score = WALKING_SCORE;
     current_zone = HOSPITAL_ZONE;
-    //   mlimbs_AI = &music_ai;
+    mlimbs_AI = &music_ai;
     cyber_play = 255;
 
     return (OK);
@@ -337,14 +346,16 @@ errtype mai_transition(int new_trans) {
     if ((next_mode == TRANSITION_MODE) || (current_mode == TRANSITION_MODE))
         return (ERR_NOEFFECT);
 
+    DEBUG("mai_transition");
+
     if (transition_table[new_trans] < LAYER_BASE) {
         current_transition = new_trans;
         next_mode = TRANSITION_MODE;
-        tmode_time = 1; // KLC - was 4
+        tmode_time = 4; // KLC - was 4
     } else if ((transition_count == 0) && (layering_table[TRANSITION_LAYER_BASE + new_trans][0] != 255)) {
         current_transition = new_trans;
         // For now, let's not do any layered transitions.
-        //      transition_count = 1;		//KLC - was 2
+        transition_count = 2;		//KLC - was 2
     }
     // temp
     /*
@@ -375,6 +386,13 @@ errtype make_request(int chunk_num, int piece_ID) {
     current_request[chunk_num].crossfade = curr_crossfade;
     current_request[chunk_num].ramp_time = curr_ramp_time;
     current_request[chunk_num].ramp = curr_ramp;
+
+    // CC: DEBUG!
+    /*extern struct ADL_MIDIPlayer *adlDevice;
+    if(adlDevice != NULL)
+        adl_setTrackOptions(adlDevice, piece_ID, ADLMIDI_TrackOption_On);*/
+
+    DEBUG("make_request %i %i", chunk_num, piece_ID);
     return (OK);
 }
 

@@ -2,6 +2,7 @@
 #include <Carbon/Carbon.h>
 #include "musicai.h"
 #include "adlmidi.h"
+#include "mlimbs.h"
 
 #ifdef USE_SDL_MIXER
 
@@ -126,10 +127,15 @@ static void SDL_MidiAudioCallback(void *adl_midi_player, Uint8 *stream, int len)
 
     /* Send buffer to the audio device */
     SDL_memcpy(stream, (Uint8*)adl_buffer, samples_count * 2);
+
+    //mlimbs_callback(NULL, 1);
+    mlimbs_timer_callback();
 }
 
 int MacTuneLoadTheme(char* theme_base, int themeID) {
-	char filename[30];
+	char music_filename[30];
+	char data_filename[30];
+	char bin_filename[30];
 
 	// Try to play some music! theme_base will be a string like 'thm0'
 
@@ -137,11 +143,36 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 	// until then, I'm going to just attempt to play .mid files instead.
 
 	// Build the file name
-	strcpy(filename, "res/sound/genmidi/");
-	strcat(filename, theme_base - 0);
-	strcat(filename, ".xmi");
+	strcpy(music_filename, "res/sound/genmidi/");
+	strcat(music_filename, theme_base - 0);
+	strcat(music_filename, ".xmi");
 
-	DEBUG("Playing music %s", filename);
+	// Build the data file name
+	strcpy(data_filename, "res/sound/");
+	strcat(data_filename, theme_base - 0);
+	strcat(data_filename, ".dat");
+
+	// Build the tbin file name
+	strcpy(bin_filename, "res/sound/");
+	strcat(bin_filename, theme_base - 0);
+	strcat(bin_filename, ".bin");
+
+	DEBUG("Playing music %s", music_filename);
+
+	FILE* bin_file = fopen(bin_filename, "rb");
+	if(bin_file != NULL) {
+		extern uchar track_table[NUM_SCORES][SUPERCHUNKS_PER_SCORE]; 
+		extern uchar transition_table[NUM_TRANSITIONS];
+		extern uchar key_table[NUM_LAYERABLE_SUPERCHUNKS][KEY_BAR_RESOLUTION];
+		extern uchar layering_table[NUM_LAYERS][MAX_KEYS];
+
+		// Read in the Music AI stuff
+		fread(track_table, sizeof(uchar), NUM_SCORES * SUPERCHUNKS_PER_SCORE, bin_file);
+		fread(layering_table, sizeof(uchar), NUM_LAYERS * MAX_KEYS, bin_file);
+		fread(transition_table, sizeof(uchar), NUM_TRANSITIONS, bin_file);
+		fread(key_table, sizeof(uchar), NUM_LAYERABLE_SUPERCHUNKS * KEY_BAR_RESOLUTION, bin_file);
+		fclose(bin_file);
+	}
 
 	if(adlDevice != NULL) {
 		SDL_CloseAudio();
@@ -176,17 +207,17 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
     adl_setNumChips(adlDevice, 4);
     adl_setVolumeRangeModel(adlDevice, 1);
 
-    if(adl_openFile(adlDevice, filename) != 0)
+    if(adl_openFile(adlDevice, music_filename) != 0)
     {
     	ERROR("Could not open music file for ADL");
     }
 
-    for(int i = 0; i < 64; i++) {
+    for(int i = 1; i < 64; i++) {
 		adl_setTrackOptions(adlDevice, i, ADLMIDI_TrackOption_Off);    	
     }
 
-    adl_setTrackOptions(adlDevice, 0, ADLMIDI_TrackOption_On);
-    adl_setTrackOptions(adlDevice, 9, ADLMIDI_TrackOption_On);
+    //adl_setTrackOptions(adlDevice, 0, ADLMIDI_TrackOption_On);
+    //adl_setTrackOptions(adlDevice, 9, ADLMIDI_TrackOption_On);
 
     SDL_PauseAudio(0);
 
@@ -194,6 +225,11 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 	music = Mix_LoadMUS(filename);
 	Mix_PlayMusic(music, -1);*/
 	MacTuneUpdateVolume();
+
+	mlimbs_init();
+	int r = mlimbs_load_theme(music_filename, data_filename, themeID);
+	if(r > 0) mlimbs_start_theme();
+	DEBUG("mlimbs_load_theme: %i", r);
 
 	return OK;
 }
