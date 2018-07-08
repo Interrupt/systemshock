@@ -26,6 +26,7 @@
 
 #include <string.h>
 #include <stdint.h>
+#include <cstring>
 
 #pragma pack(push, 1)
 #define ADLDATA_BYTE_COMPARABLE(T)                      \
@@ -34,18 +35,17 @@
     inline bool operator!=(const T &a, const T &b)      \
     { return !operator==(a, b); }
 
-extern const struct adldata
+struct adldata
 {
     uint32_t    modulator_E862, carrier_E862;  // See below
     uint8_t     modulator_40, carrier_40; // KSL/attenuation settings
     uint8_t     feedconn; // Feedback/connection bits for the channel
 
     int8_t      finetune;
-} adl[];
+};
 ADLDATA_BYTE_COMPARABLE(struct adldata)
-enum { adlDefaultNumber = 189 };
 
-extern const struct adlinsdata
+struct adlinsdata
 {
     enum { Flag_Pseudo4op = 0x01, Flag_NoSound = 0x02, Flag_Real4op = 0x04 };
 
@@ -55,11 +55,8 @@ extern const struct adlinsdata
     uint16_t    ms_sound_kon;  // Number of milliseconds it produces sound;
     uint16_t    ms_sound_koff;
     double      voice2_fine_tune;
-} adlins[];
+};
 ADLDATA_BYTE_COMPARABLE(struct adlinsdata)
-int maxAdlBanks();
-extern const unsigned short banks[][256];
-extern const char* const banknames[];
 
 enum { adlNoteOnMaxTime = 40000 };
 
@@ -85,14 +82,23 @@ ADLDATA_BYTE_COMPARABLE(struct adlinsdata2)
 /**
  * @brief Bank global setup
  */
-extern const struct AdlBankSetup
+struct AdlBankSetup
 {
     int     volumeModel;
     bool    deepTremolo;
     bool    deepVibrato;
     bool    adLibPercussions;
     bool    scaleModulators;
-} adlbanksetup[];
+};
+
+#ifndef DISABLE_EMBEDDED_BANKS
+int maxAdlBanks();
+extern const adldata adl[];
+extern const adlinsdata adlins[];
+extern const unsigned short banks[][256];
+extern const char* const banknames[];
+extern const AdlBankSetup adlbanksetup[];
+#endif
 
 /**
  * @brief Conversion of storage formats
@@ -102,8 +108,12 @@ inline adlinsdata2::adlinsdata2(const adlinsdata &d)
       ms_sound_kon(d.ms_sound_kon), ms_sound_koff(d.ms_sound_koff),
       voice2_fine_tune(d.voice2_fine_tune)
 {
+#ifdef DISABLE_EMBEDDED_BANKS
+    std::memset(adl, 0, sizeof(adldata) * 2);
+#else
     adl[0] = ::adl[d.adlno1];
     adl[1] = ::adl[d.adlno2];
+#endif
 }
 
 /**

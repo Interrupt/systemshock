@@ -42,32 +42,8 @@ static const unsigned OPLBase = 0x388;
 #   endif
 #endif
 
-#ifdef DISABLE_EMBEDDED_BANKS
-/*
-    Dummy data which replaces adldata.cpp banks database
-*/
-
-const struct adldata adl[] =
-{
-    {0, 0, (unsigned char)'\0', (unsigned char)'\0', (unsigned char)'\0', 0}
-};
-
-const struct adlinsdata adlins[] =
-{
-    {0, 0, 0, 0, 0, 0, 0.0}
-};
-
-int maxAdlBanks()
-{
-    return 0;
-}
-
-const unsigned short banks[][256] = {{0}};
-const char *const banknames[] = {"<Embedded banks are disabled>"};
-const AdlBankSetup adlbanksetup[] = {{0, 1, 1, 0, 0}};
-#endif
-
-static const unsigned short Operators[23 * 2] =
+//! Per-channel and per-operator registers map
+static const uint16_t g_operatorsMap[23 * 2] =
 {
     // Channels 0-2
     0x000, 0x003, 0x001, 0x004, 0x002, 0x005, // operators  0, 3,  1, 4,  2, 5
@@ -91,7 +67,8 @@ static const unsigned short Operators[23 * 2] =
     0x011, 0xFFF
 }; // operator 13
 
-static const unsigned short Channels[23] =
+//! Channel map to regoster offsets
+static const uint16_t g_channelsMap[23] =
 {
     0x000, 0x001, 0x002, 0x003, 0x004, 0x005, 0x006, 0x007, 0x008, // 0..8
     0x100, 0x101, 0x102, 0x103, 0x104, 0x105, 0x106, 0x107, 0x108, // 9..17 (secondary set)
@@ -129,29 +106,6 @@ static const unsigned short Channels[23] =
     Ports: ???
 */
 
-void OPL3::setEmbeddedBank(unsigned int bank)
-{
-    AdlBank = bank;
-    //Embedded banks are supports 128:128 GM set only
-    dynamic_banks.clear();
-
-    if(bank >= static_cast<unsigned int>(maxAdlBanks()))
-        return;
-
-    Bank *bank_pair[2] =
-    {
-        &dynamic_banks[0],
-        &dynamic_banks[PercussionTag]
-    };
-
-    for(unsigned i = 0; i < 256; ++i)
-    {
-        size_t meta = banks[bank][i];
-        adlinsdata2 &ins = bank_pair[i / 128]->ins[i % 128];
-        ins = adlinsdata2(adlins[meta]);
-    }
-}
-
 static adlinsdata2 makeEmptyInstrument()
 {
     adlinsdata2 ins;
@@ -160,69 +114,105 @@ static adlinsdata2 makeEmptyInstrument()
     return ins;
 }
 
-const adlinsdata2 OPL3::emptyInstrument = makeEmptyInstrument();
+const adlinsdata2 OPL3::m_emptyInstrument = makeEmptyInstrument();
 
 OPL3::OPL3() :
-    NumCards(1),
-    NumFourOps(0),
-    HighTremoloMode(false),
-    HighVibratoMode(false),
-    AdlPercussionMode(false),
+    m_numChips(1),
+    m_numFourOps(0),
+    m_deepTremoloMode(false),
+    m_deepVibratoMode(false),
+    m_rhythmMode(false),
     m_musicMode(MODE_MIDI),
     m_volumeScale(VOLUME_Generic)
 {
 #ifdef DISABLE_EMBEDDED_BANKS
-    AdlBank = ~0u;
+    m_embeddedBank = CustomBankTag;
 #else
     setEmbeddedBank(0);
 #endif
 }
 
-void OPL3::Poke(size_t card, uint16_t index, uint8_t value)
+void OPL3::setEmbeddedBank(uint32_t bank)
 {
-    #ifdef ADLMIDI_HW_OPL
-    (void)card;
-    unsigned o = index >> 8;
+#ifndef DISABLE_EMBEDDED_BANKS
+    m_embeddedBank = bank;
+    //Embedded banks are supports 128:128 GM set only
+    m_insBanks.clear();
+
+    if(bank >= static_cast<unsigned int>(maxAdlBanks()))
+        return;
+
+    Bank *bank_pair[2] =
+    {
+        &m_insBanks[0],
+        &m_insBanks[PercussionTag]
+    };
+
+    for(unsigned i = 0; i < 256; ++i)
+    {
+        size_t meta = banks[bank][i];
+        adlinsdata2 &ins = bank_pair[i / 128]->ins[i % 128];
+        ins = adlinsdata2(adlins[meta]);
+    }
+#else
+    ADL_UNUSED(bank);
+#endif
+}
+
+void OPL3::writeReg(size_t chip, uint16_t address, uint8_t value)
+{
+#ifdef ADLMIDI_HW_OPL
+    ADL_UNUSED(chip);
+    unsigned o = address >> 8;
     unsigned port = OPLBase + o * 2;
 
     #ifdef __DJGPP__
-    outportb(port, index);
+    outportb(port, address);
     for(unsigned c = 0; c < 6; ++c) inportb(port);
     outportb(port + 1, value);
     for(unsigned c = 0; c < 35; ++c) inportb(port);
     #endif
 
     #ifdef __WATCOMC__
-    outp(port, index);
+    outp(port, address);
     for(uint16_t c = 0; c < 6; ++c)  inp(port);
     outp(port + 1, value);
     for(uint16_t c = 0; c < 35; ++c) inp(port);
     #endif//__WATCOMC__
 
-    #else
-    cardsOP2[card]->writeReg(index, value);
-    #endif
+#else//ADLMIDI_HW_OPL
+    m_chips[chip]->writeReg(address, value);
+#endif
+}
+
+void OPL3::writeRegI(size_t chip, uint32_t address, uint32_t value)
+{
+#ifdef ADLMIDI_HW_OPL
+    writeReg(chip, static_cast<uint16_t>(address), static_cast<uint8_t>(value));
+#else//ADLMIDI_HW_OPL
+    m_chips[chip]->writeReg(static_cast<uint16_t>(address), static_cast<uint8_t>(value));
+#endif
 }
 
 
-void OPL3::NoteOff(size_t c)
+void OPL3::noteOff(size_t c)
 {
-    size_t card = c / 23, cc = c % 23;
+    size_t chip = c / 23, cc = c % 23;
 
     if(cc >= 18)
     {
-        regBD[card] &= ~(0x10 >> (cc - 18));
-        Poke(card, 0xBD, regBD[card]);
+        m_regBD[chip] &= ~(0x10 >> (cc - 18));
+        writeRegI(chip, 0xBD, m_regBD[chip]);
         return;
     }
 
-    Poke(card, 0xB0 + Channels[cc], pit[c] & 0xDF);
+    writeRegI(chip, 0xB0 + g_channelsMap[cc], m_keyBlockFNumCache[c] & 0xDF);
 }
 
-void OPL3::NoteOn(unsigned c, double hertz) // Hertz range: 0..131071
+void OPL3::noteOn(size_t c, double hertz) // Hertz range: 0..131071
 {
-    unsigned card = c / 23, cc = c % 23;
-    unsigned x = 0x2000;
+    size_t chip = c / 23, cc = c % 23;
+    uint32_t x = 0x2000;
 
     if(hertz < 0 || hertz > 131071) // Avoid infinite loop
         return;
@@ -233,53 +223,54 @@ void OPL3::NoteOn(unsigned c, double hertz) // Hertz range: 0..131071
         x += 0x400;
     }
 
-    x += static_cast<unsigned int>(hertz + 0.5);
-    unsigned chn = Channels[cc];
+    x += static_cast<uint32_t>(hertz + 0.5);
+    uint32_t chn = g_channelsMap[cc];
 
     if(cc >= 18)
     {
-        regBD[card] |= (0x10 >> (cc - 18));
-        Poke(card, 0x0BD, regBD[card]);
+        m_regBD[chip ] |= (0x10 >> (cc - 18));
+        writeRegI(chip , 0x0BD, m_regBD[chip ]);
         x &= ~0x2000u;
         //x |= 0x800; // for test
     }
 
     if(chn != 0xFFF)
     {
-        Poke(card, 0xA0 + chn, x & 0xFF);
-        Poke(card, 0xB0 + chn, pit[c] = static_cast<uint8_t>(x >> 8));
+        writeRegI(chip , 0xA0 + chn, (x & 0xFF));
+        writeRegI(chip , 0xB0 + chn, (x >> 8));
+        m_keyBlockFNumCache[c] = (x >> 8);
     }
 }
 
-void OPL3::Touch_Real(unsigned c, unsigned volume, uint8_t brightness)
+void OPL3::touchNote(size_t c, uint8_t volume, uint8_t brightness)
 {
     if(volume > 63)
         volume = 63;
 
-    size_t card = c / 23, cc = c % 23;
-    const adldata &adli = ins[c];
-    uint16_t o1 = Operators[cc * 2 + 0];
-    uint16_t o2 = Operators[cc * 2 + 1];
+    size_t chip = c / 23, cc = c % 23;
+    const adldata &adli = m_insCache[c];
+    uint16_t o1 = g_operatorsMap[cc * 2 + 0];
+    uint16_t o2 = g_operatorsMap[cc * 2 + 1];
     uint8_t  x = adli.modulator_40, y = adli.carrier_40;
-    uint16_t mode = 1; // 2-op AM
+    uint32_t mode = 1; // 2-op AM
 
-    if(four_op_category[c] == 0 || four_op_category[c] == 3)
+    if(m_channelCategory[c] == 0 || m_channelCategory[c] == 3)
     {
         mode = adli.feedconn & 1; // 2-op FM or 2-op AM
     }
-    else if(four_op_category[c] == 1 || four_op_category[c] == 2)
+    else if(m_channelCategory[c] == 1 || m_channelCategory[c] == 2)
     {
         const adldata *i0, *i1;
 
-        if(four_op_category[c] == 1)
+        if(m_channelCategory[c] == 1)
         {
             i0 = &adli;
-            i1 = &ins[c + 3];
+            i1 = &m_insCache[c + 3];
             mode = 2; // 4-op xx-xx ops 1&2
         }
         else
         {
-            i0 = &ins[c - 3];
+            i0 = &m_insCache[c - 3];
             i1 = &adli;
             mode = 6; // 4-op xx-xx ops 3&4
         }
@@ -303,14 +294,14 @@ void OPL3::Touch_Real(unsigned c, unsigned volume, uint8_t brightness)
 
     if(m_musicMode == MODE_RSXX)
     {
-        Poke(card, 0x40 + o1, x);
+        writeRegI(chip, 0x40 + o1, x);
         if(o2 != 0xFFF)
-            Poke(card, 0x40 + o2, y - volume / 2);
+            writeRegI(chip, 0x40 + o2, y - volume / 2);
     }
     else
     {
-        bool do_modulator = do_ops[ mode ][ 0 ] || ScaleModulators;
-        bool do_carrier   = do_ops[ mode ][ 1 ] || ScaleModulators;
+        bool do_modulator = do_ops[ mode ][ 0 ] || m_scaleModulators;
+        bool do_carrier   = do_ops[ mode ][ 1 ] || m_scaleModulators;
 
         uint32_t modulator = do_modulator ? (x | 63) - volume + volume * (x & 63) / 63 : x;
         uint32_t carrier   = do_carrier   ? (y | 63) - volume + volume * (y & 63) / 63 : y;
@@ -324,9 +315,9 @@ void OPL3::Touch_Real(unsigned c, unsigned volume, uint8_t brightness)
                 carrier = (carrier | 63) - brightness + brightness * (carrier & 63) / 63;
         }
 
-        Poke(card, 0x40 + o1, modulator);
+        writeRegI(chip, 0x40 + o1, modulator);
         if(o2 != 0xFFF)
-            Poke(card, 0x40 + o2, carrier);
+            writeRegI(chip, 0x40 + o2, carrier);
     }
 
     // Correct formula (ST3, AdPlug):
@@ -351,70 +342,69 @@ void OPL3::Touch(unsigned c, unsigned volume) // Volume maxes at 127*127*127
     }
 }*/
 
-void OPL3::Patch(uint16_t c, const adldata &adli)
+void OPL3::setPatch(size_t c, const adldata &instrument)
 {
-    uint16_t card = c / 23, cc = c % 23;
+    size_t chip = c / 23, cc = c % 23;
     static const uint8_t data[4] = {0x20, 0x60, 0x80, 0xE0};
-    ins[c] = adli;
-    uint16_t o1 = Operators[cc * 2 + 0];
-    uint16_t o2 = Operators[cc * 2 + 1];
-    unsigned x = adli.modulator_E862, y = adli.carrier_E862;
+    m_insCache[c] = instrument;
+    uint16_t o1 = g_operatorsMap[cc * 2 + 0];
+    uint16_t o2 = g_operatorsMap[cc * 2 + 1];
+    unsigned x = instrument.modulator_E862, y = instrument.carrier_E862;
 
-    for(unsigned a = 0; a < 4; ++a, x >>= 8, y >>= 8)
+    for(size_t a = 0; a < 4; ++a, x >>= 8, y >>= 8)
     {
-        Poke(card, data[a] + o1, x & 0xFF);
+        writeRegI(chip, data[a] + o1, x & 0xFF);
         if(o2 != 0xFFF)
-            Poke(card, data[a] + o2, y & 0xFF);
+            writeRegI(chip, data[a] + o2, y & 0xFF);
     }
 }
 
-void OPL3::Pan(unsigned c, unsigned value)
+void OPL3::setPan(size_t c, uint8_t value)
 {
-    unsigned card = c / 23, cc = c % 23;
-
-    if(Channels[cc] != 0xFFF)
-        Poke(card, 0xC0 + Channels[cc], ins[c].feedconn | value);
+    size_t chip = c / 23, cc = c % 23;
+    if(g_channelsMap[cc] != 0xFFF)
+        writeRegI(chip, 0xC0 + g_channelsMap[cc], m_insCache[c].feedconn | value);
 }
 
-void OPL3::Silence() // Silence all OPL channels.
+void OPL3::silenceAll() // Silence all OPL channels.
 {
-    for(unsigned c = 0; c < NumChannels; ++c)
+    for(size_t c = 0; c < m_numChannels; ++c)
     {
-        NoteOff(c);
-        Touch_Real(c, 0);
+        noteOff(c);
+        touchNote(c, 0);
     }
 }
 
-void OPL3::updateFlags()
+void OPL3::updateChannelCategories()
 {
-    unsigned fours = NumFourOps;
+    uint32_t fours = m_numFourOps;
 
-    for(unsigned card = 0; card < NumCards; ++card)
+    for(size_t chip = 0; chip < m_numChips; ++chip)
     {
-        Poke(card, 0x0BD, regBD[card] = (HighTremoloMode * 0x80
-                                         + HighVibratoMode * 0x40
-                                         + AdlPercussionMode * 0x20));
-        unsigned fours_this_card = std::min(fours, 6u);
-        Poke(card, 0x104, (1 << fours_this_card) - 1);
-        fours -= fours_this_card;
+        m_regBD[chip] = (m_deepTremoloMode * 0x80 + m_deepVibratoMode * 0x40 + m_rhythmMode * 0x20);
+        writeRegI(chip, 0x0BD, m_regBD[chip]);
+        uint32_t fours_this_chip = std::min(fours, static_cast<uint32_t>(6u));
+        writeRegI(chip, 0x104, (1 << fours_this_chip) - 1);
+        fours -= fours_this_chip;
     }
 
     // Mark all channels that are reserved for four-operator function
-    if(AdlPercussionMode == 1)
-        for(unsigned a = 0; a < NumCards; ++a)
-        {
-            for(unsigned b = 0; b < 5; ++b)
-                four_op_category[a * 23 + 18 + b] = static_cast<char>(b + 3);
-            for(unsigned b = 0; b < 3; ++b)
-                four_op_category[a * 23 + 6  + b] = 8;
-        }
-
-    unsigned nextfour = 0;
-
-    for(unsigned a = 0; a < NumFourOps; ++a)
+    if(m_rhythmMode == 1)
     {
-        four_op_category[nextfour  ] = 1;
-        four_op_category[nextfour + 3] = 2;
+        for(size_t a = 0; a < m_numChips; ++a)
+        {
+            for(size_t b = 0; b < 5; ++b)
+                m_channelCategory[a * 23 + 18 + b] = static_cast<char>(b + 3);
+            for(size_t b = 0; b < 3; ++b)
+                m_channelCategory[a * 23 + 6  + b] = ChanCat_Rhythm_Slave;
+        }
+    }
+
+    size_t nextfour = 0;
+    for(size_t a = 0; a < m_numFourOps; ++a)
+    {
+        m_channelCategory[nextfour] = ChanCat_4op_Master;
+        m_channelCategory[nextfour + 3] = ChanCat_4op_Slave;
 
         switch(a % 6)
         {
@@ -434,19 +424,45 @@ void OPL3::updateFlags()
             break;
         }
     }
+
+/**/
+/*
+    In two-op mode, channels 0..8 go as follows:
+                  Op1[port]  Op2[port]
+      Channel 0:  00  00     03  03
+      Channel 1:  01  01     04  04
+      Channel 2:  02  02     05  05
+      Channel 3:  06  08     09  0B
+      Channel 4:  07  09     10  0C
+      Channel 5:  08  0A     11  0D
+      Channel 6:  12  10     15  13
+      Channel 7:  13  11     16  14
+      Channel 8:  14  12     17  15
+    In four-op mode, channels 0..8 go as follows:
+                  Op1[port]  Op2[port]  Op3[port]  Op4[port]
+      Channel 0:  00  00     03  03     06  08     09  0B
+      Channel 1:  01  01     04  04     07  09     10  0C
+      Channel 2:  02  02     05  05     08  0A     11  0D
+      Channel 3:  CHANNEL 0 SLAVE
+      Channel 4:  CHANNEL 1 SLAVE
+      Channel 5:  CHANNEL 2 SLAVE
+      Channel 6:  12  10     15  13
+      Channel 7:  13  11     16  14
+      Channel 8:  14  12     17  15
+     Same goes principally for channels 9-17 respectively.
+    */
 }
 
-void OPL3::updateDeepFlags()
+void OPL3::commitDeepFlags()
 {
-    for(unsigned card = 0; card < NumCards; ++card)
+    for(size_t chip = 0; chip < m_numChips; ++chip)
     {
-        Poke(card, 0x0BD, regBD[card] = (HighTremoloMode * 0x80
-                                         + HighVibratoMode * 0x40
-                                         + AdlPercussionMode * 0x20));
+        m_regBD[chip] = (m_deepTremoloMode * 0x80 + m_deepVibratoMode * 0x40 + m_rhythmMode * 0x20);
+        writeRegI(chip, 0x0BD, m_regBD[chip]);
     }
 }
 
-void OPL3::ChangeVolumeRangesModel(ADLMIDI_VolumeModels volumeModel)
+void OPL3::setVolumeScaleModel(ADLMIDI_VolumeModels volumeModel)
 {
     switch(volumeModel)
     {
@@ -476,18 +492,18 @@ void OPL3::ChangeVolumeRangesModel(ADLMIDI_VolumeModels volumeModel)
 }
 
 #ifndef ADLMIDI_HW_OPL
-void OPL3::ClearChips()
+void OPL3::clearChips()
 {
-    for(size_t i = 0; i < cardsOP2.size(); i++)
-        cardsOP2[i].reset(NULL);
-    cardsOP2.clear();
+    for(size_t i = 0; i < m_chips.size(); i++)
+        m_chips[i].reset(NULL);
+    m_chips.clear();
 }
 #endif
 
-void OPL3::Reset(int emulator, unsigned long PCM_RATE, void *audioTickHandler)
+void OPL3::reset(int emulator, unsigned long PCM_RATE, void *audioTickHandler)
 {
 #ifndef ADLMIDI_HW_OPL
-    ClearChips();
+    clearChips();
 #else
     (void)emulator;
     (void)PCM_RATE;
@@ -495,24 +511,27 @@ void OPL3::Reset(int emulator, unsigned long PCM_RATE, void *audioTickHandler)
 #if !defined(ADLMIDI_AUDIO_TICK_HANDLER)
     (void)audioTickHandler;
 #endif
-    ins.clear();
-    pit.clear();
-    regBD.clear();
+    m_insCache.clear();
+    m_keyBlockFNumCache.clear();
+    m_regBD.clear();
 
 #ifndef ADLMIDI_HW_OPL
-    cardsOP2.resize(NumCards, AdlMIDI_SPtr<OPLChipBase>());
+    m_chips.resize(m_numChips, AdlMIDI_SPtr<OPLChipBase>());
 #endif
 
-    NumChannels = NumCards * 23;
-    ins.resize(NumChannels, adl[adlDefaultNumber]);
-    pit.resize(NumChannels,   0);
-    regBD.resize(NumCards,    0);
-    four_op_category.resize(NumChannels, 0);
+    const struct adldata defaultInsCache = { 0x1557403,0x005B381, 0x49,0x80, 0x4, +0 };
+    m_numChannels = m_numChips * 23;
+    m_insCache.resize(m_numChannels, defaultInsCache);
+    m_keyBlockFNumCache.resize(m_numChannels,   0);
+    m_regBD.resize(m_numChips,    0);
+    m_channelCategory.resize(m_numChannels, 0);
 
-    for(unsigned p = 0, a = 0; a < NumCards; ++a)
+    for(size_t p = 0, a = 0; a < m_numChips; ++a)
     {
-        for(unsigned b = 0; b < 18; ++b) four_op_category[p++] = 0;
-        for(unsigned b = 0; b < 5; ++b)  four_op_category[p++] = 8;
+        for(size_t b = 0; b < 18; ++b)
+            m_channelCategory[p++] = 0;
+        for(size_t b = 0; b < 5; ++b)
+            m_channelCategory[p++] = ChanCat_Rhythm_Slave;
     }
 
     static const uint16_t data[] =
@@ -521,9 +540,9 @@ void OPL3::Reset(int emulator, unsigned long PCM_RATE, void *audioTickHandler)
         0x105, 0, 0x105, 1, 0x105, 0, // Pulse OPL3 enable
         0x001, 32, 0x105, 1           // Enable wave, OPL3 extensions
     };
-    unsigned fours = NumFourOps;
+//    size_t fours = m_numFourOps;
 
-    for(size_t i = 0; i < NumCards; ++i)
+    for(size_t i = 0; i < m_numChips; ++i)
     {
 #ifndef ADLMIDI_HW_OPL
         OPLChipBase *chip;
@@ -544,91 +563,23 @@ void OPL3::Reset(int emulator, unsigned long PCM_RATE, void *audioTickHandler)
             break;
 #endif
         }
-        cardsOP2[i].reset(chip);
+        m_chips[i].reset(chip);
         chip->setChipId((uint32_t)i);
         chip->setRate((uint32_t)PCM_RATE);
-        if(runAtPcmRate)
+        if(m_runAtPcmRate)
             chip->setRunningAtPcmRate(true);
 #   if defined(ADLMIDI_AUDIO_TICK_HANDLER)
         chip->setAudioTickHandlerInstance(audioTickHandler);
 #   endif
 #endif // ADLMIDI_HW_OPL
 
-        for(unsigned a = 0; a < 18; ++a) Poke(i, 0xB0 + Channels[a], 0x00);
-        for(unsigned a = 0; a < sizeof(data) / sizeof(*data); a += 2)
-            Poke(i, data[a], static_cast<uint8_t>(data[a + 1]));
-        Poke(i, 0x0BD, regBD[i] = (HighTremoloMode * 0x80
-                                 + HighVibratoMode * 0x40
-                                 + AdlPercussionMode * 0x20));
-        unsigned fours_this_card = std::min(fours, 6u);
-        Poke(i, 0x104, (1 << fours_this_card) - 1);
-        //fprintf(stderr, "Card %u: %u four-ops.\n", card, fours_this_card);
-        fours -= fours_this_card;
+        /* Clean-up channels from any playing junk sounds */
+        for(size_t a = 0; a < 18; ++a)
+            writeRegI(i, 0xB0 + g_channelsMap[a], 0x00);
+        for(size_t a = 0; a < sizeof(data) / sizeof(*data); a += 2)
+            writeRegI(i, data[a], (data[a + 1]));
     }
 
-    // Mark all channels that are reserved for four-operator function
-    if(AdlPercussionMode == 1)
-    {
-        for(unsigned a = 0; a < NumCards; ++a)
-        {
-            for(unsigned b = 0; b < 5; ++b) four_op_category[a * 23 + 18 + b] = static_cast<char>(b + 3);
-            for(unsigned b = 0; b < 3; ++b) four_op_category[a * 23 + 6  + b] = 8;
-        }
-    }
-    unsigned nextfour = 0;
-
-    for(unsigned a = 0; a < NumFourOps; ++a)
-    {
-        four_op_category[nextfour  ] = 1;
-        four_op_category[nextfour + 3] = 2;
-
-        switch(a % 6)
-        {
-        case 0:
-        case 1:
-            nextfour += 1;
-            break;
-
-        case 2:
-            nextfour += 9 - 2;
-            break;
-
-        case 3:
-        case 4:
-            nextfour += 1;
-            break;
-
-        case 5:
-            nextfour += 23 - 9 - 2;
-            break;
-        }
-    }
-
-    /**/
-    /*
-        In two-op mode, channels 0..8 go as follows:
-                      Op1[port]  Op2[port]
-          Channel 0:  00  00     03  03
-          Channel 1:  01  01     04  04
-          Channel 2:  02  02     05  05
-          Channel 3:  06  08     09  0B
-          Channel 4:  07  09     10  0C
-          Channel 5:  08  0A     11  0D
-          Channel 6:  12  10     15  13
-          Channel 7:  13  11     16  14
-          Channel 8:  14  12     17  15
-        In four-op mode, channels 0..8 go as follows:
-                      Op1[port]  Op2[port]  Op3[port]  Op4[port]
-          Channel 0:  00  00     03  03     06  08     09  0B
-          Channel 1:  01  01     04  04     07  09     10  0C
-          Channel 2:  02  02     05  05     08  0A     11  0D
-          Channel 3:  CHANNEL 0 SLAVE
-          Channel 4:  CHANNEL 1 SLAVE
-          Channel 5:  CHANNEL 2 SLAVE
-          Channel 6:  12  10     15  13
-          Channel 7:  13  11     16  14
-          Channel 8:  14  12     17  15
-         Same goes principally for channels 9-17 respectively.
-        */
-    Silence();
+    updateChannelCategories();
+    silenceAll();
 }

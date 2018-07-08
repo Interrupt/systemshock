@@ -221,7 +221,7 @@ static int32_t mus2mid_writevarlen(int32_t value, uint8_t *out)
 #define MUS_READ_INT16(b) ((b)[0] | ((b)[1] << 8))
 #define MUS_READ_INT32(b) ((b)[0] | ((b)[1] << 8) | ((b)[2] << 16) | ((b)[3] << 24))
 
-static int AdlMidi_mus2midi(uint8_t *in, uint32_t insize,
+static int Convert_mus2midi(uint8_t *in, uint32_t insize,
                             uint8_t **out, uint32_t *outsize,
                             uint16_t frequency)
 {

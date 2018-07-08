@@ -11,6 +11,7 @@ static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
 static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
 
 #define SAMPLE_RATE 44100
+#define SAMPLES 4096
 
 struct ADL_MIDIPlayer *adlDevice;
 
@@ -22,7 +23,7 @@ int snd_start_digital(void) {
 		DebugString("SDL_Mixer: Init failed");
 	}
 
-	if(Mix_OpenAudio(SAMPLE_RATE, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
+	if(Mix_OpenAudio(SAMPLE_RATE, MIX_DEFAULT_FORMAT, 2, SAMPLES / 2) < 0) {
 		DebugString("SDL_Mixer: Couldn't open audio device");	
 	}
 
@@ -103,7 +104,7 @@ void MacTuneUpdateVolume(void) {
 	Mix_VolumeMusic((curr_vol_lev * curr_vol_lev) * 128 / 10000);
 }
 
-short adl_buffer[4096];
+short adl_buffer[SAMPLES * 2];
 int is_playing = 0;
 
 static void SDL_MidiAudioCallback(void *adl_midi_player, Uint8 *stream, int len)
@@ -136,9 +137,9 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 	// until then, I'm going to just attempt to play .mid files instead.
 
 	// Build the file name
-	strcpy(filename, "res/music/");
+	strcpy(filename, "res/sound/genmidi/");
 	strcat(filename, theme_base - 0);
-	strcat(filename, ".mid");
+	strcat(filename, ".xmi");
 
 	DEBUG("Playing music %s", filename);
 
@@ -158,7 +159,7 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
     spec.freq = SAMPLE_RATE;
     spec.format = AUDIO_S16SYS;
     spec.channels = 2;
-    spec.samples = 2048;
+    spec.samples = SAMPLES;
 
     spec.callback = SDL_MidiAudioCallback;
     spec.userdata = adlDevice;
@@ -170,7 +171,10 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
     	ERROR("Could not open audio for music!\n\n");
     }
 
+    adl_switchEmulator(adlDevice, 1);
     adl_setLoopEnabled(adlDevice, 1);
+    adl_setNumChips(adlDevice, 4);
+    adl_setVolumeRangeModel(adlDevice, 1);
 
     if(adl_openFile(adlDevice, filename) != 0)
     {

@@ -24,50 +24,16 @@
 #include "adlmidi_private.hpp"
 #include "wopl/wopl_file.h"
 
-#ifndef ADLMIDI_DISABLE_MIDI_SEQUENCER
-#   ifndef ADLMIDI_DISABLE_MUS_SUPPORT
-#       include "adlmidi_mus2mid.hpp"
-#   endif//MUS
-#   ifndef ADLMIDI_DISABLE_XMI_SUPPORT
-#       include "adlmidi_xmi2mid.hpp"
-#   endif//XMI
-#endif //ADLMIDI_DISABLE_MIDI_SEQUENCER
-
-#ifndef ADLMIDI_DISABLE_MIDI_SEQUENCER
-uint64_t MIDIplay::ReadBEint(const void *buffer, size_t nbytes)
-{
-    uint64_t result = 0;
-    const unsigned char *data = reinterpret_cast<const unsigned char *>(buffer);
-
-    for(unsigned n = 0; n < nbytes; ++n)
-        result = (result << 8) + data[n];
-
-    return result;
-}
-
-uint64_t MIDIplay::ReadLEint(const void *buffer, size_t nbytes)
-{
-    uint64_t result = 0;
-    const unsigned char *data = reinterpret_cast<const unsigned char *>(buffer);
-
-    for(unsigned n = 0; n < nbytes; ++n)
-        result = result + static_cast<uint64_t>(data[n] << (n * 8));
-
-    return result;
-}
-
-#endif
-
 bool MIDIplay::LoadBank(const std::string &filename)
 {
-    fileReader file;
+    FileAndMemReader file;
     file.openFile(filename.c_str());
     return LoadBank(file);
 }
 
 bool MIDIplay::LoadBank(const void *data, size_t size)
 {
-    fileReader file;
+    FileAndMemReader file;
     file.openData(data, size);
     return LoadBank(file);
 }
@@ -138,7 +104,7 @@ static void cvt_FMIns_to_generic(WOPLI &ins, const adlinsdata2 &in)
             ins.second_voice_detune = -1;
         else
         {
-            long value = lround(voice2_fine_tune * (1000.0 / 15.625));
+            long value = static_cast<long>(round(voice2_fine_tune * (1000.0 / 15.625)));
             value = (value < -128) ? -128 : value;
             value = (value > +127) ? +127 : value;
             ins.second_voice_detune = static_cast<int8_t>(value);
@@ -194,7 +160,7 @@ void cvt_FMIns_to_ADLI(ADL_Instrument &ins, const adlinsdata2 &in)
     cvt_FMIns_to_generic(ins, in);
 }
 
-bool MIDIplay::LoadBank(MIDIplay::fileReader &fr)
+bool MIDIplay::LoadBank(FileAndMemReader &fr)
 {
     int err = 0;
     WOPLFile *wopl = NULL;
@@ -207,9 +173,8 @@ bool MIDIplay::LoadBank(MIDIplay::fileReader &fr)
     }
 
     // Read complete bank file into the memory
-    fr.seek(0, SEEK_END);
-    fsize = fr.tell();
-    fr.seek(0, SEEK_SET);
+    fsize = fr.fileSize();
+    fr.seek(0, FileAndMemReader::SET);
     // Allocate necessary memory block
     raw_file_data = (char*)malloc(fsize);
     if(!raw_file_data)
@@ -250,29 +215,28 @@ bool MIDIplay::LoadBank(MIDIplay::fileReader &fr)
         }
     }
 
-    opl.dynamic_bank_setup.adLibPercussions = false;
-    opl.dynamic_bank_setup.scaleModulators = false;
-    opl.dynamic_bank_setup.deepTremolo = (wopl->opl_flags & WOPL_FLAG_DEEP_TREMOLO) != 0;
-    opl.dynamic_bank_setup.deepVibrato = (wopl->opl_flags & WOPL_FLAG_DEEP_VIBRATO) != 0;
-    opl.dynamic_bank_setup.volumeModel = wopl->volume_model;
-    m_setup.HighTremoloMode = -1;
-    m_setup.HighVibratoMode = -1;
-    m_setup.VolumeModel = ADLMIDI_VolumeModel_AUTO;
+    m_synth.m_insBankSetup.adLibPercussions = false;
+    m_synth.m_insBankSetup.scaleModulators = false;
+    m_synth.m_insBankSetup.deepTremolo = (wopl->opl_flags & WOPL_FLAG_DEEP_TREMOLO) != 0;
+    m_synth.m_insBankSetup.deepVibrato = (wopl->opl_flags & WOPL_FLAG_DEEP_VIBRATO) != 0;
+    m_synth.m_insBankSetup.volumeModel = wopl->volume_model;
+    m_setup.deepTremoloMode = -1;
+    m_setup.deepVibratoMode = -1;
+    m_setup.volumeScaleModel = ADLMIDI_VolumeModel_AUTO;
 
-    opl.setEmbeddedBank(m_setup.AdlBank);
+    m_synth.setEmbeddedBank(m_setup.bankId);
 
     uint16_t slots_counts[2] = {wopl->banks_count_melodic, wopl->banks_count_percussion};
     WOPLBank *slots_src_ins[2] = { wopl->banks_melodic, wopl->banks_percussive };
 
-    for(unsigned ss = 0; ss < 2; ss++)
+    for(size_t ss = 0; ss < 2; ss++)
     {
-        for(unsigned i = 0; i < slots_counts[ss]; i++)
+        for(size_t i = 0; i < slots_counts[ss]; i++)
         {
-            unsigned bankno =
-                (slots_src_ins[ss][i].bank_midi_msb * 256) +
-                slots_src_ins[ss][i].bank_midi_lsb +
-                (ss ? OPL3::PercussionTag : 0);
-            OPL3::Bank &bank = opl.dynamic_banks[bankno];
+            size_t bankno = (slots_src_ins[ss][i].bank_midi_msb * 256) +
+                            (slots_src_ins[ss][i].bank_midi_lsb) +
+                            (ss ? size_t(OPL3::PercussionTag) : 0);
+            OPL3::Bank &bank = m_synth.m_insBanks[bankno];
             for(int j = 0; j < 128; j++)
             {
                 adlinsdata2 &ins = bank.ins[j];
@@ -283,7 +247,7 @@ bool MIDIplay::LoadBank(MIDIplay::fileReader &fr)
         }
     }
 
-    opl.AdlBank = ~0u; // Use dynamic banks!
+    m_synth.m_embeddedBank = OPL3::CustomBankTag; // Use dynamic banks!
     //Percussion offset is count of instruments multipled to count of melodic banks
     applySetup();
 
@@ -293,189 +257,45 @@ bool MIDIplay::LoadBank(MIDIplay::fileReader &fr)
 }
 
 #ifndef ADLMIDI_DISABLE_MIDI_SEQUENCER
-bool MIDIplay::LoadMIDI(const std::string &filename)
-{
-    fileReader file;
-    file.openFile(filename.c_str());
-    if(!LoadMIDI(file))
-        return false;
-    return true;
-}
 
-bool MIDIplay::LoadMIDI(const void *data, size_t size)
+bool MIDIplay::LoadMIDI_pre()
 {
-    fileReader file;
-    file.openData(data, size);
-    return LoadMIDI(file);
-}
-
-bool MIDIplay::LoadMIDI(MIDIplay::fileReader &fr)
-{
-    size_t  fsize;
-    ADL_UNUSED(fsize);
-    //! Temp buffer for conversion
-    AdlMIDI_CPtr<uint8_t> cvt_buf;
-    errorString.clear();
-
-    #ifdef DISABLE_EMBEDDED_BANKS
-    if((opl.AdlBank != ~0u) || opl.dynamic_banks.empty())
+#ifdef DISABLE_EMBEDDED_BANKS
+    if((m_synth.m_embeddedBank != OPL3::CustomBankTag) || m_synth.m_insBanks.empty())
     {
         errorStringOut = "Bank is not set! Please load any instruments bank by using of adl_openBankFile() or adl_openBankData() functions!";
         return false;
     }
-    #endif
-
-    if(!fr.isValid())
-    {
-        errorStringOut = "Invalid data stream!\n";
-        #ifndef _WIN32
-        errorStringOut += std::strerror(errno);
-        #endif
-        return false;
-    }
-
+#endif
     /**** Set all properties BEFORE starting of actial file reading! ****/
+    resetMIDI();
     applySetup();
 
-    atEnd            = false;
-    loopStart        = true;
-    invalidLoop      = false;
+    return true;
+}
 
-    bool is_GMF = false; // GMD/MUS files (ScummVM)
-    //bool is_MUS = false; // MUS/DMX files (Doom)
-    bool is_IMF = false; // IMF
-    bool is_CMF = false; // Creative Music format (CMF/CTMF)
-    bool is_RSXX = false; // RSXX, such as Cartooners
-
-    const size_t HeaderSize = 4 + 4 + 2 + 2 + 2; // 14
-    char HeaderBuf[HeaderSize] = "";
-    size_t DeltaTicks = 192, TrackCount = 1;
-
-riffskip:
-    fsize = fr.read(HeaderBuf, 1, HeaderSize);
-
-    if(std::memcmp(HeaderBuf, "RIFF", 4) == 0)
+bool MIDIplay::LoadMIDI_post()
+{
+    MidiSequencer::FileFormat format = m_sequencer.getFormat();
+    if(format == MidiSequencer::Format_CMF)
     {
-        fr.seek(6l, SEEK_CUR);
-        goto riffskip;
-    }
+        const std::vector<MidiSequencer::CmfInstrument> &instruments = m_sequencer.getRawCmfInstruments();
+        m_synth.m_insBanks.clear();//Clean up old banks
 
-    if(std::memcmp(HeaderBuf, "GMF\x1", 4) == 0)
-    {
-        // GMD/MUS files (ScummVM)
-        fr.seek(7 - static_cast<long>(HeaderSize), SEEK_CUR);
-        is_GMF = true;
-    }
-    #ifndef ADLMIDI_DISABLE_MUS_SUPPORT
-    else if(std::memcmp(HeaderBuf, "MUS\x1A", 4) == 0)
-    {
-        // MUS/DMX files (Doom)
-        fr.seek(0, SEEK_END);
-        size_t mus_len = fr.tell();
-        fr.seek(0, SEEK_SET);
-        uint8_t *mus = (uint8_t *)malloc(mus_len);
-        if(!mus)
+        uint16_t ins_count = static_cast<uint16_t>(instruments.size());
+        for(uint16_t i = 0; i < ins_count; ++i)
         {
-            errorStringOut = "Out of memory!";
-            return false;
-        }
-        fr.read(mus, 1, mus_len);
-        //Close source stream
-        fr.close();
-
-        uint8_t *mid = NULL;
-        uint32_t mid_len = 0;
-        int m2mret = AdlMidi_mus2midi(mus, static_cast<uint32_t>(mus_len),
-                                      &mid, &mid_len, 0);
-        if(mus) free(mus);
-        if(m2mret < 0)
-        {
-            errorStringOut = "Invalid MUS/DMX data format!";
-            return false;
-        }
-        cvt_buf.reset(mid);
-        //Open converted MIDI file
-        fr.openData(mid, static_cast<size_t>(mid_len));
-        //Re-Read header again!
-        goto riffskip;
-    }
-    #endif //ADLMIDI_DISABLE_MUS_SUPPORT
-    #ifndef ADLMIDI_DISABLE_XMI_SUPPORT
-    else if(std::memcmp(HeaderBuf, "FORM", 4) == 0)
-    {
-        if(std::memcmp(HeaderBuf + 8, "XDIR", 4) != 0)
-        {
-            fr.close();
-            errorStringOut = fr._fileName + ": Invalid format\n";
-            return false;
-        }
-
-        fr.seek(0, SEEK_END);
-        size_t mus_len = fr.tell();
-        fr.seek(0, SEEK_SET);
-        uint8_t *mus = (uint8_t*)malloc(mus_len);
-        if(!mus)
-        {
-            errorStringOut = "Out of memory!";
-            return false;
-        }
-        fr.read(mus, 1, mus_len);
-        //Close source stream
-        fr.close();
-
-        uint8_t *mid = NULL;
-        uint32_t mid_len = 0;
-        int m2mret = AdlMidi_xmi2midi(mus, static_cast<uint32_t>(mus_len),
-                                      &mid, &mid_len, XMIDI_CONVERT_NOCONVERSION);
-        if(mus) free(mus);
-        if(m2mret < 0)
-        {
-            errorStringOut = "Invalid XMI data format!";
-            return false;
-        }
-        cvt_buf.reset(mid);
-        //Open converted MIDI file
-        fr.openData(mid, static_cast<size_t>(mid_len));
-        //Re-Read header again!
-        goto riffskip;
-    }
-    #endif //ADLMIDI_DISABLE_XMI_SUPPORT
-    else if(std::memcmp(HeaderBuf, "CTMF", 4) == 0)
-    {
-        opl.dynamic_banks.clear();
-        // Creative Music Format (CMF).
-        // When playing CTMF files, use the following commandline:
-        // adlmidi song8.ctmf -p -v 1 1 0
-        // i.e. enable percussion mode, deeper vibrato, and use only 1 card.
-        is_CMF = true;
-        //unsigned version   = ReadLEint(HeaderBuf+4, 2);
-        uint64_t ins_start = ReadLEint(HeaderBuf + 6, 2);
-        uint64_t mus_start = ReadLEint(HeaderBuf + 8, 2);
-        //unsigned deltas    = ReadLEint(HeaderBuf+10, 2);
-        uint64_t ticks     = ReadLEint(HeaderBuf + 12, 2);
-        // Read title, author, remarks start offsets in file
-        fr.read(HeaderBuf, 1, 6);
-        //unsigned long notes_starts[3] = {ReadLEint(HeaderBuf+0,2),ReadLEint(HeaderBuf+0,4),ReadLEint(HeaderBuf+0,6)};
-        fr.seek(16, SEEK_CUR); // Skip the channels-in-use table
-        fr.read(HeaderBuf, 1, 4);
-        uint64_t ins_count =  ReadLEint(HeaderBuf + 0, 2); //, basictempo = ReadLEint(HeaderBuf+2, 2);
-        fr.seek(static_cast<long>(ins_start), SEEK_SET);
-
-        //std::printf("%u instruments\n", ins_count);
-        for(unsigned i = 0; i < ins_count; ++i)
-        {
-            unsigned bank = i / 256;
-            bank = (bank & 127) + ((bank >> 7) << 8);
+            const uint8_t *InsData = instruments[i].data;
+            size_t bank = i / 256;
+            bank = ((bank & 127) + ((bank >> 7) << 8));
             if(bank > 127 + (127 << 8))
                 break;
-            bank += (i % 256 < 128) ? 0 : OPL3::PercussionTag;
+            bank += (i % 256 < 128) ? 0 : size_t(OPL3::PercussionTag);
 
-            unsigned char InsData[16];
-            fr.read(InsData, 1, 16);
             /*std::printf("Ins %3u: %02X %02X %02X %02X  %02X %02X %02X %02X  %02X %02X %02X %02X  %02X %02X %02X %02X\n",
                         i, InsData[0],InsData[1],InsData[2],InsData[3], InsData[4],InsData[5],InsData[6],InsData[7],
                            InsData[8],InsData[9],InsData[10],InsData[11], InsData[12],InsData[13],InsData[14],InsData[15]);*/
-            adlinsdata2 &adlins = opl.dynamic_banks[bank].ins[i % 128];
+            adlinsdata2 &adlins = m_synth.m_insBanks[bank].ins[i % 128];
             adldata    adl;
             adl.modulator_E862 =
                 ((static_cast<uint32_t>(InsData[8] & 0x07) << 24) & 0xFF000000) //WaveForm
@@ -494,230 +314,69 @@ riffskip:
             adlins.adl[0] = adl;
             adlins.adl[1] = adl;
             adlins.ms_sound_kon  = 1000;
-            adlins.ms_sound_koff = 500;
+            adlins.ms_sound_koff = 0;
             adlins.tone  = 0;
             adlins.flags = 0;
             adlins.voice2_fine_tune = 0.0;
         }
 
-        fr.seeku(mus_start, SEEK_SET);
-        TrackCount = 1;
-        DeltaTicks = (size_t)ticks;
-        opl.AdlBank    = ~0u; // Ignore AdlBank number, use dynamic banks instead
+        m_synth.m_embeddedBank = OPL3::CustomBankTag; // Ignore AdlBank number, use dynamic banks instead
         //std::printf("CMF deltas %u ticks %u, basictempo = %u\n", deltas, ticks, basictempo);
-        opl.AdlPercussionMode = true;
-        opl.m_musicMode = OPL3::MODE_CMF;
-        opl.m_volumeScale = OPL3::VOLUME_NATIVE;
+        m_synth.m_rhythmMode = true;
+        m_synth.m_musicMode = OPL3::MODE_CMF;
+        m_synth.m_volumeScale = OPL3::VOLUME_NATIVE;
     }
-    else
+    else if(format == MidiSequencer::Format_RSXX)
     {
-        // Try to identify RSXX format
-        if(HeaderBuf[0] == 0x7D)
-        {
-            fr.seek(0x6D, SEEK_SET);
-            fr.read(HeaderBuf, 6, 1);
-            if(std::memcmp(HeaderBuf, "rsxx}u", 6) == 0)
-            {
-                is_RSXX = true;
-                fr.seek(0x7D, SEEK_SET);
-                TrackCount = 1;
-                DeltaTicks = 60;
-                //opl.CartoonersVolumes = true;
-                opl.m_musicMode = OPL3::MODE_RSXX;
-                opl.m_volumeScale = OPL3::VOLUME_NATIVE;
-            }
-        }
-
-        // Try parsing as an IMF file
-        if(!is_RSXX)
-        {
-            do
-            {
-                uint8_t raw[4];
-                size_t end = static_cast<size_t>(HeaderBuf[0]) + 256 * static_cast<size_t>(HeaderBuf[1]);
-
-                if(!end || (end & 3))
-                    break;
-
-                size_t backup_pos = fr.tell();
-                int64_t sum1 = 0, sum2 = 0;
-                fr.seek(2, SEEK_SET);
-
-                for(unsigned n = 0; n < 42; ++n)
-                {
-                    if(fr.read(raw, 1, 4) != 4)
-                        break;
-                    int64_t value1 = raw[0];
-                    value1 += raw[1] << 8;
-                    sum1 += value1;
-                    int64_t value2 = raw[2];
-                    value2 += raw[3] << 8;
-                    sum2 += value2;
-                }
-
-                fr.seek(static_cast<long>(backup_pos), SEEK_SET);
-
-                if(sum1 > sum2)
-                {
-                    is_IMF = true;
-                    DeltaTicks = 1;
-                }
-            } while(false);
-        }
-
-        if(!is_IMF && !is_RSXX)
-        {
-            if(std::memcmp(HeaderBuf, "MThd\0\0\0\6", 8) != 0)
-            {
-                fr.close();
-                errorStringOut = fr._fileName + ": Invalid format, Header signature is unknown!\n";
-                return false;
-            }
-
-            /*size_t  Fmt =      ReadBEint(HeaderBuf + 8,  2);*/
-            TrackCount = (size_t)ReadBEint(HeaderBuf + 10, 2);
-            DeltaTicks = (size_t)ReadBEint(HeaderBuf + 12, 2);
-        }
+        //opl.CartoonersVolumes = true;
+        m_synth.m_musicMode     = OPL3::MODE_RSXX;
+        m_synth.m_volumeScale   = OPL3::VOLUME_NATIVE;
     }
-
-    TrackData.clear();
-    TrackData.resize(TrackCount, std::vector<uint8_t>());
-    InvDeltaTicks = fraction<uint64_t>(1, 1000000l * static_cast<uint64_t>(DeltaTicks));
-    if(is_CMF || is_RSXX)
-        Tempo         = fraction<uint64_t>(1,            static_cast<uint64_t>(DeltaTicks));
-    else
-        Tempo         = fraction<uint64_t>(1,            static_cast<uint64_t>(DeltaTicks) * 2);
-    static const unsigned char EndTag[4] = {0xFF, 0x2F, 0x00, 0x00};
-    size_t totalGotten = 0;
-
-    for(size_t tk = 0; tk < TrackCount; ++tk)
+    else if(format == MidiSequencer::Format_IMF)
     {
-        // Read track header
-        size_t TrackLength;
-
-        if(is_IMF)
-        {
-            //std::fprintf(stderr, "Reading IMF file...\n");
-            size_t end = static_cast<size_t>(HeaderBuf[0]) + 256 * static_cast<size_t>(HeaderBuf[1]);
-            unsigned IMF_tempo = 1428;
-            static const unsigned char imf_tempo[] = {0x0,//Zero delay!
-                                                      MidiEvent::T_SPECIAL, MidiEvent::ST_TEMPOCHANGE, 0x4,
-                                                      static_cast<uint8_t>(IMF_tempo >> 24),
-                                                      static_cast<uint8_t>(IMF_tempo >> 16),
-                                                      static_cast<uint8_t>(IMF_tempo >> 8),
-                                                      static_cast<uint8_t>(IMF_tempo)
-                                                     };
-            TrackData[tk].insert(TrackData[tk].end(), imf_tempo, imf_tempo + sizeof(imf_tempo));
-            TrackData[tk].push_back(0x00);
-            fr.seek(2, SEEK_SET);
-
-            while(fr.tell() < end && !fr.eof())
-            {
-                uint8_t special_event_buf[5];
-                uint8_t raw[4];
-                special_event_buf[0] = MidiEvent::T_SPECIAL;
-                special_event_buf[1] = MidiEvent::ST_RAWOPL;
-                special_event_buf[2] = 0x02;
-                if(fr.read(raw, 1, 4) != 4)
-                    break;
-                special_event_buf[3] = raw[0]; // port index
-                special_event_buf[4] = raw[1]; // port value
-                uint32_t delay = static_cast<uint32_t>(raw[2]);
-                delay += 256 * static_cast<uint32_t>(raw[3]);
-                totalGotten += 4;
-                //if(special_event_buf[3] <= 8) continue;
-                //fprintf(stderr, "Put %02X <- %02X, plus %04X delay\n", special_event_buf[3],special_event_buf[4], delay);
-                TrackData[tk].insert(TrackData[tk].end(), special_event_buf, special_event_buf + 5);
-                //if(delay>>21) TrackData[tk].push_back( 0x80 | ((delay>>21) & 0x7F ) );
-                if(delay >> 14)
-                    TrackData[tk].push_back(0x80 | ((delay >> 14) & 0x7F));
-                if(delay >> 7)
-                    TrackData[tk].push_back(0x80 | ((delay >> 7) & 0x7F));
-                TrackData[tk].push_back(((delay >> 0) & 0x7F));
-            }
-
-            TrackData[tk].insert(TrackData[tk].end(), EndTag + 0, EndTag + 4);
-            //CurrentPosition.track[tk].delay = 0;
-            //CurrentPosition.began = true;
-            //std::fprintf(stderr, "Done reading IMF file\n");
-            opl.NumFourOps = 0; //Don't use 4-operator channels for IMF playing!
-            opl.m_musicMode = OPL3::MODE_IMF;
-        }
-        else
-        {
-            // Take the rest of the file
-            if(is_GMF || is_CMF || is_RSXX)
-            {
-                size_t pos = fr.tell();
-                fr.seek(0, SEEK_END);
-                TrackLength = fr.tell() - pos;
-                fr.seek(static_cast<long>(pos), SEEK_SET);
-            }
-            //else if(is_MUS) // Read TrackLength from file position 4
-            //{
-            //    size_t pos = fr.tell();
-            //    fr.seek(4, SEEK_SET);
-            //    TrackLength = static_cast<size_t>(fr.getc());
-            //    TrackLength += static_cast<size_t>(fr.getc() << 8);
-            //    fr.seek(static_cast<long>(pos), SEEK_SET);
-            //}
-            else
-            {
-                fsize = fr.read(HeaderBuf, 1, 8);
-                if(std::memcmp(HeaderBuf, "MTrk", 4) != 0)
-                {
-                    fr.close();
-                    errorStringOut = fr._fileName + ": Invalid format, MTrk signature is not found!\n";
-                    return false;
-                }
-                TrackLength = (size_t)ReadBEint(HeaderBuf + 4, 4);
-            }
-
-            // Read track data
-            TrackData[tk].resize(TrackLength);
-            fsize = fr.read(&TrackData[tk][0], 1, TrackLength);
-            totalGotten += fsize;
-
-            if(is_GMF/*|| is_MUS*/) // Note: CMF does include the track end tag.
-                TrackData[tk].insert(TrackData[tk].end(), EndTag + 0, EndTag + 4);
-            if(is_RSXX)//Finalize raw track data with a zero
-                TrackData[tk].push_back(0);
-
-            //bool ok = false;
-            //// Read next event time
-            //uint64_t tkDelay = ReadVarLenEx(tk, ok);
-            //if(ok)
-            //    CurrentPosition.track[tk].delay = tkDelay;
-            //else
-            //{
-            //    std::stringstream msg;
-            //    msg << fr._fileName << ": invalid variable length in the track " << tk << "! (error code " << tkDelay << ")";
-            //    ADLMIDI_ErrorString = msg.str();
-            //    return false;
-            //}
-        }
+        //std::fprintf(stderr, "Done reading IMF file\n");
+        m_synth.m_numFourOps  = 0; //Don't use 4-operator channels for IMF playing!
+        m_synth.m_musicMode = OPL3::MODE_IMF;
     }
 
-    for(size_t tk = 0; tk < TrackCount; ++tk)
-        totalGotten += TrackData[tk].size();
-
-    if(totalGotten == 0)
-    {
-        errorStringOut = fr._fileName + ": Empty track data";
-        return false;
-    }
-
-    //Build new MIDI events table
-    if(!buildTrackData())
-    {
-        errorStringOut = fr._fileName + ": MIDI data parsing error has occouped!\n" + errorString;
-        return false;
-    }
-
-    opl.Reset(m_setup.emulator, m_setup.PCM_RATE, this); // Reset OPL3 chip
+    m_synth.reset(m_setup.emulator, m_setup.PCM_RATE, this); // Reset OPL3 chip
     //opl.Reset(); // ...twice (just in case someone misprogrammed OPL3 previously)
-    ch.clear();
-    ch.resize(opl.NumChannels);
+    m_chipChannels.clear();
+    m_chipChannels.resize(m_synth.m_numChannels);
+
     return true;
 }
-#endif //ADLMIDI_DISABLE_MIDI_SEQUENCER
+
+bool MIDIplay::LoadMIDI(const std::string &filename)
+{
+    FileAndMemReader file;
+    file.openFile(filename.c_str());
+    if(!LoadMIDI_pre())
+        return false;
+    if(!m_sequencer.loadMIDI(file))
+    {
+        errorStringOut = m_sequencer.getErrorString();
+        return false;
+    }
+    if(!LoadMIDI_post())
+        return false;
+    return true;
+}
+
+bool MIDIplay::LoadMIDI(const void *data, size_t size)
+{
+    FileAndMemReader file;
+    file.openData(data, size);
+    if(!LoadMIDI_pre())
+        return false;
+    if(!m_sequencer.loadMIDI(file))
+    {
+        errorStringOut = m_sequencer.getErrorString();
+        return false;
+    }
+    if(!LoadMIDI_post())
+        return false;
+    return true;
+}
+
+#endif /* ADLMIDI_DISABLE_MIDI_SEQUENCER */

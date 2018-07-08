@@ -9366,10 +9366,11 @@ const struct adlinsdata adlins[4804] =
 
 //Returns total number of generated banks
 int  maxAdlBanks()
-{   return 75;
+{
+   return 75;
 }
 
-const char* const banknames[75] =
+const char* const banknames[76] =
 {
     "AIL (Star Control 3, Albion, Empire 2, etc.)",
     "Bisqwit (selection of 4op and 2op)",
@@ -9446,6 +9447,7 @@ const char* const banknames[75] =
     "WOPL (DMXOPL3 bank by Sneakernets)",
     "EA (Cartooners)",
     "WOPL (Apogee IMF 90-ish)",
+    NULL
 };
 const unsigned short banks[75][256] =
 {
