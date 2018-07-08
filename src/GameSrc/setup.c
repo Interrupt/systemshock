@@ -339,6 +339,11 @@ errtype difficulty_draw(uchar full) {
         draw_raw_res_bm_extract(REF_IMG_bmDifficultyScreen, 0, 0);
         /*if (which_lang)
            draw_raw_res_bm_extract(MKREF(RES_bmIntroGraphics4,which_lang-1),50,11);*/
+
+        // This shouldn't be necessary since the difficulty screen already
+        // contains the biometer background, but there seems to be a 1-pixel
+        // offset in the left biometer region between the two resources.
+        status_bio_draw();
     }
     setup_mode = SETUP_DIFFICULTY;
     for (i = 0; i < NUM_DIFF_CATEGORIES; i++) {

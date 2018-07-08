@@ -256,8 +256,8 @@ void ss_save_under_set_pixel(int color, short i, short j) {
 void bio_set_pixel(int color, short x, short y) {
     short x0, x1, y0, y1, i, j;
 
-    // KLC - don't need   if ((curr_bio_mode == DIFF_BIO) && (under_bio(x)))
-    //      return;
+    if ((curr_bio_mode == DIFF_BIO) && (under_bio(x)))
+        return;
     if (convert_use_mode) {
         x0 = SCONV_X(x);
         y0 = SCONV_Y(y);
@@ -274,27 +274,14 @@ void bio_set_pixel(int color, short x, short y) {
 //  Restore the pixels from the offscreen background bitmap.
 // ---------------------------------------------------------
 void bio_restore_pixel(grs_bitmap *bmp, short x, short y) {
-    int x0, y0;
-    int x1, y1;
-    uchar *pp;
-    int i, j;
+    if ((curr_bio_mode == DIFF_BIO) && (under_bio(x)))
+        return;
 
-    // Determine where x and y really are on the Mac screen.
-    x0 = SCONV_X(x);
-    y0 = SCONV_Y(y);
-    x1 = SCONV_X(x + 1);
-    y1 = SCONV_Y(y + 1);
-
-    // OK, this sets a pointer to the background bitmap at the same location.  I just happen
-    // to know that the difference between the on-screen and offscreen bitmaps is (10,2).
-    pp = bmp->bits + (bmp->row * (y0 - 2) + (x0 - 10));
-
-    // Restore the pixels directly from the offscreen background bitmap.
-    for (j = y0; j < y1; j++) {
-        for (i = x0; i < x1; i++)
-            ss_save_under_set_pixel(*pp++, i, j);
-        pp += bmp->row - 2;
-    }
+    short a, b, c, d;
+    STORE_CLIP(a, b, c, d);
+    ss_cset_cliprect(&bio_canvas, x, y, x + 1, y + 1);
+    ss_bitmap(bmp, STATUS_BIO_X, STATUS_BIO_Y);
+    RESTORE_CLIP(a, b, c, d);
 }
 
 // ---------------------------------------------------------
