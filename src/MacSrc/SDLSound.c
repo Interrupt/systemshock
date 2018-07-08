@@ -181,6 +181,13 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
     	ERROR("Could not open music file for ADL");
     }
 
+    for(int i = 0; i < 64; i++) {
+		adl_setTrackOptions(adlDevice, i, ADLMIDI_TrackOption_Off);    	
+    }
+
+    adl_setTrackOptions(adlDevice, 0, ADLMIDI_TrackOption_On);
+    adl_setTrackOptions(adlDevice, 9, ADLMIDI_TrackOption_On);
+
     SDL_PauseAudio(0);
 
 	/*Mix_Music *music;
