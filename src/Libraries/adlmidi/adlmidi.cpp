@@ -69,6 +69,7 @@ ADLMIDI_EXPORT struct ADL_MIDIPlayer *adl_init(long sample_rate)
     }
     midi_device->adl_midiPlayer = player;
     adlRefreshNumCards(midi_device);
+
     return midi_device;
 }
 
@@ -82,6 +83,14 @@ ADLMIDI_EXPORT void adl_close(struct ADL_MIDIPlayer *device)
     device->adl_midiPlayer = NULL;
     free(device);
     device = NULL;
+}
+
+ADLMIDI_EXPORT void adl_setCallback(ADL_MIDIPlayer *device, void (*AdlMidiCallback)(void)) {
+    MidiPlayer *play = GET_MIDI_PLAYER(device);
+    if(play) {
+        MidiSequencer &seq = play->m_sequencer;
+        seq.MidiCallback = AdlMidiCallback;
+    }
 }
 
 ADLMIDI_EXPORT int adl_setDeviceIdentifier(ADL_MIDIPlayer *device, unsigned id)

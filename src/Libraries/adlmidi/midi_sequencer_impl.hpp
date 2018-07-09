@@ -1146,8 +1146,17 @@ BW_MidiSequencer::MidiEvent BW_MidiSequencer::parseEvent(const uint8_t **pptr, c
 
 void BW_MidiSequencer::handleEvent(size_t track, const BW_MidiSequencer::MidiEvent &evt, int32_t &status)
 {
+    // CC: Call the callback for XMI Controller
+    if(track == 0 && (evt.type == 0xB || evt.type == 0xC) && (evt.data[1] == 119))
+    {
+        if(MidiCallback != NULL) {
+            MidiCallback();
+        }
+        return;
+    }
+    
     if(track == 0 && m_smfFormat < 2 && evt.type == MidiEvent::T_SPECIAL &&
-       (evt.subtype == MidiEvent::ST_TEMPOCHANGE || evt.subtype == MidiEvent::ST_TIMESIGNATURE))
+       (evt.subtype == MidiEvent::ST_TEMPOCHANGE || evt.subtype == MidiEvent::ST_TIMESIGNATURE || evt.subtype == MidiEvent::T_NOTEOFF))
     {
         /* never reject track 0 timing events on SMF format != 2
            note: multi-track XMI convert to format 2 SMF */

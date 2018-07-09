@@ -253,6 +253,35 @@ void mlimbs_shutdown(void) {
     mlimbs_status = 0;
 }
 
+
+// Callback for XMIDI 119
+int mlimbs_c_count = 0;
+void mlimbs_special_callback() {
+
+    mlimbs_c_count++;
+
+    printf("mlimbs_special_callback %i!\n", mlimbs_c_count);
+
+    if(mlimbs_c_count == 2) {
+        printf("Second call! Might be able to guess tempo from this\n");
+    }
+
+    // HAX! XMI Loop points in libadl must not be working, so doing some weird rewinding instead
+    if(mlimbs_c_count >= 3) {
+        printf("Rewind!\n");
+        mlimbs_c_count = 0;
+
+        adl_positionRewind(adlDevice);
+    }
+    else if (mlimbs_AI != NULL) {
+        mlimbs_update_requests = TRUE;
+        printf("mlimbs_AI!\n");
+        mlimbs_AI();
+    }
+
+    mlimbs_timer_callback();
+}
+
 /////////////////////////////////////////////////////////////////
 // int mlimbs_load_theme
 //
@@ -308,6 +337,8 @@ int mlimbs_load_theme(char *xname, char *xinfo, int thmid) {
         fread(xseq_info[i].channel_voices, sizeof(uchar), 7, fil); // Now read in channel voice usage
     }
     fclose(fil);
+
+    adl_setCallback(adlDevice, mlimbs_special_callback);
 
     mlimbs_update_requests = TRUE;
     // secret_sprint((ss_temp,"load themed %s (%d) a-ok\n",xname,thmid));
@@ -1200,17 +1231,6 @@ long callback_count = 1;
 void mlimbs_timer_callback(void) {
     int i, j, k, loop, rvol;
     int usernum;
-
-    if(callback_count++ % 220 == 0)
-        mlimbs_update_requests = TRUE;
-
-    // CC: HAX almidi runs these tracks long, manually rewinding for now!
-    if(adlDevice != NULL) {
-        if(adl_positionTell(adlDevice) > 9) {
-            adl_positionRewind(adlDevice);
-            mlimbs_update_requests = TRUE;
-        }
-    }
 
     if (mlimbs_update_requests == FALSE) {
         return;

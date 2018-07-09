@@ -288,6 +288,8 @@ public:
         Format_RSXX
     };
 
+    void (*MidiCallback)(void) = NULL;
+
 private:
     //! Music file format type. MIDI is default.
     FileFormat m_format;

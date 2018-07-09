@@ -643,6 +643,8 @@ extern int adl_atEnd(struct ADL_MIDIPlayer *device);
  */
 extern size_t adl_trackCount(struct ADL_MIDIPlayer *device);
 
+extern void adl_setCallback(struct ADL_MIDIPlayer *device, void (*AdlMidiCallback)(void));
+
 /**
  * @brief Track options
  */

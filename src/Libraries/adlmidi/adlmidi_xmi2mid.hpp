@@ -475,7 +475,7 @@ static const char xmi2mid_mt32asgs[256] = {
     121, 0  /* 127 Jungle Tune set to Breath Noise */
 };
 
-static int Convert_xmi2midi(uint8_t *in, uint32_t insize,
+static int AdlMidi_xmi2midi(uint8_t *in, uint32_t insize,
                             uint8_t **out, uint32_t *outsize,
                             uint32_t convert_type)
 {
@@ -659,24 +659,6 @@ static int xmi2mid_ConvertEvent(struct xmi2mid_xmi_ctx *ctx, const int32_t time,
     int i;
 
     data = xmi2mid_read1(ctx);
-
-    if(data == 116 || data == 117) {
-        printf("Found a loop point! %i\n", data);
-        xmi2mid_CreateNewEvent(ctx, time);
-        ctx->current->status = status;
-        ctx->current->data[0] = data;
-        ctx->current->data[1] = data;
-        return (2);
-    }
-
-    // CC: XMI 119 Controller is a callback function!
-    if(data == 119) {
-        xmi2mid_CreateNewEvent(ctx, time);
-        ctx->current->status = status;
-        ctx->current->data[0] = 0;
-        ctx->current->data[1] = data;
-        return (2);
-    }
 
     /*HACK!*/
     if (((status >> 4) == 0xB) && (status & 0xF) != 9 && (data == 114)) {
@@ -1075,6 +1057,11 @@ badfile:    /*_WM_GLOBAL_ERROR(__FUNCTION__, __LINE__, WM_ERR_CORUPT, "(too shor
                     break;
 
                 ctx->info.tracks = xmi2mid_read2(ctx);
+
+                if(ctx->info.tracks > 4) {
+                    ctx->info.tracks = 4;
+                }
+
                 break;
             }
 
