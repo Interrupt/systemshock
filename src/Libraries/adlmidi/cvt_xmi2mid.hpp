@@ -57,6 +57,14 @@ typedef unsigned long   uint32_t;
 #define XMI2MID_MIDI_STATUS_PITCH_WHEEL 0xE
 #define XMI2MID_MIDI_STATUS_SYSEX       0xF
 
+#if 1
+#define XMI2MID_TRACE(...)
+#else
+#include <stdio.h>
+#define XMI2MID_TRACE(fmt, ...)                                 \
+    fprintf(stderr, "XMI2MID: " fmt "\n", ## __VA_ARGS__)
+#endif
+
 typedef struct _xmi2mid_midi_event {
     int32_t time;
     uint8_t status;
@@ -86,6 +94,12 @@ struct xmi2mid_xmi_ctx {
     midi_event *current;
 };
 
+typedef struct {
+    unsigned count;
+    uint8_t id[128];
+    uint32_t offset[128];
+} xmi2mid_rbrn;
+
 /* forward declarations of private functions */
 static void xmi2mid_DeleteEventList(midi_event *mlist);
 static void xmi2mid_CreateNewEvent(struct xmi2mid_xmi_ctx *ctx, int32_t time); /* List manipulation */
@@ -96,7 +110,7 @@ static int xmi2mid_ConvertEvent(struct xmi2mid_xmi_ctx *ctx,
             const int32_t time, const uint8_t status, const int size);
 static int32_t xmi2mid_ConvertSystemMessage(struct xmi2mid_xmi_ctx *ctx,
                 const int32_t time, const uint8_t status);
-static int32_t xmi2mid_ConvertFiletoList(struct xmi2mid_xmi_ctx *ctx);
+static int32_t xmi2mid_ConvertFiletoList(struct xmi2mid_xmi_ctx *ctx, const xmi2mid_rbrn *rbrn);
 static uint32_t xmi2mid_ConvertListToMTrk(struct xmi2mid_xmi_ctx *ctx, midi_event *mlist);
 static int xmi2mid_ParseXMI(struct xmi2mid_xmi_ctx *ctx);
 static int xmi2mid_ExtractTracks(struct xmi2mid_xmi_ctx *ctx);
@@ -125,6 +139,16 @@ static uint32_t xmi2mid_read4(struct xmi2mid_xmi_ctx *ctx)
     b1 = *ctx->src_ptr++;
     b0 = *ctx->src_ptr++;
     return (b0 + ((uint32_t)b1<<8) + ((uint32_t)b2<<16) + ((uint32_t)b3<<24));
+}
+
+static uint32_t xmi2mid_read4le(struct xmi2mid_xmi_ctx *ctx)
+{
+    uint8_t b0, b1, b2, b3;
+    b3 = *ctx->src_ptr++;
+    b2 = *ctx->src_ptr++;
+    b1 = *ctx->src_ptr++;
+    b0 = *ctx->src_ptr++;
+    return (b3 + ((uint32_t)b2<<8) + ((uint32_t)b1<<16) + ((uint32_t)b0<<24));
 }
 
 static void xmi2mid_copy(struct xmi2mid_xmi_ctx *ctx, char *b, uint32_t len)
@@ -660,15 +684,6 @@ static int xmi2mid_ConvertEvent(struct xmi2mid_xmi_ctx *ctx, const int32_t time,
 
     data = xmi2mid_read1(ctx);
 
-    if(data == 116 || data == 117) {
-        printf("Found a loop point! %i\n", data);
-        xmi2mid_CreateNewEvent(ctx, time);
-        ctx->current->status = status;
-        ctx->current->data[0] = data;
-        ctx->current->data[1] = data;
-        return (2);
-    }
-
     // CC: XMI 119 Controller is a callback function!
     if(data == 119) {
         xmi2mid_CreateNewEvent(ctx, time);
@@ -797,7 +812,7 @@ static int32_t xmi2mid_ConvertSystemMessage(struct xmi2mid_xmi_ctx *ctx, const i
 
 /* XMIDI and Midi to List
  * Returns XMIDI PPQN   */
-static int32_t xmi2mid_ConvertFiletoList(struct xmi2mid_xmi_ctx *ctx) {
+static int32_t xmi2mid_ConvertFiletoList(struct xmi2mid_xmi_ctx *ctx, const xmi2mid_rbrn *rbrn) {
     int32_t time = 0;
     uint32_t data;
     int32_t end = 0;
@@ -805,6 +820,7 @@ static int32_t xmi2mid_ConvertFiletoList(struct xmi2mid_xmi_ctx *ctx) {
     int32_t tempo_set = 0;
     uint32_t status = 0;
     uint32_t file_size = xmi2mid_getsrcsize(ctx);
+    uint32_t begin = xmi2mid_getsrcpos(ctx);
 
     /* Set Drum track to correct setting if required */
     if (ctx->convert_type == XMIDI_CONVERT_MT32_TO_GS127) {
@@ -815,6 +831,32 @@ static int32_t xmi2mid_ConvertFiletoList(struct xmi2mid_xmi_ctx *ctx) {
     }
 
     while (!end && xmi2mid_getsrcpos(ctx) < file_size) {
+        uint32_t offset = xmi2mid_getsrcpos(ctx) - begin;
+
+        /* search for branch to this offset */
+        for (unsigned i = 0, n = rbrn->count; i < n; ++i) {
+            if (offset == rbrn->offset[i]) {
+                unsigned id = rbrn->id[i];
+
+                xmi2mid_CreateNewEvent(ctx, time);
+
+                uint8_t *marker = (uint8_t *)malloc(sizeof(uint8_t)*8);
+                memcpy(marker, ":XBRN:", 6);
+                const char hex[] = "0123456789ABCDEF";
+                marker[6] = hex[id >> 4];
+                marker[7] = hex[id & 15];
+
+                XMI2MID_TRACE("Branch %u @ %u marker \"%.8s\"",
+                              id, offset, marker);
+
+                ctx->current->status = 0xFF;
+                ctx->current->data[0] = 0x06;
+                ctx->current->len = 8;
+
+                ctx->current->buffer = marker;
+            }
+        }
+
         xmi2mid_GetVLQ2(ctx, &data);
         time += data * 3;
 
@@ -968,6 +1010,11 @@ static uint32_t xmi2mid_ExtractTracksFromXmi(struct xmi2mid_xmi_ctx *ctx) {
     uint32_t len = 0;
     int32_t begin;
     char buf[32];
+    uint32_t branch[128];
+
+    /* clear branch points */
+    for (unsigned i = 0; i < 128; ++i)
+        branch[i] = ~0u;
 
     while (xmi2mid_getsrcpos(ctx) < xmi2mid_getsrcsize(ctx) && num != ctx->info.tracks) {
         /* Read first 4 bytes of name */
@@ -981,6 +1028,36 @@ static uint32_t xmi2mid_ExtractTracksFromXmi(struct xmi2mid_xmi_ctx *ctx) {
             len = xmi2mid_read4(ctx);
         }
 
+        if (!memcmp(buf, "RBRN", 4)) {
+            begin = xmi2mid_getsrcpos(ctx);
+            uint32_t count;
+
+            if (len < 2) {
+                /* insufficient data */
+                goto rbrn_nodata;
+            }
+
+            count = xmi2mid_read2(ctx);
+            if (len - 2 < 6 * count) {
+                /* insufficient data */
+                goto rbrn_nodata;
+            }
+
+            for (uint32_t i = 0; i < count; ++i) {
+                /* read branch point as byte offset */
+                uint32_t ctlvalue = xmi2mid_read2(ctx);
+                uint32_t evtoffset = xmi2mid_read4le(ctx);
+                if(ctlvalue < 128)
+                    branch[ctlvalue] = evtoffset;
+                XMI2MID_TRACE("RBRN %u/%u: id %u -> offset %u",
+                              i + 1, count, ctlvalue, evtoffset);
+            }
+
+        rbrn_nodata:
+            xmi2mid_seeksrc(ctx, begin + ((len + 1) & ~1));
+            continue;
+        }
+
         if (memcmp(buf, "EVNT", 4)) {
             xmi2mid_skipsrc(ctx, (len + 1) & ~1);
             continue;
@@ -989,8 +1066,20 @@ static uint32_t xmi2mid_ExtractTracksFromXmi(struct xmi2mid_xmi_ctx *ctx) {
         ctx->list = NULL;
         begin = xmi2mid_getsrcpos(ctx);
 
+        /* Rearrange branches as structure */
+        xmi2mid_rbrn rbrn;
+        rbrn.count = 0;
+        for (unsigned i = 0; i < 128; ++i) {
+            if (branch[i] != ~0u) {
+                unsigned index = rbrn.count;
+                rbrn.id[index] = i;
+                rbrn.offset[index] = branch[i];
+                rbrn.count = index + 1;
+            }
+        }
+
         /* Convert it */
-        if (!(ppqn = xmi2mid_ConvertFiletoList(ctx))) {
+        if (!(ppqn = xmi2mid_ConvertFiletoList(ctx, &rbrn))) {
             /*_WM_GLOBAL_ERROR(__FUNCTION__, __LINE__, WM_ERR_CORUPT, NULL, 0);*/
             break;
         }
@@ -1002,6 +1091,10 @@ static uint32_t xmi2mid_ExtractTracksFromXmi(struct xmi2mid_xmi_ctx *ctx) {
 
         /* go to start of next track */
         xmi2mid_seeksrc(ctx, begin + ((len + 1) & ~1));
+
+        /* clear branch points */
+        for (unsigned i = 0; i < 128; ++i)
+            branch[i] = ~0u;
     }
 
     /* Return how many were converted */

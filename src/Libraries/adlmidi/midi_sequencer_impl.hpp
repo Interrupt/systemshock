@@ -173,8 +173,15 @@ void BW_MidiSequencer::MidiTrackRow::sortEvents(bool *noteStates)
                 controllers.reserve(events.size());
             controllers.push_back(events[i]);
         }
-        else if((events[i].type == MidiEvent::T_SPECIAL)
-            && ((events[i].subtype == MidiEvent::ST_MARKER) || (events[i].subtype == MidiEvent::ST_DEVICESWITCH)))
+        else if((events[i].type == MidiEvent::T_SPECIAL) && (
+            (events[i].subtype == MidiEvent::ST_MARKER) ||
+            (events[i].subtype == MidiEvent::ST_DEVICESWITCH) ||
+            (events[i].subtype == MidiEvent::ST_LOOPSTART) ||
+            (events[i].subtype == MidiEvent::ST_LOOPEND) ||
+            (events[i].subtype == MidiEvent::ST_LOOPSTACK_BEGIN) ||
+            (events[i].subtype == MidiEvent::ST_LOOPSTACK_END) ||
+            (events[i].subtype == MidiEvent::ST_LOOPSTACK_BREAK)
+            ))
         {
             if(metas.capacity() == 0)
                 metas.reserve(events.size());
@@ -270,11 +277,11 @@ BW_MidiSequencer::BW_MidiSequencer() :
     m_loopEndTime(-1.0),
     m_tempoMultiplier(1.0),
     m_atEnd(false),
-    m_loopStart(false),
-    m_loopEnd(false),
-    m_invalidLoop(false),
     m_trackSolo(~(size_t)0)
-{}
+{
+    m_loop.reset();
+    m_loop.invalidLoop = false;
+}
 
 BW_MidiSequencer::~BW_MidiSequencer()
 {}
@@ -394,8 +401,13 @@ bool BW_MidiSequencer::buildTrackData(const std::vector<std::vector<uint8_t> > &
     m_trackData.resize(trackCount, MidiTrackQueue());
     m_trackDisable.resize(trackCount);
 
-    m_invalidLoop = false;
-    bool gotLoopStart = false, gotLoopEnd = false, gotLoopEventInThisRow = false;
+    m_loop.reset();
+    m_loop.invalidLoop = false;
+
+    bool gotGlobalLoopStart = false,
+         gotGlobalLoopEnd = false,
+         gotStackLoopStart = false,
+         gotLoopEventInThisRow = false;
     //! Tick position of loop start tag
     uint64_t loopStartTicks = 0;
     //! Tick position of loop end tag
@@ -484,24 +496,24 @@ bool BW_MidiSequencer::buildTrackData(const std::vector<std::vector<uint8_t> > &
                     event.absPosition = abs_position;
                     tempos.push_back(event);
                 }
-                else if(!m_invalidLoop && (event.subtype == MidiEvent::ST_LOOPSTART))
+                else if(!m_loop.invalidLoop && (event.subtype == MidiEvent::ST_LOOPSTART))
                 {
                     /*
                      * loopStart is invalid when:
                      * - starts together with loopEnd
                      * - appears more than one time in same MIDI file
                      */
-                    if(gotLoopStart || gotLoopEventInThisRow)
-                        m_invalidLoop = true;
+                    if(gotGlobalLoopStart || gotLoopEventInThisRow)
+                        m_loop.invalidLoop = true;
                     else
                     {
-                        gotLoopStart = true;
+                        gotGlobalLoopStart = true;
                         loopStartTicks = abs_position;
                     }
                     //In this row we got loop event, register this!
                     gotLoopEventInThisRow = true;
                 }
-                else if(!m_invalidLoop && (event.subtype == MidiEvent::ST_LOOPEND))
+                else if(!m_loop.invalidLoop && (event.subtype == MidiEvent::ST_LOOPEND))
                 {
                     /*
                      * loopEnd is invalid when:
@@ -509,15 +521,70 @@ bool BW_MidiSequencer::buildTrackData(const std::vector<std::vector<uint8_t> > &
                      * - starts together with loopStart
                      * - appars more than one time in same MIDI file
                      */
-                    if(gotLoopEnd || gotLoopEventInThisRow)
-                        m_invalidLoop = true;
+                    if(gotGlobalLoopEnd || gotLoopEventInThisRow)
+                    {
+                        m_loop.invalidLoop = true;
+                        if(m_interface->onDebugMessage)
+                        {
+                            m_interface->onDebugMessage(
+                                m_interface->onDebugMessage_userData,
+                                "== Invalid loop detected! %s %s ==",
+                                (gotGlobalLoopEnd ? "[Caught more than 1 loopEnd!]" : ""),
+                                (gotLoopEventInThisRow ? "[loopEnd in same row as loopStart!]" : "")
+                            );
+                        }
+                    }
                     else
                     {
-                        gotLoopEnd = true;
+                        gotGlobalLoopEnd = true;
                         loopEndTicks = abs_position;
                     }
-                    //In this row we got loop event, register this!
+                    // In this row we got loop event, register this!
                     gotLoopEventInThisRow = true;
+                }
+                else if(!m_loop.invalidLoop && (event.subtype == MidiEvent::ST_LOOPSTACK_BEGIN))
+                {
+                    if(!gotStackLoopStart)
+                    {
+                        if(!gotGlobalLoopStart)
+                            loopStartTicks = abs_position;
+                        gotStackLoopStart = true;
+                    }
+
+                    m_loop.stackUp();
+                    if(m_loop.stackLevel >= static_cast<int>(m_loop.stack.size()))
+                    {
+                        LoopStackEntry e;
+                        e.loops = event.data[0];
+                        e.infinity = (event.data[0] == 0);
+                        e.start = abs_position;
+                        e.end = abs_position;
+                        m_loop.stack.push_back(e);
+                    }
+                }
+                else if(!m_loop.invalidLoop &&
+                    ((event.subtype == MidiEvent::ST_LOOPSTACK_END) ||
+                     (event.subtype == MidiEvent::ST_LOOPSTACK_BREAK))
+                )
+                {
+                    if(m_loop.stackLevel <= -1)
+                    {
+                        m_loop.invalidLoop = true; // Caught loop end without of loop start!
+                        if(m_interface->onDebugMessage)
+                        {
+                            m_interface->onDebugMessage(
+                                m_interface->onDebugMessage_userData,
+                                "== Invalid loop detected! [Caught loop end without of loop start] =="
+                            );
+                        }
+                    }
+                    else
+                    {
+                        if(loopEndTicks < abs_position)
+                            loopEndTicks = abs_position;
+                        m_loop.getCurStack().end = abs_position;
+                        m_loop.stackDown();
+                    }
                 }
             }
 
@@ -551,15 +618,24 @@ bool BW_MidiSequencer::buildTrackData(const std::vector<std::vector<uint8_t> > &
             m_currentPosition.track[tk].pos = m_trackData[tk].begin();
     }
 
-    if(gotLoopStart && !gotLoopEnd)
+    if(gotGlobalLoopStart && !gotGlobalLoopEnd)
     {
-        gotLoopEnd = true;
+        gotGlobalLoopEnd = true;
         loopEndTicks = ticksSongLength;
     }
 
     //loopStart must be located before loopEnd!
     if(loopStartTicks >= loopEndTicks)
-        m_invalidLoop = true;
+    {
+        m_loop.invalidLoop = true;
+        if(m_interface->onDebugMessage && (gotGlobalLoopStart || gotGlobalLoopEnd))
+        {
+            m_interface->onDebugMessage(
+                m_interface->onDebugMessage_userData,
+                "== Invalid loop detected! [loopEnd is going before loopStart] =="
+            );
+        }
+    }
 
     /********************************************************************************/
     //Calculate time basing on collected tempo events
@@ -666,7 +742,7 @@ bool BW_MidiSequencer::buildTrackData(const std::vector<std::vector<uint8_t> > &
             }
 
             //Capture loop points time positions
-            if(!m_invalidLoop)
+            if(!m_loop.invalidLoop)
             {
                 // Set loop points times
                 if(loopStartTicks == pos.absPos)
@@ -822,9 +898,14 @@ bool BW_MidiSequencer::processEvents(bool isSeek)
     if(m_atEnd)
         return false;//No more events in the queue
 
-    m_loopEnd = false;
+    m_loop.caughtEnd = false;
     const size_t        TrackCount = m_currentPosition.track.size();
-    const Position   RowBeginPosition(m_currentPosition);
+    const Position      rowBeginPosition(m_currentPosition);
+    bool doLoopJump = false;
+    unsigned caughLoopStart = 0;
+    unsigned caughLoopStackStart = 0;
+    unsigned caughLoopStackEnds = 0;
+    unsigned caughLoopStackBreaks = 0;
 
 #ifdef DEBUG_TIME_CALCULATION
     double maxTime = 0.0;
@@ -847,14 +928,41 @@ bool BW_MidiSequencer::processEvents(bool isSeek)
             {
                 const MidiEvent &evt = track.pos->events[i];
 #ifdef ENABLE_BEGIN_SILENCE_SKIPPING
-                if(!CurrentPositionNew.began && (evt.type == MidiEvent::T_NOTEON))
-                    CurrentPositionNew.began = true;
+                if(!m_currentPosition.began && (evt.type == MidiEvent::T_NOTEON))
+                    m_currentPosition.began = true;
 #endif
                 if(isSeek && (evt.type == MidiEvent::T_NOTEON))
                     continue;
                 handleEvent(tk, evt, track.lastHandledEvent);
-                if(m_loopEnd)
+
+                if(m_loop.caughtStart)
+                {
+                    caughLoopStart++;
+                    m_loop.caughtStart = false;
+                }
+
+                if(m_loop.caughtStackStart)
+                {
+                    caughLoopStackStart++;
+                    m_loop.caughtStackStart = false;
+                }
+
+                if(m_loop.caughtStackBreak)
+                {
+                    caughLoopStackBreaks++;
+                    m_loop.caughtStackBreak = false;
+                }
+
+                if(m_loop.caughtEnd || m_loop.isStackEnd())
+                {
+                    if(m_loop.caughtStackEnd)
+                    {
+                        m_loop.caughtStackEnd = false;
+                        caughLoopStackEnds++;
+                    }
+                    doLoopJump = true;
                     break;//Stop event handling on catching loopEnd event!
+                }
             }
 
 #ifdef DEBUG_TIME_CALCULATION
@@ -867,6 +975,9 @@ bool BW_MidiSequencer::processEvents(bool isSeek)
                 track.delay += track.pos->delay;
                 track.pos++;
             }
+
+            if(doLoopJump)
+                break;
         }
     }
 
@@ -899,21 +1010,81 @@ bool BW_MidiSequencer::processEvents(bool isSeek)
     fraction<uint64_t> t = shortest * m_tempo;
 
 #ifdef ENABLE_BEGIN_SILENCE_SKIPPING
-    if(CurrentPositionNew.began)
+    if(m_currentPosition.began)
 #endif
         m_currentPosition.wait += t.value();
 
     //if(shortest > 0) UI.PrintLn("Delay %ld (%g)", shortest, (double)t.valuel());
-    if(m_loopStart)
+    if(caughLoopStart > 0)
+        m_loopBeginPosition = rowBeginPosition;
+
+    if(caughLoopStackStart > 0)
     {
-        m_loopBeginPosition = RowBeginPosition;
-        m_loopStart = false;
+        while(caughLoopStackStart > 0)
+        {
+            m_loop.stackUp();
+            LoopStackEntry &s = m_loop.getCurStack();
+            s.startPosition = rowBeginPosition;
+            caughLoopStackStart--;
+        }
+        return true;
     }
 
-    if(shortest_no || m_loopEnd)
+    if(caughLoopStackBreaks > 0)
+    {
+        while(caughLoopStackBreaks > 0)
+        {
+            LoopStackEntry &s = m_loop.getCurStack();
+            s.loops = 0;
+            s.infinity = false;
+            // Quit the loop
+            m_loop.stackDown();
+            caughLoopStackBreaks--;
+        }
+    }
+
+    if(caughLoopStackEnds > 0)
+    {
+        while(caughLoopStackEnds > 0)
+        {
+            LoopStackEntry &s = m_loop.getCurStack();
+            if(s.infinity)
+            {
+                m_currentPosition = s.startPosition;
+                m_loop.skipStackStart = true;
+                return true;
+            }
+            else
+            if(s.loops >= 0)
+            {
+                s.loops--;
+                if(s.loops > 0)
+                {
+                    m_currentPosition = s.startPosition;
+                    m_loop.skipStackStart = true;
+                    return true;
+                }
+                else
+                {
+                    // Quit the loop
+                    m_loop.stackDown();
+                }
+            }
+            else
+            {
+                // Quit the loop
+                m_loop.stackDown();
+            }
+            caughLoopStackEnds--;
+        }
+
+        return true;
+    }
+
+    if(shortest_no || m_loop.caughtEnd)
     {
         //Loop if song end or loop end point has reached
-        m_loopEnd         = false;
+        m_loop.caughtEnd         = false;
         shortest = 0;
         if(!m_loopEnabled)
         {
@@ -1050,6 +1221,46 @@ BW_MidiSequencer::MidiEvent BW_MidiSequencer::parseEvent(const uint8_t **pptr, c
                 evt.data.clear();//Data is not needed
                 return evt;
             }
+
+            if(!data.compare(0, 10, "loopstart="))
+            {
+                evt.type = MidiEvent::T_SPECIAL;
+                evt.subtype = MidiEvent::ST_LOOPSTACK_BEGIN;
+                uint8_t loops = static_cast<uint8_t>(atoi(data.substr(10).c_str()));
+                evt.data.clear();
+                evt.data.push_back(loops);
+
+                if(m_interface->onDebugMessage)
+                {
+                    m_interface->onDebugMessage(
+                        m_interface->onDebugMessage_userData,
+                        "Stack Marker Loop Start at %d to %d level with %d loops",
+                        m_loop.stackLevel,
+                        m_loop.stackLevel + 1,
+                        loops
+                    );
+                }
+                return evt;
+            }
+
+            if(!data.compare(0, 8, "loopend="))
+            {
+                evt.type = MidiEvent::T_SPECIAL;
+                evt.subtype = MidiEvent::ST_LOOPSTACK_END;
+                evt.data.clear();
+
+                if(m_interface->onDebugMessage)
+                {
+                    m_interface->onDebugMessage(
+                        m_interface->onDebugMessage_userData,
+                        "Stack Marker Loop %s at %d to %d level",
+                        (evt.subtype == MidiEvent::ST_LOOPSTACK_END ? "End" : "Break"),
+                        m_loop.stackLevel,
+                        m_loop.stackLevel - 1
+                    );
+                }
+                return evt;
+            }
         }
 
         if(evtype == MidiEvent::ST_ENDTRACK)
@@ -1119,13 +1330,60 @@ BW_MidiSequencer::MidiEvent BW_MidiSequencer::parseEvent(const uint8_t **pptr, c
         if((evType == MidiEvent::T_NOTEON) && (evt.data[1] == 0))
         {
             evt.type = MidiEvent::T_NOTEOFF; // Note ON with zero velocity is Note OFF!
-        } //111'th loopStart controller (RPG Maker and others)
-        else if((evType == MidiEvent::T_CTRLCHANGE) && (evt.data[0] == 111))
+        }
+        else
+        if(evType == MidiEvent::T_CTRLCHANGE)
         {
-            //Change event type to custom Loop Start event and clear data
-            evt.type = MidiEvent::T_SPECIAL;
-            evt.subtype = MidiEvent::ST_LOOPSTART;
-            evt.data.clear();
+            //111'th loopStart controller (RPG Maker and others)
+            if((m_format == Format_MIDI) && (evt.data[0] == 111))
+            {
+                //Change event type to custom Loop Start event and clear data
+                evt.type = MidiEvent::T_SPECIAL;
+                evt.subtype = MidiEvent::ST_LOOPSTART;
+                evt.data.clear();
+            }
+
+            if(m_format == Format_XMIDI)
+            {
+                if(evt.data[0] == 116)
+                {
+                    evt.type = MidiEvent::T_SPECIAL;
+                    evt.subtype = MidiEvent::ST_LOOPSTACK_BEGIN;
+                    evt.data[0] = evt.data[1];
+                    evt.data.pop_back();
+
+                    if(m_interface->onDebugMessage)
+                    {
+                        m_interface->onDebugMessage(
+                            m_interface->onDebugMessage_userData,
+                            "Stack XMI Loop Start at %d to %d level with %d loops",
+                            m_loop.stackLevel,
+                            m_loop.stackLevel + 1,
+                            evt.data[0]
+                        );
+                    }
+                }
+
+                if(evt.data[0] == 117)
+                {
+                    evt.type = MidiEvent::T_SPECIAL;
+                    evt.subtype = evt.data[1] < 64 ?
+                                MidiEvent::ST_LOOPSTACK_BREAK :
+                                MidiEvent::ST_LOOPSTACK_END;
+                    evt.data.clear();
+
+                    if(m_interface->onDebugMessage)
+                    {
+                        m_interface->onDebugMessage(
+                            m_interface->onDebugMessage_userData,
+                            "Stack XMI Loop %s at %d to %d level",
+                            (evt.subtype == MidiEvent::ST_LOOPSTACK_END ? "End" : "Break"),
+                            m_loop.stackLevel,
+                            m_loop.stackLevel - 1
+                        );
+                    }
+                }
+            }
         }
 
         return evt;
@@ -1146,6 +1404,7 @@ BW_MidiSequencer::MidiEvent BW_MidiSequencer::parseEvent(const uint8_t **pptr, c
 
 void BW_MidiSequencer::handleEvent(size_t track, const BW_MidiSequencer::MidiEvent &evt, int32_t &status)
 {
+
     // CC: Call the callback for XMI Controller
     if(track == 0 && (evt.type == 0xB || evt.type == 0xC) && (evt.data[1] == 119))
     {
@@ -1154,9 +1413,9 @@ void BW_MidiSequencer::handleEvent(size_t track, const BW_MidiSequencer::MidiEve
         }
         return;
     }
-    
+
     if(track == 0 && m_smfFormat < 2 && evt.type == MidiEvent::T_SPECIAL &&
-       (evt.subtype == MidiEvent::ST_TEMPOCHANGE || evt.subtype == MidiEvent::ST_TIMESIGNATURE || evt.subtype == MidiEvent::T_NOTEOFF))
+       (evt.subtype == MidiEvent::ST_TEMPOCHANGE || evt.subtype == MidiEvent::ST_TIMESIGNATURE))
     {
         /* never reject track 0 timing events on SMF format != 2
            note: multi-track XMI convert to format 2 SMF */
@@ -1195,7 +1454,7 @@ void BW_MidiSequencer::handleEvent(size_t track, const BW_MidiSequencer::MidiEve
         // Special event FF
         uint8_t  evtype = evt.subtype;
         uint64_t length = (uint64_t)evt.data.size();
-        std::string data(length ? (const char *)evt.data.data() : 0, (size_t)length);
+        const char *data(length ? (const char *)evt.data.data() : "");
 
         if(evtype == MidiEvent::ST_ENDTRACK)//End Of Track
         {
@@ -1218,9 +1477,9 @@ void BW_MidiSequencer::handleEvent(size_t track, const BW_MidiSequencer::MidiEve
         if(evtype == MidiEvent::ST_DEVICESWITCH)
         {
             if(m_interface->onDebugMessage)
-                m_interface->onDebugMessage(m_interface->onDebugMessage_userData, "Switching another device: %s", data.c_str());
+                m_interface->onDebugMessage(m_interface->onDebugMessage_userData, "Switching another device: %s", data);
             if(m_interface->rt_deviceSwitch)
-                m_interface->rt_deviceSwitch(m_interface->rtUserData, track, data.c_str(), data.size());
+                m_interface->rt_deviceSwitch(m_interface->rtUserData, track, data, length);
             return;
         }
 
@@ -1228,17 +1487,43 @@ void BW_MidiSequencer::handleEvent(size_t track, const BW_MidiSequencer::MidiEve
         //    UI.PrintLn("Meta %d: %s", evtype, data.c_str());
 
         //Turn on Loop handling when loop is enabled
-        if(m_loopEnabled && !m_invalidLoop)
+        if(m_loopEnabled && !m_loop.invalidLoop)
         {
             if(evtype == MidiEvent::ST_LOOPSTART) // Special non-spec MIDI loop Start point
             {
-                m_loopStart = true;
+                m_loop.caughtStart = true;
                 return;
             }
 
             if(evtype == MidiEvent::ST_LOOPEND) // Special non-spec MIDI loop End point
             {
-                m_loopEnd = true;
+                m_loop.caughtEnd = true;
+                return;
+            }
+
+            if(evtype == MidiEvent::ST_LOOPSTACK_BEGIN)
+            {
+                if(m_loop.skipStackStart)
+                {
+                    m_loop.skipStackStart = false;
+                    return;
+                }
+                LoopStackEntry &s = m_loop.stack[(m_loop.stackLevel + 1)];
+                s.loops = (int)data[0];
+                s.infinity = (data[0] == 0);
+                m_loop.caughtStackStart = true;
+                return;
+            }
+
+            if(evtype == MidiEvent::ST_LOOPSTACK_END)
+            {
+                m_loop.caughtStackEnd = true;
+                return;
+            }
+
+            if(evtype == MidiEvent::ST_LOOPSTACK_BREAK)
+            {
+                m_loop.caughtStackBreak = true;
                 return;
             }
         }
@@ -1393,7 +1678,7 @@ double BW_MidiSequencer::seek(double seconds, const double granularity)
      *
      * TODO: Detect & set loopStart position on load time to don't break loop while seeking
      */
-    m_loopStart   = false;
+    m_loop.caughtStart   = false;
 
     while((m_currentPosition.absTimePosition < seconds) &&
           (m_currentPosition.absTimePosition < m_fullSongTimeLength))
@@ -1451,9 +1736,10 @@ double BW_MidiSequencer::getLoopEnd()
 void BW_MidiSequencer::rewind()
 {
     m_currentPosition   = m_trackBeginPosition;
-    m_atEnd            = false;
-    m_loopStart        = true;
-    m_loopEnd          = false;
+    m_atEnd             = false;
+
+    m_loop.reset();
+    m_loop.caughtStart  = true;
 }
 
 void BW_MidiSequencer::setTempo(double tempo)
@@ -1519,8 +1805,8 @@ bool BW_MidiSequencer::loadMIDI(FileAndMemReader &fr)
     }
 
     m_atEnd            = false;
-    m_loopStart        = true;
-    m_invalidLoop      = false;
+    m_loop.fullReset();
+    m_loop.caughtStart = true;
 
     m_format = Format_MIDI;
 
@@ -1532,7 +1818,7 @@ bool BW_MidiSequencer::loadMIDI(FileAndMemReader &fr)
     const size_t headerSize = 4 + 4 + 2 + 2 + 2; // 14
     char headerBuf[headerSize] = "";
     size_t DeltaTicks = 192, TrackCount = 1;
-    unsigned Fmt = 0;
+    unsigned smfFormat = 0;
 
 riffskip:
     fsize = fr.read(headerBuf, 1, headerSize);
@@ -1639,6 +1925,8 @@ riffskip:
         cvt_buf.set(mid);
         //Open converted MIDI file
         fr.openData(mid, static_cast<size_t>(mid_len));
+        //Set format as XMIDI
+        m_format = Format_XMIDI;
         //Re-Read header again!
         goto riffskip;
     }
@@ -1761,12 +2049,12 @@ riffskip:
                 return false;
             }
 
-            Fmt = (unsigned)readBEint(headerBuf + 8,  2);
+            smfFormat = (unsigned)readBEint(headerBuf + 8,  2);
             TrackCount = (size_t)readBEint(headerBuf + 10, 2);
             DeltaTicks = (size_t)readBEint(headerBuf + 12, 2);
 
-            if(Fmt > 2)
-                Fmt = 1;
+            if(smfFormat > 2)
+                smfFormat = 1;
         }
     }
 
@@ -1884,7 +2172,8 @@ riffskip:
         return false;
     }
 
-    m_smfFormat = Fmt;
+    m_smfFormat = smfFormat;
+    m_loop.stackLevel   = -1;
 
     return true;
 }

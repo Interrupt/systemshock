@@ -123,7 +123,14 @@ class BW_MidiSequencer
             //! [Non-Standard] Loop End point
             ST_LOOPEND      = 0xE2,//size == 0 <CUSTOM>
             //! [Non-Standard] Raw OPL data
-            ST_RAWOPL       = 0xE3//size == 0 <CUSTOM>
+            ST_RAWOPL       = 0xE3,//size == 0 <CUSTOM>
+
+            //! [Non-Standard] Loop Start point with support of multi-loops
+            ST_LOOPSTACK_BEGIN = 0xE4,//size == 1 <CUSTOM>
+            //! [Non-Standard] Loop End point with support of multi-loops
+            ST_LOOPSTACK_END   = 0xE5,//size == 0 <CUSTOM>
+            //! [Non-Standard] Loop End point with support of multi-loops
+            ST_LOOPSTACK_BREAK = 0xE6,//size == 0 <CUSTOM>
         };
         //! Main type of event
         uint8_t type;
@@ -251,6 +258,9 @@ class BW_MidiSequencer
     void handleEvent(size_t tk, const MidiEvent &evt, int32_t &status);
 
 public:
+
+    void (*MidiCallback)(void) = NULL;
+    
     /**
      * @brief MIDI marker entry
      */
@@ -285,10 +295,10 @@ public:
         //! Id-Software Music File
         Format_IMF,
         //! EA-MUS format
-        Format_RSXX
+        Format_RSXX,
+        //! AIL's XMIDI format (act same as MIDI, but with exceptions)
+        Format_XMIDI
     };
-
-    void (*MidiCallback)(void) = NULL;
 
 private:
     //! Music file format type. MIDI is default.
@@ -311,9 +321,9 @@ private:
     //! Delay after song playd before rejecting the output stream requests
     double m_postSongWaitDelay;
 
-    //! Loop start time
+    //! Global loop start time
     double m_loopStartTime;
-    //! Loop end time
+    //! Global loop end time
     double m_loopEndTime;
 
     //! Pre-processed track data storage
@@ -340,12 +350,106 @@ private:
     double  m_tempoMultiplier;
     //! Is song at end
     bool    m_atEnd;
-    //! Loop start has reached
-    bool    m_loopStart;
-    //! Loop end has reached, reset on handling
-    bool    m_loopEnd;
-    //! Are loop points invalid?
-    bool    m_invalidLoop; /*Loop points are invalid (loopStart after loopEnd or loopStart and loopEnd are on same place)*/
+
+    /**
+     * @brief Loop stack entry
+     */
+    struct LoopStackEntry
+    {
+        //! is infinite loop
+        bool infinity;
+        //! Count of loops left to break. <0 - infinite loop
+        int loops;
+        //! Start position snapshot to return back
+        Position startPosition;
+        //! Loop start tick
+        uint64_t start;
+        //! Loop end tick
+        uint64_t end;
+    };
+
+    struct LoopState
+    {
+        //! Loop start has reached
+        bool    caughtStart;
+        //! Loop end has reached, reset on handling
+        bool    caughtEnd;
+
+        //! Loop start has reached
+        bool    caughtStackStart;
+        //! Loop next has reached, reset on handling
+        bool    caughtStackEnd;
+        //! Loop break has reached, reset on handling
+        bool    caughtStackBreak;
+        //! Skip next stack loop start event handling
+        bool    skipStackStart;
+
+        //! Are loop points invalid?
+        bool    invalidLoop; /*Loop points are invalid (loopStart after loopEnd or loopStart and loopEnd are on same place)*/
+
+        //! Stack of nested loops
+        std::vector<LoopStackEntry> stack;
+        //! Current level on the loop stack (<0 - out of loop, 0++ - the index in the loop stack)
+        int                         stackLevel;
+
+        /**
+         * @brief Reset loop state to initial
+         */
+        void reset()
+        {
+            caughtStart = false;
+            caughtEnd = false;
+            caughtStackStart = false;
+            caughtStackEnd = false;
+            caughtStackBreak = false;
+            skipStackStart = false;
+        }
+
+        void fullReset()
+        {
+            reset();
+            invalidLoop = false;
+            stack.clear();
+            stackLevel = -1;
+        }
+
+        bool isStackEnd()
+        {
+            if(caughtStackEnd && (stackLevel >= 0) && (stackLevel < static_cast<int>(stack.size())))
+            {
+                const LoopStackEntry &e = stack[stackLevel];
+                if(e.infinity || (!e.infinity && e.loops > 0))
+                    return true;
+            }
+            return false;
+        }
+
+        void stackUp(int count = 1)
+        {
+            stackLevel += count;
+        }
+
+        void stackDown(int count = 1)
+        {
+            stackLevel -= count;
+        }
+
+        LoopStackEntry &getCurStack()
+        {
+            if((stackLevel >= 0) && (stackLevel < static_cast<int>(stack.size())))
+                return stack[stackLevel];
+            if(stack.empty())
+            {
+                LoopStackEntry d;
+                d.loops = 0;
+                d.infinity = 0;
+                d.start = 0;
+                d.end = 0;
+                stack.push_back(d);
+            }
+            return stack[0];
+        }
+    } m_loop;
 
     //! Whether the nth track has playback disabled
     std::vector<bool> m_trackDisable;

@@ -590,6 +590,8 @@ extern double adl_loopStartTime(struct ADL_MIDIPlayer *device);
  */
 extern double adl_loopEndTime(struct ADL_MIDIPlayer *device);
 
+extern void adl_setCallback(struct ADL_MIDIPlayer *device, void (*AdlMidiCallback)(void));
+
 /**
  * @brief Get current time position in seconds
  *
@@ -642,8 +644,6 @@ extern int adl_atEnd(struct ADL_MIDIPlayer *device);
  * @return Count of tracks in the current sequence
  */
 extern size_t adl_trackCount(struct ADL_MIDIPlayer *device);
-
-extern void adl_setCallback(struct ADL_MIDIPlayer *device, void (*AdlMidiCallback)(void));
 
 /**
  * @brief Track options

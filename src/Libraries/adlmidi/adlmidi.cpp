@@ -69,7 +69,6 @@ ADLMIDI_EXPORT struct ADL_MIDIPlayer *adl_init(long sample_rate)
     }
     midi_device->adl_midiPlayer = player;
     adlRefreshNumCards(midi_device);
-
     return midi_device;
 }
 

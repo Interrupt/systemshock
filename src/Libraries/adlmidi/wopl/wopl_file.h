@@ -88,7 +88,7 @@ typedef enum WOPL_RhythmMode
     /* RythmMode: Cymbell */
     WOPL_RM_Cymbal   = 0x20,
     /* RythmMode: HiHat */
-    WOPL_RM_HiHat     = 0x28,
+    WOPL_RM_HiHat     = 0x28
 } WOPL_RhythmMode;
 
 /* DEPRECATED: It has typo. Don't use it! */
