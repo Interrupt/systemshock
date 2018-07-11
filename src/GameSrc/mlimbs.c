@@ -255,31 +255,16 @@ void mlimbs_shutdown(void) {
 
 
 // Callback for XMIDI 119
-int mlimbs_c_count = 0;
 void mlimbs_special_callback() {
+    DEBUG("AIL callback 119 triggered, running music AI");
 
-    mlimbs_c_count++;
-
-    printf("mlimbs_special_callback %i!\n", mlimbs_c_count);
-
-    if(mlimbs_c_count == 2) {
-        printf("Second call! Might be able to guess tempo from this\n");
-    }
-
-    // HAX! XMI Loop points in libadl must not be working, so doing some weird rewinding instead
-    if(mlimbs_c_count >= 3) {
-        printf("Rewind!\n");
-        mlimbs_c_count = 0;
-
-        adl_positionRewind(adlDevice);
-    }
-    else if (mlimbs_AI != NULL) {
+    if (mlimbs_AI != NULL) {
         mlimbs_update_requests = TRUE;
-        printf("mlimbs_AI!\n");
         mlimbs_AI();
-    }
 
-    mlimbs_timer_callback();
+        // Do we need to do this now?
+        // mlimbs_timer_callback();
+    }
 }
 
 /////////////////////////////////////////////////////////////////
