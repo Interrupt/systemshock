@@ -1,0 +1,16 @@
+language: c
+
+sudo: false
+
+compiler:
+  - gcc
+  - clang
+
+os:
+  - linux
+  - osx
+
+script:
+  - ./build_deps.sh
+  - cmake .
+  - make systemshock
