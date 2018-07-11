@@ -59,6 +59,7 @@ set(MAC_SRC
 	src/MacSrc/MacTune.c
 	src/MacSrc/SDLSound.c
 	src/MacSrc/Modding.c
+	src/MacSrc/OpenGL.cc
 )
 
 set(GAME_SRC
@@ -314,6 +315,8 @@ target_link_libraries(systemshock
 	FIXPP_LIB
 	${SDL2_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
+	GLEW
+	GL
 )
 
 # Turn on address sanitizing if wanted

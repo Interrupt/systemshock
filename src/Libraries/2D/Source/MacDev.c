@@ -104,6 +104,9 @@ void mac_set_mode(void)
     gScreenHigh = height;
     gActiveWide = width;
     gActiveHigh = height;
+
+    extern void opengl_resize(int width, int height);
+    opengl_resize(width, height);
  }
 
 

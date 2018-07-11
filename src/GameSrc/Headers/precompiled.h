@@ -1,5 +1,9 @@
 #pragma pack(2)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -70,3 +74,7 @@
 #include "vmouse.h"
 
 #include "vox.h"
+
+#ifdef __cplusplus
+}
+#endif

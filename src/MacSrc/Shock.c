@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Shock.h"
 #include "InitMac.h"
+#include "OpenGL.h"
 #include "Prefs.h"
 #include "ShockBitmap.h"
 #include "ShockHelp.h"
@@ -67,6 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <SDL.h>
+#include <GL/glew.h>
 
 extern uchar game_paused;		// I've learned such bad lessons from LG.
 extern uchar objdata_loaded;
@@ -225,6 +227,11 @@ void InitSDL()
 		DebugString("SDL: Init failed");
 	}
 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
 	SetupOffscreenBitmaps();
 
 	// Point the renderer at the screen bytes
@@ -247,7 +254,7 @@ void InitSDL()
 
 	window = SDL_CreateWindow(
 		"System Shock - Shockolate 0.5", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
 	// Create the palette
 
@@ -265,9 +272,11 @@ void InitSDL()
 	atexit(SDL_Quit);
 
 	SDL_RaiseWindow(window);
-	
+
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 	SDL_RenderSetLogicalSize(renderer, gScreenWide, gScreenHigh);
+
+	init_opengl();
 
 	SDLDraw();
 }
@@ -282,11 +291,11 @@ void SetSDLPalette(int index, int count, uchar *pal)
 		gamePalette[index+i].a = 0xFF;
 	}
 
-	// Hack black!
+	// Hack transparent!
 	gamePalette[255].r = 0x0;
 	gamePalette[255].g = 0x0;
 	gamePalette[255].b = 0x0;
-	gamePalette[255].a = 0xFF;
+	gamePalette[255].a = 0x0;
 
 	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
 	SDL_SetSurfacePalette(drawSurface, sdlPalette);
@@ -295,10 +304,13 @@ void SetSDLPalette(int index, int count, uchar *pal)
 
 void SDLDraw()
 {
-	SDL_RenderClear(renderer);
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, drawSurface);
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	SDL_Rect srcRect = { 0, 0, gScreenWide, gScreenHigh };
 	SDL_RenderCopy(renderer, texture, &srcRect, NULL);
 	SDL_DestroyTexture(texture);
 	SDL_RenderPresent(renderer);
+
+	SDL_RenderClear(renderer);
+	glClear(GL_DEPTH_BUFFER_BIT);
 }

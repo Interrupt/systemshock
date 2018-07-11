@@ -673,7 +673,13 @@ int fr_start_view(void) {
         detail = _fr_global_detail;
     else
         detail = _fr->detail;
-    if (detail != 0) {
+    extern bool use_opengl();
+    if (use_opengl()) {
+        extern int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
+        extern int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
+        _fr_per_func = _fr_floor_func = _fr_wall_func = opengl_draw_tmap;
+        _fr_lit_per_func = _fr_lit_floor_func = _fr_lit_wall_func = opengl_light_tmap;
+    } else if (detail != 0) {
         /* check viewer orientation.  Use wall/floor/full perspective texture maps accordingly. */
         _fr_lit_per_func = g3_light_tmap;
         _fr_per_func = g3_draw_tmap;

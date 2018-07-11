@@ -375,6 +375,11 @@ void pump_events(void)
 					addMouseEvent(&mouseEvent);
 				}
 				break;
+			case SDL_WINDOWEVENT:
+				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+					extern void opengl_resize(int width, int height);
+					opengl_resize(ev.window.data1, ev.window.data2);
+				}
 			// TODO: maybe handle other events as well..
 		}
 	}
