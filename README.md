@@ -29,6 +29,15 @@ The end goal for this project is something like what Chocolate Doom is for Doom:
 - Video Files / Audiologs
   - Need to revive the old movie rendering code in AFile
 
+Downloads
+=======
+
+### Linux/Mac
+For now, compiling the source yourself is the way to go. See the Compiling / Running section below.
+
+### Windows
+We're making intermittent [releases](releases/) while setting up a CI system to automatically produce up-to-date ones.
+
 Compiling / Running
 ============
 
