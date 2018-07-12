@@ -108,6 +108,8 @@ extern volatile ulong mlimbs_counter;
 extern volatile void (*mlimbs_AI)();
 extern volatile int mlimbs_master_slot;
 
+char current_music_filename[255];
+
 /* Function prototypes */
 int mlimbs_init(void);
 void mlimbs_callback(snd_midi_parms *mprm, unsigned trigger_value);

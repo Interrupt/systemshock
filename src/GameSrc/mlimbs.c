@@ -100,11 +100,26 @@ int snd_find_free_sequence(uchar smp_pri, bool check_only)
 // CC: HAX HAX HAX
 int snd_sequence_play(int snd_ref, uchar *seq_dat, int seq_num, snd_midi_parms *mparm)
 {
-    DEBUG("snd_sequence_play: %i", seq_num);
+    DEBUG("snd_sequence_play: %i %s", seq_num, current_music_filename);
 
     int seq_id;
     if ((seq_id=snd_find_free_sequence(SND_DEF_PRI,FALSE))==SND_PERROR)
     { snd_error=SND_NO_HANDLE; return SND_PERROR; }
+
+    if(adlDevice[seq_id] == NULL) {
+        struct ADL_MIDIPlayer *adlD = adl_init(44100);
+
+        // Bank 45 is System Shock?
+        adl_setBank(adlD, 45);
+        adl_switchEmulator(adlD, 1);
+        adl_setLoopEnabled(adlD, 1);
+        adl_setNumChips(adlD, 1);
+        adl_setVolumeRangeModel(adlD, 1);
+
+        adl_openFile(adlD, current_music_filename);
+
+        adlDevice[seq_id] = adlD;
+    }
 
     if(adlDevice[seq_id] != NULL) {
         DEBUG("Playing track %i on %i", seq_num, seq_id);

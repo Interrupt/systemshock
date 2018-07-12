@@ -180,7 +180,9 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 		}
 	}
 
-	for(int i = 0; i < CHANNELS; i++) {
+	strcpy(current_music_filename, music_filename);
+
+	for(int i = 0; i < 1; i++) {
 		struct ADL_MIDIPlayer *adlD = adl_init(SAMPLE_RATE);
 
 		// Bank 45 is System Shock?
@@ -191,9 +193,11 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 	    adl_setVolumeRangeModel(adlD, 1);
 
 	    adl_openFile(adlD, music_filename);
-    	for(int x = 0; x < 64; x++) {
-			adl_setTrackOptions(adlD, 0, ADLMIDI_TrackOption_Solo);
-	    }
+    	/*for(int x = 0; x < 64; x++) {
+			adl_setTrackOptions(adlD, x, ADLMIDI_TrackOption_Off);
+	    }*/
+
+	    adl_setTrackOptions(adlD, 0, ADLMIDI_TrackOption_Solo);
 
 	    adlDevice[i] = adlD;
 	}
