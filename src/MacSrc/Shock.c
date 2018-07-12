@@ -68,7 +68,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <SDL.h>
-#include <GL/glew.h>
+
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#endif
 
 extern uchar game_paused;		// I've learned such bad lessons from LG.
 extern uchar objdata_loaded;
@@ -313,4 +316,10 @@ void SDLDraw()
 
 	SDL_RenderClear(renderer);
 	glClear(GL_DEPTH_BUFFER_BIT);
+
+	// check OpenGL error
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        ERROR("OpenGL error: %i", err);
+    }
 }

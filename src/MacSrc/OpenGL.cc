@@ -1,13 +1,21 @@
 #include "OpenGL.h"
 
 #define GL_GLEXT_PROTOTYPES
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include </usr/local/include/glm/glm.hpp>
+#include </usr/local/include/glm/gtc/matrix_transform.hpp>
+#include </usr/local/include/glm/gtc/type_ptr.hpp>
+#else
 #include <GL/gl.h>
 #include <GL/glext.h>
-#include <SDL.h>
-#include <SDL_opengl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#endif
+
+#include <SDL.h>
+#include <SDL_opengl.h>
 
 #include "mainloop.h"
 
