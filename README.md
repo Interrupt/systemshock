@@ -2,7 +2,7 @@ Shockolate - System Shock, but cross platform!
 ============================
 Based on the source code for PowerPC released by Night Dive Studios, Incorporated.
 
-[![Build Status](https://travis-ci.org/Laastine/systemshock.svg?branch=travis-build)](https://travis-ci.org/Laastine/systemshock)
+[![Build Status](https://travis-ci.org/Interrupt/systemshock.svg?branch=master)](https://travis-ci.org/Interrupt/systemshock)
 
 GENERAL NOTES
 =============
