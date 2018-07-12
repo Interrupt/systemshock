@@ -69,8 +69,6 @@ static GLuint compileShader(GLenum type, const char *source) {
 int init_opengl() {
     context = SDL_GL_CreateContext(window);
 
-    glEnable(GL_DEPTH_TEST);
-
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, VertexShader);
     GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, FragmentShader);
     shaderProgram = glCreateProgram();

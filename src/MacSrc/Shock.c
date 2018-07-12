@@ -312,5 +312,4 @@ void SDLDraw()
 	SDL_RenderPresent(renderer);
 
 	SDL_RenderClear(renderer);
-	glClear(GL_DEPTH_BUFFER_BIT);
 }
