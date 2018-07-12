@@ -1,0 +1,29 @@
+language: c
+
+sudo: false
+
+notifications:
+  email: false
+
+os:
+  - linux
+  - osx
+
+compiler:
+  - clang
+  - gcc
+
+addons:
+  apt:
+    packages:
+      - cmake-data
+      - cmake
+      - libx32gcc-4.8-dev
+      - libc6-dev-i386
+      - gcc-multilib
+      - g++-multilib
+
+script:
+  - ./build_deps.sh
+  - cmake .
+  - make systemshock
