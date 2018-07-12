@@ -144,16 +144,14 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
 
     struct g3s_point *p = *vp;
     glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(0, 0);
     glVertexAttrib2f(tcAttrib, 0, 0);
     glVertex3f(p[0].x / 65536.0f,  p[0].y / 65536.0f, -p[0].z / 65536.0f);
-    glTexCoord2f(1, 0);
     glVertexAttrib2f(tcAttrib, 1, 0);
     glVertex3f(p[1].x / 65536.0f,  p[1].y / 65536.0f, -p[1].z / 65536.0f);
-    glTexCoord2f(0, 1);
-    glVertexAttrib2f(tcAttrib, 0, 1);
-    glVertex3f(p[3].x / 65536.0f,  p[3].y / 65536.0f, -p[3].z / 65536.0f);
-    glTexCoord2f(1, 1);
+    if (n > 3) {
+        glVertexAttrib2f(tcAttrib, 0, 1);
+        glVertex3f(p[3].x / 65536.0f,  p[3].y / 65536.0f, -p[3].z / 65536.0f);
+    }
     glVertexAttrib2f(tcAttrib, 1, 1);
     glVertex3f(p[2].x / 65536.0f,  p[2].y / 65536.0f, -p[2].z / 65536.0f);
     glEnd();
