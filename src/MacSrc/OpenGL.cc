@@ -21,36 +21,34 @@ static GLuint vbo;
 static GLuint ebo;
 static GLuint tex;
 
-static const char *VertexShader = R"glsl(
-    #version 150 core
+static const char *VertexShader =
+    "#version 150 core\n"
+    "\n"
+    "in vec3 position;\n"
+    "in vec2 texcoords;\n"
+    "\n"
+    "out vec2 TexCoords;\n"
+    "\n"
+    "uniform mat4 view;\n"
+    "uniform mat4 proj;\n"
+    "\n"
+    "void main() {\n"
+    "    TexCoords = texcoords;\n"
+    "    gl_Position = proj * view * vec4(position, 1.0);\n"
+    "}\n";
 
-    in vec3 position;
-    in vec2 texcoords;
-
-    out vec2 TexCoords;
-
-    uniform mat4 view;
-    uniform mat4 proj;
-
-    void main() {
-        TexCoords = texcoords;
-        gl_Position = proj * view * vec4(position, 1.0);
-    }
-)glsl";
-
-static const char *FragmentShader = R"glsl(
-    #version 150 core
-
-    in vec2 TexCoords;
-
-    out vec4 outColor;
-
-    uniform sampler2D tex;
-
-    void main() {
-        outColor = texture(tex, TexCoords);
-    }
-)glsl";
+static const char *FragmentShader =
+    "#version 150 core\n"
+    "\n"
+    "in vec2 TexCoords;\n"
+    "\n"
+    "out vec4 outColor;\n"
+    "\n"
+    "uniform sampler2D tex;\n"
+    "\n"
+    "void main() {\n"
+    "    outColor = texture(tex, TexCoords);\n"
+    "}\n";
 
 static GLuint compileShader(GLenum type, const char *source) {
     GLuint shader = glCreateShader(type);
