@@ -7,23 +7,13 @@ Based on the source code for PowerPC released by Night Dive Studios, Incorporate
 GENERAL NOTES
 =============
 
-Shockolate is a cross platform source port of the System Shock source code that was released, using SDL2. This runs well on OSX, Linux, and Windows right now, with some runtime issues to sort out.
+Shockolate is a cross platform source port of System Shock, using SDL2. This runs well on OSX, Linux, and Windows right now, with some missing features that need reviving due to not being included in the source code that was released.
 
 The end goal for this project is something like what Chocolate Doom is for Doom: an experience that closely mimics the original, but portable and with some quality of life improvements - and mod support!
 
 ![work so far](https://i.imgur.com/kbVWQj4.gif)
 
-# Working so far:
-- Gameplay!
-- Mouse and keyboard input
-- Software 3D / 2D rendering
-- Physics
-- Saving and loading
-- Sound effects
-- Basic midi music, if available
-- Mod support!
-
-# Not working:
+# Missing Features:
 - Music
   - SDL_Mixer can't play the multi track XMI midi files, need to find another solution for those
   - There is basic midi music support if there are .mid files in `/res/music/` like `thm0.mid`.
