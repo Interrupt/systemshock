@@ -38,7 +38,7 @@ Downloads
 For now, compiling the source yourself is the way to go. See the Compiling / Running section below.
 
 ### Windows
-We're making intermittent [releases](releases/) while setting up a CI system to automatically produce up-to-date ones.
+We're making intermittent [releases](https://github.com/Interrupt/systemshock/releases) while setting up a CI system to automatically produce up-to-date ones.
 
 Compiling / Running
 ============
