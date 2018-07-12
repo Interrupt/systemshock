@@ -953,7 +953,7 @@ bool BW_MidiSequencer::processEvents(bool isSeek)
                     m_loop.caughtStackBreak = false;
                 }
 
-                if(m_loop.caughtEnd || m_loop.isStackEnd())
+                if(m_loop.caughtEnd || m_loop.isStackEnd() || m_loop.caughtStackEnd)
                 {
                     if(m_loop.caughtStackEnd)
                     {
@@ -1508,6 +1508,7 @@ void BW_MidiSequencer::handleEvent(size_t track, const BW_MidiSequencer::MidiEve
                     m_loop.skipStackStart = false;
                     return;
                 }
+
                 LoopStackEntry &s = m_loop.stack[(m_loop.stackLevel + 1)];
                 s.loops = (int)data[0];
                 s.infinity = (data[0] == 0);

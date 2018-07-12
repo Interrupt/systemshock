@@ -61,7 +61,7 @@ extern volatile ulong mlimbs_counter;
 volatile long mlimbs_error;
 extern volatile uchar mlimbs_semaphore;
 
-extern struct ADL_MIDIPlayer *adlDevice;
+extern struct ADL_MIDIPlayer *adlDevice[MLIMBS_MAX_CHANNELS];
 
 int master_volume = 100;
 
@@ -85,7 +85,7 @@ extern uchar run_asynch_music_ai;
 int used_sequences[10];
 int snd_find_free_sequence(uchar smp_pri, bool check_only)
 {
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 5; i++) {
         if(used_sequences[i] == 0) {
             used_sequences[i] = 1;
             return i + 1;
@@ -106,8 +106,10 @@ int snd_sequence_play(int snd_ref, uchar *seq_dat, int seq_num, snd_midi_parms *
     if ((seq_id=snd_find_free_sequence(SND_DEF_PRI,FALSE))==SND_PERROR)
     { snd_error=SND_NO_HANDLE; return SND_PERROR; }
 
-    if(adlDevice != NULL) {
-        adl_setTrackOptions(adlDevice, seq_num, ADLMIDI_TrackOption_On);
+    if(adlDevice[seq_id] != NULL) {
+        DEBUG("Playing track %i on %i", seq_num, seq_id);
+        adl_setTrackOptions(adlDevice[seq_id], seq_num, ADLMIDI_TrackOption_Solo);
+        adl_positionRewind(adlDevice[seq_id]);
     }
 
     return seq_id;
@@ -323,7 +325,7 @@ int mlimbs_load_theme(char *xname, char *xinfo, int thmid) {
     }
     fclose(fil);
 
-    adl_setCallback(adlDevice, mlimbs_special_callback);
+    adl_setCallback(adlDevice[0], mlimbs_special_callback);
 
     mlimbs_update_requests = TRUE;
     // secret_sprint((ss_temp,"load themed %s (%d) a-ok\n",xname,thmid));
@@ -522,7 +524,7 @@ void mlimbs_mute_sequence_channel(int usernum, int x, bool mute) {
     int val, seq_ch;
     int phys_ch;
 
-    DEBUG("Mute sequence channel %i %i", usernum, userID[usernum].pieceID);
+    DEBUG("Mute sequence %i on channel %i", usernum, userID[usernum].pieceID + 1);
 
     if (usernum < 0)
         return;
@@ -550,7 +552,8 @@ void mlimbs_mute_sequence_channel(int usernum, int x, bool mute) {
         // secret_sprint((ss_temp,"is playing, remapping it %d from %d\n",phys_ch,x));
 
         if(adlDevice != NULL) {
-            adl_setTrackOptions(adlDevice, userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Off);
+            adl_setTrackOptions(adlDevice[usernum], userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Off);
+            adl_positionSeek(adlDevice[usernum], adl_positionTell(adlDevice[usernum]));
         }
 
         seq_ch = x;
@@ -573,6 +576,7 @@ void mlimbs_mute_sequence_channel(int usernum, int x, bool mute) {
             AIL_map_sequence_channel(_uiD_seq(usernum), seq_ch, seq_ch);
             AIL_resume_sequence(_uiD_seq(usernum));
             #endif
+
             channel_info[phys_ch].status = MLIMBS_STOPPED;
         }
     }
@@ -602,7 +606,7 @@ void mlimbs_mute_sequence_channel(int usernum, int x, bool mute) {
 int mlimbs_unmute_sequence_channel(int usernum, int x) {
     int i;
 
-    DEBUG("Unmute sequence channel %i %i", usernum, userID[usernum].pieceID);
+    DEBUG("Unmute sequence %i for piece %i", usernum, userID[usernum].pieceID + 1);
 
     if (usernum < 0)
         return 1;
@@ -634,10 +638,11 @@ int mlimbs_unmute_sequence_channel(int usernum, int x) {
             //AIL_map_sequence_channel(_uiD_seq(usernum), x, channel_info[i].mchannel);
             //AIL_resume_sequence(_uiD_seq(usernum));
 
-            DEBUG("Unmuted channel.");
+            DEBUG("Unmuted sequence %i on channel %i.", usernum, channel_info[i].mchannel);
 
-            if(adlDevice != NULL) {
-                adl_setTrackOptions(adlDevice, userID[usernum].pieceID + 1, ADLMIDI_TrackOption_On);
+            if(adlDevice[usernum] != NULL) {
+                adl_setTrackOptions(adlDevice[usernum], userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Solo);
+                adl_positionSeek(adlDevice[usernum], adl_positionTell(adlDevice[usernum]));
             }
 
             channel_info[i].status = MLIMBS_PLAYING_PIECE;
@@ -863,8 +868,6 @@ int mlimbs_assign_channels(int usernum, bool crossfade) {
     uint j;
     ushort c_map;
 
-    DEBUG("mlimbs_assign_channels %i %i", usernum, MLIMBS_MAX_SEQUENCES);
-
     if (usernum >= (MLIMBS_MAX_SEQUENCES - 1))
         return -1;
     c_map = xseq_info[userID[usernum].pieceID].channel_map;
@@ -1028,8 +1031,9 @@ void mlimbs_punt_piece(int usernum) {
         snd_end_sequence(slot);
 
         if(adlDevice != NULL) {
-            DEBUG("mlimbs_punt_piece %i", userID[usernum].pieceID);
-            adl_setTrackOptions(adlDevice, userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Off);
+            DEBUG("mlimbs_punt_piece %i on %i", userID[usernum].pieceID, usernum);
+            adl_setTrackOptions(adlDevice[usernum], userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Off);
+            adl_positionSeek(adlDevice[usernum], adl_positionTell(adlDevice[usernum]));
         }
 
         for (i = 11; i < 17; i++) {

@@ -13,8 +13,9 @@ static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
 
 #define SAMPLE_RATE 44100
 #define SAMPLES 4096
+#define CHANNELS MLIMBS_MAX_CHANNELS
 
-struct ADL_MIDIPlayer *adlDevice;
+struct ADL_MIDIPlayer *adlDevice[MLIMBS_MAX_CHANNELS];
 
 int snd_start_digital(void) {
 
@@ -105,28 +106,25 @@ void MacTuneUpdateVolume(void) {
 	Mix_VolumeMusic((curr_vol_lev * curr_vol_lev) * 128 / 10000);
 }
 
-short adl_buffer[SAMPLES * 2];
 int is_playing = 0;
 
 static void SDL_MidiAudioCallback(void *adl_midi_player, Uint8 *stream, int len)
 {
-	struct ADL_MIDIPlayer* p = (struct ADL_MIDIPlayer*)adl_midi_player;
-
     /* Convert bytes length into total count of samples in all channels */
     int samples_count = len / 2;
+    SDL_memset(stream, 0, len);
 
     /* Take some samples from the ADLMIDI */
-    samples_count = adl_play(p, samples_count, (short*)adl_buffer);
-
-    if(samples_count <= 0)
-    {
-        is_playing = 0;
-        SDL_memset(stream, 0, len);
-        return;
-    }
-
-    /* Send buffer to the audio device */
-    SDL_memcpy(stream, (Uint8*)adl_buffer, samples_count * 2);
+    for(int i = 0; i < CHANNELS; i++) {
+    	int read = 0;
+    	if(adlDevice[i] != NULL) {
+    		short adl_buffer[SAMPLES * 2];
+    		read = adl_play(adlDevice[i], samples_count, (short*)adl_buffer);
+	    	for(int x = 0; x < read * 2; x++) {
+	    		stream[x] += ((Uint8*)adl_buffer)[x];
+	    	}
+    	}
+	}
 
     //mlimbs_callback(NULL, 1);
     mlimbs_timer_callback();
@@ -174,11 +172,31 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 		fclose(bin_file);
 	}
 
-	if(adlDevice != NULL) {
-		SDL_CloseAudio();
+	SDL_CloseAudio();
+	for(int i = 0; i < CHANNELS; i++) {
+		if(adlDevice[i] != NULL) {
+			adl_close(adlDevice[i]);
+			adlDevice[i] = NULL;
+		}
 	}
 
-	adlDevice = adl_init(SAMPLE_RATE);
+	for(int i = 0; i < CHANNELS; i++) {
+		struct ADL_MIDIPlayer *adlD = adl_init(SAMPLE_RATE);
+
+		// Bank 45 is System Shock?
+		adl_setBank(adlD, 45);
+		adl_switchEmulator(adlD, 1);
+	    adl_setLoopEnabled(adlD, 1);
+	    adl_setNumChips(adlD, 1);
+	    adl_setVolumeRangeModel(adlD, 1);
+
+	    adl_openFile(adlD, music_filename);
+    	for(int x = 0; x < 64; x++) {
+			adl_setTrackOptions(adlD, 0, ADLMIDI_TrackOption_Solo);
+	    }
+
+	    adlDevice[i] = adlD;
+	}
 
 	if(adlDevice == NULL) {
 		ERROR("Could not open ADLMIDI");
@@ -195,29 +213,11 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
     spec.callback = SDL_MidiAudioCallback;
     spec.userdata = adlDevice;
 
-    // Bank 45 is System Shock?
-    adl_setBank(adlDevice, 45);
-
     if(SDL_OpenAudio(&spec, &obtained) < 0) {
     	ERROR("Could not open audio for music!\n\n");
     }
 
-    adl_switchEmulator(adlDevice, 1);
-    adl_setLoopEnabled(adlDevice, 1);
-    adl_setNumChips(adlDevice, 4);
-    adl_setVolumeRangeModel(adlDevice, 1);
-
-    if(adl_openFile(adlDevice, music_filename) != 0)
-    {
-    	ERROR("Could not open music file for ADL");
-    }
-
-    for(int i = 1; i < 64; i++) {
-		adl_setTrackOptions(adlDevice, i, ADLMIDI_TrackOption_Off);    	
-    }
-
-    //adl_setTrackOptions(adlDevice, 0, ADLMIDI_TrackOption_On);
-    //adl_setTrackOptions(adlDevice, 9, ADLMIDI_TrackOption_On);
+	//adl_setTrackOptions(adlDevice[0], 0, ADLMIDI_TrackOption_Solo);
 
     SDL_PauseAudio(0);
 
