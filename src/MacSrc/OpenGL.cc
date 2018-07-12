@@ -1,6 +1,8 @@
 #include "OpenGL.h"
 
-#include <GL/glew.h>
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glext.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <glm/glm.hpp>
@@ -22,32 +24,29 @@ static GLuint ebo;
 static GLuint tex;
 
 static const char *VertexShader =
-    "#version 150 core\n"
+    "#version 110\n"
     "\n"
-    "in vec3 position;\n"
-    "in vec2 texcoords;\n"
+    "attribute vec2 texcoords;\n"
     "\n"
-    "out vec2 TexCoords;\n"
+    "varying vec2 TexCoords;\n"
     "\n"
     "uniform mat4 view;\n"
     "uniform mat4 proj;\n"
     "\n"
     "void main() {\n"
     "    TexCoords = texcoords;\n"
-    "    gl_Position = proj * view * vec4(position, 1.0);\n"
+    "    gl_Position = proj * view * gl_Vertex;\n"
     "}\n";
 
 static const char *FragmentShader =
-    "#version 150 core\n"
+    "#version 110\n"
     "\n"
-    "in vec2 TexCoords;\n"
-    "\n"
-    "out vec4 outColor;\n"
+    "varying vec2 TexCoords;\n"
     "\n"
     "uniform sampler2D tex;\n"
     "\n"
     "void main() {\n"
-    "    outColor = texture(tex, TexCoords);\n"
+    "    gl_FragColor = texture2D(tex, TexCoords);\n"
     "}\n";
 
 static GLuint compileShader(GLenum type, const char *source) {
@@ -70,8 +69,6 @@ static GLuint compileShader(GLenum type, const char *source) {
 int init_opengl() {
     context = SDL_GL_CreateContext(window);
 
-    glewInit();
-
     glEnable(GL_DEPTH_TEST);
 
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, VertexShader);
@@ -79,20 +76,8 @@ int init_opengl() {
     shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
-    glBindFragDataLocation(shaderProgram, 0, "outColor");
     glLinkProgram(shaderProgram);
     glUseProgram(shaderProgram);
-
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
-    glGenTextures(1, &tex);
-
-    const GLuint elements[] = {
-        0, 1, 3,
-        1, 2, 3
-    };
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
     auto view = glm::lookAt(
         glm::vec3(0.0f, 0.0f,  0.01f),
@@ -106,20 +91,10 @@ int init_opengl() {
     GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
     glUniformMatrix4fv(uniProj, 1, false, glm::value_ptr(proj));
 
-    uint8_t pixels[64*64*3];
-    uint8_t *p = pixels;
-    for (int i = 0; i < 64; ++i) {
-        for (int j = 0; j < 64; ++j) {
-            *p++ = 4 * i;
-            *p++ = 4 * j;
-            *p++ = 0;
-        }
-    }
-
+    glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 64, 64, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
     return 0;
 }
@@ -159,31 +134,29 @@ int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
 int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     SDL_GL_MakeCurrent(window, context);
 
-    struct g3s_point *p = *vp;
-    const float vertices[] = {
-        p[0].x / 65536.0f,  p[0].y / 65536.0f, -p[0].z / 65536.0f, 0.0, 0.0,
-        p[1].x / 65536.0f,  p[1].y / 65536.0f, -p[1].z / 65536.0f, 1.0, 0.0,
-        p[2].x / 65536.0f,  p[2].y / 65536.0f, -p[2].z / 65536.0f, 1.0, 1.0,
-        p[3].x / 65536.0f,  p[3].y / 65536.0f, -p[3].z / 65536.0f, 0.0, 1.0,
-    };
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-    glEnableVertexAttribArray(posAttrib);
-    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-
-    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
-    glEnableVertexAttribArray(tcAttrib);
-    glVertexAttribPointer(tcAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-
     SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(bm->bits, bm->w, bm->h, 8, bm->row, 0, 0, 0, 0);
     SDL_SetSurfacePalette(surface, sdlPalette);
     SDL_Surface *texture = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB24, 0);
     glBindTexture(GL_TEXTURE_2D, tex);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bm->w, bm->h, 0, GL_RGB, GL_UNSIGNED_BYTE, texture->pixels);
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
+
+    struct g3s_point *p = *vp;
+    glBegin(GL_TRIANGLE_STRIP);
+    glTexCoord2f(0, 0);
+    glVertexAttrib2f(tcAttrib, 0, 0);
+    glVertex3f(p[0].x / 65536.0f,  p[0].y / 65536.0f, -p[0].z / 65536.0f);
+    glTexCoord2f(1, 0);
+    glVertexAttrib2f(tcAttrib, 1, 0);
+    glVertex3f(p[1].x / 65536.0f,  p[1].y / 65536.0f, -p[1].z / 65536.0f);
+    glTexCoord2f(0, 1);
+    glVertexAttrib2f(tcAttrib, 0, 1);
+    glVertex3f(p[3].x / 65536.0f,  p[3].y / 65536.0f, -p[3].z / 65536.0f);
+    glTexCoord2f(1, 1);
+    glVertexAttrib2f(tcAttrib, 1, 1);
+    glVertex3f(p[2].x / 65536.0f,  p[2].y / 65536.0f, -p[2].z / 65536.0f);
+    glEnd();
 
     SDL_FreeSurface(texture);
     SDL_FreeSurface(surface);

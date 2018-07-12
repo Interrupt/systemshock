@@ -315,7 +315,6 @@ target_link_libraries(systemshock
 	FIXPP_LIB
 	${SDL2_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
-	GLEW
 	GL
 )
 
