@@ -2,6 +2,8 @@ Shockolate - System Shock, but cross platform!
 ============================
 Based on the source code for PowerPC released by Night Dive Studios, Incorporated.
 
+[![Build Status](https://travis-ci.org/Laastine/systemshock.svg?branch=travis-build)](https://travis-ci.org/Laastine/systemshock)
+
 GENERAL NOTES
 =============
 
@@ -46,7 +48,7 @@ Compiling / Running
   - SDL2_mixer, 32 bit
   - Original cd-rom or SS:EE assets in a `res/data` folder next to the executable
     - Floppy disk assets are an older version that we can't load currently
-  
+
 ## Building SDL
 ### Linux/Mac
 You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer. VOC support was broken until recently in SDL_mixer, so for sound effects to work you'll probably need to build it from the latest sources like that script does.
