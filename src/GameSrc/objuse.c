@@ -1047,8 +1047,8 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
                 do_multi_stuff(pbigs->data2 >> 16);
                 play_digi_fx_obj(SFX_SURGERY_MACHINE, 1, id);
             }
-            retval = TRUE;
-            break;
+            // return here to prevent 'data1' from being interpreted as object IDs below
+            return TRUE;
 
         case CONTPAN_TRIPLE:
         case CONTPED_TRIPLE:
