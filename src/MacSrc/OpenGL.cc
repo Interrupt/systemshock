@@ -125,6 +125,11 @@ void toggle_opengl() {
     _use_opengl = !_use_opengl;
 }
 
+static void draw_vertex(const g3s_point& vertex, grs_bitmap *bm, GLint tcAttrib) {
+    glVertexAttrib2f(tcAttrib, 0.5f * vertex.uv.u / bm->w, 0.5f * vertex.uv.v / bm->h);
+    glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
+}
+
 int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     return g3_draw_tmap(n, vp, bm);
 }
@@ -137,21 +142,15 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     SDL_Surface *texture = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB24, 0);
     glBindTexture(GL_TEXTURE_2D, tex);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bm->w, bm->h, 0, GL_RGB, GL_UNSIGNED_BYTE, texture->pixels);
-
     GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
 
     struct g3s_point *p = *vp;
     glBegin(GL_TRIANGLE_STRIP);
-    glVertexAttrib2f(tcAttrib, 0, 0);
-    glVertex3f(p[0].x / 65536.0f,  p[0].y / 65536.0f, -p[0].z / 65536.0f);
-    glVertexAttrib2f(tcAttrib, 1, 0);
-    glVertex3f(p[1].x / 65536.0f,  p[1].y / 65536.0f, -p[1].z / 65536.0f);
-    if (n > 3) {
-        glVertexAttrib2f(tcAttrib, 0, 1);
-        glVertex3f(p[3].x / 65536.0f,  p[3].y / 65536.0f, -p[3].z / 65536.0f);
-    }
-    glVertexAttrib2f(tcAttrib, 1, 1);
-    glVertex3f(p[2].x / 65536.0f,  p[2].y / 65536.0f, -p[2].z / 65536.0f);
+    draw_vertex(p[0], bm, tcAttrib);
+    draw_vertex(p[1], bm, tcAttrib);
+    if (n > 3)
+        draw_vertex(p[3], bm, tcAttrib);
+    draw_vertex(p[2], bm, tcAttrib);
     glEnd();
 
     SDL_FreeSurface(texture);
