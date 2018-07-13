@@ -170,7 +170,7 @@ ulong asm high_umpy(ulong a, ulong b)
 long RndRange(RndStream *prs, long low, long high)
 {
 	// HAX HAX HAX should use this library instead of using the std lib random
-	return (rand() % (high - low)) + low;
+	return (rand() % (high - low + 1)) + low;
 }
 
 //	----------------------------------------------------------------
