@@ -17,7 +17,7 @@ function build_sdl {
 	tar xvf SDL2-${SDL_version}.tar.gz
 	pushd SDL2-${SDL_version}
 
-	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --prefix=${install_dir}/built_sdl
+	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" --host=i686-w64-mingw32 --prefix=${install_dir}/built_sdl
 	remove_mwindows
 	make
 	make install
@@ -29,7 +29,8 @@ function build_sdl_mixer {
 	git clone https://github.com/SDL-mirror/SDL_mixer.git
 	pushd SDL_mixer
 
-	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --prefix=${install_dir}/built_sdl_mixer
+	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" --host=i686-w64-mingw32 --disable-sdltest --with-sdl-prefix=${install_dir}/built_sdl --prefix=${install_dir}/built_sdl_mixer 
+	
 	remove_mwindows
 	make
 	make install
@@ -71,13 +72,20 @@ fi
 
 # Back to the root directory, copy SDL DLL files for the executable
 cd ..
-cp /usr/local/bin/SDL*.dll .
+cp build_ext/built_sdl/bin/SDL*.dll .
+cp build_ext/built_sdl_mixer/bin/SDL*.dll .
 
 # Set up build.bat
-# TODO: conditional on whether CMake was downloaded
-echo "@echo off
-set PATH=%PATH%;${CMAKE_ROOT}
-cmake -G \"MinGW Makefiles\" .
-mingw32-make systemshock" >build.bat
+if [[ -z "${APPVEYOR}" ]]; then
+	echo "Normal build"
+	echo "@echo off
+	set PATH=%PATH%;${CMAKE_ROOT}
+	cmake -G \"MinGW Makefiles\" .
+	mingw32-make systemshock" >build.bat
+else
+	echo "Appveyor"
+	echo "cmake -G \"Unix Makefiles\" . 
+	make systemshock" >build.bat
+fi
 
 echo "Our work here is done. Run BUILD.BAT in a Windows shell to build the actual source."
