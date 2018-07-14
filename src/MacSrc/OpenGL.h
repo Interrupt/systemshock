@@ -14,6 +14,7 @@ void opengl_resize(int width, int height);
 
 int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
 int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
+int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 
 #ifdef __cplusplus
 }

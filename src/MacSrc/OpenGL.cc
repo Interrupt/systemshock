@@ -10,6 +10,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "mainloop.h"
+#include "frflags.h"
+#include "Shock.h"
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
@@ -69,6 +71,9 @@ static GLuint compileShader(GLenum type, const char *source) {
 int init_opengl() {
     context = SDL_GL_CreateContext(window);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, VertexShader);
     GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, FragmentShader);
     shaderProgram = glCreateProgram();
@@ -76,18 +81,6 @@ int init_opengl() {
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
     glUseProgram(shaderProgram);
-
-    auto view = glm::lookAt(
-        glm::vec3(0.0f, 0.0f,  0.01f),
-        glm::vec3(0.0f, 0.0f, -100.0f),
-        glm::vec3(0.0f, 1.0f,  0.0f)
-    );
-    GLint uniView = glGetUniformLocation(shaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, false, glm::value_ptr(view));
-
-    auto proj = glm::perspective(glm::radians(89.5f), 1.0f, 0.1f, 100.0f);
-    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, false, glm::value_ptr(proj));
 
     glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);
@@ -118,11 +111,35 @@ void opengl_resize(int width, int height) {
 }
 
 bool use_opengl() {
-    return _use_opengl && _current_loop == FULLSCREEN_LOOP;
+    extern uint _fr_curflags;
+    return _use_opengl &&
+           _current_loop == FULLSCREEN_LOOP &&
+           !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 void toggle_opengl() {
     _use_opengl = !_use_opengl;
+}
+
+static void set_texture(grs_bitmap *bm) {
+    // This function is too slow! Need to find a way to do it once per
+    // bitmap, not for each surface to be drawn.
+    // TODO: Translucent bitmaps
+
+    SDL_Surface *surface;
+    if (bm->type == BMT_RSD8) {
+        grs_bitmap decoded;
+        gr_rsd8_convert(bm, &decoded);
+        surface = SDL_CreateRGBSurfaceFrom(decoded.bits, bm->w, bm->h, 8, bm->row, 0, 0, 0, 0);
+    } else {
+        surface = SDL_CreateRGBSurfaceFrom(bm->bits, bm->w, bm->h, 8, bm->row, 0, 0, 0, 0);
+    }
+    SDL_SetSurfacePalette(surface, sdlPalette);
+    SDL_Surface *texture = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
+    SDL_FreeSurface(texture);
+    SDL_FreeSurface(surface);
 }
 
 static void draw_vertex(const g3s_point& vertex, grs_bitmap *bm, GLint tcAttrib) {
@@ -131,17 +148,33 @@ static void draw_vertex(const g3s_point& vertex, grs_bitmap *bm, GLint tcAttrib)
 }
 
 int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
-    return g3_draw_tmap(n, vp, bm);
+    return opengl_light_tmap(n, vp, bm);
 }
 
 int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
+    if (n != 3 && n != 4) {
+        WARN("Unexpected number of texture vertices (%d)", n);
+        return CLIP_ALL;
+    }
+
     SDL_GL_MakeCurrent(window, context);
 
-    SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(bm->bits, bm->w, bm->h, 8, bm->row, 0, 0, 0, 0);
-    SDL_SetSurfacePalette(surface, sdlPalette);
-    SDL_Surface *texture = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB24, 0);
-    glBindTexture(GL_TEXTURE_2D, tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bm->w, bm->h, 0, GL_RGB, GL_UNSIGNED_BYTE, texture->pixels);
+    auto view = glm::lookAt(
+        glm::vec3(0.0f, 0.0f,  0.01f),
+        glm::vec3(0.0f, 0.0f, -100.0f),
+        glm::vec3(0.0f, 1.0f,  0.0f)
+    );
+    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    glUniformMatrix4fv(uniView, 1, false, glm::value_ptr(view));
+
+    auto proj = glm::perspective(glm::radians(89.5f), 1.0f, 0.1f, 100.0f);
+    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    glUniformMatrix4fv(uniProj, 1, false, glm::value_ptr(proj));
+
+    set_texture(bm);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
 
     struct g3s_point *p = *vp;
@@ -153,7 +186,45 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     draw_vertex(p[2], bm, tcAttrib);
     glEnd();
 
-    SDL_FreeSurface(texture);
-    SDL_FreeSurface(surface);
-    return 0;
+    return CLIP_NONE;
+}
+
+int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
+    if (n != 4) {
+        WARN("Unexpected number of bitmap vertices (%d)", n);
+        return CLIP_ALL;
+    }
+
+    SDL_GL_MakeCurrent(window, context);
+
+    glm::mat4 view(1.0f);
+    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    glUniformMatrix4fv(uniView, 1, false, glm::value_ptr(view));
+
+    glm::mat4 proj(1.0f);
+    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    glUniformMatrix4fv(uniProj, 1, false, glm::value_ptr(proj));
+
+    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
+
+    set_texture(bm);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    auto convx = [](float x) { return  x/32768.0f / gScreenWide - 1; };
+    auto convy = [](float y) { return -y/32768.0f / gScreenHigh + 1; };
+
+    grs_vertex *v = *vpl;
+    glBegin(GL_TRIANGLE_STRIP);
+    glVertexAttrib2f(tcAttrib, 0.0f, 0.0f);
+    glVertex3f(convx(v[0].x), convy(v[0].y), 0.0f);
+    glVertexAttrib2f(tcAttrib, 1.0f, 0.0f);
+    glVertex3f(convx(v[1].x), convy(v[1].y), 0.0f);
+    glVertexAttrib2f(tcAttrib, 0.0f, 1.0f);
+    glVertex3f(convx(v[3].x), convy(v[3].y), 0.0f);
+    glVertexAttrib2f(tcAttrib, 1.0f, 1.0f);
+    glVertex3f(convx(v[2].x), convy(v[2].y), 0.0f);
+    glEnd();
+
+    return CLIP_NONE;
 }

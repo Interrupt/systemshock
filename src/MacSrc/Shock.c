@@ -295,6 +295,7 @@ void SetSDLPalette(int index, int count, uchar *pal)
 	gamePalette[255].g = 0x0;
 	gamePalette[255].b = 0x0;
 	gamePalette[255].a = 0x0;
+	gamePalette[0].a = 0x0;
 
 	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
 	SDL_SetSurfacePalette(drawSurface, sdlPalette);
