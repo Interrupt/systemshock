@@ -1,31 +1,36 @@
+# Shockolate AppVeyor configuration 
+# YAML format reference: https://www.appveyor.com/docs/appveyor-yml/
+
+# This determines the disk image AppVeyor uses while building
 # Despite its name, this image actually contains all sorts of non-VC goodies
-# https://www.appveyor.com/docs/build-environment/ for all the details
+# See https://www.appveyor.com/docs/build-environment/ for all the details
 image: Visual Studio 2015
 
-# appveyor-config can, of course, be removed once the branch is merged to master
+# For now, let's configure AppVeyor to build on every commit made to master
+# The appveyor-config branch can, of course, be removed once the branch is merged to master
 branches:
   only:
     - master
     - appveyor-config
 
-# This is necessary because Appveyor creates a tag for artifacts it releases
+# This is necessary because AppVeyor creates a tag for otherwise untagged artifacts it releases
 # -- so without this we'd create releases forever
 skip_tags: true    
 
-# Tell build_windows.sh that we're building for Appveyor
+# Tell build_windows.sh that we're building for AppVeyor
 environment:
   APPVEYOR: TRUE
-    
-cache:
-  - build_ext  # uncache this if external deps change (eg. SDL_mixer 2.0.3 gets released)
 
+# Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
+# Uncache build_ext if external deps change (eg. SDL_mixer 2.0.3 gets released)
+cache:
+  - build_ext  
+
+# Actual build script..
 # Step 1: Git has to reside in a path without spaces because the SDL build script is weird like that.
 #         So we create a symlink to the real Git, remove it from PATH and add our own.
 # Step 2: We need to use our own make.exe to build stuff, so we add that
-# Step 3: We tell build_windows.sh to create an Appveyor batch file. 
-#         There's actually an "environment" option that I should test to see if APPVEYOR=TRUE could reside there
-# Step 4: Do the actual building
-
+# Step 3: Do the actual building
 build_script:
   - mklink /D c:\git "C:\Program Files\Git"
   - set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
@@ -35,10 +40,10 @@ build_script:
   - sh build_windows.sh
   - build.bat
 
+# For now, we don't have any automatic tests to run
 test: off
 
 # Once building is done, we gather all the necessary DLL files and build our ZIP file.
-
 after_build:
   - copy c:\mingw\bin\libgcc*.dll .
   - copy c:\git\mingw64\bin\libstd*.dll .
@@ -50,8 +55,9 @@ artifacts:
   - path: systemshock.zip
     name: Shockolate
 
-# FIXME: Replace the auth_token with your own
-    
+# Finally, we deploy the ZIP file as a GitHub release
+# FIXME: Replace the auth_token with your own 
+# TODO: invent a better versioning scheme for the tag name
 deploy:
   - provider: GitHub
     release: Shockolate-v$(appveyor_build_version)
