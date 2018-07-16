@@ -1,0 +1,61 @@
+# Despite its name, this image actually contains all sorts of non-VC goodies
+# https://www.appveyor.com/docs/build-environment/ for all the details
+image: Visual Studio 2015
+
+# appveyor-config can, of course, be removed once the branch is merged to master
+branches:
+  only:
+    - master
+    - appveyor-config
+
+# This is necessary because Appveyor creates a tag for artifacts it releases
+# -- so without this we'd create releases forever
+skip_tags: true    
+
+# Tell build_windows.sh that we're building for Appveyor
+environment:
+  APPVEYOR: TRUE
+    
+cache:
+  - build_ext  # uncache this if external deps change (eg. SDL_mixer 2.0.3 gets released)
+
+# Step 1: Git has to reside in a path without spaces because the SDL build script is weird like that.
+#         So we create a symlink to the real Git, remove it from PATH and add our own.
+# Step 2: We need to use our own make.exe to build stuff, so we add that
+# Step 3: We tell build_windows.sh to create an Appveyor batch file. 
+#         There's actually an "environment" option that I should test to see if APPVEYOR=TRUE could reside there
+# Step 4: Do the actual building
+
+build_script:
+  - mklink /D c:\git "C:\Program Files\Git"
+  - set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
+  - set PATH=c:\git\usr\bin;%PATH%;C:\MinGW\bin
+  - copy windows\make.exe \git\usr\bin
+  - set CMAKE_MAKE_PROGRAM=c:\git\usr\bin\make.exe
+  - sh build_windows.sh
+  - build.bat
+
+test: off
+
+# Once building is done, we gather all the necessary DLL files and build our ZIP file.
+
+after_build:
+  - copy c:\mingw\bin\libgcc*.dll .
+  - copy c:\git\mingw64\bin\libstd*.dll .
+  - copy build_ext\built_sdl\bin\SDL*.dll .
+  - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
+  - 7z a systemshock.zip systemshock.exe *.dll 
+
+artifacts:
+  - path: systemshock.zip
+    name: Shockolate
+
+# FIXME: Replace the auth_token with your own
+    
+deploy:
+  - provider: GitHub
+    release: Shockolate-v$(appveyor_build_version)
+    description: 'Latest master branch build of Shockolate for Windows'
+    artifact: systemshock.zip
+    auth_token:
+      secure: 4oa2yc5W2R7oqYQfqkQnqi2yl0v5tSeh58GS+su7tsAXMaM77BeWhSDs+p7T4cWy
