@@ -1,0 +1,16 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "cppdbg",
+      "name": "SShock",
+      "project": "",
+      "cwd": "${workspaceRoot}",
+      "program": "${workspaceRoot}\\build\\x86-Debug\\systemshock.exe",
+      "MIMode": "gdb",
+      "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
+      "externalConsole": true
+    }
+  ]
+}
