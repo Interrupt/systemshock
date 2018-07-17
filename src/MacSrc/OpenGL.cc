@@ -71,6 +71,7 @@ static GLuint compileShader(GLenum type, const char *source) {
 int init_opengl() {
     context = SDL_GL_CreateContext(window);
 
+    glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -177,13 +178,12 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
 
     GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
 
-    struct g3s_point *p = *vp;
     glBegin(GL_TRIANGLE_STRIP);
-    draw_vertex(p[0], bm, tcAttrib);
-    draw_vertex(p[1], bm, tcAttrib);
+    draw_vertex(*(vp[1]), bm, tcAttrib);
+    draw_vertex(*(vp[0]), bm, tcAttrib);
+    draw_vertex(*(vp[2]), bm, tcAttrib);
     if (n > 3)
-        draw_vertex(p[3], bm, tcAttrib);
-    draw_vertex(p[2], bm, tcAttrib);
+        draw_vertex(*(vp[3]), bm, tcAttrib);
     glEnd();
 
     return CLIP_NONE;
@@ -216,14 +216,14 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
 
     grs_vertex *v = *vpl;
     glBegin(GL_TRIANGLE_STRIP);
-    glVertexAttrib2f(tcAttrib, 0.0f, 0.0f);
-    glVertex3f(convx(v[0].x), convy(v[0].y), 0.0f);
     glVertexAttrib2f(tcAttrib, 1.0f, 0.0f);
     glVertex3f(convx(v[1].x), convy(v[1].y), 0.0f);
-    glVertexAttrib2f(tcAttrib, 0.0f, 1.0f);
-    glVertex3f(convx(v[3].x), convy(v[3].y), 0.0f);
+    glVertexAttrib2f(tcAttrib, 0.0f, 0.0f);
+    glVertex3f(convx(v[0].x), convy(v[0].y), 0.0f);
     glVertexAttrib2f(tcAttrib, 1.0f, 1.0f);
     glVertex3f(convx(v[2].x), convy(v[2].y), 0.0f);
+    glVertexAttrib2f(tcAttrib, 0.0f, 1.0f);
+    glVertex3f(convx(v[3].x), convy(v[3].y), 0.0f);
     glEnd();
 
     return CLIP_NONE;
