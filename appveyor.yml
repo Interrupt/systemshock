@@ -55,6 +55,8 @@ artifacts:
   - path: systemshock.zip
     name: Shockolate
 
+version: '0.5.{build}'
+
 # Finally, we deploy the ZIP file as a GitHub release
 # FIXME: Replace the auth_token with your own 
 # TODO: invent a better versioning scheme for the tag name
