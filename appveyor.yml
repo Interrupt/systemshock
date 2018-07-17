@@ -11,7 +11,6 @@ image: Visual Studio 2015
 branches:
   only:
     - master
-    - appveyor-config
 
 # This is necessary because AppVeyor creates a tag for otherwise untagged artifacts it releases
 # -- so without this we'd create releases forever
@@ -64,4 +63,4 @@ deploy:
     description: 'Latest master branch build of Shockolate for Windows'
     artifact: systemshock.zip
     auth_token:
-      secure: 4oa2yc5W2R7oqYQfqkQnqi2yl0v5tSeh58GS+su7tsAXMaM77BeWhSDs+p7T4cWy
+      secure: P1kIk8rRxKAYHqDrOWf0Zf5spfR+N86E0lO8VBu99vHtECJgPLn/Z6tBmL9cxPah  
