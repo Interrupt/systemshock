@@ -73,6 +73,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "objmode.h"
 
+#include "OpenGL.h"
+
 #define VOXEL_PIX_DIST_BASE (fix_make(0, 0x1000))
 #define VOXEL_PIX_DIST_DELTA (fix_make(0, 0x6000))
 // this is obfuscated to put it mildly
@@ -543,6 +545,8 @@ void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar 
         gr_set_fill_parm(_fr_clut_list[curr_clut_table] + (_sq_lght & 0xf00));
         fpoly_rend(col_val, 4, plst);
         gr_set_fill_type(cur_ft);
+    } else if (use_opengl()) {
+        opengl_light_tmap(4, plst, draw_bm);
     } else {
         g3_light_tmap(4, plst, draw_bm);
     }
@@ -567,6 +571,8 @@ void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar 
                 gr_set_fill_parm(_fr_clut_list[curr_clut_table] + (_sq_lght & 0xf00));
                 fpoly_rend(col_val, 4, plst);
                 gr_set_fill_type(cur_ft);
+            } else if (use_opengl()) {
+                opengl_light_tmap(4, plst, draw_bm);
             } else {
                 g3_light_tmap(4, plst, draw_bm);
             }

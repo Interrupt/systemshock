@@ -144,7 +144,7 @@ static void set_texture(grs_bitmap *bm) {
 }
 
 static void draw_vertex(const g3s_point& vertex, grs_bitmap *bm, GLint tcAttrib) {
-    glVertexAttrib2f(tcAttrib, 0.5f * vertex.uv.u / bm->w, 0.5f * vertex.uv.v / bm->h);
+    glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
     glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
 }
 
