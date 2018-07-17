@@ -701,6 +701,7 @@ int fr_start_view(void) {
             _fr_lit_wall_func = g3_light_tmap;
             _fr_wall_func = g3_draw_tmap;
         }
+        g3_reset_tmaps();
     } else {
         /* Use linear texture maps unless 1d wall applicable. */
         if ((((viewer_orientation.bank + (FIXANG_EPS / 2)) & FIXANG_MASK) < FIXANG_EPS) &&
@@ -715,6 +716,7 @@ int fr_start_view(void) {
         _fr_floor_func = g3_draw_lmap;
         _fr_lit_per_func = g3_light_lmap;
         _fr_per_func = g3_draw_lmap;
+        g3_set_tmaps_linear();
     }
 
 #ifdef _FR_PIXPROF
