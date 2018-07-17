@@ -48,7 +48,8 @@ after_build:
   - copy c:\git\mingw64\bin\libstd*.dll .
   - copy build_ext\built_sdl\bin\SDL*.dll .
   - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
-  - 7z a systemshock.zip systemshock.exe *.dll 
+  - copy readme\readme-windows.txt readme.txt
+  - 7z a systemshock.zip systemshock.exe *.dll readme.txt
 
 artifacts:
   - path: systemshock.zip
