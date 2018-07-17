@@ -58,12 +58,13 @@ artifacts:
 version: '0.5.{build}'
 
 # Finally, we deploy the ZIP file as a GitHub release
-# FIXME: Replace the auth_token with your own 
+# FIXME: How do we want to be building releases? Seems like this would be better as a manual process
 # TODO: invent a better versioning scheme for the tag name
-deploy:
-  - provider: GitHub
-    release: Shockolate-v$(appveyor_build_version)
-    description: 'Latest master branch build of Shockolate for Windows'
-    artifact: systemshock.zip
-    auth_token:
-      secure: P1kIk8rRxKAYHqDrOWf0Zf5spfR+N86E0lO8VBu99vHtECJgPLn/Z6tBmL9cxPah  
+
+#deploy:
+#  - provider: GitHub
+#    release: Shockolate-v$(appveyor_build_version)
+#    description: 'Latest master branch build of Shockolate for Windows'
+#    artifact: systemshock.zip
+#    auth_token:
+#      secure: P1kIk8rRxKAYHqDrOWf0Zf5spfR+N86E0lO8VBu99vHtECJgPLn/Z6tBmL9cxPah  
