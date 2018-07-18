@@ -49,10 +49,10 @@ after_build:
   - copy build_ext\built_sdl\bin\SDL*.dll .
   - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
   - copy readme\readme-windows.txt readme.txt
-  - 7z a systemshock.zip systemshock.exe *.dll readme.txt
+  - 7z a systemshock-windows-$(appveyor_build_version).zip systemshock.exe *.dll readme.txt
 
 artifacts:
-  - path: systemshock.zip
+  - path: systemshock-windows-$(appveyor_build_version).zip
     name: Shockolate
 
 version: '0.5.{build}'
