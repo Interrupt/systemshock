@@ -6,12 +6,6 @@
 # See https://www.appveyor.com/docs/build-environment/ for all the details
 image: Visual Studio 2015
 
-# For now, let's configure AppVeyor to build on every commit made to master
-# The appveyor-config branch can, of course, be removed once the branch is merged to master
-branches:
-  only:
-    - master
-
 # Tell build_windows.sh that we're building for AppVeyor
 environment:
   APPVEYOR: TRUE
