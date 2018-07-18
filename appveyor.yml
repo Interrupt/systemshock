@@ -12,10 +12,6 @@ branches:
   only:
     - master
 
-# This is necessary because AppVeyor creates a tag for otherwise untagged artifacts it releases
-# -- so without this we'd create releases forever
-skip_tags: true    
-
 # Tell build_windows.sh that we're building for AppVeyor
 environment:
   APPVEYOR: TRUE
