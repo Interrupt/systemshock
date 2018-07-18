@@ -54,7 +54,7 @@ version: '0.5.{build}'
 deploy:
   - provider: GitHub
     release: $(appveyor_repo_tag_name)
-    description: 'Latest master branch build of Shockolate'
+    description: 'Latest release build of Shockolate'
     artifact: systemshock-windows.zip
     auth_token:
       secure: P1kIk8rRxKAYHqDrOWf0Zf5spfR+N86E0lO8VBu99vHtECJgPLn/Z6tBmL9cxPah  
