@@ -20,6 +20,9 @@ endif()
 
 add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
 
+# Find OpenGL
+find_package(OpenGL)
+
 # Find SDL, trying the easy way and then the hard way
 find_package(SDL2)
 
@@ -315,7 +318,7 @@ target_link_libraries(systemshock
 	FIXPP_LIB
 	${SDL2_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
-	GL
+	${OPENGL_LIBRARIES}
 )
 
 # Turn on address sanitizing if wanted

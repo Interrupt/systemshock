@@ -1,13 +1,21 @@
 #include "OpenGL.h"
 
 #define GL_GLEXT_PROTOTYPES
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include </usr/local/include/glm/glm.hpp>
+#include </usr/local/include/glm/gtc/matrix_transform.hpp>
+#include </usr/local/include/glm/gtc/type_ptr.hpp>
+#else
 #include <GL/gl.h>
 #include <GL/glext.h>
-#include <SDL.h>
-#include <SDL_opengl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#endif
+
+#include <SDL.h>
+#include <SDL_opengl.h>
 
 #include "mainloop.h"
 #include "frflags.h"
@@ -116,11 +124,19 @@ void opengl_resize(int width, int height) {
     }
 }
 
-bool use_opengl() {
-    extern uint _fr_curflags;
-    return _use_opengl &&
-           _current_loop == FULLSCREEN_LOOP &&
-           !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
+extern "C" {
+    bool use_opengl() {
+        extern uint _fr_curflags;
+        return _use_opengl &&
+               _current_loop == FULLSCREEN_LOOP &&
+               !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
+    }
+
+    bool should_opengl_swap() {
+        extern uint _fr_curflags;
+        return _use_opengl &&
+               _current_loop == FULLSCREEN_LOOP;
+    }
 }
 
 void toggle_opengl() {
@@ -166,7 +182,7 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
 
     SDL_GL_MakeCurrent(window, context);
 
-    auto view = glm::lookAt(
+    glm::mat4 view = glm::lookAt(
         glm::vec3(0.0f, 0.0f,  0.01f),
         glm::vec3(0.0f, 0.0f, -100.0f),
         glm::vec3(0.0f, 1.0f,  0.0f)
@@ -174,7 +190,7 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     GLint uniView = glGetUniformLocation(shaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, false, glm::value_ptr(view));
 
-    auto proj = glm::perspective(glm::radians(89.5f), 1.0f, 0.1f, 100.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(89.5f), 1.0f, 0.1f, 100.0f);
     GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
     glUniformMatrix4fv(uniProj, 1, false, glm::value_ptr(proj));
 
@@ -194,6 +210,14 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     glEnd();
 
     return CLIP_NONE;
+}
+
+float convx(float x) {
+    return  x/32768.0f / gScreenWide - 1;
+}
+
+float convy(float y) {
+    return -y/32768.0f / gScreenHigh + 1;
 }
 
 int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
@@ -218,9 +242,6 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     set_texture(bm);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    auto convx = [](float x) { return  x/32768.0f / gScreenWide - 1; };
-    auto convy = [](float y) { return -y/32768.0f / gScreenHigh + 1; };
 
     float light = 1.0f;
     if (ti->flags & TMF_CLUT) {
