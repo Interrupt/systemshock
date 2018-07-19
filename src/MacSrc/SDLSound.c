@@ -14,11 +14,11 @@ int snd_start_digital(void) {
 	// Startup the sound system
 
 	if(Mix_Init(MIX_INIT_MP3) < 0) {
-		DebugString("SDL_Mixer: Init failed");
+		ERROR("%s: Init failed", __FUNCTION__);
 	}
 
 	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
-		DebugString("SDL_Mixer: Couldn't open audio device");	
+		ERROR("%s: Couldn't open audio device", __FUNCTION__);
 	}
 
 	Mix_AllocateChannels(SND_MAX_SAMPLES);
@@ -32,13 +32,13 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 
 	Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromConstMem(smp, len), 1);
 	if (sample == NULL) {
-		DebugString("SDL_Mixer: Failed to load sample");
+		DEBUG("%s: Failed to load sample", __FUNCTION__);
 		return ERR_NOEFFECT;
 	}
 
 	int channel = Mix_PlayChannel(-1, sample, 0);
 	if (channel < 0) {
-		DebugString("SDL_Mixer: Failed to play sample");
+		DEBUG("%s: Failed to play sample", __FUNCTION__);
 		Mix_FreeChunk(sample);
 		return ERR_NOEFFECT;
 	}
