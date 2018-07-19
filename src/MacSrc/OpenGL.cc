@@ -17,21 +17,21 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 
-#include "mainloop.h"
-#include "map.h"
-#include "frflags.h"
-#include "Shock.h"
+extern "C" {
+    #include "mainloop.h"
+    #include "map.h"
+    #include "frflags.h"
+    #include "Shock.h"
 
-extern SDL_Window *window;
-extern SDL_Renderer *renderer;
-extern SDL_Palette *sdlPalette;
+    extern SDL_Renderer *renderer;
+    extern SDL_Palette *sdlPalette;
+    extern uint _fr_curflags;
+}
 
 bool _use_opengl = true;
 
 static SDL_GLContext context;
 static GLuint shaderProgram;
-static GLuint vbo;
-static GLuint ebo;
 static GLuint tex;
 
 static const char *VertexShader =
@@ -126,7 +126,6 @@ void opengl_resize(int width, int height) {
 }
 
 bool use_opengl() {
-    extern uint _fr_curflags;
     return _use_opengl &&
            _current_loop == FULLSCREEN_LOOP &&
            !global_fullmap->cyber &&
