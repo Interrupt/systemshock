@@ -87,14 +87,14 @@ static const float IdentityMatrix[] = {
 
 static GLuint compileShader(GLenum type, const char *source) {
     GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &source, nullptr);
+    glShaderSource(shader, 1, &source, NULL);
     glCompileShader(shader);
 
     GLint status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
         char buffer[512];
-        glGetShaderInfoLog(shader, 512, nullptr, buffer);
+        glGetShaderInfoLog(shader, 512, NULL, buffer);
         printf("Error compiling shader!\n");
         puts(buffer);
         exit(1);
