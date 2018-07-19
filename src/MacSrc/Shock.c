@@ -313,9 +313,15 @@ void SDLDraw()
 	SDL_Rect srcRect = { 0, 0, gScreenWide, gScreenHigh };
 	SDL_RenderCopy(renderer, texture, &srcRect, NULL);
 	SDL_DestroyTexture(texture);
-	//SDL_RenderPresent(renderer);
-	//SDL_RenderClear(renderer);
-	SDL_GL_SwapWindow(window);
+
+	extern bool should_opengl_swap(void);
+	if(should_opengl_swap()) {
+		SDL_GL_SwapWindow(window);
+	}
+	else {
+		SDL_RenderPresent(renderer);
+		SDL_RenderClear(renderer);	
+	}
 
 	// check OpenGL error
     GLenum err;

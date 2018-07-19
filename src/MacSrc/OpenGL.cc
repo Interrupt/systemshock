@@ -124,11 +124,19 @@ void opengl_resize(int width, int height) {
     }
 }
 
-bool use_opengl() {
-    extern uint _fr_curflags;
-    return _use_opengl &&
-           _current_loop == FULLSCREEN_LOOP &&
-           !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
+extern "C" {
+    bool use_opengl() {
+        extern uint _fr_curflags;
+        return _use_opengl &&
+               _current_loop == FULLSCREEN_LOOP &&
+               !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
+    }
+
+    bool should_opengl_swap() {
+        extern uint _fr_curflags;
+        return _use_opengl &&
+               _current_loop == FULLSCREEN_LOOP;
+    }
 }
 
 void toggle_opengl() {
