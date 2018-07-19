@@ -18,6 +18,7 @@
 #include <SDL_opengl.h>
 
 #include "mainloop.h"
+#include "map.h"
 #include "frflags.h"
 #include "Shock.h"
 
@@ -128,12 +129,14 @@ bool use_opengl() {
     extern uint _fr_curflags;
     return _use_opengl &&
            _current_loop == FULLSCREEN_LOOP &&
+           !global_fullmap->cyber &&
            !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 bool should_opengl_swap() {
     return _use_opengl &&
-           _current_loop == FULLSCREEN_LOOP;
+           _current_loop == FULLSCREEN_LOOP &&
+           !global_fullmap->cyber;
 }
 
 void toggle_opengl() {
