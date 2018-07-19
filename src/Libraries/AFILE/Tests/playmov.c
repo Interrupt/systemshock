@@ -4,7 +4,7 @@
 
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include <afile.h>
+#include <stdio.h>
 
 #include "afile.h"
 #include "movie.h"
@@ -14,6 +14,7 @@ int32_t gScreenRowbytes = 1024;
 
 int main(int argc, char *argv[]) {
 
+    FILE *fp;
     Afile *afile = malloc(sizeof(Afile));
     int32_t audio_length, bitmap_length;
     char *infile;
@@ -28,7 +29,14 @@ int main(int argc, char *argv[]) {
     }
     infile = argv[1];
 
-    if (AfileOpen(afile, infile) < 0) {
+    // Open file
+    fp = fopen(infile, "rb");
+    if (fp == NULL) {
+        ERROR("%s: can't open file", __FUNCTION__);
+        return -2;
+    }
+
+    if (AfileOpen(afile, fp, AFILE_MOV) < 0) {
         ERROR("Can't open: %s", infile);
         return 1;
     }
@@ -70,6 +78,8 @@ int main(int argc, char *argv[]) {
     free(buffer);
     Mix_FreeChunk(sample);
     SDL_Quit();
+    AfileFree(afile);
+    fclose(fp);
 
     DEBUG("We hope you have a pleasant stay on Citadel Station");
     return 0;

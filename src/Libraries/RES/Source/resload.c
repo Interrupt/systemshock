@@ -57,55 +57,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //		id = resource id
 //	-----------------------------------------------------------
-//  For Mac version:  Call Resource Mgr call LoadResource.
 
 void *ResLoadResource(Id id) {
-  ResDesc *prd;
-  ResDesc2 *prd2;
+    ResDesc *prd;
 
-  // If doesn't exit, forget it
+    // If doesn't exit, forget it
+    if (!ResInUse(id))
+        return NULL;
+    if (!ResCheckId(id))
+        return NULL;
 
-  // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResInUse(id))
-    return NULL;
-  //});
-  // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResCheckId(id))
-    return NULL;
-  //});
+    TRACE("%s loading $%x", __FUNCTION__, id);
 
-  SpewArgs("resload", "ResLoadResource: loading $%x\n", id);
+    prd = RESDESC(id);
 
-  prd = RESDESC(id);
-  prd2 = RESDESC2(id);
+    if (prd->size == 0) {
+        return NULL;
+    }
 
-  if (prd->size == 0) {
-    return NULL;
-  }
+    // Allocate memory, setting magic id so pager can tell who it is if need be.
+    prd->ptr = malloc(prd->size);
+    if (prd->ptr == NULL)
+        return (NULL);
 
-  // Allocate memory, setting magic id so pager can tell who it is if need be.
+    // Load from disk
+    ResRetrieve(id, prd->ptr);
 
-  prd->ptr = malloc(prd->size);
-  if (prd->ptr == NULL)
-    return (NULL);
-
-  // Tally memory allocated to resources
-
-  // DBG(DSRC_RES_Stat, {resStat.totMemAlloc += prd->size;});
-  // Spew(DSRC_RES_Stat, ("ResLoadResource: loading id: $%x, alloc %d, total
-  // now %d bytes\n", 		id, prd->size, resStat.totMemAlloc));
-
-  // Add to cumulative stats
-  // CUMSTATS(id,numLoads);
-
-  // Load from disk
-  ResRetrieve(id, prd->ptr);
-
-  // Tally stats
-  // DBG(DSRC_RES_Stat, {resStat.numLoaded++;});
-
-  // Return ptr
-  return (prd->ptr);
+    // Return ptr
+    return (prd->ptr);
 }
 
 //	---------------------------------------------------------
@@ -118,54 +97,49 @@ void *ResLoadResource(Id id) {
 //	Returns: TRUE if retrieved, FALSE if problem
 
 bool ResRetrieve(Id id, void *buffer) {
-  ResDesc *prd;
-  ResDesc2 *prd2;
-  FILE *fd;
-  uint8_t *p;
-  int32_t size;
-  RefIndex numRefs;
+    ResDesc *prd;
+    ResDesc2 *prd2;
+    FILE *fd;
+    uint8_t *p;
+    int32_t size;
+    RefIndex numRefs;
 
-  // Check id and file number
+    // Check id and file number
+    if (!ResCheckId(id)) {
+        TRACE("%s: failed ResCheckId! %x\n", __FUNCTION__, id);
+        return false;
+    }
 
-  // DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return FALSE;});
+    prd = RESDESC(id);
+    prd2 = RESDESC2(id);
+    fd = resFile[prd->filenum].fd;
 
-  if (!ResCheckId(id)) {
-    printf("ResRetrieve failed ResCheckId! %x\n", id);
-    return false;
-  }
+    if (fd == NULL) {
+        WARN("%s: id $%x doesn't exist", __FUNCTION__, id);
+        return false;
+    }
 
-  prd = RESDESC(id);
-  prd2 = RESDESC2(id);
-  fd = resFile[prd->filenum].fd;
+    // Seek to data, set up
+    fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
+    p = (uint8_t *)buffer;
+    size = prd->size;
 
-  //	DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
-//		Warning(("ResRetrieve: id $%x doesn't exist\n", id)); \
-//		return FALSE; \
-//		}});
-  if (fd == NULL)
-    return false;
+    // If compound, read in ref table
+    if (prd2->flags & RDF_COMPOUND) {
+        fread(p, sizeof(int16_t), 1, fd);
+        numRefs = *(uint16_t *)p;
+        p += sizeof(int16_t);
+        fread(p, sizeof(int32_t), (numRefs + 1), fd);
+        p += sizeof(int32_t) * (numRefs + 1);
+        size -= REFTABLESIZE(numRefs);
+    }
 
-  // Seek to data, set up
-  fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
-  p = (uint8_t *)buffer;
-  size = prd->size;
+    // Read in data
+    if (prd2->flags & RDF_LZW) {
+        LzwExpandFp2Buff(fd, p, 0, 0);
+    } else {
+        fread(p, size, 1, fd);
+    }
 
-  // If compound, read in ref table
-  if (prd2->flags & RDF_COMPOUND) {
-    fread(p, sizeof(int16_t), 1, fd);
-    numRefs = *(int16_t *)p;
-    p += sizeof(int16_t);
-    fread(p, sizeof(int32_t), (numRefs + 1), fd);
-    p += sizeof(int32_t) * (numRefs + 1);
-    size -= REFTABLESIZE(numRefs);
-  }
-
-  // Read in data
-  if (prd2->flags & RDF_LZW) {
-    LzwExpandFp2Buff(fd, p, 0, 0);
-  } else {
-    fread(p, size, 1, fd);
-  }
-
-  return true;
+    return true;
 }

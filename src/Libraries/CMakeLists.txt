@@ -209,7 +209,7 @@ set(AFILE_SRC
 #	AFILE/Source/quiktime.c
 #	AFILE/Source/quikwrit.c
 #	AFILE/Source/SubTitles.c
-)
+        AFILE/Source/movie.c)
 
 set(DSTRUCT_SRC
 	DSTRUCT/Source/array.c
@@ -252,6 +252,7 @@ set(PALETTE_SRC
 )
 
 set(RES_SRC
+	RES/Source/caseless.c
 	RES/Source/lzw.c
 	RES/Source/refacc.c
 	RES/Source/resacc.c
@@ -379,7 +380,7 @@ add_library(GR_LIB ${GR_SRC})
 add_library(3D_LIB ${3D_SRC})
 target_link_libraries(3D_LIB m)
 add_library(AFILE_LIB ${AFILE_SRC})
-target_link_libraries(AFILE_LIB 2D_LIB)
+target_link_libraries(AFILE_LIB 2D_LIB RES_LIB)
 add_library(PALETTE_LIB ${PALETTE_SRC})
 add_library(DSTRUCT_LIB ${DSTRUCT_SRC})
 add_library(FIX_LIB ${FIX_SRC})

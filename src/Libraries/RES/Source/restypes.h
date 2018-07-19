@@ -87,9 +87,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RTYPE_OBJ3D 15    // 3d object (always compound)
 #define RTYPE_STENCIL 16  // stencil, with offsets (usually non-compound)
 #define RTYPE_MOVIE 17    // movie (lg .mov format)
-#define RTYPE_RECT                                                             \
-  18 // list of bounding rects for images (usually in
-     // compound table)
+#define RTYPE_RECT \
+    18 // list of bounding rects for images (usually in
+       // compound table)
 // Resource types 48-63 are application-specific
 #define RTYPE_APP 48 // 16 application-specific resource types
 
