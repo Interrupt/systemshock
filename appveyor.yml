@@ -35,7 +35,7 @@ test: off
 # Once building is done, we gather all the necessary DLL files and build our ZIP file.
 after_build:
   - copy c:\mingw\bin\libgcc*.dll .
-  - copy c:\git\mingw64\bin\libstd*.dll .
+  - copy c:\mingw\bin\libstd*.dll .
   - copy build_ext\built_sdl\bin\SDL*.dll .
   - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
   - copy readme\readme-windows.txt readme.txt
