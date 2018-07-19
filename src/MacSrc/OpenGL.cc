@@ -3,15 +3,9 @@
 #define GL_GLEXT_PROTOTYPES
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
-#include </usr/local/include/glm/glm.hpp>
-#include </usr/local/include/glm/gtc/matrix_transform.hpp>
-#include </usr/local/include/glm/gtc/type_ptr.hpp>
 #else
 #include <GL/gl.h>
 #include <GL/glext.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #endif
 
 #include <SDL.h>
@@ -64,6 +58,32 @@ static const char *FragmentShader =
     "    vec4 t = texture2D(tex, TexCoords);\n"
     "    gl_FragColor = vec4(t.r * Light, t.g * Light, t.b * Light, t.a);\n"
     "}\n";
+
+// View matrix; Z offset experimentally tweaked for near-perfect alignment
+// between GL projection and software projection (sprite screen coordinates)
+static const float ViewMatrix[] = {
+    1.0, 0.0,   0.0, 0.0,
+    0.0, 1.0,   0.0, 0.0,
+    0.0, 0.0,   1.0, 0.0,
+    0.0, 0.0, -0.01, 1.0
+};
+
+// Projection matrix; experimentally tweaked for near-perfect alignment:
+// FOV 89.5 deg, aspect ratio 1:1, near plane 0, far plane 100
+static const float ProjectionMatrix[] = {
+    1.00876,     0.0,  0.0,  0.0,
+        0.0, 1.00876,  0.0,  0.0,
+        0.0,     0.0, -1.0, -1.0,
+        0.0,     0.0,  0.0,  0.0
+};
+
+// Identity matrix for sprite rendering
+static const float IdentityMatrix[] = {
+    1.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0
+};
 
 static GLuint compileShader(GLenum type, const char *source) {
     GLuint shader = glCreateShader(type);
@@ -181,17 +201,11 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
 
     SDL_GL_MakeCurrent(window, context);
 
-    glm::mat4 view = glm::lookAt(
-        glm::vec3(0.0f, 0.0f,  0.01f),
-        glm::vec3(0.0f, 0.0f, -100.0f),
-        glm::vec3(0.0f, 1.0f,  0.0f)
-    );
     GLint uniView = glGetUniformLocation(shaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, false, glm::value_ptr(view));
+    glUniformMatrix4fv(uniView, 1, false, ViewMatrix);
 
-    glm::mat4 proj = glm::perspective(glm::radians(89.5f), 1.0f, 0.1f, 100.0f);
     GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, false, glm::value_ptr(proj));
+    glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
 
     set_texture(bm);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -227,13 +241,11 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
 
     SDL_GL_MakeCurrent(window, context);
 
-    glm::mat4 view(1.0f);
     GLint uniView = glGetUniformLocation(shaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, false, glm::value_ptr(view));
+    glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
 
-    glm::mat4 proj(1.0f);
     GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, false, glm::value_ptr(proj));
+    glUniformMatrix4fv(uniProj, 1, false, IdentityMatrix);
 
     GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
     GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
