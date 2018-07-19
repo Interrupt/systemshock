@@ -4,13 +4,14 @@
   "configurations": [
     {
       "type": "cppdbg",
-      "name": "SShock",
+      "name": "System Shock",
       "project": "",
-      "cwd": "${workspaceRoot}",
-      "program": "${workspaceRoot}\\build\\x86-Debug\\systemshock.exe",
+      "cwd": "${workspaceRoot}\\build\\x86-Debug",
+      "program": "${debugInfo.target}\\build\\x86-Debug\\systemshock.exe",
       "MIMode": "gdb",
-      "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
+      "miDebuggerPath": "${env.MINGW_PREFIX}\\bin\\gdb.exe",
       "externalConsole": true
     }
+    
   ]
 }
