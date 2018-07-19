@@ -9,16 +9,16 @@
       "buildRoot": "${workspaceRoot}\\build\\${name}",
       "installRoot": "${workspaceRoot}\\build\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
+      "buildCommandArgs": "-v -d stats",
       "ctestCommandArgs": "",
       "variables": [
         {
           "name": "CMAKE_C_COMPILER",
-          "value": "${env.MINGW_PREFIX}\\bin\\gcc.exe"
+          "value": "C:\\MinGW\\bin\\gcc.exe"
         },
         {
           "name": "CMAKE_CXX_COMPILER",
-          "value": "${env.MINGW_PREFIX}\\bin\\g++.exe"
+          "value": "C:\\MinGW\\bin\\g++.exe"
         }
       ]
     },
@@ -35,11 +35,11 @@
       "variables": [
         {
           "name": "CMAKE_C_COMPILER",
-          "value": "${env.MINGW_PREFIX}\\bin\\gcc.exe"
+          "value": "C:\\MinGW\\bin\\gcc.exe"
         },
         {
           "name": "CMAKE_CXX_COMPILER",
-          "value": "${env.MINGW_PREFIX}\\bin\\g++.exe"
+          "value": "C:\\MinGW\\bin\\g++.exe"
         }
       ]
     },
@@ -53,14 +53,14 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
-      "variables": [
+       "variables": [
         {
           "name": "CMAKE_C_COMPILER",
-          "value": "${env.MINGW_PREFIX}\\bin\\gcc.exe"
+          "value": "C:\\MinGW\\bin\\gcc.exe"
         },
         {
           "name": "CMAKE_CXX_COMPILER",
-          "value": "${env.MINGW_PREFIX}\\bin\\g++.exe"
+          "value": "C:\\MinGW\\bin\\g++.exe"
         }
       ]
     },
@@ -74,14 +74,14 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
-      "variables": [
+       "variables": [
         {
           "name": "CMAKE_C_COMPILER",
-          "value": "${env.MINGW_PREFIX}\\bin\\gcc.exe"
+          "value": "C:\\MinGW\\bin\\gcc.exe"
         },
         {
           "name": "CMAKE_CXX_COMPILER",
-          "value": "${env.MINGW_PREFIX}\\bin\\g++.exe"
+          "value": "C:\\MinGW\\bin\\g++.exe"
         }
       ]
     },

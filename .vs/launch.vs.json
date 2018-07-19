@@ -9,7 +9,7 @@
       "cwd": "${workspaceRoot}\\build\\x86-Debug",
       "program": "${debugInfo.target}\\build\\x86-Debug\\systemshock.exe",
       "MIMode": "gdb",
-      "miDebuggerPath": "${env.MINGW_PREFIX}\\bin\\gdb.exe",
+      "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
       "externalConsole": true
     }
     
