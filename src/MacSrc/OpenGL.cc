@@ -37,14 +37,17 @@ static const char *VertexShader =
     "#version 110\n"
     "\n"
     "attribute vec2 texcoords;\n"
+    "attribute float light;\n"
     "\n"
     "varying vec2 TexCoords;\n"
+    "varying float Light;\n"
     "\n"
     "uniform mat4 view;\n"
     "uniform mat4 proj;\n"
     "\n"
     "void main() {\n"
     "    TexCoords = texcoords;\n"
+    "    Light = light;\n"
     "    gl_Position = proj * view * gl_Vertex;\n"
     "}\n";
 
@@ -52,11 +55,13 @@ static const char *FragmentShader =
     "#version 110\n"
     "\n"
     "varying vec2 TexCoords;\n"
+    "varying float Light;\n"
     "\n"
     "uniform sampler2D tex;\n"
     "\n"
     "void main() {\n"
-    "    gl_FragColor = texture2D(tex, TexCoords);\n"
+    "    vec4 t = texture2D(tex, TexCoords);\n"
+    "    gl_FragColor = vec4(t.r * Light, t.g * Light, t.b * Light, t.a);\n"
     "}\n";
 
 static GLuint compileShader(GLenum type, const char *source) {
@@ -79,6 +84,7 @@ static GLuint compileShader(GLenum type, const char *source) {
 int init_opengl() {
     context = SDL_GL_CreateContext(window);
 
+    glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -150,8 +156,9 @@ static void set_texture(grs_bitmap *bm) {
     SDL_FreeSurface(surface);
 }
 
-static void draw_vertex(const g3s_point& vertex, grs_bitmap *bm, GLint tcAttrib) {
-    glVertexAttrib2f(tcAttrib, 0.5f * vertex.uv.u / bm->w, 0.5f * vertex.uv.v / bm->h);
+static void draw_vertex(const g3s_point& vertex, grs_bitmap *bm, GLint tcAttrib, GLint lightAttrib) {
+    glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
+    glVertexAttrib1f(lightAttrib, 1.0f - vertex.i / 4096.0f);
     glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
 }
 
@@ -184,14 +191,14 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
 
-    struct g3s_point *p = *vp;
     glBegin(GL_TRIANGLE_STRIP);
-    draw_vertex(p[0], bm, tcAttrib);
-    draw_vertex(p[1], bm, tcAttrib);
+    draw_vertex(*(vp[1]), bm, tcAttrib, lightAttrib);
+    draw_vertex(*(vp[0]), bm, tcAttrib, lightAttrib);
+    draw_vertex(*(vp[2]), bm, tcAttrib, lightAttrib);
     if (n > 3)
-        draw_vertex(p[3], bm, tcAttrib);
-    draw_vertex(p[2], bm, tcAttrib);
+        draw_vertex(*(vp[3]), bm, tcAttrib, lightAttrib);
     glEnd();
 
     return CLIP_NONE;
@@ -214,6 +221,7 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     glUniformMatrix4fv(uniProj, 1, false, glm::value_ptr(proj));
 
     GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
 
     set_texture(bm);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -222,16 +230,27 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     auto convx = [](float x) { return  x/32768.0f / gScreenWide - 1; };
     auto convy = [](float y) { return -y/32768.0f / gScreenHigh + 1; };
 
-    grs_vertex *v = *vpl;
+    float light = 1.0f;
+    if (ti->flags & TMF_CLUT) {
+        // Ugly hack: We don't get the original 'i' value, so we have to
+        // recalculate it from the offset into the global lighting lookup
+        // table.
+        light = 1.0 - (ti->clut - grd_screen->ltab) / 4096.0f;
+    }
+
     glBegin(GL_TRIANGLE_STRIP);
-    glVertexAttrib2f(tcAttrib, 0.0f, 0.0f);
-    glVertex3f(convx(v[0].x), convy(v[0].y), 0.0f);
     glVertexAttrib2f(tcAttrib, 1.0f, 0.0f);
-    glVertex3f(convx(v[1].x), convy(v[1].y), 0.0f);
-    glVertexAttrib2f(tcAttrib, 0.0f, 1.0f);
-    glVertex3f(convx(v[3].x), convy(v[3].y), 0.0f);
+    glVertexAttrib1f(lightAttrib, light);
+    glVertex3f(convx(vpl[1]->x), convy(vpl[1]->y), 0.0f);
+    glVertexAttrib2f(tcAttrib, 0.0f, 0.0f);
+    glVertexAttrib1f(lightAttrib, light);
+    glVertex3f(convx(vpl[0]->x), convy(vpl[0]->y), 0.0f);
     glVertexAttrib2f(tcAttrib, 1.0f, 1.0f);
-    glVertex3f(convx(v[2].x), convy(v[2].y), 0.0f);
+    glVertexAttrib1f(lightAttrib, light);
+    glVertex3f(convx(vpl[2]->x), convy(vpl[2]->y), 0.0f);
+    glVertexAttrib2f(tcAttrib, 0.0f, 1.0f);
+    glVertexAttrib1f(lightAttrib, light);
+    glVertex3f(convx(vpl[3]->x), convy(vpl[3]->y), 0.0f);
     glEnd();
 
     return CLIP_NONE;

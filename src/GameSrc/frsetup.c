@@ -679,6 +679,8 @@ int fr_start_view(void) {
         extern int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
         _fr_per_func = _fr_floor_func = _fr_wall_func = opengl_draw_tmap;
         _fr_lit_per_func = _fr_lit_floor_func = _fr_lit_wall_func = opengl_light_tmap;
+        extern int (*g3_tmap_func)(int n, g3s_phandle *vp, grs_bitmap *bm);
+        g3_tmap_func = opengl_light_tmap;
     } else if (detail != 0) {
         /* check viewer orientation.  Use wall/floor/full perspective texture maps accordingly. */
         _fr_lit_per_func = g3_light_tmap;
@@ -699,6 +701,7 @@ int fr_start_view(void) {
             _fr_lit_wall_func = g3_light_tmap;
             _fr_wall_func = g3_draw_tmap;
         }
+        g3_reset_tmaps();
     } else {
         /* Use linear texture maps unless 1d wall applicable. */
         if ((((viewer_orientation.bank + (FIXANG_EPS / 2)) & FIXANG_MASK) < FIXANG_EPS) &&
@@ -713,6 +716,7 @@ int fr_start_view(void) {
         _fr_floor_func = g3_draw_lmap;
         _fr_lit_per_func = g3_light_lmap;
         _fr_per_func = g3_draw_lmap;
+        g3_set_tmaps_linear();
     }
 
 #ifdef _FR_PIXPROF

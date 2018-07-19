@@ -73,6 +73,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "objmode.h"
 
+#include "OpenGL.h"
+
 #define VOXEL_PIX_DIST_BASE (fix_make(0, 0x1000))
 #define VOXEL_PIX_DIST_DELTA (fix_make(0, 0x6000))
 // this is obfuscated to put it mildly
@@ -85,6 +87,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // should get this into headers
 extern grs_bitmap *get_text_bitmap_obj(ObjID cobjid, char dest_type, char *scale);
 // extern Ref ref_from_critter_data(ObjID oid, int triple, ubyte posture, ubyte frame, ubyte view);
+
+extern int (*g3_tmap_func)(int n, g3s_phandle *vp, grs_bitmap *bm);
 
 extern int fr_n_3d_models;
 
@@ -188,17 +192,17 @@ void _fr_draw_parm_cube(grs_bitmap *side_bm, grs_bitmap *oth_bm, int x, int y, i
     }
 #endif
     setup_face(0, 3, 2, 1);
-    g3_draw_tmap(4, cface, oth_bm);
+    (*g3_tmap_func)(4, cface, oth_bm);
     setup_rface(7, 4, 5, 6);
-    g3_draw_tmap(4, cface, oth_bm);
+    (*g3_tmap_func)(4, cface, oth_bm);
     setup_face(4, 7, 3, 0);
-    g3_draw_tmap(4, cface, side_bm);
+    (*g3_tmap_func)(4, cface, side_bm);
     setup_face(7, 6, 2, 3);
-    g3_draw_tmap(4, cface, side_bm);
+    (*g3_tmap_func)(4, cface, side_bm);
     setup_face(6, 5, 1, 2);
-    g3_draw_tmap(4, cface, side_bm);
+    (*g3_tmap_func)(4, cface, side_bm);
     setup_face(5, 4, 0, 1);
-    g3_draw_tmap(4, cface, side_bm);
+    (*g3_tmap_func)(4, cface, side_bm);
     g3_end_object();
 #ifdef LIGHT_3D_OBJS
     gr_set_fill_type(cur_ft);
@@ -534,13 +538,15 @@ void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar 
         if ((draw_bm == NULL) || (_fr_curflags & FR_NOTRANS_MASK) || ((draw_bm->flags & BMF_TRANS) == 0))
             g3_check_and_draw_poly(gr_get_fill_parm(), 4, plst);
         else
-            g3_draw_tmap(4, plst, draw_bm);
+            (*g3_tmap_func)(4, plst, draw_bm);
     else if (col_val != 0xFF) {
         int cur_ft = gr_get_fill_type();
         gr_set_fill_type(FILL_CLUT);
         gr_set_fill_parm(_fr_clut_list[curr_clut_table] + (_sq_lght & 0xf00));
         fpoly_rend(col_val, 4, plst);
         gr_set_fill_type(cur_ft);
+    } else if (use_opengl()) {
+        opengl_light_tmap(4, plst, draw_bm);
     } else {
         g3_light_tmap(4, plst, draw_bm);
     }
@@ -557,7 +563,7 @@ void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar 
             if ((draw_bm == NULL) || (_fr_curflags & FR_NOTRANS_MASK) || ((draw_bm->flags & BMF_TRANS) == 0))
                 g3_check_and_draw_poly(gr_get_fill_parm(), 4, plst);
             else
-                g3_draw_tmap(4, plst, draw_bm);
+                (*g3_tmap_func)(4, plst, draw_bm);
         else {
             if (col_val != 0xFF) {
                 int cur_ft = gr_get_fill_type();
@@ -565,6 +571,8 @@ void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar 
                 gr_set_fill_parm(_fr_clut_list[curr_clut_table] + (_sq_lght & 0xf00));
                 fpoly_rend(col_val, 4, plst);
                 gr_set_fill_type(cur_ft);
+            } else if (use_opengl()) {
+                opengl_light_tmap(4, plst, draw_bm);
             } else {
                 g3_light_tmap(4, plst, draw_bm);
             }
