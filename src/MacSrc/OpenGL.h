@@ -11,6 +11,7 @@ int init_opengl();
 bool use_opengl();
 void toggle_opengl();
 void opengl_resize(int width, int height);
+bool should_opengl_swap();
 
 int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
 int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);

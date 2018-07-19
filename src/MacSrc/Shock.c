@@ -71,6 +71,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
 #endif
 
 extern uchar game_paused;		// I've learned such bad lessons from LG.
@@ -314,18 +316,15 @@ void SDLDraw()
 	SDL_RenderCopy(renderer, texture, &srcRect, NULL);
 	SDL_DestroyTexture(texture);
 
-	extern bool should_opengl_swap(void);
-	if(should_opengl_swap()) {
+	if (should_opengl_swap()) {
 		SDL_GL_SwapWindow(window);
-	}
-	else {
+	} else {
 		SDL_RenderPresent(renderer);
-		SDL_RenderClear(renderer);	
+		SDL_RenderClear(renderer);
 	}
 
 	// check OpenGL error
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        ERROR("OpenGL error: %i", err);
-    }
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR)
+		ERROR("OpenGL error: %i", err);
 }
