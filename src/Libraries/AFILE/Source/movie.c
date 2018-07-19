@@ -17,25 +17,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+#include <stdio.h>
+
+#include "afile.h"
 #include "movie.h"
 #include "res.h"
 
-Movie *MoviePrepareRes(Id id, uint8_t *buff, int32_t buffLen, int32_t blockLen) {
-    Movie *result;
+FILE *temp_file;
 
-    DEBUG("%s: opening media", __FUNCTION__);
+int32_t AfilePrepareRes(Id id, Afile *afile) {
 
-    return result;
-}
+    uint8_t *ptr = ResLock(id);
 
-/**
- * Play movie
- * @param pmovie pointer to Movie
- * @param pcanvas canvas to show video, NULL if you need to play only audio
- */
-void MoviePlay(Movie *pmovie, grs_canvas *pcanvas) {
+    // FIXME That's ugly. We need fmemopen() analog.
+    temp_file = tmpfile();
+    fwrite(ptr, ResSize(id), 1, temp_file);
+    fseek(temp_file, 0, 0);
 
-    DEBUG("%s: playing media", __FUNCTION__);
+    //ResUnlock(id);
+    free(ptr);
 
-    return;
+    int32_t error = AfileOpen(afile, temp_file, AFILE_MOV);
+
+    return error;
 }
