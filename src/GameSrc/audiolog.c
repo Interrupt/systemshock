@@ -41,6 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "musicai.h"
 
 #include "bark.h"
+#include "miscqvar.h"
 
 #include <SDL_mixer.h>
 
@@ -70,6 +71,11 @@ snd_digi_parms *sdp = NULL;
 //#define AUDIOLOG_BLOCK_LEN MOVIE_DEFAULT_BLOCKLEN
 //#define AUDIOLOG_BUFFER_SIZE  (64 * 1024)
 // uchar audiolog_buffer[AUDIOLOG_BUFFER_SIZE];
+
+extern uchar curr_vol_lev;
+extern void MacTuneUpdateVolume(void);
+
+#define ALOG_MUSIC_DUCK  30
 
 //-------------------------------------------------------------
 //  Sorry excuse for a function.
@@ -134,7 +140,6 @@ errtype audiolog_play(int email_id) {
         end_wait();
         return (ERR_FREAD);
     }
-    audiolog_stop();
     // alog_fn = new_alog_fn;
 
     palog = malloc(sizeof(Afile));
@@ -201,6 +206,13 @@ errtype audiolog_play(int email_id) {
     // bureaucracy
     curr_alog = email_id;
 
+    // Duck the music
+    if (music_on) {
+        curr_vol_lev = QVAR_TO_VOLUME(QUESTVAR_GET(MUSIC_VOLUME_QVAR));
+        curr_vol_lev = lg_max(0,curr_vol_lev - ALOG_MUSIC_DUCK);
+        MacTuneUpdateVolume();
+    }
+
     return (OK);
 }
 
@@ -221,10 +233,6 @@ void audiolog_stop() {
         // MovieKill(palog);
         StopMovie(alog);
         DisposeMovie(alog);
-
-        // Restore music volume
-        //		if (music_on)
-        //			mlimbs_change_master_volume(curr_vol_lev);
     }
     */
     //	if (alog_fn >= 0)
@@ -232,6 +240,12 @@ void audiolog_stop() {
     //		ResCloseFile(alog_fn);
     //		alog_fn = -1;
     //	}
+
+    // Restore music volume
+    if (music_on) {
+        curr_vol_lev = QVAR_TO_VOLUME(QUESTVAR_GET(MUSIC_VOLUME_QVAR));
+        MacTuneUpdateVolume();
+    }
 
     if(alog_handle != -1) {
         snd_end_sample(alog_handle);
@@ -258,7 +272,6 @@ void audiolog_stop() {
     }
 }
 
-//#define ALOG_MUSIC_VOLUME  65
 //-------------------------------------------------------------
 //  Task handler for audiologs and barks.
 //-------------------------------------------------------------
@@ -280,6 +293,13 @@ errtype audiolog_loop_callback() {
         //				mlimbs_change_master_volume(min(ALOG_MUSIC_VOLUME,curr_vol_lev));
         //		}
     }*/
+
+    if(alog_handle != -1) {
+        if(!snd_sample_playing(alog_handle)) {
+            audiolog_stop();
+        }
+    }
+
     return (OK);
 }
 
