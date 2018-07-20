@@ -70,7 +70,7 @@ int snd_alog_play(int snd_ref, int len, Uint8 *smp, struct snd_digi_parms *dprm)
 		return ERR_NOEFFECT;
 	}
 
-	if (samples_by_channel[channel])
+	if (samples_by_channel[channel] && samples_by_channel[channel] != sample)
 		Mix_FreeChunk(samples_by_channel[channel]);
 
 	samples_by_channel[channel] = sample;

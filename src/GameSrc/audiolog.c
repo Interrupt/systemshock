@@ -58,6 +58,9 @@ int alog_handle = -1;
 uchar audiolog_setting = 2;
 //Movie alog = NULL;
 
+Uint8 *alog_buffer = NULL;
+snd_digi_parms *sdp = NULL;
+
 // this can become RES_alog_email0 once there is one
 #define AUDIOLOG_BASE_ID 2741
 #define AUDIOLOG_BARK_BASE_ID 3100
@@ -84,7 +87,6 @@ char *alog_files[] = { "res/data/citalog.res", "res/data/frnalog.res", "res/data
 errtype audiolog_play(int email_id) {
     extern uchar curr_alog_vol;
     extern char which_lang;
-    snd_digi_parms *sdp;
     int new_alog_fn;
     char buff[64];
     OSErr err;
@@ -158,12 +160,13 @@ errtype audiolog_play(int email_id) {
     SDL_BuildAudioCVT(&cvt, AUDIO_U8, 1, fix_int(palog->a.sampleRate), MIX_DEFAULT_FORMAT, 2, MIX_DEFAULT_FREQUENCY);
     cvt.len = audio_length;  // 1024 stereo float32 sample frames.
     cvt.buf = (Uint8 *) SDL_malloc(cvt.len * cvt.len_mult);
+    alog_buffer = cvt.buf;
 
     SDL_memcpy(cvt.buf, buffer, audio_length); // copy our bytes to be converted
     SDL_ConvertAudio(&cvt); // cvt.buf will have cvt.len_cvt bytes of converted data after this
 
     // Now play the sample
-    alog_handle = snd_alog_play(0, cvt.len_cvt, cvt.buf, sdp);
+    alog_handle = snd_alog_play(AUDIOLOG_BASE_ID + email_id, cvt.len_cvt, cvt.buf, sdp);
 
     /*
     palog = MoviePrepareRes(AUDIOLOG_BASE_ID + email_id, audiolog_buffer, sizeof(audiolog_buffer), AUDIOLOG_BLOCK_LEN);
@@ -230,12 +233,23 @@ void audiolog_stop() {
     //		alog_fn = -1;
     //	}
 
-    if(alog_handle != -1)
+    if(alog_handle != -1) {
         snd_end_sample(alog_handle);
+        alog_handle = -1;
+    }
+
+    if(alog_buffer != NULL) {
+        free(alog_buffer);
+        alog_buffer = NULL;
+    }
+
+    if(sdp != NULL) {
+        free(sdp);
+        sdp = NULL;
+    }
 
     //alog = NULL;
     curr_alog = -1;
-    alog_handle = -1;
 
     if (secret_pending_hack) {
         secret_pending_hack = 0;
