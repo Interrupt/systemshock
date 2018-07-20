@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __LGSNDX_H
 
 #include <Carbon/Carbon.h>
+#include <SDL_mixer.h>
 
 //#include <QuickTimeComponents.h>
 //#include <Sound.h>
@@ -109,6 +110,7 @@ int   snd_start_midi(void);
 int   snd_stop_midi(void);
 
 int   snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dprm);
+int   snd_alog_play(int snd_ref, int len, Uint8 *smp, struct snd_digi_parms *dprm);
 void  snd_end_sample(int hnd_id);
 bool  snd_sample_playing(int hnd_id);
 struct snd_digi_parms *snd_sample_parms(int hnd_id);

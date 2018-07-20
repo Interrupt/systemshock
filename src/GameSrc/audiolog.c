@@ -11,7 +11,7 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
+A
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -53,6 +53,7 @@ uchar audiolog_cancel_func(short, ulong, void *);
 //  GLOBALS
 //-------------------
 int curr_alog = -1;
+int alog_handle = -1;
 // int 		alog_fn = -1;
 uchar audiolog_setting = 2;
 //Movie alog = NULL;
@@ -119,12 +120,10 @@ errtype audiolog_play(int email_id) {
     begin_wait();
 
     // Open up the appropriate sound-only movie file.
-    // FIXME Only English for this time
     if (email_id > (AUDIOLOG_BARK_BASE_ID - AUDIOLOG_BASE_ID)) {
-        new_alog_fn = ResOpenFile(bark_files[0]);
+        new_alog_fn = ResOpenFile(bark_files[which_lang]);
     } else {
-        //FIXME: Where are the english audiologs hiding? I don't have a citalog.res file...
-        new_alog_fn = ResOpenFile(alog_files[1]);
+        new_alog_fn = ResOpenFile(alog_files[which_lang]);
     }
 
     // Make sure this is a thing we have an audiolog for...
@@ -164,16 +163,7 @@ errtype audiolog_play(int email_id) {
     SDL_ConvertAudio(&cvt); // cvt.buf will have cvt.len_cvt bytes of converted data after this
 
     // Now play the sample
-    Mix_Chunk *sample = Mix_QuickLoad_RAW(cvt.buf, cvt.len_cvt);
-    int channel = Mix_PlayChannel(-1, sample, 0);
-
-    // FIXME: Need to wire this up to the sdp
-
-    if (channel < 0) {
-        ERROR("SDL_Mixer: Failed to play sample");
-        Mix_FreeChunk(sample);
-        return 2;
-    }
+    alog_handle = snd_alog_play(0, cvt.len_cvt, cvt.buf, sdp);
 
     /*
     palog = MoviePrepareRes(AUDIOLOG_BASE_ID + email_id, audiolog_buffer, sizeof(audiolog_buffer), AUDIOLOG_BLOCK_LEN);
@@ -202,6 +192,8 @@ errtype audiolog_play(int email_id) {
     //	StartMovie(alog);
 
     end_wait();
+
+    ResCloseFile(new_alog_fn);
 
     // bureaucracy
     curr_alog = email_id;
@@ -238,8 +230,12 @@ void audiolog_stop() {
     //		alog_fn = -1;
     //	}
 
+    if(alog_handle != -1)
+        snd_end_sample(alog_handle);
+
     //alog = NULL;
     curr_alog = -1;
+    alog_handle = -1;
 
     if (secret_pending_hack) {
         secret_pending_hack = 0;

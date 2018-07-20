@@ -53,6 +53,33 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 	return channel;
 }
 
+int snd_alog_play(int snd_ref, int len, Uint8 *smp, struct snd_digi_parms *dprm) {
+
+	// Play one of the Audiolog sounds
+
+	Mix_Chunk *sample = Mix_QuickLoad_RAW(smp, len);
+	if (sample == NULL) {
+		DEBUG("%s: Failed to load sample", __FUNCTION__);
+		return ERR_NOEFFECT;
+	}
+
+	int channel = Mix_PlayChannel(0, sample, 0);
+	if (channel < 0) {
+		DEBUG("%s: Failed to play sample", __FUNCTION__);
+		Mix_FreeChunk(sample);
+		return ERR_NOEFFECT;
+	}
+
+	if (samples_by_channel[channel])
+		Mix_FreeChunk(samples_by_channel[channel]);
+
+	samples_by_channel[channel] = sample;
+	digi_parms_by_channel[channel] = *dprm;
+	snd_sample_reload_parms(&digi_parms_by_channel[channel]);
+
+	return channel;
+}
+
 void snd_end_sample(int hnd_id) {
 	Mix_HaltChannel(hnd_id);
 	if (samples_by_channel[hnd_id]) {
@@ -127,6 +154,7 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 
 int snd_start_digital(void) { return OK; }
 int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dprm) { return OK; }
+int snd_alog_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dprm) { return OK; }
 void snd_end_sample(int hnd_id);
 int MacTuneLoadTheme(char* theme_base, int themeID) { return OK; }
 
