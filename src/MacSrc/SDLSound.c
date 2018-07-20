@@ -71,7 +71,7 @@ int snd_alog_play(int snd_ref, int len, Uint8 *smp, struct snd_digi_parms *dprm)
 		return ERR_NOEFFECT;
 	}
 
-	int channel = Mix_PlayChannel(0, playing_audiolog_sample, 0);
+	int channel = Mix_PlayChannel(-1, playing_audiolog_sample, 0);
 	if (channel < 0) {
 		DEBUG("%s: Failed to play sample", __FUNCTION__);
 		Mix_FreeChunk(playing_audiolog_sample);

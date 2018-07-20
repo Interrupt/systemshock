@@ -150,7 +150,7 @@ void snd_release_current_theme(void);
 //--------------------------
 //	Size/scale defines
 //--------------------------
-#define SND_MAX_SAMPLES		8			// For Mac version.
+#define SND_MAX_SAMPLES		12			// For Mac version.
 #define SND_MAX_SEQUENCES 	8			//¥¥¥ Can I really handle this many?
 
 //--------------------------
