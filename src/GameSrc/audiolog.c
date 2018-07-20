@@ -75,7 +75,7 @@ snd_digi_parms *sdp = NULL;
 extern uchar curr_vol_lev;
 extern void MacTuneUpdateVolume(void);
 
-#define ALOG_MUSIC_DUCK  30
+#define ALOG_MUSIC_DUCK  0.6
 
 //-------------------------------------------------------------
 //  Sorry excuse for a function.
@@ -209,7 +209,7 @@ errtype audiolog_play(int email_id) {
     // Duck the music
     if (music_on) {
         curr_vol_lev = QVAR_TO_VOLUME(QUESTVAR_GET(MUSIC_VOLUME_QVAR));
-        curr_vol_lev = lg_max(0,curr_vol_lev - ALOG_MUSIC_DUCK);
+        curr_vol_lev = curr_vol_lev * ALOG_MUSIC_DUCK;
         MacTuneUpdateVolume();
     }
 
