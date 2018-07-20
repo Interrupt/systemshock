@@ -17,7 +17,7 @@ int snd_start_digital(void) {
 		ERROR("%s: Init failed", __FUNCTION__);
 	}
 
-	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
+	if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
 		ERROR("%s: Couldn't open audio device", __FUNCTION__);
 	}
 
