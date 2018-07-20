@@ -11,6 +11,8 @@ Shockolate is a cross platform source port of System Shock, using SDL2. This run
 
 The end goal for this project is something like what Chocolate Doom is for Doom: an experience that closely mimics the original, but portable and with some quality of life improvements - and mod support!
 
+Join our Discord to follow along with development: https://discord.gg/m45xPan
+
 ![work so far](https://i.imgur.com/kbVWQj4.gif)
 
 # Missing Features:

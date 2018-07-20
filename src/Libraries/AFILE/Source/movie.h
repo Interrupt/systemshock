@@ -119,7 +119,7 @@ typedef struct {
 #endif
 
 // FIXME: unportable, need change to FourCC
-// Little endian
+// Little endian, "MOVI"
 #define MOVI_MAGIC_ID 0x49564F4D
 
 //	Movie text chunk begins with a 0-terminated array of these:
@@ -221,4 +221,6 @@ extern MovieAudioBuffers movieAudioBuffers;
 
 void Draw4x4FreeResources();
 
+// Custom functions
+int32_t AfilePrepareRes(Id id, Afile *afile);
 #endif
