@@ -34,8 +34,7 @@ int32_t AfilePrepareRes(Id id, Afile *afile) {
     fwrite(ptr, ResSize(id), 1, temp_file);
     fseek(temp_file, 0, 0);
 
-    //ResUnlock(id);
-    free(ptr);
+    ResUnlock(id);
 
     int32_t error = AfileOpen(afile, temp_file, AFILE_MOV);
 

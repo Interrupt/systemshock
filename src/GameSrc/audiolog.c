@@ -41,6 +41,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "musicai.h"
 
 #include "bark.h"
+#include "miscqvar.h"
+
+#include <SDL_mixer.h>
 
 //-------------------
 //  PROTOTYPES
@@ -51,9 +54,13 @@ uchar audiolog_cancel_func(short, ulong, void *);
 //  GLOBALS
 //-------------------
 int curr_alog = -1;
-// int 		alog_fn = -1;
-uchar audiolog_setting = 2;
+int alog_handle = -1;
+int alog_fn = -1;
+uchar audiolog_setting = 1;
 //Movie alog = NULL;
+
+Uint8 *alog_buffer = NULL;
+snd_digi_parms *sdp = NULL;
 
 // this can become RES_alog_email0 once there is one
 #define AUDIOLOG_BASE_ID 2741
@@ -64,6 +71,11 @@ uchar audiolog_setting = 2;
 //#define AUDIOLOG_BLOCK_LEN MOVIE_DEFAULT_BLOCKLEN
 //#define AUDIOLOG_BUFFER_SIZE  (64 * 1024)
 // uchar audiolog_buffer[AUDIOLOG_BUFFER_SIZE];
+
+extern uchar curr_vol_lev;
+extern void MacTuneUpdateVolume(void);
+
+#define ALOG_MUSIC_DUCK  0.6
 
 //-------------------------------------------------------------
 //  Sorry excuse for a function.
@@ -81,7 +93,6 @@ char *alog_files[] = { "res/data/citalog.res", "res/data/frnalog.res", "res/data
 errtype audiolog_play(int email_id) {
     extern uchar curr_alog_vol;
     extern char which_lang;
-    snd_digi_parms *sdp;
     int new_alog_fn;
     char buff[64];
     OSErr err;
@@ -117,11 +128,10 @@ errtype audiolog_play(int email_id) {
     begin_wait();
 
     // Open up the appropriate sound-only movie file.
-    // FIXME Only English for this time
     if (email_id > (AUDIOLOG_BARK_BASE_ID - AUDIOLOG_BASE_ID)) {
-        new_alog_fn = ResOpenFile(bark_files[0]);
+        new_alog_fn = ResOpenFile(bark_files[which_lang]);
     } else {
-        new_alog_fn = ResOpenFile(alog_files[0]);
+        new_alog_fn = ResOpenFile(alog_files[which_lang]);
     }
 
     // Make sure this is a thing we have an audiolog for...
@@ -130,8 +140,7 @@ errtype audiolog_play(int email_id) {
         end_wait();
         return (ERR_FREAD);
     }
-    audiolog_stop();
-    // alog_fn = new_alog_fn;
+    alog_fn = new_alog_fn;
 
     palog = malloc(sizeof(Afile));
     if (AfilePrepareRes(AUDIOLOG_BASE_ID + email_id, palog) < 0) {
@@ -143,15 +152,26 @@ errtype audiolog_play(int email_id) {
     buffer = malloc(audio_length);
     AfileGetAudio(palog, buffer);
 
-    // FIXME playback
     DEBUG("%s: Playing email", __FUNCTION__);
-    /*
+    
     sdp = malloc(sizeof(snd_digi_parms));
     sdp->vol = curr_alog_vol;
     sdp->pan = ALOG_PAN;
     sdp->snd_ref = 0;
-    snd_sample_play(0, audio_length, buffer, sdp);
-    */
+
+    // Need to convert the movie's audio format to ours
+    // FIXME: Might want to use SDL_AudioStream to do this on the fly
+    SDL_AudioCVT cvt;
+    SDL_BuildAudioCVT(&cvt, AUDIO_U8, 1, fix_int(palog->a.sampleRate), MIX_DEFAULT_FORMAT, 2, MIX_DEFAULT_FREQUENCY);
+    cvt.len = audio_length;  // 1024 stereo float32 sample frames.
+    cvt.buf = (Uint8 *) SDL_malloc(cvt.len * cvt.len_mult);
+    alog_buffer = cvt.buf;
+
+    SDL_memcpy(cvt.buf, buffer, audio_length); // copy our bytes to be converted
+    SDL_ConvertAudio(&cvt); // cvt.buf will have cvt.len_cvt bytes of converted data after this
+
+    // Now play the sample
+    alog_handle = snd_alog_play(AUDIOLOG_BASE_ID + email_id, cvt.len_cvt, cvt.buf, sdp);
 
     /*
     palog = MoviePrepareRes(AUDIOLOG_BASE_ID + email_id, audiolog_buffer, sizeof(audiolog_buffer), AUDIOLOG_BLOCK_LEN);
@@ -184,6 +204,13 @@ errtype audiolog_play(int email_id) {
     // bureaucracy
     curr_alog = email_id;
 
+    // Duck the music
+    if (music_on) {
+        curr_vol_lev = QVAR_TO_VOLUME(QUESTVAR_GET(MUSIC_VOLUME_QVAR));
+        curr_vol_lev = curr_vol_lev * ALOG_MUSIC_DUCK;
+        MacTuneUpdateVolume();
+    }
+
     return (OK);
 }
 
@@ -204,17 +231,35 @@ void audiolog_stop() {
         // MovieKill(palog);
         StopMovie(alog);
         DisposeMovie(alog);
-
-        // Restore music volume
-        //		if (music_on)
-        //			mlimbs_change_master_volume(curr_vol_lev);
     }
     */
-    //	if (alog_fn >= 0)
-    //	{
-    //		ResCloseFile(alog_fn);
-    //		alog_fn = -1;
-    //	}
+
+    if (alog_fn >= 0)
+    {
+        ResCloseFile(alog_fn);
+        alog_fn = -1;
+    }
+
+    // Restore music volume
+    if (music_on) {
+        curr_vol_lev = QVAR_TO_VOLUME(QUESTVAR_GET(MUSIC_VOLUME_QVAR));
+        MacTuneUpdateVolume();
+    }
+
+    if(alog_handle != -1) {
+        snd_end_sample(alog_handle);
+        alog_handle = -1;
+    }
+
+    if(alog_buffer != NULL) {
+        free(alog_buffer);
+        alog_buffer = NULL;
+    }
+
+    if(sdp != NULL) {
+        free(sdp);
+        sdp = NULL;
+    }
 
     //alog = NULL;
     curr_alog = -1;
@@ -226,7 +271,6 @@ void audiolog_stop() {
     }
 }
 
-//#define ALOG_MUSIC_VOLUME  65
 //-------------------------------------------------------------
 //  Task handler for audiologs and barks.
 //-------------------------------------------------------------
@@ -248,6 +292,13 @@ errtype audiolog_loop_callback() {
         //				mlimbs_change_master_volume(min(ALOG_MUSIC_VOLUME,curr_vol_lev));
         //		}
     }*/
+
+    if(alog_handle != -1) {
+        if(!snd_sample_playing(alog_handle)) {
+            audiolog_stop();
+        }
+    }
+
     return (OK);
 }
 
