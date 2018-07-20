@@ -8,6 +8,7 @@
 
 static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
 static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
+static Mix_Chunk *playing_audiolog_sample = NULL;
 
 int snd_start_digital(void) {
 
@@ -55,27 +56,30 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 
 int snd_alog_play(int snd_ref, int len, Uint8 *smp, struct snd_digi_parms *dprm) {
 
+	// Get rid of the last playing audiolog
+
+	if(playing_audiolog_sample != NULL) {
+		Mix_FreeChunk(playing_audiolog_sample);
+		playing_audiolog_sample = NULL;
+	}
+
 	// Play one of the Audiolog sounds
 
-	Mix_Chunk *sample = Mix_QuickLoad_RAW(smp, len);
-	if (sample == NULL) {
+	playing_audiolog_sample = Mix_QuickLoad_RAW(smp, len);
+	if (playing_audiolog_sample == NULL) {
 		DEBUG("%s: Failed to load sample", __FUNCTION__);
 		return ERR_NOEFFECT;
 	}
 
-	int channel = Mix_PlayChannel(0, sample, 0);
+	int channel = Mix_PlayChannel(0, playing_audiolog_sample, 0);
 	if (channel < 0) {
 		DEBUG("%s: Failed to play sample", __FUNCTION__);
-		Mix_FreeChunk(sample);
+		Mix_FreeChunk(playing_audiolog_sample);
+		playing_audiolog_sample = NULL;
 		return ERR_NOEFFECT;
 	}
 
-	if (samples_by_channel[channel] && samples_by_channel[channel] != sample)
-		Mix_FreeChunk(samples_by_channel[channel]);
-
-	samples_by_channel[channel] = sample;
-	digi_parms_by_channel[channel] = *dprm;
-	snd_sample_reload_parms(&digi_parms_by_channel[channel]);
+	Mix_Volume(channel, dprm->vol / 2);
 
 	return channel;
 }

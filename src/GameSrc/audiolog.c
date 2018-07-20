@@ -55,7 +55,7 @@ uchar audiolog_cancel_func(short, ulong, void *);
 //-------------------
 int curr_alog = -1;
 int alog_handle = -1;
-// int 		alog_fn = -1;
+int alog_fn = -1;
 uchar audiolog_setting = 2;
 //Movie alog = NULL;
 
@@ -140,7 +140,7 @@ errtype audiolog_play(int email_id) {
         end_wait();
         return (ERR_FREAD);
     }
-    // alog_fn = new_alog_fn;
+    alog_fn = new_alog_fn;
 
     palog = malloc(sizeof(Afile));
     if (AfilePrepareRes(AUDIOLOG_BASE_ID + email_id, palog) < 0) {
@@ -201,8 +201,6 @@ errtype audiolog_play(int email_id) {
 
     end_wait();
 
-    ResCloseFile(new_alog_fn);
-
     // bureaucracy
     curr_alog = email_id;
 
@@ -235,11 +233,12 @@ void audiolog_stop() {
         DisposeMovie(alog);
     }
     */
-    //	if (alog_fn >= 0)
-    //	{
-    //		ResCloseFile(alog_fn);
-    //		alog_fn = -1;
-    //	}
+
+    if (alog_fn >= 0)
+    {
+        ResCloseFile(alog_fn);
+        alog_fn = -1;
+    }
 
     // Restore music volume
     if (music_on) {
