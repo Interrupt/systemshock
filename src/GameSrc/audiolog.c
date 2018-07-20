@@ -56,7 +56,7 @@ uchar audiolog_cancel_func(short, ulong, void *);
 int curr_alog = -1;
 int alog_handle = -1;
 int alog_fn = -1;
-uchar audiolog_setting = 2;
+uchar audiolog_setting = 1;
 //Movie alog = NULL;
 
 Uint8 *alog_buffer = NULL;
