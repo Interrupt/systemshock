@@ -42,6 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "bark.h"
 
+#include <SDL_mixer.h>
+
 //-------------------
 //  PROTOTYPES
 //-------------------
@@ -121,7 +123,7 @@ errtype audiolog_play(int email_id) {
     if (email_id > (AUDIOLOG_BARK_BASE_ID - AUDIOLOG_BASE_ID)) {
         new_alog_fn = ResOpenFile(bark_files[0]);
     } else {
-        new_alog_fn = ResOpenFile(alog_files[0]);
+        new_alog_fn = ResOpenFile(alog_files[1]);
     }
 
     // Make sure this is a thing we have an audiolog for...
@@ -143,15 +145,34 @@ errtype audiolog_play(int email_id) {
     buffer = malloc(audio_length);
     AfileGetAudio(palog, buffer);
 
-    // FIXME playback
     DEBUG("%s: Playing email", __FUNCTION__);
-    /*
+    
     sdp = malloc(sizeof(snd_digi_parms));
     sdp->vol = curr_alog_vol;
     sdp->pan = ALOG_PAN;
     sdp->snd_ref = 0;
-    snd_sample_play(0, audio_length, buffer, sdp);
-    */
+
+    // Need to convert the movie's audio format to ours
+    // FIXME: Might want to use SDL_AudioStream to do this on the fly
+    SDL_AudioCVT cvt;
+    SDL_BuildAudioCVT(&cvt, AUDIO_U8, 1, fix_int(palog->a.sampleRate), MIX_DEFAULT_FORMAT, 2, 44100);
+    cvt.len = audio_length;  // 1024 stereo float32 sample frames.
+    cvt.buf = (Uint8 *) SDL_malloc(cvt.len * cvt.len_mult);
+
+    SDL_memcpy(cvt.buf, buffer, audio_length); // copy our bytes to be converted
+    SDL_ConvertAudio(&cvt); // cvt.buf will have cvt.len_cvt bytes of converted data after this
+
+    // Now play the sample
+    Mix_Chunk *sample = Mix_QuickLoad_RAW(cvt.buf, cvt.len_cvt);
+    int channel = Mix_PlayChannel(-1, sample, 0);
+
+    // FIXME: Need to wire this up to the sdp
+
+    if (channel < 0) {
+        ERROR("SDL_Mixer: Failed to play sample");
+        Mix_FreeChunk(sample);
+        return 2;
+    }
 
     /*
     palog = MoviePrepareRes(AUDIOLOG_BASE_ID + email_id, audiolog_buffer, sizeof(audiolog_buffer), AUDIOLOG_BLOCK_LEN);
