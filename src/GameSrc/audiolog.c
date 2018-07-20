@@ -123,6 +123,7 @@ errtype audiolog_play(int email_id) {
     if (email_id > (AUDIOLOG_BARK_BASE_ID - AUDIOLOG_BASE_ID)) {
         new_alog_fn = ResOpenFile(bark_files[0]);
     } else {
+        //FIXME: Where are the english audiologs hiding? I don't have a citalog.res file...
         new_alog_fn = ResOpenFile(alog_files[1]);
     }
 
