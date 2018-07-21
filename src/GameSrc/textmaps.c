@@ -42,6 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tpolys.h"
 #include "statics.h"
 
+#include "OpenGL.h"
+
 //#include <mprintf.h>
 //#include <dpaths.h>
 //#include <config.h>
@@ -250,6 +252,7 @@ void load_textures(void) {
                     //                              gr_bitmap(cur_bm, 0, 0);
                     //               });
                 }
+                opengl_cache_texture(c * NUM_TEXTURE_SIZES + n, cur_bm);
             }
             AdvanceProgress();
         }

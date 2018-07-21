@@ -29,13 +29,21 @@ extern "C" {
     extern uint _fr_curflags;
 }
 
+#include <map>
+
 bool _use_opengl = true;
 int _blend_mode = GL_LINEAR;
 
 static SDL_GLContext context;
 static GLuint shaderProgram;
-static GLuint tex;
+static GLuint dynTexture;
 static GLuint starsTexture;
+
+// static cache for the most important textures (54 textures in four sizes);
+// initialized during load_textures() in textmaps.c
+static const size_t NUM_TEXTURES = 216;
+static GLuint textures[NUM_TEXTURES];
+static std::map<uint8_t *, GLuint> texturesByBitsPtr;
 
 static const char *VertexShader =
     "#version 110\n"
@@ -131,10 +139,9 @@ int init_opengl() {
     glLinkProgram(shaderProgram);
     glUseProgram(shaderProgram);
 
-    glGenTextures(1, &tex);
-
+    glGenTextures(NUM_TEXTURES, textures);
+    glGenTextures(1, &dynTexture);
     glGenTextures(1, &starsTexture);
-    glBindTexture(GL_TEXTURE_2D, starsTexture);
 
     const int stars_width = 1280;
     const int stars_height = 400;
@@ -149,6 +156,8 @@ int init_opengl() {
         stars[n++] = brightness;
         stars[n++] = brightness;
     }
+
+    glBindTexture(GL_TEXTURE_2D, starsTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, stars_width, stars_height, 0, GL_RGB, GL_UNSIGNED_BYTE, stars);
 
     return 0;
@@ -200,10 +209,7 @@ void toggle_opengl() {
     }
 }
 
-static void set_texture(grs_bitmap *bm) {
-    // This function is too slow! Need to find a way to do it once per
-    // bitmap, not for each surface to be drawn.
-
+static void convert_texture(GLuint texture, grs_bitmap *bm) {
     SDL_Surface *surface;
     if (bm->type == BMT_RSD8) {
         grs_bitmap decoded;
@@ -213,11 +219,32 @@ static void set_texture(grs_bitmap *bm) {
         surface = SDL_CreateRGBSurfaceFrom(bm->bits, bm->w, bm->h, 8, bm->row, 0, 0, 0, 0);
     }
     SDL_SetSurfacePalette(surface, sdlPalette);
-    SDL_Surface *texture = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
-    glBindTexture(GL_TEXTURE_2D, tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pixels);
-    SDL_FreeSurface(texture);
+
+    SDL_Surface *rgba = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba->pixels);
+
+    SDL_FreeSurface(rgba);
     SDL_FreeSurface(surface);
+}
+
+void opengl_cache_texture(int idx, grs_bitmap *bm) {
+    SDL_GL_MakeCurrent(window, context);
+
+    if (idx < NUM_TEXTURES) {
+        convert_texture(textures[idx], bm);
+        texturesByBitsPtr[bm->bits] = textures[idx];
+    }
+}
+
+static void set_texture(grs_bitmap *bm) {
+    std::map<uint8_t *, GLuint>::iterator iter = texturesByBitsPtr.find(bm->bits);
+    if (iter != texturesByBitsPtr.end()) {
+        glBindTexture(GL_TEXTURE_2D, iter->second);
+    } else {
+        convert_texture(dynTexture, bm);
+    }
 }
 
 static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttrib) {
@@ -325,7 +352,7 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
 
 void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
     const uint8_t pixel[] = { red, green, blue, alpha };
-    glBindTexture(GL_TEXTURE_2D, tex);
+    glBindTexture(GL_TEXTURE_2D, dynTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
 }
 
