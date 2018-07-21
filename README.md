@@ -23,14 +23,16 @@ Join our Discord to follow along with development: https://discord.gg/m45xPan
 - Video Files
   - Need to revive the old movie rendering code in AFile
 
+Prerequisites
+=======
+  - Original cd-rom or SS:EE assets in a `res/data` folder next to the executable
+    - Floppy disk assets are an older version that we can't load currently
+
+
 Downloads
 =======
 
-### Linux/Mac
-For now, compiling the source yourself is the way to go. See the Compiling / Running section below.
-
-### Windows
-We're making intermittent [releases](https://github.com/Interrupt/systemshock/releases) while setting up a CI system to automatically produce up-to-date ones.
+We have CI systems in place building [distributable packages](releases/) out of tagged commits for Linux, Mac and Windows.
 
 Compiling / Running
 ============
@@ -38,8 +40,6 @@ Compiling / Running
 ## Prerequisites
   - SDL2, 32 bit
   - SDL2_mixer, 32 bit
-  - Original cd-rom or SS:EE assets in a `res/data` folder next to the executable
-    - Floppy disk assets are an older version that we can't load currently
 
 ## Building SDL
 ### Linux/Mac
