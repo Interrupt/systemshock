@@ -194,7 +194,7 @@ static void set_texture(grs_bitmap *bm) {
     SDL_FreeSurface(surface);
 }
 
-static void draw_vertex(const g3s_point& vertex, grs_bitmap *bm, GLint tcAttrib, GLint lightAttrib) {
+static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttrib) {
     glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
     glVertexAttrib1f(lightAttrib, 1.0f - vertex.i / 4096.0f);
     glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
@@ -226,11 +226,11 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
 
     glBegin(GL_TRIANGLE_STRIP);
-    draw_vertex(*(vp[1]), bm, tcAttrib, lightAttrib);
-    draw_vertex(*(vp[0]), bm, tcAttrib, lightAttrib);
-    draw_vertex(*(vp[2]), bm, tcAttrib, lightAttrib);
+    draw_vertex(*(vp[1]), tcAttrib, lightAttrib);
+    draw_vertex(*(vp[0]), tcAttrib, lightAttrib);
+    draw_vertex(*(vp[2]), tcAttrib, lightAttrib);
     if (n > 3)
-        draw_vertex(*(vp[3]), bm, tcAttrib, lightAttrib);
+        draw_vertex(*(vp[3]), tcAttrib, lightAttrib);
     glEnd();
 
     return CLIP_NONE;
@@ -286,6 +286,65 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     glVertexAttrib2f(tcAttrib, 0.0f, 1.0f);
     glVertexAttrib1f(lightAttrib, light);
     glVertex3f(convx(vpl[3]->x), convy(vpl[3]->y), 0.0f);
+    glEnd();
+
+    return CLIP_NONE;
+}
+
+void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
+    const uint8_t pixel[] = { red, green, blue, alpha };
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+}
+
+int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
+    if (n_verts < 3) {
+        WARN("Unexpected number of polygon vertices (%d)", n_verts);
+        return CLIP_ALL;
+    }
+
+    SDL_GL_MakeCurrent(window, context);
+
+    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    glUniformMatrix4fv(uniView, 1, false, ViewMatrix);
+
+    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
+
+    if (gour_flag == 1 || gour_flag == 3) {
+        // translucent; see init_pal_fx() for translucency parameters
+        switch (c) {
+            case 247: set_color(120, 120, 120,  80); break; // dark fog
+            case 248: set_color(170, 170, 170,  80); break; // medium fog
+            case 249: set_color(255,   0,   0,  80); break; // red fog
+            case 250: set_color(  0, 255,   0,  80); break; // green fog
+            case 251: set_color(  0,   0, 255,  80); break; // blue fog
+            case 252: set_color(240, 240, 240,  80); break; // light fog
+            case 253: set_color(  0,   0, 255, 128); break; // blue force field
+            case 254: set_color(  0, 255,   0, 128); break; // green force field
+            case 255: set_color(255,   0,   0, 128); break; // red force field
+            default: return CLIP_ALL;
+        }
+    } else {
+        // solid color
+        SDL_Color color = sdlPalette->colors[c];
+        set_color(color.r, color.g, color.b, 255);
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
+
+    long a = 0, b = n_verts - 1;
+    glBegin(GL_TRIANGLE_STRIP);
+    while (true) {
+        draw_vertex(*(p[a]), tcAttrib, lightAttrib);
+        if (a++ == b) break;
+        draw_vertex(*(p[b]), tcAttrib, lightAttrib);
+        if (b-- == a) break;
+    }
     glEnd();
 
     return CLIP_NONE;

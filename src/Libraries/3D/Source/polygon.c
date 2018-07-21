@@ -199,6 +199,12 @@ int g3_draw_poly(long c, int n_verts, g3s_phandle *p) {
 }
 
 int draw_poly_common(long c, int n_verts, g3s_phandle *p) {
+    extern bool use_opengl();
+    if (use_opengl()) {
+        extern int opengl_draw_poly(long, int, g3s_phandle *, char);
+        return opengl_draw_poly(c, n_verts, p, gour_flag);
+    }
+
     char andcode, orcode;
     g3s_phandle *old_p;
     int i;
