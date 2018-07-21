@@ -12,8 +12,8 @@ environment:
 
 # Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
 # Uncache build_ext if external deps change (eg. SDL_mixer 2.0.3 gets released)
-cache:
-  - build_ext  
+# cache:
+#  - build_ext  
 
 # Actual build script..
 # Step 1: Git has to reside in a path without spaces because the SDL build script is weird like that.
