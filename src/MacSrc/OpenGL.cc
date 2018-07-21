@@ -1,15 +1,21 @@
 #include "OpenGL.h"
 
-#define GL_GLEXT_PROTOTYPES
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
+#ifdef _WIN32
+    #define GLEW_STATIC 1
+    #include <SDL.h>
+    #include <GL/glew.h>
 #else
-#include <GL/gl.h>
-#include <GL/glext.h>
-#endif
+    #define GL_GLEXT_PROTOTYPES
+    #ifdef __APPLE__
+    #include <OpenGL/gl.h>
+    #else
+    #include <GL/gl.h>
+    #include <GL/glext.h>
+    #endif
 
-#include <SDL.h>
-#include <SDL_opengl.h>
+    #include <SDL.h>
+    #include <SDL_opengl.h>
+#endif
 
 extern "C" {
     #include "mainloop.h"
@@ -104,6 +110,11 @@ static GLuint compileShader(GLenum type, const char *source) {
 
 int init_opengl() {
     context = SDL_GL_CreateContext(window);
+
+#ifdef _WIN32
+    glewExperimental = GL_TRUE;
+    GLenum err = glewInit();
+#endif
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
