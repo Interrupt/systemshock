@@ -29,6 +29,7 @@ extern "C" {
 }
 
 bool _use_opengl = true;
+int _blend_mode = GL_LINEAR;
 
 static SDL_GLContext context;
 static GLuint shaderProgram;
@@ -130,8 +131,8 @@ int init_opengl() {
 
     glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
 
     return 0;
 }
@@ -170,7 +171,16 @@ bool should_opengl_swap() {
 }
 
 void toggle_opengl() {
-    _use_opengl = !_use_opengl;
+    if(_use_opengl && _blend_mode == GL_LINEAR) {
+        _blend_mode = GL_NEAREST;
+    }
+    else {
+        _use_opengl = !_use_opengl;
+
+        if(_use_opengl == TRUE) {
+            _blend_mode = GL_LINEAR;
+        }
+    }
 }
 
 static void set_texture(grs_bitmap *bm) {
@@ -219,8 +229,11 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
 
     set_texture(bm);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
     GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
@@ -262,8 +275,11 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
 
     set_texture(bm);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
     float light = 1.0f;
     if (ti->flags & TMF_CLUT) {
@@ -331,8 +347,11 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
         set_color(color.r, color.g, color.b, 255);
     }
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
     GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
