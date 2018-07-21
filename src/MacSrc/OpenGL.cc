@@ -141,7 +141,9 @@ int init_opengl() {
     uint8_t stars[stars_width * stars_height * 3];
     memset(stars, 0, sizeof(stars));
     for (int i = 0; i < 500; ++i) {
-        int n = rand() % (stars_width * stars_height) * 3;
+        int x = rand() % stars_width;
+        int y = rand() % stars_height;
+        int n = 3 * (y * stars_width + x);
         uint8_t brightness = 128 + rand() % 128;
         stars[n++] = brightness;
         stars[n++] = brightness;
