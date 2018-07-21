@@ -321,6 +321,12 @@ target_link_libraries(systemshock
 	${OPENGL_LIBRARIES}
 )
 
+if (WIN32)
+	include_directories(${CMAKE_SOURCE_DIR}/build_ext/glew-2.1.0/include)
+	target_link_libraries(systemshock ${CMAKE_SOURCE_DIR}/build_ext/glew-2.1.0/lib/libglew32.dll.a)
+endif(WIN32)
+
+
 # Turn on address sanitizing if wanted
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers/cmake" ${CMAKE_MODULE_PATH})
 find_package(Sanitizers)

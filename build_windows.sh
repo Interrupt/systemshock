@@ -37,6 +37,14 @@ function build_sdl_mixer {
 	popd
 }
 
+function build_glew {
+	curl -O https://netcologne.dl.sourceforge.net/project/glew/glew/2.1.0/glew-2.1.0.tgz
+	tar xvf glew-2.1.0.tgz
+	pushd glew-2.1.0
+	mingw32-make glew.lib
+	popd
+}
+
 function get_cmake {
 	curl -O https://cmake.org/files/v3.11/cmake-${CMAKE_version}-${CMAKE_architecture}.zip
 	unzip cmake-${CMAKE_version}-${CMAKE_architecture}.zip
@@ -63,6 +71,7 @@ install_dir=`pwd -W`
 
 build_sdl
 build_sdl_mixer
+build_glew
 
 if ! [ -x "$(command -v cmake)" ]; then
 	echo "Getting CMake"
@@ -71,7 +80,10 @@ fi
 
 # Back to the root directory, copy SDL DLL files for the executable
 cd ..
-cp /usr/local/bin/SDL*.dll .
+cp build_ext/built_sdl/bin/SDL*.dll .
+cp build_ext/built_sdl_mixer/bin/SDL*.dll .
+cp build_ext/glew-2.1.0/lib/*.dll .
+
 
 # Set up build.bat
 # TODO: conditional on whether CMake was downloaded
