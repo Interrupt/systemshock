@@ -1281,10 +1281,10 @@ void verify_screen_init(void (*verify)(uchar butid), slorker slork) {
     clear_obuttons();
 
     standard_button_rect(&r, 1, 2, 2, 5);
-    pushbutton_init(0, tolower(get_temp_string(REF_STR_VerifyText)[0]), REF_STR_VerifyText, verify, &r);
+    pushbutton_init(0, tolower(get_temp_string(REF_STR_VerifyText)), REF_STR_VerifyText, verify, &r);
 
     standard_button_rect(&r, 4, 2, 2, 5);
-    pushbutton_init(1, 0, tolower(REF_STR_VerifyText + 1), (void (*)(uchar))slork, &r);
+    pushbutton_init(1, tolower(get_temp_string(REF_STR_VerifyText + 1)), (REF_STR_VerifyText + 1), (void (*)(uchar))slork, &r);
 
     slork_init(2, slork);
 

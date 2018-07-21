@@ -1,0 +1,53 @@
+language: c
+
+notifications:
+  email: false
+
+env:
+  - PACKAGE_NAME="shockolate-$TRAVIS_OS_NAME.tgz"
+
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+      compiler: gcc
+    - os: osx
+      compiler: clang
+    - os: osx
+      compiler: gcc
+
+addons:
+  apt:
+    packages:
+      - cmake-data
+      - cmake
+      - libx32gcc-4.8-dev
+      - libc6-dev-i386
+      - gcc-multilib
+      - g++-multilib
+
+script:
+  - sudo ./osx-linux/install_32bit_sdl.sh
+  - cmake .
+  - make systemshock
+
+before_deploy:
+  - mkdir -p shockolate
+  - cp systemshock shockolate
+  - cp osx-linux/install_32bit_sdl.sh shockolate
+  - cp osx-linux/readme_osx_linux.md shockolate
+  - cp readme/readme-linux.txt shockolate/readme.txt
+  - tar zcfv $PACKAGE_NAME shockolate
+  - rm -r shockolate
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  overwrite: true
+  api_key:
+    secure: "M8fgLU06LQHZS7cf98dHi8bl0BPsyvQHHDWqBaiWqnOoC4XET4fYibFf9B9Ba64RYw5DqPCGbf2onYcDrrUq0cZBwbJsJoVmajKOsWiPzddAtJrk2/nle0MWtjt6OdwbHtg0dNs36QmQ7oRxrEmQaodMmnQW0PKCZOhMmT2zdU73r9ZJ0g4kkkmAAHgfLWYPkfSb9gMj0bn5BLwwGPXv9+NeDFxVG4DY4qjEqQES9tjabVSbVNHretkFCLr0rCpGDQnEZHCP3Wt5c6MoSRunZbRg0X+IwiI1xCEchw2VQFBQiKZ3D4nJIyrZ96iijUQRnnKz5aoMZXQJZQEsnTaZLM+ZbYnK6iA5KWorILdh1odFhNfUJsvWEmEGlrrIQ9qzcAJaIFFch0HRY1S8+gGOy9tEoIpr0VWNZLg8lJvkiQgQmARrt9O+4wIzXZmQnNQcU/N3nWakI68CND4UWk4xAfA6k/Mq2IWyVu477lYxEN+FcqT7EbpowovOOn7e1rutwKDUtb3jWBHZBESF5TCL/hdwdOGNITaV+ENTHbHbWvK6J+3+sCK62xG0/pqzJk3+j7R9zoDvz+htwse/hhk/F3Sa+MpaJQVqtKVD4nBlY/E7+qd3yCyXQm916V+04evjoKOqXXnOOe5d+a87OquLJ6UaynjRsq6lJY2kZ2/Irmc="
+  file: "$PACKAGE_NAME"
+  on:
+    tags: true
+    repo: Interrupt/systemshock

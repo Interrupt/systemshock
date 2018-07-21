@@ -68,50 +68,44 @@ here static bool resPushedAllocators;	// did we push our allocators?
 //	ResInit() initializes resource manager.
 
 void ResInit() {
-  // char *p;
-  int32_t i;
+    int32_t i;
 
-  // We must exit cleanly
-  // FIXME Segfault at exit
-  //atexit(ResTerm);
-  /*
-  // Set memory allocator, init LZW system
-  MemPushAllocator(ResMalloc, ResRealloc, ResFree);
-  resPushedAllocators = TRUE;
-  */
+    // We must exit cleanly
+    atexit(ResTerm);
 
-  LzwInit();
+    // init LZW system
+    LzwInit();
 
-  // Allocate initial resource descriptor table, default size (can't fail)
+    // Allocate initial resource descriptor table, default size (can't fail)
+    TRACE("%s: RES system initialization", __FUNCTION__);
 
-  INFO("ResInit");
+    resDescMax = DEFAULT_RESMAX;
+    gResDesc = (ResDesc *)malloc((DEFAULT_RESMAX + 1) * (sizeof(ResDesc) + sizeof(ResDesc2)));
+    if (gResDesc == NULL)
+        ERROR("ResInit: Can't allocate the global resource descriptor table.");
+    gResDesc2 = (ResDesc2 *)(gResDesc + (DEFAULT_RESMAX + 1));
+    gResDesc[ID_HEAD].prev = 0;
+    gResDesc[ID_HEAD].next = ID_TAIL;
+    gResDesc[ID_TAIL].prev = ID_HEAD;
+    gResDesc[ID_TAIL].next = 0;
 
-  resDescMax = DEFAULT_RESMAX;
-  gResDesc = (ResDesc *)malloc((DEFAULT_RESMAX + 1) *
-                               (sizeof(ResDesc) + sizeof(ResDesc2)));
-  if (gResDesc == NULL)
-    ERROR("ResInit: Can't allocate the global resource descriptor table.");
-  gResDesc2 = (ResDesc2 *)(gResDesc + (DEFAULT_RESMAX + 1));
-  gResDesc[ID_HEAD].prev = 0;
-  gResDesc[ID_HEAD].next = ID_TAIL;
-  gResDesc[ID_TAIL].prev = ID_HEAD;
-  gResDesc[ID_TAIL].next = 0;
+    // Clear file descriptor array
 
-  // Clear file descriptor array
+    for (i = 0; i <= MAX_RESFILENUM; i++)
+        resFile[i].fd = NULL;
 
-  for (i = 0; i <= MAX_RESFILENUM; i++)
-    resFile[i].fd = NULL;
+    // Add directory pointed to by RES env var to search path
 
-  // Add directory pointed to by RES env var to search path
+    /*
+    p = getenv("RES");
+    if (p)
+            ResAddPath(p);
+    */
 
-  /*p = getenv("RES");
-  if (p)
-          ResAddPath(p);
+    TRACE("%s: RES system initialized", __FUNCTION__);
 
-  Spew(DSRC_RES_General, ("ResInit: res system initialized\n"));*/
-
-  // Install default pager
-  // ResInstallPager(ResDefaultPager);
+    // Install default pager
+    // ResInstallPager(ResDefaultPager);
 }
 
 //	---------------------------------------------------------
@@ -119,35 +113,23 @@ void ResInit() {
 //	ResTerm() terminates resource manager.
 
 void ResTerm() {
-  int32_t i;
-  // Close all open resource files
-  for (i = 0; i <= MAX_RESFILENUM; i++) {
-    if (resFile[i].fd >= 0)
-      ResCloseFile(i);
-  }
+    int32_t i;
+    // Close all open resource files
+    for (i = 0; i <= MAX_RESFILENUM; i++) {
+        if (resFile[i].fd >= 0)
+            ResCloseFile(i);
+    }
 
-  // Spew out cumulative stats if want them
-  // DBG(DSRC_RES_CumStat, {ResSpewCumStats();});
+    // Free up resource descriptor table
 
-  // Free up resource descriptor table
-
-  if (gResDesc) {
-    free(gResDesc);
-    gResDesc = NULL;
-    gResDesc2 = NULL;
-    resDescMax = 0;
-  }
-  /*
-  // Pop allocators
-          if (resPushedAllocators)
-                  {
-                  MemPopAllocator();
-                  resPushedAllocators = FALSE;
-                  }
-
-  // We're outta here
-  Spew(DSRC_RES_General, ("ResTerm: res system terminated\n"));
-  */
+    if (gResDesc) {
+        free(gResDesc);
+        gResDesc = NULL;
+        gResDesc2 = NULL;
+        resDescMax = 0;
+    }
+    // We're outta here
+    TRACE("%s: RES system terminated", __FUNCTION__);
 }
 
 //	---------------------------------------------------------
@@ -161,66 +143,45 @@ void ResTerm() {
 //		id = id
 
 void ResGrowResDescTable(Id id) {
-  int32_t newAmt, currAmt;
-  ResDesc2 *pNewResDesc2;
+    int32_t newAmt, currAmt;
+    ResDesc2 *pNewResDesc2;
 
-  // Calculate size of new table and size of current
+    // Calculate size of new table and size of current
 
-  newAmt = (id + DEFAULT_RESGROW) & ~(DEFAULT_RESGROW - 1);
-  currAmt = resDescMax + 1;
+    newAmt = (id + DEFAULT_RESGROW) & ~(DEFAULT_RESGROW - 1);
+    currAmt = resDescMax + 1;
 
-  // If need to grow, do it, clearing new entries
+    // If need to grow, do it, clearing new entries
 
-  if (newAmt > currAmt) {
-    //		Spew(DSRC_RES_General,
-    //			("ResGrowResDescTable: extending to $%x entries\n",
-    // newAmt));
+    if (newAmt > currAmt) {
+        WARN("%s: extending to $%x entries", __FUNCTION__, newAmt);
 
-    printf("ResGrowResDescTable\n");
-
-    // Realloc double-array buffer and check for error
-    gResDesc = (ResDesc *)realloc(
-        gResDesc, newAmt * (sizeof(ResDesc) + sizeof(ResDesc2)));
-    if (gResDesc == NULL) {
-      // Warning(("ResGrowDescTable: RES DESCRIPTOR TABLE BAD!!!\n"));
-      return;
-    }
-
-    //  Compute new location for gResDesc2[] array at top of buffer,
-    //  and move the gResDesc2[] array up there
-
-    gResDesc2 = (ResDesc2 *)(gResDesc + currAmt);
-    pNewResDesc2 = (ResDesc2 *)(gResDesc + newAmt);
-    memmove(pNewResDesc2, gResDesc2, currAmt * sizeof(ResDesc2));
-    gResDesc2 = pNewResDesc2;
-
-    //  Clear extra entries in both tables
-
-    memset(gResDesc + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc));
-    memset(gResDesc2 + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc2));
-
-    //  Set new max id limit
-
-    resDescMax = newAmt - 1;
-
-    // Grow cumulative stats table too
-
-    /*
-    DBG(DSRC_RES_CumStat, {
-      if (pCumStatId == NULL)
-        ResAllocCumStatTable();
-      else {
-        pCumStatId = Realloc(pCumStatId, newAmt * sizeof(ResCumStat));
-        if (pCumStatId == NULL) {
-          Warning(("ResGrowDescTable: RES CUMSTAT TABLE BAD!!!\n"));
-          return;
+        // Realloc double-array buffer and check for error
+        gResDesc = (ResDesc *)realloc(gResDesc, newAmt * (sizeof(ResDesc) + sizeof(ResDesc2)));
+        if (gResDesc == NULL) {
+            ERROR("%s: RES DESCRIPTOR TABLE BAD!!!", __FUNCTION__);
+            return;
         }
-        memset(pCumStatId + currAmt, 0,
-               (newAmt - currAmt) * sizeof(ResCumStat));
-      }
-    });
-    */
-  }
+
+        //  Compute new location for gResDesc2[] array at top of buffer,
+        //  and move the gResDesc2[] array up there
+
+        gResDesc2 = (ResDesc2 *)(gResDesc + currAmt);
+        pNewResDesc2 = (ResDesc2 *)(gResDesc + newAmt);
+        memmove(pNewResDesc2, gResDesc2, currAmt * sizeof(ResDesc2));
+        gResDesc2 = pNewResDesc2;
+
+        //  Clear extra entries in both tables
+
+        memset(gResDesc + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc));
+        memset(gResDesc2 + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc2));
+
+        //  Set new max id limit
+
+        resDescMax = newAmt - 1;
+
+
+    }
 }
 
 //	---------------------------------------------------------

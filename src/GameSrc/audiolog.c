@@ -25,10 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	Mac version by Ken Cobb,  2/9/95
 
 #include <stdio.h>
+#include <afile.h>
 //#include <Movies.h>		// QuickTime header
 
 //#include "Shock.h"
-//#include <movie.h>
+#include "afile.h"
+#include "movie.h"
 #include "audiolog.h"
 #include "citalog.h"
 #include "criterr.h"
@@ -39,8 +41,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "musicai.h"
 
 #include "bark.h"
+#include "miscqvar.h"
 
-typedef void * Movie;
+#include <SDL_mixer.h>
 
 //-------------------
 //  PROTOTYPES
@@ -51,19 +54,28 @@ uchar audiolog_cancel_func(short, ulong, void *);
 //  GLOBALS
 //-------------------
 int curr_alog = -1;
-// int 		alog_fn = -1;
-uchar audiolog_setting = 2;
-Movie alog = NULL;
+int alog_handle = -1;
+int alog_fn = -1;
+uchar audiolog_setting = 1;
+//Movie alog = NULL;
+
+Uint8 *alog_buffer = NULL;
+snd_digi_parms *sdp = NULL;
 
 // this can become RES_alog_email0 once there is one
 #define AUDIOLOG_BASE_ID 2741
 #define AUDIOLOG_BARK_BASE_ID 3100
 
-//#define MIN_ALOG_SIZE   20000
+#define MIN_ALOG_SIZE   20000
 
 //#define AUDIOLOG_BLOCK_LEN MOVIE_DEFAULT_BLOCKLEN
 //#define AUDIOLOG_BUFFER_SIZE  (64 * 1024)
 // uchar audiolog_buffer[AUDIOLOG_BUFFER_SIZE];
+
+extern uchar curr_vol_lev;
+extern void MacTuneUpdateVolume(void);
+
+#define ALOG_MUSIC_DUCK  0.6
 
 //-------------------------------------------------------------
 //  Sorry excuse for a function.
@@ -72,23 +84,21 @@ errtype audiolog_init() { return (OK); }
 
 // extern uchar set_sample_pan_gain(snd_digi_parms *sdp);
 
-//#define ALOG_PAN 64
-// char *bark_files[] = { "citbark.res", "frnbark.res", "gerbark.res" };
-// char *alog_files[] = { "citalog.res", "frnalog.res", "geralog.res" };
+#define ALOG_PAN 64
+char *bark_files[] = { "res/data/citbark.res", "res/data/frnbark.res", "res/data/gerbark.res" };
+char *alog_files[] = { "res/data/citalog.res", "res/data/frnalog.res", "res/data/geralog.res" };
 //-------------------------------------------------------------
 //  Play an audiolog or bark file.
 //-------------------------------------------------------------
 errtype audiolog_play(int email_id) {
     extern uchar curr_alog_vol;
     extern char which_lang;
-    //	snd_digi_parms *sdp;
-    //	int new_alog_fn;
+    int new_alog_fn;
     char buff[64];
-    FSSpec fSpec;
     OSErr err;
     short movieResFile;
-    Fixed mr;
-    Size dummy;
+    Afile *palog;
+    uint8_t *buffer;
 
     // KLC - no sfx_card global in Mac version
     //	if ((!sfx_on) || (!sfx_card) || (!audiolog_setting))
@@ -97,14 +107,14 @@ errtype audiolog_play(int email_id) {
         return (ERR_NOEFFECT);
 
     // KLC - Big-time hack to prevent bark #389 from trying to play twice (and thus skipping).
-    if ((email_id == 389) && (alog != NULL) && (curr_alog == email_id))
+    if ((email_id == 389) && (curr_alog == email_id))
         return (ERR_NOEFFECT);
 
     // KLC - Another big-time hack to prevent the Shodan bark #448 from playing before
     // bark #389 has finished.
-    if ((email_id == 448) && (alog != NULL) && (curr_alog == 389)) {
-        while (alog != NULL)
-            audiolog_loop_callback();
+    if ((email_id == 448) && (curr_alog == 389)) {
+    //    while (alog != NULL)
+    //        audiolog_loop_callback();
     }
 
     // Stop any currently playing alogs.
@@ -116,59 +126,69 @@ errtype audiolog_play(int email_id) {
         return (ERR_NOEFFECT);
 
     begin_wait();
-    // MaxMem(&dummy);							// Compact heap before loading the alog. - DG: I don't think we need that
-    // anymore
 
     // Open up the appropriate sound-only movie file.
-
     if (email_id > (AUDIOLOG_BARK_BASE_ID - AUDIOLOG_BASE_ID)) {
-        sprintf(buff, "BARK %x", AUDIOLOG_BASE_ID + email_id);
-        // FSMakeFSSpec(gBarkVref, gBarkDirID, c2pstr(buff), &fSpec);
+        new_alog_fn = ResOpenFile(bark_files[which_lang]);
     } else {
-        sprintf(buff, "ALOG %x", AUDIOLOG_BASE_ID + email_id);
-        // FSMakeFSSpec(gAlogVref, gAlogDirID, c2pstr(buff), &fSpec);
+        new_alog_fn = ResOpenFile(alog_files[which_lang]);
     }
 
-    /*err = OpenMovieFile(&fSpec, &movieResFile, fsRdPerm);
-    if (err == noErr)
-    {
-            short 		movieResID = 0;
-            Str255 		movieName;
-            Boolean 		wasChanged;
-                                                                                                                                                    // Load the 'moov' resource.
-            err = NewMovieFromFile(&alog, movieResFile, &movieResID, movieName, newMovieActive, &wasChanged);
-            CloseMovieFile (movieResFile);						// Close the resource fork.
+    // Make sure this is a thing we have an audiolog for...
+    if ((!ResInUse(AUDIOLOG_BASE_ID + email_id)) || (ResSize(AUDIOLOG_BASE_ID + email_id) < MIN_ALOG_SIZE)) {
+        ResCloseFile(new_alog_fn);
+        end_wait();
+        return (ERR_FREAD);
     }
-    else
-    {
-            end_wait();
-            return(ERR_FREAD);
-    }*/
+    alog_fn = new_alog_fn;
+
+    palog = malloc(sizeof(Afile));
+    if (AfilePrepareRes(AUDIOLOG_BASE_ID + email_id, palog) < 0) {
+        WARN("%s: Cannot open Afile by id $%x", __FUNCTION__, AUDIOLOG_BASE_ID + email_id);
+        free(palog);
+        return (ERR_FREAD);
+    }
+    int32_t audio_length = AfileAudioLength(palog) * MOVIE_DEFAULT_BLOCKLEN;
+    buffer = malloc(audio_length);
+    AfileGetAudio(palog, buffer);
+
+    DEBUG("%s: Playing email", __FUNCTION__);
+    
+    sdp = malloc(sizeof(snd_digi_parms));
+    sdp->vol = curr_alog_vol;
+    sdp->pan = ALOG_PAN;
+    sdp->snd_ref = 0;
+
+    // Need to convert the movie's audio format to ours
+    // FIXME: Might want to use SDL_AudioStream to do this on the fly
+    SDL_AudioCVT cvt;
+    SDL_BuildAudioCVT(&cvt, AUDIO_U8, 1, fix_int(palog->a.sampleRate), MIX_DEFAULT_FORMAT, 2, MIX_DEFAULT_FREQUENCY);
+    cvt.len = audio_length;  // 1024 stereo float32 sample frames.
+    cvt.buf = (Uint8 *) SDL_malloc(cvt.len * cvt.len_mult);
+    alog_buffer = cvt.buf;
+
+    SDL_memcpy(cvt.buf, buffer, audio_length); // copy our bytes to be converted
+    SDL_ConvertAudio(&cvt); // cvt.buf will have cvt.len_cvt bytes of converted data after this
+
+    // Now play the sample
+    alog_handle = snd_alog_play(AUDIOLOG_BASE_ID + email_id, cvt.len_cvt, cvt.buf, sdp);
 
     /*
-       // Make sure this is a thing we have an audiolog for...
-       if ((!ResInUse(AUDIOLOG_BASE_ID + email_id)) || (ResSize(AUDIOLOG_BASE_ID + email_id) < MIN_ALOG_SIZE))
-       {
-          ResCloseFile(new_alog_fn);
-          end_wait();
-          return(ERR_FREAD);
-       }
-       audiolog_stop();
-       alog_fn = new_alog_fn;
+    palog = MoviePrepareRes(AUDIOLOG_BASE_ID + email_id, audiolog_buffer, sizeof(audiolog_buffer), AUDIOLOG_BLOCK_LEN);
+    sdp = snd_sample_parms(palog->as.smp_id);
+    sdp->vol = curr_alog_vol;
+    sdp->pan = ALOG_PAN;
+    sdp->snd_ref = 0;
+    set_sample_pan_gain(sdp);
 
-       palog = MoviePrepareRes(AUDIOLOG_BASE_ID + email_id, audiolog_buffer, sizeof(audiolog_buffer),
-       AUDIOLOG_BLOCK_LEN); sdp=snd_sample_parms(palog->as.smp_id); sdp->vol=curr_alog_vol; sdp->pan=ALOG_PAN;
-       sdp->snd_ref=0;
-       set_sample_pan_gain(sdp);
-
-       // check failure
-       if (palog == NULL)
-       {
-          Warning(("MoviePrepareRes returned NULL! email_id = %x\n",email_id));
-          end_wait();
-          return(ERR_NOMEM);
-       }
+    // check failure
+    if (palog == NULL) {
+        Warning(("MoviePrepareRes returned NULL! email_id = %x\n", email_id));
+        end_wait();
+        return (ERR_NOMEM);
+    }
     */
+
 
     // rock and roll
     //   MovieReadAhead(palog, 2);
@@ -184,6 +204,13 @@ errtype audiolog_play(int email_id) {
     // bureaucracy
     curr_alog = email_id;
 
+    // Duck the music
+    if (music_on) {
+        curr_vol_lev = QVAR_TO_VOLUME(QUESTVAR_GET(MUSIC_VOLUME_QVAR));
+        curr_vol_lev = curr_vol_lev * ALOG_MUSIC_DUCK;
+        MacTuneUpdateVolume();
+    }
+
     return (OK);
 }
 
@@ -196,6 +223,7 @@ extern Boolean gPlayingGame;
 //-------------------------------------------------------------
 void audiolog_stop() {
     // double check
+    /*
     if (alog != NULL) {
         //		extern uchar curr_vol_lev;
 
@@ -203,18 +231,37 @@ void audiolog_stop() {
         // MovieKill(palog);
         StopMovie(alog);
         DisposeMovie(alog);
-
-        // Restore music volume
-        //		if (music_on)
-        //			mlimbs_change_master_volume(curr_vol_lev);
     }
-    //	if (alog_fn >= 0)
-    //	{
-    //		ResCloseFile(alog_fn);
-    //		alog_fn = -1;
-    //	}
+    */
 
-    alog = NULL;
+    if (alog_fn >= 0)
+    {
+        ResCloseFile(alog_fn);
+        alog_fn = -1;
+    }
+
+    // Restore music volume
+    if (music_on) {
+        curr_vol_lev = QVAR_TO_VOLUME(QUESTVAR_GET(MUSIC_VOLUME_QVAR));
+        MacTuneUpdateVolume();
+    }
+
+    if(alog_handle != -1) {
+        snd_end_sample(alog_handle);
+        alog_handle = -1;
+    }
+
+    if(alog_buffer != NULL) {
+        free(alog_buffer);
+        alog_buffer = NULL;
+    }
+
+    if(sdp != NULL) {
+        free(sdp);
+        sdp = NULL;
+    }
+
+    //alog = NULL;
     curr_alog = -1;
 
     if (secret_pending_hack) {
@@ -224,7 +271,6 @@ void audiolog_stop() {
     }
 }
 
-//#define ALOG_MUSIC_VOLUME  65
 //-------------------------------------------------------------
 //  Task handler for audiologs and barks.
 //-------------------------------------------------------------
@@ -232,7 +278,7 @@ errtype audiolog_loop_callback() {
     //   extern uchar curr_vol_lev;
 
     // check on things
-    if (alog != NULL) {
+    /*if (alog != NULL) {
         MoviesTask(alog, 0);
         if (IsMovieDone(alog)) {
             audiolog_stop();
@@ -245,7 +291,14 @@ errtype audiolog_loop_callback() {
         //			if (music_on)
         //				mlimbs_change_master_volume(min(ALOG_MUSIC_VOLUME,curr_vol_lev));
         //		}
+    }*/
+
+    if(alog_handle != -1) {
+        if(!snd_sample_playing(alog_handle)) {
+            audiolog_stop();
+        }
     }
+
     return (OK);
 }
 
@@ -263,7 +316,7 @@ fix GetFixTimer()
 // if email_id is -1, returns whether or not anything is playing
 // if email_id != -1, matches whether or not that specific email_id is playing
 //-------------------------------------------------------------
-uchar audiolog_playing(int email_id) {
+bool audiolog_playing(int email_id) {
     if (email_id == -1)
         return (curr_alog != -1);
     else

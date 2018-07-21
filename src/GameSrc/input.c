@@ -1296,19 +1296,20 @@ void init_input(void) {
     hotkey_add(DOWN('f'), DEMO_CONTEXT, toggle_mouse_look, (void *)TRUE);
 
     hotkey_add(DOWN('p'), DEMO_CONTEXT, pause_game_func, (void *)TRUE);
-    hotkey_add(DOWN('y'), DEMO_CONTEXT, toggle_physics_func, (void *)TRUE);
-    hotkey_add(DOWN('u'), DEMO_CONTEXT, toggle_giveall_func, (void *)TRUE);
-    hotkey_add(DOWN('7'), DEMO_CONTEXT, toggle_up_level_func, (void *)TRUE);
-    hotkey_add(DOWN('8'), DEMO_CONTEXT, toggle_down_level_func, (void *)TRUE);
+
+    // Cheats!
+    hotkey_add(CONTROL('2'), DEMO_CONTEXT, toggle_giveall_func, (void *)TRUE);
+    hotkey_add(CONTROL('3'), DEMO_CONTEXT, toggle_physics_func, (void *)TRUE);
+    hotkey_add(CONTROL('4'), DEMO_CONTEXT, toggle_up_level_func, (void *)TRUE);
+    hotkey_add(CONTROL('5'), DEMO_CONTEXT, toggle_down_level_func, (void *)TRUE);
+
     hotkey_add(DOWN(KEY_ESC), DEMO_CONTEXT, wrapper_options_func, (void *)TRUE);
     for (i = 0; i < NUM_POSTURES; i++) {
         hotkey_add(DOWN(posture_keys[i]), DEMO_CONTEXT, posture_hotkey_func, (void *)i);
         hotkey_add(DOWN(toupper(posture_keys[i])), DEMO_CONTEXT, posture_hotkey_func, (void *)i);
     }
     hotkey_add(CONTROL('q'), DEMO_CONTEXT, MacQuitFunc, NULL);
-    hotkey_add(CONTROL('1'), DEMO_CONTEXT, MacResFunc, NULL);
-    hotkey_add(CONTROL('2'), DEMO_CONTEXT, MacSkiplinesFunc, NULL);
-    hotkey_add(CONTROL('3'), DEMO_CONTEXT, MacDetailFunc, NULL);
+    hotkey_add(CONTROL('1'), DEMO_CONTEXT, MacDetailFunc, NULL);
     hotkey_add(CONTROL('/'), DEMO_CONTEXT, MacHelpFunc, NULL);
     hotkey_add(CONTROL('?'), DEMO_CONTEXT, MacHelpFunc, NULL);
 

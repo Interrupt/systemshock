@@ -56,59 +56,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  return ptr.
 
 void *RefLock(Ref ref) {
-  Id id = REFID(ref);
-  ResDesc *prd;
-  RefTable *prt;
-  RefIndex index;
+    Id id = REFID(ref);
+    ResDesc *prd;
+    RefTable *prt;
+    RefIndex index;
 
-  // Check for valid ref
-  // DBG(DSRC_RES_ChkIdRef, {if (!RefCheckRef(ref)) return NULL;});
-
-  if (!RefCheckRef(ref)) {
-    printf("Bad ref ID!");
-    return NULL;
-  }
-
-  // Add to cumulative stats
-  // CUMSTATS(REFID(ref),numLocks);
-
-  // Load block if not in RAM
-  prd = RESDESC(id);
-
-  if (prd->ptr == NULL) {
-    if (ResLoadResource(id) == NULL) {
-      return (NULL);
+    if (!RefCheckRef(ref)) {
+        ERROR("%s: Bad ref ID!", __FUNCTION__);
+        return NULL;
     }
-  }
 
-  if (prd->lock == 0)
-    ResRemoveFromLRU(prd);
+    // Load block if not in RAM
+    prd = RESDESC(id);
 
-  // Tally stats
-  // DBG(DSRC_RES_Stat, {if (prd->lock == 0) resStat.numLocked++;});
+    if (prd->ptr == NULL) {
+        if (ResLoadResource(id) == NULL) {
+            return (NULL);
+        }
+    }
 
-  // Bump lock count
-  // DBG(DSRC_RES_ChkLock, {
-  if (prd->lock == RES_MAXLOCK)
-    prd->lock--;
-  //});
-  prd->lock++;
+    if (prd->lock == 0)
+        ResRemoveFromLRU(prd);
 
-  // Index into ref table
-  prt = (RefTable *)prd->ptr;
-  index = REFINDEX(ref);
+    if (prd->lock == RES_MAXLOCK)
+        prd->lock--;
 
-  // printf("Loading ref %x %x\n", REFID(ref), index);
+    prd->lock++;
 
-  // DBG(DSRC_RES_ChkIdRef, { if (!RefIndexValid(prt,index)) \
-  // Warning(("RefLock: reference: $%x bad, index out of range\n", ref));});*/
+    // Index into ref table
+    prt = (RefTable *)prd->ptr;
+    index = REFINDEX(ref);
 
-  // Return ptr
-  if (!RefIndexValid(prt, index)) {
-    printf("RefLock: Invalid Index %x\n", ref);
-    return (NULL);
-  } else
-    return (((uint8_t *)prt) + (prt->offset[index]));
+    // printf("Loading ref %x %x\n", REFID(ref), index);
+
+    // Return ptr
+    if (!RefIndexValid(prt, index)) {
+        ERROR("%s: Invalid Index %x", __FUNCTION__, ref);
+        return (NULL);
+    } else
+        return (((uint8_t *)prt) + (prt->offset[index]));
 }
 
 //	---------------------------------------------------------
@@ -124,44 +110,40 @@ void *RefLock(Ref ref) {
 //  the resource handle before returning the ref ptr.
 
 void *RefGet(Ref ref) {
-  Id id = REFID(ref);
-  ResDesc *prd;
-  RefTable *prt;
-  RefIndex index;
+    Id id = REFID(ref);
+    ResDesc *prd;
+    RefTable *prt;
+    RefIndex index;
 
-  // Check for valid ref
-  if (RefCheckRef(ref) != true) {
-    printf("No valid ref!\n");
-    return NULL;
-  }
-  // DBG(DSRC_RES_ChkIdRef, {if (!RefCheckRef(ref)) return NULL;});
-
-  // Add to cumulative stats
-  // CUMSTATS(REFID(ref),numGets);
-
-  // Get hold of ref
-  prd = RESDESC(id);
-  if (prd->ptr == NULL) {
-    if (ResLoadResource(REFID(ref)) == NULL) {
-      printf("ResLoadResource: NULL\n");
-      return (NULL);
+    // Check for valid ref
+    if (RefCheckRef(ref) != true) {
+        ERROR("%s: No valid ref!", __FUNCTION__);
+        return NULL;
     }
-    ResAddToTail(prd);
-  } else if (prd->lock == 0) {
-    ResMoveToTail(prd);
-  }
 
-  // Index into ref table
-  prt = (RefTable *)prd->ptr;
-  index = REFINDEX(ref);
+    // Get hold of ref
+    prd = RESDESC(id);
+    if (prd->ptr == NULL) {
+        if (ResLoadResource(REFID(ref)) == NULL) {
+            ERROR("%s: RefID %x == NULL!", __FUNCTION__, ref);
+            return (NULL);
+        }
+        ResAddToTail(prd);
+    } else if (prd->lock == 0) {
+        ResMoveToTail(prd);
+    }
 
-  // Return ptr
-  if (!RefIndexValid(prt, index)) {
-    printf("RefGet: reference: $%x bad, index out of range\n", ref);
-    return (NULL);
-  }
+    // Index into ref table
+    prt = (RefTable *)prd->ptr;
+    index = REFINDEX(ref);
 
-  return (((uint8_t *)prt) + (prt->offset[index]));
+    // Return ptr
+    if (!RefIndexValid(prt, index)) {
+        ERROR("%s: reference: $%x bad, index out of range", __FUNCTION__, ref);
+        return (NULL);
+    }
+
+    return (((uint8_t *)prt) + (prt->offset[index]));
 }
 
 //	---------------------------------------------------------
@@ -176,43 +158,36 @@ void *RefGet(Ref ref) {
 //  functionality.
 
 RefTable *ResReadRefTable(Id id) {
-  ResDesc *prd;
-  RefIndex numRefs;
-  RefTable *prt;
-  FILE *fd;
+    ResDesc *prd;
+    RefIndex numRefs;
+    RefTable *prt;
+    FILE *fd;
 
-  // Check id and file number and make sure compound
-  // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResCheckId(id))
-    return (NULL);
-  //});
+    if (!ResCheckId(id))
+        return (NULL);
 
-  prd = RESDESC(id);
-  fd = resFile[prd->filenum].fd;
+    prd = RESDESC(id);
+    fd = resFile[prd->filenum].fd;
 
-  if (fd == NULL) {
-    printf("ResReadRefTable: id $%x doesn't exist\n", id);
-    return (NULL);
-  }
+    if (fd == NULL) {
+        ERROR("%s: id $%x doesn't exist", __FUNCTION__, id);
+        return (NULL);
+    }
 
-  //DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
-		Warning(("ResReadRefTable: id $%x doesn't exist\n", id)); \
-		return(NULL); \
-		}});
-  if (ResIsCompound(id) == 0) {
-    printf("ResReadRefTable: id $%x is not compound\n", id);
-    return (NULL);
-  }
+    if (ResIsCompound(id) == 0) {
+        ERROR("%s: id $%x is not compound", __FUNCTION__, id);
+        return (NULL);
+    }
 
-  // Seek to data, read numrefs, allocate table, read in offsets
+    // Seek to data, read numrefs, allocate table, read in offsets
 
-  fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
-  fread(&numRefs, sizeof(RefIndex), 1, fd);
-  prt = malloc(REFTABLESIZE(numRefs));
-  prt->numRefs = numRefs;
-  fread(&prt->offset[0], sizeof(int32_t), (numRefs + 1), fd);
+    fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
+    fread(&numRefs, sizeof(RefIndex), 1, fd);
+    prt = malloc(REFTABLESIZE(numRefs));
+    prt->numRefs = numRefs;
+    fread(&prt->offset[0], sizeof(int32_t), (numRefs + 1), fd);
 
-  return (prt);
+    return (prt);
 }
 
 //	---------------------------------------------------------
@@ -226,38 +201,34 @@ RefTable *ResReadRefTable(Id id) {
 //	Returns: 0 if ok, -1 if error
 
 int32_t ResExtractRefTable(Id id, RefTable *prt, int32_t size) {
-  ResDesc *prd;
-  FILE *fd;
+    ResDesc *prd;
+    FILE *fd;
 
-  // Check id and file number and make sure compound
-  // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResCheckId(id))
-    return (-1);
-  // });
-  prd = RESDESC(id);
-  fd = resFile[prd->filenum].fd;
-  // DBG(DSRC_RES_ChkIdRef, {
-  if (fd < 0) {
-    // Warning(("ResExtractRefTable: id $%x doesn't exist\n", id));
-    return (-1);
-  }
-  //});
-  if (ResIsCompound(id) == 0) {
-    // DBG(DSRC_RES_ChkIdRef,
-    // { Warning(("ResExtractRefTable: id $%x is not compound\n", id)); });
-    return (-1);
-  }
+    // Check id and file number and make sure compound
+    if (!ResCheckId(id))
+        return (-1);
 
-  // Seek to data, read numrefs, check table size, read in offsets
-  fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
-  fread(&prt->numRefs, sizeof(RefIndex), 1, fd);
-  if (REFTABLESIZE(prt->numRefs) > size) {
-    // Warning(("ResExtractRefTable: ref table too large for buffer\n"));
-    return (-1);
-  }
-  fread(&prt->offset[0], sizeof(int32_t) * (prt->numRefs + 1), 1, fd);
+    prd = RESDESC(id);
+    fd = resFile[prd->filenum].fd;
+    if (fd == NULL) {
+        ERROR("%s: id $%x doesn't exist", __FUNCTION__, id);
+        return (-1);
+    }
+    if (ResIsCompound(id) == 0) {
+        ERROR("%s: id $%x is not compound", __FUNCTION__, id);
+        return (-1);
+    }
 
-  return (0);
+    // Seek to data, read numrefs, check table size, read in offsets
+    fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
+    fread(&prt->numRefs, sizeof(RefIndex), 1, fd);
+    if (REFTABLESIZE(prt->numRefs) > size) {
+        ERROR("%s: ref table too large for buffer", __FUNCTION__);
+        return (-1);
+    }
+    fread(&prt->offset[0], sizeof(int32_t) * (prt->numRefs + 1), 1, fd);
+
+    return (0);
 }
 
 //	---------------------------------------------------------
@@ -266,34 +237,29 @@ int32_t ResExtractRefTable(Id id, RefTable *prt, int32_t size) {
 //
 //	---------------------------------------------------------
 int32_t ResNumRefs(Id id) {
-  ResDesc *prd;
+    ResDesc *prd;
 
-  // Check id and file number and make sure compound
-  // DBG(DSRC_RES_ChkIdRef, {
-  if (!ResCheckId(id))
-    return (-1);
-  // });
-  if (ResIsCompound(id) == 0) {
-    // DBG(DSRC_RES_ChkIdRef,
-    // { Warning(("ResNumRefs: id $%x is not compound\n", id)); });
-    return (-1);
-  }
-  prd = RESDESC(id);
-  if (prd->ptr != NULL) {
-    return ((RefTable *)prd->ptr)->numRefs;
-  } else {
-    FILE *fd = resFile[prd->filenum].fd;
-    RefIndex result;
-    // DBG(DSRC_RES_ChkIdRef, {
-    if (fd < 0) {
-      // Warning(("ResNumRefs: id $%x doesn't exist\n", id));
-      return (-1);
+    // Check id and file number and make sure compound
+    if (!ResCheckId(id))
+        return (-1);
+    if (ResIsCompound(id) == 0) {
+        ERROR("%s: id $%x is not compound", __FUNCTION__, id);
+        return (-1);
     }
-    // });
-    fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
-    fread(&result, sizeof(RefIndex), 1, fd);
-    return result;
-  }
+    prd = RESDESC(id);
+    if (prd->ptr != NULL) {
+        return ((RefTable *)prd->ptr)->numRefs;
+    } else {
+        FILE *fd = resFile[prd->filenum].fd;
+        RefIndex result;
+        if (fd == NULL) {
+            ERROR("%s: id $%x doesn't exist", __FUNCTION__, id);
+            return (-1);
+        }
+        fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
+        fread(&result, sizeof(RefIndex), 1, fd);
+        return result;
+    }
 }
 
 //	---------------------------------------------------------
@@ -307,64 +273,52 @@ int32_t ResNumRefs(Id id) {
 //
 //	Returns: ptr to supplied buffer, or NULL if problem
 //	---------------------------------------------------------
-//  For Mac version:  Use "ReadPartialResource" to get just the reference
-//  specified. ��� For now, ignore LZW.
 
 void *RefExtract(RefTable *prt, Ref ref, void *buff) {
-  RefIndex index;
-  ResDesc *prd;
-  FILE *fd;
-  int32_t refsize;
-  RefIndex numrefs;
-  int32_t offset;
+    RefIndex index;
+    ResDesc *prd;
+    FILE *fd;
+    int32_t refsize;
+    RefIndex numrefs;
+    int32_t offset;
 
-  // Check id, get file number
-  prd = RESDESC(REFID(ref));
-  fd = resFile[prd->filenum].fd;
-  index = REFINDEX(ref);
+    // Check id, get file number
+    prd = RESDESC(REFID(ref));
+    fd = resFile[prd->filenum].fd;
+    index = REFINDEX(ref);
 
-  // get reftable date from rt or by seeking.
-  if (prt != NULL) {
-    refsize = RefSize(prt, index);
-    numrefs = prt->numRefs;
-    offset = prt->offset[index];
-  } else {
-    // seek into the file and find the stuff.
-    fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
-    fread(&numrefs, sizeof(RefIndex), 1, fd);
-    fseek(fd, index * sizeof(int32_t), SEEK_CUR);
-    fread(&offset, sizeof(int32_t), 1, fd);
-    fread(&refsize, sizeof(int32_t), 1, fd);
-    refsize -= offset;
-    // Warning(("Null reftable size = %d offset = %d numrefs =
-    // %d\n",refsize,offset,numrefs));
-  }
-  /*DBG(DSRC_RES_ChkIdRef, {if (!RefCheckRef(ref)) return(NULL);});
-  DBG(DSRC_RES_ChkIdRef, {if (index >= prt->numRefs) { \
-          Warning(("RefExtract: ref $%x index too large\n", ref)); \
-          return(NULL); \
-          }});*/
-  prd = RESDESC(REFID(ref));
-  fd = resFile[prd->filenum].fd;
+    // get reftable date from rt or by seeking.
+    if (prt != NULL) {
+        refsize = RefSize(prt, index);
+        numrefs = prt->numRefs;
+        offset = prt->offset[index];
+    } else {
+        // seek into the file and find the stuff.
+        fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
+        fread(&numrefs, sizeof(RefIndex), 1, fd);
+        fseek(fd, index * sizeof(int32_t), SEEK_CUR);
+        fread(&offset, sizeof(int32_t), 1, fd);
+        fread(&refsize, sizeof(int32_t), 1, fd);
+        refsize -= offset;
+    }
 
-  // Add to cumulative stats
-  // CUMSTATS(REFID(ref),numExtracts);
+    prd = RESDESC(REFID(ref));
+    fd = resFile[prd->filenum].fd;
 
-  // Seek to start of all data in compound resource
-  fseek(fd, RES_OFFSET_DESC2REAL(prd->offset) + REFTABLESIZE(numrefs),
-        SEEK_SET);
+    // Seek to start of all data in compound resource
+    fseek(fd, RES_OFFSET_DESC2REAL(prd->offset) + REFTABLESIZE(numrefs), SEEK_SET);
 
-  // If LZW, extract with skipping, else seek & read
-  if (ResCompressed(REFID(ref))) {
-    LzwExpandFp2Buff(fd, buff,
-                     offset - REFTABLESIZE(numrefs), // skip amt
-                     refsize);                       // data amt
-  } else {
-    fseek(fd, offset - REFTABLESIZE(numrefs), SEEK_CUR);
-    fread(buff, refsize, 1, fd);
-  }
+    // If LZW, extract with skipping, else seek & read
+    if (ResCompressed(REFID(ref))) {
+        LzwExpandFp2Buff(fd, buff,
+                         offset - REFTABLESIZE(numrefs), // skip amt
+                         refsize);                       // data amt
+    } else {
+        fseek(fd, offset - REFTABLESIZE(numrefs), SEEK_CUR);
+        fread(buff, refsize, 1, fd);
+    }
 
-  return (buff);
+    return (buff);
 }
 
 /*
@@ -441,18 +395,18 @@ int32_t RefInject(RefTable *prt, Ref ref, void *buff)
 //	Returns: true if ref ok, false if invalid & prints warning
 
 bool RefCheckRef(Ref ref) {
-  Id id;
+    Id id;
 
-  id = REFID(ref);
-  if (!ResCheckId(id)) {
-    printf("RefCheckRef: id $%x is bad\n", id);
-    return false;
-  }
+    id = REFID(ref);
+    if (!ResCheckId(id)) {
+        WARN("%s: id $%x is bad\n", __FUNCTION__, id);
+        return false;
+    }
 
-  if (ResIsCompound(id) == 0) {
-    printf("RefCheckRef: id $%x is not a compound resource\n", id);
-    return false;
-  }
+    if (ResIsCompound(id) == 0) {
+        WARN("%s: id $%x is not a compound resource", __FUNCTION__, id);
+        return false;
+    }
 
-  return true;
+    return true;
 }

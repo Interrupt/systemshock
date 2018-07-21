@@ -8,17 +8,18 @@
 
 static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
 static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
+static Mix_Chunk *playing_audiolog_sample = NULL;
 
 int snd_start_digital(void) {
 
 	// Startup the sound system
 
 	if(Mix_Init(MIX_INIT_MP3) < 0) {
-		DebugString("SDL_Mixer: Init failed");
+		ERROR("%s: Init failed", __FUNCTION__);
 	}
 
-	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
-		DebugString("SDL_Mixer: Couldn't open audio device");	
+	if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
+		ERROR("%s: Couldn't open audio device", __FUNCTION__);
 	}
 
 	Mix_AllocateChannels(SND_MAX_SAMPLES);
@@ -32,13 +33,13 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 
 	Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromConstMem(smp, len), 1);
 	if (sample == NULL) {
-		DebugString("SDL_Mixer: Failed to load sample");
+		DEBUG("%s: Failed to load sample", __FUNCTION__);
 		return ERR_NOEFFECT;
 	}
 
 	int channel = Mix_PlayChannel(-1, sample, 0);
 	if (channel < 0) {
-		DebugString("SDL_Mixer: Failed to play sample");
+		DEBUG("%s: Failed to play sample", __FUNCTION__);
 		Mix_FreeChunk(sample);
 		return ERR_NOEFFECT;
 	}
@@ -49,6 +50,36 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 	samples_by_channel[channel] = sample;
 	digi_parms_by_channel[channel] = *dprm;
 	snd_sample_reload_parms(&digi_parms_by_channel[channel]);
+
+	return channel;
+}
+
+int snd_alog_play(int snd_ref, int len, Uint8 *smp, struct snd_digi_parms *dprm) {
+
+	// Get rid of the last playing audiolog
+
+	if(playing_audiolog_sample != NULL) {
+		Mix_FreeChunk(playing_audiolog_sample);
+		playing_audiolog_sample = NULL;
+	}
+
+	// Play one of the Audiolog sounds
+
+	playing_audiolog_sample = Mix_QuickLoad_RAW(smp, len);
+	if (playing_audiolog_sample == NULL) {
+		DEBUG("%s: Failed to load sample", __FUNCTION__);
+		return ERR_NOEFFECT;
+	}
+
+	int channel = Mix_PlayChannel(-1, playing_audiolog_sample, 0);
+	if (channel < 0) {
+		DEBUG("%s: Failed to play sample", __FUNCTION__);
+		Mix_FreeChunk(playing_audiolog_sample);
+		playing_audiolog_sample = NULL;
+		return ERR_NOEFFECT;
+	}
+
+	Mix_Volume(channel, dprm->vol / 2);
 
 	return channel;
 }
@@ -127,6 +158,7 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 
 int snd_start_digital(void) { return OK; }
 int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dprm) { return OK; }
+int snd_alog_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dprm) { return OK; }
 void snd_end_sample(int hnd_id);
 int MacTuneLoadTheme(char* theme_base, int themeID) { return OK; }
 

@@ -1,0 +1,62 @@
+# Shockolate AppVeyor configuration 
+# YAML format reference: https://www.appveyor.com/docs/appveyor-yml/
+
+# This determines the disk image AppVeyor uses while building
+# Despite its name, this image actually contains all sorts of non-VC goodies
+# See https://www.appveyor.com/docs/build-environment/ for all the details
+image: Visual Studio 2015
+
+# Tell build_windows.sh that we're building for AppVeyor
+environment:
+  APPVEYOR: TRUE
+
+# Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
+# Uncache build_ext if external deps change (eg. SDL_mixer 2.0.3 gets released)
+cache:
+  - build_ext  
+
+# Actual build script..
+# Step 1: Git has to reside in a path without spaces because the SDL build script is weird like that.
+#         So we create a symlink to the real Git, remove it from PATH and add our own.
+# Step 2: We need to use our own make.exe to build stuff, so we add that
+# Step 3: Do the actual building
+build_script:
+  - mklink /D c:\git "C:\Program Files\Git"
+  - set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
+  - set PATH=c:\git\usr\bin;%PATH%;C:\MinGW\bin
+  - copy windows\make.exe \git\usr\bin
+  - set CMAKE_MAKE_PROGRAM=c:\git\usr\bin\make.exe
+  - sh build_windows.sh
+  - build.bat
+
+# For now, we don't have any automatic tests to run
+test: off
+
+# Once building is done, we gather all the necessary DLL files and build our ZIP file.
+after_build:
+  - copy c:\mingw\bin\libgcc*.dll .
+  - copy c:\mingw\bin\libstd*.dll .
+  - copy build_ext\built_sdl\bin\SDL*.dll .
+  - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
+  - copy readme\readme-windows.txt readme.txt
+  - 7z a systemshock-windows.zip systemshock.exe *.dll readme.txt
+
+artifacts:
+  - path: systemshock-windows.zip
+    name: Shockolate
+
+version: '0.5.{build}'
+
+# Finally, we deploy the ZIP file as a GitHub release
+# FIXME: How do we want to be building releases? Seems like this would be better as a manual process
+# TODO: invent a better versioning scheme for the tag name
+
+deploy:
+  - provider: GitHub
+    release: $(appveyor_repo_tag_name)
+    description: 'Latest release build of Shockolate'
+    artifact: systemshock-windows.zip
+    auth_token:
+      secure: P1kIk8rRxKAYHqDrOWf0Zf5spfR+N86E0lO8VBu99vHtECJgPLn/Z6tBmL9cxPah  
+    on:
+      APPVEYOR_REPO_TAG: true

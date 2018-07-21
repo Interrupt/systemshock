@@ -84,49 +84,38 @@ static Amethods *methods[] = {
 //		GENERAL ACCESS ROUTINES - READING
 //	-------------------------------------------------------
 //
-//	AfileOpen() opens an anim file and begins reading from it.
-//
-//		paf      = ptr to (unused) animation file struct
-//		filename = ptr to filename
-//		pdp      = ptr to datapath
-//
-//	Returns:
-//				0  = ok
-//				-1 = bad extension
-//				-2 = can't open file
-//				-3 = bad file format
 
-int AfileOpen(Afile *paf, char *filename) {
-    AfileType aftype;
+/**
+ * Opens an anim file and begins reading from it.
+ * @param paf ptr to (unused) animation file struct
+ * @param file ptr to opened FILE
+ * @param aftype type of file (see AfileType)
+ * @return 0 - OK, -1 - unknown file type, -3 - bad file format
+ */
+int32_t AfileOpen(Afile *paf, FILE *file, AfileType aftype) {
+    AfileType type = AFILE_BAD;
     uint8_t bmtype;
     FILE *fp;
     char *p;
 
-    DEBUG("%s: trying to open: %s", __FUNCTION__, filename);
+    DEBUG("%s: trying to open file", __FUNCTION__);
 
     // Extract file extension, get type
-    aftype = AFILE_BAD;
-    p = strchr(filename, '.');
-    if (p) {
-        p++;
-        *(p + 3) = 0;
-        aftype = AfileLookupType(p);
+    for (int i = 0; i < (sizeof(afTypes)/sizeof(afTypes[0])); i++) {
+        if (afTypes[i] == aftype) {
+            type = aftype;
+            break;
+        }
     }
-    if (aftype == AFILE_BAD) {
-        ERROR("%s: unknown extension", __FUNCTION__);
+
+    if (type == AFILE_BAD) {
+        ERROR("%s: unknown file type", __FUNCTION__);
         return (-1);
     }
 
-    // Open file
-    fp = fopen(filename, "rb");
-    if (fp == NULL) {
-        ERROR("%s: can't open file", __FUNCTION__);
-        return -2;
-    }
-
-    // If opened successfully, set up afile struct
+    // Set up afile struct
     memset(paf, 0, sizeof(Afile));
-    paf->fp = fp;
+    paf->fp = file;
     paf->type = aftype;
     paf->writing = false;
     paf->pm = methods[paf->type];
@@ -338,14 +327,14 @@ int AfileReadReset(Afile *paf) {
 
 //	--------------------------------------------------------------
 //
-//	AfileClose() closes animfile.
+//	AfileFree() closes animfile.
 //
 //		paf = ptr to animfile struct
 
-void AfileClose(Afile *paf) {
+void AfileFree(Afile *paf) {
     // Close properly based on whether writing or reading
 
-    DEBUG("%s: closing file", __FUNCTION__);
+    DEBUG("%s: freeing memory", __FUNCTION__);
 
     if (paf->writing) {
         paf->v.numFrames = paf->currFrame;
@@ -360,9 +349,6 @@ void AfileClose(Afile *paf) {
         free(paf->bmWork.bits);
     if (paf->bmPrev.bits)
         free(paf->bmPrev.bits);
-
-    // Close file
-    fclose(paf->fp);
 }
 
 //	--------------------------------------------------------------

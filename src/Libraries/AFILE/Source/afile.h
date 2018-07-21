@@ -114,13 +114,13 @@ typedef struct Amethods_ {
 
 //	Function prototypes: reading anim files
 
-int32_t AfileOpen(Afile *paf, char *filename /*Datapath *pdp*/);
+int32_t AfileOpen(Afile *paf, FILE *file, AfileType aftype);
 int32_t AfileReadFullFrame(Afile *paf, grs_bitmap *pbm, fix *ptime);
 int32_t AfileReadDiffFrame(Afile *paf, grs_bitmap *pbm, fix *ptime);
 bool AfileGetFramePal(Afile *paf, Apalette *ppal);
 int32_t AfileGetAudio(Afile *paf, void *paudio);
 int32_t AfileReadReset(Afile *paf);
-void AfileClose(Afile *paf); // write also
+void AfileFree(Afile *paf); // write also
 
 //	Function prototypes: writing anim files
 

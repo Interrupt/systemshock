@@ -61,7 +61,7 @@ void LzwTerm(void); // Calls LzwFreeBuffer()
 
 int32_t LzwSetBuffer(void *buff, int32_t buffSize); // Set buffer for lzw use
 int32_t LzwMallocBuffer();                          // Malloc buffer for lzw use
-void LzwFreeBuffer(); // free alloced buffer if any
+void LzwFreeBuffer();                               // free alloced buffer if any
 
 //	Sizing constants (just needed to define LZW_BUFF_SIZE)
 
@@ -83,15 +83,15 @@ void LzwFreeBuffer(); // free alloced buffer if any
 
 //	LzwSetBuffer() requires a buffer of at least this size:
 
-#define LZW_BUFF_SIZE                                                          \
-  (LZW_DECODE_STACK_SIZE + LZW_FD_READ_BUFF_SIZE + LZW_FD_WRITE_BUFF_SIZE +    \
-   (LZW_TABLE_SIZE * (sizeof(int16_t) + sizeof(uint16_t) + sizeof(uint8_t))))
+#define LZW_BUFF_SIZE                                                         \
+    (LZW_DECODE_STACK_SIZE + LZW_FD_READ_BUFF_SIZE + LZW_FD_WRITE_BUFF_SIZE + \
+     (LZW_TABLE_SIZE * (sizeof(int16_t) + sizeof(uint16_t) + sizeof(uint8_t))))
 
 //	Other constants
 
 typedef enum {
-  BEGIN,
-  END
+    BEGIN,
+    END
 } LzwCtrl; // LzwCtrl's used to start/stop lzw
            // data sources and destinations
 
@@ -99,28 +99,26 @@ typedef enum {
 
 //	The Ginzo compression knife
 
-int32_t LzwCompress(
-    void (*f_SrcCtrl)(intptr_t srcLoc, LzwCtrl ctrl), // func to control source
-    uint8_t (*f_SrcGet)(), // func to get bytes from source
-    intptr_t srcLoc,       // source "location" (ptr, FILE *, etc.)
-    int32_t srcSize,       // size of source in bytes
-    void (*f_DestCtrl)(intptr_t destLoc, LzwCtrl ctrl), // func to control dest
-    void (*f_DestPut)(uint8_t byte), // func to put bytes to dest
-    intptr_t destLoc,                // dest "location" (ptr, FILE *, etc.)
-    int32_t destSizeMax              // max size of dest (or LZW_MAXSIZE)
+int32_t LzwCompress(void (*f_SrcCtrl)(intptr_t srcLoc, LzwCtrl ctrl),   // func to control source
+                    uint8_t (*f_SrcGet)(),                              // func to get bytes from source
+                    intptr_t srcLoc,                                    // source "location" (ptr, FILE *, etc.)
+                    int32_t srcSize,                                    // size of source in bytes
+                    void (*f_DestCtrl)(intptr_t destLoc, LzwCtrl ctrl), // func to control dest
+                    void (*f_DestPut)(uint8_t byte),                    // func to put bytes to dest
+                    intptr_t destLoc,                                   // dest "location" (ptr, FILE *, etc.)
+                    int32_t destSizeMax                                 // max size of dest (or LZW_MAXSIZE)
 );
 
 //	And its expansion counterpart, both for $19.95 while supplies last
 
-int32_t LzwExpand(
-    void (*f_SrcCtrl)(intptr_t srcLoc, LzwCtrl ctrl), // func to control source
-    uint8_t (*f_SrcGet)(), // func to get bytes from source
-    intptr_t srcLoc,       // source "location" (ptr, FILE *, etc.)
-    void (*f_DestCtrl)(intptr_t destLoc, LzwCtrl ctrl), // func to control dest
-    void (*f_DestPut)(uint8_t byte), // func to put bytes to dest
-    intptr_t destLoc,                // dest "location" (ptr, FILE *, etc.)
-    int32_t destSkip,                // # dest bytes to skip over (or 0)
-    int32_t destSize                 // # dest bytes to capture (if 0, all)
+int32_t LzwExpand(void (*f_SrcCtrl)(intptr_t srcLoc, LzwCtrl ctrl),   // func to control source
+                  uint8_t (*f_SrcGet)(),                              // func to get bytes from source
+                  intptr_t srcLoc,                                    // source "location" (ptr, FILE *, etc.)
+                  void (*f_DestCtrl)(intptr_t destLoc, LzwCtrl ctrl), // func to control dest
+                  void (*f_DestPut)(uint8_t byte),                    // func to put bytes to dest
+                  intptr_t destLoc,                                   // dest "location" (ptr, FILE *, etc.)
+                  int32_t destSkip,                                   // # dest bytes to skip over (or 0)
+                  int32_t destSize                                    // # dest bytes to capture (if 0, all)
 );
 
 // clang-format off
@@ -149,91 +147,66 @@ int32_t LzwExpand(
 //	LzwCompressUser2User	- src is user-supplied, dest is user-supplied
 // clang-format on
 
-#define LzwCompressBuff2Buff(psrc, srcSize, pdest, destSizeMax)                \
-  LzwCompress(LzwBuffSrcC(psrc, srcSize), LzwBuffDestC(pdest, destSizeMax))
+#define LzwCompressBuff2Buff(psrc, srcSize, pdest, destSizeMax) \
+    LzwCompress(LzwBuffSrcC(psrc, srcSize), LzwBuffDestC(pdest, destSizeMax))
 
-#define LzwCompressBuff2Fd(psrc, srcSize, fdDest)                              \
-  LzwCompress(LzwBuffSrcC(psrc, srcSize), LzwFdDestC(fdDest))
+#define LzwCompressBuff2Fd(psrc, srcSize, fdDest) LzwCompress(LzwBuffSrcC(psrc, srcSize), LzwFdDestC(fdDest))
 
-#define LzwCompressBuff2Fp(psrc, srcSize, fpDest)                              \
-  LzwCompress(LzwBuffSrcC(psrc, srcSize), LzwFpDestC(fpDest))
+#define LzwCompressBuff2Fp(psrc, srcSize, fpDest) LzwCompress(LzwBuffSrcC(psrc, srcSize), LzwFpDestC(fpDest))
 
-#define LzwCompressBuff2Null(psrc, srcSize)                                    \
-  LzwCompress(LzwBuffSrcC(psrc, srcSize), LzwNullDestC())
+#define LzwCompressBuff2Null(psrc, srcSize) LzwCompress(LzwBuffSrcC(psrc, srcSize), LzwNullDestC())
 
-#define LzwCompressBuff2User(psrc, srcSize, f_destCtrl, f_destPut, destLoc,    \
-                             destSizeMax)                                      \
-  LzwCompress(LzwBuffSrcC(psrc, srcSize), f_destCtrl, f_destPut, destLoc,      \
-              destSizeMax)
+#define LzwCompressBuff2User(psrc, srcSize, f_destCtrl, f_destPut, destLoc, destSizeMax) \
+    LzwCompress(LzwBuffSrcC(psrc, srcSize), f_destCtrl, f_destPut, destLoc, destSizeMax)
 
-#define LzwCompressFd2Buff(fdSrc, srcSize, pdest, destSizeMax)                 \
-  LzwCompress(LzwFdSrcC(fdSrc, srcSize), LzwBuffDestC(pdest, destSizeMax))
+#define LzwCompressFd2Buff(fdSrc, srcSize, pdest, destSizeMax) \
+    LzwCompress(LzwFdSrcC(fdSrc, srcSize), LzwBuffDestC(pdest, destSizeMax))
 
-#define LzwCompressFd2Fd(fdSrc, srcSize, fdDest)                               \
-  LzwCompress(LzwFdSrcC(fdSrc, srcSize), LzwFdDestC(fdDest))
+#define LzwCompressFd2Fd(fdSrc, srcSize, fdDest) LzwCompress(LzwFdSrcC(fdSrc, srcSize), LzwFdDestC(fdDest))
 
-#define LzwCompressFd2Fp(fdSrc, srcSize, fpDest)                               \
-  LzwCompress(LzwFdSrcC(fdSrc, srcSize), LzwFpDestC(fpDest))
+#define LzwCompressFd2Fp(fdSrc, srcSize, fpDest) LzwCompress(LzwFdSrcC(fdSrc, srcSize), LzwFpDestC(fpDest))
 
-#define LzwCompressFd2Null(fdSrc, srcSize)                                     \
-  LzwCompress(LzwFdSrcC(fdSrc, srcSize), LzwNullDestC())
+#define LzwCompressFd2Null(fdSrc, srcSize) LzwCompress(LzwFdSrcC(fdSrc, srcSize), LzwNullDestC())
 
-#define LzwCompressFd2User(fdSrc, srcSize, f_destCtrl, f_destPut, destLoc,     \
-                           destSizeMax)                                        \
-  LzwCompress(LzwFdSrcC(fdSrc, srcSize), f_destCtrl, f_destPut, destLoc,       \
-              destSizeMax)
+#define LzwCompressFd2User(fdSrc, srcSize, f_destCtrl, f_destPut, destLoc, destSizeMax) \
+    LzwCompress(LzwFdSrcC(fdSrc, srcSize), f_destCtrl, f_destPut, destLoc, destSizeMax)
 
-#define LzwCompressFp2Buff(fpSrc, srcSize, pdest, destSizeMax)                 \
-  LzwCompress(LzwFpSrcC(fpSrc, srcSize), LzwBuffDestC(pdest, destSizeMax))
+#define LzwCompressFp2Buff(fpSrc, srcSize, pdest, destSizeMax) \
+    LzwCompress(LzwFpSrcC(fpSrc, srcSize), LzwBuffDestC(pdest, destSizeMax))
 
-#define LzwCompressFp2Fd(fpSrc, srcSize, fdDest)                               \
-  LzwCompress(LzwFpSrcC(fpSrc, srcSize), LzwFdDestC(fdDest))
+#define LzwCompressFp2Fd(fpSrc, srcSize, fdDest) LzwCompress(LzwFpSrcC(fpSrc, srcSize), LzwFdDestC(fdDest))
 
-#define LzwCompressFp2Fp(fpSrc, srcSize, fpDest)                               \
-  LzwCompress(LzwFpSrcC(fpSrc, srcSize), LzwFpDestC(fpDest))
+#define LzwCompressFp2Fp(fpSrc, srcSize, fpDest) LzwCompress(LzwFpSrcC(fpSrc, srcSize), LzwFpDestC(fpDest))
 
-#define LzwCompressFp2Null(fpSrc, srcSize)                                     \
-  LzwCompress(LzwFpSrcC(fpSrc, srcSize), LzwNullDestC())
+#define LzwCompressFp2Null(fpSrc, srcSize) LzwCompress(LzwFpSrcC(fpSrc, srcSize), LzwNullDestC())
 
-#define LzwCompressFp2User(fpSrc, srcSize, f_destCtrl, f_destPut, destLoc,     \
-                           destSizeMax)                                        \
-  LzwCompress(LzwFpSrcC(fpSrc, srcSize), f_destCtrl, f_destPut, destLoc,       \
-              destSizeMax)
+#define LzwCompressFp2User(fpSrc, srcSize, f_destCtrl, f_destPut, destLoc, destSizeMax) \
+    LzwCompress(LzwFpSrcC(fpSrc, srcSize), f_destCtrl, f_destPut, destLoc, destSizeMax)
 
-#define LzwCompressUser2Buff(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, pdest,      \
-                             destSizeMax)                                      \
-  LzwCompress(f_SrcCtrl, f_SrcGet, srcLoc, srcSize,                            \
-              LzwBuffDestC(pdest, destSizeMax))
+#define LzwCompressUser2Buff(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, pdest, destSizeMax) \
+    LzwCompress(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, LzwBuffDestC(pdest, destSizeMax))
 
-#define LzwCompressUser2Fd(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, fdDest)       \
-  LzwCompress(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, LzwFdDestC(fdDest))
+#define LzwCompressUser2Fd(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, fdDest) \
+    LzwCompress(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, LzwFdDestC(fdDest))
 
-#define LzwCompressUser2Fp(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, fpDest)       \
-  LzwCompress(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, LzwFpDestC(fpDest))
+#define LzwCompressUser2Fp(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, fpDest) \
+    LzwCompress(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, LzwFpDestC(fpDest))
 
-#define LzwCompressUser2Null(f_SrcCtrl, f_SrcGet, srcLoc, srcSize)             \
-  LzwCompress(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, LzwNullDestC())
+#define LzwCompressUser2Null(f_SrcCtrl, f_SrcGet, srcLoc, srcSize) \
+    LzwCompress(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, LzwNullDestC())
 
-#define LzwCompressUser2User(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, f_DestCtrl, \
-                             f_DestPut, destLoc, destSizeMax)                  \
-  LzwCompress(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, f_DestCtrl, f_DestPut,     \
-              destLoc, destSizeMax)
+#define LzwCompressUser2User(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, f_DestCtrl, f_DestPut, destLoc, destSizeMax) \
+    LzwCompress(f_SrcCtrl, f_SrcGet, srcLoc, srcSize, f_DestCtrl, f_DestPut, destLoc, destSizeMax)
 
 //	These macros are used to help implement the compression macros
 
-#define LzwBuffSrcC(psrc, srcSize)                                             \
-  LzwBuffSrcCtrl, LzwBuffSrcGet, (intptr_t)psrc, srcSize
-#define LzwFdSrcC(fdSrc, srcSize)                                              \
-  LzwFdSrcCtrl, LzwFdSrcGet, (intptr_t)fdSrc, srcSize
-#define LzwFpSrcC(fpSrc, srcSize)                                              \
-  LzwFpSrcCtrl, LzwFpSrcGet, (intptr_t)fpSrc, srcSize
+#define LzwBuffSrcC(psrc, srcSize) LzwBuffSrcCtrl, LzwBuffSrcGet, (intptr_t)psrc, srcSize
+#define LzwFdSrcC(fdSrc, srcSize) LzwFdSrcCtrl, LzwFdSrcGet, (intptr_t)fdSrc, srcSize
+#define LzwFpSrcC(fpSrc, srcSize) LzwFpSrcCtrl, LzwFpSrcGet, (intptr_t)fpSrc, srcSize
 
-#define LzwBuffDestC(pdest, destSizeMax)                                       \
-  LzwBuffDestCtrl, LzwBuffDestPut, (intptr_t)pdest, destSizeMax
-#define LzwFdDestC(fdDest)                                                     \
-  LzwFdDestCtrl, LzwFdDestPut, (intptr_t)fdDest, LZW_MAXSIZE
-#define LzwFpDestC(fpDest)                                                     \
-  LzwFpDestCtrl, LzwFpDestPut, (intptr_t)fpDest, LZW_MAXSIZE
+#define LzwBuffDestC(pdest, destSizeMax) LzwBuffDestCtrl, LzwBuffDestPut, (intptr_t)pdest, destSizeMax
+#define LzwFdDestC(fdDest) LzwFdDestCtrl, LzwFdDestPut, (intptr_t)fdDest, LZW_MAXSIZE
+#define LzwFpDestC(fpDest) LzwFpDestCtrl, LzwFpDestPut, (intptr_t)fpDest, LZW_MAXSIZE
 #define LzwNullDestC() LzwNullDestCtrl, LzwNullDestPut, NULL, LZW_MAXSIZE
 
 // clang-format off
@@ -262,86 +235,70 @@ int32_t LzwExpand(
 //	LzwExpandUser2User	- src is user-supplied, dest is user-supplied
 // clang-format on
 
-#define LzwExpandBuff2Buff(psrc, pdest, destSkip, destSize)                    \
-  LzwExpand(LzwBuffSrcE(psrc), LzwBuffDestE(pdest, destSkip, destSize))
+#define LzwExpandBuff2Buff(psrc, pdest, destSkip, destSize) \
+    LzwExpand(LzwBuffSrcE(psrc), LzwBuffDestE(pdest, destSkip, destSize))
 
-#define LzwExpandBuff2Fd(psrc, fdDest, destSkip, destSize)                     \
-  LzwExpand(LzwBuffSrcE(psrc), LzwFdDestE(fdDest, destSkip, destSize))
+#define LzwExpandBuff2Fd(psrc, fdDest, destSkip, destSize) \
+    LzwExpand(LzwBuffSrcE(psrc), LzwFdDestE(fdDest, destSkip, destSize))
 
-#define LzwExpandBuff2Fp(psrc, fpDest, destSkip, destSize)                     \
-  LzwExpand(LzwBuffSrcE(psrc), LzwFpDestE(fpDest, destSkip, destSize))
+#define LzwExpandBuff2Fp(psrc, fpDest, destSkip, destSize) \
+    LzwExpand(LzwBuffSrcE(psrc), LzwFpDestE(fpDest, destSkip, destSize))
 
-#define LzwExpandBuff2Null(psrc, destSkip, destSize)                           \
-  LzwExpand(LzwBuffSrcE(psrc), LzwNullDestE(destSkip, destSize))
+#define LzwExpandBuff2Null(psrc, destSkip, destSize) LzwExpand(LzwBuffSrcE(psrc), LzwNullDestE(destSkip, destSize))
 
-#define LzwExpandBuff2User(psrc, f_destCtrl, f_destPut, destLoc, destSkip,     \
-                           destSize)                                           \
-  LzwExpand(LzwBuffSrcE(psrc), f_destCtrl, f_destPut, destLoc, destSkip,       \
-            destSize)
+#define LzwExpandBuff2User(psrc, f_destCtrl, f_destPut, destLoc, destSkip, destSize) \
+    LzwExpand(LzwBuffSrcE(psrc), f_destCtrl, f_destPut, destLoc, destSkip, destSize)
 
 #ifdef OPTIMIZED_LZW_EXPAND_FD2BUFF
 
-int32_t LzwExpandFd2Buff(int32_t fdSrc, uint8_t *pdest, int32_t destSkip,
-                         int32_t destSize);
+int32_t LzwExpandFd2Buff(int32_t fdSrc, uint8_t *pdest, int32_t destSkip, int32_t destSize);
 
 #else
 
-#define LzwExpandFd2Buff(fdSrc, pdest, destSkip, destSize)                     \
-  LzwExpand(LzwFdSrcE(fdSrc), LzwBuffDestE(pdest, destSkip, destSize))
+#define LzwExpandFd2Buff(fdSrc, pdest, destSkip, destSize) \
+    LzwExpand(LzwFdSrcE(fdSrc), LzwBuffDestE(pdest, destSkip, destSize))
 
 #endif
 
-#define LzwExpandFd2Fd(fdSrc, fdDest, destSkip, destSize)                      \
-  LzwExpand(LzwFdSrcE(fdSrc), LzwFdDestE(fdDest, destSkip, destSize))
+#define LzwExpandFd2Fd(fdSrc, fdDest, destSkip, destSize) \
+    LzwExpand(LzwFdSrcE(fdSrc), LzwFdDestE(fdDest, destSkip, destSize))
 
-#define LzwExpandFd2Fp(fdSrc, fpDest, destSkip, destSize)                      \
-  LzwExpand(LzwFdSrcE(fdSrc), LzwFpDestE(fpDest, destSkip, destSize))
+#define LzwExpandFd2Fp(fdSrc, fpDest, destSkip, destSize) \
+    LzwExpand(LzwFdSrcE(fdSrc), LzwFpDestE(fpDest, destSkip, destSize))
 
-#define LzwExpandFd2Null(fdSrc, destSkip, destSize)                            \
-  LzwExpand(LzwFdSrcE(fdSrc), LzwNullDestE(destSkip, destSize))
+#define LzwExpandFd2Null(fdSrc, destSkip, destSize) LzwExpand(LzwFdSrcE(fdSrc), LzwNullDestE(destSkip, destSize))
 
-#define LzwExpandFd2User(fdSrc, f_destCtrl, f_destPut, destLoc, destSkip,      \
-                         destSize)                                             \
-  LzwExpand(LzwFdSrcE(fdSrc), f_destCtrl, f_destPut, destLoc, destSkip,        \
-            destSize)
+#define LzwExpandFd2User(fdSrc, f_destCtrl, f_destPut, destLoc, destSkip, destSize) \
+    LzwExpand(LzwFdSrcE(fdSrc), f_destCtrl, f_destPut, destLoc, destSkip, destSize)
 
-#define LzwExpandFp2Buff(fpSrc, pdest, destSkip, destSize)                     \
-  LzwExpand(LzwFpSrcE(fpSrc), LzwBuffDestE(pdest, destSkip, destSize))
+#define LzwExpandFp2Buff(fpSrc, pdest, destSkip, destSize) \
+    LzwExpand(LzwFpSrcE(fpSrc), LzwBuffDestE(pdest, destSkip, destSize))
 
-#define LzwExpandFp2Fd(fpSrc, fdDest, destSkip, destSize)                      \
-  LzwExpand(LzwFpSrcE(fpSrc), LzwFdDestE(fdDest, destSkip, destSize))
+#define LzwExpandFp2Fd(fpSrc, fdDest, destSkip, destSize) \
+    LzwExpand(LzwFpSrcE(fpSrc), LzwFdDestE(fdDest, destSkip, destSize))
 
-#define LzwExpandFp2Fp(fpSrc, fpDest, destSkip, destSize)                      \
-  LzwExpand(LzwFpSrcE(fpSrc), LzwFpDestE(fpDest, destSkip, destSize))
+#define LzwExpandFp2Fp(fpSrc, fpDest, destSkip, destSize) \
+    LzwExpand(LzwFpSrcE(fpSrc), LzwFpDestE(fpDest, destSkip, destSize))
 
-#define LzwExpandFp2Null(fpSrc, destSkip, destSize)                            \
-  LzwExpand(LzwFpSrcE(fpSrc), LzwNullDestE(destSkip, destSize))
+#define LzwExpandFp2Null(fpSrc, destSkip, destSize) LzwExpand(LzwFpSrcE(fpSrc), LzwNullDestE(destSkip, destSize))
 
-#define LzwExpandFp2User(fpSrc, f_destCtrl, f_destPut, destLoc, destSkip,      \
-                         destSize)                                             \
-  LzwExpand(LzwFpSrcE(fpSrc), f_destCtrl, f_destPut, destLoc, destSkip,        \
-            destSize)
+#define LzwExpandFp2User(fpSrc, f_destCtrl, f_destPut, destLoc, destSkip, destSize) \
+    LzwExpand(LzwFpSrcE(fpSrc), f_destCtrl, f_destPut, destLoc, destSkip, destSize)
 
-#define LzwExpandUser2Buff(f_SrcCtrl, f_SrcGet, srcLoc, pdest, destSkip,       \
-                           destSize)                                           \
-  LzwExpand(f_SrcCtrl, f_SrcGet, srcLoc,                                       \
-            LzwBuffDestE(pdest, destSkip, destSize))
+#define LzwExpandUser2Buff(f_SrcCtrl, f_SrcGet, srcLoc, pdest, destSkip, destSize) \
+    LzwExpand(f_SrcCtrl, f_SrcGet, srcLoc, LzwBuffDestE(pdest, destSkip, destSize))
 
-#define LzwExpandUser2Fd(f_SrcCtrl, f_SrcGet, srcLoc, fdDest, destSkip,        \
-                         destSize)                                             \
-  LzwExpand(f_SrcCtrl, f_SrcGet, srcLoc, LzwFdDestE(fdDest, destSkip, destSize))
+#define LzwExpandUser2Fd(f_SrcCtrl, f_SrcGet, srcLoc, fdDest, destSkip, destSize) \
+    LzwExpand(f_SrcCtrl, f_SrcGet, srcLoc, LzwFdDestE(fdDest, destSkip, destSize))
 
-#define LzwExpandUser2Fp(f_SrcCtrl, f_SrcGet, srcLoc, fpDest, destSkip,        \
-                         destSize)                                             \
-  LzwExpand(f_SrcCtrl, f_SrcGet, srcLoc, LzwFpDestE(fpDest, destSkip, destSize))
+#define LzwExpandUser2Fp(f_SrcCtrl, f_SrcGet, srcLoc, fpDest, destSkip, destSize) \
+    LzwExpand(f_SrcCtrl, f_SrcGet, srcLoc, LzwFpDestE(fpDest, destSkip, destSize))
 
-#define LzwExpandUser2Null(f_SrcCtrl, f_SrcGet, srcLoc, destSkip, destSize)    \
-  LzwExpand(f_SrcCtrl, f_SrcGet, srcLoc, LzwNullDestE(destSkip, destSize))
+#define LzwExpandUser2Null(f_SrcCtrl, f_SrcGet, srcLoc, destSkip, destSize) \
+    LzwExpand(f_SrcCtrl, f_SrcGet, srcLoc, LzwNullDestE(destSkip, destSize))
 
-#define LzwExpandUserUser(f_SrcCtrl, f_SrcGet, srcLoc, f_DestCtrl, f_DestPut,  \
-                          destLoc, destSkip, destSize)                         \
-  LzwExpand(f_SrcCtrl, f_SrcGet, srcLoc, f_DestCtrl, f_DestPut, destLoc,       \
-            destSkip, destSize)
+#define LzwExpandUserUser(f_SrcCtrl, f_SrcGet, srcLoc, f_DestCtrl, f_DestPut, destLoc, destSkip, destSize) \
+    LzwExpand(f_SrcCtrl, f_SrcGet, srcLoc, f_DestCtrl, f_DestPut, destLoc, destSkip, destSize)
 
 //	These macros are used to help implement the expansion macros
 
@@ -349,14 +306,10 @@ int32_t LzwExpandFd2Buff(int32_t fdSrc, uint8_t *pdest, int32_t destSkip,
 #define LzwFdSrcE(fdSrc) LzwFdSrcCtrl, LzwFdSrcGet, (intptr_t)fdSrc
 #define LzwFpSrcE(fpSrc) LzwFpSrcCtrl, LzwFpSrcGet, (intptr_t)fpSrc
 
-#define LzwBuffDestE(pdest, destSkip, destSize)                                \
-  LzwBuffDestCtrl, LzwBuffDestPut, (intptr_t)pdest, destSkip, destSize
-#define LzwFdDestE(fdDest, destSkip, destSize)                                 \
-  LzwFdDestCtrl, LzwFdDestPut, (intptr_t)fdDest, destSkip, destSize
-#define LzwFpDestE(fpDest, destSkip, destSize)                                 \
-  LzwFpDestCtrl, LzwFpDestPut, (intptr_t)fpDest, destSkip, destSize
-#define LzwNullDestE(destSkip, destSize)                                       \
-  LzwNullDestCtrl, LzwNullDestPut, NULL, destSkip, destSize
+#define LzwBuffDestE(pdest, destSkip, destSize) LzwBuffDestCtrl, LzwBuffDestPut, (intptr_t)pdest, destSkip, destSize
+#define LzwFdDestE(fdDest, destSkip, destSize) LzwFdDestCtrl, LzwFdDestPut, (intptr_t)fdDest, destSkip, destSize
+#define LzwFpDestE(fpDest, destSkip, destSize) LzwFpDestCtrl, LzwFpDestPut, (intptr_t)fpDest, destSkip, destSize
+#define LzwNullDestE(destSkip, destSize) LzwNullDestCtrl, LzwNullDestPut, NULL, destSkip, destSize
 
 //	Prototypes of standard sources
 

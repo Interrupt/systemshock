@@ -605,8 +605,8 @@ errtype physics_run(void) {
 #ifdef DIRAC_EDMS
         if (global_fullmap->cyber) {
             // printf("EDMS_control_Dirac_frame\n");
-            EDMS_control_Dirac_frame(PLAYER_PHYSICS, plr_z, plr_alpha + fix_make(mlook_vel_x * 4, 0),
-                                     plr_y - fix_make(mlook_vel_y * 4, 0), plr_side);
+            EDMS_control_Dirac_frame(PLAYER_PHYSICS, plr_z, plr_alpha + fix_make(mlook_vel_x, 5),
+                                     plr_y - fix_make(mlook_vel_y, 5), plr_side);
         } else
 #endif
             // printf("EDMS_control_pelvis %i %i %i %i %i %i %i\n", PLAYER_PHYSICS, plr_y, plr_alpha, plr_side,
