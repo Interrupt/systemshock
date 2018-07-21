@@ -21,6 +21,7 @@ extern "C" {
     #include "mainloop.h"
     #include "map.h"
     #include "frflags.h"
+    #include "player.h"
     #include "Shock.h"
 
     extern SDL_Renderer *renderer;
@@ -34,6 +35,7 @@ int _blend_mode = GL_LINEAR;
 static SDL_GLContext context;
 static GLuint shaderProgram;
 static GLuint tex;
+static GLuint starsTexture;
 
 static const char *VertexShader =
     "#version 110\n"
@@ -130,9 +132,22 @@ int init_opengl() {
     glUseProgram(shaderProgram);
 
     glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D, tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
+
+    glGenTextures(1, &starsTexture);
+    glBindTexture(GL_TEXTURE_2D, starsTexture);
+
+    const int stars_width = 1280;
+    const int stars_height = 400;
+    uint8_t stars[stars_width * stars_height * 3];
+    memset(stars, 0, sizeof(stars));
+    for (int i = 0; i < 500; ++i) {
+        int n = rand() % (stars_width * stars_height) * 3;
+        uint8_t brightness = 128 + rand() % 128;
+        stars[n++] = brightness;
+        stars[n++] = brightness;
+        stars[n++] = brightness;
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, stars_width, stars_height, 0, GL_RGB, GL_UNSIGNED_BYTE, stars);
 
     return 0;
 }
@@ -186,7 +201,6 @@ void toggle_opengl() {
 static void set_texture(grs_bitmap *bm) {
     // This function is too slow! Need to find a way to do it once per
     // bitmap, not for each surface to be drawn.
-    // TODO: Translucent bitmaps
 
     SDL_Surface *surface;
     if (bm->type == BMT_RSD8) {
@@ -341,6 +355,9 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
             case 255: set_color(255,   0,   0, 128); break; // red force field
             default: return CLIP_ALL;
         }
+    } else if (c == 255) {
+        // transparent
+        return CLIP_NONE;
     } else {
         // solid color
         SDL_Color color = sdlPalette->colors[c];
@@ -367,4 +384,48 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
     glEnd();
 
     return CLIP_NONE;
+}
+
+void opengl_draw_stars() {
+    SDL_GL_MakeCurrent(window, context);
+
+    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
+
+    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    glUniformMatrix4fv(uniProj, 1, false, IdentityMatrix);
+
+    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
+
+    glBindTexture(GL_TEXTURE_2D, starsTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // see comment in fr_send_view(): rotation period is ~20 minutes before
+    // reactor blows, ~1.3 minutes after.
+    fixang angle = QUESTBIT_GET(0x14) ? player_struct.game_time * 3 : player_struct.game_time / 5;
+
+    extern g3s_angvec viewer_orientation;
+    float tc_top = -1.0 * viewer_orientation.tx / FIXANG_PI / 2;
+    float tc_bottom = tc_top + 0.5;
+    float tc_left = 1.0 * (viewer_orientation.ty - angle) / FIXANG_PI / 2;
+    float tc_right = tc_left + 0.25;
+
+    glBegin(GL_TRIANGLE_STRIP);
+    glVertexAttrib2f(tcAttrib, tc_right, tc_bottom);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
+    glVertexAttrib2f(tcAttrib, tc_right, tc_top);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(1.0f, 1.0f, 0.0f);
+    glVertexAttrib2f(tcAttrib, tc_left, tc_bottom);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
+    glVertexAttrib2f(tcAttrib, tc_left, tc_top);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(-1.0f, 1.0f, 0.0f);
+    glEnd();
 }

@@ -17,6 +17,7 @@ int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
 int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
 int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag);
+void opengl_draw_stars();
 
 #ifdef __cplusplus
 }

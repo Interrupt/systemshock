@@ -74,6 +74,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "refstuf.h"
 
+#include "OpenGL.h"
+
 //#include <mprintf.h>
 
 // tell me tell me what you're after
@@ -293,6 +295,10 @@ int fr_pipe_go_3(void) {
     fr_rend_start();
     if ((_fr_curflags & FR_HACKCAM_MASK) == 0)
         do_seen_pass();
+
+    if (use_opengl()) {
+        opengl_draw_stars();
+    }
 
     // use clip len as temp for delta within the square
     clip_len[0] = (short)((fr_camera_last[0] & 0xffff) - 0x8000);
