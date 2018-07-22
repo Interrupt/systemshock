@@ -69,14 +69,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include <SDL.h>
 
-#ifdef _WIN32
-	#include <GL/glew.h>
-#else
-	#ifdef __APPLE__
-	#include <OpenGL/gl.h>
-	#else
-	#include <GL/gl.h>
-	#endif
+#ifdef USE_OPENGL
+# if defined(_WIN32)
+#  include <GL/glew.h>
+# elif defined(__APPLE__)
+#  include <OpenGL/gl.h>
+# else
+#  include <GL/gl.h>
+# endif
 #endif
 
 extern uchar game_paused;		// I've learned such bad lessons from LG.
@@ -337,8 +337,10 @@ void SDLDraw()
 		SDL_RenderClear(renderer);
 	}
 
+#ifdef USE_OPENGL
 	// check OpenGL error
 	GLenum err = glGetError();
 	if (err != GL_NO_ERROR)
 		ERROR("OpenGL error: %i", err);
+#endif
 }
