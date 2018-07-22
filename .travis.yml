@@ -26,10 +26,12 @@ addons:
       - libc6-dev-i386
       - gcc-multilib
       - g++-multilib
+      - libglu1-mesa-dev:i386
+      - libgl1-mesa-dev:i386
 
 script:
   - sudo ./osx-linux/install_32bit_sdl.sh
-  - cmake .
+  - cmake -DCMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu .
   - make systemshock
 
 before_deploy:

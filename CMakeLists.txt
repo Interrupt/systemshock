@@ -2,6 +2,8 @@ project(SystemShock)
 
 cmake_minimum_required(VERSION 3.1)
 
+set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
+
 # Required for stdbool.h
 set(CMAKE_C_STANDARD 99)
 
