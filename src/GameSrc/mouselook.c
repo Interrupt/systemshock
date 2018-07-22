@@ -100,11 +100,16 @@ void mouse_look_toggle() {
 
     if (mlook_enabled) {
         // Flush mouse events, because we don't care about the past anymore
-        pump_events();
-        mouse_flush();
+        uiHideMouse(NULL);
 
         // Now we can center the mouse
         center_mouse();
+        pump_events();
+        mouse_flush();
+        uiFlush();
+        uiPopGlobalCursor();
+        uiSetCursor();
+        uiShowMouse(NULL);
     }
 }
 
