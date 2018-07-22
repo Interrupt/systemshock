@@ -32,7 +32,7 @@ Prerequisites
 Downloads
 =======
 
-We have CI systems in place building [distributable packages](releases/) out of tagged commits for Linux, Mac and Windows.
+We have CI systems in place building [distributable packages](https://github.com/Interrupt/systemshock/releases/) out of tagged commits for Linux, Mac and Windows.
 
 Compiling / Running
 ============
