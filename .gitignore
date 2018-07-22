@@ -51,3 +51,6 @@ build_ext
 # Save files
 CurrentGame.dat
 savgam*.dat
+
+# Temporary audio files
+.temp.audio

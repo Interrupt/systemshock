@@ -24,13 +24,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res.h"
 
 FILE *temp_file;
+static uint8_t *tempfile_name = ".temp.audio";
 
 int32_t AfilePrepareRes(Id id, Afile *afile) {
 
     uint8_t *ptr = ResLock(id);
 
     // FIXME That's ugly. We need fmemopen() analog.
-    temp_file = tmpfile();
+    temp_file = fopen(tempfile_name, "wb+");
     fwrite(ptr, ResSize(id), 1, temp_file);
     fseek(temp_file, 0, 0);
 
