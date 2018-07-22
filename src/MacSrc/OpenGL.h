@@ -8,7 +8,7 @@ extern "C" {
 #include <3d.h>
 
 int init_opengl();
-void opengl_cache_texture(int idx, grs_bitmap *bm);
+void opengl_cache_texture(int idx, int size, grs_bitmap *bm);
 
 bool use_opengl();
 void toggle_opengl();

@@ -22,6 +22,7 @@ extern "C" {
     #include "map.h"
     #include "frflags.h"
     #include "player.h"
+    #include "textmaps.h"
     #include "Shock.h"
 
     extern SDL_Renderer *renderer;
@@ -39,10 +40,9 @@ static GLuint shaderProgram;
 static GLuint dynTexture;
 static GLuint starsTexture;
 
-// static cache for the most important textures (54 textures in four sizes);
+// static cache for the most important textures;
 // initialized during load_textures() in textmaps.c
-static const size_t NUM_TEXTURES = 216;
-static GLuint textures[NUM_TEXTURES];
+static GLuint textures[NUM_LOADED_TEXTURES];
 static std::map<uint8_t *, GLuint> texturesByBitsPtr;
 
 static const char *VertexShader =
@@ -139,7 +139,7 @@ int init_opengl() {
     glLinkProgram(shaderProgram);
     glUseProgram(shaderProgram);
 
-    glGenTextures(NUM_TEXTURES, textures);
+    glGenTextures(NUM_LOADED_TEXTURES, textures);
     glGenTextures(1, &dynTexture);
     glGenTextures(1, &starsTexture);
 
@@ -229,11 +229,14 @@ static void convert_texture(GLuint texture, grs_bitmap *bm) {
     SDL_FreeSurface(surface);
 }
 
-void opengl_cache_texture(int idx, grs_bitmap *bm) {
+void opengl_cache_texture(int idx, int size, grs_bitmap *bm) {
     SDL_GL_MakeCurrent(window, context);
 
-    if (idx < NUM_TEXTURES) {
-        convert_texture(textures[idx], bm);
+    if (idx < NUM_LOADED_TEXTURES) {
+        // only load the full-resolution into GL; use it in place of
+        // down-scaled versions.
+        if (size == TEXTURE_128_INDEX)
+            convert_texture(textures[idx], bm);
         texturesByBitsPtr[bm->bits] = textures[idx];
     }
 }
