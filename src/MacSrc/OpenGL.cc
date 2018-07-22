@@ -1,3 +1,5 @@
+#ifdef USE_OPENGL
+
 #include "OpenGL.h"
 
 #ifdef _WIN32
@@ -461,3 +463,5 @@ void opengl_draw_stars() {
     glVertex3f(-1.0f, 1.0f, 0.0f);
     glEnd();
 }
+
+#endif // USE_OPENGL

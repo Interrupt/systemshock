@@ -76,6 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "3d.h"
 #include "GlobalV.h"
 #include "lg.h"
+#include "OpenGL.h"
 #include <stdbool.h>
 
 // need this from 2D lib
@@ -391,7 +392,6 @@ grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p) {
                     }
 
                     tmap_info.tmap_type = GRC_POLY;
-                    extern bool use_opengl();
                     if (!use_opengl()) {
                         h_map(bm, 4, _g3d_bitmap_poly, &tmap_info);
                     } else {

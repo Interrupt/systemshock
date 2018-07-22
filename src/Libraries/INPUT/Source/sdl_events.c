@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL.h>
+#include <OpenGL.h>
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
@@ -376,10 +377,8 @@ void pump_events(void)
 				}
 				break;
 			case SDL_WINDOWEVENT:
-				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-					extern void opengl_resize(int width, int height);
+				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
 					opengl_resize(ev.window.data1, ev.window.data2);
-				}
 			// TODO: maybe handle other events as well..
 		}
 	}

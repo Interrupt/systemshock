@@ -22,6 +22,10 @@ add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
 
 # Find OpenGL
 find_package(OpenGL)
+if(OPENGL_FOUND)
+	message(STATUS "OpenGL found")
+	add_definitions(-DUSE_OPENGL)
+ENDIF(OPENGL_FOUND)
 
 # Find SDL, trying the easy way and then the hard way
 find_package(SDL2)

@@ -108,6 +108,8 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 
 #endif // NOT_YET
 
+#include "OpenGL.h"
+
 #define CHECK_FOR_A_PACKET
 
 #ifdef SVGA_SUPPORT
@@ -1211,7 +1213,6 @@ uchar MacHelpFunc(short keycode, ulong context, void *data) {
 }
 
 uchar toggle_opengl_func(short keycode, ulong context, void *data) {
-    extern void toggle_opengl();
     toggle_opengl();
     return TRUE;
 }
