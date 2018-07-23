@@ -69,16 +69,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include <SDL.h>
 
-#ifdef USE_OPENGL
-# if defined(_WIN32)
-#  include <GL/glew.h>
-# elif defined(__APPLE__)
-#  include <OpenGL/gl.h>
-# else
-#  include <GL/gl.h>
-# endif
-#endif
-
 extern uchar game_paused;		// I've learned such bad lessons from LG.
 extern uchar objdata_loaded;
 extern uchar music_on;
@@ -325,22 +315,20 @@ void SetSDLPalette(int index, int count, uchar *pal)
 void SDLDraw()
 {
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, drawSurface);
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+        if (should_opengl_swap()) {
+		opengl_backup_view();
+		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+        }
+
 	SDL_Rect srcRect = { 0, 0, gScreenWide, gScreenHigh };
 	SDL_RenderCopy(renderer, texture, &srcRect, NULL);
 	SDL_DestroyTexture(texture);
 
 	if (should_opengl_swap()) {
-		SDL_GL_SwapWindow(window);
+		opengl_swap_and_restore();
 	} else {
 		SDL_RenderPresent(renderer);
 		SDL_RenderClear(renderer);
 	}
-
-#ifdef USE_OPENGL
-	// check OpenGL error
-	GLenum err = glGetError();
-	if (err != GL_NO_ERROR)
-		ERROR("OpenGL error: %i", err);
-#endif
 }

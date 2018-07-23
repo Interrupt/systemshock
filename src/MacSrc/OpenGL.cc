@@ -42,6 +42,7 @@ int _blend_mode = GL_LINEAR;
 static SDL_GLContext context;
 static GLuint shaderProgram;
 static GLuint dynTexture;
+static GLuint viewBackupTexture;
 
 // static cache for the most important textures;
 // initialized during load_textures() in textmaps.c
@@ -146,6 +147,7 @@ int init_opengl() {
 
     glGenTextures(NUM_LOADED_TEXTURES, textures);
     glGenTextures(1, &dynTexture);
+    glGenTextures(1, &viewBackupTexture);
 
     return 0;
 }
@@ -159,14 +161,18 @@ void opengl_resize(int width, int height) {
     float scale_x = (float)width / logical_width;
     float scale_y = (float)height / logical_height;
 
+    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+
     if (scale_x >= scale_y) {
         // physical aspect ratio is wider; black borders left and right
-        int border_x = (width - logical_width * scale_y + 1);
+        int border_x = (width - logical_width * scale_y);
         glViewport(border_x / 2, 0, width - border_x, height);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width - border_x, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
     } else {
         // physical aspect ratio is narrower; black borders at top and bottom
-        int border_y = (height - logical_height * scale_x + 1);
+        int border_y = (height - logical_height * scale_x);
         glViewport(0, border_y / 2, width, height - border_y);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height - border_y, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
     }
 }
 
@@ -181,6 +187,58 @@ bool should_opengl_swap() {
     return _use_opengl &&
            _current_loop == FULLSCREEN_LOOP &&
            !global_fullmap->cyber;
+}
+
+void opengl_backup_view() {
+    // save the framebuffer into a texture after rendering the 3D view(s)
+    // but before blitting the HUD overlay
+    SDL_GL_MakeCurrent(window, context);
+
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, viewport[0], viewport[1], viewport[2], viewport[3]);
+}
+
+void opengl_swap_and_restore() {
+    // restore the view backup (without HUD overlay) for incremental
+    // updates in the subsequent frame
+    SDL_GL_MakeCurrent(window, context);
+    SDL_GL_SwapWindow(window);
+
+    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
+
+    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    glUniformMatrix4fv(uniProj, 1, false, IdentityMatrix);
+
+    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
+    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glBegin(GL_TRIANGLE_STRIP);
+    glVertexAttrib2f(tcAttrib, 1.0f, 0.0f);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
+    glVertexAttrib2f(tcAttrib, 1.0f, 1.0f);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(1.0f, 1.0f, 0.0f);
+    glVertexAttrib2f(tcAttrib, 0.0f, 0.0f);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
+    glVertexAttrib2f(tcAttrib, 0.0f, 1.0f);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(-1.0f, 1.0f, 0.0f);
+    glEnd();
+
+    // check OpenGL error
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR)
+        ERROR("OpenGL error: %i", err);
 }
 
 void toggle_opengl() {
