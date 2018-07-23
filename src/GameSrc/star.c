@@ -43,6 +43,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include "star.h"
 
+#include "OpenGL.h"
+
 //#define  STAR_SPEW
 #define STARS_ANTI_ALIAS
 
@@ -157,6 +159,12 @@ void star_poly(int n, g3s_phandle *vp) {
     // draw star poly in color zero.  This part very
     // important, if not zero, won't work.
     f = g3_draw_poly(0xff, n, vp);
+
+    if(use_opengl()) {
+        opengl_set_stencil(0xFF);
+        opengl_draw_poly(0x00, n, vp, 0);
+        opengl_set_stencil(0x00);
+    }
 
     // snag points that have been fully clipped and projected
     // out of the depths of insanity of the 3d
@@ -285,6 +293,10 @@ void star_render(void) {
         return;
     }
 
+    if(use_opengl()) {
+        opengl_begin_stars();
+    }
+
 #ifdef STAR_SPEW
     mprintf("max_rad = %x min_z = %x\n", fix_sqrt(star_max_rad), star_min_z);
 #endif
@@ -315,31 +327,19 @@ void star_render(void) {
         s = star_transform_point(&v);
 
         if (s->codes == 0) {
-            x = fix_rint(s->sx);
-            y = fix_rint(s->sy);
-            if (std_size <= 1) {
-#ifdef STARS_ANTI_ALIAS
-                if (anti_alias) {
-                    do_aa_star(s->sx, s->sy, std_col[i]);
-                } else
-#endif
-                    if (gr_get_pixel(x, y) == 0xff)
-                    gr_set_pixel(std_col[i], x, y);
-            } else {
-                for (x1 = x; x1 < x + std_size; ++x1) {
-                    for (y1 = y; y1 < y + std_size; ++y1) {
-                        if (gr_get_pixel(x1, y1) == 0xff)
-                            gr_set_pixel(std_col[i], x1, y1);
-                    }
-                }
+            if(use_opengl()) {
+                opengl_draw_star(0xff, 1, &s);
             }
-
-#ifdef STEREO_ON
-            if (old_stereo) {
-                // switch canvases quickly
-                grd_bm.bits = g3d_rt_canv_bits;
+            else {
+                x = fix_rint(s->sx);
+                y = fix_rint(s->sy);
                 if (std_size <= 1) {
-                    if (gr_get_pixel(x, y) == 0xff)
+    #ifdef STARS_ANTI_ALIAS
+                    if (anti_alias) {
+                        do_aa_star(s->sx, s->sy, std_col[i]);
+                    } else
+    #endif
+                        if (gr_get_pixel(x, y) == 0xff)
                         gr_set_pixel(std_col[i], x, y);
                 } else {
                     for (x1 = x; x1 < x + std_size; ++x1) {
@@ -349,12 +349,34 @@ void star_render(void) {
                         }
                     }
                 }
-                // switch back
-                grd_bm.bits = g3d_lt_canv_bits;
+
+    #ifdef STEREO_ON
+                if (old_stereo) {
+                    // switch canvases quickly
+                    grd_bm.bits = g3d_rt_canv_bits;
+                    if (std_size <= 1) {
+                        if (gr_get_pixel(x, y) == 0xff)
+                            gr_set_pixel(std_col[i], x, y);
+                    } else {
+                        for (x1 = x; x1 < x + std_size; ++x1) {
+                            for (y1 = y; y1 < y + std_size; ++y1) {
+                                if (gr_get_pixel(x1, y1) == 0xff)
+                                    gr_set_pixel(std_col[i], x1, y1);
+                            }
+                        }
+                    }
+                    // switch back
+                    grd_bm.bits = g3d_lt_canv_bits;
+                }
+    #endif
             }
-#endif
         }
+
         g3_free_point(s);
+    }
+
+    if(use_opengl()) {
+        opengl_end_stars();
     }
 
 #ifdef STEREO_ON

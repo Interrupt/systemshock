@@ -284,6 +284,10 @@ int fr_pipe_go_3(void) {
 
     //_fr_x_cen = fix_make(0, 2);
 
+    if (use_opengl()) {
+        opengl_draw_stars();
+    }
+
     int i, j, p_dir; // p_dir is how many per diagonal element
     uchar *loc_code_ptr, *quad_order;
     short clip_len[4]; // , clip_contrib[4];
@@ -295,10 +299,6 @@ int fr_pipe_go_3(void) {
     fr_rend_start();
     if ((_fr_curflags & FR_HACKCAM_MASK) == 0)
         do_seen_pass();
-
-    if (use_opengl()) {
-        opengl_draw_stars();
-    }
 
     // use clip len as temp for delta within the square
     clip_len[0] = (short)((fr_camera_last[0] & 0xffff) - 0x8000);

@@ -820,11 +820,9 @@ int fr_send_view(void) {
     // rotation every 20 minutes, every 1 minute after explosion
     // with OpenGL, the starts have already been rendered before everything else
 
-    if (!use_opengl()) {
-        g3_start_object_angles_y(&zvec, QUESTBIT_GET(0x14) ? player_struct.game_time * 3 : player_struct.game_time / 5);
-        star_render();
-        g3_end_object();
-    }
+    g3_start_object_angles_y(&zvec, QUESTBIT_GET(0x14) ? player_struct.game_time * 3 : player_struct.game_time / 5);
+    star_render();
+    g3_end_object();
 
     g3_end_frame();
 

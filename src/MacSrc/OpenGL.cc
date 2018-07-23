@@ -25,6 +25,7 @@ extern "C" {
     #include "frflags.h"
     #include "player.h"
     #include "textmaps.h"
+    #include "star.h"
     #include "Shock.h"
 
     extern SDL_Renderer *renderer;
@@ -131,7 +132,9 @@ int init_opengl() {
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
+    glEnable(GL_ALPHA_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glAlphaFunc(GL_GEQUAL, 0.001f);
 
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, VertexShader);
     GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, FragmentShader);
@@ -145,19 +148,10 @@ int init_opengl() {
     glGenTextures(1, &dynTexture);
     glGenTextures(1, &starsTexture);
 
-    const int stars_width = 1280;
-    const int stars_height = 400;
+    const int stars_width = 4;
+    const int stars_height = 4;
     uint8_t stars[stars_width * stars_height * 3];
     memset(stars, 0, sizeof(stars));
-    for (int i = 0; i < 500; ++i) {
-        int x = rand() % stars_width;
-        int y = rand() % stars_height;
-        int n = 3 * (y * stars_width + x);
-        uint8_t brightness = 128 + rand() % 128;
-        stars[n++] = brightness;
-        stars[n++] = brightness;
-        stars[n++] = brightness;
-    }
 
     glBindTexture(GL_TEXTURE_2D, starsTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, stars_width, stars_height, 0, GL_RGB, GL_UNSIGNED_BYTE, stars);
@@ -420,48 +414,69 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
     return CLIP_NONE;
 }
 
-void opengl_draw_stars() {
+void opengl_set_stencil(int v) {
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+    glStencilFunc(GL_ALWAYS, v, ~0);
+}
+
+void opengl_begin_stars() {
     SDL_GL_MakeCurrent(window, context);
 
+    glPointSize(2.5f);
+    glEnable(GL_POINT_SMOOTH);
+
     GLint uniView = glGetUniformLocation(shaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(uniView, 1, false, ViewMatrix);
 
     GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
+
+    // Only draw stars where the stencil value is 0xFF (Sky!)
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glStencilFunc(GL_EQUAL, 0xFF, ~0);
+}
+
+void opengl_end_stars() {
+    // Turn off the stencil test
+    opengl_set_stencil(0x00);
+}
+
+int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
+    SDL_GL_MakeCurrent(window, context);
 
     GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
     GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
 
-    glBindTexture(GL_TEXTURE_2D, starsTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    g3s_point& vertex = *(p[0]);
+
+    set_color(200, 200, 200, 255);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    // see comment in fr_send_view(): rotation period is ~20 minutes before
-    // reactor blows, ~1.3 minutes after.
-    fixang angle = QUESTBIT_GET(0x14) ? player_struct.game_time * 3 : player_struct.game_time / 5;
-
-    extern g3s_angvec viewer_orientation;
-    float tc_top = -1.0 * viewer_orientation.tx / FIXANG_PI / 2;
-    float tc_bottom = tc_top + 0.5;
-    float tc_left = 1.0 * (viewer_orientation.ty - angle) / FIXANG_PI / 2;
-    float tc_right = tc_left + 0.25;
-
-    glBegin(GL_TRIANGLE_STRIP);
-    glVertexAttrib2f(tcAttrib, tc_right, tc_bottom);
+    // FIXME: Might be able to draw all the stars at once, in one Begin / End!
+    glBegin(GL_POINTS);
+    glVertexAttrib2f(tcAttrib, 0.1f, 0.1f);
     glVertexAttrib1f(lightAttrib, 1.0f);
-    glVertex3f(1.0f, -1.0f, 0.0f);
-    glVertexAttrib2f(tcAttrib, tc_right, tc_top);
-    glVertexAttrib1f(lightAttrib, 1.0f);
-    glVertex3f(1.0f, 1.0f, 0.0f);
-    glVertexAttrib2f(tcAttrib, tc_left, tc_bottom);
-    glVertexAttrib1f(lightAttrib, 1.0f);
-    glVertex3f(-1.0f, -1.0f, 0.0f);
-    glVertexAttrib2f(tcAttrib, tc_left, tc_top);
-    glVertexAttrib1f(lightAttrib, 1.0f);
-    glVertex3f(-1.0f, 1.0f, 0.0f);
+    glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
     glEnd();
+
+    return CLIP_NONE;
+}
+
+void opengl_draw_stars() {
+    SDL_GL_MakeCurrent(window, context);
+
+    // Make sure everything starts with a stencil of 0
+    glClearStencil(0x00);
+    glClear(GL_STENCIL_BUFFER_BIT);
+
+    // Draw everything with a stencil of 0
+    opengl_set_stencil(0x00);
 }
 
 #endif // USE_OPENGL
