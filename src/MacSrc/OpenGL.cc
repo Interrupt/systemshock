@@ -33,6 +33,7 @@ extern "C" {
 }
 
 #include <map>
+#include "frintern.h"
 
 bool _use_opengl = true;
 int _blend_mode = GL_LINEAR;
@@ -259,8 +260,11 @@ static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttr
 
     // Could be a CLUT color instead, use that for lighting
     if(gr_get_fill_type() == FILL_CLUT) {
-        int v = (gr_get_fill_parm() & 0x0F00) >> 4;
-        light = v / 256.0f;
+        // Ugly hack: We don't get the original light value, so we have to
+        // recalculate it from the offset into the global lighting lookup
+        // table.
+        uchar* clut = (uchar*)gr_get_fill_parm();
+        light = (clut - grd_screen->ltab) / 4096.0f;
     }
 
     glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
