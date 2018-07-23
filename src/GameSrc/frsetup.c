@@ -680,6 +680,8 @@ int fr_start_view(void) {
         _fr_lit_per_func = _fr_lit_floor_func = _fr_lit_wall_func = opengl_light_tmap;
         extern int (*g3_tmap_func)(int n, g3s_phandle *vp, grs_bitmap *bm);
         g3_tmap_func = opengl_light_tmap;
+
+        opengl_set_viewport(_fr->xtop, _fr->ytop, _fr->xwid, _fr->ywid);
     } else if (detail != 0) {
         /* check viewer orientation.  Use wall/floor/full perspective texture maps accordingly. */
         _fr_lit_per_func = g3_light_tmap;

@@ -19,6 +19,7 @@ bool should_opengl_swap();
 void opengl_backup_view();
 void opengl_swap_and_restore();
 
+void opengl_set_viewport(int x, int y, int width, int height);
 int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
 int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
 int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
@@ -41,6 +42,7 @@ static bool should_opengl_swap() { return false; }
 static void opengl_backup_view() {}
 static void opengl_swap_and_restore() {}
 
+static void opengl_set_viewport(int x, int y, int width, int height) {}
 static int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) { return 0; }
 static int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) { return 0; }
 static int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) { return 0; }

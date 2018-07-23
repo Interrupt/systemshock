@@ -22,6 +22,7 @@
 extern "C" {
     #include "mainloop.h"
     #include "map.h"
+    #include "frintern.h"
     #include "frflags.h"
     #include "player.h"
     #include "textmaps.h"
@@ -34,7 +35,6 @@ extern "C" {
 }
 
 #include <map>
-#include "frintern.h"
 
 bool _use_opengl = true;
 int _blend_mode = GL_LINEAR;
@@ -48,6 +48,15 @@ static GLuint viewBackupTexture;
 // initialized during load_textures() in textmaps.c
 static GLuint textures[NUM_LOADED_TEXTURES];
 static std::map<uint8_t *, GLuint> texturesByBitsPtr;
+
+static float view_scale;
+static int phys_width;
+static int phys_height;
+static int phys_offset_x;
+static int phys_offset_y;
+
+static int render_width;
+static int render_height;
 
 static const char *VertexShader =
     "#version 110\n"
@@ -161,31 +170,39 @@ void opengl_resize(int width, int height) {
     float scale_x = (float)width / logical_width;
     float scale_y = (float)height / logical_height;
 
-    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
-
     if (scale_x >= scale_y) {
         // physical aspect ratio is wider; black borders left and right
-        int border_x = (width - logical_width * scale_y);
-        glViewport(border_x / 2, 0, width - border_x, height);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width - border_x, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+        view_scale = scale_y;
     } else {
         // physical aspect ratio is narrower; black borders at top and bottom
-        int border_y = (height - logical_height * scale_x);
-        glViewport(0, border_y / 2, width, height - border_y);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height - border_y, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+        view_scale = scale_x;
     }
+
+    phys_width = view_scale * logical_width;
+    phys_height = view_scale * logical_height;
+
+    int border_x = width - phys_width;
+    int border_y = height - phys_height;
+    phys_offset_x = border_x / 2;
+    phys_offset_y = border_y / 2;
+    printf("window = %dx%d, scale = %.2f, viewport = %dx%d, offset = %d/%d\n",
+           width, height, view_scale, phys_width, phys_height, phys_offset_x, phys_offset_y);
+
+    // allocate a buffer for the framebuffer backup
+    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, phys_width, phys_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 }
 
 bool use_opengl() {
     return _use_opengl &&
-           _current_loop == FULLSCREEN_LOOP &&
+           (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber &&
            !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 bool should_opengl_swap() {
     return _use_opengl &&
-           _current_loop == FULLSCREEN_LOOP &&
+           (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber;
 }
 
@@ -194,11 +211,9 @@ void opengl_backup_view() {
     // but before blitting the HUD overlay
     SDL_GL_MakeCurrent(window, context);
 
-    GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
-
+    glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
-    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, viewport[0], viewport[1], viewport[2], viewport[3]);
+    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, phys_offset_x, phys_offset_y, phys_width, phys_height);
 }
 
 void opengl_swap_and_restore() {
@@ -206,6 +221,8 @@ void opengl_swap_and_restore() {
     // updates in the subsequent frame
     SDL_GL_MakeCurrent(window, context);
     SDL_GL_SwapWindow(window);
+
+    glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
 
     GLint uniView = glGetUniformLocation(shaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
@@ -252,6 +269,18 @@ void toggle_opengl() {
             _blend_mode = GL_LINEAR;
         }
     }
+}
+
+void opengl_set_viewport(int x, int y, int width, int height) {
+    render_width = width;
+    render_height = height;
+
+    SDL_GL_MakeCurrent(window, context);
+    int scaled_width = width * view_scale;
+    int scaled_height = height * view_scale;
+    int scaled_x = phys_offset_x + x * view_scale;
+    int scaled_y = phys_offset_y + phys_height - scaled_height - y * view_scale;
+    glViewport(scaled_x, scaled_y, scaled_width, scaled_height);
 }
 
 static void convert_texture(GLuint texture, grs_bitmap *bm) {
@@ -354,11 +383,11 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
 }
 
 float convx(float x) {
-    return  x/32768.0f / gScreenWide - 1;
+    return  x/32768.0f / render_width - 1;
 }
 
 float convy(float y) {
-    return -y/32768.0f / gScreenHigh + 1;
+    return -y/32768.0f / render_height + 1;
 }
 
 int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
@@ -535,7 +564,7 @@ void opengl_clear() {
 
     // Make sure everything starts with a stencil of 0
     glClearStencil(0xFF);
-    glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glClear(GL_STENCIL_BUFFER_BIT);
 
     // Draw everything with a stencil of 0
     opengl_set_stencil(0x00);
