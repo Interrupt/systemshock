@@ -259,7 +259,8 @@ static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttr
 
     // Could be a CLUT color instead, use that for lighting
     if(gr_get_fill_type() == FILL_CLUT) {
-        light = abs(((uchar)(gr_get_fill_parm() >> 4))) / 256.0f;
+        int v = (gr_get_fill_parm() & 0x0F00) >> 4;
+        light = v / 256.0f;
     }
 
     glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
