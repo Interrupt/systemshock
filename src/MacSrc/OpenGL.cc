@@ -41,7 +41,6 @@ int _blend_mode = GL_LINEAR;
 static SDL_GLContext context;
 static GLuint shaderProgram;
 static GLuint dynTexture;
-static GLuint starsTexture;
 
 // static cache for the most important textures;
 // initialized during load_textures() in textmaps.c
@@ -134,7 +133,7 @@ int init_opengl() {
     glEnable(GL_BLEND);
     glEnable(GL_ALPHA_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.001f);
+    glAlphaFunc(GL_GEQUAL, 0.05f);
 
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, VertexShader);
     GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, FragmentShader);
@@ -146,15 +145,6 @@ int init_opengl() {
 
     glGenTextures(NUM_LOADED_TEXTURES, textures);
     glGenTextures(1, &dynTexture);
-    glGenTextures(1, &starsTexture);
-
-    const int stars_width = 4;
-    const int stars_height = 4;
-    uint8_t stars[stars_width * stars_height * 3];
-    memset(stars, 0, sizeof(stars));
-
-    glBindTexture(GL_TEXTURE_2D, starsTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, stars_width, stars_height, 0, GL_RGB, GL_UNSIGNED_BYTE, stars);
 
     return 0;
 }
@@ -468,12 +458,12 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
     return CLIP_NONE;
 }
 
-void opengl_draw_stars() {
+void opengl_clear() {
     SDL_GL_MakeCurrent(window, context);
 
     // Make sure everything starts with a stencil of 0
-    glClearStencil(0x00);
-    glClear(GL_STENCIL_BUFFER_BIT);
+    glClearStencil(0xFF);
+    glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     // Draw everything with a stencil of 0
     opengl_set_stencil(0x00);

@@ -21,7 +21,7 @@ int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
 int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm);
 int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
 int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag);
-void opengl_draw_stars();
+void opengl_clear();
 int opengl_draw_star(long c, int n_verts, g3s_phandle *p);
 void opengl_begin_stars();
 void opengl_end_stars();
@@ -41,7 +41,7 @@ static int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) { return 0; 
 static int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) { return 0; }
 static int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) { return 0; }
 static int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) { return 0; }
-static void opengl_draw_stars() {}
+static void opengl_clear() {}
 static int opengl_draw_star(long c, int n_verts, g3s_phandle *p) { return 0; }
 static void opengl_begin_stars() { }
 static void opengl_end_stars() { }

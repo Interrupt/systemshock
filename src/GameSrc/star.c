@@ -156,14 +156,16 @@ void star_poly(int n, g3s_phandle *vp) {
     g3s_phandle *p;
     int f;
 
-    // draw star poly in color zero.  This part very
-    // important, if not zero, won't work.
-    f = g3_draw_poly(0xff, n, vp);
-
     if(use_opengl()) {
+        // Stencil out this area where we want stars to draw
         opengl_set_stencil(0xFF);
-        opengl_draw_poly(0x00, n, vp, 0);
+        f = opengl_draw_poly(0x00, n, vp, 0);
         opengl_set_stencil(0x00);
+    }
+    else {
+        // draw star poly in color zero.  This part very
+        // important, if not zero, won't work.
+        f = g3_draw_poly(0xff, n, vp);
     }
 
     // snag points that have been fully clipped and projected
