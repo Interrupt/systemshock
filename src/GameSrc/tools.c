@@ -423,7 +423,7 @@ void strip_newlines(char *buf) {
     }
 }
 
-errtype message_info(char *info_text) {
+errtype message_info(const char *info_text) {
     extern errtype inventory_draw_new_page(int pgnum);
     int x, y;
     char buf[MESSAGE_LEN];

@@ -27,6 +27,8 @@ extern "C" {
     #include "player.h"
     #include "textmaps.h"
     #include "star.h"
+    #include "tools.h"
+    #include "Prefs.h"
     #include "Shock.h"
 
     extern SDL_Renderer *renderer;
@@ -35,9 +37,6 @@ extern "C" {
 }
 
 #include <map>
-
-bool _use_opengl = true;
-int _blend_mode = GL_LINEAR;
 
 static SDL_GLContext context;
 static GLuint shaderProgram;
@@ -192,14 +191,14 @@ void opengl_resize(int width, int height) {
 }
 
 bool use_opengl() {
-    return _use_opengl &&
+    return gShockPrefs.doUseOpenGL &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber &&
            !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 bool should_opengl_swap() {
-    return _use_opengl &&
+    return gShockPrefs.doUseOpenGL &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber;
 }
@@ -257,16 +256,18 @@ void opengl_swap_and_restore() {
 }
 
 void toggle_opengl() {
-    if(_use_opengl && _blend_mode == GL_LINEAR) {
-        _blend_mode = GL_NEAREST;
+    if (!gShockPrefs.doUseOpenGL) {
+        message_info("OpenGL rendering, no texture filter");
+        gShockPrefs.doUseOpenGL = true;
+        gShockPrefs.doLinearScaling = false;
+    } else if (!gShockPrefs.doLinearScaling) {
+        message_info("OpenGL rendering, linear texture filter");
+        gShockPrefs.doLinearScaling = true;
+    } else {
+        message_info("Software rendering");
+        gShockPrefs.doUseOpenGL = false;
     }
-    else {
-        _use_opengl = !_use_opengl;
-
-        if(_use_opengl == TRUE) {
-            _blend_mode = GL_LINEAR;
-        }
-    }
+    SavePrefs();
 }
 
 void opengl_set_viewport(int x, int y, int width, int height) {
@@ -360,8 +361,8 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
 
     set_texture(bm);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -406,8 +407,8 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
 
     set_texture(bm);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -481,8 +482,8 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
         set_color(color.r, color.g, color.b, 255);
     }
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -541,8 +542,8 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
 
     set_color(200, 200, 200, 255);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

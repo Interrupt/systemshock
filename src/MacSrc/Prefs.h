@@ -52,6 +52,8 @@ typedef struct {
     short doDetail;             // 0 - Min, 1-Low, 2-High, 3-Max
     short doGamma;
     Boolean doUseQD;
+    Boolean doUseOpenGL;
+    Boolean doLinearScaling;
 } ShockPrefs;
 
 //--------------------
