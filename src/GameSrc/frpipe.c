@@ -297,7 +297,7 @@ int fr_pipe_go_3(void) {
         do_seen_pass();
 
     if (use_opengl()) {
-        opengl_draw_stars();
+        opengl_clear();
     }
 
     // use clip len as temp for delta within the square

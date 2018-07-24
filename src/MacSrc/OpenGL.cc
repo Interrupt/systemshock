@@ -22,9 +22,11 @@
 extern "C" {
     #include "mainloop.h"
     #include "map.h"
+    #include "frintern.h"
     #include "frflags.h"
     #include "player.h"
     #include "textmaps.h"
+    #include "star.h"
     #include "Shock.h"
 
     extern SDL_Renderer *renderer;
@@ -41,12 +43,21 @@ int _blend_mode = GL_LINEAR;
 static SDL_GLContext context;
 static GLuint shaderProgram;
 static GLuint dynTexture;
-static GLuint starsTexture;
+static GLuint viewBackupTexture;
 
 // static cache for the most important textures;
 // initialized during load_textures() in textmaps.c
 static GLuint textures[NUM_LOADED_TEXTURES];
 static std::map<uint8_t *, GLuint> texturesByBitsPtr;
+
+static float view_scale;
+static int phys_width;
+static int phys_height;
+static int phys_offset_x;
+static int phys_offset_y;
+
+static int render_width;
+static int render_height;
 
 static const char *VertexShader =
     "#version 110\n"
@@ -132,7 +143,9 @@ int init_opengl() {
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
+    glEnable(GL_ALPHA_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glAlphaFunc(GL_GEQUAL, 0.05f);
 
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, VertexShader);
     GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, FragmentShader);
@@ -144,24 +157,7 @@ int init_opengl() {
 
     glGenTextures(NUM_LOADED_TEXTURES, textures);
     glGenTextures(1, &dynTexture);
-    glGenTextures(1, &starsTexture);
-
-    const int stars_width = 1280;
-    const int stars_height = 400;
-    uint8_t stars[stars_width * stars_height * 3];
-    memset(stars, 0, sizeof(stars));
-    for (int i = 0; i < 500; ++i) {
-        int x = rand() % stars_width;
-        int y = rand() % stars_height;
-        int n = 3 * (y * stars_width + x);
-        uint8_t brightness = 128 + rand() % 128;
-        stars[n++] = brightness;
-        stars[n++] = brightness;
-        stars[n++] = brightness;
-    }
-
-    glBindTexture(GL_TEXTURE_2D, starsTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, stars_width, stars_height, 0, GL_RGB, GL_UNSIGNED_BYTE, stars);
+    glGenTextures(1, &viewBackupTexture);
 
     return 0;
 }
@@ -177,26 +173,90 @@ void opengl_resize(int width, int height) {
 
     if (scale_x >= scale_y) {
         // physical aspect ratio is wider; black borders left and right
-        int border_x = (width - logical_width * scale_y + 1);
-        glViewport(border_x / 2, 0, width - border_x, height);
+        view_scale = scale_y;
     } else {
         // physical aspect ratio is narrower; black borders at top and bottom
-        int border_y = (height - logical_height * scale_x + 1);
-        glViewport(0, border_y / 2, width, height - border_y);
+        view_scale = scale_x;
     }
+
+    phys_width = view_scale * logical_width;
+    phys_height = view_scale * logical_height;
+
+    int border_x = width - phys_width;
+    int border_y = height - phys_height;
+    phys_offset_x = border_x / 2;
+    phys_offset_y = border_y / 2;
+    printf("window = %dx%d, scale = %.2f, viewport = %dx%d, offset = %d/%d\n",
+           width, height, view_scale, phys_width, phys_height, phys_offset_x, phys_offset_y);
+
+    // allocate a buffer for the framebuffer backup
+    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, phys_width, phys_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 }
 
 bool use_opengl() {
     return _use_opengl &&
-           _current_loop == FULLSCREEN_LOOP &&
+           (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber &&
            !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 bool should_opengl_swap() {
     return _use_opengl &&
-           _current_loop == FULLSCREEN_LOOP &&
+           (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber;
+}
+
+void opengl_backup_view() {
+    // save the framebuffer into a texture after rendering the 3D view(s)
+    // but before blitting the HUD overlay
+    SDL_GL_MakeCurrent(window, context);
+
+    glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
+    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, phys_offset_x, phys_offset_y, phys_width, phys_height);
+}
+
+void opengl_swap_and_restore() {
+    // restore the view backup (without HUD overlay) for incremental
+    // updates in the subsequent frame
+    SDL_GL_MakeCurrent(window, context);
+    SDL_GL_SwapWindow(window);
+
+    glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
+
+    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
+
+    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    glUniformMatrix4fv(uniProj, 1, false, IdentityMatrix);
+
+    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
+    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glBegin(GL_TRIANGLE_STRIP);
+    glVertexAttrib2f(tcAttrib, 1.0f, 0.0f);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
+    glVertexAttrib2f(tcAttrib, 1.0f, 1.0f);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(1.0f, 1.0f, 0.0f);
+    glVertexAttrib2f(tcAttrib, 0.0f, 0.0f);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
+    glVertexAttrib2f(tcAttrib, 0.0f, 1.0f);
+    glVertexAttrib1f(lightAttrib, 1.0f);
+    glVertex3f(-1.0f, 1.0f, 0.0f);
+    glEnd();
+
+    // check OpenGL error
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR)
+        ERROR("OpenGL error: %i", err);
 }
 
 void toggle_opengl() {
@@ -210,6 +270,18 @@ void toggle_opengl() {
             _blend_mode = GL_LINEAR;
         }
     }
+}
+
+void opengl_set_viewport(int x, int y, int width, int height) {
+    render_width = width;
+    render_height = height;
+
+    SDL_GL_MakeCurrent(window, context);
+    int scaled_width = width * view_scale;
+    int scaled_height = height * view_scale;
+    int scaled_x = phys_offset_x + x * view_scale;
+    int scaled_y = phys_offset_y + phys_height - scaled_height - y * view_scale;
+    glViewport(scaled_x, scaled_y, scaled_width, scaled_height);
 }
 
 static void convert_texture(GLuint texture, grs_bitmap *bm) {
@@ -312,11 +384,11 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
 }
 
 float convx(float x) {
-    return  x/32768.0f / gScreenWide - 1;
+    return  x/32768.0f / render_width - 1;
 }
 
 float convy(float y) {
-    return -y/32768.0f / gScreenHigh + 1;
+    return -y/32768.0f / render_height + 1;
 }
 
 int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
@@ -434,48 +506,69 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
     return CLIP_NONE;
 }
 
-void opengl_draw_stars() {
+void opengl_set_stencil(int v) {
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+    glStencilFunc(GL_ALWAYS, v, ~0);
+}
+
+void opengl_begin_stars() {
     SDL_GL_MakeCurrent(window, context);
 
+    glPointSize(2.5f);
+    glEnable(GL_POINT_SMOOTH);
+
     GLint uniView = glGetUniformLocation(shaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(uniView, 1, false, ViewMatrix);
 
     GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
+
+    // Only draw stars where the stencil value is 0xFF (Sky!)
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glStencilFunc(GL_EQUAL, 0xFF, ~0);
+}
+
+void opengl_end_stars() {
+    // Turn off the stencil test
+    opengl_set_stencil(0x00);
+}
+
+int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
+    SDL_GL_MakeCurrent(window, context);
 
     GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
     GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
 
-    glBindTexture(GL_TEXTURE_2D, starsTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    g3s_point& vertex = *(p[0]);
+
+    set_color(200, 200, 200, 255);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _blend_mode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _blend_mode);
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    // see comment in fr_send_view(): rotation period is ~20 minutes before
-    // reactor blows, ~1.3 minutes after.
-    fixang angle = QUESTBIT_GET(0x14) ? player_struct.game_time * 3 : player_struct.game_time / 5;
-
-    extern g3s_angvec viewer_orientation;
-    float tc_top = -1.0 * viewer_orientation.tx / FIXANG_PI / 2;
-    float tc_bottom = tc_top + 0.5;
-    float tc_left = 1.0 * (viewer_orientation.ty - angle) / FIXANG_PI / 2;
-    float tc_right = tc_left + 0.25;
-
-    glBegin(GL_TRIANGLE_STRIP);
-    glVertexAttrib2f(tcAttrib, tc_right, tc_bottom);
+    // FIXME: Might be able to draw all the stars at once, in one Begin / End!
+    glBegin(GL_POINTS);
+    glVertexAttrib2f(tcAttrib, 0.1f, 0.1f);
     glVertexAttrib1f(lightAttrib, 1.0f);
-    glVertex3f(1.0f, -1.0f, 0.0f);
-    glVertexAttrib2f(tcAttrib, tc_right, tc_top);
-    glVertexAttrib1f(lightAttrib, 1.0f);
-    glVertex3f(1.0f, 1.0f, 0.0f);
-    glVertexAttrib2f(tcAttrib, tc_left, tc_bottom);
-    glVertexAttrib1f(lightAttrib, 1.0f);
-    glVertex3f(-1.0f, -1.0f, 0.0f);
-    glVertexAttrib2f(tcAttrib, tc_left, tc_top);
-    glVertexAttrib1f(lightAttrib, 1.0f);
-    glVertex3f(-1.0f, 1.0f, 0.0f);
+    glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
     glEnd();
+
+    return CLIP_NONE;
+}
+
+void opengl_clear() {
+    SDL_GL_MakeCurrent(window, context);
+
+    // Make sure everything starts with a stencil of 0
+    glClearStencil(0xFF);
+    glClear(GL_STENCIL_BUFFER_BIT);
+
+    // Draw everything with a stencil of 0
+    opengl_set_stencil(0x00);
 }
 
 #endif // USE_OPENGL

@@ -1018,6 +1018,7 @@ uchar toggle_giveall_func(short keycode, ulong context, void *data) {
 
     for (int i = 0; i < NUM_HARDWAREZ; i++)
         player_struct.hardwarez[i] = 1;
+    player_struct.hardwarez[HARDWARE_360] = 3;
 
     player_struct.weapons[0].type = 2;
     player_struct.weapons[0].subtype = 1;
