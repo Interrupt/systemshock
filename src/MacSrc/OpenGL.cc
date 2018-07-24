@@ -125,7 +125,7 @@ static GLuint compileShader(GLenum type, const char *source) {
     if (status != GL_TRUE) {
         char buffer[512];
         glGetShaderInfoLog(shader, 512, NULL, buffer);
-        printf("Error compiling shader!\n");
+        ERROR("Error compiling shader!\n");
         puts(buffer);
         exit(1);
     }
@@ -185,8 +185,6 @@ void opengl_resize(int width, int height) {
     int border_y = height - phys_height;
     phys_offset_x = border_x / 2;
     phys_offset_y = border_y / 2;
-    printf("window = %dx%d, scale = %.2f, viewport = %dx%d, offset = %d/%d\n",
-           width, height, view_scale, phys_width, phys_height, phys_offset_x, phys_offset_y);
 
     // allocate a buffer for the framebuffer backup
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
