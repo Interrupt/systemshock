@@ -390,24 +390,21 @@ static void set_texture(grs_bitmap *bm) {
         return;
     }
 
-    // Only update the pixels once per frame.
-    if(t->lastDrawTime != *tmd_ticks) {
-        if(!t->locked) {
-            if (bm->type == BMT_RSD8) {
-                grs_bitmap decoded;
-                gr_rsd8_convert(bm, &decoded);
-                SDL_memmove(t->bitmap->pixels, decoded.bits, bm->w * bm->h);
-            }
-            else {
-                SDL_memmove(t->bitmap->pixels, bm->bits, bm->w * bm->h);
-            }
+    if(!t->locked) {
+        if (bm->type == BMT_RSD8) {
+            grs_bitmap decoded;
+            gr_rsd8_convert(bm, &decoded);
+            SDL_memmove(t->bitmap->pixels, decoded.bits, bm->w * bm->h);
         }
-
-        SDL_SetSurfacePalette(t->bitmap, sdlPalette);
-        SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
-
-        t->lastDrawTime = *tmd_ticks;
+        else {
+            SDL_memmove(t->bitmap->pixels, bm->bits, bm->w * bm->h);
+        }
     }
+
+    SDL_SetSurfacePalette(t->bitmap, sdlPalette);
+    SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+
+    t->lastDrawTime = *tmd_ticks;
 
     glBindTexture(GL_TEXTURE_2D, t->texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, t->converted->pixels);
