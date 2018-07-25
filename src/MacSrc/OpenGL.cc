@@ -293,6 +293,8 @@ void opengl_set_viewport(int x, int y, int width, int height) {
 }
 
 bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
+    SDL_GL_MakeCurrent(window, context);
+    
     if(texturesByBitsPtr.size() < MAX_CACHED_TEXTURES) {
         // We have enough room, generate the new texture
         glGenTextures(1, &toCache.texture);
@@ -328,8 +330,8 @@ void opengl_clear_texture_cache() {
 
     std::map<uint8_t *, CachedTexture>::iterator iter;
     for(iter = texturesByBitsPtr.begin(); iter != texturesByBitsPtr.end(); iter++) {
-        CachedTexture ct;
-        if(ct.locked) { // only clear the locked textures for now
+        CachedTexture ct = iter->second;
+        if(!ct.locked) { // don't free locked surfaces
             SDL_FreeSurface(ct.bitmap);
             SDL_FreeSurface(ct.converted);
 
@@ -341,8 +343,6 @@ void opengl_clear_texture_cache() {
 }
 
 static void convert_texture(grs_bitmap *bm, bool locked) {
-    SDL_GL_MakeCurrent(window, context);
-
     SDL_Surface *surface;
     if (bm->type == BMT_RSD8) {
         grs_bitmap decoded;
@@ -372,13 +372,8 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
 }
 
 void opengl_cache_texture(int idx, int size, grs_bitmap *bm) {
-    SDL_GL_MakeCurrent(window, context);
-
     if (idx < NUM_LOADED_TEXTURES) {
-        // only load the full-resolution into GL; use it in place of
-        // down-scaled versions.
-        if (size == TEXTURE_128_INDEX)
-            convert_texture(bm, true);
+        convert_texture(bm, true);
     }
 }
 
@@ -390,7 +385,17 @@ static void set_texture(grs_bitmap *bm) {
         return;
     }
 
-    if(!t->locked) {
+    bool isDirty = false;
+
+    if(t->locked) {
+        if(t->lastDrawTime != *tmd_ticks) {
+            // Locked surfaces only need to update their palettes once per frame
+            SDL_SetSurfacePalette(t->bitmap, sdlPalette);
+            SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+            isDirty = true;
+        }
+    }
+    else {
         if (bm->type == BMT_RSD8) {
             grs_bitmap decoded;
             gr_rsd8_convert(bm, &decoded);
@@ -399,15 +404,18 @@ static void set_texture(grs_bitmap *bm) {
         else {
             SDL_memmove(t->bitmap->pixels, bm->bits, bm->w * bm->h);
         }
+
+        SDL_SetSurfacePalette(t->bitmap, sdlPalette);
+        SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+        isDirty = true;
     }
 
-    SDL_SetSurfacePalette(t->bitmap, sdlPalette);
-    SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
-
+    glBindTexture(GL_TEXTURE_2D, t->texture);
     t->lastDrawTime = *tmd_ticks;
 
-    glBindTexture(GL_TEXTURE_2D, t->texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, t->converted->pixels);
+    if(isDirty) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, t->converted->pixels);   
+    }
 }
 
 static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttrib) {
