@@ -373,7 +373,9 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
 
 void opengl_cache_texture(int idx, int size, grs_bitmap *bm) {
     if (idx < NUM_LOADED_TEXTURES) {
-        convert_texture(bm, true);
+        CachedTexture* t = opengl_get_texture(bm);
+        if(t == NULL)
+            convert_texture(bm, true);
     }
 }
 
