@@ -292,9 +292,9 @@ void opengl_set_viewport(int x, int y, int width, int height) {
     glViewport(scaled_x, scaled_y, scaled_width, scaled_height);
 }
 
-bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
+static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
     SDL_GL_MakeCurrent(window, context);
-    
+
     if(texturesByBitsPtr.size() < MAX_CACHED_TEXTURES) {
         // We have enough room, generate the new texture
         glGenTextures(1, &toCache.texture);
@@ -312,7 +312,7 @@ bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
     return false;
 }
 
-CachedTexture* opengl_get_texture(grs_bitmap *bm) {
+static CachedTexture* opengl_get_texture(grs_bitmap *bm) {
     std::map<uint8_t *, CachedTexture>::iterator iter = texturesByBitsPtr.find(bm->bits);
     if (iter != texturesByBitsPtr.end()) {
         return &iter->second;
@@ -476,11 +476,11 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     return CLIP_NONE;
 }
 
-float convx(float x) {
+static float convx(float x) {
     return  x/32768.0f / render_width - 1;
 }
 
-float convy(float y) {
+static float convy(float y) {
     return -y/32768.0f / render_height + 1;
 }
 
@@ -534,7 +534,7 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     return CLIP_NONE;
 }
 
-void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
+static void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
     const uint8_t pixel[] = { red, green, blue, alpha };
     glBindTexture(GL_TEXTURE_2D, dynTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
