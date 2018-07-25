@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Shock.h"
 #include "sideicon.h"
 #include "criterr.h"
-#include "OpenGl.h"
+#include "OpenGL.h"
 
 /*
 #include <memstat.h>
