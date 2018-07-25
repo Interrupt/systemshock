@@ -316,10 +316,10 @@ void SDLDraw()
 {
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, drawSurface);
 
-        if (should_opengl_swap()) {
+	if (should_opengl_swap()) {
 		opengl_backup_view();
 		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        }
+	}
 
 	SDL_Rect srcRect = { 0, 0, gScreenWide, gScreenHigh };
 	SDL_RenderCopy(renderer, texture, &srcRect, NULL);

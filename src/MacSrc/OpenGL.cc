@@ -30,6 +30,7 @@ extern "C" {
     #include "tools.h"
     #include "Prefs.h"
     #include "Shock.h"
+    #include "faketime.h"
 
     extern SDL_Renderer *renderer;
     extern SDL_Palette *sdlPalette;
@@ -37,16 +38,25 @@ extern "C" {
 }
 
 #include <map>
+#include "frintern.h"
+
+struct CachedTexture {
+    SDL_Surface *bitmap;
+    SDL_Surface *converted;
+    GLuint texture;
+    long lastDrawTime;
+    bool locked;
+};
+
+#define MAX_CACHED_TEXTURES 1024
 
 static SDL_GLContext context;
 static GLuint shaderProgram;
 static GLuint dynTexture;
 static GLuint viewBackupTexture;
 
-// static cache for the most important textures;
-// initialized during load_textures() in textmaps.c
-static GLuint textures[NUM_LOADED_TEXTURES];
-static std::map<uint8_t *, GLuint> texturesByBitsPtr;
+// Texture cache to keep SDL surfaces and GL textures in memory
+static std::map<uint8_t *, CachedTexture> texturesByBitsPtr;
 
 static float view_scale;
 static int phys_width;
@@ -153,7 +163,6 @@ int init_opengl() {
     glLinkProgram(shaderProgram);
     glUseProgram(shaderProgram);
 
-    glGenTextures(NUM_LOADED_TEXTURES, textures);
     glGenTextures(1, &dynTexture);
     glGenTextures(1, &viewBackupTexture);
 
@@ -282,7 +291,57 @@ void opengl_set_viewport(int x, int y, int width, int height) {
     glViewport(scaled_x, scaled_y, scaled_width, scaled_height);
 }
 
-static void convert_texture(GLuint texture, grs_bitmap *bm) {
+static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
+    SDL_GL_MakeCurrent(window, context);
+
+    if(texturesByBitsPtr.size() < MAX_CACHED_TEXTURES) {
+        // We have enough room, generate the new texture
+        glGenTextures(1, &toCache.texture);
+        glBindTexture(GL_TEXTURE_2D, toCache.texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, toCache.converted->pixels);
+
+        texturesByBitsPtr[bm->bits] = toCache;
+        return true;
+    }
+
+    // Not enough room, just use the dynTexture
+    glBindTexture(GL_TEXTURE_2D, dynTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, toCache.converted->pixels);
+
+    return false;
+}
+
+static CachedTexture* opengl_get_texture(grs_bitmap *bm) {
+    std::map<uint8_t *, CachedTexture>::iterator iter = texturesByBitsPtr.find(bm->bits);
+    if (iter != texturesByBitsPtr.end()) {
+        return &iter->second;
+    }
+    return NULL;
+}
+
+void opengl_clear_texture_cache() {
+    if(texturesByBitsPtr.size() == 0)
+        return;
+
+    DEBUG("Clearing OpenGL texture cache.");
+
+    SDL_GL_MakeCurrent(window, context);
+
+    std::map<uint8_t *, CachedTexture>::iterator iter;
+    for(iter = texturesByBitsPtr.begin(); iter != texturesByBitsPtr.end(); iter++) {
+        CachedTexture ct = iter->second;
+        if(!ct.locked) { // don't free locked surfaces
+            SDL_FreeSurface(ct.bitmap);
+            SDL_FreeSurface(ct.converted);
+
+            glDeleteTextures(1, &ct.texture);
+
+            texturesByBitsPtr.erase(iter);
+        }
+    }
+}
+
+static void convert_texture(grs_bitmap *bm, bool locked) {
     SDL_Surface *surface;
     if (bm->type == BMT_RSD8) {
         grs_bitmap decoded;
@@ -291,35 +350,72 @@ static void convert_texture(GLuint texture, grs_bitmap *bm) {
     } else {
         surface = SDL_CreateRGBSurfaceFrom(bm->bits, bm->w, bm->h, 8, bm->row, 0, 0, 0, 0);
     }
+
     SDL_SetSurfacePalette(surface, sdlPalette);
 
     SDL_Surface *rgba = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
 
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba->pixels);
+    // Cache this new surface.
+    CachedTexture ct;
+    ct.bitmap = surface;
+    ct.converted = rgba;
+    ct.lastDrawTime = *tmd_ticks;
+    ct.locked = locked;
 
-    SDL_FreeSurface(rgba);
-    SDL_FreeSurface(surface);
+    bool cached = opengl_cache_texture(ct, bm);
+    if(!cached) {
+        DEBUG("Not enough room to cache texture!");
+        SDL_FreeSurface(surface);
+        SDL_FreeSurface(rgba);
+    }
 }
 
 void opengl_cache_texture(int idx, int size, grs_bitmap *bm) {
-    SDL_GL_MakeCurrent(window, context);
-
     if (idx < NUM_LOADED_TEXTURES) {
-        // only load the full-resolution into GL; use it in place of
-        // down-scaled versions.
-        if (size == TEXTURE_128_INDEX)
-            convert_texture(textures[idx], bm);
-        texturesByBitsPtr[bm->bits] = textures[idx];
+        CachedTexture* t = opengl_get_texture(bm);
+        if(t == NULL)
+            convert_texture(bm, true);
     }
 }
 
 static void set_texture(grs_bitmap *bm) {
-    std::map<uint8_t *, GLuint>::iterator iter = texturesByBitsPtr.find(bm->bits);
-    if (iter != texturesByBitsPtr.end()) {
-        glBindTexture(GL_TEXTURE_2D, iter->second);
-    } else {
-        convert_texture(dynTexture, bm);
+    CachedTexture* t = opengl_get_texture(bm);
+    if(t == NULL) {
+        // Not cached, have to make it
+        convert_texture(bm, false);
+        return;
+    }
+
+    bool isDirty = false;
+
+    if(t->locked) {
+        if(t->lastDrawTime != *tmd_ticks) {
+            // Locked surfaces only need to update their palettes once per frame
+            SDL_SetSurfacePalette(t->bitmap, sdlPalette);
+            SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+            isDirty = true;
+        }
+    }
+    else {
+        if (bm->type == BMT_RSD8) {
+            grs_bitmap decoded;
+            gr_rsd8_convert(bm, &decoded);
+            SDL_memmove(t->bitmap->pixels, decoded.bits, bm->w * bm->h);
+        }
+        else {
+            SDL_memmove(t->bitmap->pixels, bm->bits, bm->w * bm->h);
+        }
+
+        SDL_SetSurfacePalette(t->bitmap, sdlPalette);
+        SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+        isDirty = true;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, t->texture);
+    t->lastDrawTime = *tmd_ticks;
+
+    if(isDirty) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, t->converted->pixels);   
     }
 }
 
@@ -381,11 +477,11 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     return CLIP_NONE;
 }
 
-float convx(float x) {
+static float convx(float x) {
     return  x/32768.0f / render_width - 1;
 }
 
-float convy(float y) {
+static float convy(float y) {
     return -y/32768.0f / render_height + 1;
 }
 
@@ -439,7 +535,7 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     return CLIP_NONE;
 }
 
-void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
+static void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
     const uint8_t pixel[] = { red, green, blue, alpha };
     glBindTexture(GL_TEXTURE_2D, dynTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
@@ -561,7 +657,7 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
 void opengl_clear() {
     SDL_GL_MakeCurrent(window, context);
 
-    // Make sure everything starts with a stencil of 0
+    // Make sure everything starts with a stencil of 0xFF
     glClearStencil(0xFF);
     glClear(GL_STENCIL_BUFFER_BIT);
 
