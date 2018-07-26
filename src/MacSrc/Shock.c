@@ -300,12 +300,11 @@ void SetSDLPalette(int index, int count, uchar *pal)
 		gamePalette[index+i].a = 0xFF;
 	}
 
-	// Hack transparent!
+	// Hack black!
 	gamePalette[255].r = 0x0;
 	gamePalette[255].g = 0x0;
 	gamePalette[255].b = 0x0;
-	gamePalette[255].a = 0x0;
-	gamePalette[0].a = 0x0;
+	gamePalette[255].a = 0xff;
 
 	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
 	SDL_SetSurfacePalette(drawSurface, sdlPalette);
@@ -314,7 +313,9 @@ void SetSDLPalette(int index, int count, uchar *pal)
 
 void SDLDraw()
 {
+        sdlPalette->colors[255].a = 0x00;
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, drawSurface);
+        sdlPalette->colors[255].a = 0xff;
 
 	if (should_opengl_swap()) {
 		opengl_backup_view();

@@ -351,9 +351,13 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
         surface = SDL_CreateRGBSurfaceFrom(bm->bits, bm->w, bm->h, 8, bm->row, 0, 0, 0, 0);
     }
 
-    SDL_SetSurfacePalette(surface, sdlPalette);
+    if (bm->flags & BMF_TRANS)
+        sdlPalette->colors[0].a = 0x00;
 
+    SDL_SetSurfacePalette(surface, sdlPalette);
     SDL_Surface *rgba = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
+
+    sdlPalette->colors[0].a = 0xff;
 
     // Cache this new surface.
     CachedTexture ct;
@@ -391,8 +395,13 @@ static void set_texture(grs_bitmap *bm) {
     if(t->locked) {
         if(t->lastDrawTime != *tmd_ticks) {
             // Locked surfaces only need to update their palettes once per frame
+            if (bm->flags & BMF_TRANS)
+                sdlPalette->colors[0].a = 0x00;
+
             SDL_SetSurfacePalette(t->bitmap, sdlPalette);
             SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+
+            sdlPalette->colors[0].a = 0xff;
             isDirty = true;
         }
     }
@@ -406,8 +415,13 @@ static void set_texture(grs_bitmap *bm) {
             SDL_memmove(t->bitmap->pixels, bm->bits, bm->w * bm->h);
         }
 
+        if (bm->flags & BMF_TRANS)
+            sdlPalette->colors[0].a = 0x00;
+
         SDL_SetSurfacePalette(t->bitmap, sdlPalette);
         SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+
+        sdlPalette->colors[0].a = 0xff;
         isDirty = true;
     }
 
