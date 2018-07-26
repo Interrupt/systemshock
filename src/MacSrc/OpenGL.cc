@@ -51,7 +51,8 @@ struct CachedTexture {
 #define MAX_CACHED_TEXTURES 1024
 
 static SDL_GLContext context;
-static GLuint shaderProgram;
+static GLuint textureShaderProgram;
+static GLuint colorShaderProgram;
 static GLuint dynTexture;
 static GLuint viewBackupTexture;
 
@@ -85,7 +86,26 @@ static const char *VertexShader =
     "    gl_Position = proj * view * gl_Vertex;\n"
     "}\n";
 
-static const char *FragmentShader =
+// The texture alpha value has two separate functions in this shader:
+// - Pixels with a zero alpha value are transparent.
+// - Pixels with non-zero alpha are opaque, and the alpha value
+//   defines a minimum light level.
+static const char *TextureShader =
+    "#version 110\n"
+    "\n"
+    "varying vec2 TexCoords;\n"
+    "varying float Light;\n"
+    "\n"
+    "uniform sampler2D tex;\n"
+    "\n"
+    "void main() {\n"
+    "    vec4 t = texture2D(tex, TexCoords);\n"
+    "    float light = max(Light, t.a);\n"
+    "    float alpha = t.a < 0.0001 ? 0.0 : 1.0;\n"
+    "    gl_FragColor = vec4(t.r * light, t.g * light, t.b * light, alpha);\n"
+    "}\n";
+
+static const char *ColorShader =
     "#version 110\n"
     "\n"
     "varying vec2 TexCoords;\n"
@@ -156,12 +176,18 @@ int init_opengl() {
     glAlphaFunc(GL_GEQUAL, 0.05f);
 
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, VertexShader);
-    GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, FragmentShader);
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    glUseProgram(shaderProgram);
+    GLuint textureShader = compileShader(GL_FRAGMENT_SHADER, TextureShader);
+    GLuint colorShader = compileShader(GL_FRAGMENT_SHADER, ColorShader);
+
+    textureShaderProgram = glCreateProgram();
+    glAttachShader(textureShaderProgram, vertexShader);
+    glAttachShader(textureShaderProgram, textureShader);
+    glLinkProgram(textureShaderProgram);
+
+    colorShaderProgram = glCreateProgram();
+    glAttachShader(colorShaderProgram, vertexShader);
+    glAttachShader(colorShaderProgram, colorShader);
+    glLinkProgram(colorShaderProgram);
 
     glGenTextures(1, &dynTexture);
     glGenTextures(1, &viewBackupTexture);
@@ -229,15 +255,16 @@ void opengl_swap_and_restore() {
     SDL_GL_SwapWindow(window);
 
     glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
+    glUseProgram(textureShaderProgram);
 
-    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
 
-    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    GLint uniProj = glGetUniformLocation(textureShaderProgram, "proj");
     glUniformMatrix4fv(uniProj, 1, false, IdentityMatrix);
 
-    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
-    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
+    GLint tcAttrib = glGetAttribLocation(textureShaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(textureShaderProgram, "light");
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -341,6 +368,23 @@ void opengl_clear_texture_cache() {
     }
 }
 
+static SDL_Palette *createPalette(bool transparent) {
+    SDL_Palette *palette = SDL_AllocPalette(256);
+    SDL_SetPaletteColors(palette, sdlPalette->colors, 0, 256);
+
+    // color 0: black or transparent
+    if (transparent)
+        palette->colors[0].a = 0x00;
+    // colors 1..31: always at maximum light level
+    for (int i = 1; i < 32; i++)
+        palette->colors[i].a = 0xff;
+    // colors 32..255: no minimum brightness, use interpolated vertex light level
+    for (int i = 32; i < 256; i++)
+        palette->colors[i].a = 0x01;
+
+    return palette;
+}
+
 static void convert_texture(grs_bitmap *bm, bool locked) {
     SDL_Surface *surface;
     if (bm->type == BMT_RSD8) {
@@ -351,13 +395,10 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
         surface = SDL_CreateRGBSurfaceFrom(bm->bits, bm->w, bm->h, 8, bm->row, 0, 0, 0, 0);
     }
 
-    if (bm->flags & BMF_TRANS)
-        sdlPalette->colors[0].a = 0x00;
-
-    SDL_SetSurfacePalette(surface, sdlPalette);
+    SDL_Palette *palette = createPalette(bm->flags & BMF_TRANS);
+    SDL_SetSurfacePalette(surface, palette);
     SDL_Surface *rgba = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
-
-    sdlPalette->colors[0].a = 0xff;
+    SDL_FreePalette(palette);
 
     // Cache this new surface.
     CachedTexture ct;
@@ -395,13 +436,12 @@ static void set_texture(grs_bitmap *bm) {
     if(t->locked) {
         if(t->lastDrawTime != *tmd_ticks) {
             // Locked surfaces only need to update their palettes once per frame
-            if (bm->flags & BMF_TRANS)
-                sdlPalette->colors[0].a = 0x00;
 
-            SDL_SetSurfacePalette(t->bitmap, sdlPalette);
+            SDL_Palette *palette = createPalette(bm->flags & BMF_TRANS);
+            SDL_SetSurfacePalette(t->bitmap, palette);
             SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+            SDL_FreePalette(palette);
 
-            sdlPalette->colors[0].a = 0xff;
             isDirty = true;
         }
     }
@@ -415,13 +455,11 @@ static void set_texture(grs_bitmap *bm) {
             SDL_memmove(t->bitmap->pixels, bm->bits, bm->w * bm->h);
         }
 
-        if (bm->flags & BMF_TRANS)
-            sdlPalette->colors[0].a = 0x00;
-
-        SDL_SetSurfacePalette(t->bitmap, sdlPalette);
+        SDL_Palette *palette = createPalette(bm->flags & BMF_TRANS);
+        SDL_SetSurfacePalette(t->bitmap, palette);
         SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+        SDL_FreePalette(palette);
 
-        sdlPalette->colors[0].a = 0xff;
         isDirty = true;
     }
 
@@ -463,11 +501,12 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     }
 
     SDL_GL_MakeCurrent(window, context);
+    glUseProgram(textureShaderProgram);
 
-    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, false, ViewMatrix);
 
-    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    GLint uniProj = glGetUniformLocation(textureShaderProgram, "proj");
     glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
 
     set_texture(bm);
@@ -477,8 +516,8 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
-    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
+    GLint tcAttrib = glGetAttribLocation(textureShaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(textureShaderProgram, "light");
 
     glBegin(GL_TRIANGLE_STRIP);
     draw_vertex(*(vp[1]), tcAttrib, lightAttrib);
@@ -506,15 +545,16 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     }
 
     SDL_GL_MakeCurrent(window, context);
+    glUseProgram(textureShaderProgram);
 
-    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
 
-    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    GLint uniProj = glGetUniformLocation(textureShaderProgram, "proj");
     glUniformMatrix4fv(uniProj, 1, false, IdentityMatrix);
 
-    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
-    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
+    GLint tcAttrib = glGetAttribLocation(textureShaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(textureShaderProgram, "light");
 
     set_texture(bm);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
@@ -562,11 +602,12 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
     }
 
     SDL_GL_MakeCurrent(window, context);
+    glUseProgram(colorShaderProgram);
 
-    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    GLint uniView = glGetUniformLocation(colorShaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, false, ViewMatrix);
 
-    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    GLint uniProj = glGetUniformLocation(colorShaderProgram, "proj");
     glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
 
     if (gour_flag == 1 || gour_flag == 3) {
@@ -598,8 +639,8 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
-    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
+    GLint tcAttrib = glGetAttribLocation(colorShaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(colorShaderProgram, "light");
 
     long a = 0, b = n_verts - 1;
     glBegin(GL_TRIANGLE_STRIP);
@@ -626,10 +667,10 @@ void opengl_begin_stars() {
     glPointSize(2.5f);
     glEnable(GL_POINT_SMOOTH);
 
-    GLint uniView = glGetUniformLocation(shaderProgram, "view");
+    GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, false, ViewMatrix);
 
-    GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
+    GLint uniProj = glGetUniformLocation(textureShaderProgram, "proj");
     glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
 
     // Only draw stars where the stencil value is 0xFF (Sky!)
@@ -645,8 +686,8 @@ void opengl_end_stars() {
 int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
     SDL_GL_MakeCurrent(window, context);
 
-    GLint tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
-    GLint lightAttrib = glGetAttribLocation(shaderProgram, "light");
+    GLint tcAttrib = glGetAttribLocation(textureShaderProgram, "texcoords");
+    GLint lightAttrib = glGetAttribLocation(textureShaderProgram, "light");
 
     g3s_point& vertex = *(p[0]);
 
