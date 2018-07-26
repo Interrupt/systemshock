@@ -107,8 +107,6 @@ extern char container_extract(ObjID *pidlist, int d1, int d2);
 extern void container_stuff(ObjID *pidlist, int numobjs, int *d1, int *d2);
 extern uchar is_container(ObjID id, int **d1, int **d2);
 
-char clearwithFF = false;
-
 // global symbol for the player camera...
 cams player_cam;
 
@@ -403,28 +401,16 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
             seed = *tmd_ticks >> 7;
             use_index = ((seed * 9277 + 7) % 14983) % 10;
             numtostring((long)use_index, use_buf);
-            clearwithFF = true;
-            result = get_text_bitmap_from_string(style, 1, use_buf, FALSE, 0);
-            clearwithFF = false;
-            return (result);
-            //            return(get_text_bitmap_from_string(style, 1, itoa(use_index, use_buf, 10), FALSE, 0));
+            return get_text_bitmap_from_string(style, 1, use_buf, FALSE, 0);
+            // return(get_text_bitmap_from_string(style, 1, itoa(use_index, use_buf, 10), FALSE, 0));
         } else {
-            clearwithFF = true;
-            result = get_text_bitmap(style, *index, 1, FALSE);
-            clearwithFF = false;
-            return (result);
-            //            return(get_text_bitmap(style, *index, 1,FALSE));
+            return get_text_bitmap(style, *index, 1, FALSE);
         }
         break;
     case TPOLY_TYPE_SCROLL_TEXT:
         // style=style?2:3;
         style = 3 - style;
-        clearwithFF = true;
-        result = get_text_bitmap(style, *index, 1, TRUE);
-        clearwithFF = false;
-        return (result);
-        //         return(get_text_bitmap(style, *index, 1,TRUE));
-        break;
+        return get_text_bitmap(style, *index, 1, TRUE);
     }
 
     return (NULL);
@@ -2058,11 +2044,7 @@ grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, uchar s
 
     gr_push_canvas(&text_canvases[dest_type]);
 
-    // hack MLA
-    if (clearwithFF)
-        gr_clear(0xff);
-    else
-        gr_clear(0);
+    gr_clear(0);
 
     c = d1 >> 16;
     if (c == 0)
