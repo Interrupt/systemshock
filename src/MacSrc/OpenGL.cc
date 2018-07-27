@@ -1,5 +1,6 @@
 #ifdef USE_OPENGL
 
+#include <stdio.h>
 #include "OpenGL.h"
 
 #ifdef _WIN32
@@ -68,56 +69,6 @@ static int phys_offset_y;
 static int render_width;
 static int render_height;
 
-static const char *VertexShader =
-    "#version 110\n"
-    "\n"
-    "attribute vec2 texcoords;\n"
-    "attribute float light;\n"
-    "\n"
-    "varying vec2 TexCoords;\n"
-    "varying float Light;\n"
-    "\n"
-    "uniform mat4 view;\n"
-    "uniform mat4 proj;\n"
-    "\n"
-    "void main() {\n"
-    "    TexCoords = texcoords;\n"
-    "    Light = light;\n"
-    "    gl_Position = proj * view * gl_Vertex;\n"
-    "}\n";
-
-// The texture alpha value has two separate functions in this shader:
-// - Pixels with a zero alpha value are transparent.
-// - Pixels with non-zero alpha are opaque, and the alpha value
-//   defines a minimum light level.
-static const char *TextureShader =
-    "#version 110\n"
-    "\n"
-    "varying vec2 TexCoords;\n"
-    "varying float Light;\n"
-    "\n"
-    "uniform sampler2D tex;\n"
-    "\n"
-    "void main() {\n"
-    "    vec4 t = texture2D(tex, TexCoords);\n"
-    "    float light = max(Light, t.a);\n"
-    "    float alpha = t.a < 0.0001 ? 0.0 : 1.0;\n"
-    "    gl_FragColor = vec4(t.r * light, t.g * light, t.b * light, alpha);\n"
-    "}\n";
-
-static const char *ColorShader =
-    "#version 110\n"
-    "\n"
-    "varying vec2 TexCoords;\n"
-    "varying float Light;\n"
-    "\n"
-    "uniform sampler2D tex;\n"
-    "\n"
-    "void main() {\n"
-    "    vec4 t = texture2D(tex, TexCoords);\n"
-    "    gl_FragColor = vec4(t.r * Light, t.g * Light, t.b * Light, t.a);\n"
-    "}\n";
-
 // View matrix; Z offset experimentally tweaked for near-perfect alignment
 // between GL projection and software projection (sprite screen coordinates)
 static const float ViewMatrix[] = {
@@ -161,7 +112,37 @@ static GLuint compileShader(GLenum type, const char *source) {
     return shader;
 }
 
+static GLuint loadShader(GLenum type, const char *filename) {
+
+    DEBUG("Loading shader %s", filename);
+
+    char fb[256];
+    sprintf(fb, "shaders/%s", filename);
+
+    FILE* file = fopen(fb, "r");
+    if(file == NULL) {
+        ERROR("Error loading shader %s!\n", fb);
+        exit(1);
+    }
+
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    rewind(file);
+
+    char *contents = (char*)malloc(sizeof(char) * (size + 1));
+    fread(contents, size, 1, file);
+    fclose(file);
+
+    contents[size] = '\0';
+
+    GLuint shader = compileShader(type, contents);
+    free(contents);
+
+    return shader;
+}
+
 int init_opengl() {
+    DEBUG("Initializing OpenGL");
     context = SDL_GL_CreateContext(window);
 
 #ifdef _WIN32
@@ -175,9 +156,9 @@ int init_opengl() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glAlphaFunc(GL_GEQUAL, 0.05f);
 
-    GLuint vertexShader = compileShader(GL_VERTEX_SHADER, VertexShader);
-    GLuint textureShader = compileShader(GL_FRAGMENT_SHADER, TextureShader);
-    GLuint colorShader = compileShader(GL_FRAGMENT_SHADER, ColorShader);
+    GLuint vertexShader = loadShader(GL_VERTEX_SHADER, "main.vert");
+    GLuint textureShader = loadShader(GL_FRAGMENT_SHADER, "texture.frag");
+    GLuint colorShader = loadShader(GL_FRAGMENT_SHADER, "color.frag");
 
     textureShaderProgram = glCreateProgram();
     glAttachShader(textureShaderProgram, vertexShader);
