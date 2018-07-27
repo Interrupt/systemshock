@@ -1276,6 +1276,7 @@ uchar pause_game_func(short keycode, ulong context, void *data) {
     extern LGRegion *inventory_region;
 
     game_paused = !game_paused;
+    CaptureMouse(!game_paused);
 
     if (game_paused) {
         redraw_paused = TRUE;

@@ -1350,6 +1350,8 @@ void setup_start() {
         // FIXME: Cutscenes!
         play_cutscene(START_CUTSCENE, FALSE);
     }
+
+    CaptureMouse(false);
 }
 
 //#define SAFETY_PUPS_NIECE

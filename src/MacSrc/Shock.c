@@ -302,3 +302,8 @@ void SDLDraw()
 	SDL_DestroyTexture(texture);
 	SDL_RenderPresent(renderer);
 }
+
+void CaptureMouse(bool capture)
+{
+	SDL_SetWindowGrab(window, capture);
+}
