@@ -51,6 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "invent.h"
 #include "invdims.h"
+#include "Shock.h"
 
 /*
 KLC - stereo
@@ -251,6 +252,8 @@ void screen_start() {
 #ifdef PALFX_FADES
 // later   if (pal_fx_on) palfx_fade_up(FALSE);
 #endif
+
+    CaptureMouse(true);
     return;
 }
 

@@ -54,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "wares.h"
 
 #include "game_screen.h" // was screen.h?
+#include "Shock.h"
 
 #ifdef NOT_YET // KLC stereo
 
@@ -404,6 +405,8 @@ void fullscreen_start() {
 //   if (pal_fx_on) palfx_fade_up(FALSE);
 #endif
     // KLC   uiShowMouse(NULL);
+
+    CaptureMouse(true);
 }
 
 // Restore all appropriate things to put us back in normal
