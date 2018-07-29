@@ -352,12 +352,14 @@ static SDL_Palette *createPalette(bool transparent) {
     // color 0: black or transparent
     if (transparent)
         palette->colors[0].a = 0x00;
-    // colors 1..31: always at maximum light level
-    for (int i = 1; i < 32; i++)
-        palette->colors[i].a = 0xff;
-    // colors 32..255: no minimum brightness, use interpolated vertex light level
-    for (int i = 32; i < 256; i++)
-        palette->colors[i].a = 0x01;
+    for (int i = 1; i < 256; i++) {
+        // colors 1..31, except 2: always at maximum light level
+        // colors 2, 32..255: no minimum brightness, use interpolated vertex light level
+        if (i < 32 && i != 2)
+            palette->colors[i].a = 0xff;
+        else
+            palette->colors[i].a = 0x01;
+    }
 
     return palette;
 }
