@@ -39,7 +39,7 @@ extern "C" {
 }
 
 #include <map>
-#include "frintern.h"
+#include <sstream>
 
 struct CachedTexture {
     SDL_Surface *bitmap;
@@ -125,20 +125,16 @@ static GLuint loadShader(GLenum type, const char *filename) {
         exit(1);
     }
 
-    fseek(file, 0, SEEK_END);
-    long size = ftell(file);
-    rewind(file);
+    std::stringstream source;
+    char line[256];
+    while (fgets(line, sizeof(line), file)) {
+        char *c = &line[strlen(line) - 1];
+        while (c >= line && (*c == '\r' || *c == '\n'))
+            *(c--) = '\0';
+        source << line << '\n';
+    }
 
-    char *contents = (char*)malloc(sizeof(char) * (size + 1));
-    fread(contents, size, 1, file);
-    fclose(file);
-
-    contents[size] = '\0';
-
-    GLuint shader = compileShader(type, contents);
-    free(contents);
-
-    return shader;
+    return compileShader(type, source.str().c_str());
 }
 
 int init_opengl() {
