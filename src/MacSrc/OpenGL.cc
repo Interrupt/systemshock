@@ -355,10 +355,11 @@ static SDL_Palette *createPalette(bool transparent) {
     for (int i = 1; i < 256; i++) {
         // colors 1..31, except 2: always at maximum light level
         // colors 2, 32..255: no minimum brightness, use interpolated vertex light level
+        // encode emissive property in the top half of the alpha color, since we don't use those bytes
         if (i < 32 && i != 2)
             palette->colors[i].a = 0xff;
         else
-            palette->colors[i].a = 0x01;
+            palette->colors[i].a = 0x7f;
     }
 
     return palette;

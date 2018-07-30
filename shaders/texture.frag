@@ -12,7 +12,11 @@ uniform sampler2D tex;
 
 void main() {
     vec4 t = texture2D(tex, TexCoords);
-    float light = max(Light, t.a);
-    float alpha = t.a < 0.0001 ? 0.0 : 1.0;
+
+    // Alpha values > 0.5 are emissive
+    float alpha = t.a > 0.5 ? 1.0 : t.a * 2.0;
+    float emissive = t.a > 0.5 ? 1.0 : 0.0;
+    float light = max(Light, emissive);
+
     gl_FragColor = vec4(t.r * light, t.g * light, t.b * light, alpha);
 }
