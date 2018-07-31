@@ -12,11 +12,18 @@
 #include "setploop.h"
 #include "hkeyfunc.h"
 
+#include "anim.h"
+#include "statics.h"
+
+#include "vmail.h"
+
 uiSlab cutscene_slab;
 LGRegion cutscene_root_region;
 
 int current_cutscene;
 bool should_show_credits;
+
+ActAnim *main_anim;
 
 uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, void *user_data) {
 	uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
@@ -87,7 +94,6 @@ void cutscene_loop() {
 	}
 	
 	res_draw_text(RES_coloraliasedFont, "[ Press space to continue ]", 30, 90 - ymov);
-
 }
 
 short play_cutscene(int id, bool show_credits) {
@@ -98,6 +104,8 @@ short play_cutscene(int id, bool show_credits) {
 
 	current_cutscene = id;
 	should_show_credits = show_credits;
+
+	play_vmail(5);
 
 	return 1;
 }
