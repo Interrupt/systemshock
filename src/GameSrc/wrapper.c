@@ -1605,7 +1605,14 @@ void center_joy_pushbutton_func(uchar butid) {
 }
 
 static void renderer_dealfunc(bool use_opengl) {
+    uiHideMouse(NULL);
     render_run();
+    if (full_game_3d) {
+        // update stored background bitmap and redraw menu
+        ss_get_bitmap(&inv_view360_canvas.bm, GAME_MESSAGE_X, GAME_MESSAGE_Y);
+        opanel_redraw(FALSE);
+    }
+    uiShowMouse(NULL);
 }
 
 void detail_dealfunc(uchar det) {
