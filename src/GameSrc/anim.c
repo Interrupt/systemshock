@@ -1,25 +1,40 @@
 #include "anim.h"
 #include "tools.h"
 #include "faketime.h"
+#include "gr2ss.h"
 
 ActAnim current_anim;
 
 long next_time = 0;
 
+extern void SDLDraw(void);
+extern void pump_events(void);
+
 // play
 void AnimRecur() {
 	// advance to next frame
-	DEBUG("Playing frame %x!", current_anim.currFrameRef);
+	// DEBUG("Playing frame %x!", current_anim.currFrameRef);
 
-	draw_full_res_bm(current_anim.currFrameRef, 0, 0, FALSE);
+	FrameDesc *f = (FrameDesc *)RefLock(current_anim.currFrameRef);
+    if (f != NULL) {
+    	f->bm.bits = (uchar *)(f + 1);
+    	ss_bitmap(&f->bm, 0, 0);
+    }
+    else {
+    	DEBUG("Done playing anim!");
+    	AnimCodeData data;
+    	current_anim.notifyFunc(&current_anim, ANCODE_KILL, &data);
+    }
+    RefUnlock(current_anim.currFrameRef);
 
 	next_time++;
-	if(next_time > 10) {
+	if(next_time > 5) {
 		current_anim.currFrameRef++;
 		next_time = 0;
 	}
 
-	extern void SDLDraw(void);
+	// Make SDL happy
+	pump_events();
 	SDLDraw();
 }
 
@@ -50,9 +65,14 @@ ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, Point loc, char unknown,
 
 void AnimSetNotify(ActAnim *paa, void *powner, AnimCode mask,
         void (*func) (ActAnim *, AnimCode ancode, AnimCodeData *animData)) {
+
+	paa->notifyFunc = func;
 	// user callback function
 }
 
 void AnimKill(ActAnim *paa) {
 	// Stop animation
+	DEBUG("Anim killed.");
+    AnimCodeData data;
+	current_anim.notifyFunc(&current_anim, ANCODE_KILL, &data);
 }

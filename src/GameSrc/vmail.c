@@ -60,6 +60,9 @@ ActAnim *main_anim;
 byte current_vmail = -1;
 extern LGCursor vmail_cursor;
 
+extern void SDLDraw(void);
+extern void pump_events(void);
+
 Ref vmail_frame_anim[NUM_VMAIL] = {
    RES_FRAMES_shield,
    RES_FRAMES_grove,
@@ -159,7 +162,7 @@ errtype play_vmail_intro(uchar use_texture_buffer)
    int bsize;
    short w,h;
 
-   DEBUG("Playing intro");
+   DEBUG("Playing vmail intro");
 
    main_anim = AnimPlayRegion(REF_ANIM_vintro, mainview_region, animloc, 0, vmail_intro);
    if (main_anim == NULL)
@@ -239,7 +242,7 @@ errtype play_vmail(byte vmail_no)
 
    // let's extern
 
-   DEBUG("Playing vmail");
+   DEBUG("Playing vmail %i", vmail_no);
 
    // the more I look at this procedure - the more I think
    // art - what were you thinking
@@ -270,8 +273,6 @@ errtype play_vmail(byte vmail_no)
 
    uiPushSlabCursor(&fullscreen_slab, &vmail_cursor);
    uiPushSlabCursor(&main_slab, &vmail_cursor);
-
-   DEBUG("Playing!");
 
    //MemStats(&data);
    //use_texture_buffer = (data.free.sizeMax < MAX_VMAIL_SIZE);
@@ -401,6 +402,7 @@ errtype play_vmail(byte vmail_no)
       }
    }
 
+   DEBUG("Finished playing!");
    if (preload_animation)
    {
       for (i=0;i<len;i++)
@@ -432,12 +434,16 @@ errtype play_vmail(byte vmail_no)
 
 #ifndef CONTINUOUS_VMAIL_TEST
    if (!early_exit && vmail_wait_for_input)
-      while (!citadel_check_input()) ;
+      while (!citadel_check_input()) {
+         pump_events();
+         SDLDraw();
+      }
 #endif
 
    email_page_exit();
    inventory_draw_new_page(old_invent_page);
 
+   DEBUG("Resuming game time");
    resume_game_time();
    checking_mouse_button_emulation = game_paused = FALSE;
 
