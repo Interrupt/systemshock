@@ -10,7 +10,7 @@ function build_sdl {
 	pushd SDL2-${SDL_version}
 
 	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
-	make
+	make -j2
 	make install
 
 	popd
@@ -23,7 +23,7 @@ function build_sdl_mixer {
 
 	export SDL2_CONFIG="/usr/local/bin/sdl2-config"
 	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
-	make
+	make -j2
 	make install
 
 	popd
