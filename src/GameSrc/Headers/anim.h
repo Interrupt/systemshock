@@ -28,7 +28,7 @@ typedef struct {
 //      AnimHead: describes the header of an individual animscript resource
 
 typedef struct {
-        Point size;                             // size of anim
+        LGPoint size;                             // size of anim
         Id frameSetId;                  // resource id of binary frame set
         uchar unknown1[6];
         short unknown2;
@@ -40,6 +40,7 @@ typedef struct {
 typedef struct ActAnim_ {
         LGRegion                        *reg;
         AnimHead                        *pah;                   // ptr to animation header
+        grs_canvas                      cnv;
         void                            (*notifyFunc) (struct ActAnim_ *paa, AnimCode ancode, AnimCodeData *animData); // owner evt handler
         void                            (*composeFunc) (Rect *area, ubyte flags); // owner compose handler
         Ref                             currFrameRef;   // current frame ref

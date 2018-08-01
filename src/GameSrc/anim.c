@@ -17,16 +17,14 @@ void AnimRecur() {
 	// advance to next frame
 	// DEBUG("Playing frame %x!", current_anim.currFrameRef);
 
-	int x = SCONV_X(current_anim.reg->abs_x);
-	int y = SCONV_Y(current_anim.reg->abs_y);
-
-	x = 0;
-	y = 0;
+	int x, y = 0;
 
 	AnimCodeData *data = &current_anim.pah->data[current_anim.curSeq];
 	grs_bitmap unpackBM;
 
 	DEBUG("%i", data->frameDelay);
+
+	gr_push_canvas(&current_anim.cnv);
 
 	if(first_frame == TRUE) {
 		if(current_anim.composeFunc != NULL)
@@ -43,14 +41,22 @@ void AnimRecur() {
     	f->bm.bits = (uchar *)(f + 1);
     	f->bm.flags = BMF_TRANS;
 
-    	gr_set_cliprect(f->updateArea.ul.x, f->updateArea.ul.y, f->updateArea.lr.x, f->updateArea.lr.y);
-    	gr_rsd8_bitmap((grs_bitmap *)f, x, y);
+		gr_set_cliprect(f->updateArea.ul.x, f->updateArea.ul.y, f->updateArea.lr.x, f->updateArea.lr.y);
+    	gr_rsd8_bitmap((grs_bitmap *)f, 0, 0);
     }
     else {
     	DEBUG("Done playing anim!");
 		current_anim.notifyFunc(&current_anim, ANCODE_KILL, data);
     }
     RefUnlock(current_anim.currFrameRef);
+
+    RESTORE_CLIP(a, b, c, d);
+    gr_pop_canvas();
+
+    // Draw the scaled up movie
+    x = SCONV_X(current_anim.reg->abs_x);
+	y = SCONV_Y(current_anim.reg->abs_y);
+    ss_bitmap(&current_anim.cnv.bm, x, y);
 
     long time = SDL_GetTicks();
 	if(time >= next_time) {
@@ -62,8 +68,6 @@ void AnimRecur() {
 			current_anim.curSeq++;
 		}
 	}
-
-	RESTORE_CLIP(a, b, c, d);
 
 	// Make SDL happy
 	pump_events();
@@ -99,6 +103,16 @@ ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, Point loc, char unknown,
 	current_anim.composeFunc = composeFunc;
 
 	next_time = SDL_GetTicks() + current_anim.pah->data[0].frameDelay;
+
+	// Initialize canvas for this animation
+	grs_bitmap bm;
+	uchar *bptr = (uchar *)malloc(head->size.x * head->size.y * 2);
+
+	gr_init_bm(&bm, bptr, BMT_FLAT8, BMF_TRANS, head->size.x, head->size.y);
+    gr_make_canvas(&bm, &current_anim.cnv);
+    gr_push_canvas(&current_anim.cnv);
+    gr_clear(0);
+    gr_pop_canvas();
 
 	return &current_anim;
 }
