@@ -107,7 +107,7 @@ void vmail_intro(LGRect *area, ubyte flags)
    if (flags & BEFORE_ANIM_BITMAP)
    {
       if (vmail_background)
-         ss_bitmap(vmail_background, SCONV_X(area->ul.x), SCONV_X(area->ul.y));
+         gr_bitmap(vmail_background, 0, 0);
    }
 }
 #pragma enable_message(202)

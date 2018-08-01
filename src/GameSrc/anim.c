@@ -20,6 +20,9 @@ void AnimRecur() {
 	int x = SCONV_X(current_anim.reg->abs_x);
 	int y = SCONV_Y(current_anim.reg->abs_y);
 
+	x = 0;
+	y = 0;
+
 	AnimCodeData *data = &current_anim.pah->data[current_anim.curSeq];
 	grs_bitmap unpackBM;
 
@@ -38,13 +41,10 @@ void AnimRecur() {
 	FrameDesc *f = (FrameDesc *)RefLock(current_anim.currFrameRef);
     if (f != NULL) {
     	f->bm.bits = (uchar *)(f + 1);
+    	f->bm.flags = BMF_TRANS;
 
-    	gr_rsd8_convert((grs_bitmap *)f, &unpackBM);
-    	unpackBM.flags = BMF_TRANS;
-
-    	// clip the draw area?
-    	ss_safe_set_cliprect(f->updateArea.ul.x + x, f->updateArea.ul.y + y, f->updateArea.lr.x + x, f->updateArea.lr.y + y);
-    	ss_bitmap(&unpackBM, x, y);
+    	gr_set_cliprect(f->updateArea.ul.x, f->updateArea.ul.y, f->updateArea.lr.x, f->updateArea.lr.y);
+    	gr_rsd8_bitmap((grs_bitmap *)f, x, y);
     }
     else {
     	DEBUG("Done playing anim!");
@@ -53,12 +53,12 @@ void AnimRecur() {
     RefUnlock(current_anim.currFrameRef);
 
     long time = SDL_GetTicks();
-	if(time > next_time) {
+	if(time >= next_time) {
 		current_anim.currFrameRef++;
 		current_anim.frameNum++;
 		next_time = time + data->frameDelay;
 
-		if(current_anim.frameNum > data->frameRunEnd) {
+		if(current_anim.frameNum > data->frameRunEnd + 1) {
 			current_anim.curSeq++;
 		}
 	}
