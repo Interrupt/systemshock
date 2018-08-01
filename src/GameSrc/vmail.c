@@ -102,12 +102,12 @@ grs_bitmap *vmail_background = NULL;
 extern uchar uiCheckInput(void);
 
 #pragma disable_message(202)
-void vmail_intro(Rect *area, ubyte flags)
+void vmail_intro(LGRect *area, ubyte flags)
 {
    if (flags & BEFORE_ANIM_BITMAP)
    {
       if (vmail_background)
-         gr_bitmap(vmail_background, 0,0);
+         ss_bitmap(vmail_background, area->ul.x,area->ul.y);
    }
 }
 #pragma enable_message(202)
@@ -212,7 +212,7 @@ errtype play_vmail_intro(uchar use_texture_buffer)
    while (current_vmail != -1)
    {
       AnimRecur();
-      tight_loop(FALSE);
+      tight_loop(TRUE);
    }
 #ifdef LOTS_O_SPEW
    mprintf("*DONE INTRO*");
@@ -276,8 +276,6 @@ errtype play_vmail(byte vmail_no)
 
    //MemStats(&data);
    //use_texture_buffer = (data.free.sizeMax < MAX_VMAIL_SIZE);
-
-   use_texture_buffer = FALSE;
 
 #ifdef LOTS_O_SPEW
    mprintf("\nBUFFER:(%d)\n", use_texture_buffer);
@@ -398,7 +396,7 @@ errtype play_vmail(byte vmail_no)
 #endif
             AnimKill(main_anim);
          }
-         tight_loop(FALSE);
+         tight_loop(TRUE);
       }
    }
 

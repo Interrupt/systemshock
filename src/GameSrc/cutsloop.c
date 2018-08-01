@@ -105,7 +105,7 @@ short play_cutscene(int id, bool show_credits) {
 	current_cutscene = id;
 	should_show_credits = show_credits;
 
-	play_vmail(1);
+	//play_vmail(1);
 
 	return 1;
 }
