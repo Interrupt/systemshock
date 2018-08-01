@@ -21,7 +21,8 @@ typedef struct {
    uchar marker;                       // marker code, or 0
    uchar frameRunStart;
    uchar frameRunEnd;
-   short frameDelay;
+   uchar frameDelay;
+   uchar renderUnknown;
 } AnimCodeData;
 
 //      AnimHead: describes the header of an individual animscript resource

@@ -2,15 +2,15 @@
 #include "tools.h"
 #include "faketime.h"
 #include "gr2ss.h"
+#include <SDL.h>
 
 ActAnim current_anim;
 
 long next_time = 0;
+bool first_frame = TRUE;
 
 extern void SDLDraw(void);
 extern void pump_events(void);
-
-bool first = TRUE;
 
 // play
 void AnimRecur() {
@@ -23,11 +23,13 @@ void AnimRecur() {
 	AnimCodeData *data = &current_anim.pah->data[current_anim.curSeq];
 	grs_bitmap unpackBM;
 
-	if(first == TRUE) {
+	DEBUG("%i", data->frameDelay);
+
+	if(first_frame == TRUE) {
 		if(current_anim.composeFunc != NULL)
 			current_anim.composeFunc(current_anim.reg->r, 0x04);
 
-		first = FALSE;
+		first_frame = FALSE;
 	}
 
 	short a, b, c, d;
@@ -50,11 +52,11 @@ void AnimRecur() {
     }
     RefUnlock(current_anim.currFrameRef);
 
-	next_time++;
-	if(next_time > 5) {
+    long time = SDL_GetTicks();
+	if(time > next_time) {
 		current_anim.currFrameRef++;
 		current_anim.frameNum++;
-		next_time = 0;
+		next_time = time + data->frameDelay;
 
 		if(current_anim.frameNum > data->frameRunEnd) {
 			current_anim.curSeq++;
@@ -87,6 +89,7 @@ ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, Point loc, char unknown,
 		DEBUG("Animation frames at %x", head->frameSetId);
 	}
 
+	first_frame = TRUE;
 	current_anim.reg = region;
 	current_anim.pah = head;
 	current_anim.currFrameRef = MKREF(head->frameSetId, 0);
@@ -94,6 +97,8 @@ ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, Point loc, char unknown,
 	current_anim.curSeq = 0;
 	current_anim.frameNum = 0;
 	current_anim.composeFunc = composeFunc;
+
+	next_time = SDL_GetTicks() + current_anim.pah->data[0].frameDelay;
 
 	return &current_anim;
 }
