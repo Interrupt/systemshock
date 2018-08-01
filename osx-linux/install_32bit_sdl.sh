@@ -6,7 +6,7 @@ SDL_version=2.0.8
 
 function build_sdl {
 	curl -O https://www.libsdl.org/release/SDL2-${SDL_version}.tar.gz
-	tar xvf SDL2-${SDL_version}.tar.gz
+	tar xf SDL2-${SDL_version}.tar.gz
 	pushd SDL2-${SDL_version}
 
 	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
