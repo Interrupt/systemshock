@@ -17,8 +17,8 @@ void AnimRecur() {
 	// advance to next frame
 	// DEBUG("Playing frame %x!", current_anim.currFrameRef);
 
-	int x = current_anim.reg->abs_x;
-	int y = current_anim.reg->abs_y;
+	int x = SCONV_X(current_anim.reg->abs_x);
+	int y = SCONV_Y(current_anim.reg->abs_y);
 
 	AnimCodeData *data = &current_anim.pah->data[current_anim.curSeq];
 	grs_bitmap unpackBM;

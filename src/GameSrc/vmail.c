@@ -107,7 +107,7 @@ void vmail_intro(LGRect *area, ubyte flags)
    if (flags & BEFORE_ANIM_BITMAP)
    {
       if (vmail_background)
-         ss_bitmap(vmail_background, area->ul.x,area->ul.y);
+         ss_bitmap(vmail_background, SCONV_X(area->ul.x), SCONV_X(area->ul.y));
    }
 }
 #pragma enable_message(202)
@@ -273,6 +273,8 @@ errtype play_vmail(byte vmail_no)
 
    uiPushSlabCursor(&fullscreen_slab, &vmail_cursor);
    uiPushSlabCursor(&main_slab, &vmail_cursor);
+
+   uiHideMouse(NULL);
 
    //MemStats(&data);
    //use_texture_buffer = (data.free.sizeMax < MAX_VMAIL_SIZE);
