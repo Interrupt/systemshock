@@ -12,23 +12,20 @@
 
 typedef uchar AnimCode;
 
-#define ANCODE_NEWFRAME 0x01            // new frame, update screen
+#define ANCODE_NEWFRAME         0x01            // new frame, update screen
 #define ANCODE_END              0x04            // end anim w/o kill (no arg)
 #define ANCODE_KILL             0x08            // kill anim (no arg)
-#define ANCODE_MARK             0x10            // user marking (arg = user param)
 
 typedef struct {
-   uchar marker;                       // marker code, or 0
+   uchar unknown;
    uchar frameRunStart;
    uchar frameRunEnd;
    fix frameDelay;
 } AnimCodeData;
 
-//      AnimHead: describes the header of an individual animscript resource
-
 typedef struct {
-        LGPoint size;                             // size of anim
-        Id frameSetId;                  // resource id of binary frame set
+        LGPoint size;                           // size of anim
+        Id frameSetId;                          // resource id of binary frame set
         uchar unknown1[6];
         short unknown2;
         AnimCodeData data[];
@@ -38,22 +35,22 @@ typedef struct {
 
 typedef struct ActAnim_ {
         LGRegion                        *reg;
-        AnimHead                        *pah;                   // ptr to animation header
+        AnimHead                        *pah;           // ptr to animation header
         grs_canvas                      cnv;
         void                            (*notifyFunc) (struct ActAnim_ *paa, AnimCode ancode, AnimCodeData *animData); // owner evt handler
         void                            (*composeFunc) (Rect *area, ubyte flags); // owner compose handler
         Ref                             currFrameRef;   // current frame ref
         int                             curSeq;
         int                             frameNum;
-        fix                             animRate;               // animation rate
+        fix                             animRate;       // animation rate
         ulong                           timeContinue;   // time at which to advance to next step
-        void           *dataBuffer;  // data buffer to use for frames, or NULL
+        void                            *dataBuffer;    // data buffer to use for frames, or NULL
         long                            dataBufferLen;  // length of data buffer
 } ActAnim;
 
 //      General prototypes: anim.c
 
-void AnimRecur();                                                                       // update animations in progress
+void AnimRecur();                                                       // update animations in progress
 
 //      Play and control anims: anim.c
 
