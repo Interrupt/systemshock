@@ -21,8 +21,7 @@ typedef struct {
    uchar marker;                       // marker code, or 0
    uchar frameRunStart;
    uchar frameRunEnd;
-   uchar frameDelay;
-   uchar renderUnknown;
+   fix frameDelay;
 } AnimCodeData;
 
 //      AnimHead: describes the header of an individual animscript resource
@@ -44,10 +43,6 @@ typedef struct ActAnim_ {
         void                            (*notifyFunc) (struct ActAnim_ *paa, AnimCode ancode, AnimCodeData *animData); // owner evt handler
         void                            (*composeFunc) (Rect *area, ubyte flags); // owner compose handler
         Ref                             currFrameRef;   // current frame ref
-        Ref startFrameRef;
-        short                           frameRunNum;    // current frame number, -1 if not in run
-        short                           frameRunEnd;    // last frame in run + 1
-        short                           frameDelay;             // frame delay in frame set
         int                             curSeq;
         int                             frameNum;
         fix                             animRate;               // animation rate

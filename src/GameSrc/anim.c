@@ -6,37 +6,33 @@
 
 ActAnim current_anim;
 
-long next_time = 0;
-bool first_frame = TRUE;
-
 extern void SDLDraw(void);
 extern void pump_events(void);
 
 // play
 void AnimRecur() {
-	// advance to next frame
-	// DEBUG("Playing frame %x!", current_anim.currFrameRef);
-
 	int x, y = 0;
+	bool done = FALSE;
 
 	AnimCodeData *data = &current_anim.pah->data[current_anim.curSeq];
 	grs_bitmap unpackBM;
 
-	DEBUG("%i", data->frameDelay);
-
+	// stop drawing the mouse for now, switch to video canvas
+	uiHideMouse(NULL);
 	gr_push_canvas(&current_anim.cnv);
 
-	if(first_frame == TRUE) {
+	// might need to draw a background before the first frame
+	if(current_anim.frameNum == 0) {
 		if(current_anim.composeFunc != NULL)
 			current_anim.composeFunc(current_anim.reg->r, 0x04);
-
-		first_frame = FALSE;
 	}
 
 	short a, b, c, d;
 	STORE_CLIP(a, b, c, d);
 
+	// grab this frame
 	FrameDesc *f = (FrameDesc *)RefLock(current_anim.currFrameRef);
+
     if (f != NULL) {
     	f->bm.bits = (uchar *)(f + 1);
     	f->bm.flags = BMF_TRANS;
@@ -45,9 +41,10 @@ void AnimRecur() {
     	gr_rsd8_bitmap((grs_bitmap *)f, 0, 0);
     }
     else {
-    	DEBUG("Done playing anim!");
-		current_anim.notifyFunc(&current_anim, ANCODE_KILL, data);
+    	TRACE("Done playing anim!");
+    	done = TRUE;
     }
+
     RefUnlock(current_anim.currFrameRef);
 
     RESTORE_CLIP(a, b, c, d);
@@ -59,14 +56,21 @@ void AnimRecur() {
     ss_bitmap(&current_anim.cnv.bm, x, y);
 
     long time = SDL_GetTicks();
-	if(time >= next_time) {
+	if(time >= current_anim.timeContinue) {
 		current_anim.currFrameRef++;
 		current_anim.frameNum++;
-		next_time = time + data->frameDelay;
+		current_anim.timeContinue = time + 100;
 
 		if(current_anim.frameNum > data->frameRunEnd + 1) {
 			current_anim.curSeq++;
 		}
+	}
+
+	// safe to draw the mouse again
+	uiShowMouse(NULL);
+
+	if(done) {
+		AnimKill(&current_anim);
 	}
 
 	// Make SDL happy
@@ -85,24 +89,20 @@ bool AnimPreloadFrames(ActAnim *paa, Ref animRef) {
 ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, Point loc, char unknown,
    void (*composeFunc)(Rect *area, ubyte flags)) {
 	// start playing
-
 	DEBUG("Playing animation: %x", animRef);
 
 	AnimHead *head = (AnimHead *)RefGet(animRef);
 	if(head != NULL) {
-		DEBUG("Animation frames at %x", head->frameSetId);
+		TRACE("Animation frames at %x", head->frameSetId);
 	}
 
-	first_frame = TRUE;
 	current_anim.reg = region;
 	current_anim.pah = head;
 	current_anim.currFrameRef = MKREF(head->frameSetId, 0);
-	current_anim.startFrameRef = current_anim.currFrameRef;
 	current_anim.curSeq = 0;
 	current_anim.frameNum = 0;
 	current_anim.composeFunc = composeFunc;
-
-	next_time = SDL_GetTicks() + current_anim.pah->data[0].frameDelay;
+	current_anim.timeContinue = SDL_GetTicks() + 100;
 
 	// Initialize canvas for this animation
 	grs_bitmap bm;
@@ -120,13 +120,14 @@ ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, Point loc, char unknown,
 void AnimSetNotify(ActAnim *paa, void *powner, AnimCode mask,
         void (*func) (ActAnim *, AnimCode ancode, AnimCodeData *animData)) {
 
-	paa->notifyFunc = func;
 	// user callback function
+	paa->notifyFunc = func;
 }
 
 void AnimKill(ActAnim *paa) {
 	// Stop animation
-	DEBUG("Anim killed.");
     AnimCodeData data;
 	current_anim.notifyFunc(&current_anim, ANCODE_KILL, &data);
+
+	free(current_anim.cnv.bm.bits);
 }

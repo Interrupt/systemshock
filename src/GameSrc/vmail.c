@@ -274,8 +274,6 @@ errtype play_vmail(byte vmail_no)
    uiPushSlabCursor(&fullscreen_slab, &vmail_cursor);
    uiPushSlabCursor(&main_slab, &vmail_cursor);
 
-   uiHideMouse(NULL);
-
    //MemStats(&data);
    //use_texture_buffer = (data.free.sizeMax < MAX_VMAIL_SIZE);
 
@@ -441,6 +439,8 @@ errtype play_vmail(byte vmail_no)
 #endif
 
    email_page_exit();
+
+   screen_draw();
    inventory_draw_new_page(old_invent_page);
 
    DEBUG("Resuming game time");
