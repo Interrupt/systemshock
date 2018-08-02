@@ -296,10 +296,6 @@ int fr_pipe_go_3(void) {
     if ((_fr_curflags & FR_HACKCAM_MASK) == 0)
         do_seen_pass();
 
-    if (use_opengl()) {
-        opengl_clear();
-    }
-
     // use clip len as temp for delta within the square
     clip_len[0] = (short)((fr_camera_last[0] & 0xffff) - 0x8000);
     clip_len[1] = (short)((fr_camera_last[1] & 0xffff) - 0x8000);

@@ -293,6 +293,16 @@ void opengl_set_viewport(int x, int y, int width, int height) {
     int scaled_x = phys_offset_x + x * view_scale;
     int scaled_y = phys_offset_y + phys_height - scaled_height - y * view_scale;
     glViewport(scaled_x, scaled_y, scaled_width, scaled_height);
+
+    // Make sure everything starts with a stencil of 0xFF
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(scaled_x, scaled_y, scaled_width, scaled_height);
+    glClearStencil(0xFF);
+    glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glDisable(GL_SCISSOR_TEST);
+
+    // Draw everything with a stencil of 0
+    opengl_set_stencil(0x00);
 }
 
 static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
@@ -687,17 +697,6 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
     glEnd();
 
     return CLIP_NONE;
-}
-
-void opengl_clear() {
-    SDL_GL_MakeCurrent(window, context);
-
-    // Make sure everything starts with a stencil of 0xFF
-    glClearStencil(0xFF);
-    glClear(GL_STENCIL_BUFFER_BIT);
-
-    // Draw everything with a stencil of 0
-    opengl_set_stencil(0x00);
 }
 
 #endif // USE_OPENGL
