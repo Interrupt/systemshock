@@ -669,8 +669,6 @@ errtype load_da_palette(void) {
     ResCloseFile(pal_file);
     gr_set_pal(0, 256, ppall);
 
-    SetSDLPalette(0, 256, ppall);
-
     return (OK);
 }
 

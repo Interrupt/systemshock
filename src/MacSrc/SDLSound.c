@@ -152,6 +152,10 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 	return OK;
 }
 
+void MacTuneKillCurrentTheme(void) {
+	Mix_FadeOutMusic(300);
+}
+
 #else
 
 // Sound stubs that do nothing, when SDL Mixer is not found
@@ -161,6 +165,7 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 int snd_alog_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dprm) { return OK; }
 void snd_end_sample(int hnd_id);
 int MacTuneLoadTheme(char* theme_base, int themeID) { return OK; }
+void MacTuneKillCurrentTheme(void) { }
 
 #endif
 

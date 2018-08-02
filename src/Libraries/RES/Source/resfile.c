@@ -325,6 +325,7 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum, int32_t dataOffset
         WARN("%s, RESOURCE ID COLLISION AT ID %x!!", __FUNCTION__, pDirEntry->id);
         ResDelete(pDirEntry->id);
     }
+    
     // Fill in resource descriptor
     prd->ptr = NULL;
     prd->size = pDirEntry->size;
@@ -335,6 +336,8 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum, int32_t dataOffset
     prd2->type = pDirEntry->type;
     prd->next = 0;
     prd->prev = 0;
+
+    //TRACE("Found id: %x of type %x", pDirEntry->id, pDirEntry->type);
 
     // If loadonopen flag set, load resource
 
