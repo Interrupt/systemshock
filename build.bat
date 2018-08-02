@@ -1,4 +1,4 @@
 @REM Initial build.bat for Appveyor
 
 cmake -G "Unix Makefiles" .
-make systemshock
+make -j2 systemshock

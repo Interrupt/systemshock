@@ -30,7 +30,7 @@ addons:
 script:
   - sudo ./osx-linux/install_32bit_sdl.sh
   - cmake .
-  - make systemshock
+  - make -j2 systemshock
 
 before_deploy:
   - mkdir -p shockolate
