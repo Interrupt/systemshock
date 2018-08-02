@@ -36,6 +36,7 @@ typedef struct {
 typedef struct ActAnim_ {
         LGRegion                        *reg;
         AnimHead                        *pah;           // ptr to animation header
+        LGPoint                         loc;
         grs_canvas                      cnv;
         void                            (*notifyFunc) (struct ActAnim_ *paa, AnimCode ancode, AnimCodeData *animData); // owner evt handler
         void                            (*composeFunc) (Rect *area, ubyte flags); // owner compose handler

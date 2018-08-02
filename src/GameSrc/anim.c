@@ -55,8 +55,8 @@ void AnimRecur() {
     gr_pop_canvas();
 
     // Draw the scaled up movie
-    x = SCONV_X(current_anim.reg->abs_x);
-	y = SCONV_Y(current_anim.reg->abs_y);
+    x = current_anim.loc.x;
+	y = current_anim.loc.y;
     ss_bitmap(&current_anim.cnv.bm, x, y);
 
     long time = SDL_GetTicks();
@@ -108,6 +108,7 @@ ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, LGPoint loc, char unknown
 	current_anim.frameNum = 0;
 	current_anim.composeFunc = composeFunc;
 	current_anim.timeContinue = SDL_GetTicks() + 100;
+	current_anim.loc = loc;
 
 	// Initialize canvas for this animation
 	grs_bitmap bm;

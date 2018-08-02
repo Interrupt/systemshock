@@ -16,6 +16,7 @@
 #include "statics.h"
 
 #include "MacTune.h"
+#include "gr2ss.h"
 
 uiSlab cutscene_slab;
 LGRegion cutscene_root_region;
@@ -130,7 +131,7 @@ void cutscene_loop() {
 		if(cutscene_id == -1) {
 			LGPoint animloc;
 			animloc.x = 0;
-			animloc.y = 20;
+			animloc.y = 25;
 
 			uchar* cpal = (uchar*)ResLock(cutscene_pals[current_cutscene][cutscene_idx]);
 			if(cpal != NULL)
