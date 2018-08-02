@@ -34,6 +34,12 @@ char* cutscene_files[3] = {
 	"res/data/win1.res"
 };
 
+char* cutscene_music[3] = {
+	"Intro",
+	"dead",
+	"enda"
+};
+
 Ref cutscene_anims[3] = {
 	0x1bc,
 	0x1e,
@@ -49,7 +55,7 @@ Ref cutscene_anims_len[3] = {
 Ref cutscene_pals[5][20] = {
  {5,6,7,8,9,9,10,10,11,11,11,12,13,13,14,14,15,16,17,18},
  {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
- {18,19,20,20,4,4,10,10,11,11,11,12,13,13,14,14,15,16,17,18},
+ {18,19,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20},
 };
 
 int current_cutscene = -1;
@@ -190,6 +196,8 @@ short play_cutscene(int id, bool show_credits) {
 
 		MacTuneKillCurrentTheme();
 		uiHideMouse(NULL);
+
+		MacTuneLoadTheme("intro", 0);
 	}
 
 	return 1;
