@@ -337,7 +337,7 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum, int32_t dataOffset
     prd->next = 0;
     prd->prev = 0;
 
-    //DEBUG("Found id: %x of type %x", pDirEntry->id, pDirEntry->type);
+    //TRACE("Found id: %x of type %x", pDirEntry->id, pDirEntry->type);
 
     // If loadonopen flag set, load resource
 

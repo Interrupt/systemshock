@@ -157,7 +157,7 @@ void vmail_start_anim_end(ActAnim *paa, AnimCode ancode, AnimCodeData *pdata)
 
 errtype play_vmail_intro(uchar use_texture_buffer)
 {
-   Point animloc = {VINTRO_X, VINTRO_Y};
+   LGPoint animloc = {VINTRO_X, VINTRO_Y};
    uchar *p, *useBuffer;
    int bsize;
    short w,h;
@@ -230,7 +230,7 @@ errtype play_vmail_intro(uchar use_texture_buffer)
 #pragma disable_message(202)
 errtype play_vmail(byte vmail_no)
 {
-   Point    animloc = {VINTRO_X, VINTRO_Y};
+   LGPoint    animloc = {VINTRO_X, VINTRO_Y};
    errtype  intro_error;
    int      vmail_animfile_num = 0;
    uchar     early_exit = FALSE;

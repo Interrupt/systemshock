@@ -54,7 +54,7 @@ void AnimRecur();                                                       // updat
 
 //      Play and control anims: anim.c
 
-ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, Point loc, char unknown, // play anim into canvas
+ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, LGPoint loc, char unknown, // play anim into canvas
    void (*composeFunc)(Rect *area, ubyte flags));
 
 void AnimKill(ActAnim *paa);                                            // kill one or all anims
