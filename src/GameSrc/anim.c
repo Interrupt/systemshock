@@ -9,10 +9,14 @@ ActAnim current_anim;
 extern void SDLDraw(void);
 extern void pump_events(void);
 
+bool done_playing_anim = false;
+
 // play
 void AnimRecur() {
 	int x, y = 0;
-	bool done = FALSE;
+
+	if(done_playing_anim)
+		return;
 
 	AnimCodeData *data = &current_anim.pah->data[current_anim.curSeq];
 	grs_bitmap unpackBM;
@@ -42,7 +46,7 @@ void AnimRecur() {
     }
     else {
     	TRACE("Done playing anim!");
-    	done = TRUE;
+    	done_playing_anim = true;
     }
 
     RefUnlock(current_anim.currFrameRef);
@@ -69,7 +73,7 @@ void AnimRecur() {
 	// safe to draw the mouse again
 	uiShowMouse(NULL);
 
-	if(done) {
+	if(done_playing_anim) {
 		AnimKill(&current_anim);
 	}
 
@@ -96,6 +100,7 @@ ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, Point loc, char unknown,
 		TRACE("Animation frames at %x", head->frameSetId);
 	}
 
+	done_playing_anim = false;
 	current_anim.reg = region;
 	current_anim.pah = head;
 	current_anim.currFrameRef = MKREF(head->frameSetId, 0);
@@ -127,7 +132,9 @@ void AnimSetNotify(ActAnim *paa, void *powner, AnimCode mask,
 void AnimKill(ActAnim *paa) {
 	// Stop animation
     AnimCodeData data;
-	current_anim.notifyFunc(&current_anim, ANCODE_KILL, &data);
+
+    if(current_anim.notifyFunc != NULL)
+		current_anim.notifyFunc(&current_anim, ANCODE_KILL, &data);
 
 	free(current_anim.cnv.bm.bits);
 }
