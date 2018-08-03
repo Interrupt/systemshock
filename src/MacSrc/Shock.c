@@ -333,3 +333,8 @@ void SDLDraw()
 		SDL_RenderClear(renderer);
 	}
 }
+
+void CaptureMouse(bool capture)
+{
+	SDL_SetWindowGrab(window, capture);
+}

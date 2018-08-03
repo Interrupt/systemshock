@@ -286,9 +286,9 @@ void MacTuneStartCurrentTheme(void)
 //------------------------------------------------------------------------------
 //  Stop the current tune playing, stop the tune queue timer task.
 //------------------------------------------------------------------------------
-void MacTuneKillCurrentTheme(void)
+/*void MacTuneKillCurrentTheme(void)
 {
-	/*if (mlimbs_status && gTuneHdl)						// Only do this if MacTune is inited and there is a 
+	if (mlimbs_status && gTuneHdl)						// Only do this if MacTune is inited and there is a 
 	{																	// current theme.
 		RmvTime((QElemPtr)&gCalcTuneTask);		// Remove the TimeManager task that queues up
 		InsTime((QElemPtr)&gCalcTuneTask);			// next tune, and re-insert to prevent any tasks from 
@@ -297,8 +297,8 @@ void MacTuneKillCurrentTheme(void)
 		TuneFlush(gPlayer);									// Flush the queue.
 		
 		gReadyToQueue = FALSE;
-	}*/
-}
+	}
+}*/
 
 //------------------------------------------------------------------------------
 //  Stop the current tune playing, stop the tune queue timer task.

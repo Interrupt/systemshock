@@ -77,6 +77,7 @@ set(GAME_SRC
 	src/GameSrc/amap.c
 	src/GameSrc/amaploop.c
 	src/GameSrc/ammomfd.c
+	src/GameSrc/anim.c
 	src/GameSrc/audiolog.c
 	src/GameSrc/automap.c
 	src/GameSrc/bark.c

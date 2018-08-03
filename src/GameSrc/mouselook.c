@@ -90,19 +90,25 @@ void mouse_look_physics() {
 }
 
 void center_mouse() {
+    uiHideMouse(NULL);
+
     short middle_x = (grd_cap->w / 2);
     short middle_y = (grd_cap->h / 2);
     mouse_put_xy(middle_x, middle_y);
+
+    // Flush mouse events, because we don't care about the past anymore
+    pump_events();
+    mouse_flush();
+    uiFlush();
+    uiPopGlobalCursor();
+    // This will show the mouse again
+    uiSetCursor();
 }
 
 void mouse_look_toggle() {
     mlook_enabled = !mlook_enabled;
 
     if (mlook_enabled) {
-        // Flush mouse events, because we don't care about the past anymore
-        pump_events();
-        mouse_flush();
-
         // Now we can center the mouse
         center_mouse();
     }

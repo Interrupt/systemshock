@@ -47,6 +47,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define VINTRO_W 200
 #define VINTRO_H 100
 
+#define RES_FRAMES_shield 0xA40
+#define RES_FRAMES_grove 0xA42
+#define RES_FRAMES_bridge 0xA42 //0xA44
+#define RES_FRAMES_laser1 0xA46
+#define RES_FRAMES_status 0xA48
+#define RES_FRAMES_explode1 0xA4A
+
+#define RES_shield 0xA4C
+#define RES_grove 0xA4D
+#define RES_bridge 0xA4E
+#define RES_laser1 0xA4F
+#define RES_status 0xA57
+#define RES_explode1 0xA51
+
+#define BEFORE_ANIM_BITMAP 0x04
+
+#define REF_ANIM_vintro 0xa560000
+#define RES_FRAMES_vintro 0xA4A
+
 errtype play_vmail(byte vmail_no);
 
 #endif // __VMAIL_H

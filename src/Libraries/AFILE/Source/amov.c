@@ -167,6 +167,22 @@ int32_t AmovReadHeader(Afile *paf) {
 static void Draw4x4(const uint8_t *data, int16_t w, int16_t h) {
     // I have no idea what this really does..
     STUB_ONCE("TODO: Implement");
+
+    int cval = 2;
+    for(int j = 0; j < h / 4; j++) {
+        for(int i = 0; i < w / 4; i++) {
+            int x = i * 4;
+            int y = j * 4;
+
+            for(int xx = 0; xx < 4; xx++) {
+                for(int yy = 0; yy < 4; yy++) {
+                    gr_set_pixel(cval, x + xx, y + yy);
+                }
+            }
+
+            cval = 10;
+        }
+    }
 }
 static void HuffExpandFlashTables(uint8_t *huffmanTable, uint32_t len, uint32_t *pl, int32_t xWTF) {
     // unsure about the types, especially of pl? and what it is as well..

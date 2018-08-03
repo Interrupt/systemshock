@@ -51,6 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "invent.h"
 #include "invdims.h"
+#include "Shock.h"
 
 /*
 KLC - stereo
@@ -251,6 +252,8 @@ void screen_start() {
 #ifdef PALFX_FADES
 // later   if (pal_fx_on) palfx_fade_up(FALSE);
 #endif
+
+    CaptureMouse(true);
     return;
 }
 
@@ -349,7 +352,7 @@ errtype screen_shutdown(void) {
 static grs_bitmap _targbm;
 static grs_bitmap _waitbm;
 static grs_bitmap _firebm;
-// static grs_bitmap _vmailbm;
+static grs_bitmap _vmailbm;
 extern grs_bitmap slider_cursor_bmap;
 extern LGCursor slider_cursor;
 
@@ -363,7 +366,8 @@ errtype load_misc_cursors(void) {
             free(_waitbm.bits);
         if (_firebm.bits != NULL)
             free(_firebm.bits);
-        //      if (_vmailbm.bits != NULL)  free(_vmailbm.bits);
+        if (_vmailbm.bits != NULL)
+            free(_vmailbm.bits);
         if (slider_cursor_bmap.bits != NULL)
             free(slider_cursor_bmap.bits);
     }
@@ -371,7 +375,7 @@ errtype load_misc_cursors(void) {
     load_res_bitmap_cursor(&globcursor, &_targbm, REF_IMG_bmTargetCursor, TRUE);
     load_res_bitmap_cursor(&wait_cursor, &_waitbm, REF_IMG_bmWaitCursor, TRUE);
     load_res_bitmap_cursor(&fire_cursor, &_firebm, REF_IMG_bmFireCursor, TRUE);
-    //   load_hires_bitmap_cursor(&vmail_cursor, &_vmailbm, REF_IMG_bmVmailCursor, TRUE);
+    load_res_bitmap_cursor(&vmail_cursor, &_vmailbm, REF_IMG_bmVmailCursor, TRUE);
     load_res_bitmap_cursor(&slider_cursor, &slider_cursor_bmap, REF_IMG_bmMfdPhaserCursor, TRUE);
     misc_cursors_loaded = TRUE;
     return (OK);

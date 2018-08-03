@@ -28,120 +28,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "MoviePlay.h"
 
 // KLC #include <screen.h>
+#include "game_screen.h"
 #include "vmail.h"
 #include "invent.h"
 #include "mainloop.h"
 #include "gameloop.h"
-// KLC #include <tools.h>
+#include "tools.h"
 #include "gametime.h"
-// KLC #include <sfxlist.h>
-// KLC #include <musicai.h>
+#include "sfxlist.h"
+#include "musicai.h"
 #include "player.h"
-// KLC #include <statics.h>
+#include "statics.h"
 #include "fullscrn.h"
 #include "render.h"
 #include "gr2ss.h"
 #include "criterr.h"
 
+#include "anim.h"
+
 //#include <mprintf.h>
 //#define LOTS_O_SPEW
-// KLC  uchar vmail_wait_for_input = TRUE;
+uchar vmail_wait_for_input = TRUE;
 
 //#define CONTINUOUS_VMAIL_TEST
 
-// KLC  ActAnim *main_anim;
+ActAnim *main_anim;
 
 #define NUM_VMAIL 6
-// KLC #define INTRO_VMAIL (NUM_VMAIL+1)
+#define INTRO_VMAIL (NUM_VMAIL+1)
 
 byte current_vmail = -1;
 extern LGCursor vmail_cursor;
 
-// --------------------------------------------------------------------
-//
-// play_vmail()
-//
-errtype play_vmail(byte vmail_no) {
-    extern uchar game_paused;
-    extern uchar citadel_check_input(void);
-    extern void email_page_exit(void);
-    extern short old_invent_page;
-
-    // make sure we don't have a current vmail, and we're given a valid vmail num
-    if ((current_vmail != -1) || (vmail_no < 0) || (vmail_no >= NUM_VMAIL))
-        return (ERR_NOEFFECT);
-
-    // spew the appropriate text for vmail - full screen needs a draw!
-    if (full_game_3d)
-        render_run();
-
-    suspend_game_time();
-    time_passes = FALSE;
-    game_paused = TRUE;
-
-    // Play the appropriate V-Mail.
-    {
-        uchar savep[768];
-        FSSpec fSpec;
-
-        gr_get_pal(0, 256, savep);
-        switch (vmail_no) {
-        case 0: // shield
-            FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Shields On", &fSpec);
-            break;
-        case 1: // grove
-            FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Jettison Pod", &fSpec);
-            break;
-        case 2: // bridge
-            FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Detach", &fSpec);
-            break;
-        case 3: // laser1
-            FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Laser Malfunction", &fSpec);
-            break;
-        case 4: // status
-            FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Citadel Status", &fSpec);
-            break;
-        case 5: // explode1
-            FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Auto-destruct", &fSpec);
-            break;
-        }
-        PlayVMail(&fSpec, 120, 90);
-        gr_set_pal(0, 256, savep);
-    }
-
-    uiFlush();
-
-    // Need to pause here for click if not clicked to stop vmail already.
-
-    email_page_exit();
-    inventory_draw_new_page(old_invent_page);
-
-    resume_game_time();
-    game_paused = FALSE;
-
-    // let the player wait before firing auto fire weapon
-    player_struct.auto_fire_click = player_struct.game_time + 60;
-    time_passes = TRUE;
-
-    chg_set_flg(DEMOVIEW_UPDATE);
-
-    return (OK);
-}
-
-//
-// KLC - Mac Version
-//
-// The Mac version is vmail is so different, we're just going to keep the play_vmail
-// function (in a highly altered form).  The rest of this stuff will go away.
-/* KLC
-Ref vmail_anim_refs[NUM_VMAIL] = {
-   REF_ANIM_shield,
-   REF_ANIM_grove,
-   REF_ANIM_bridge,
-   REF_ANIM_laser1,
-   REF_ANIM_status,
-   REF_ANIM_explode1
-};
+extern void SDLDraw(void);
+extern void pump_events(void);
 
 Ref vmail_frame_anim[NUM_VMAIL] = {
    RES_FRAMES_shield,
@@ -182,12 +102,12 @@ grs_bitmap *vmail_background = NULL;
 extern uchar uiCheckInput(void);
 
 #pragma disable_message(202)
-void vmail_intro(Rect *area, ubyte flags)
+void vmail_intro(LGRect *area, ubyte flags)
 {
    if (flags & BEFORE_ANIM_BITMAP)
    {
       if (vmail_background)
-         gr_bitmap(vmail_background, 0,0);
+         gr_bitmap(vmail_background, 0, 0);
    }
 }
 #pragma enable_message(202)
@@ -237,10 +157,12 @@ void vmail_start_anim_end(ActAnim *paa, AnimCode ancode, AnimCodeData *pdata)
 
 errtype play_vmail_intro(uchar use_texture_buffer)
 {
-   Point animloc = {VINTRO_X, VINTRO_Y};
+   LGPoint animloc = {VINTRO_X, VINTRO_Y};
    uchar *p, *useBuffer;
    int bsize;
    short w,h;
+
+   DEBUG("Playing vmail intro");
 
    main_anim = AnimPlayRegion(REF_ANIM_vintro, mainview_region, animloc, 0, vmail_intro);
    if (main_anim == NULL)
@@ -290,7 +212,7 @@ errtype play_vmail_intro(uchar use_texture_buffer)
    while (current_vmail != -1)
    {
       AnimRecur();
-      tight_loop(FALSE);
+      tight_loop(TRUE);
    }
 #ifdef LOTS_O_SPEW
    mprintf("*DONE INTRO*");
@@ -308,7 +230,7 @@ errtype play_vmail_intro(uchar use_texture_buffer)
 #pragma disable_message(202)
 errtype play_vmail(byte vmail_no)
 {
-   Point    animloc = {VINTRO_X, VINTRO_Y};
+   LGPoint    animloc = {VINTRO_X, VINTRO_Y};
    errtype  intro_error;
    int      vmail_animfile_num = 0;
    uchar     early_exit = FALSE;
@@ -316,9 +238,11 @@ errtype play_vmail(byte vmail_no)
    uchar     use_texture_buffer = FALSE;
    int      len = vmail_len[vmail_no];
    int      i;
-   MemStat  data;
+   //MemStat  data;
 
    // let's extern
+
+   DEBUG("Playing vmail %i", vmail_no);
 
    // the more I look at this procedure - the more I think
    // art - what were you thinking
@@ -343,15 +267,15 @@ errtype play_vmail(byte vmail_no)
    checking_mouse_button_emulation = game_paused = TRUE;
 
    // open the res file
-   vmail_animfile_num = ResOpenFile("vidmail.res");
+   vmail_animfile_num = ResOpenFile("res/data/vidmail.res");
    if (vmail_animfile_num < 0)
       return(ERR_FOPEN);
 
    uiPushSlabCursor(&fullscreen_slab, &vmail_cursor);
    uiPushSlabCursor(&main_slab, &vmail_cursor);
 
-   MemStats(&data);
-   use_texture_buffer = (data.free.sizeMax < MAX_VMAIL_SIZE);
+   //MemStats(&data);
+   //use_texture_buffer = (data.free.sizeMax < MAX_VMAIL_SIZE);
 
 #ifdef LOTS_O_SPEW
    mprintf("\nBUFFER:(%d)\n", use_texture_buffer);
@@ -371,12 +295,13 @@ errtype play_vmail(byte vmail_no)
          for (i=0;i<len && !cant_preload_all;i++)
          {
             // check if we have enough memory to preload another segment
-            MemStats(&data);
+            /*MemStats(&data);
             if (data.free.sizeMax < MAX_VMAIL_SIZE)
             {
                cant_preload_all = TRUE;
                break;
-            }
+            }*/
+
             // preload vmail frame animation first, and then play intro -> no pause between the two
             // if it fails on the lock - then say you can't preload!
             if(ResLock(vmail_frame_anim[vmail_no]+i) == NULL)
@@ -424,6 +349,7 @@ errtype play_vmail(byte vmail_no)
       // if we had a problem with the intro - then flush
       // the animation all out - close it and
       // then return error code
+      DEBUG("Could not play vmail intro");
       if (preload_animation)
          for (i=0;i<len;i++)
          {
@@ -436,6 +362,7 @@ errtype play_vmail(byte vmail_no)
 
    for (i=0; (i<len) && !early_exit;i++)
    {
+      DEBUG("Playing segment.");
       Ref   vmail_ref = MKREF(vmail_res[vmail_no]+i,0);
       main_anim = AnimPlayRegion(vmail_ref,mainview_region,animloc, 0, NULL);
       if (main_anim == NULL)
@@ -469,10 +396,11 @@ errtype play_vmail(byte vmail_no)
 #endif
             AnimKill(main_anim);
          }
-         tight_loop(FALSE);
+         tight_loop(TRUE);
       }
    }
 
+   DEBUG("Finished playing!");
    if (preload_animation)
    {
       for (i=0;i<len;i++)
@@ -504,12 +432,18 @@ errtype play_vmail(byte vmail_no)
 
 #ifndef CONTINUOUS_VMAIL_TEST
    if (!early_exit && vmail_wait_for_input)
-      while (!citadel_check_input()) ;
+      while (!citadel_check_input()) {
+         pump_events();
+         SDLDraw();
+      }
 #endif
 
    email_page_exit();
+
+   screen_draw();
    inventory_draw_new_page(old_invent_page);
 
+   DEBUG("Resuming game time");
    resume_game_time();
    checking_mouse_button_emulation = game_paused = FALSE;
 
@@ -556,4 +490,3 @@ uchar shield_off_func(short keycode, ulong context, void* data)
 #pragma enable_message(202)
 
 #endif
-*/

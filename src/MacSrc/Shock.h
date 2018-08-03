@@ -134,6 +134,7 @@ void ScrollCredits(void);
 void InitSDL();
 void SetSDLPalette(int index, int count, uchar *pal);
 void SDLDraw();
+void CaptureMouse(bool capture);
 
 //--------------------
 // Public Globals
