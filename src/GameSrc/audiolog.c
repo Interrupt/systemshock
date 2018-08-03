@@ -234,6 +234,10 @@ void audiolog_stop() {
     }
     */
 
+    if(alog_fn < 0) {
+        return;
+    }
+
     if (alog_fn >= 0)
     {
         ResCloseFile(alog_fn);

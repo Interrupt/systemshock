@@ -1283,9 +1283,7 @@ void setup_start() {
         }
     }
     if (!start_first_time) {
-        //      start_setup_sound();
         closedown_game(TRUE);
-        start_setup_sound(0);
     }
     start_first_time = FALSE;
 

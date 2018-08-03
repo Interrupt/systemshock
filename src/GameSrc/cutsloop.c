@@ -122,6 +122,7 @@ void cutscene_start() {
 
 void cutscene_exit() {
 	DEBUG("Cutscene exit");
+	MacTuneKillCurrentTheme();
 }
 
 void cutscene_loop() {
