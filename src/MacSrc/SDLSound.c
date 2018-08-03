@@ -126,7 +126,8 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) {
 
 void MacTuneUpdateVolume(void) {
 	extern uchar curr_vol_lev;
-	Mix_VolumeMusic((curr_vol_lev * curr_vol_lev) * 128 / 10000);
+	float music_vol_mod = 0.6f;
+	Mix_VolumeMusic(((curr_vol_lev * curr_vol_lev) * 128 / 10000) * music_vol_mod);
 }
 
 int MacTuneLoadTheme(char* theme_base, int themeID) {
@@ -153,7 +154,7 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 }
 
 void MacTuneKillCurrentTheme(void) {
-	Mix_FadeOutMusic(300);
+	Mix_HaltMusic();
 }
 
 #else

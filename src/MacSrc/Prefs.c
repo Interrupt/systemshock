@@ -78,7 +78,7 @@ void SetDefaultPrefs(void) {
 
     gShockPrefs.soBackMusic = true;
     gShockPrefs.soSoundFX = true;
-    gShockPrefs.soMusicVolume = 100;
+    gShockPrefs.soMusicVolume = 75;
     gShockPrefs.soSfxVolume = 100;
     gShockPrefs.soAudioLogVolume = 100;
 
