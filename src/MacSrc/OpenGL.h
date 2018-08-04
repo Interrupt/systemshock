@@ -51,7 +51,7 @@ static int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag)
 static int opengl_draw_star(long c, int n_verts, g3s_phandle *p) { return 0; }
 static void opengl_begin_stars() { }
 static void opengl_end_stars() { }
-static void opengl_set_stencil(int v);
+static void opengl_set_stencil(int v) {}
 
 #endif
 
