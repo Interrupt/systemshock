@@ -209,7 +209,9 @@ set(AFILE_SRC
 #	AFILE/Source/quiktime.c
 #	AFILE/Source/quikwrit.c
 #	AFILE/Source/SubTitles.c
-        AFILE/Source/movie.c)
+	AFILE/Source/draw4x4.cpp
+	AFILE/Source/huffde.cpp
+	AFILE/Source/movie.c)
 
 set(DSTRUCT_SRC
 	DSTRUCT/Source/array.c

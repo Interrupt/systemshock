@@ -18,6 +18,9 @@
 #include "MacTune.h"
 #include "gr2ss.h"
 
+#include "afile.h"
+#include "movie.h"
+
 uiSlab cutscene_slab;
 LGRegion cutscene_root_region;
 
@@ -29,9 +32,11 @@ int cutscene_idx;
 int cutscene_len;
 ActAnim *main_anim = NULL;
 
+Afile *amovie;
+
 char* cutscene_files[3] = {
-	"res/data/start1.res",
-	"res/data/death.res",
+	"res/data/svgaintr.res",
+	"res/data/death.res", 
 	"res/data/win1.res"
 };
 
@@ -42,7 +47,7 @@ char* cutscene_music[3] = {
 };
 
 Ref cutscene_anims[3] = {
-	0x1bc,
+	0xbd6,
 	0x1e,
 	0x1d4
 };
@@ -128,25 +133,23 @@ void cutscene_exit() {
 void cutscene_loop() {
 	gr_clear(0xFF);
 
-	if(cutscene_len > 0) {
-		if(cutscene_id == -1) {
-			LGPoint animloc;
-			animloc.x = 0;
-			animloc.y = 25;
+	if(amovie != NULL) {
+	    fix time;
+	    Apalette pal;
 
-			uchar* cpal = (uchar*)ResLock(cutscene_pals[current_cutscene][cutscene_idx]);
-			if(cpal != NULL)
-				gr_set_pal(0, 256, cpal);
+	    grs_bitmap bitmap;
+	    bitmap.bits = NULL;
 
-			cutscene_id = cutscene_idx;
-			main_anim = AnimPlayRegion(MKREF(cutscene_anims[current_cutscene] + cutscene_idx, 0), root_region, animloc, 0, NULL);
-			AnimSetNotify(main_anim, NULL, ANCODE_KILL, cutscene_anim_end);
+	    AfileReadFullFrame(amovie, &bitmap, &time);
 
-			cutscene_id = cutscene_idx;
-		}
+	    if(AfileGetFramePal(amovie, &pal)) {
+	    	DEBUG("Setting pal");
+	    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
+	    }
 
-		AnimRecur();
-		return;
+	    gr_bitmap(&bitmap, 0, 0);
+
+	    return;
 	}
 
 	fix sint, cost;
@@ -179,28 +182,44 @@ short play_cutscene(int id, bool show_credits) {
 	_new_mode = CUTSCENE_LOOP;
 	chg_set_flg(GL_CHG_LOOP);
 
-	current_cutscene = id;
-	should_show_credits = show_credits;
-	main_anim = NULL;
+	int cf = ResOpenFile(cutscene_files[id]);
+	if(cf <= 0)
+		return 0;
 
-	cutscene_idx = 0;
-	cutscene_len = cutscene_anims_len[id];
-	cutscene_id = -1;
+	amovie = malloc(sizeof(Afile));
+    if (AfilePrepareRes(cutscene_anims[id], amovie) < 0) {
+        WARN("%s: Cannot open Afile by id $%x", __FUNCTION__, cutscene_anims[id]);
+        free(amovie);
+        return (ERR_FREAD);
+    }
 
-	if(cutscene_len > 0) {
-		int cp = ResOpenFile("res/data/cutspal.res");
-		if(cp <= 0)
-			return 0;
+    int32_t audio_length = AfileAudioLength(amovie) * MOVIE_DEFAULT_BLOCKLEN;
+    uint8_t *buffer = malloc(audio_length);
+    AfileGetAudio(amovie, buffer);
+    
+    snd_digi_parms *sdp = malloc(sizeof(snd_digi_parms));
+    sdp->vol = 128;
+    sdp->pan = 64;
+    sdp->snd_ref = 0;
 
-		int cf = ResOpenFile(cutscene_files[id]);
-		if(cf <= 0)
-			return 0;
+    // Need to convert the movie's audio format to ours
+    // FIXME: Might want to use SDL_AudioStream to do this on the fly
+    SDL_AudioCVT cvt;
+    SDL_BuildAudioCVT(&cvt, AUDIO_U8, 1, fix_int(amovie->a.sampleRate), MIX_DEFAULT_FORMAT, 2, MIX_DEFAULT_FREQUENCY);
+    cvt.len = audio_length;  // 1024 stereo float32 sample frames.
+    cvt.buf = (Uint8 *) SDL_malloc(cvt.len * cvt.len_mult);
 
-		MacTuneKillCurrentTheme();
-		uiHideMouse(NULL);
+    SDL_memcpy(cvt.buf, buffer, audio_length); // copy our bytes to be converted
+    SDL_ConvertAudio(&cvt); // cvt.buf will have cvt.len_cvt bytes of converted data after this
 
-		MacTuneLoadTheme("intro", 0);
-	}
+    // Stop current music
+	MacTuneKillCurrentTheme();
+
+	// Now play the sample
+    snd_alog_play(0x0, cvt.len_cvt, cvt.buf, sdp);
+
+    // Reset the movie reader
+    AfileReadReset(amovie);
 
 	return 1;
 }

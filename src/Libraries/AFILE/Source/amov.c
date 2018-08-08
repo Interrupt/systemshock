@@ -52,8 +52,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "compose.h"
 #include "movie.h"
 #include "rect.h"
-//#include <decod4x4.h>
-//#include <huff.h>
+#include "draw4x4.h"
+#include "huff.h"
 
 #include "movie.h"
 
@@ -156,43 +156,13 @@ int32_t AmovReadHeader(Afile *paf) {
     // Current chunk is first one
     pmi->pcurrChunk = pmi->pmc;
 
+    DEBUG("PMI: %x", pmi);
+
     // Return
 
     return (0);
 }
 
-// DG: add some stubs so stuff builds
-
-// for some reason precompiled.h is missing here?!
-static void Draw4x4(const uint8_t *data, int16_t w, int16_t h) {
-    // I have no idea what this really does..
-    STUB_ONCE("TODO: Implement");
-
-    int cval = 2;
-    for(int j = 0; j < h / 4; j++) {
-        for(int i = 0; i < w / 4; i++) {
-            int x = i * 4;
-            int y = j * 4;
-
-            for(int xx = 0; xx < 4; xx++) {
-                for(int yy = 0; yy < 4; yy++) {
-                    gr_set_pixel(cval, x + xx, y + yy);
-                }
-            }
-
-            cval = 10;
-        }
-    }
-}
-static void HuffExpandFlashTables(uint8_t *huffmanTable, uint32_t len, uint32_t *pl, int32_t xWTF) {
-    // unsure about the types, especially of pl? and what it is as well..
-    STUB_ONCE("TODO: Implement");
-}
-static void Draw4x4Reset(uint8_t *x, uint8_t *y) {
-    // as you may have guessed, I have no idea about this one either.
-    STUB_ONCE("TODO: Implement");
-}
-// DG end
 //	----------------------------------------------------------
 //
 //	AmovReadFrame() reads the next frame.
@@ -216,6 +186,7 @@ NEXT_CHUNK:
         return (-1);
 
     case MOVIE_CHUNK_VIDEO:
+        DEBUG("MOVIE_CHUNK_VIDEO");
         pbm->type = pmi->pcurrChunk->flags & MOVIE_FVIDEO_BMTMASK;
         if (pbm->type == MOVIE_FVIDEO_BMF_4X4) {
             fseek(paf->fp, pmi->pcurrChunk->offset, SEEK_SET);
@@ -239,6 +210,7 @@ NEXT_CHUNK:
         return (len);
 
     case MOVIE_CHUNK_TABLE:
+        DEBUG("MOVIE_CHUNK_TABLE");
         fseek(paf->fp, pmi->pcurrChunk->offset, SEEK_SET);
         switch (pmi->pcurrChunk->flags) {
         case MOVIE_FTABLE_COLORSET:
@@ -266,6 +238,7 @@ NEXT_CHUNK:
         goto NEXT_CHUNK;
 
     case MOVIE_CHUNK_PALETTE:
+        DEBUG("MOVIE_CHUNK_PALETTE");
         if (pmi->pcurrChunk->flags == MOVIE_FPAL_SET) {
             fseek(paf->fp, pmi->pcurrChunk->offset, SEEK_SET);
             fread(pmi->pal, 768, 1, paf->fp);
@@ -311,7 +284,7 @@ int32_t AmovReadAudio(Afile *paf, void *paudio) {
     while (pmi->pcurrChunk->chunkType != MOVIE_CHUNK_END) {
         // Got audio chunk
         if (pmi->pcurrChunk->chunkType == MOVIE_CHUNK_AUDIO) {
-            TRACE("%s: got audio chunk in 0x%08x offset", __FUNCTION__, pmi->pcurrChunk->offset);
+            // TRACE("%s: got audio chunk in 0x%08x offset", __FUNCTION__, pmi->pcurrChunk->offset);
             fseek(paf->fp, pmi->pcurrChunk->offset, SEEK_SET);
             fread(p, MOVIE_DEFAULT_BLOCKLEN, 1, paf->fp);
             memcpy(paudio + i, p, MOVIE_DEFAULT_BLOCKLEN);
