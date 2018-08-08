@@ -36,8 +36,8 @@ Afile *amovie;
 
 char* cutscene_files[3] = {
 	"res/data/svgaintr.res",
-	"res/data/death.res", 
-	"res/data/win1.res"
+	"res/data/svgadeth.res", 
+	"res/data/svgaend.res"
 };
 
 char* cutscene_music[3] = {
@@ -48,8 +48,8 @@ char* cutscene_music[3] = {
 
 Ref cutscene_anims[3] = {
 	0xbd6,
-	0x1e,
-	0x1d4
+	0xbd7,
+	0xbd8
 };
 
 Ref cutscene_anims_len[3] = {
@@ -140,14 +140,24 @@ void cutscene_loop() {
 	    grs_bitmap bitmap;
 	    bitmap.bits = NULL;
 
-	    AfileReadFullFrame(amovie, &bitmap, &time);
+	    // Read the next frame
+	    if(AfileReadFullFrame(amovie, &bitmap, &time) != -1) {
+	    	// Also get the next palette
+		    if(AfileGetFramePal(amovie, &pal)) {
+		    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
+		    }
 
-	    if(AfileGetFramePal(amovie, &pal)) {
-	    	DEBUG("Setting pal");
-	    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
-	    }
+		    gr_bitmap(&bitmap, 0, 0);
+		}
+		else {
+			// Go back to the main menu
+            _new_mode = SETUP_LOOP;
+			chg_set_flg(GL_CHG_LOOP);
 
-	    gr_bitmap(&bitmap, 0, 0);
+			if(should_show_credits) {
+				journey_credits_func(FALSE);
+			}
+		}
 
 	    return;
 	}
