@@ -203,6 +203,8 @@ short play_cutscene(int id, bool show_credits) {
         return (ERR_FREAD);
     }
 
+    gr_set_pal(0, 256, amovie->v.pal.rgb);
+
     int32_t audio_length = AfileAudioLength(amovie) * MOVIE_DEFAULT_BLOCKLEN;
     uint8_t *buffer = malloc(audio_length);
     AfileGetAudio(amovie, buffer);
