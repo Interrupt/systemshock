@@ -25,18 +25,10 @@
 
 uiSlab cutscene_slab;
 LGRegion cutscene_root_region;
-
-int current_cutscene;
 bool should_show_credits;
-
-int cutscene_id = -1;
-int cutscene_idx;
-int cutscene_len;
-ActAnim *main_anim = NULL;
 
 Afile *amovie;
 grs_bitmap movie_bitmap;
-long last_time;
 long next_time;
 
 char* cutscene_files[3] = {
@@ -45,48 +37,11 @@ char* cutscene_files[3] = {
 	"res/data/svgaend.res"
 };
 
-char* cutscene_music[3] = {
-	"Intro",
-	"dead",
-	"enda"
-};
-
 Ref cutscene_anims[3] = {
 	0xbd6,
 	0xbd7,
 	0xbd8
 };
-
-Ref cutscene_anims_len[3] = {
-	19,
-	7,
-	3
-};
-
-Ref cutscene_pals[5][20] = {
- {5,6,7,8,9,9,10,10,11,11,11,12,13,13,14,14,15,16,17,18},
- {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
- {18,19,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20},
-};
-
-int current_cutscene = -1;
-void cutscene_anim_end(ActAnim *paa, AnimCode ancode, AnimCodeData *pdata)
-{
-	cutscene_id = -1;
-	cutscene_idx++;
-
-	// Go back to the main menu if we're done
-	if(cutscene_idx >= cutscene_len) {
-	    _new_mode = SETUP_LOOP;
-		chg_set_flg(GL_CHG_LOOP);
-
-		if(should_show_credits) {
-			journey_credits_func(FALSE);
-		}
-
-		uiShowMouse(NULL);
-	}
-}
 
 uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, void *user_data) {
 	uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
@@ -138,61 +93,35 @@ void cutscene_exit() {
 void cutscene_loop() {
 	gr_clear(0xFF);
 
-	if(amovie != NULL) {
-	    fix time;
-	    Apalette pal;
+    fix time;
+    Apalette pal;
 
-	    long cur_time = SDL_GetTicks();
-	    long frame_rate = fix_int(amovie->v.frameRate);
+    long cur_time = SDL_GetTicks();
+    long frame_rate = fix_int(amovie->v.frameRate);
 
-	    if(cur_time >= next_time) {
-		    // Read the next frame
-		    if(AfileReadFullFrame(amovie, &movie_bitmap, &time) != -1) {
-		    	// Also get the next palette
-			    if(AfileGetFramePal(amovie, &pal)) {
-			    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
-			    }
+    if(cur_time >= next_time) {
+	    // Read the next frame
+	    if(AfileReadFullFrame(amovie, &movie_bitmap, &time) != -1) {
+	    	// Also get the next palette
+		    if(AfileGetFramePal(amovie, &pal)) {
+		    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
+		    }
 
-			    int overflow = cur_time - next_time;
-				next_time += (frame_rate * 10) - overflow;
-			}
-			else {
-				// Go back to the main menu
-	            _new_mode = SETUP_LOOP;
-				chg_set_flg(GL_CHG_LOOP);
+		    int overflow = cur_time - next_time;
+			next_time += (frame_rate * 10) - overflow;
+		}
+		else {
+			// Go back to the main menu
+            _new_mode = SETUP_LOOP;
+			chg_set_flg(GL_CHG_LOOP);
 
-				if(should_show_credits) {
-					journey_credits_func(FALSE);
-				}
+			if(should_show_credits) {
+				journey_credits_func(FALSE);
 			}
 		}
-
-		gr_bitmap(&movie_bitmap, 0, 0);
-	    return;
 	}
 
-	fix sint, cost;
-	fix_sincos(*tmd_ticks * 50, &sint, &cost);
-	int ymov = fix_int(fix_mul(sint, fix_make(5, 0)));
-
-	char buff[100];
-	sprintf(buff, "Cutscene #%i should go here!", current_cutscene);
-
-	switch(current_cutscene) {
-		case DEATH_CUTSCENE:
-			res_draw_text(RES_coloraliasedFont, "Game Over, Hacker.", 30, 70 - ymov);
-			break;
-		case WIN_CUTSCENE:
-			res_draw_text(RES_coloraliasedFont, "It's over. Shodan is dust.", 30, 70 - ymov);
-			break;
-		case START_CUTSCENE:
-			res_draw_text(RES_coloraliasedFont, "Welcome back to Citadel Station", 30, 70 - ymov);
-			break;
-		default:
-			res_draw_text(RES_coloraliasedFont, buff, 50, 70 - ymov);
-	}
-	
-	res_draw_text(RES_coloraliasedFont, "[ Press space to continue ]", 30, 90 - ymov);
+	gr_bitmap(&movie_bitmap, 0, 0);
 }
 
 short play_cutscene(int id, bool show_credits) {
