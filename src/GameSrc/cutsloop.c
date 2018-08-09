@@ -28,8 +28,11 @@ LGRegion cutscene_root_region;
 bool should_show_credits;
 
 Afile *amovie;
+Apalette pal;
 grs_bitmap movie_bitmap;
 long next_time;
+
+bool is_first_frame = TRUE;
 
 char* cutscene_files[3] = {
 	"res/data/svgaintr.res",
@@ -91,13 +94,17 @@ void cutscene_exit() {
 }
 
 void cutscene_loop() {
-	gr_clear(0xFF);
 
     fix time;
-    Apalette pal;
-
     long cur_time = SDL_GetTicks();
-    long frame_rate = fix_int(amovie->v.frameRate);
+
+    if(is_first_frame) {
+    	is_first_frame = FALSE;
+    	next_time = cur_time;
+
+    	// Set the initial palette
+    	gr_set_pal(0, 256, amovie->v.pal.rgb);
+    }
 
     if(cur_time >= next_time) {
 	    // Read the next frame
@@ -107,8 +114,12 @@ void cutscene_loop() {
 		    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
 		    }
 
+		    gr_clear(0x00);
+		    gr_bitmap(&movie_bitmap, 0, 0);
+
+		    // Figure out when to show the next frame
 		    int overflow = cur_time - next_time;
-			next_time += (frame_rate * 10) - overflow;
+			next_time += (fix_int(amovie->v.frameRate) * 10) - overflow;
 		}
 		else {
 			// Go back to the main menu
@@ -120,18 +131,19 @@ void cutscene_loop() {
 			}
 		}
 	}
-
-	gr_bitmap(&movie_bitmap, 0, 0);
 }
 
 short play_cutscene(int id, bool show_credits) {
 	INFO("Playing Cutscene %i", id);
+
+	gr_clear(0x00);
 
 	_new_mode = CUTSCENE_LOOP;
 	chg_set_flg(GL_CHG_LOOP);
 
 	movie_bitmap.bits = NULL;
 
+	// Open the movie file
 	int cf = ResOpenFile(cutscene_files[id]);
 	if(cf <= 0)
 		return 0;
@@ -143,8 +155,7 @@ short play_cutscene(int id, bool show_credits) {
         return (ERR_FREAD);
     }
 
-    gr_set_pal(0, 256, amovie->v.pal.rgb);
-
+    // Now start playing the audio for this movie
     int32_t audio_length = AfileAudioLength(amovie) * MOVIE_DEFAULT_BLOCKLEN;
     uint8_t *buffer = malloc(audio_length);
     AfileGetAudio(amovie, buffer);
@@ -172,8 +183,6 @@ short play_cutscene(int id, bool show_credits) {
 
     // Reset the movie reader
     AfileReadReset(amovie);
-
-    next_time = SDL_GetTicks();
 
 	return 1;
 }
