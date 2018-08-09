@@ -21,6 +21,8 @@
 #include "afile.h"
 #include "movie.h"
 
+#include <SDL.h>
+
 uiSlab cutscene_slab;
 LGRegion cutscene_root_region;
 
@@ -33,6 +35,9 @@ int cutscene_len;
 ActAnim *main_anim = NULL;
 
 Afile *amovie;
+grs_bitmap movie_bitmap;
+long last_time;
+long next_time;
 
 char* cutscene_files[3] = {
 	"res/data/svgaintr.res",
@@ -137,28 +142,32 @@ void cutscene_loop() {
 	    fix time;
 	    Apalette pal;
 
-	    grs_bitmap bitmap;
-	    bitmap.bits = NULL;
+	    long cur_time = SDL_GetTicks();
+	    long frame_rate = fix_int(amovie->v.frameRate);
 
-	    // Read the next frame
-	    if(AfileReadFullFrame(amovie, &bitmap, &time) != -1) {
-	    	// Also get the next palette
-		    if(AfileGetFramePal(amovie, &pal)) {
-		    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
-		    }
+	    if(cur_time >= next_time) {
+		    // Read the next frame
+		    if(AfileReadFullFrame(amovie, &movie_bitmap, &time) != -1) {
+		    	// Also get the next palette
+			    if(AfileGetFramePal(amovie, &pal)) {
+			    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
+			    }
 
-		    gr_bitmap(&bitmap, 0, 0);
-		}
-		else {
-			// Go back to the main menu
-            _new_mode = SETUP_LOOP;
-			chg_set_flg(GL_CHG_LOOP);
+			    int overflow = cur_time - next_time;
+				next_time += (frame_rate * 10) - overflow;
+			}
+			else {
+				// Go back to the main menu
+	            _new_mode = SETUP_LOOP;
+				chg_set_flg(GL_CHG_LOOP);
 
-			if(should_show_credits) {
-				journey_credits_func(FALSE);
+				if(should_show_credits) {
+					journey_credits_func(FALSE);
+				}
 			}
 		}
 
+		gr_bitmap(&movie_bitmap, 0, 0);
 	    return;
 	}
 
@@ -191,6 +200,8 @@ short play_cutscene(int id, bool show_credits) {
 
 	_new_mode = CUTSCENE_LOOP;
 	chg_set_flg(GL_CHG_LOOP);
+
+	movie_bitmap.bits = NULL;
 
 	int cf = ResOpenFile(cutscene_files[id]);
 	if(cf <= 0)
@@ -232,6 +243,8 @@ short play_cutscene(int id, bool show_credits) {
 
     // Reset the movie reader
     AfileReadReset(amovie);
+
+    next_time = SDL_GetTicks();
 
 	return 1;
 }
