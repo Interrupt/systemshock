@@ -32,7 +32,10 @@ Apalette pal;
 grs_bitmap movie_bitmap;
 long next_time;
 
-bool is_first_frame = TRUE;
+bool is_first_frame;
+bool done_playing_movie;
+long start_time;
+long next_draw_time;
 
 char* cutscene_files[3] = {
 	"res/data/svgaintr.res",
@@ -101,27 +104,28 @@ void cutscene_loop() {
     if(is_first_frame) {
     	is_first_frame = FALSE;
     	next_time = cur_time;
+    	start_time = SDL_GetTicks();
+
+    	// Read the first frame
+    	AfileReadFullFrame(amovie, &movie_bitmap, &time);
+    	next_draw_time = start_time + fix_float(time) * 1000.0;
 
     	// Set the initial palette
     	gr_set_pal(0, 256, amovie->v.pal.rgb);
+    	gr_clear(0x00);
     }
 
-    if(cur_time >= next_time) {
-	    // Read the next frame
-	    if(AfileReadFullFrame(amovie, &movie_bitmap, &time) != -1) {
-	    	// Also get the next palette
-		    if(AfileGetFramePal(amovie, &pal)) {
-		    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
-		    }
+    if(cur_time > next_draw_time) {
+    	// Get the palette for this frame, if any
+    	if(AfileGetFramePal(amovie, &pal)) {
+	    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
+	    }
 
-		    gr_clear(0x00);
-		    gr_bitmap(&movie_bitmap, 0, 0);
+	    // Draw this frame
+	    gr_clear(0x00);
+		gr_bitmap(&movie_bitmap, 0, 0);
 
-		    // Figure out when to show the next frame
-		    int overflow = cur_time - next_time;
-			next_time += (fix_int(amovie->v.frameRate) * 10) - overflow;
-		}
-		else {
+		if(done_playing_movie) {
 			// Go back to the main menu
             _new_mode = SETUP_LOOP;
 			chg_set_flg(GL_CHG_LOOP);
@@ -129,18 +133,33 @@ void cutscene_loop() {
 			if(should_show_credits) {
 				journey_credits_func(FALSE);
 			}
+
+			return;
 		}
-	}
+
+		// Read the next frame
+    	if(AfileReadFullFrame(amovie, &movie_bitmap, &time) == -1) {
+    		DEBUG("Done playing movie!");
+    		done_playing_movie = TRUE;
+
+    		// Still want a bit of a delay before finishing
+    		next_draw_time += 100;
+    	}
+    	else {
+    		next_draw_time = start_time + fix_float(time) * 1000.0;
+    	}
+    }
 }
 
 short play_cutscene(int id, bool show_credits) {
 	INFO("Playing Cutscene %i", id);
 
-	gr_clear(0x00);
-
 	_new_mode = CUTSCENE_LOOP;
 	chg_set_flg(GL_CHG_LOOP);
 
+	// Set some initial variables
+	is_first_frame = TRUE;
+    done_playing_movie = FALSE;
 	movie_bitmap.bits = NULL;
 
 	// Open the movie file
