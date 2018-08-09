@@ -123,7 +123,11 @@ void cutscene_loop() {
 
 	    // Draw this frame
 	    gr_clear(0x00);
-		gr_bitmap(&movie_bitmap, 0, 0);
+
+	    float vscale = (float)amovie->v.height / (float)amovie->v.width;
+
+	    int offset = (320 - (amovie->v.width / 2)) / 2;
+		ss_scale_bitmap(&movie_bitmap, offset, offset / 1.25, amovie->v.width / 2, amovie->v.height / 2);
 
 		if(done_playing_movie) {
 			// Go back to the main menu
