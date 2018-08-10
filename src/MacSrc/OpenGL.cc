@@ -699,4 +699,12 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
     return CLIP_NONE;
 }
 
+void opengl_context_hack() {
+    #ifdef __APPLE__
+    // This somehow fixes UI elements drawing under OpenGL elements
+    // Something to do with the glTexImage2D call happening here
+    set_color(0, 0, 0, 255);
+    #endif
+}
+
 #endif // USE_OPENGL
