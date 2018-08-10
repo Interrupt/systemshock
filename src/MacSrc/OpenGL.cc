@@ -174,8 +174,6 @@ int init_opengl() {
 }
 
 void opengl_resize(int width, int height) {
-    SDL_GL_MakeCurrent(window, context);
-
     int logical_width, logical_height;
     SDL_RenderGetLogicalSize(renderer, &logical_width, &logical_height);
 
@@ -219,7 +217,6 @@ bool should_opengl_swap() {
 void opengl_backup_view() {
     // save the framebuffer into a texture after rendering the 3D view(s)
     // but before blitting the HUD overlay
-    SDL_GL_MakeCurrent(window, context);
 
     glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
@@ -229,7 +226,6 @@ void opengl_backup_view() {
 void opengl_swap_and_restore() {
     // restore the view backup (without HUD overlay) for incremental
     // updates in the subsequent frame
-    SDL_GL_MakeCurrent(window, context);
 
     glUseProgram(textureShaderProgram);
 
@@ -288,7 +284,6 @@ void opengl_set_viewport(int x, int y, int width, int height) {
     render_width = width;
     render_height = height;
 
-    SDL_GL_MakeCurrent(window, context);
     int scaled_width = width * view_scale;
     int scaled_height = height * view_scale;
     int scaled_x = phys_offset_x + x * view_scale;
@@ -307,7 +302,6 @@ void opengl_set_viewport(int x, int y, int width, int height) {
 }
 
 static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
-    SDL_GL_MakeCurrent(window, context);
 
     glPixelStorei(GL_UNPACK_ROW_LENGTH,bm->row);
 
@@ -341,8 +335,6 @@ void opengl_clear_texture_cache() {
         return;
 
     DEBUG("Clearing OpenGL texture cache.");
-
-    SDL_GL_MakeCurrent(window, context);
 
     std::map<uint8_t *, CachedTexture>::iterator iter;
     for(iter = texturesByBitsPtr.begin(); iter != texturesByBitsPtr.end(); iter++) {
@@ -494,7 +486,6 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
         return CLIP_ALL;
     }
 
-    SDL_GL_MakeCurrent(window, context);
     glUseProgram(textureShaderProgram);
 
     GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
@@ -538,7 +529,6 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
         return CLIP_ALL;
     }
 
-    SDL_GL_MakeCurrent(window, context);
     glUseProgram(textureShaderProgram);
 
     GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
@@ -595,7 +585,6 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
         return CLIP_ALL;
     }
 
-    SDL_GL_MakeCurrent(window, context);
     glUseProgram(colorShaderProgram);
 
     GLint uniView = glGetUniformLocation(colorShaderProgram, "view");
@@ -656,8 +645,6 @@ void opengl_set_stencil(int v) {
 }
 
 void opengl_begin_stars() {
-    SDL_GL_MakeCurrent(window, context);
-
     glPointSize(2.5f);
     glEnable(GL_POINT_SMOOTH);
 
@@ -678,8 +665,6 @@ void opengl_end_stars() {
 }
 
 int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
-    SDL_GL_MakeCurrent(window, context);
-
     GLint tcAttrib = glGetAttribLocation(textureShaderProgram, "texcoords");
     GLint lightAttrib = glGetAttribLocation(textureShaderProgram, "light");
 
@@ -705,6 +690,8 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
 
 void opengl_start_frame() {
     // Set up for level rendering
+    SDL_GL_MakeCurrent(window, context);
+    
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glEnable(GL_ALPHA_TEST);
