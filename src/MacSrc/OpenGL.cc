@@ -141,8 +141,10 @@ int init_opengl() {
     DEBUG("Initializing OpenGL");
 
     context = SDL_GL_GetCurrentContext();
-    if(context == NULL)
+    if(context == NULL) {
         ERROR("No opengl context!");
+        return 1;
+    }
 
 #ifdef _WIN32
     glewExperimental = GL_TRUE;
@@ -202,14 +204,14 @@ void opengl_resize(int width, int height) {
 }
 
 bool use_opengl() {
-    return gShockPrefs.doUseOpenGL &&
+    return gShockPrefs.doUseOpenGL && context != NULL &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber &&
            !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 bool should_opengl_swap() {
-    return gShockPrefs.doUseOpenGL &&
+    return gShockPrefs.doUseOpenGL && context != NULL &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber;
 }
