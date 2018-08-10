@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 {
 	// FIXME externalize this
 	log_set_quiet(0);
-	log_set_level(LOG_TRACE);
+	log_set_level(LOG_INFO);
 
 	InitMac();															// init mac managers
 

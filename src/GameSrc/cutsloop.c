@@ -18,65 +18,36 @@
 #include "MacTune.h"
 #include "gr2ss.h"
 
+#include "afile.h"
+#include "movie.h"
+
+#include <SDL.h>
+
 uiSlab cutscene_slab;
 LGRegion cutscene_root_region;
-
-int current_cutscene;
 bool should_show_credits;
 
-int cutscene_id = -1;
-int cutscene_idx;
-int cutscene_len;
-ActAnim *main_anim = NULL;
+Afile *amovie;
+Apalette pal;
+grs_bitmap movie_bitmap;
+long next_time;
+
+bool is_first_frame;
+bool done_playing_movie;
+long start_time;
+long next_draw_time;
 
 char* cutscene_files[3] = {
-	"res/data/start1.res",
-	"res/data/death.res",
-	"res/data/win1.res"
-};
-
-char* cutscene_music[3] = {
-	"Intro",
-	"dead",
-	"enda"
+	"res/data/svgaintr.res",
+	"res/data/svgadeth.res", 
+	"res/data/svgaend.res"
 };
 
 Ref cutscene_anims[3] = {
-	0x1bc,
-	0x1e,
-	0x1d4
+	0xbd6,
+	0xbd7,
+	0xbd8
 };
-
-Ref cutscene_anims_len[3] = {
-	19,
-	7,
-	3
-};
-
-Ref cutscene_pals[5][20] = {
- {5,6,7,8,9,9,10,10,11,11,11,12,13,13,14,14,15,16,17,18},
- {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
- {18,19,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20},
-};
-
-int current_cutscene = -1;
-void cutscene_anim_end(ActAnim *paa, AnimCode ancode, AnimCodeData *pdata)
-{
-	cutscene_id = -1;
-	cutscene_idx++;
-
-	// Go back to the main menu if we're done
-	if(cutscene_idx >= cutscene_len) {
-	    _new_mode = SETUP_LOOP;
-		chg_set_flg(GL_CHG_LOOP);
-
-		if(should_show_credits) {
-			journey_credits_func(FALSE);
-		}
-
-		uiShowMouse(NULL);
-	}
-}
 
 uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, void *user_data) {
 	uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
@@ -126,51 +97,62 @@ void cutscene_exit() {
 }
 
 void cutscene_loop() {
-	gr_clear(0xFF);
 
-	if(cutscene_len > 0) {
-		if(cutscene_id == -1) {
-			LGPoint animloc;
-			animloc.x = 0;
-			animloc.y = 25;
+    fix time;
+    long cur_time = SDL_GetTicks();
 
-			uchar* cpal = (uchar*)ResLock(cutscene_pals[current_cutscene][cutscene_idx]);
-			if(cpal != NULL)
-				gr_set_pal(0, 256, cpal);
+    if(is_first_frame) {
+    	is_first_frame = FALSE;
+    	next_time = cur_time;
+    	start_time = SDL_GetTicks();
 
-			cutscene_id = cutscene_idx;
-			main_anim = AnimPlayRegion(MKREF(cutscene_anims[current_cutscene] + cutscene_idx, 0), root_region, animloc, 0, NULL);
-			AnimSetNotify(main_anim, NULL, ANCODE_KILL, cutscene_anim_end);
+    	// Read the first frame
+    	AfileReadFullFrame(amovie, &movie_bitmap, &time);
+    	next_draw_time = start_time + fix_float(time) * 1000.0;
 
-			cutscene_id = cutscene_idx;
+    	// Set the initial palette
+    	gr_set_pal(0, 256, amovie->v.pal.rgb);
+    	gr_clear(0x00);
+    }
+
+    if(cur_time > next_draw_time) {
+    	// Get the palette for this frame, if any
+    	if(AfileGetFramePal(amovie, &pal)) {
+	    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
+	    }
+
+	    // Draw this frame
+	    gr_clear(0x00);
+
+	    float vscale = (float)amovie->v.height / (float)amovie->v.width;
+
+	    int offset = (320 - (amovie->v.width / 2)) / 2;
+		ss_scale_bitmap(&movie_bitmap, offset, offset / 1.25, amovie->v.width / 2, amovie->v.height / 2);
+
+		if(done_playing_movie) {
+			// Go back to the main menu
+            _new_mode = SETUP_LOOP;
+			chg_set_flg(GL_CHG_LOOP);
+
+			if(should_show_credits) {
+				journey_credits_func(FALSE);
+			}
+
+			return;
 		}
 
-		AnimRecur();
-		return;
-	}
+		// Read the next frame
+    	if(AfileReadFullFrame(amovie, &movie_bitmap, &time) == -1) {
+    		DEBUG("Done playing movie!");
+    		done_playing_movie = TRUE;
 
-	fix sint, cost;
-	fix_sincos(*tmd_ticks * 50, &sint, &cost);
-	int ymov = fix_int(fix_mul(sint, fix_make(5, 0)));
-
-	char buff[100];
-	sprintf(buff, "Cutscene #%i should go here!", current_cutscene);
-
-	switch(current_cutscene) {
-		case DEATH_CUTSCENE:
-			res_draw_text(RES_coloraliasedFont, "Game Over, Hacker.", 30, 70 - ymov);
-			break;
-		case WIN_CUTSCENE:
-			res_draw_text(RES_coloraliasedFont, "It's over. Shodan is dust.", 30, 70 - ymov);
-			break;
-		case START_CUTSCENE:
-			res_draw_text(RES_coloraliasedFont, "Welcome back to Citadel Station", 30, 70 - ymov);
-			break;
-		default:
-			res_draw_text(RES_coloraliasedFont, buff, 50, 70 - ymov);
-	}
-	
-	res_draw_text(RES_coloraliasedFont, "[ Press space to continue ]", 30, 90 - ymov);
+    		// Still want a bit of a delay before finishing
+    		next_draw_time += 100;
+    	}
+    	else {
+    		next_draw_time = start_time + fix_float(time) * 1000.0;
+    	}
+    }
 }
 
 short play_cutscene(int id, bool show_credits) {
@@ -179,28 +161,51 @@ short play_cutscene(int id, bool show_credits) {
 	_new_mode = CUTSCENE_LOOP;
 	chg_set_flg(GL_CHG_LOOP);
 
-	current_cutscene = id;
-	should_show_credits = show_credits;
-	main_anim = NULL;
+	// Set some initial variables
+	is_first_frame = TRUE;
+    done_playing_movie = FALSE;
+	movie_bitmap.bits = NULL;
 
-	cutscene_idx = 0;
-	cutscene_len = cutscene_anims_len[id];
-	cutscene_id = -1;
+	// Open the movie file
+	int cf = ResOpenFile(cutscene_files[id]);
+	if(cf <= 0)
+		return 0;
 
-	if(cutscene_len > 0) {
-		int cp = ResOpenFile("res/data/cutspal.res");
-		if(cp <= 0)
-			return 0;
+	amovie = malloc(sizeof(Afile));
+    if (AfilePrepareRes(cutscene_anims[id], amovie) < 0) {
+        WARN("%s: Cannot open Afile by id $%x", __FUNCTION__, cutscene_anims[id]);
+        free(amovie);
+        return (ERR_FREAD);
+    }
 
-		int cf = ResOpenFile(cutscene_files[id]);
-		if(cf <= 0)
-			return 0;
+    // Now start playing the audio for this movie
+    int32_t audio_length = AfileAudioLength(amovie) * MOVIE_DEFAULT_BLOCKLEN;
+    uint8_t *buffer = malloc(audio_length);
+    AfileGetAudio(amovie, buffer);
+    
+    snd_digi_parms *sdp = malloc(sizeof(snd_digi_parms));
+    sdp->vol = 128;
+    sdp->pan = 64;
+    sdp->snd_ref = 0;
 
-		MacTuneKillCurrentTheme();
-		uiHideMouse(NULL);
+    // Need to convert the movie's audio format to ours
+    // FIXME: Might want to use SDL_AudioStream to do this on the fly
+    SDL_AudioCVT cvt;
+    SDL_BuildAudioCVT(&cvt, AUDIO_U8, 1, fix_int(amovie->a.sampleRate), MIX_DEFAULT_FORMAT, 2, MIX_DEFAULT_FREQUENCY);
+    cvt.len = audio_length;  // 1024 stereo float32 sample frames.
+    cvt.buf = (Uint8 *) SDL_malloc(cvt.len * cvt.len_mult);
 
-		MacTuneLoadTheme("intro", 0);
-	}
+    SDL_memcpy(cvt.buf, buffer, audio_length); // copy our bytes to be converted
+    SDL_ConvertAudio(&cvt); // cvt.buf will have cvt.len_cvt bytes of converted data after this
+
+    // Stop current music
+	MacTuneKillCurrentTheme();
+
+	// Now play the sample
+    snd_alog_play(0x0, cvt.len_cvt, cvt.buf, sdp);
+
+    // Reset the movie reader
+    AfileReadReset(amovie);
 
 	return 1;
 }

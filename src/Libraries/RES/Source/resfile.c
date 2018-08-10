@@ -318,6 +318,8 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum, int32_t dataOffset
     // Grow table if need to
     ResExtendDesc(pDirEntry->id);
 
+    //TRACE("id %x", pDirEntry->id);
+
     // If already a resource at this id, warning
     prd = RESDESC(pDirEntry->id);
     prd2 = RESDESC2(pDirEntry->id);
