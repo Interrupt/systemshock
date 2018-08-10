@@ -828,7 +828,9 @@ int fr_send_view(void) {
 
     g3_end_frame();
 
-    //opengl_end_frame();
+    if(should_opengl_swap()) {
+        opengl_backup_view();
+    }
 
     // stereo support - closedown ??
 #ifdef STEREO_SUPPORT

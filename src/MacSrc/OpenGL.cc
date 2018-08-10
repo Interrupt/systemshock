@@ -231,6 +231,8 @@ void opengl_swap_and_restore() {
     SDL_GL_MakeCurrent(window, context);
     SDL_GL_SwapWindow(window);
 
+    opengl_context_hack();
+
     glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
     glUseProgram(textureShaderProgram);
 
@@ -261,6 +263,8 @@ void opengl_swap_and_restore() {
     glVertexAttrib1f(lightAttrib, 1.0f);
     glVertex3f(-1.0f, 1.0f, 0.0f);
     glEnd();
+
+    opengl_context_hack();
 
     // check OpenGL error
     GLenum err = glGetError();

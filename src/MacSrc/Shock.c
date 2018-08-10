@@ -318,7 +318,6 @@ void SDLDraw()
         sdlPalette->colors[255].a = 0xff;
 
 	if (should_opengl_swap()) {
-		opengl_backup_view();
 		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	}
 
