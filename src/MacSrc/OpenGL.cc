@@ -139,18 +139,15 @@ static GLuint loadShader(GLenum type, const char *filename) {
 
 int init_opengl() {
     DEBUG("Initializing OpenGL");
-    context = SDL_GL_CreateContext(window);
+
+    context = SDL_GL_GetCurrentContext();
+    if(context == NULL)
+        ERROR("No opengl context!");
 
 #ifdef _WIN32
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
 #endif
-
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_BLEND);
-    glEnable(GL_ALPHA_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.05f);
 
     GLuint vertexShader = loadShader(GL_VERTEX_SHADER, "main.vert");
     GLuint textureShader = loadShader(GL_FRAGMENT_SHADER, "texture.frag");
@@ -168,6 +165,8 @@ int init_opengl() {
 
     glGenTextures(1, &dynTexture);
     glGenTextures(1, &viewBackupTexture);
+
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     return 0;
 }
@@ -229,11 +228,7 @@ void opengl_swap_and_restore() {
     // restore the view backup (without HUD overlay) for incremental
     // updates in the subsequent frame
     SDL_GL_MakeCurrent(window, context);
-    SDL_GL_SwapWindow(window);
 
-    opengl_context_hack();
-
-    glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
     glUseProgram(textureShaderProgram);
 
     GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
@@ -264,7 +259,7 @@ void opengl_swap_and_restore() {
     glVertex3f(-1.0f, 1.0f, 0.0f);
     glEnd();
 
-    opengl_context_hack();
+    glUseProgram(0);
 
     // check OpenGL error
     GLenum err = glGetError();
@@ -311,6 +306,8 @@ void opengl_set_viewport(int x, int y, int width, int height) {
 
 static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
     SDL_GL_MakeCurrent(window, context);
+
+    glPixelStorei(GL_UNPACK_ROW_LENGTH,bm->row);
 
     if(texturesByBitsPtr.size() < MAX_CACHED_TEXTURES) {
         // We have enough room, generate the new texture
@@ -461,6 +458,7 @@ static void set_texture(grs_bitmap *bm) {
     t->lastDrawTime = *tmd_ticks;
 
     if(isDirty) {
+        glPixelStorei(GL_UNPACK_ROW_LENGTH,bm->row);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, t->converted->pixels);   
     }
 }
@@ -703,12 +701,29 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
     return CLIP_NONE;
 }
 
-void opengl_context_hack() {
-    #ifdef __APPLE__
-    // This somehow fixes UI elements drawing under OpenGL elements
-    // Something to do with the glTexImage2D call happening here
-    set_color(0, 0, 0, 255);
-    #endif
+void opengl_start_frame() {
+    // Set up for level rendering
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glEnable(GL_ALPHA_TEST);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glAlphaFunc(GL_GEQUAL, 0.05f);
+    glEnable(GL_TEXTURE_2D);
+}
+
+void opengl_end_frame() {
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_BLEND);
+
+    // Reset back to immediate mode
+    glLoadIdentity();
+    glUseProgram(0);
+
+    // Reset the viewport back to fullscreen
+    int w,h;
+    SDL_GetWindowSize(window, &w, &h);
+    glViewport(0, 0, w, h);
 }
 
 #endif // USE_OPENGL
