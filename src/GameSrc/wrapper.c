@@ -1894,7 +1894,7 @@ void screenmode_screen_init(void) {
     int i;
     char *keys;
 
-    if (wrapper_screenmode_hack) {
+    if (wrapper_screenmode_hack && !gShockPrefs.doUseOpenGL) {
         uiHideMouse(NULL);
         render_run();
         uiShowMouse(NULL);
