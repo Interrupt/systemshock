@@ -129,7 +129,6 @@ void MacTuneUpdateVolume(void) {
 	extern uchar curr_vol_lev;
 	float music_vol_mod = 0.8f;
 	Mix_VolumeMusic(((curr_vol_lev * curr_vol_lev * 128 * music_vol_mod) / 10000) );
-	DEBUG("%s: music volume is %d, slider at %d", __FUNCTION__, Mix_VolumeMusic(-1), curr_vol_lev);
 }
 
 int MacTuneLoadTheme(char* theme_base, int themeID) {
