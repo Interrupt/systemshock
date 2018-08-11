@@ -32,6 +32,7 @@ extern "C" {
     #include "Prefs.h"
     #include "Shock.h"
     #include "faketime.h"
+    #include "render.h"
 
     extern SDL_Renderer *renderer;
     extern SDL_Palette *sdlPalette;
@@ -68,6 +69,9 @@ static int phys_offset_y;
 
 static int render_width;
 static int render_height;
+
+static bool palette_dirty = false;
+static bool blend_enabled = false;
 
 // View matrix; Z offset experimentally tweaked for near-perfect alignment
 // between GL projection and software projection (sprite screen coordinates)
@@ -200,6 +204,31 @@ void opengl_resize(int width, int height) {
     // allocate a buffer for the framebuffer backup
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, phys_width, phys_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+    INFO("OpenGL Resize %i %i", width, height);
+
+    // Redraw the background in the new resolution
+    extern uchar wrapper_screenmode_hack;
+    if(wrapper_screenmode_hack) {
+        render_run();
+        wrapper_screenmode_hack = FALSE;
+    }
+}
+
+void opengl_change_palette() {
+    palette_dirty = TRUE;
+}
+
+static void set_blend_mode(bool enabled) {
+    if(blend_enabled != enabled) {
+        blend_enabled = enabled;
+        if(blend_enabled) {
+            glEnable(GL_BLEND);
+        }
+        else {
+            glDisable(GL_BLEND);
+        }
+    }
 }
 
 bool use_opengl() {
@@ -234,6 +263,8 @@ void opengl_swap_and_restore() {
     SDL_GL_SwapWindow(window);
 
     glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
+    set_blend_mode(false);
+
     glUseProgram(textureShaderProgram);
 
     GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
@@ -428,7 +459,7 @@ static void set_texture(grs_bitmap *bm) {
     bool isDirty = false;
 
     if(t->locked) {
-        if(t->lastDrawTime != *tmd_ticks) {
+        if(palette_dirty && t->lastDrawTime != *tmd_ticks) {
             // Locked surfaces only need to update their palettes once per frame
 
             SDL_Palette *palette = createPalette(bm->flags & BMF_TRANS);
@@ -495,6 +526,8 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     }
 
     SDL_GL_MakeCurrent(window, context);
+    set_blend_mode(bm->flags & BMF_TRANS);
+
     glUseProgram(textureShaderProgram);
 
     GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
@@ -539,6 +572,8 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     }
 
     SDL_GL_MakeCurrent(window, context);
+    set_blend_mode(bm->flags & BMF_TRANS);
+
     glUseProgram(textureShaderProgram);
 
     GLint uniView = glGetUniformLocation(textureShaderProgram, "view");

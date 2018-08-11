@@ -53,6 +53,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools.h"
 #include "wares.h"
 
+#include "OpenGl.h"
+
 #include "game_screen.h" // was screen.h?
 #include "Shock.h"
 
