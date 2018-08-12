@@ -453,7 +453,7 @@ static void set_texture(grs_bitmap *bm) {
     bool isDirty = false;
 
     if(t->locked) {
-        if(palette_dirty && lastDrawTime != *tmd_ticks) {
+        if(palette_dirty && t->lastDrawTime != *tmd_ticks) {
             // Locked surfaces only need to update their palettes once per frame
 
             SDL_Palette *palette = createPalette(bm->flags & BMF_TRANS);
