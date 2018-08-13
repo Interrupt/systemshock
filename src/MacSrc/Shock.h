@@ -179,6 +179,7 @@ extern short				gBarkVref;
 
 extern grs_screen  *cit_screen;
 extern SDL_Window* window;
+extern SDL_Renderer *renderer;
 
 
 /*#else

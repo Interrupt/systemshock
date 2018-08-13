@@ -743,10 +743,13 @@ void opengl_end_frame() {
     glLoadIdentity();
     glUseProgram(0);
 
-    // Reset the viewport back to fullscreen
-    int w,h;
-    SDL_GetWindowSize(window, &w, &h);
-    glViewport(0, 0, w, h);
+    // Reset the viewport back to fullscreen, preserving aspect ratio
+    float scalex, scaley;
+    SDL_RenderGetScale(renderer, &scalex, &scaley);
+
+    SDL_Rect wr;
+    SDL_RenderGetViewport(renderer, &wr);
+    glViewport(wr.x * scalex, wr.y * scaley, wr.w * scalex, wr.h * scaley);
 
     palette_dirty = false;
 }
