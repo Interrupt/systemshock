@@ -228,10 +228,6 @@ static void set_blend_mode(bool enabled) {
             glDisable(GL_BLEND);
         }
     }
-
-    glDisable(GL_BLEND);
-    glAlphaFunc(GL_GEQUAL, 1.0f);
-    //glDisable(GL_ALPHA_TEST);
 }
 
 bool use_opengl() {
