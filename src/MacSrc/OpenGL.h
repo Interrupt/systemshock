@@ -10,7 +10,7 @@ extern "C" {
 #ifdef USE_OPENGL
 
 int init_opengl();
-void opengl_cache_texture(int idx, int size, grs_bitmap *bm);
+void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm);
 void opengl_clear_texture_cache();
 
 bool use_opengl();
@@ -34,7 +34,7 @@ void opengl_set_stencil(int v);
 #else
 
 static int init_opengl() { return 0; }
-static void opengl_cache_texture(int idx, int size, grs_bitmap *bm) {}
+static void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm) {}
 static void opengl_clear_texture_cache() {};
 
 static bool use_opengl() { return false; }

@@ -81,6 +81,7 @@ static int render_height;
 
 static bool palette_dirty = false;
 static bool blend_enabled = true;
+static GLuint bound_texture = -1;
 
 // View matrix; Z offset experimentally tweaked for near-perfect alignment
 // between GL projection and software projection (sprite screen coordinates)
@@ -202,6 +203,25 @@ int init_opengl() {
     return 0;
 }
 
+static void set_blend_mode(bool enabled) {
+    if(blend_enabled != enabled) {
+        blend_enabled = enabled;
+        if(blend_enabled) {
+            glEnable(GL_BLEND);
+        }
+        else {
+            glDisable(GL_BLEND);
+        }
+    }
+}
+
+static void bind_texture(GLuint tex) {
+    if(bound_texture != tex) {
+        bound_texture = tex;
+        glBindTexture(GL_TEXTURE_2D, bound_texture);
+    }
+}
+
 void opengl_resize(int width, int height) {
     SDL_GL_MakeCurrent(window, context);
 
@@ -228,7 +248,7 @@ void opengl_resize(int width, int height) {
     phys_offset_y = border_y / 2;
 
     // allocate a buffer for the framebuffer backup
-    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+    bind_texture(viewBackupTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, phys_width, phys_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
     INFO("OpenGL Resize %i %i %i %i", width, height, phys_width, phys_height);
@@ -243,18 +263,6 @@ void opengl_resize(int width, int height) {
 
 void opengl_change_palette() {
     palette_dirty = TRUE;
-}
-
-static void set_blend_mode(bool enabled) {
-    if(blend_enabled != enabled) {
-        blend_enabled = enabled;
-        if(blend_enabled) {
-            glEnable(GL_BLEND);
-        }
-        else {
-            glDisable(GL_BLEND);
-        }
-    }
 }
 
 bool use_opengl() {
@@ -276,7 +284,7 @@ void opengl_backup_view() {
     SDL_GL_MakeCurrent(window, context);
 
     glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
-    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+    bind_texture(viewBackupTexture);
     glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, phys_offset_x, phys_offset_y, phys_width, phys_height);
 
     glFlush();
@@ -301,7 +309,7 @@ void opengl_swap_and_restore() {
     glUniformMatrix4fv(textureShaderProgram.uniView, 1, false, IdentityMatrix);
     glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, IdentityMatrix);
 
-    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+    bind_texture(viewBackupTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -373,7 +381,7 @@ static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
     if(texturesByBitsPtr.size() < MAX_CACHED_TEXTURES) {
         // We have enough room, generate the new texture
         glGenTextures(1, &toCache.texture);
-        glBindTexture(GL_TEXTURE_2D, toCache.texture);
+        bind_texture(toCache.texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, toCache.converted->pixels);
 
         texturesByBitsPtr[bm->bits] = toCache;
@@ -381,7 +389,7 @@ static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
     }
 
     // Not enough room, just use the dynTexture
-    glBindTexture(GL_TEXTURE_2D, dynTexture);
+    bind_texture(dynTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, toCache.converted->pixels);
 
     return false;
@@ -467,11 +475,17 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
     }
 }
 
-void opengl_cache_texture(int idx, int size, grs_bitmap *bm) {
+void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm) {
     if (idx < NUM_LOADED_TEXTURES) {
         CachedTexture* t = opengl_get_texture(bm);
-        if(t == NULL)
+        if(t == NULL) {
             convert_texture(bm, true);
+        }
+        else {
+            // Need to refresh this texture
+            t->lastDrawTime = -1;
+            palette_dirty = true;
+        }
     }
 }
 
@@ -515,7 +529,7 @@ static void set_texture(grs_bitmap *bm) {
         isDirty = true;
     }
 
-    glBindTexture(GL_TEXTURE_2D, t->texture);
+    bind_texture(t->texture);
     t->lastDrawTime = *tmd_ticks;
 
     if(isDirty) {
@@ -641,7 +655,7 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
 
 static void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
     const uint8_t pixel[] = { red, green, blue, alpha };
-    glBindTexture(GL_TEXTURE_2D, dynTexture);
+    bind_texture(dynTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
 
     set_blend_mode(alpha < 255);
