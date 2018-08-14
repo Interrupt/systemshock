@@ -78,7 +78,7 @@ LGRect *rendrect;
 extern fauxrend_context *_fr;
 ubyte mouselocked = 0;
 
-#define NUM_STARS 500
+#define NUM_STARS 1000
 
 sts_vec star_vec[NUM_STARS];
 uchar star_col[NUM_STARS];

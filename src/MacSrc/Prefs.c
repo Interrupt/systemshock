@@ -63,6 +63,8 @@ static const char *PREF_ALOG_VOL     = "alog-volume";
 static const char *PREF_VIDEOMODE    = "video-mode";
 static const char *PREF_HALFRES      = "half-resoultion";
 static const char *PREF_DETAIL       = "detail";
+static const char *PREF_USE_OPENGL   = "use-opengl";
+static const char *PREF_LIN_SCALING  = "linear-scaling";
 
 //--------------------------------------------------------------------
 //	  Initialize the preferences to their default settings.
@@ -87,6 +89,8 @@ void SetDefaultPrefs(void) {
     gShockPrefs.doDetail = 3;           // Max detail.
     gShockPrefs.doGamma = 29;           // Default gamma (29 out of 100).
     gShockPrefs.doUseQD = false;
+    gShockPrefs.doUseOpenGL = true;
+    gShockPrefs.doLinearScaling = false;
 
     SetShockGlobals();
 }
@@ -162,6 +166,10 @@ OSErr LoadPrefs(void) {
             int detail = atoi(value);
             if (detail >= 0 && detail <= 3)
                 gShockPrefs.doDetail = detail;
+        } else if (strcasecmp(key, PREF_USE_OPENGL) == 0) {
+            gShockPrefs.doUseOpenGL = is_true(value);
+        } else if (strcasecmp(key, PREF_LIN_SCALING) == 0) {
+            gShockPrefs.doLinearScaling = is_true(value);
         }
     }
 
@@ -188,6 +196,8 @@ OSErr SavePrefs(void) {
     fprintf(f, "%s = %d\n", PREF_VIDEOMODE, mode_id);
     fprintf(f, "%s = %s\n", PREF_HALFRES, DoubleSize ? "yes" : "no");
     fprintf(f, "%s = %d\n", PREF_DETAIL, _fr_global_detail);
+    fprintf(f, "%s = %s\n", PREF_USE_OPENGL, gShockPrefs.doUseOpenGL ? "yes" : "no");
+    fprintf(f, "%s = %s\n", PREF_LIN_SCALING, gShockPrefs.doLinearScaling ? "yes" : "no");
     fclose(f);
 
     return 0;

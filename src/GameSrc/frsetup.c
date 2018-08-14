@@ -142,6 +142,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <i6dvideo.h>
 #endif
 
+#include "OpenGL.h"
+
 // Internal Prototypes
 void fr_tfunc_grab_start(void);
 void fr_set_default_ptrs(void);
@@ -644,6 +646,10 @@ int fr_start_view(void) {
     uchar old_cam_type;
     int detail;
 
+    if(should_opengl_swap()) {
+        opengl_start_frame();
+    }
+
     // check detail for canvas sizing
     gr_set_canvas(&_fr->draw_canvas);
     if (_fr_curflags & FR_PICKUPM_MASK) {
@@ -673,7 +679,14 @@ int fr_start_view(void) {
         detail = _fr_global_detail;
     else
         detail = _fr->detail;
-    if (detail != 0) {
+    if (use_opengl()) {
+        _fr_per_func = _fr_floor_func = _fr_wall_func = opengl_draw_tmap;
+        _fr_lit_per_func = _fr_lit_floor_func = _fr_lit_wall_func = opengl_light_tmap;
+        extern int (*g3_tmap_func)(int n, g3s_phandle *vp, grs_bitmap *bm);
+        g3_tmap_func = opengl_light_tmap;
+
+        opengl_set_viewport(_fr->xtop, _fr->ytop, _fr->xwid, _fr->ywid);
+    } else if (detail != 0) {
         /* check viewer orientation.  Use wall/floor/full perspective texture maps accordingly. */
         _fr_lit_per_func = g3_light_tmap;
         _fr_per_func = g3_draw_tmap;
@@ -693,6 +706,7 @@ int fr_start_view(void) {
             _fr_lit_wall_func = g3_light_tmap;
             _fr_wall_func = g3_draw_tmap;
         }
+        g3_reset_tmaps();
     } else {
         /* Use linear texture maps unless 1d wall applicable. */
         if ((((viewer_orientation.bank + (FIXANG_EPS / 2)) & FIXANG_MASK) < FIXANG_EPS) &&
@@ -707,6 +721,7 @@ int fr_start_view(void) {
         _fr_floor_func = g3_draw_lmap;
         _fr_lit_per_func = g3_light_lmap;
         _fr_per_func = g3_draw_lmap;
+        g3_set_tmaps_linear();
     }
 
 #ifdef _FR_PIXPROF
@@ -809,13 +824,17 @@ int fr_send_view(void) {
     // no stars in this scene it simply returns
     // spin it, spin it more when reactor blown
     // rotation every 20 minutes, every 1 minute after explosion
+    // with OpenGL, the starts have already been rendered before everything else
 
     g3_start_object_angles_y(&zvec, QUESTBIT_GET(0x14) ? player_struct.game_time * 3 : player_struct.game_time / 5);
-
     star_render();
     g3_end_object();
 
     g3_end_frame();
+
+    if(should_opengl_swap()) {
+        opengl_end_frame();
+    }
 
     // stereo support - closedown ??
 #ifdef STEREO_SUPPORT
@@ -891,5 +910,6 @@ int fr_send_view(void) {
         (*fr_mouse_show)();
     } else
         gr_set_canvas(grd_screen_canvas);
+
     _fr_ret;
 }

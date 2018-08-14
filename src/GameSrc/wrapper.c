@@ -351,6 +351,24 @@ uchar fv;
 #define widget_x(c, t, m)  ((m) * ((c) + 1) + widget_width(t, m) * (c))
 #endif
 
+// override get_temp_string() to support hard-coded custom strings without
+// providing an actual resource file
+
+#define REF_STR_Renderer 0x10000000
+#define REF_STR_Software 0x10000001
+#define REF_STR_OpenGL   0x10000002
+
+static char *_get_temp_string(int num) {
+    switch (num) {
+        case REF_STR_Renderer: return "Renderer";
+        case REF_STR_Software: return "Software";
+        case REF_STR_OpenGL:   return "OpenGL";
+        default: return get_temp_string(num);
+    }
+}
+
+#define get_temp_string _get_temp_string
+
 //#ifdef NOT_YET //
 
 void draw_button(uchar butid) {
@@ -1586,6 +1604,17 @@ void center_joy_pushbutton_func(uchar butid) {
     }
 }
 
+static void renderer_dealfunc(bool use_opengl) {
+    uiHideMouse(NULL);
+    render_run();
+    if (full_game_3d) {
+        // update stored background bitmap and redraw menu
+        ss_get_bitmap(&inv_view360_canvas.bm, GAME_MESSAGE_X, GAME_MESSAGE_Y);
+        opanel_redraw(FALSE);
+    }
+    uiShowMouse(NULL);
+}
+
 void detail_dealfunc(uchar det) {
     extern errtype change_detail_level(byte new_level);
 
@@ -1759,6 +1788,14 @@ void video_screen_init(void) {
 
     i = 0;
 
+#ifdef USE_OPENGL
+    standard_button_rect(&r, i, 2, 2, 2);
+    multi_init(i, 'g', REF_STR_Renderer, REF_STR_Software, ID_NULL,
+               sizeof(gShockPrefs.doUseOpenGL), &gShockPrefs.doUseOpenGL, 2, renderer_dealfunc, &r);
+
+    i++;
+#endif
+
 #ifdef SVGA_SUPPORT
     standard_button_rect(&r, i, 2, 2, 2);
     pushbutton_init(SCREENMODE_BUTTON, keys[0], REF_STR_VideoText, wrapper_pushbutton_func, &r);
@@ -1857,7 +1894,7 @@ void screenmode_screen_init(void) {
     int i;
     char *keys;
 
-    if (wrapper_screenmode_hack) {
+    if (wrapper_screenmode_hack && !gShockPrefs.doUseOpenGL) {
         uiHideMouse(NULL);
         render_run();
         uiShowMouse(NULL);

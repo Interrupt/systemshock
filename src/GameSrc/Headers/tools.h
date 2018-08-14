@@ -88,7 +88,7 @@ errtype message_box(char *box_text);
 
 // Writes a message to the info LGRegion
 errtype string_message_info(int strnum);
-errtype message_info(char *info_text);
+errtype message_info(const char *info_text);
 errtype message_clear_check();
 
 // Spit up a box asking for confirmation.  Returns true or false, accordingly.

@@ -239,7 +239,7 @@ void screen_start() {
     // A rather strange function for a Mac program, but we'll keep it.
     change_svga_screen_mode();
 
-    gr_clear(0xFF);
+    gr_clear(0x00);
     status_bio_set(GAMESCR_BIO);
     screen_draw();
     // KLC   uiShowMouse(NULL);

@@ -108,6 +108,8 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 
 #endif // NOT_YET
 
+#include "OpenGL.h"
+
 #define CHECK_FOR_A_PACKET
 
 #ifdef SVGA_SUPPORT
@@ -1210,6 +1212,11 @@ uchar MacHelpFunc(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
+uchar toggle_opengl_func(short keycode, ulong context, void *data) {
+    toggle_opengl();
+    return TRUE;
+}
+
 void init_input(void) {
     extern void init_motion_polling();
     int i = 0;
@@ -1378,6 +1385,7 @@ void init_input(void) {
     hotkey_add(CONTROL('H'), DEMO_CONTEXT, toggle_olh_func, NULL);
     hotkey_add(ALT('o'), DEMO_CONTEXT, olh_overlay_func, &olh_overlay_on);
     hotkey_add(ALT('O'), DEMO_CONTEXT, olh_overlay_func, &olh_overlay_on);
+    hotkey_add(CONTROL('g'), EVERY_CONTEXT, toggle_opengl_func, NULL);
     /*
        // take these ifdefs out if memory bashing on shippable
     //   hotkey_add(ALT(CONTROL(KEY_F4)),EVERY_CONTEXT,texture_annihilate_func,NULL);

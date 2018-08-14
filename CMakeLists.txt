@@ -2,6 +2,8 @@ project(SystemShock)
 
 cmake_minimum_required(VERSION 3.1)
 
+set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
+
 # Required for stdbool.h
 set(CMAKE_C_STANDARD 99)
 
@@ -27,6 +29,13 @@ if(ENABLE_DEBUG_BLIT)
 endif()
 
 add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
+
+# Find OpenGL
+find_package(OpenGL)
+if(OPENGL_FOUND)
+	message(STATUS "OpenGL found")
+	add_definitions(-DUSE_OPENGL)
+ENDIF(OPENGL_FOUND)
 
 # Find SDL, trying the easy way and then the hard way
 find_package(SDL2)
@@ -67,6 +76,7 @@ set(MAC_SRC
 	src/MacSrc/MacTune.c
 	src/MacSrc/SDLSound.c
 	src/MacSrc/Modding.c
+	src/MacSrc/OpenGL.cc
 )
 
 set(GAME_SRC
@@ -323,7 +333,14 @@ target_link_libraries(systemshock
 	FIXPP_LIB
 	${SDL2_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
+	${OPENGL_LIBRARIES}
 )
+
+if (WIN32)
+	include_directories(${CMAKE_SOURCE_DIR}/build_ext/glew-2.1.0/include)
+	target_link_libraries(systemshock ${CMAKE_SOURCE_DIR}/build_ext/glew-2.1.0/lib/libglew32.dll.a)
+endif(WIN32)
+
 
 # Turn on address sanitizing if wanted
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers/cmake" ${CMAKE_MODULE_PATH})
