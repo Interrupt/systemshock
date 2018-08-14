@@ -38,6 +38,7 @@ typedef struct {
     Boolean goPopupLabels;
     Boolean goOnScreenHelp;
     short goLanguage;           // 0 - English, 1 - French, 2 - German
+    Boolean goCaptureMouse;
 
     // Sound Options
     Boolean soBackMusic;

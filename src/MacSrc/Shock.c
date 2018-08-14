@@ -338,5 +338,5 @@ void SDLDraw()
 
 void CaptureMouse(bool capture)
 {
-	SDL_SetWindowGrab(window, capture);
+	SDL_SetWindowGrab(window, capture && gShockPrefs.goCaptureMouse);
 }
