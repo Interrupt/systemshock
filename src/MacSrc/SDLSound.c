@@ -37,7 +37,8 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 		return ERR_NOEFFECT;
 	}
 
-	int channel = Mix_PlayChannel(-1, sample, 0);
+	int loops = dprm->loops > 0 ? dprm->loops - 1 : -1;
+	int channel = Mix_PlayChannel(-1, sample, loops);
 	if (channel < 0) {
 		DEBUG("%s: Failed to play sample", __FUNCTION__);
 		Mix_FreeChunk(sample);

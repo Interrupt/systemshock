@@ -181,7 +181,7 @@ uchar set_sample_pan_gain(snd_digi_parms *sdp) {
         for (i = 0; i < NUM_HEIGHT_SEMAPHORS; i++) {
             h = h_sems[i];
             if ((h.x == (x >> 8)) && (h.y == (y >> 8)) && (h.inuse == 1)) {
-                h.inuse--;
+                h_sems[i].inuse--;
                 return (TRUE);
             }
         }
