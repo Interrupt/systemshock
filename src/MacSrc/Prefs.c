@@ -57,6 +57,7 @@ extern uchar curr_alog_vol;
 static const char *PREFS_FILENAME = "prefs.txt";
 
 static const char *PREF_LANGUAGE     = "language";
+static const char *PREF_CAPTUREMOUSE = "capture-mouse";
 static const char *PREF_MUSIC_VOL    = "music-volume";
 static const char *PREF_SFX_VOL      = "sfx-volume";
 static const char *PREF_ALOG_VOL     = "alog-volume";
@@ -75,6 +76,7 @@ void SetDefaultPrefs(void) {
     gShockPrefs.goPopupLabels = true;
     gShockPrefs.goOnScreenHelp = true;
     gShockPrefs.goLanguage = 0;         // English
+    gShockPrefs.goCaptureMouse = true;
 
     gShockPrefs.soBackMusic = true;
     gShockPrefs.soSoundFX = true;
@@ -136,6 +138,8 @@ OSErr LoadPrefs(void) {
             int lang = atoi(value);
             if (lang >= 0 && lang <= 2)
                 gShockPrefs.goLanguage = lang;
+        } else if (strcasecmp(key, PREF_CAPTUREMOUSE) == 0) {
+            gShockPrefs.goCaptureMouse = is_true(value);
         } else if (strcasecmp(key, PREF_MUSIC_VOL) == 0) {
             int vol = atoi(value);
             if (vol >= 0 && vol <= 100) {
@@ -182,6 +186,7 @@ OSErr SavePrefs(void) {
     }
 
     fprintf(f, "%s = %d\n", PREF_LANGUAGE, which_lang);
+    fprintf(f, "%s = %s\n", PREF_CAPTUREMOUSE, gShockPrefs.goCaptureMouse ? "yes" : "no");
     fprintf(f, "%s = %d\n", PREF_MUSIC_VOL, curr_vol_lev);
     fprintf(f, "%s = %d\n", PREF_SFX_VOL, sfx_on ? curr_sfx_vol : 0);
     fprintf(f, "%s = %d\n", PREF_ALOG_VOL, curr_alog_vol);
