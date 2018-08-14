@@ -346,6 +346,8 @@ void opengl_set_viewport(int x, int y, int width, int height) {
 static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
     SDL_GL_MakeCurrent(window, context);
 
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, bm->row);
+
     if(texturesByBitsPtr.size() < MAX_CACHED_TEXTURES) {
         // We have enough room, generate the new texture
         glGenTextures(1, &toCache.texture);
@@ -495,6 +497,7 @@ static void set_texture(grs_bitmap *bm) {
     t->lastDrawTime = *tmd_ticks;
 
     if(isDirty) {
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, bm->row);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, t->converted->pixels);   
     }
 }
