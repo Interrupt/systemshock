@@ -173,6 +173,10 @@ int init_opengl() {
     glGenTextures(1, &dynTexture);
     glGenTextures(1, &viewBackupTexture);
 
+    int width, height;
+    SDL_GetWindowSize(window, &width, &height);
+    opengl_resize(width, height);
+
     return 0;
 }
 
@@ -205,7 +209,7 @@ void opengl_resize(int width, int height) {
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, phys_width, phys_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
-    INFO("OpenGL Resize %i %i", width, height);
+    INFO("OpenGL Resize %i %i %i %i", width, height, phys_width, phys_height);
 
     // Redraw the background in the new resolution
     extern uchar wrapper_screenmode_hack;
