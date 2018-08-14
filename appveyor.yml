@@ -40,7 +40,7 @@ after_build:
   - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
   - copy build_ext\glew-2.1.0\lib\glew32.dll .
   - copy readme\readme-windows.txt readme.txt
-  - 7z a systemshock-windows.zip systemshock.exe *.dll readme.txt
+  - 7z a systemshock-windows.zip systemshock.exe *.dll readme.txt shaders/
 
 artifacts:
   - path: systemshock-windows.zip
