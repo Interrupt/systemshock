@@ -108,7 +108,7 @@ void mac_set_mode(void)
 
     // Might be in fullscreen OpenGl mode, try to fix it up if so
     SDL_GetWindowSize(window, &width, &height);
-    if(gScreenWide != width && gScreenHigh != height) {
+    if(gScreenWide != width || gScreenHigh != height) {
         opengl_resize(width, height);
     }
  }
