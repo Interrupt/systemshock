@@ -625,6 +625,8 @@ static void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
     const uint8_t pixel[] = { red, green, blue, alpha };
     glBindTexture(GL_TEXTURE_2D, dynTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+
+    set_blend_mode(alpha < 255);
 }
 
 int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
