@@ -249,7 +249,19 @@ static void BindFrameBuffer(FrameBuffer *buffer) {
 
 int init_opengl() {
     DEBUG("Initializing OpenGL");
+
+    // Are we running in OpenGL mode?
+    if(SDL_GL_GetCurrentContext() == NULL) {
+        ERROR("No OpenGL context! Falling back to Software mode.");
+        return 1;
+    }
+
+    // Can we create the world rendering context?
     context = SDL_GL_CreateContext(window);
+    if(context == NULL) {
+        ERROR("Could not create an OpenGL context! Falling back to Software mode.");
+        return 1;
+    }
 
 #ifdef _WIN32
     glewExperimental = GL_TRUE;
@@ -315,15 +327,19 @@ void opengl_change_palette() {
     palette_dirty = TRUE;
 }
 
+bool can_use_opengl() {
+    return context != NULL;
+}
+
 bool use_opengl() {
-    return gShockPrefs.doUseOpenGL &&
+    return gShockPrefs.doUseOpenGL && can_use_opengl() &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber &&
            !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 bool should_opengl_swap() {
-    return gShockPrefs.doUseOpenGL &&
+    return gShockPrefs.doUseOpenGL && can_use_opengl() &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber;
 }

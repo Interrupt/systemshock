@@ -56,6 +56,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "popups.h"
 #include "Prefs.h"
 
+#include "OpenGL.h"
+
 /*
 #include <olhext.h>
 #include <inp6d.h>
@@ -1789,11 +1791,13 @@ void video_screen_init(void) {
     i = 0;
 
 #ifdef USE_OPENGL
-    standard_button_rect(&r, i, 2, 2, 2);
-    multi_init(i, 'g', REF_STR_Renderer, REF_STR_Software, ID_NULL,
-               sizeof(gShockPrefs.doUseOpenGL), &gShockPrefs.doUseOpenGL, 2, renderer_dealfunc, &r);
+    if(can_use_opengl()) {
+        standard_button_rect(&r, i, 2, 2, 2);
+        multi_init(i, 'g', REF_STR_Renderer, REF_STR_Software, ID_NULL,
+                   sizeof(gShockPrefs.doUseOpenGL), &gShockPrefs.doUseOpenGL, 2, renderer_dealfunc, &r);
 
-    i++;
+        i++;
+    }
 #endif
 
 #ifdef SVGA_SUPPORT

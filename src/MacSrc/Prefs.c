@@ -89,7 +89,7 @@ void SetDefaultPrefs(void) {
     gShockPrefs.doDetail = 3;           // Max detail.
     gShockPrefs.doGamma = 29;           // Default gamma (29 out of 100).
     gShockPrefs.doUseQD = false;
-    gShockPrefs.doUseOpenGL = true;
+    gShockPrefs.doUseOpenGL = false;
     gShockPrefs.doLinearScaling = false;
 
     SetShockGlobals();
