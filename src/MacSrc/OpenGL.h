@@ -13,6 +13,7 @@ int init_opengl();
 void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm);
 void opengl_clear_texture_cache();
 
+bool can_use_opengl();
 bool use_opengl();
 void toggle_opengl();
 void opengl_resize(int width, int height);
@@ -38,6 +39,7 @@ static int init_opengl() { return 0; }
 static void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm) {}
 static void opengl_clear_texture_cache() {};
 
+static bool can_use_opengl() { return false; }
 static bool use_opengl() { return false; }
 static void toggle_opengl() {}
 static void opengl_resize(int width, int height) {}
