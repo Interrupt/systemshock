@@ -17,7 +17,6 @@ bool use_opengl();
 void toggle_opengl();
 void opengl_resize(int width, int height);
 bool should_opengl_swap();
-void opengl_backup_view();
 void opengl_swap_and_restore();
 void opengl_change_palette();
 
@@ -30,6 +29,8 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p);
 void opengl_begin_stars();
 void opengl_end_stars();
 void opengl_set_stencil(int v);
+void opengl_start_frame();
+void opengl_end_frame();
 
 #else
 
@@ -41,7 +42,6 @@ static bool use_opengl() { return false; }
 static void toggle_opengl() {}
 static void opengl_resize(int width, int height) {}
 static bool should_opengl_swap() { return false; }
-static void opengl_backup_view() {}
 static void opengl_swap_and_restore() {}
 static void opengl_change_palette() {}
 
@@ -54,6 +54,8 @@ static int opengl_draw_star(long c, int n_verts, g3s_phandle *p) { return 0; }
 static void opengl_begin_stars() {}
 static void opengl_end_stars() {}
 static void opengl_set_stencil(int v) {}
+static void opengl_start_frame() {}
+static void opengl_end_frame() {}
 
 #endif
 
