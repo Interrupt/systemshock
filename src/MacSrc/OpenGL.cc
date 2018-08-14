@@ -253,7 +253,8 @@ void opengl_backup_view() {
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
     glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, phys_offset_x, phys_offset_y, phys_width, phys_height);
 
-    glFinish();
+    glFlush();
+    palette_dirty = FALSE;
 }
 
 void opengl_swap_and_restore() {
@@ -295,7 +296,7 @@ void opengl_swap_and_restore() {
     glVertex3f(-1.0f, 1.0f, 0.0f);
     glEnd();
 
-    glFinish();
+    glFlush();
 
     // check OpenGL error
     GLenum err = glGetError();

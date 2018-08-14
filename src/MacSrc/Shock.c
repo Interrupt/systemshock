@@ -310,7 +310,8 @@ void SetSDLPalette(int index, int count, uchar *pal)
 	SDL_SetSurfacePalette(drawSurface, sdlPalette);
 	SDL_SetSurfacePalette(offscreenDrawSurface, sdlPalette);
 
-	opengl_change_palette();
+	if(should_opengl_swap())
+		opengl_change_palette();
 }
 
 void SDLDraw()
