@@ -852,9 +852,6 @@ int fr_send_view(void) {
     }
 #endif
 
-    if(should_opengl_swap())
-        opengl_context_hack();
-
     // If we're rendering just the quick mono bitmap (for clicking on items, on-line help, etc),
     // then return here.
     if (_fr_curflags & FR_PICKUPM_MASK) {
@@ -909,9 +906,6 @@ int fr_send_view(void) {
         (*fr_mouse_show)();
     } else
         gr_set_canvas(grd_screen_canvas);
-
-    if(should_opengl_swap())
-        opengl_context_hack();
 
     _fr_ret;
 }

@@ -223,6 +223,8 @@ void opengl_backup_view() {
     glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
     glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, phys_offset_x, phys_offset_y, phys_width, phys_height);
+
+    glFinish();
 }
 
 void opengl_swap_and_restore() {
@@ -230,8 +232,6 @@ void opengl_swap_and_restore() {
     // updates in the subsequent frame
     SDL_GL_MakeCurrent(window, context);
     SDL_GL_SwapWindow(window);
-
-    opengl_context_hack();
 
     glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
     glUseProgram(textureShaderProgram);
@@ -264,7 +264,7 @@ void opengl_swap_and_restore() {
     glVertex3f(-1.0f, 1.0f, 0.0f);
     glEnd();
 
-    opengl_context_hack();
+    glFinish();
 
     // check OpenGL error
     GLenum err = glGetError();
@@ -701,11 +701,6 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
     glEnd();
 
     return CLIP_NONE;
-}
-
-void opengl_context_hack() {
-    // Finish these calls before moving on
-    glFinish();
 }
 
 #endif // USE_OPENGL
