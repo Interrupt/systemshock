@@ -722,9 +722,21 @@ void opengl_begin_stars() {
     // Only draw stars where the stencil value is 0xFF (Sky!)
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     glStencilFunc(GL_EQUAL, 0xFF, ~0);
+
+    set_color(200, 200, 200, 255);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glBegin(GL_POINTS);
 }
 
 void opengl_end_stars() {
+    glEnd();
+
     // Turn off the stencil test
     opengl_set_stencil(0x00);
 }
@@ -737,20 +749,9 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
 
     g3s_point& vertex = *(p[0]);
 
-    set_color(200, 200, 200, 255);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    // FIXME: Might be able to draw all the stars at once, in one Begin / End!
-    glBegin(GL_POINTS);
     glVertexAttrib2f(tcAttrib, 0.1f, 0.1f);
     glVertexAttrib1f(lightAttrib, 1.0f);
     glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
-    glEnd();
 
     return CLIP_NONE;
 }
