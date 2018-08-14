@@ -93,11 +93,13 @@ void mac_set_mode(void)
 
  void ChangeScreenSize(int width, int height)
  {
+    extern SDL_Renderer* renderer;
     extern SDL_Window* window;
+
+    SDL_RenderClear(renderer);
+    
     SDL_SetWindowSize(window, width, height);
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-
-    extern SDL_Renderer* renderer;
     SDL_RenderSetLogicalSize(renderer, width, height);
 
     extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;

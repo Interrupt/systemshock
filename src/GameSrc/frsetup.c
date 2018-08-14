@@ -646,6 +646,10 @@ int fr_start_view(void) {
     uchar old_cam_type;
     int detail;
 
+    if(should_opengl_swap()) {
+        opengl_start_frame();
+    }
+
     // check detail for canvas sizing
     gr_set_canvas(&_fr->draw_canvas);
     if (_fr_curflags & FR_PICKUPM_MASK) {
@@ -829,7 +833,7 @@ int fr_send_view(void) {
     g3_end_frame();
 
     if(should_opengl_swap()) {
-        opengl_backup_view();
+        opengl_end_frame();
     }
 
     // stereo support - closedown ??

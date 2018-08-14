@@ -252,7 +252,7 @@ void load_textures(void) {
                     //                              gr_bitmap(cur_bm, 0, 0);
                     //               });
                 }
-                opengl_cache_texture(c, n, cur_bm);
+                opengl_cache_wall_texture(c, n, cur_bm);
             }
             AdvanceProgress();
         }

@@ -58,14 +58,23 @@ struct Shader {
     GLint lightAttrib;
 };
 
+struct FrameBuffer {
+    GLuint frameBuffer;
+    GLuint stencilBuffer;
+    GLuint texture;
+    int width;
+    int height;
+};
+
 #define MAX_CACHED_TEXTURES 1024
 
 static Shader textureShaderProgram;
 static Shader colorShaderProgram;
 
+static FrameBuffer backupBuffer;
+
 static SDL_GLContext context;
 static GLuint dynTexture;
-static GLuint viewBackupTexture;
 
 // Texture cache to keep SDL surfaces and GL textures in memory
 static std::map<uint8_t *, CachedTexture> texturesByBitsPtr;
@@ -81,6 +90,7 @@ static int render_height;
 
 static bool palette_dirty = false;
 static bool blend_enabled = true;
+static GLuint bound_texture = -1;
 
 // View matrix; Z offset experimentally tweaked for near-perfect alignment
 // between GL projection and software projection (sprite screen coordinates)
@@ -107,6 +117,27 @@ static const float IdentityMatrix[] = {
     0.0, 0.0, 1.0, 0.0,
     0.0, 0.0, 0.0, 1.0
 };
+
+static void set_blend_mode(bool enabled) {
+    // change the blend mode, if not set already
+    if(blend_enabled != enabled) {
+        blend_enabled = enabled;
+        if(blend_enabled) {
+            glEnable(GL_BLEND);
+        }
+        else {
+            glDisable(GL_BLEND);
+        }
+    }
+}
+
+static void bind_texture(GLuint tex) {
+    // bind a texture, if not bound already
+    if(bound_texture != tex) {
+        bound_texture = tex;
+        glBindTexture(GL_TEXTURE_2D, bound_texture);
+    }
+}
 
 static GLuint compileShader(GLenum type, const char *source) {
     GLuint shader = glCreateShader(type);
@@ -174,6 +205,48 @@ static Shader CreateShader(const char *vertexShaderFile, const char *fragmentSha
     return cachedShader;
 }
 
+static FrameBuffer CreateFrameBuffer(int width, int height) {
+    FrameBuffer newBuffer;
+    newBuffer.width = width;
+    newBuffer.height = height;
+
+    // Make a frame buffer, texture for color, and render buffer for stencil
+    glGenFramebuffers(1, &newBuffer.frameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, newBuffer.frameBuffer);
+
+    glGenRenderbuffers(1, &newBuffer.stencilBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, newBuffer.stencilBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, newBuffer.stencilBuffer);
+
+    glGenTextures(1, &newBuffer.texture);
+    glBindTexture(GL_TEXTURE_2D, newBuffer.texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newBuffer.texture, 0);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(status != GL_FRAMEBUFFER_COMPLETE) {
+        ERROR("Could not make FrameBuffer!: %x \n", status);
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    return newBuffer;
+}
+
+static void BindFrameBuffer(FrameBuffer *buffer) {
+    if(buffer == NULL) {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }
+    else {
+        glBindFramebuffer(GL_FRAMEBUFFER, buffer->frameBuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, buffer->stencilBuffer);
+        glViewport(0, 0, buffer->width, buffer->height);
+    }
+}
+
 int init_opengl() {
     DEBUG("Initializing OpenGL");
     context = SDL_GL_CreateContext(window);
@@ -193,7 +266,6 @@ int init_opengl() {
     colorShaderProgram = CreateShader("main.vert", "color.frag");
 
     glGenTextures(1, &dynTexture);
-    glGenTextures(1, &viewBackupTexture);
 
     int width, height;
     SDL_GetWindowSize(window, &width, &height);
@@ -227,13 +299,11 @@ void opengl_resize(int width, int height) {
     phys_offset_x = border_x / 2;
     phys_offset_y = border_y / 2;
 
-    // allocate a buffer for the framebuffer backup
-    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, phys_width, phys_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+    backupBuffer = CreateFrameBuffer(logical_width, logical_height);
 
     INFO("OpenGL Resize %i %i %i %i", width, height, phys_width, phys_height);
 
-    // Redraw the background in the new resolution
+    // Redraw the options menu background in the new resolution
     extern uchar wrapper_screenmode_hack;
     if(wrapper_screenmode_hack) {
         render_run();
@@ -243,18 +313,6 @@ void opengl_resize(int width, int height) {
 
 void opengl_change_palette() {
     palette_dirty = TRUE;
-}
-
-static void set_blend_mode(bool enabled) {
-    if(blend_enabled != enabled) {
-        blend_enabled = enabled;
-        if(blend_enabled) {
-            glEnable(GL_BLEND);
-        }
-        else {
-            glDisable(GL_BLEND);
-        }
-    }
 }
 
 bool use_opengl() {
@@ -270,17 +328,26 @@ bool should_opengl_swap() {
            !global_fullmap->cyber;
 }
 
-void opengl_backup_view() {
-    // save the framebuffer into a texture after rendering the 3D view(s)
-    // but before blitting the HUD overlay
+void opengl_end_frame() {
     SDL_GL_MakeCurrent(window, context);
 
-    glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
-    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
-    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, phys_offset_x, phys_offset_y, phys_width, phys_height);
-
-    glFlush();
+    // Done rendering to the frame buffer, reset back to normal
+    BindFrameBuffer(NULL);
     palette_dirty = FALSE;
+}
+
+void opengl_start_frame() {
+    SDL_GL_MakeCurrent(window, context);
+
+    // Start rendering to our frame buffer canvas
+    BindFrameBuffer(&backupBuffer);
+
+    // Setup the render width
+    int logical_width, logical_height;
+    SDL_RenderGetLogicalSize(renderer, &logical_width, &logical_height);
+
+    render_height = logical_height;
+    render_width = logical_width;
 }
 
 void opengl_swap_and_restore() {
@@ -301,7 +368,7 @@ void opengl_swap_and_restore() {
     glUniformMatrix4fv(textureShaderProgram.uniView, 1, false, IdentityMatrix);
     glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, IdentityMatrix);
 
-    glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
+    bind_texture(backupBuffer.texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -348,15 +415,16 @@ void opengl_set_viewport(int x, int y, int width, int height) {
     render_height = height;
 
     SDL_GL_MakeCurrent(window, context);
-    int scaled_width = width * view_scale;
-    int scaled_height = height * view_scale;
-    int scaled_x = phys_offset_x + x * view_scale;
-    int scaled_y = phys_offset_y + phys_height - scaled_height - y * view_scale;
-    glViewport(scaled_x, scaled_y, scaled_width, scaled_height);
+
+    int lw, lh;
+    SDL_RenderGetLogicalSize(renderer, &lw, &lh);
+
+    int draw_y = lh - height - y;
+    glViewport(x, draw_y, width, height);
 
     // Make sure everything starts with a stencil of 0xFF
     glEnable(GL_SCISSOR_TEST);
-    glScissor(scaled_x, scaled_y, scaled_width, scaled_height);
+    glScissor(x, draw_y, width, height);
     glClearStencil(0xFF);
     glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glDisable(GL_SCISSOR_TEST);
@@ -373,7 +441,7 @@ static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
     if(texturesByBitsPtr.size() < MAX_CACHED_TEXTURES) {
         // We have enough room, generate the new texture
         glGenTextures(1, &toCache.texture);
-        glBindTexture(GL_TEXTURE_2D, toCache.texture);
+        bind_texture(toCache.texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, toCache.converted->pixels);
 
         texturesByBitsPtr[bm->bits] = toCache;
@@ -381,7 +449,7 @@ static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
     }
 
     // Not enough room, just use the dynTexture
-    glBindTexture(GL_TEXTURE_2D, dynTexture);
+    bind_texture(dynTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, toCache.converted->pixels);
 
     return false;
@@ -467,11 +535,17 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
     }
 }
 
-void opengl_cache_texture(int idx, int size, grs_bitmap *bm) {
+void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm) {
     if (idx < NUM_LOADED_TEXTURES) {
         CachedTexture* t = opengl_get_texture(bm);
-        if(t == NULL)
+        if(t == NULL) {
             convert_texture(bm, true);
+        }
+        else {
+            // Need to refresh this texture
+            t->lastDrawTime = -1;
+            palette_dirty = true;
+        }
     }
 }
 
@@ -515,7 +589,7 @@ static void set_texture(grs_bitmap *bm) {
         isDirty = true;
     }
 
-    glBindTexture(GL_TEXTURE_2D, t->texture);
+    bind_texture(t->texture);
     t->lastDrawTime = *tmd_ticks;
 
     if(isDirty) {
@@ -641,7 +715,7 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
 
 static void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
     const uint8_t pixel[] = { red, green, blue, alpha };
-    glBindTexture(GL_TEXTURE_2D, dynTexture);
+    bind_texture(dynTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
 
     set_blend_mode(alpha < 255);
