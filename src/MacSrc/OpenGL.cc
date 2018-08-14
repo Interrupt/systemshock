@@ -263,6 +263,8 @@ void opengl_swap_and_restore() {
     SDL_GL_MakeCurrent(window, context);
     SDL_GL_SwapWindow(window);
 
+    glClear(GL_COLOR_BUFFER_BIT);
+
     glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
     set_blend_mode(false);
 
