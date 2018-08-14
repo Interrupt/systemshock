@@ -32,6 +32,7 @@ extern "C" {
     #include "Prefs.h"
     #include "Shock.h"
     #include "faketime.h"
+    #include "render.h"
 
     extern SDL_Renderer *renderer;
     extern SDL_Palette *sdlPalette;
@@ -49,11 +50,20 @@ struct CachedTexture {
     bool locked;
 };
 
+struct Shader {
+    GLuint shaderProgram;
+    GLint uniView;
+    GLint uniProj;
+    GLint tcAttrib;
+    GLint lightAttrib;
+};
+
 #define MAX_CACHED_TEXTURES 1024
 
+static Shader textureShaderProgram;
+static Shader colorShaderProgram;
+
 static SDL_GLContext context;
-static GLuint textureShaderProgram;
-static GLuint colorShaderProgram;
 static GLuint dynTexture;
 static GLuint viewBackupTexture;
 
@@ -68,6 +78,9 @@ static int phys_offset_y;
 
 static int render_width;
 static int render_height;
+
+static bool palette_dirty = false;
+static bool blend_enabled = true;
 
 // View matrix; Z offset experimentally tweaked for near-perfect alignment
 // between GL projection and software projection (sprite screen coordinates)
@@ -109,6 +122,7 @@ static GLuint compileShader(GLenum type, const char *source) {
         puts(buffer);
         exit(1);
     }
+
     return shader;
 }
 
@@ -137,6 +151,29 @@ static GLuint loadShader(GLenum type, const char *filename) {
     return compileShader(type, source.str().c_str());
 }
 
+static Shader CreateShader(const char *vertexShaderFile, const char *fragmentShaderFile) {
+
+    GLuint vertShader = loadShader(GL_VERTEX_SHADER, vertexShaderFile);
+    GLuint fragShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderFile);
+
+    GLuint shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertShader);
+    glAttachShader(shaderProgram, fragShader);
+    glLinkProgram(shaderProgram);
+
+    Shader cachedShader;
+    cachedShader.shaderProgram = shaderProgram;
+    cachedShader.uniView = glGetUniformLocation(shaderProgram, "view");
+    cachedShader.uniProj = glGetUniformLocation(shaderProgram, "proj");
+    cachedShader.tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
+    cachedShader.lightAttrib = glGetAttribLocation(shaderProgram, "light");
+
+    glUniformMatrix4fv(cachedShader.uniView, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(cachedShader.uniProj, 1, false, IdentityMatrix);
+
+    return cachedShader;
+}
+
 int init_opengl() {
     DEBUG("Initializing OpenGL");
     context = SDL_GL_CreateContext(window);
@@ -152,22 +189,15 @@ int init_opengl() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glAlphaFunc(GL_GEQUAL, 0.05f);
 
-    GLuint vertexShader = loadShader(GL_VERTEX_SHADER, "main.vert");
-    GLuint textureShader = loadShader(GL_FRAGMENT_SHADER, "texture.frag");
-    GLuint colorShader = loadShader(GL_FRAGMENT_SHADER, "color.frag");
-
-    textureShaderProgram = glCreateProgram();
-    glAttachShader(textureShaderProgram, vertexShader);
-    glAttachShader(textureShaderProgram, textureShader);
-    glLinkProgram(textureShaderProgram);
-
-    colorShaderProgram = glCreateProgram();
-    glAttachShader(colorShaderProgram, vertexShader);
-    glAttachShader(colorShaderProgram, colorShader);
-    glLinkProgram(colorShaderProgram);
+    textureShaderProgram = CreateShader("main.vert", "texture.frag");
+    colorShaderProgram = CreateShader("main.vert", "color.frag");
 
     glGenTextures(1, &dynTexture);
     glGenTextures(1, &viewBackupTexture);
+
+    int width, height;
+    SDL_GetWindowSize(window, &width, &height);
+    opengl_resize(width, height);
 
     return 0;
 }
@@ -200,6 +230,31 @@ void opengl_resize(int width, int height) {
     // allocate a buffer for the framebuffer backup
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, phys_width, phys_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+    INFO("OpenGL Resize %i %i %i %i", width, height, phys_width, phys_height);
+
+    // Redraw the background in the new resolution
+    extern uchar wrapper_screenmode_hack;
+    if(wrapper_screenmode_hack) {
+        render_run();
+        wrapper_screenmode_hack = FALSE;
+    }
+}
+
+void opengl_change_palette() {
+    palette_dirty = TRUE;
+}
+
+static void set_blend_mode(bool enabled) {
+    if(blend_enabled != enabled) {
+        blend_enabled = enabled;
+        if(blend_enabled) {
+            glEnable(GL_BLEND);
+        }
+        else {
+            glDisable(GL_BLEND);
+        }
+    }
 }
 
 bool use_opengl() {
@@ -223,6 +278,9 @@ void opengl_backup_view() {
     glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
     glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, phys_offset_x, phys_offset_y, phys_width, phys_height);
+
+    glFlush();
+    palette_dirty = FALSE;
 }
 
 void opengl_swap_and_restore() {
@@ -231,19 +289,19 @@ void opengl_swap_and_restore() {
     SDL_GL_MakeCurrent(window, context);
     SDL_GL_SwapWindow(window);
 
+    glClear(GL_COLOR_BUFFER_BIT);
+
     glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
-    glUseProgram(textureShaderProgram);
+    set_blend_mode(false);
 
-    GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
+    glUseProgram(textureShaderProgram.shaderProgram);
+    GLint tcAttrib = textureShaderProgram.tcAttrib;
+    GLint lightAttrib = textureShaderProgram.lightAttrib;
 
-    GLint uniProj = glGetUniformLocation(textureShaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(textureShaderProgram.uniView, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, IdentityMatrix);
 
-    GLint tcAttrib = glGetAttribLocation(textureShaderProgram, "texcoords");
-    GLint lightAttrib = glGetAttribLocation(textureShaderProgram, "light");
     glBindTexture(GL_TEXTURE_2D, viewBackupTexture);
-
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -261,6 +319,8 @@ void opengl_swap_and_restore() {
     glVertexAttrib1f(lightAttrib, 1.0f);
     glVertex3f(-1.0f, 1.0f, 0.0f);
     glEnd();
+
+    glFlush();
 
     // check OpenGL error
     GLenum err = glGetError();
@@ -307,6 +367,8 @@ void opengl_set_viewport(int x, int y, int width, int height) {
 
 static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
     SDL_GL_MakeCurrent(window, context);
+
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, bm->row);
 
     if(texturesByBitsPtr.size() < MAX_CACHED_TEXTURES) {
         // We have enough room, generate the new texture
@@ -424,7 +486,7 @@ static void set_texture(grs_bitmap *bm) {
     bool isDirty = false;
 
     if(t->locked) {
-        if(t->lastDrawTime != *tmd_ticks) {
+        if(palette_dirty && t->lastDrawTime != *tmd_ticks) {
             // Locked surfaces only need to update their palettes once per frame
 
             SDL_Palette *palette = createPalette(bm->flags & BMF_TRANS);
@@ -457,6 +519,7 @@ static void set_texture(grs_bitmap *bm) {
     t->lastDrawTime = *tmd_ticks;
 
     if(isDirty) {
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, bm->row);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, t->converted->pixels);   
     }
 }
@@ -491,13 +554,9 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     }
 
     SDL_GL_MakeCurrent(window, context);
-    glUseProgram(textureShaderProgram);
+    set_blend_mode(bm->flags & BMF_TRANS);
 
-    GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, false, ViewMatrix);
-
-    GLint uniProj = glGetUniformLocation(textureShaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
+    glUseProgram(textureShaderProgram.shaderProgram);
 
     set_texture(bm);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
@@ -506,8 +565,11 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    GLint tcAttrib = glGetAttribLocation(textureShaderProgram, "texcoords");
-    GLint lightAttrib = glGetAttribLocation(textureShaderProgram, "light");
+    GLint tcAttrib = textureShaderProgram.tcAttrib;
+    GLint lightAttrib = textureShaderProgram.lightAttrib;
+
+    glUniformMatrix4fv(textureShaderProgram.uniView, 1, false, ViewMatrix);
+    glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, ProjectionMatrix);
 
     glBegin(GL_TRIANGLE_STRIP);
     draw_vertex(*(vp[1]), tcAttrib, lightAttrib);
@@ -535,16 +597,14 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     }
 
     SDL_GL_MakeCurrent(window, context);
-    glUseProgram(textureShaderProgram);
+    set_blend_mode(bm->flags & BMF_TRANS);
 
-    GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, false, IdentityMatrix);
+    glUseProgram(textureShaderProgram.shaderProgram);
+    GLint tcAttrib = textureShaderProgram.tcAttrib;
+    GLint lightAttrib = textureShaderProgram.lightAttrib;
 
-    GLint uniProj = glGetUniformLocation(textureShaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, false, IdentityMatrix);
-
-    GLint tcAttrib = glGetAttribLocation(textureShaderProgram, "texcoords");
-    GLint lightAttrib = glGetAttribLocation(textureShaderProgram, "light");
+    glUniformMatrix4fv(textureShaderProgram.uniView, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, IdentityMatrix);
 
     set_texture(bm);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
@@ -583,6 +643,8 @@ static void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
     const uint8_t pixel[] = { red, green, blue, alpha };
     glBindTexture(GL_TEXTURE_2D, dynTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+
+    set_blend_mode(alpha < 255);
 }
 
 int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
@@ -592,13 +654,10 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
     }
 
     SDL_GL_MakeCurrent(window, context);
-    glUseProgram(colorShaderProgram);
 
-    GLint uniView = glGetUniformLocation(colorShaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, false, ViewMatrix);
-
-    GLint uniProj = glGetUniformLocation(colorShaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
+    glUseProgram(colorShaderProgram.shaderProgram);
+    glUniformMatrix4fv(colorShaderProgram.uniView, 1, false, ViewMatrix);
+    glUniformMatrix4fv(colorShaderProgram.uniProj, 1, false, ProjectionMatrix);
 
     if (gour_flag == 1 || gour_flag == 3) {
         // translucent; see init_pal_fx() for translucency parameters
@@ -629,8 +688,8 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    GLint tcAttrib = glGetAttribLocation(colorShaderProgram, "texcoords");
-    GLint lightAttrib = glGetAttribLocation(colorShaderProgram, "light");
+    GLint tcAttrib = colorShaderProgram.tcAttrib;
+    GLint lightAttrib = colorShaderProgram.lightAttrib;
 
     long a = 0, b = n_verts - 1;
     glBegin(GL_TRIANGLE_STRIP);
@@ -657,29 +716,12 @@ void opengl_begin_stars() {
     glPointSize(2.5f);
     glEnable(GL_POINT_SMOOTH);
 
-    GLint uniView = glGetUniformLocation(textureShaderProgram, "view");
-    glUniformMatrix4fv(uniView, 1, false, ViewMatrix);
-
-    GLint uniProj = glGetUniformLocation(textureShaderProgram, "proj");
-    glUniformMatrix4fv(uniProj, 1, false, ProjectionMatrix);
+    glUniformMatrix4fv(textureShaderProgram.uniView, 1, false, ViewMatrix);
+    glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, ProjectionMatrix);
 
     // Only draw stars where the stencil value is 0xFF (Sky!)
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     glStencilFunc(GL_EQUAL, 0xFF, ~0);
-}
-
-void opengl_end_stars() {
-    // Turn off the stencil test
-    opengl_set_stencil(0x00);
-}
-
-int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
-    SDL_GL_MakeCurrent(window, context);
-
-    GLint tcAttrib = glGetAttribLocation(textureShaderProgram, "texcoords");
-    GLint lightAttrib = glGetAttribLocation(textureShaderProgram, "light");
-
-    g3s_point& vertex = *(p[0]);
 
     set_color(200, 200, 200, 255);
 
@@ -689,12 +731,27 @@ int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    // FIXME: Might be able to draw all the stars at once, in one Begin / End!
     glBegin(GL_POINTS);
+}
+
+void opengl_end_stars() {
+    glEnd();
+
+    // Turn off the stencil test
+    opengl_set_stencil(0x00);
+}
+
+int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
+    SDL_GL_MakeCurrent(window, context);
+
+    GLint tcAttrib = textureShaderProgram.tcAttrib;
+    GLint lightAttrib = textureShaderProgram.lightAttrib;
+
+    g3s_point& vertex = *(p[0]);
+
     glVertexAttrib2f(tcAttrib, 0.1f, 0.1f);
     glVertexAttrib1f(lightAttrib, 1.0f);
     glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
-    glEnd();
 
     return CLIP_NONE;
 }

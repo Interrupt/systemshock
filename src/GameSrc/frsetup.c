@@ -828,6 +828,10 @@ int fr_send_view(void) {
 
     g3_end_frame();
 
+    if(should_opengl_swap()) {
+        opengl_backup_view();
+    }
+
     // stereo support - closedown ??
 #ifdef STEREO_SUPPORT
     if (((_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK)) == 0) && inp6d_stereo_active &&
@@ -902,5 +906,6 @@ int fr_send_view(void) {
         (*fr_mouse_show)();
     } else
         gr_set_canvas(grd_screen_canvas);
+
     _fr_ret;
 }
