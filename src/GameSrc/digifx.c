@@ -195,7 +195,7 @@ uchar set_sample_pan_gain(snd_digi_parms *sdp) {
                                    objs[PLAYER_OBJ].loc.h << 8);
     } else if (sdp->snd_ref == 0) { // audiolog
                                     // following is temp      sdp->vol=curr_alog_vol;
-        sdp->vol = 100;
+        sdp->vol = curr_alog_vol;
         snd_sample_reload_parms(sdp);
         return (FALSE);
     } else {

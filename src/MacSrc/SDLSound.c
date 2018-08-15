@@ -80,7 +80,8 @@ int snd_alog_play(int snd_ref, int len, Uint8 *smp, struct snd_digi_parms *dprm)
 		return ERR_NOEFFECT;
 	}
 
-	Mix_Volume(channel, dprm->vol / 2);
+	digi_parms_by_channel[channel] = *dprm;
+	Mix_Volume(channel, dprm->vol * 128 / 100);
 
 	return channel;
 }
@@ -118,7 +119,7 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) {
 		return;
 
 	// sdp->vol ranges from 0..255
-	Mix_Volume(channel, sdp->vol / 2);
+	Mix_Volume(channel, (sdp->vol * 128) / 100);
 
 	// sdp->pan ranges from 1 (left) to 127 (right)
 	uint8_t right = 2 * sdp->pan;
@@ -127,8 +128,8 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) {
 
 void MacTuneUpdateVolume(void) {
 	extern uchar curr_vol_lev;
-	float music_vol_mod = 0.6f;
-	Mix_VolumeMusic(((curr_vol_lev * curr_vol_lev) * 128 / 10000) * music_vol_mod);
+	float music_vol_mod = 0.8f;
+	Mix_VolumeMusic(((curr_vol_lev * curr_vol_lev * 128 * music_vol_mod) / 10000) );
 }
 
 int MacTuneLoadTheme(char* theme_base, int themeID) {

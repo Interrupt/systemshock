@@ -1361,6 +1361,8 @@ void recompute_digifx_level(ushort vol) {
 #ifdef AUDIOLOGS
 void recompute_audiolog_level(ushort vol) {
     curr_alog_vol = QVAR_TO_VOLUME(vol);
+    extern void sound_frame_update(void);
+    sound_frame_update();
 }
 #endif
 

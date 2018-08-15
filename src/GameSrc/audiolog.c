@@ -75,7 +75,7 @@ snd_digi_parms *sdp = NULL;
 extern uchar curr_vol_lev;
 extern void MacTuneUpdateVolume(void);
 
-#define ALOG_MUSIC_DUCK  0.6
+#define ALOG_MUSIC_DUCK  0.7
 
 //-------------------------------------------------------------
 //  Sorry excuse for a function.
