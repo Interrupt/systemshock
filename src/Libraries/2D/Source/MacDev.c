@@ -122,9 +122,14 @@ void mac_set_mode(void)
 //------------------------------------------------------------------------
 // set the color palette (copy entries into gMainColorHand, then call SetEntries
 // and ResetCTSeed).
+
+uchar backup_pal[768];
 void mac_set_pal (int start, int n, uchar *pal_data)
  {
     extern void SetSDLPalette(int index, int count, uchar *pal);
+
+    // Save the palette
+    memmove(&backup_pal, pal_data, sizeof(uchar) * 768);
 
     // HAX: Only update when given a whole palette!
     if(start == 0 && n == 256)
@@ -134,22 +139,9 @@ void mac_set_pal (int start, int n, uchar *pal_data)
 //------------------------------------------------------------------------
 // get the current color palette (copy entries from gMainColorHand)
 void mac_get_pal (int start, int n, uchar *pal_data)
- {
- 	/*if (n)	// ignore if count == 0
- 	 {
- 	 	short			i;
- 	 	ColorSpec	*cSpec;
- 	 	
- 	 	cSpec = &(*gMainColorHand)->ctTable[start];
- 	 	for (i=start; i<start+n; i++) 
- 	 	 {
- 	 	 	*(pal_data++) = cSpec->rgb.red >> 8;
- 	 	 	*(pal_data++) = cSpec->rgb.green >> 8;
- 	 	 	*(pal_data++) = cSpec->rgb.blue >> 8;
- 	 	 	cSpec++;
- 	 	 }
-	 }*/		 
- }
+{
+    memmove(pal_data, &backup_pal, sizeof(uchar) * 768);
+}
  
 
 // set and get state don't currently do anything, since its not apparent

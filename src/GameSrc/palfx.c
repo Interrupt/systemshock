@@ -45,8 +45,16 @@ byte palfx_start_fade_up(uchar *new_pal);
 
 //-------------------------------------
 void finish_pal_effect(byte id) {
-    while (palette_query_effect(id) == ACTIVE)
+    while (palette_query_effect(id) == ACTIVE) {
         palette_advance_effect(id, 1);
+
+        // Update the screen
+        extern void SDLDraw(void);
+        extern void SDL_PumpEvents(void);
+
+        SDLDraw();
+        SDL_PumpEvents();
+    }
 }
 
 //-------------------------------------
