@@ -222,10 +222,6 @@ extern void CitFree(void *p);
 #define PALETTE_SIZE 768
 uchar ppall[PALETTE_SIZE];
 
-//
-#define DO_FADES
-//
-
 //-------------------------------------------------
 //  Initialize everything!
 //-------------------------------------------------
@@ -365,16 +361,6 @@ void init_all(void) {
         // PlayStartupMovie(&fSpec, 0, 0);
     }
 
-#ifdef DO_FADES
-    if (pal_fx_on) {
-        uchar savep[768];
-
-        mac_get_pal(0, 256, savep);
-        gr_set_pal(0, 256, savep);
-        palfx_fade_down();
-    }
-#endif
-
     DEBUG("- Screen init");
     screen_init();
     fullscreen_init();
@@ -439,11 +425,6 @@ void init_all(void) {
     // LG splash screen wait
     // pause_for_input(pause_time);
     //	speed_splash = TRUE;
-
-#ifdef DO_FADES
-    if (pal_fx_on)
-        palfx_fade_down();
-#endif
 
     init_pal_fx();
 
