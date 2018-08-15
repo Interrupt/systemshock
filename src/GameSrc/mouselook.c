@@ -9,8 +9,8 @@
 #include <SDL.h>
 
 int mlook_enabled = FALSE;
-int mlook_hsens = 250;
-int mlook_vsens = 50;
+float mlook_hsens = 250;
+float mlook_vsens = 50;
 
 int mouse_look_xvel;
 int mouse_look_yvel;
@@ -24,6 +24,9 @@ extern byte player_get_eye();
 extern uchar game_paused;
 extern short mouseInstantX, mouseInstantY;
 extern long eye_mods[3];
+
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
 
 void mouse_look_stop() {
     if (!mlook_enabled && !game_paused) {
@@ -56,6 +59,14 @@ void mouse_look_physics() {
 
     mvelx *= mlook_hsens;
     mvely *= mlook_vsens;
+
+    // Scale mouselook based on window size
+    int w, h, lw, lh;
+    SDL_GetWindowSize(window, &w, &h);
+    SDL_RenderGetLogicalSize(renderer, &lw, &lh);
+
+    mvelx *= w / (float)lw;
+    mvely *= h / (float)lh;
 
     // Can put the mouse back now
     if (mvelx != 0 || mvely != 0)

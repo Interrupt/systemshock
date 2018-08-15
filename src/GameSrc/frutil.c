@@ -43,7 +43,6 @@ ushort fr_col_to_obj[256];
 
 static char fr_str[15];
 
-#if 0  // KLC
 char *fr_get_frame_rate(void)
 {
    fr_str[0]='\0';
@@ -57,7 +56,9 @@ char *fr_get_frame_rate(void)
          if (_frp.time.last_frame_cnt>1)
             num/=_frp.time.last_frame_cnt;
          num=28000/num;
-         itoa(num,fr_str,10);
+
+         snprintf(fr_str, sizeof(fr_str), "%d", num);
+
          mod=strlen(fr_str);
          fr_str[mod+1]=fr_str[mod];
          fr_str[mod]=fr_str[mod-1];
@@ -68,9 +69,10 @@ char *fr_get_frame_rate(void)
       _frp.time.last_frame_cnt=0;
    }
    _frp.time.last_chk_time=*tmd_ticks;
+
+   INFO("%s", fr_str);
    return fr_str;
 }
-#endif // KLC
 
 // look, vainly i try an reuse code from uw2
 //  and, amazingly, it works... wow
