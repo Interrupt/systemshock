@@ -166,8 +166,8 @@ static GLuint loadShader(GLenum type, const char *filename) {
 
     FILE* file = fopen(fb, "r");
     if(file == NULL) {
-        ERROR("Error loading shader %s!\n", fb);
-        exit(1);
+        ERROR("Could not open shader file %s!", fb);
+        return 0;
     }
 
     std::stringstream source;
@@ -182,27 +182,29 @@ static GLuint loadShader(GLenum type, const char *filename) {
     return compileShader(type, source.str().c_str());
 }
 
-static Shader CreateShader(const char *vertexShaderFile, const char *fragmentShaderFile) {
-
+static int CreateShader(const char *vertexShaderFile, const char *fragmentShaderFile, Shader *outShader) {
     GLuint vertShader = loadShader(GL_VERTEX_SHADER, vertexShaderFile);
     GLuint fragShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderFile);
+
+    if(vertShader == 0 || fragShader == 0) {
+        return 1; // Error!
+    }
 
     GLuint shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertShader);
     glAttachShader(shaderProgram, fragShader);
     glLinkProgram(shaderProgram);
 
-    Shader cachedShader;
-    cachedShader.shaderProgram = shaderProgram;
-    cachedShader.uniView = glGetUniformLocation(shaderProgram, "view");
-    cachedShader.uniProj = glGetUniformLocation(shaderProgram, "proj");
-    cachedShader.tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
-    cachedShader.lightAttrib = glGetAttribLocation(shaderProgram, "light");
+    outShader->shaderProgram = shaderProgram;
+    outShader->uniView = glGetUniformLocation(shaderProgram, "view");
+    outShader->uniProj = glGetUniformLocation(shaderProgram, "proj");
+    outShader->tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
+    outShader->lightAttrib = glGetAttribLocation(shaderProgram, "light");
 
-    glUniformMatrix4fv(cachedShader.uniView, 1, false, IdentityMatrix);
-    glUniformMatrix4fv(cachedShader.uniProj, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(outShader->uniView, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(outShader->uniProj, 1, false, IdentityMatrix);
 
-    return cachedShader;
+    return 0;
 }
 
 static FrameBuffer CreateFrameBuffer(int width, int height) {
@@ -274,8 +276,13 @@ int init_opengl() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glAlphaFunc(GL_GEQUAL, 0.05f);
 
-    textureShaderProgram = CreateShader("main.vert", "texture.frag");
-    colorShaderProgram = CreateShader("main.vert", "color.frag");
+    if(CreateShader("main.vert", "texture.frag", &textureShaderProgram) || 
+        CreateShader("main.vert", "color.frag", &colorShaderProgram)) {
+
+        ERROR("Could not load shaders, falling back to Software mode");
+        context = NULL;
+        return 1;
+    }
 
     glGenTextures(1, &dynTexture);
 
