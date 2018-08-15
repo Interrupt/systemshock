@@ -1504,19 +1504,9 @@ void sound_screen_init(void) {
     opanel_redraw(TRUE);
 }
 
-    //
-    // THE OPTIONS SCREEN: Initialization, update funcs
-    //
-
-    /*void gamma_dealfunc(ushort gamma_qvar)
-    {
-       fix gamma;
-
-    //   gamma=FIX_UNIT-fix_make(0,gamma_qvar);
-    //   gamma=fix_mul(gamma,gamma)+(FIX_UNIT/2);
-       gamma=QVAR_TO_GAMMA(gamma_qvar);
-       gr_set_gamma_pal(0,256,gamma);
-    }*/
+//
+// THE OPTIONS SCREEN: Initialization, update funcs
+//
 
 #ifdef SVGA_SUPPORT
 uchar wrapper_screenmode_hack = FALSE;
@@ -1817,7 +1807,7 @@ void video_screen_init(void) {
     standard_slider_rect(&r, i, 2, 2);
     r.ul.x = r.ul.x + 1;
     sliderbase = ((r.lr.x - r.ul.x - 1) * ((29 * FIX_UNIT) / 100)) / USHRT_MAX;
-    slider_init(i, REF_STR_OptionsText + 3, sizeof(ushort), TRUE, &player_struct.questvars[GAMMACOR_QVAR], USHRT_MAX,
+    slider_init(i, REF_STR_OptionsText + 3, sizeof(ushort), TRUE, &gShockPrefs.doGamma, 99,
                 sliderbase, gamma_dealfunc, &r);
 
 #if defined(VFX1_SUPPORT) || defined(CTM_SUPPORT)
@@ -1898,7 +1888,7 @@ void screenmode_screen_init(void) {
     int i;
     char *keys;
 
-    if (wrapper_screenmode_hack && !can_use_opengl()) {
+    if (wrapper_screenmode_hack && !(can_use_opengl() && gShockPrefs.doUseOpenGL)) {
         uiHideMouse(NULL);
         render_run();
         uiShowMouse(NULL);

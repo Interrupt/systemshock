@@ -89,7 +89,7 @@ void SetDefaultPrefs(void) {
     gShockPrefs.doVideoMode = 3;
     gShockPrefs.doResolution = 0;       // High-res.
     gShockPrefs.doDetail = 3;           // Max detail.
-    gShockPrefs.doGamma = 29;           // Default gamma (29 out of 100).
+    gShockPrefs.doGamma = 28;           // Default gamma (28 out of 100).
     gShockPrefs.doUseQD = false;
     gShockPrefs.doUseOpenGL = false;
     gShockPrefs.doLinearScaling = false;
