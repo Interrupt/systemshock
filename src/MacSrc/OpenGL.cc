@@ -149,9 +149,8 @@ static GLuint compileShader(GLenum type, const char *source) {
     if (status != GL_TRUE) {
         char buffer[512];
         glGetShaderInfoLog(shader, 512, NULL, buffer);
-        ERROR("Error compiling shader!\n");
-        puts(buffer);
-        exit(1);
+        ERROR("Error compiling shader: %s", buffer);
+        return 0;
     }
 
     return shader;
@@ -179,7 +178,12 @@ static GLuint loadShader(GLenum type, const char *filename) {
         source << line << '\n';
     }
 
-    return compileShader(type, source.str().c_str());
+    GLuint s = compileShader(type, source.str().c_str());
+
+    if(s == 0) {
+        ERROR("Could not compile shader %s", filename);
+    }
+    return s;
 }
 
 static int CreateShader(const char *vertexShaderFile, const char *fragmentShaderFile, Shader *outShader) {
@@ -187,6 +191,8 @@ static int CreateShader(const char *vertexShaderFile, const char *fragmentShader
     GLuint fragShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderFile);
 
     if(vertShader == 0 || fragShader == 0) {
+        ERROR("Could not create shader %s : %s", vertexShaderFile, fragmentShaderFile);
+        context = NULL;
         return 1; // Error!
     }
 
@@ -229,6 +235,7 @@ static FrameBuffer CreateFrameBuffer(int width, int height) {
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if(status != GL_FRAMEBUFFER_COMPLETE) {
         ERROR("Could not make FrameBuffer!: %x \n", status);
+        context = NULL;
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -276,15 +283,16 @@ int init_opengl() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glAlphaFunc(GL_GEQUAL, 0.05f);
 
-    if(CreateShader("main.vert", "texture.frag", &textureShaderProgram) || 
-        CreateShader("main.vert", "color.frag", &colorShaderProgram)) {
-
-        ERROR("Could not load shaders, falling back to Software mode");
-        context = NULL;
-        return 1;
-    }
+    CreateShader("main.vert", "texture.frag", &textureShaderProgram);
+    CreateShader("main.vert", "color.frag", &colorShaderProgram);
 
     glGenTextures(1, &dynTexture);
+
+    // Did the setup go okay?
+    if(context == NULL) {
+        ERROR("OpenGL could not be initialized, falling back to Software mode.");
+        return 1;
+    }
 
     int width, height;
     SDL_GetWindowSize(window, &width, &height);
@@ -335,18 +343,18 @@ void opengl_change_palette() {
 }
 
 bool can_use_opengl() {
-    return context != NULL;
+    return context != NULL && gShockPrefs.doUseOpenGL;
 }
 
 bool use_opengl() {
-    return gShockPrefs.doUseOpenGL && can_use_opengl() &&
+    return can_use_opengl() &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber &&
            !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 bool should_opengl_swap() {
-    return gShockPrefs.doUseOpenGL && can_use_opengl() &&
+    return can_use_opengl() &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber;
 }

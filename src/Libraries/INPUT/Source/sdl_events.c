@@ -377,8 +377,11 @@ void pump_events(void)
 				}
 				break;
 			case SDL_WINDOWEVENT:
-				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-					opengl_resize(ev.window.data1, ev.window.data2);
+				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+					if(can_use_opengl()) {
+						opengl_resize(ev.window.data1, ev.window.data2);
+					}
+				}
 			// TODO: maybe handle other events as well..
 		}
 	}

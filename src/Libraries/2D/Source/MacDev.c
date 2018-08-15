@@ -75,8 +75,9 @@ void (**mac_device_table[])() = {
 // Mac specific device routines
 //========================================================================
 
-extern Ptr		gScreenAddress;
+extern Ptr  gScreenAddress;
 extern void opengl_resize(int width, int height);
+extern bool can_use_opengl(void);
 
 //------------------------------------------------------------------------
 // init the graphics mode, set up function tables and screen base address
@@ -108,10 +109,12 @@ void mac_set_mode(void)
     gActiveWide = width;
     gActiveHigh = height;
 
-    // Might be in fullscreen OpenGl mode, try to fix it up if so
-    SDL_GetWindowSize(window, &width, &height);
-    if(gScreenWide != width || gScreenHigh != height) {
-        opengl_resize(width, height);
+    if(can_use_opengl()) {
+        // Might be in fullscreen OpenGl mode, try to fix it up if so
+        SDL_GetWindowSize(window, &width, &height);
+        if(gScreenWide != width || gScreenHigh != height) {
+            opengl_resize(width, height);
+        }
     }
  }
 
