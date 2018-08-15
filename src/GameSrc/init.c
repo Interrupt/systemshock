@@ -894,7 +894,7 @@ void byebyemessage(void) {
 #ifdef DEMO
         printf("Thanks for playing the System Shock CD Demo %s.\n", SYSTEM_SHOCK_VERSION);
 #else
-        printf("Thanks for playing System Shock Shockolate %s.\n", SYSTEM_SHOCK_VERSION);
+        printf("Thanks for playing System Shock %s.\n", SHOCKOLATE_VERSION);
 #endif
     else
         printf("Our system has been shocked!!!\b But remember to Salt The Fries\n");

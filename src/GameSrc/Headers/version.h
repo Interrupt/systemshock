@@ -28,3 +28,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif                     // SVGA_SUPPORT
 
 #define SYSTEM_SHOCK_VERSION "v" SS_GREEK_LETTER SS_VERSION_NUM SS_FLAG_LETTER
+
+#define SHOCKOLATE_VERSION "Shockolate 0.6"

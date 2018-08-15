@@ -61,6 +61,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "physics.h"
 #include "wrapper.h"
+#include "version.h"
 
 #include "Modding.h"
 
@@ -94,6 +95,8 @@ grs_screen  *cit_screen;
 SDL_Window* window;
 SDL_Palette* sdlPalette;
 SDL_Renderer* renderer;
+
+char window_title[128];
 
 extern grs_screen *svga_screen;
 extern 	frc *svga_render_context;
@@ -260,8 +263,10 @@ void InitSDL()
 
 	// Open our window!
 
+	sprintf(&window_title, "System Shock - %s", SHOCKOLATE_VERSION);
+
 	window = SDL_CreateWindow(
-		"System Shock - Shockolate 0.5", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
 
