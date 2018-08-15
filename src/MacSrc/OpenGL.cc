@@ -343,18 +343,18 @@ void opengl_change_palette() {
 }
 
 bool can_use_opengl() {
-    return context != NULL && gShockPrefs.doUseOpenGL;
+    return context != NULL;
 }
 
 bool use_opengl() {
-    return can_use_opengl() &&
+    return can_use_opengl() && gShockPrefs.doUseOpenGL &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber &&
            !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 bool should_opengl_swap() {
-    return can_use_opengl() &&
+    return can_use_opengl() && gShockPrefs.doUseOpenGL &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber;
 }
