@@ -368,6 +368,21 @@ if (WIN32)
         target_link_libraries(systemshock ${CMAKE_SOURCE_DIR}/build_ext/built_glew/lib/libglew32.dll.a winmm)
 endif(WIN32)
 
+set(data_install_dir bin)
+set(install_dest bin)
+# Install data dirs
+set(bin_data_dirs shaders)
+
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+
+#install(TARGETS systemshock ${install_dest} DESTINATION ${CMAKE_INSTALL_BINDIR})
+foreach( binpath ${bin_data_dirs})
+	add_custom_command(TARGET systemshock
+			POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${binpath} ${EXECUTABLE_OUTPUT_PATH}/${binpath} VERBATIM)
+	install(DIRECTORY ${CMAKE_SOURCE_DIR}/${binpath} DESTINATION ${data_install_dir})
+endforeach()
+
+
 # Turn on address sanitizing if wanted
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers/cmake" ${CMAKE_MODULE_PATH})
 find_package(Sanitizers)

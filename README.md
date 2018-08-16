@@ -30,8 +30,9 @@ Compiling / Running
 ============
 
 ## Prerequisites
-  - SDL2, 32 bit
-  - SDL2_mixer, 32 bit
+  - SDL2 2.0.8, 32 bit
+  - SDL2_mixer 2.0.1, 32 bit
+  - OpenGL (glew), 32 bit
 
 ## Building SDL
 ### Linux/Mac
@@ -42,8 +43,16 @@ See [the Windows readme](windows/readme_windows.md).
 
 ## Build and run
 ```
-cmake .
+mkdir build
+cd build
+cmake ..
 make systemshock
+```
+
+Copy RES folder to build/bin (there should be `RES/DATA/*.RES` and `RES/DATA/ARCHIVE.DAT` files). Now you ready to play SystemShock:
+
+```
+cd bin
 ./systemshock
 ```
 
