@@ -228,8 +228,9 @@ errtype draw_full_res_bm(Ref id, int x, int y, uchar fade_in) {
         gr_set_pal(*temp_pall, *(temp_pall + 1), (uchar *)(temp_pall + 2));
     }
 
-    if (fade_in)
+    if (fade_in && temp_pall != NULL) {
         pal_id = palfx_start_fade_up((uchar *)(temp_pall + 2));
+    }
 
     f->bm.bits = (uchar *)(f + 1);
     ss_bitmap(&f->bm, x, y); // KLC  ss_bitmap(&f->bm, x, y);

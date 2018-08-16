@@ -110,6 +110,7 @@ int last_setup_mode;
 int intro_num;
 int splash_num;
 int diff_sum = 0;
+bool do_fades = false;
 
 extern char which_lang;
 
@@ -121,6 +122,10 @@ uchar setup_bio_started = FALSE;
 // Internal Prototypes
 // ----------------------
 errtype journey_newgame_func();
+
+//
+#define DO_FADES
+//
 
 #define ALT(x) ((x) | KB_FLAG_ALT)
 
@@ -1196,21 +1201,34 @@ void splash_draw() {
 
     // Draw Origin Logo
 
+    #ifdef DO_FADES
+        do_fades = true && pal_fx_on;
+    #endif
+
     uiHideMouse(NULL);
-    draw_full_res_bm(REF_IMG_bmOriginSplash, 0, 0, FALSE);
+    draw_full_res_bm(REF_IMG_bmOriginSplash, 0, 0, do_fades);
     pause_for_key(500);
+
+    if (do_fades)
+        palfx_fade_down();
 
     // Draw LGS Logo
 
     uiHideMouse(NULL);
-    draw_full_res_bm(REF_IMG_bmLGSplash, 0, 0, FALSE);
+    draw_full_res_bm(REF_IMG_bmLGSplash, 0, 0, do_fades);
     pause_for_key(500);
+
+    if (do_fades)
+        palfx_fade_down();
 
     // Draw System Shock title
 
     uiHideMouse(NULL);
-    draw_full_res_bm(REF_IMG_bmSystemShockTitle, 0, 0, FALSE);
+    draw_full_res_bm(REF_IMG_bmSystemShockTitle, 0, 0, do_fades);
     pause_for_key(500);
+
+    if (do_fades)
+        palfx_fade_down();
 
     // Original palette
     gr_set_pal(0, 256, ppall);
