@@ -123,25 +123,31 @@ errtype CheckFreeSpace(short	checkRefNum);
 //------------------------------------------------------------------------------------
 int main(int argc, char** argv)
 {
+	// Save the arguments for later
+
+	num_args = argc;
+	arg_values = argv;
+
 	// FIXME externalize this
 	log_set_quiet(0);
 	log_set_level(LOG_INFO);
 
-	InitMac();															// init mac managers
+	// init mac managers
 
-	SetDefaultPrefs();													// Initialize the preferences file.
+	InitMac();
+
+	// Initialize the preferences file.
+
+	SetDefaultPrefs();
 	LoadPrefs();
 	
 #ifdef TESTING
 	SetupTests();
 #endif
 
-	num_args = argc;
-	arg_values = argv;
+	// Process some startup arguments
 
 	bool show_splash = !CheckArgument("-nosplash");
-
-	// Process some startup arguments
 
 	// CC: Modding support! This is so exciting.
 
@@ -179,34 +185,6 @@ int main(int argc, char** argv)
 	status_bio_end();
 	stop_music();
 
-	/*
-	// We're through playing now.
-	uiHideMouse(NULL);
-	loopmode_exit(_current_loop);
-	status_bio_end();
-	 stop_music();											//KLC - add here to stop music at end game
-	
-	if (gDeadPlayerQuit)									// If we quit because the player was killed, show
-	{																// the death movie.
-		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Death", &fSpec);
-		PlayCutScene(&fSpec, TRUE, TRUE);		
-		gDeadPlayerQuit = FALSE;
-	}
-
-	if (gGameCompletedQuit)								// If we quit because the game was completed, show
-	{																// the endgame movie.
-		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Endgame", &fSpec);		
-		PlayCutScene(&fSpec, TRUE, TRUE);
-		gGameCompletedQuit = FALSE;
-
-		PaintRect(&gMainWindow->portRect);
-		ShowCursor();
-		DoEndgameDlg();
-	}
-
-	closedown_game(TRUE);
-	*/
-
 	return 0;
 }
 
@@ -228,12 +206,7 @@ bool CheckArgument(char* arg) {
 //------------------------------------------------------------------------------------
 void DoQuit(void)
 {
-//	if (AskToSave(1))
-//	{
-//		if (modeflag!=-1)
-//			EndGame(false);
-		gDone = true;
-//	}
+	gDone = true;
 }
 
 #define NEEDED_DISKSPACE   700000
@@ -313,6 +286,8 @@ void InitSDL()
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 	SDL_RenderSetLogicalSize(renderer, gScreenWide, gScreenHigh);
+
+	// Startup OpenGL
 
 	init_opengl();
 
