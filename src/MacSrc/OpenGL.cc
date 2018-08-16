@@ -76,6 +76,9 @@ static FrameBuffer backupBuffer;
 static SDL_GLContext context;
 static GLuint dynTexture;
 
+static SDL_Palette *opaquePalette;
+static SDL_Palette *transparentPalette;
+
 // Texture cache to keep SDL surfaces and GL textures in memory
 static std::map<uint8_t *, CachedTexture> texturesByBitsPtr;
 
@@ -298,6 +301,10 @@ int init_opengl() {
     SDL_GetWindowSize(window, &width, &height);
     opengl_resize(width, height);
 
+    // Now make the palettes
+    opaquePalette = SDL_AllocPalette(256);
+    transparentPalette = SDL_AllocPalette(256);
+
     return 0;
 }
 
@@ -367,6 +374,23 @@ void opengl_end_frame() {
     palette_dirty = FALSE;
 }
 
+static void updatePalette(SDL_Palette *palette, bool transparent) {
+    // Update from the base
+    SDL_SetPaletteColors(palette, sdlPalette->colors, 0, 256);
+
+    if (transparent)
+        palette->colors[0].a = 0x00;
+    for (int i = 1; i < 256; i++) {
+        // colors 1..31, except 2: always at maximum light level
+        // colors 2, 32..255: no minimum brightness, use interpolated vertex light level
+        // encode emissive property in the top half of the alpha color, since we don't use those bytes
+        if (i < 32 && i != 2)
+            palette->colors[i].a = 0xff;
+        else
+            palette->colors[i].a = 0x7f;
+    }
+}
+
 void opengl_start_frame() {
     SDL_GL_MakeCurrent(window, context);
 
@@ -379,6 +403,10 @@ void opengl_start_frame() {
 
     render_height = logical_height;
     render_width = logical_width;
+
+    // Update the palettes for this frame
+    updatePalette(opaquePalette, false);
+    updatePalette(transparentPalette, true);
 }
 
 void opengl_swap_and_restore() {
@@ -516,24 +544,11 @@ void opengl_clear_texture_cache() {
     }
 }
 
-static SDL_Palette *createPalette(bool transparent) {
-    SDL_Palette *palette = SDL_AllocPalette(256);
-    SDL_SetPaletteColors(palette, sdlPalette->colors, 0, 256);
-
-    // color 0: black or transparent
-    if (transparent)
-        palette->colors[0].a = 0x00;
-    for (int i = 1; i < 256; i++) {
-        // colors 1..31, except 2: always at maximum light level
-        // colors 2, 32..255: no minimum brightness, use interpolated vertex light level
-        // encode emissive property in the top half of the alpha color, since we don't use those bytes
-        if (i < 32 && i != 2)
-            palette->colors[i].a = 0xff;
-        else
-            palette->colors[i].a = 0x7f;
-    }
-
-    return palette;
+static void setPaletteForBitmap(grs_bitmap *bm, SDL_Surface *surface) {
+    if(bm->flags & BMF_TRANS)
+        SDL_SetSurfacePalette(surface, transparentPalette);
+    else
+        SDL_SetSurfacePalette(surface, opaquePalette);
 }
 
 static void convert_texture(grs_bitmap *bm, bool locked) {
@@ -546,10 +561,8 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
         surface = SDL_CreateRGBSurfaceFrom(bm->bits, bm->w, bm->h, 8, bm->row, 0, 0, 0, 0);
     }
 
-    SDL_Palette *palette = createPalette(bm->flags & BMF_TRANS);
-    SDL_SetSurfacePalette(surface, palette);
+    setPaletteForBitmap(bm, surface);
     SDL_Surface *rgba = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
-    SDL_FreePalette(palette);
 
     // Cache this new surface.
     CachedTexture ct;
@@ -591,13 +604,10 @@ static void set_texture(grs_bitmap *bm) {
     bool isDirty = false;
 
     if(t->locked) {
+        // Locked surfaces only need to update once
         if(palette_dirty && t->lastDrawTime != *tmd_ticks) {
-            // Locked surfaces only need to update their palettes once per frame
-
-            SDL_Palette *palette = createPalette(bm->flags & BMF_TRANS);
-            SDL_SetSurfacePalette(t->bitmap, palette);
+            setPaletteForBitmap(bm, t->bitmap);
             SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
-            SDL_FreePalette(palette);
 
             isDirty = true;
         }
@@ -612,10 +622,8 @@ static void set_texture(grs_bitmap *bm) {
             SDL_memmove(t->bitmap->pixels, bm->bits, bm->w * bm->h);
         }
 
-        SDL_Palette *palette = createPalette(bm->flags & BMF_TRANS);
-        SDL_SetSurfacePalette(t->bitmap, palette);
+        setPaletteForBitmap(bm, t->bitmap);
         SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
-        SDL_FreePalette(palette);
 
         isDirty = true;
     }
