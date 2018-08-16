@@ -33,6 +33,7 @@ extern "C" {
     #include "Shock.h"
     #include "faketime.h"
     #include "render.h"
+    #include "wares.h"
 
     extern SDL_Renderer *renderer;
     extern SDL_Palette *sdlPalette;
@@ -54,6 +55,7 @@ struct Shader {
     GLuint shaderProgram;
     GLint uniView;
     GLint uniProj;
+    GLint uniNightSight;
     GLint tcAttrib;
     GLint lightAttrib;
 };
@@ -204,10 +206,12 @@ static int CreateShader(const char *vertexShaderFile, const char *fragmentShader
     glAttachShader(shaderProgram, vertShader);
     glAttachShader(shaderProgram, fragShader);
     glLinkProgram(shaderProgram);
+    glUseProgram(shaderProgram);
 
     outShader->shaderProgram = shaderProgram;
     outShader->uniView = glGetUniformLocation(shaderProgram, "view");
     outShader->uniProj = glGetUniformLocation(shaderProgram, "proj");
+    outShader->uniNightSight = glGetUniformLocation(shaderProgram, "nightsight");
     outShader->tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
     outShader->lightAttrib = glGetAttribLocation(shaderProgram, "light");
 
@@ -393,6 +397,10 @@ static void updatePalette(SDL_Palette *palette, bool transparent) {
     }
 }
 
+static bool nightsight_active() {
+    return WareActive(player_struct.hardwarez_status[HARDWARE_GOGGLE_INFRARED]);
+}
+
 void opengl_start_frame() {
     SDL_GL_MakeCurrent(window, context);
 
@@ -426,6 +434,8 @@ void opengl_swap_and_restore() {
     GLint tcAttrib = textureShaderProgram.tcAttrib;
     GLint lightAttrib = textureShaderProgram.lightAttrib;
 
+    glUniform1i(textureShaderProgram.uniNightSight, nightsight_active());
+
     glUniformMatrix4fv(textureShaderProgram.uniView, 1, false, IdentityMatrix);
     glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, IdentityMatrix);
 
@@ -449,6 +459,8 @@ void opengl_swap_and_restore() {
     glEnd();
 
     glFlush();
+
+    glUniform1i(textureShaderProgram.uniNightSight, false);
 
     // check OpenGL error
     GLenum err = glGetError();
@@ -642,19 +654,21 @@ static void set_texture(grs_bitmap *bm) {
 static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttrib) {
 
     // Default, per-vertex lighting
-    float light = vertex.i / 4096.0f;
+    float light = 1.0f - (vertex.i / 4096.0f);
 
-    // Could be a CLUT color instead, use that for lighting
-    if(gr_get_fill_type() == FILL_CLUT) {
+    if (nightsight_active()) {
+        light = 1.0f;
+    } else if (gr_get_fill_type() == FILL_CLUT) {
+        // Could be a CLUT color instead, use that for lighting
         // Ugly hack: We don't get the original light value, so we have to
         // recalculate it from the offset into the global lighting lookup
         // table.
         uchar* clut = (uchar*)gr_get_fill_parm();
-        light = (clut - grd_screen->ltab) / 4096.0f;
+        light = 1.0f - (clut - grd_screen->ltab) / 4096.0f;
     }
 
     glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
-    glVertexAttrib1f(lightAttrib, 1.0f - light);
+    glVertexAttrib1f(lightAttrib, light);
     glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
 }
 
@@ -729,7 +743,7 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
     float light = 1.0f;
-    if (ti->flags & TMF_CLUT) {
+    if ((ti->flags & TMF_CLUT) && !nightsight_active()) {
         // Ugly hack: We don't get the original 'i' value, so we have to
         // recalculate it from the offset into the global lighting lookup
         // table.
