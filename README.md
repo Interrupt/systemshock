@@ -55,7 +55,7 @@ make systemshock
 ./systemshock
 ```
 
-## Command line parameters
+Command line parameters
 ============
 
 `-nosplash` Disables the splash screens, causes the game to start straight to the main menu
