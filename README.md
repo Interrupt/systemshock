@@ -55,6 +55,11 @@ make systemshock
 ./systemshock
 ```
 
+## Command line parameters
+============
+
+`-nosplash` Disables the splash screens, causes the game to start straight to the main menu
+
 Modding Support
 ============
 Shockolate supports loading mods and full on fan missions. Just point the executable at a mod file or folder and the game will load it in. So far mod loading supports additional `.res` and `.dat` files for resources and missions respectively.
