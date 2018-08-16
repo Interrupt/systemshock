@@ -606,7 +606,7 @@ static void set_texture(grs_bitmap *bm) {
     if(t->locked) {
         // Locked surfaces only need to update once
         if(palette_dirty && t->lastDrawTime != *tmd_ticks) {
-            setPaletteForBitmap(bm, t->bitmap);
+            SDL_SetSurfacePalette(t->bitmap, transparentPalette); // Walls should show stars
             SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
 
             isDirty = true;
