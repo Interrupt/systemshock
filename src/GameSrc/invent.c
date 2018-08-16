@@ -1870,7 +1870,7 @@ ubyte add_to_some_page(ObjID obj, uchar select) {
         }
         if (pop != ADD_REJECT) {
             if (pop != ADD_NOEFFECT) {
-                if (dpy->pgnum != inventory_page) {
+                if (dpy->pgnum != inventory_page && dpy->pgnum < NUM_PAGE_BUTTONS) {
                     page_button_state[dpy->pgnum] = BttnFlashOn;
                 }
                 INVENT_CHANGED;
