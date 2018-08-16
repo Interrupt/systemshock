@@ -54,14 +54,23 @@ int ProcessModFile(char* filename, uchar follow_dirs) {
 int ProcessModArgs(int argc, char** argv) {
 	// Default things
 	num_mod_files = 0;
+	int mod_args_start = 1;
 
+	// Skip arguments
+	for(int i = 1; i < argc; i++) {
+		if(argv[i][0] == '-') {
+			mod_args_start++;
+		}
+	}
+
+	// Default the mod list to empty
 	modding_archive_override = NULL;
 	for(int i = 0; i < MAX_MOD_FILES; i++) {
 		modding_additional_files[i] = NULL;
 	}
 
 	// Now go process args
-	for(int i = 1; i < argc; i++) {
+	for(int i = mod_args_start; i < argc; i++) {
 		ProcessModFile(argv[i], TRUE);
 	}
 }

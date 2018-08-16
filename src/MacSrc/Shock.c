@@ -97,6 +97,8 @@ SDL_Palette* sdlPalette;
 SDL_Renderer* renderer;
 
 char window_title[128];
+int num_args;
+char** arg_values;
 
 extern grs_screen *svga_screen;
 extern 	frc *svga_render_context;
@@ -134,6 +136,13 @@ int main(int argc, char** argv)
 	SetupTests();
 #endif
 
+	num_args = argc;
+	arg_values = argv;
+
+	bool show_splash = !CheckArgument("-nosplash");
+
+	// Process some startup arguments
+
 	// CC: Modding support! This is so exciting.
 
 	ProcessModArgs(argc, argv);
@@ -152,8 +161,10 @@ int main(int argc, char** argv)
 
 	// Draw the splash screen
 
-	INFO("Showing splash screen");
-	splash_draw();
+	if(show_splash) {
+		INFO("Showing splash screen");
+		splash_draw();
+	}
 
 	// Start in the Main Menu loop
 
@@ -197,6 +208,19 @@ int main(int argc, char** argv)
 	*/
 
 	return 0;
+}
+
+bool CheckArgument(char* arg) {
+	if(arg == NULL)
+		return false;
+
+	for(int i = 1; i < num_args; i++) {
+		if(strcmp(arg_values[i], arg) == 0) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 //------------------------------------------------------------------------------------
