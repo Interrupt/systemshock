@@ -329,19 +329,37 @@ void star_render(void) {
         s = star_transform_point(&v);
 
         if (s->codes == 0) {
+            x = fix_rint(s->sx);
+            y = fix_rint(s->sy);
+
             if(use_opengl()) {
-                opengl_draw_star(0xff, 1, &s);
+                opengl_draw_star(s->sx, s->sy, std_col[i], anti_alias);
+                continue;
             }
-            else {
-                x = fix_rint(s->sx);
-                y = fix_rint(s->sy);
+
+            if (std_size <= 1) {
+#ifdef STARS_ANTI_ALIAS
+                if (anti_alias) {
+                    do_aa_star(s->sx, s->sy, std_col[i]);
+                } else
+#endif
+                    if (gr_get_pixel(x, y) == 0xff)
+                    gr_set_pixel(std_col[i], x, y);
+            } else {
+                for (x1 = x; x1 < x + std_size; ++x1) {
+                    for (y1 = y; y1 < y + std_size; ++y1) {
+                        if (gr_get_pixel(x1, y1) == 0xff)
+                            gr_set_pixel(std_col[i], x1, y1);
+                    }
+                }
+            }
+
+#ifdef STEREO_ON
+            if (old_stereo) {
+                // switch canvases quickly
+                grd_bm.bits = g3d_rt_canv_bits;
                 if (std_size <= 1) {
-    #ifdef STARS_ANTI_ALIAS
-                    if (anti_alias) {
-                        do_aa_star(s->sx, s->sy, std_col[i]);
-                    } else
-    #endif
-                        if (gr_get_pixel(x, y) == 0xff)
+                    if (gr_get_pixel(x, y) == 0xff)
                         gr_set_pixel(std_col[i], x, y);
                 } else {
                     for (x1 = x; x1 < x + std_size; ++x1) {
@@ -351,27 +369,10 @@ void star_render(void) {
                         }
                     }
                 }
-
-    #ifdef STEREO_ON
-                if (old_stereo) {
-                    // switch canvases quickly
-                    grd_bm.bits = g3d_rt_canv_bits;
-                    if (std_size <= 1) {
-                        if (gr_get_pixel(x, y) == 0xff)
-                            gr_set_pixel(std_col[i], x, y);
-                    } else {
-                        for (x1 = x; x1 < x + std_size; ++x1) {
-                            for (y1 = y; y1 < y + std_size; ++y1) {
-                                if (gr_get_pixel(x1, y1) == 0xff)
-                                    gr_set_pixel(std_col[i], x1, y1);
-                            }
-                        }
-                    }
-                    // switch back
-                    grd_bm.bits = g3d_lt_canv_bits;
-                }
-    #endif
+                // switch back
+                grd_bm.bits = g3d_lt_canv_bits;
             }
+#endif
         }
 
         g3_free_point(s);

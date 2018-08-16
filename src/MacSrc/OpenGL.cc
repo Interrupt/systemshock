@@ -70,6 +70,7 @@ struct FrameBuffer {
 
 static Shader textureShaderProgram;
 static Shader colorShaderProgram;
+static Shader starShaderProgram;
 
 static FrameBuffer backupBuffer;
 
@@ -288,6 +289,7 @@ int init_opengl() {
 
     CreateShader("main.vert", "texture.frag", &textureShaderProgram);
     CreateShader("main.vert", "color.frag", &colorShaderProgram);
+    CreateShader("main.vert", "star.frag", &starShaderProgram);
 
     glGenTextures(1, &dynTexture);
 
@@ -826,19 +828,18 @@ void opengl_set_stencil(int v) {
 void opengl_begin_stars() {
     SDL_GL_MakeCurrent(window, context);
 
-    glPointSize(0.25 * (render_width / 320.0));
+    glPointSize(1.5 * (render_width / 320.0));
 
-    glEnable(GL_POINT_SMOOTH);
-    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-
-    glUniformMatrix4fv(textureShaderProgram.uniView, 1, false, ViewMatrix);
-    glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, ProjectionMatrix);
+    glUseProgram(starShaderProgram.shaderProgram);
+    glUniformMatrix4fv(starShaderProgram.uniView, 1, false, IdentityMatrix);
+    glUniformMatrix4fv(starShaderProgram.uniProj, 1, false, IdentityMatrix);
 
     // Only draw stars where the stencil value is 0xFF (Sky!)
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     glStencilFunc(GL_EQUAL, 0xFF, ~0);
 
-    set_color(200, 200, 200, 255);
+    set_color(255, 255, 255, 255);
+    set_blend_mode(true);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
@@ -852,21 +853,36 @@ void opengl_begin_stars() {
 void opengl_end_stars() {
     glEnd();
 
-    // Turn off the stencil test
+    // Turn off the stencil test and blending
     opengl_set_stencil(0x00);
+    set_blend_mode(false);
 }
 
-int opengl_draw_star(long c, int n_verts, g3s_phandle *p) {
+int opengl_draw_star(fix star_x, fix star_y, int c, bool anti_alias) {
     SDL_GL_MakeCurrent(window, context);
 
-    GLint tcAttrib = textureShaderProgram.tcAttrib;
-    GLint lightAttrib = textureShaderProgram.lightAttrib;
+    GLint lightAttrib = starShaderProgram.lightAttrib;
 
-    g3s_point& vertex = *(p[0]);
+    float x = fix_float(star_x);
+    float y = fix_float(star_y);
 
-    glVertexAttrib2f(tcAttrib, 0.1f, 0.1f);
-    glVertexAttrib1f(lightAttrib, 1.0f);
-    glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
+    // Lower screen resolutions should snap to pixels to avoid shimmering
+    if(!anti_alias) {
+        x = (int)x + 0.5f;
+        y = (int)y + 0.5f;
+    }
+
+    x = (x / render_width) * 2.0 - 1.0;
+    y = (y / render_height) * -2.0 + 1.0;
+
+    // rescale the color so that it's 0..255, 0 = dark, 255 = light
+    int std_color_base = 208;;
+    int std_color_range = 16;;
+    int color = (std_color_base + std_color_range - 1 - c);
+    color = (255 * color) / (std_color_range + 1);
+
+    glVertexAttrib1f(lightAttrib, color / 255.0f);
+    glVertex3f(x,  y, -0.25f);
 
     return CLIP_NONE;
 }
