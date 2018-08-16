@@ -97,6 +97,8 @@ SDL_Palette* sdlPalette;
 SDL_Renderer* renderer;
 
 char window_title[128];
+int num_args;
+char** arg_values;
 
 extern grs_screen *svga_screen;
 extern 	frc *svga_render_context;
@@ -121,18 +123,31 @@ errtype CheckFreeSpace(short	checkRefNum);
 //------------------------------------------------------------------------------------
 int main(int argc, char** argv)
 {
+	// Save the arguments for later
+
+	num_args = argc;
+	arg_values = argv;
+
 	// FIXME externalize this
 	log_set_quiet(0);
 	log_set_level(LOG_INFO);
 
-	InitMac();															// init mac managers
+	// init mac managers
 
-	SetDefaultPrefs();													// Initialize the preferences file.
+	InitMac();
+
+	// Initialize the preferences file.
+
+	SetDefaultPrefs();
 	LoadPrefs();
 	
 #ifdef TESTING
 	SetupTests();
 #endif
+
+	// Process some startup arguments
+
+	bool show_splash = !CheckArgument("-nosplash");
 
 	// CC: Modding support! This is so exciting.
 
@@ -152,8 +167,10 @@ int main(int argc, char** argv)
 
 	// Draw the splash screen
 
-	INFO("Showing splash screen");
-	splash_draw();
+	if(show_splash) {
+		INFO("Showing splash screen");
+		splash_draw();
+	}
 
 	// Start in the Main Menu loop
 
@@ -168,35 +185,20 @@ int main(int argc, char** argv)
 	status_bio_end();
 	stop_music();
 
-	/*
-	// We're through playing now.
-	uiHideMouse(NULL);
-	loopmode_exit(_current_loop);
-	status_bio_end();
-	 stop_music();											//KLC - add here to stop music at end game
-	
-	if (gDeadPlayerQuit)									// If we quit because the player was killed, show
-	{																// the death movie.
-		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Death", &fSpec);
-		PlayCutScene(&fSpec, TRUE, TRUE);		
-		gDeadPlayerQuit = FALSE;
-	}
-
-	if (gGameCompletedQuit)								// If we quit because the game was completed, show
-	{																// the endgame movie.
-		FSMakeFSSpec(gCDDataVref, gCDDataDirID, "Endgame", &fSpec);		
-		PlayCutScene(&fSpec, TRUE, TRUE);
-		gGameCompletedQuit = FALSE;
-
-		PaintRect(&gMainWindow->portRect);
-		ShowCursor();
-		DoEndgameDlg();
-	}
-
-	closedown_game(TRUE);
-	*/
-
 	return 0;
+}
+
+bool CheckArgument(char* arg) {
+	if(arg == NULL)
+		return false;
+
+	for(int i = 1; i < num_args; i++) {
+		if(strcmp(arg_values[i], arg) == 0) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 //------------------------------------------------------------------------------------
@@ -204,12 +206,7 @@ int main(int argc, char** argv)
 //------------------------------------------------------------------------------------
 void DoQuit(void)
 {
-//	if (AskToSave(1))
-//	{
-//		if (modeflag!=-1)
-//			EndGame(false);
-		gDone = true;
-//	}
+	gDone = true;
 }
 
 #define NEEDED_DISKSPACE   700000
@@ -289,6 +286,8 @@ void InitSDL()
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 	SDL_RenderSetLogicalSize(renderer, gScreenWide, gScreenHigh);
+
+	// Startup OpenGL
 
 	init_opengl();
 
