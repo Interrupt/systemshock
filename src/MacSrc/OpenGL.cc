@@ -826,8 +826,10 @@ void opengl_set_stencil(int v) {
 void opengl_begin_stars() {
     SDL_GL_MakeCurrent(window, context);
 
-    glPointSize(2.5f);
+    glPointSize(0.25 * (render_width / 320.0));
+
     glEnable(GL_POINT_SMOOTH);
+    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
 
     glUniformMatrix4fv(textureShaderProgram.uniView, 1, false, ViewMatrix);
     glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, ProjectionMatrix);
