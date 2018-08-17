@@ -252,7 +252,8 @@ void load_textures(void) {
                     //                              gr_bitmap(cur_bm, 0, 0);
                     //               });
                 }
-                opengl_cache_wall_texture(c, n, cur_bm);
+                if(can_use_opengl())
+                    opengl_cache_wall_texture(c, n, cur_bm);
             }
             AdvanceProgress();
         }
