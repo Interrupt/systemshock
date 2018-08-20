@@ -776,7 +776,7 @@ ObjID obj_create_base(int triple) {
 
             //         Warning(("ObjAndSpecGrab could not find ObjSpec for this class: %d.\n", TRIP2CL(triple)));
 
-            FORALLOBJS(oid) {
+            for (oid = (objs[OBJ_NULL]).headused; oid != OBJ_NULL; oid = objs[oid].next) {
                 if (oid == player_struct.panel_ref)
                     continue;
                 obclass = objs[oid].obclass;
@@ -2545,7 +2545,7 @@ errtype obj_level_munge() {
 #endif
 
 #ifdef REFLOOR_CRATES_HACK
-    FORALLOBJS(oid) {
+    for (oid = (objs[OBJ_NULL]).headused; oid != OBJ_NULL; oid = objs[oid].next) {
         switch (ID2TRIP(oid)) {
         case SML_CRT_TRIPLE:
         case LG_CRT_TRIPLE:

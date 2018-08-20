@@ -30,11 +30,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 errtype update_shodometer(short new_val, uchar game_stuff);
 
 short compute_shodometer_value(uchar game_stuff) {
-    ObjID oid;
-
     if (player_struct.level <= MAX_SHODOMETER_LEVEL) {
         QUESTVAR_SET(SHODAN_QV, 0);
-        FORALLOBJS(oid) { increment_shodan_value(oid, game_stuff); }
+        for (ObjID oid = (objs[OBJ_NULL]).headused; oid != OBJ_NULL; oid = objs[oid].next) {
+            increment_shodan_value(oid, game_stuff);
+        }
         return (QUESTVAR_GET(SHODAN_QV));
     } else
         return (0);

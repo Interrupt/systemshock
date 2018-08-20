@@ -68,14 +68,13 @@ void load_treasure_table(uchar *loadme, char cp) {
 
 void compute_complex_loadage(uchar *loadme) {
     int i, tr, objtrip;
-    ObjID id;
     weapon_slot wpnslot;
 
     // Figure out what to load
     ObjLoadMeClearAll();
 
     // If it's on the level, load it, with some specialized hacks
-    FORALLOBJS(id) {
+    for (ObjID id = (objs[OBJ_NULL]).headused; id != OBJ_NULL; id = objs[id].next) {
         objtrip = ID2TRIP(id);
         switch (objtrip) {
         case ANTENNA_PAN_TRIPLE:
