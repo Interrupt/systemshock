@@ -94,6 +94,7 @@ static int phys_offset_y;
 static int render_width;
 static int render_height;
 
+static bool opengl_enabled = true;
 static bool palette_dirty = false;
 static bool blend_enabled = true;
 static GLuint bound_texture = -1;
@@ -360,14 +361,13 @@ bool can_use_opengl() {
 }
 
 bool use_opengl() {
-    return can_use_opengl() && gShockPrefs.doUseOpenGL &&
+    return can_use_opengl() && gShockPrefs.doUseOpenGL && opengl_enabled &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
-           !global_fullmap->cyber &&
-           !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
+           !global_fullmap->cyber && !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 bool should_opengl_swap() {
-    return can_use_opengl() && gShockPrefs.doUseOpenGL &&
+    return can_use_opengl() && gShockPrefs.doUseOpenGL && opengl_enabled &&
            (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
            !global_fullmap->cyber;
 }
@@ -890,8 +890,8 @@ int opengl_draw_star(fix star_x, fix star_y, int c, bool anti_alias) {
     y = (y / render_height) * -2.0 + 1.0;
 
     // rescale the color so that it's 0..255, 0 = dark, 255 = light
-    int std_color_base = 208;;
-    int std_color_range = 16;;
+    int std_color_base = 208;
+    int std_color_range = 16;
     int color = (std_color_base + std_color_range - 1 - c);
     color = (255 * color) / (std_color_range + 1);
 
@@ -899,6 +899,17 @@ int opengl_draw_star(fix star_x, fix star_y, int c, bool anti_alias) {
     glVertex3f(x,  y, -0.25f);
 
     return CLIP_NONE;
+}
+
+void opengl_begin_sensaround(uchar version) {
+    if(version == 1) {
+        // Version 1 of the sensaround is old tech, and should render in software mode :D
+        opengl_enabled = FALSE;
+    }
+}
+
+void opengl_end_sensaround() {
+    opengl_enabled = TRUE;
 }
 
 #endif // USE_OPENGL

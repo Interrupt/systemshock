@@ -52,6 +52,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybstrng.h"
 #include "gamescr.h"
 
+#include "OpenGL.h"
+
 extern uchar dirty_inv_canvas;
 
 // -------
@@ -223,6 +225,7 @@ void view360_update_screen_mode() {
 char update_string[30] = "";
 
 void view360_render(void) {
+    opengl_begin_sensaround(player_struct.hardwarez[CPTRIP(SENS_HARD_TRIPLE)]);
     uchar on = FALSE;
     int i;
     if (inventory_page != INV_3DVIEW_PAGE && ACTIVE[MID_CONTEXT]) {
@@ -237,8 +240,10 @@ void view360_render(void) {
             LGRect r;
             char buf[sizeof(update_string)];
             short w, h;
-            if (strlen(update_string) + 1 >= sizeof(update_string))
+            if (strlen(update_string) + 1 >= sizeof(update_string)) {
+                opengl_end_sensaround();
                 return;
+            }
             if (update_string[0] == '\0')
                 get_string(REF_STR_View360Update, buf, sizeof(buf));
             else
@@ -265,6 +270,8 @@ void view360_render(void) {
             ResUnlock(RES_tinyTechFont);
             gr_pop_canvas();
             strcat(update_string, buf);
+
+            opengl_end_sensaround();
             return;
         }
         update_string[0] = '\0';
@@ -276,7 +283,6 @@ void view360_render(void) {
     }
 
     // Render the 360 view scenes.
-
     view360_is_rendering = TRUE;
     for (i = 0; i < NUM_360_CONTEXTS; i++)
         if (ACTIVE[i]) {
@@ -296,6 +302,8 @@ void view360_render(void) {
 
     if (on == !(player_struct.hardwarez_status[HARDWARE_360] & WARE_ON))
         use_ware(WARE_HARD, HARDWARE_360);
+
+    opengl_end_sensaround();
 }
 
 // ------------------
