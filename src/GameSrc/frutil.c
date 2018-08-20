@@ -43,35 +43,32 @@ ushort fr_col_to_obj[256];
 
 static char fr_str[15];
 
-char *fr_get_frame_rate(void)
-{
-   fr_str[0]='\0';
-   if (_frp.time.last_frame_cnt>0)
-   {
-      if (_frp.time.last_chk_time!=0)
-      {
-         long num=(*tmd_ticks-_frp.time.last_chk_time);
-         char mod;
+char *fr_get_frame_rate(void) {
+    fr_str[0] = '\0';
+    if (_frp.time.last_frame_cnt > 0) {
+        if (_frp.time.last_chk_time != 0) {
+            long num = (*tmd_ticks - _frp.time.last_chk_time);
+            char mod;
 
-         if (_frp.time.last_frame_cnt>1)
-            num/=_frp.time.last_frame_cnt;
-         num=28000/num;
+            if (_frp.time.last_frame_cnt > 1)
+                num /= _frp.time.last_frame_cnt;
+            num = 28000 / num;
 
-         snprintf(fr_str, sizeof(fr_str), "%d", num);
+            snprintf(fr_str, sizeof(fr_str), "%d", num);
 
-         mod=strlen(fr_str);
-         fr_str[mod+1]=fr_str[mod];
-         fr_str[mod]=fr_str[mod-1];
-         fr_str[mod-1]=fr_str[mod-2];
-         fr_str[mod-2]='.';
-         _frp.time.last_frame_len=num/100;
-      } 
-      _frp.time.last_frame_cnt=0;
-   }
-   _frp.time.last_chk_time=*tmd_ticks;
+            mod = strlen(fr_str);
+            fr_str[mod + 1] = fr_str[mod];
+            fr_str[mod] = fr_str[mod - 1];
+            fr_str[mod - 1] = fr_str[mod - 2];
+            fr_str[mod - 2] = '.';
+            _frp.time.last_frame_len = num / 100;
+        }
+        _frp.time.last_frame_cnt = 0;
+    }
+    _frp.time.last_chk_time = *tmd_ticks;
 
-   INFO("%s", fr_str);
-   return fr_str;
+    INFO("%s", fr_str);
+    return fr_str;
 }
 
 // look, vainly i try an reuse code from uw2
@@ -120,8 +117,8 @@ ushort fr_get_real(fauxrend_context *cur_fr, int x, int y) {
     // %d\n",col,(col>=FR_CUR_OBJ_BASE)?fr_col_to_obj[col-FR_CUR_OBJ_BASE]:0,fr_cur_obj_col,x,y);
     if ((col >= FR_CUR_OBJ_BASE) && (col < fr_cur_obj_col))  // if we are actually exactly over an object
         return (ushort)fr_col_to_obj[col - FR_CUR_OBJ_BASE]; //  actual obj_id
-    if (tmpcol = check_around(cur_fr->draw_canvas.bm.bits, x,
-                              y)) // if we found an object nearby (what to do about transparent doors)
+    // if we found an object nearby (what to do about transparent doors)
+    if (tmpcol = check_around(cur_fr->draw_canvas.bm.bits, x, y))
         return (ushort)fr_col_to_obj[tmpcol - FR_CUR_OBJ_BASE]; //  actual obj_id
     else                                                        // its a wall folks, just a wall
         return ((ushort)0) - ((ushort)col);                     //  return a tmap as - (tmapid+1), or nothing as 0
