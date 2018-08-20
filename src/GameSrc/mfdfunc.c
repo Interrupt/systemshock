@@ -3024,9 +3024,9 @@ void set_inventory_mfd(ubyte obclass, ubyte type, uchar grab) {
                         full_visible |= FULL_MFD_MASK(i);
                 }
             }
-#endif
         }
-
+#endif
+    }
         // THEN we check to see if we need to take over the info mfd
 
         switch (obclass) {
