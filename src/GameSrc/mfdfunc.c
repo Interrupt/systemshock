@@ -232,47 +232,47 @@ void mfd_init_funcs() {
     return;
 }
 
-    // ===========================================================================
-    //
-    // ===========================================================================
+// ===========================================================================
+//
+// ===========================================================================
 
-    //                             --------------------
-    //                             ACTUAL MFD FUNCTIONS
-    //                             --------------------
+//                             --------------------
+//                             ACTUAL MFD FUNCTIONS
+//                             --------------------
 
-    // ===========================================================================
-    //                             * THE WEAPON MFD *
-    // ===========================================================================
+// ===========================================================================
+//                             * THE WEAPON MFD *
+// ===========================================================================
 
-    // Hey, wow, floats and doubles are UNcool.
+// Hey, wow, floats and doubles are UNcool.
 
 #define mfd_pixels_per_charge_unit (FIX_UNIT * 69 / 100) // How many hor. pixels equals a % of charge?
 #define mfd_charge_units_per_pixel (FIX_UNIT * 100 / 69)
 
 // note _LEFT is 0, _RIGHT is 1
-#define MFDLeftOffs     MFD_LEFT
-#define MFDRightOffs    MFD_RIGHT
-#define MFDLastWeapon   0
-#define MFDAmmo         2
+#define MFDLeftOffs MFD_LEFT
+#define MFDRightOffs MFD_RIGHT
+#define MFDLastWeapon 0
+#define MFDAmmo 2
 #define MFDLastBeamHeat 4
 
 #define MFD_Access(which, lorr) mfd_fdata[MFD_WEAPON_FUNC][(which) + (lorr)]
 
-#define MFDGetLastLeftWeapon       mfd_fdata[MFD_WEAPON_FUNC][0]
-#define MFDGetLastRightWeapon      mfd_fdata[MFD_WEAPON_FUNC][1]
-#define MFDGetLeftAmmo             mfd_fdata[MFD_WEAPON_FUNC][2]
-#define MFDGetRightAmmo            mfd_fdata[MFD_WEAPON_FUNC][3]
-#define MFDGetLastLeftBeamHeat     mfd_fdata[MFD_WEAPON_FUNC][4]
-#define MFDGetLastRightBeamHeat    mfd_fdata[MFD_WEAPON_FUNC][5]
-#define MFDSetLastLeftWeapon(n)    (mfd_fdata[MFD_WEAPON_FUNC][0] = (n))
-#define MFDSetLastRightWeapon(n)   (mfd_fdata[MFD_WEAPON_FUNC][1] = (n))
-#define MFDSetLeftAmmo(n)          (mfd_fdata[MFD_WEAPON_FUNC][2] = (n))
-#define MFDSetRightAmmo(n)         (mfd_fdata[MFD_WEAPON_FUNC][3] = (n))
-#define MFDSetLastLeftBeamHeat(n)  (mfd_fdata[MFD_WEAPON_FUNC][4] = (n))
+#define MFDGetLastLeftWeapon mfd_fdata[MFD_WEAPON_FUNC][0]
+#define MFDGetLastRightWeapon mfd_fdata[MFD_WEAPON_FUNC][1]
+#define MFDGetLeftAmmo mfd_fdata[MFD_WEAPON_FUNC][2]
+#define MFDGetRightAmmo mfd_fdata[MFD_WEAPON_FUNC][3]
+#define MFDGetLastLeftBeamHeat mfd_fdata[MFD_WEAPON_FUNC][4]
+#define MFDGetLastRightBeamHeat mfd_fdata[MFD_WEAPON_FUNC][5]
+#define MFDSetLastLeftWeapon(n) (mfd_fdata[MFD_WEAPON_FUNC][0] = (n))
+#define MFDSetLastRightWeapon(n) (mfd_fdata[MFD_WEAPON_FUNC][1] = (n))
+#define MFDSetLeftAmmo(n) (mfd_fdata[MFD_WEAPON_FUNC][2] = (n))
+#define MFDSetRightAmmo(n) (mfd_fdata[MFD_WEAPON_FUNC][3] = (n))
+#define MFDSetLastLeftBeamHeat(n) (mfd_fdata[MFD_WEAPON_FUNC][4] = (n))
 #define MFDSetLastRightBeamHeat(n) (mfd_fdata[MFD_WEAPON_FUNC][5] = (n))
 
-#define MFD_BEAMWPN_STAT_BORDER    GREEN_YELLOW_BASE
-#define MFD_BEAMWPN_STAT_CHARGE    WHITE
+#define MFD_BEAMWPN_STAT_BORDER GREEN_YELLOW_BASE
+#define MFD_BEAMWPN_STAT_CHARGE WHITE
 #define MFD_BEAMWPN_STAT_MAXCHARGE PURPLE_BASE
 #define MFD_BEAMWPN_STAT_DEADSPACE BLACK
 
@@ -282,13 +282,13 @@ void mfd_init_funcs() {
 #define AMMO_BUTTON_W 23
 #define AMMO_BUTTON_Y (MFD_VIEW_HGT - AMMO_BUTTON_H)
 #define AMMO_STRING_Y (AMMO_BUTTON_Y - 4)
-#define AMMO_NAME_Y   (MFD_VIEW_HGT - 6)
+#define AMMO_NAME_Y (MFD_VIEW_HGT - 6)
 
-#define AMMO_BUTTON_X1  29
+#define AMMO_BUTTON_X1 29
 #define AMMO_BUTTON_DX1 0
-#define AMMO_BUTTON_X2  11
+#define AMMO_BUTTON_X2 11
 #define AMMO_BUTTON_DX2 31
-#define AMMO_BUTTON_X3  1
+#define AMMO_BUTTON_X3 1
 #define AMMO_BUTTON_DX3 24
 
 #define MFD_BEAM_RECT_X1 1
@@ -461,10 +461,10 @@ uchar mfd_weapon_expose_projectile(MFD *m, weapon_slot *ws, ubyte control) {
     return RedrawAmmoFlag;
 }
 
-    // ---------------------------------------------------------------------------
-    // mfd_weapon_draw_ammo_buttons()
-    //
-    // Draws the labelled buttons of ammo on a projectile gun's mfd
+// ---------------------------------------------------------------------------
+// mfd_weapon_draw_ammo_buttons()
+//
+// Draws the labelled buttons of ammo on a projectile gun's mfd
 
 #define MAX_CART_COLORS 3
 #define CARTRIDGE_BRACKET 8 // cartridges per color
@@ -909,30 +909,30 @@ void weapon_mfd_for_reload(void) {
     mfd_funcs[MFD_TARGET_FUNC].priority = target_pri;
 }
 
-    // ===========================================================================
-    //                             * THE ITEM MFD *
-    // ===========================================================================
+// ===========================================================================
+//                             * THE ITEM MFD *
+// ===========================================================================
 
-    // OK, the item MFD is pretty heinous, and, in fact, they all
-    // really want to be their own MFDfuncs, so, let's grant them their wish!
+// OK, the item MFD is pretty heinous, and, in fact, they all
+// really want to be their own MFDfuncs, so, let's grant them their wish!
 
 #define MFDGetLastItemClass(m) mfd_fdata[MFD_ITEM_FUNC][(m)]
-#define MFDGetLastItemType(m)  mfd_fdata[MFD_ITEM_FUNC][(m) + 2]
+#define MFDGetLastItemType(m) mfd_fdata[MFD_ITEM_FUNC][(m) + 2]
 #define MFDGetCurrItemClass(m) mfd_fdata[MFD_ITEM_FUNC][(m) + 4]
-#define MFDGetCurrItemType(m)  mfd_fdata[MFD_ITEM_FUNC][(m) + 6]
+#define MFDGetCurrItemType(m) mfd_fdata[MFD_ITEM_FUNC][(m) + 6]
 
 #define MFDSetLastItemClass(m, n) mfd_fdata[MFD_ITEM_FUNC][(m)] = (n)
-#define MFDSetLastItemType(m, n)  mfd_fdata[MFD_ITEM_FUNC][(m) + 2] = (n)
+#define MFDSetLastItemType(m, n) mfd_fdata[MFD_ITEM_FUNC][(m) + 2] = (n)
 #define MFDSetCurrItemClass(m, n) mfd_fdata[MFD_ITEM_FUNC][(m) + 4] = (n)
-#define MFDSetCurrItemType(m, n)  mfd_fdata[MFD_ITEM_FUNC][(m) + 6] = (n)
+#define MFDSetCurrItemType(m, n) mfd_fdata[MFD_ITEM_FUNC][(m) + 6] = (n)
 
 LGRect MfdGrenadeBox[2];
 
 #define MFD_GRENADE_BOX_X1 27
 #define MFD_GRENADE_BOX_X2 47
-#define MFD_GRENADE_BOX_Y  5
-#define MFD_GRENADE_BOX_W  5
-#define MFD_GRENADE_BOX_H  5
+#define MFD_GRENADE_BOX_Y 5
+#define MFD_GRENADE_BOX_W 5
+#define MFD_GRENADE_BOX_H 5
 
 #define HARDWARE_BUTTON_H 13
 #define HARDWARE_BUTTON_W 44
@@ -1030,11 +1030,11 @@ void mfd_item_micro_hires_expose(uchar full, int triple) {
     return;
 }
 
-    // --------------------------------------------------------------------------
-    // mfd_item_draw_grenade_setting_boxes()
-    //
-    // Draws the little increment/decrement boxes on either side of the
-    // "time left before grenade blows up" setting on the MFD.
+// --------------------------------------------------------------------------
+// mfd_item_draw_grenade_setting_boxes()
+//
+// Draws the little increment/decrement boxes on either side of the
+// "time left before grenade blows up" setting on the MFD.
 
 #ifdef OLD_GRENADE_BUTTONS
 void mfd_item_draw_grenade_setting_boxes(MFD *m) {
@@ -1058,10 +1058,10 @@ void mfd_item_draw_grenade_setting_boxes(MFD *m) {
 }
 #endif // OLD_GRENADE_BUTTONS
 
-    // --------------------------------------------------------------------------
-    // mfd_item_expose()
-    //
-    // Draws an overlay of a drug molecule or whatever in the current slot.
+// --------------------------------------------------------------------------
+// mfd_item_expose()
+//
+// Draws an overlay of a drug molecule or whatever in the current slot.
 
 #define NULL_ACTIVE 0xFF
 static ubyte cat2active[MFD_INV_CATEGORIES] = {
@@ -1379,9 +1379,9 @@ uchar mfd_item_handler(MFD *m, uiEvent *e) {
     return retval;
 }
 
-    // ----------------------
-    // * ITEM MFD FOR LANTERN
-    // ----------------------
+// ----------------------
+// * ITEM MFD FOR LANTERN
+// ----------------------
 
 #define LANTERN_BARRAY_X 2
 #define LANTERN_BARRAY_WD (MFD_VIEW_WID - 6)
@@ -1389,7 +1389,7 @@ uchar mfd_item_handler(MFD *m, uiEvent *e) {
 
 #define LANTERN_LAST_SETTING(mfd) (player_struct.mfd_func_data[MFD_LANTERN_FUNC][mfd])
 #define LANTERN_LAST_VERSION(mfd) (player_struct.mfd_func_data[MFD_LANTERN_FUNC][NUM_MFDS + mfd])
-#define LANTERN_LAST_STATE(mfd)   (player_struct.mfd_func_data[MFD_LANTERN_FUNC][2 * NUM_MFDS + mfd])
+#define LANTERN_LAST_STATE(mfd) (player_struct.mfd_func_data[MFD_LANTERN_FUNC][2 * NUM_MFDS + mfd])
 #define LANTERN_BARRAY_IDX 0
 
 extern uchar muzzle_fire_light;
@@ -1492,15 +1492,15 @@ void mfd_lanternware_expose(MFD *mfd, ubyte control) {
     mfd_update_rects(mfd);
 }
 
-    // ----------------------
-    // * ITEM MFD FOR SHIELD
-    // ----------------------
+// ----------------------
+// * ITEM MFD FOR SHIELD
+// ----------------------
 
-#define SHIELD_BARRAY_X  2
+#define SHIELD_BARRAY_X 2
 #define SHIELD_BARRAY_WD (MFD_VIEW_WID - 4)
-#define SHIELD_BARRAY_Y  45
+#define SHIELD_BARRAY_Y 45
 
-#define SHIELD_LAST_STATUS(mfd)  (player_struct.mfd_func_data[MFD_SHIELD_FUNC][mfd])
+#define SHIELD_LAST_STATUS(mfd) (player_struct.mfd_func_data[MFD_SHIELD_FUNC][mfd])
 #define SHIELD_LAST_VERSION(mfd) (player_struct.mfd_func_data[MFD_SHIELD_FUNC][NUM_MFDS + mfd])
 #define SHIELD_BARRAY_IDX 0
 
@@ -1628,19 +1628,19 @@ void mfd_shieldware_expose(MFD *mfd, ubyte control) {
     mfd_update_rects(mfd);
 }
 
-    // ----------------------
-    // * ITEM MFD FOR MOTION WARE
-    // ----------------------
+// ----------------------
+// * ITEM MFD FOR MOTION WARE
+// ----------------------
 
 #define MOTION_BARRAY_WD (3 * MFD_VIEW_WID / 4)
-#define MOTION_BARRAY_X  ((MFD_VIEW_WID - MOTION_BARRAY_WD) / 2)
-#define MOTION_BARRAY_Y  48
+#define MOTION_BARRAY_X ((MFD_VIEW_WID - MOTION_BARRAY_WD) / 2)
+#define MOTION_BARRAY_Y 48
 
-#define MOTION_LAST_STATUS(mfd)  (player_struct.mfd_func_data[MFD_MOTION_FUNC][mfd])
+#define MOTION_LAST_STATUS(mfd) (player_struct.mfd_func_data[MFD_MOTION_FUNC][mfd])
 #define MOTION_LAST_VERSION(mfd) (player_struct.mfd_func_data[MFD_MOTION_FUNC][NUM_MFDS + mfd])
 #define MOTION_BARRAY_IDX 0
 
-#define MOTION_SETTING     LAMP_SETTING
+#define MOTION_SETTING LAMP_SETTING
 #define MOTION_SETTING_SET LAMP_SETTING_SET
 
 #define MOTION_BUTTONS 2
@@ -1732,9 +1732,9 @@ void mfd_motionware_expose(MFD *mfd, ubyte control) {
     mfd_update_rects(mfd);
 }
 
-    // -----------------
-    // TIMED GRENADE MFD
-    // -----------------
+// -----------------
+// TIMED GRENADE MFD
+// -----------------
 
 #define MFD_GRENADE_FUNC 10
 
@@ -1836,10 +1836,10 @@ errtype mfd_grenade_init(MFD_Func *f) {
     return OK;
 }
 
-#define LAST_GRENADE(mfd)         (player_struct.mfd_func_data[MFD_GRENADE_FUNC][mfd])
+#define LAST_GRENADE(mfd) (player_struct.mfd_func_data[MFD_GRENADE_FUNC][mfd])
 #define LAST_GRENADE_SETTING(mfd) (player_struct.mfd_func_data[MFD_GRENADE_FUNC][mfd + 2])
 
-#define GRENADE_SLIDER_BORDER        MFD_BEAMWPN_STAT_BORDER
+#define GRENADE_SLIDER_BORDER MFD_BEAMWPN_STAT_BORDER
 #define GRENADE_SLIDER_SETTING_COLOR MFD_BEAMWPN_STAT_CHARGE
 
 #define TIME_TEXT_Y (GRENADE_SLIDER_Y - 8)
@@ -1913,28 +1913,28 @@ void mfd_grenade_expose(MFD *mfd, ubyte control) {
     mfd_update_rects(mfd);
 }
 
-    // ------------------
-    // * THE BIO WARE MFD
-    // ------------------
+// ------------------
+// * THE BIO WARE MFD
+// ------------------
 
 #define BIO_TEXT_X 29
 
-    // ---------------------------------------------------------------------------
-    // mfd_bioware_expose()
-    //
-    // This is the bioware, activated in the info window.  It displays stats.
-    // As of now, it's pretty sketchy.
+// ---------------------------------------------------------------------------
+// mfd_bioware_expose()
+//
+// This is the bioware, activated in the info window.  It displays stats.
+// As of now, it's pretty sketchy.
 
-#define LAST_HP(mfd)       (mfd_fdata[MFD_BIOWARE_FUNC][4 * mfd])
-#define LAST_FATIGUE(mfd)  (mfd_fdata[MFD_BIOWARE_FUNC][1 + 4 * mfd])
+#define LAST_HP(mfd) (mfd_fdata[MFD_BIOWARE_FUNC][4 * mfd])
+#define LAST_FATIGUE(mfd) (mfd_fdata[MFD_BIOWARE_FUNC][1 + 4 * mfd])
 #define LAST_DRUGBITS(mfd) (*(ushort *)&mfd_fdata[MFD_BIOWARE_FUNC][2 + 4 * mfd])
 
 // this is stolen from gamesys.c
 #define MAX_FATIGUE 10000
 #define MAX_HP UCHAR_MAX
 
-#define BIO_DRUG_UP    1 // experincing normal effects
-#define BIO_DRUG_DOWN  2 // experiencing after effects.
+#define BIO_DRUG_UP 1   // experincing normal effects
+#define BIO_DRUG_DOWN 2 // experiencing after effects.
 #define BIO_DRUG_CLEAN 0
 
 #define BITS_PER_DRUG 2
@@ -2173,25 +2173,25 @@ errtype draw_shodan_influence(MFD *mfd, uchar amt) {
     return (OK);
 }
 
-    // ELEVATOR PANEL MFD
-    // ------------------
+// ELEVATOR PANEL MFD
+// ------------------
 
-    // NOMENCLATURE: "level" refers to the internal, unique, game-system
-    // number for a level.  "floor" refers to the in-game floor number for
-    // a floor.
+// NOMENCLATURE: "level" refers to the internal, unique, game-system
+// number for a level.  "floor" refers to the in-game floor number for
+// a floor.
 
-#define NUM_ELEV_LVLS        15
+#define NUM_ELEV_LVLS 15
 #define NUM_ELEVATOR_BUTTONS 12
-#define ELEV_BTTN_ROWS       4
-#define ELEV_BTTN_COLS       ((NUM_ELEVATOR_BUTTONS + ELEV_BTTN_ROWS - 1) / ELEV_BTTN_ROWS)
-#define ELEV_BTTNS_X         11
-#define ELEV_BTTNS_WD        (MFD_VIEW_WID - 20)
-#define ELEV_BTTNS_Y         21
-#define ELEV_BTTNS_HT        (MFD_VIEW_HGT - ELEV_BTTNS_Y - 2)
-#define ELEV_BTTN_HT         8
-#define ELEV_BTTN_WD         11
-#define ELEV_STATUS_Y        3
-#define ELEV_STATUS_X        50
+#define ELEV_BTTN_ROWS 4
+#define ELEV_BTTN_COLS ((NUM_ELEVATOR_BUTTONS + ELEV_BTTN_ROWS - 1) / ELEV_BTTN_ROWS)
+#define ELEV_BTTNS_X 11
+#define ELEV_BTTNS_WD (MFD_VIEW_WID - 20)
+#define ELEV_BTTNS_Y 21
+#define ELEV_BTTNS_HT (MFD_VIEW_HGT - ELEV_BTTNS_Y - 2)
+#define ELEV_BTTN_HT 8
+#define ELEV_BTTN_WD 11
+#define ELEV_STATUS_Y 3
+#define ELEV_STATUS_X 50
 
 #define ELEV_STATUS_FONT RES_mediumLEDFont
 #define ELEV_STATUS_COLOR (GOOD_RED)
@@ -2435,26 +2435,26 @@ void mfd_elevator_expose(MFD *mfd, ubyte control) {
     mfd_update_rects(mfd);
 }
 
-    // ------------------
-    // KEYPAD MFD
-    // ------------------
+// ------------------
+// KEYPAD MFD
+// ------------------
 
 #define NUM_KEYPAD_BUTTONS 12
-#define KEYPAD_BTTN_ROWS   4
-#define KEYPAD_BTTN_COLS   3
-#define KEYPAD_X_MARGIN    0
-#define KEYPAD_Y_MARGIN    2
-#define KEYPAD_BTTNS_X     19
-#define KEYPAD_BTTNS_WD    (MFD_VIEW_WID - (2 * KEYPAD_BTTNS_X) - 1 - KEYPAD_X_MARGIN)
+#define KEYPAD_BTTN_ROWS 4
+#define KEYPAD_BTTN_COLS 3
+#define KEYPAD_X_MARGIN 0
+#define KEYPAD_Y_MARGIN 2
+#define KEYPAD_BTTNS_X 19
+#define KEYPAD_BTTNS_WD (MFD_VIEW_WID - (2 * KEYPAD_BTTNS_X) - 1 - KEYPAD_X_MARGIN)
 //#define KEYPAD_BTTNS_WD    (MFD_VIEW_WID - (3* KEYPAD_BTTNS_X))
-#define KEYPAD_BTTNS_Y     20
-#define KEYPAD_BTTNS_HT    (MFD_VIEW_HGT - KEYPAD_BTTNS_Y - KEYPAD_Y_MARGIN - 1)
-#define KEYPAD_BTTN_HT     8
-#define KEYPAD_BTTN_WD     11
-#define KEYPAD_STATUS_Y    3
-#define KEYPAD_STATUS_X    60
+#define KEYPAD_BTTNS_Y 20
+#define KEYPAD_BTTNS_HT (MFD_VIEW_HGT - KEYPAD_BTTNS_Y - KEYPAD_Y_MARGIN - 1)
+#define KEYPAD_BTTN_HT 8
+#define KEYPAD_BTTN_WD 11
+#define KEYPAD_STATUS_Y 3
+#define KEYPAD_STATUS_X 60
 
-#define MAX_KEYPAD_DIGITS  3
+#define MAX_KEYPAD_DIGITS 3
 
 #define KEYPAD_STATUS_FONT RES_mediumLEDFont
 #define KEYPAD_STATUS_COLOR (GOOD_RED)
@@ -2486,26 +2486,46 @@ uchar keypad_num(int b) {
     // but hey, this is already done, easier to modify and maybe even easier
     // to understand.
     switch (b) {
-    case 0:  retval = 1;  break;
-    case 1:  retval = 4;  break;
-    case 2:  retval = 7;  break;
-    case 3:  retval = 10; break;
-    case 4:  retval = 2;  break;
-    case 5:  retval = 5;  break;
-    case 6:  retval = 8;  break;
-    case 7:  retval = 0;  break;
-    case 8:  retval = 3;  break;
-    case 9:  retval = 6;  break;
-    case 10: retval = 9;  break;
-    case 11: retval = 11; break;
+    case 0:
+        retval = 1;
+        break;
+    case 1:
+        retval = 4;
+        break;
+    case 2:
+        retval = 7;
+        break;
+    case 3:
+        retval = 10;
+        break;
+    case 4:
+        retval = 2;
+        break;
+    case 5:
+        retval = 5;
+        break;
+    case 6:
+        retval = 8;
+        break;
+    case 7:
+        retval = 0;
+        break;
+    case 8:
+        retval = 3;
+        break;
+    case 9:
+        retval = 6;
+        break;
+    case 10:
+        retval = 9;
+        break;
+    case 11:
+        retval = 11;
+        break;
     }
     return (retval);
 #endif
-    static uchar retval[] = {
-        1, 4, 7, 10,
-        2, 5, 8, 0,
-        3, 6, 9, 11
-    };
+    static uchar retval[] = {1, 4, 7, 10, 2, 5, 8, 0, 3, 6, 9, 11};
     return (retval[b]);
 }
 
@@ -3027,167 +3047,168 @@ void set_inventory_mfd(ubyte obclass, ubyte type, uchar grab) {
         }
 #endif
     }
-        // THEN we check to see if we need to take over the info mfd
+    // THEN we check to see if we need to take over the info mfd
 
-        switch (obclass) {
+    switch (obclass) {
 
-        case MFD_INV_HARDWARE:
+    case MFD_INV_HARDWARE:
 
-            switch (type) {
+        switch (type) {
 
-            case HARDWARE_BIOWARE:
+        case HARDWARE_BIOWARE:
 
-                if (WareActive(player_struct.hardwarez_status[HARDWARE_BIOWARE]))
-                    mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
-
-                break;
-            }
+            if (WareActive(player_struct.hardwarez_status[HARDWARE_BIOWARE]))
+                mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
 
             break;
         }
 
-        if (obclass != MFD_INV_NULL && type != MFD_INV_NOTYPE)
-            player_struct.actives[catactives[obclass]] = type;
-
-        return;
+        break;
     }
 
-    void update_item_mfd(void) {
-        ubyte curr = player_struct.current_active;
-        if (curr != NULL_ACTIVE) {
-            ubyte obclass = activecats[curr];
-            ubyte type = player_struct.actives[curr];
-            ulong opnum = (obclass != MFD_INV_GENINV) ? OPTRIP(catbasetrips[obclass]) + type
-                                                      : OPNUM(player_struct.inventory[type]);
-            int func = ObjProps[opnum].mfd_id;
-            if (func != MFD_EMPTY_FUNC) {
-                mfd_notify_func(func, MFD_ITEM_FUNC, TRUE, MFD_ACTIVE, TRUE);
-            }
+    if (obclass != MFD_INV_NULL && type != MFD_INV_NOTYPE)
+        player_struct.actives[catactives[obclass]] = type;
+
+    return;
+}
+
+void update_item_mfd(void) {
+    ubyte curr = player_struct.current_active;
+    if (curr != NULL_ACTIVE) {
+        ubyte obclass = activecats[curr];
+        ubyte type = player_struct.actives[curr];
+        ulong opnum =
+            (obclass != MFD_INV_GENINV) ? OPTRIP(catbasetrips[obclass]) + type : OPNUM(player_struct.inventory[type]);
+        int func = ObjProps[opnum].mfd_id;
+        if (func != MFD_EMPTY_FUNC) {
+            mfd_notify_func(func, MFD_ITEM_FUNC, TRUE, MFD_ACTIVE, TRUE);
         }
     }
+}
 
-    uchar mfd_distance_remove(ubyte slot_func) {
-        switch (slot_func) {
-        case MFD_KEYPAD_FUNC:
-        case MFD_FIXTURE_FUNC:
-        case MFD_ELEV_FUNC:
-        case MFD_BARK_FUNC:
-        case MFD_ACCESSPANEL_FUNC:
-        case MFD_GUMP_FUNC:
-        case MFD_GRIDPANEL_FUNC:
-            return TRUE;
-        }
-        return FALSE;
+uchar mfd_distance_remove(ubyte slot_func) {
+    switch (slot_func) {
+    case MFD_KEYPAD_FUNC:
+    case MFD_FIXTURE_FUNC:
+    case MFD_ELEV_FUNC:
+    case MFD_BARK_FUNC:
+    case MFD_ACCESSPANEL_FUNC:
+    case MFD_GUMP_FUNC:
+    case MFD_GRIDPANEL_FUNC:
+        return TRUE;
     }
+    return FALSE;
+}
 
-    // -------
-    // DEFAULT MFD FUNC QUALIFYING FUNCTIONS
-    uchar mfd_target_qual(void) { return (player_struct.hardwarez[HARDWARE_TARGET] > 0); }
+// -------
+// DEFAULT MFD FUNC QUALIFYING FUNCTIONS
+uchar mfd_target_qual(void) { return (player_struct.hardwarez[HARDWARE_TARGET] > 0); }
 
-    uchar mfd_automap_qual(void) { return (player_struct.hardwarez[HARDWARE_AUTOMAP] > 0); }
+uchar mfd_automap_qual(void) { return (player_struct.hardwarez[HARDWARE_AUTOMAP] > 0); }
 
-    uchar mfd_weapon_qual(void) {
-        return (player_struct.weapons[player_struct.actives[ACTIVE_WEAPON]].type != EMPTY_WEAPON_SLOT);
-    }
+uchar mfd_weapon_qual(void) {
+    return (player_struct.weapons[player_struct.actives[ACTIVE_WEAPON]].type != EMPTY_WEAPON_SLOT);
+}
 
-    // --------------------------------------------------------
-    // THE STATIC MFD_FUNCS ARRAY
+// --------------------------------------------------------
+// THE STATIC MFD_FUNCS ARRAY
 
-    extern void mfd_view360_expose(MFD * mfd, ubyte control);
-    extern void mfd_dummy_expose(MFD * mfd, ubyte control);
-    extern void mfd_fixture_expose(MFD * mfd, ubyte control);
-    extern uchar mfd_fixture_handler(MFD * mfd, uiEvent * e);
-    extern void mfd_emailmug_expose(MFD * mfd, ubyte control);
-    extern uchar mfd_emailmug_handler(MFD * mfd, uiEvent * e);
-    extern errtype mfd_emailware_init(MFD_Func * f);
-    extern void mfd_emailware_expose(MFD *, ubyte);
-    extern void mfd_plotware_expose(MFD *, ubyte);
-    extern errtype mfd_plotware_init(MFD_Func * f);
-    extern void mfd_bark_expose(MFD *, ubyte);
-    extern errtype mfd_accesspanel_init(MFD_Func * f);
-    extern uchar mfd_accesspanel_handler(MFD * mfd, uiEvent * ev);
-    extern void mfd_accesspanel_expose(MFD * mfd, ubyte control);
-    extern errtype mfd_gridpanel_init(MFD_Func * f);
-    extern void mfd_gridpanel_expose(MFD * mfd, ubyte control);
-    extern uchar mfd_gridpanel_handler(MFD * mfd, uiEvent * ev);
-    extern void mfd_targetware_expose(MFD * mfd, ubyte control);
-    extern uchar mfd_targetware_handler(MFD * mfd, uiEvent * ev);
-    extern void mfd_gump_expose(MFD * mfd, ubyte control);
-    extern uchar mfd_gump_handler(MFD * mfd, uiEvent * ev);
-    extern void mfd_accesscard_expose(MFD * mfd, ubyte control);
-    extern void mfd_biohelp_expose(MFD * mfd, ubyte control);
-    extern errtype mfd_biohelp_init(MFD_Func * f);
-    extern uchar mfd_biohelp_handler(MFD * mfd, uiEvent * ev);
-    extern void mfd_cspace_expose(MFD * mfd, ubyte control);
-    extern void mfd_viewhelp_expose(MFD * mfd, ubyte control);
-    extern errtype mfd_viewhelp_init(MFD_Func * f);
-    extern void mfd_gear_expose(MFD * mfd, ubyte control);
-    extern uchar mfd_gear_handler(MFD * mfd, uiEvent * ev);
+extern void mfd_view360_expose(MFD *mfd, ubyte control);
+extern void mfd_dummy_expose(MFD *mfd, ubyte control);
+extern void mfd_fixture_expose(MFD *mfd, ubyte control);
+extern uchar mfd_fixture_handler(MFD *mfd, uiEvent *e);
+extern void mfd_emailmug_expose(MFD *mfd, ubyte control);
+extern uchar mfd_emailmug_handler(MFD *mfd, uiEvent *e);
+extern errtype mfd_emailware_init(MFD_Func *f);
+extern void mfd_emailware_expose(MFD *, ubyte);
+extern void mfd_plotware_expose(MFD *, ubyte);
+extern errtype mfd_plotware_init(MFD_Func *f);
+extern void mfd_bark_expose(MFD *, ubyte);
+extern errtype mfd_accesspanel_init(MFD_Func *f);
+extern uchar mfd_accesspanel_handler(MFD *mfd, uiEvent *ev);
+extern void mfd_accesspanel_expose(MFD *mfd, ubyte control);
+extern errtype mfd_gridpanel_init(MFD_Func *f);
+extern void mfd_gridpanel_expose(MFD *mfd, ubyte control);
+extern uchar mfd_gridpanel_handler(MFD *mfd, uiEvent *ev);
+extern void mfd_targetware_expose(MFD *mfd, ubyte control);
+extern uchar mfd_targetware_handler(MFD *mfd, uiEvent *ev);
+extern void mfd_gump_expose(MFD *mfd, ubyte control);
+extern uchar mfd_gump_handler(MFD *mfd, uiEvent *ev);
+extern void mfd_accesscard_expose(MFD *mfd, ubyte control);
+extern void mfd_biohelp_expose(MFD *mfd, ubyte control);
+extern errtype mfd_biohelp_init(MFD_Func *f);
+extern uchar mfd_biohelp_handler(MFD *mfd, uiEvent *ev);
+extern void mfd_cspace_expose(MFD *mfd, ubyte control);
+extern void mfd_viewhelp_expose(MFD *mfd, ubyte control);
+extern errtype mfd_viewhelp_init(MFD_Func *f);
+extern void mfd_gear_expose(MFD *mfd, ubyte control);
+extern uchar mfd_gear_handler(MFD *mfd, uiEvent *ev);
 
 #define PANEL_PRIORITY 37
 
-    MFD_Func mfd_funcs[MFD_NUM_FUNCS] = {
-        // MFD_EMPTY_FUNC   0
-        {mfd_expose_blank, NULL, NULL, 255, MFD_NOSAVEREST},
-        // MFD_ITEM_FUNC    1
-        {mfd_item_expose, mfd_item_handler, mfd_item_init, 40},
-        // MFD_MAP_FUNC     2
-        {mfd_map_expose, mfd_map_handler, mfd_map_init, 20, MFD_INCREMENTAL},
-        // MFD_TARGET_FUNC  3
-        {mfd_target_expose, mfd_target_handler, NULL, 21},
-        // MFD_ANIM_FUNC    4
-        {mfd_expose_blank, NULL, NULL, 255},
-        // MFD_WEAPON_FUNC  5
-        {mfd_weapon_expose, mfd_weapon_handler, mfd_weapon_init, 25},
-        // MFD_BIOWARE_FUNC 6
-        {mfd_bioware_expose, NULL, NULL, 50, MFD_NOSAVEREST},
-        // MFD_LANTERN_FUNC 7
-        {mfd_lanternware_expose, NULL, mfd_lanternware_init, 38},
-        // MFD_3DVIEW_FUNC  8
-        {mfd_view360_expose, NULL, NULL, 25, MFD_NOSAVEREST},
-        // MFD_ELEV_FUNC    9
-        {mfd_elevator_expose, NULL, mfd_elevator_init, PANEL_PRIORITY, MFD_NOSAVEREST},
-        // MFD_GRENADE_FUNC 10
-        {mfd_grenade_expose, mfd_grenade_handler, mfd_grenade_init, 32},
-        // MFD_HUD_FUNC     11
-        {mfd_expose_blank,},
-        // MFD_FIXTURE_FUNC 12
-        {mfd_fixture_expose, mfd_fixture_handler, NULL, 32, MFD_NOSAVEREST},
-        // MFD_KEYPAD_FUNC  13
-        {mfd_keypad_expose, mfd_keypad_handler, mfd_keypad_init, PANEL_PRIORITY, MFD_NOSAVEREST},
-        // MFD_EMAILMUG_FUNC 14
-        {mfd_emailmug_expose, mfd_emailmug_handler, NULL, 60, MFD_NOSAVEREST},
-        // MFD_EMAILWARE_FUNC 15
-        {mfd_emailware_expose, NULL, mfd_emailware_init, 60},
-        // MFD_PLOTWARE_FUNC  16
-        {mfd_plotware_expose, NULL, mfd_plotware_init, 55},
-        // MFD_BARK_FUNC 17
-        {mfd_bark_expose, NULL, NULL, 255, MFD_NOSAVEREST},
-        // MFD_ACCESSPANEL_FUNC 18
-        {mfd_accesspanel_expose, mfd_accesspanel_handler, mfd_accesspanel_init, PANEL_PRIORITY,
-         MFD_INCREMENTAL | MFD_NOSAVEREST},
-        // MFD_SHIELD_FUNC 19
-        {mfd_shieldware_expose, mfd_shield_handler, mfd_shield_init, 36},
-        // MFD_MOTION_FUNC 20
-        {mfd_motionware_expose, NULL, mfd_motion_init, 36},
-        // MFD_SEVERED_HEAD_FUNC 21
-        {severed_head_expose, NULL, NULL, 250},
-        // MFD_TARGETWARE_FUNC 22
-        {mfd_targetware_expose, mfd_targetware_handler, NULL, 40},
-        // MFD_GUMP_FUNC 23
-        {mfd_gump_expose, mfd_gump_handler, NULL, 40, MFD_NOSAVEREST},
-        // MFD_CARD_FUNC 24
-        {mfd_accesscard_expose, NULL, NULL, 40},
-        // MFD_BIOHELP_FUNC 25
-        {mfd_biohelp_expose, mfd_biohelp_handler, mfd_biohelp_init, 40},
-        // MFD_GRIDPANEL_FUNC 26
-        {mfd_gridpanel_expose, mfd_gridpanel_handler, mfd_gridpanel_init, PANEL_PRIORITY, MFD_NOSAVEREST},
-        // MFD_GAMES_FUNC 27
-        {mfd_games_expose, mfd_games_handler, mfd_games_init, PANEL_PRIORITY, MFD_INCREMENTAL | MFD_NOSAVEREST},
-        // MFD_CYBERSPACE_FUNC 28
-        {mfd_cspace_expose, NULL, NULL, 40},
-        // MFD_VIEWHELP_FUNC 29
-        {mfd_viewhelp_expose, NULL, mfd_viewhelp_init, 40},
-        // MFD_GEAR_FUNC 30
-        {mfd_gear_expose, mfd_gear_handler, NULL, 40}
-    };
+MFD_Func mfd_funcs[MFD_NUM_FUNCS] = {
+    // MFD_EMPTY_FUNC   0
+    {mfd_expose_blank, NULL, NULL, 255, MFD_NOSAVEREST},
+    // MFD_ITEM_FUNC    1
+    {mfd_item_expose, mfd_item_handler, mfd_item_init, 40},
+    // MFD_MAP_FUNC     2
+    {mfd_map_expose, mfd_map_handler, mfd_map_init, 20, MFD_INCREMENTAL},
+    // MFD_TARGET_FUNC  3
+    {mfd_target_expose, mfd_target_handler, NULL, 21},
+    // MFD_ANIM_FUNC    4
+    {mfd_expose_blank, NULL, NULL, 255},
+    // MFD_WEAPON_FUNC  5
+    {mfd_weapon_expose, mfd_weapon_handler, mfd_weapon_init, 25},
+    // MFD_BIOWARE_FUNC 6
+    {mfd_bioware_expose, NULL, NULL, 50, MFD_NOSAVEREST},
+    // MFD_LANTERN_FUNC 7
+    {mfd_lanternware_expose, NULL, mfd_lanternware_init, 38},
+    // MFD_3DVIEW_FUNC  8
+    {mfd_view360_expose, NULL, NULL, 25, MFD_NOSAVEREST},
+    // MFD_ELEV_FUNC    9
+    {mfd_elevator_expose, NULL, mfd_elevator_init, PANEL_PRIORITY, MFD_NOSAVEREST},
+    // MFD_GRENADE_FUNC 10
+    {mfd_grenade_expose, mfd_grenade_handler, mfd_grenade_init, 32},
+    // MFD_HUD_FUNC     11
+    {
+        mfd_expose_blank,
+    },
+    // MFD_FIXTURE_FUNC 12
+    {mfd_fixture_expose, mfd_fixture_handler, NULL, 32, MFD_NOSAVEREST},
+    // MFD_KEYPAD_FUNC  13
+    {mfd_keypad_expose, mfd_keypad_handler, mfd_keypad_init, PANEL_PRIORITY, MFD_NOSAVEREST},
+    // MFD_EMAILMUG_FUNC 14
+    {mfd_emailmug_expose, mfd_emailmug_handler, NULL, 60, MFD_NOSAVEREST},
+    // MFD_EMAILWARE_FUNC 15
+    {mfd_emailware_expose, NULL, mfd_emailware_init, 60},
+    // MFD_PLOTWARE_FUNC  16
+    {mfd_plotware_expose, NULL, mfd_plotware_init, 55},
+    // MFD_BARK_FUNC 17
+    {mfd_bark_expose, NULL, NULL, 255, MFD_NOSAVEREST},
+    // MFD_ACCESSPANEL_FUNC 18
+    {mfd_accesspanel_expose, mfd_accesspanel_handler, mfd_accesspanel_init, PANEL_PRIORITY,
+     MFD_INCREMENTAL | MFD_NOSAVEREST},
+    // MFD_SHIELD_FUNC 19
+    {mfd_shieldware_expose, mfd_shield_handler, mfd_shield_init, 36},
+    // MFD_MOTION_FUNC 20
+    {mfd_motionware_expose, NULL, mfd_motion_init, 36},
+    // MFD_SEVERED_HEAD_FUNC 21
+    {severed_head_expose, NULL, NULL, 250},
+    // MFD_TARGETWARE_FUNC 22
+    {mfd_targetware_expose, mfd_targetware_handler, NULL, 40},
+    // MFD_GUMP_FUNC 23
+    {mfd_gump_expose, mfd_gump_handler, NULL, 40, MFD_NOSAVEREST},
+    // MFD_CARD_FUNC 24
+    {mfd_accesscard_expose, NULL, NULL, 40},
+    // MFD_BIOHELP_FUNC 25
+    {mfd_biohelp_expose, mfd_biohelp_handler, mfd_biohelp_init, 40},
+    // MFD_GRIDPANEL_FUNC 26
+    {mfd_gridpanel_expose, mfd_gridpanel_handler, mfd_gridpanel_init, PANEL_PRIORITY, MFD_NOSAVEREST},
+    // MFD_GAMES_FUNC 27
+    {mfd_games_expose, mfd_games_handler, mfd_games_init, PANEL_PRIORITY, MFD_INCREMENTAL | MFD_NOSAVEREST},
+    // MFD_CYBERSPACE_FUNC 28
+    {mfd_cspace_expose, NULL, NULL, 40},
+    // MFD_VIEWHELP_FUNC 29
+    {mfd_viewhelp_expose, NULL, mfd_viewhelp_init, 40},
+    // MFD_GEAR_FUNC 30
+    {mfd_gear_expose, mfd_gear_handler, NULL, 40}};
