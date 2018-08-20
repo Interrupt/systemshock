@@ -468,8 +468,8 @@ int32_t AmovWriteClose(Afile *paf) {
 
     // Free up stuff
     free(pmi->pmc);
-    free(pmi);
     fclose(pmi->fpTemp);
+    free(pmi);
     fclose(paf->fp);
     unlink(MOV_TEMP_FILENAME);
     return (0);
