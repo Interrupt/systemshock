@@ -54,7 +54,7 @@ char *fr_get_frame_rate(void) {
                 num /= _frp.time.last_frame_cnt;
             num = 28000 / num;
 
-            snprintf(fr_str, sizeof(fr_str), "%d", num);
+            snprintf(fr_str, sizeof(fr_str), "%ld", num);
 
             mod = strlen(fr_str);
             fr_str[mod + 1] = fr_str[mod];
