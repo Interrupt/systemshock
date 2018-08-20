@@ -83,9 +83,9 @@ int fr_pts_freemem(void) {
     int i;
     if (_fr_pt_wid == 0)
         _fr_ret_val(FR_NO_NEED);
-    for (i = 0; i < 3; i++) {
-        Free(*(pt_rowv + i));
-        Free(*(pt_lsts + i));
+    for (i = 0; i < 2; i++) {
+        free(*(pt_rowv + i));
+        free(*(pt_lsts + i));
     }
     _fr_pt_wid = 0;
 #endif
@@ -99,7 +99,7 @@ int fr_pts_resize(int x, int y) // x, y
     int i;
     fr_pts_freemem();
     _fr_pt_wid = x + 1;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 2; i++) {
         if (((*(pt_rowv + i)) = Malloc(x * sizeof(ushort))) == NULL)
             _fr_ret_val(FR_NOMEM);
         if (((*(pt_lsts + i)) = Malloc(x * sizeof(g3s_phandle))) == NULL)
