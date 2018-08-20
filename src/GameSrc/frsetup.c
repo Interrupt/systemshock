@@ -447,8 +447,10 @@ frc *fr_place_view(frc *view, void *v_cam, void *cnvs, int pflags, char axis, in
             if (!((rowbytes / 64) & 1))
                 rowbytes += 64;
             p = (uchar *)malloc(rowbytes * hgt + 32);
-            if (p == NULL)
+            if (p == NULL) {
+                free(fr);
                 return NULL;
+            }
             fr->realCanvasPtr = (Ptr)p;
             gr_init_canvas(&fr->main_canvas, (uchar *)((ulong)(p + 31) & 0xFFFFFFE0), BMT_FLAT8, wid, hgt);
             fr->main_canvas.bm.row = rowbytes;
@@ -775,7 +777,7 @@ int fr_start_view(void) {
 
     g3_set_bitmap_scale(fix_make(0, (int)(2048 / 3)), fix_make(0, (int)(2048 / 3)));
     //	g3_get_FOV(&x_fov,&y_fov);
-    if (!_fr->flags & FR_DOUBLEB_MASK)
+    if (!(_fr->flags & FR_DOUBLEB_MASK))
         (*fr_mouse_hide)();
     else if (_fr->horizon_call)
         _fr->horizon_call(&_fr->draw_canvas.bm, _fr_curflags);
