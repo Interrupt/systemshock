@@ -46,8 +46,8 @@ uchar sfx_on = TRUE;
 //  Externs
 //--------------------
 extern int _fr_global_detail;
-extern Boolean DoubleSize;
-extern Boolean SkipLines;
+extern bool DoubleSize;
+extern bool SkipLines;
 extern short mode_id;
 
 extern uchar curr_vol_lev;

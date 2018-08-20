@@ -138,7 +138,7 @@ HudLine hud_lines[] = {
 
 #define HUDLINE_BUFFER(i) (hudline_text[HUDLINE_TEXT(&hud_lines[i])])
 
-extern Boolean DoubleSize;
+extern bool DoubleSize;
 
 // --------------
 //  PROTOTYPES

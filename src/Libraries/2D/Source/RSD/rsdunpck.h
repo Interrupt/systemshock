@@ -47,11 +47,8 @@ extern uchar *grd_unpack_buf;
 extern int gr_rsd8_convert(grs_bitmap *sbm, grs_bitmap *dbm);
 // #endif
 
-#if defined(powerc) || defined(__powerc)
 uchar *gr_rsd8_unpack(uchar* src, uchar *dst);
-#else
-asm uchar *gr_rsd8_unpack(uchar* src, uchar *dst);
-#endif
+
 //#pragma aux gr_rsd8_unpack parm [esi] [edi] value [edi] modify [eax ecx edx esi edi]
 
 #define gr_set_unpack_buf(buf) grd_unpack_buf=buf

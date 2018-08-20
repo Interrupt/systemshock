@@ -194,7 +194,7 @@ errtype hack_camera_takeover(int hack_cam) {
     extern LGPoint use_cursor_pos;
     LGPoint ucp;
     extern void zoom_rect(LGRect * start, LGRect * end);
-    extern Boolean DoubleSize;
+    extern bool DoubleSize;
     extern LGRect mainview_rect;
     extern LGRect fscrn_rect;
     cams *cam = fr_camera_getdef();

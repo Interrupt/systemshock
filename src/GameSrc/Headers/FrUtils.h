@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // externs for functions in FrUtils.C
 
-#if (defined(powerc) || defined(__powerc))
 extern void Fast_Slot_Copy(grs_bitmap *bm);
 extern void Fast_FullScreen_Copy(grs_bitmap *bm);
 extern void Fast_Slot_Double(grs_bitmap *bm, long w, long h);
@@ -26,14 +25,6 @@ extern void Fast_FullScreen_Double(grs_bitmap *bm, long w, long h);
 
 void FastSlotDouble2Canvas(grs_bitmap *bm, grs_canvas *destCanvas, long w, long h);
 void FastFullscreenDouble2Canvas(grs_bitmap *bm, grs_canvas *destCanvas, long w, long h);
-
-#else
-
-extern asm void Fast_Slot_Copy(grs_bitmap *bm);
-extern asm void Fast_FullScreen_Copy(grs_bitmap *bm);
-extern asm void Fast_Slot_Double(grs_bitmap *bm, long w, long h);
-extern asm void Fast_FullScreen_Double(grs_bitmap *bm, long w, long h);
-#endif
 
 // Stuff for the low-res temporary offscreen buffer.
 extern grs_canvas gDoubleSizeOffCanvas;

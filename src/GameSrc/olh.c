@@ -226,7 +226,7 @@ got_id:
 // ---------
 // EXTERNALS
 // ---------
-extern Boolean DoubleSize;
+extern bool DoubleSize;
 
 //-----------------------------
 // olh_scan_objects()

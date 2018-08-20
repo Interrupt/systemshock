@@ -66,28 +66,10 @@ int				gQueueTime;									// Amount of time (in millisecs) to wait to queue nex
 //---------------------------------------------------------------
 #pragma require_prototypes off
 
-#ifndef __powerc
-//CalcTuneTaskPtr GetCalcTuneTask(void) = 0x2049;				// MOVE.L A1,A0
-//CalcTuneTaskPtr	tmTaskPtr = GetCalcTuneTask();
-#endif
-
 //---------------------------------------------------------------
-#ifdef __powerc
-pascal void CalcTuneProc(TMTaskPtr)
-#else
 pascal void CalcTuneProc(void)
-#endif
 {
-#ifndef __powerc
-	//CalcTuneTaskPtr	tmTaskPtr = GetCalcTuneTask();			// get address of task record
-	//long					curA5 = SetA5(tmTaskPtr->appA5);		// save and set value of A5
-#endif
-	
 	gReadyToQueue = TRUE;								// It's time to queue up another tune.
-	
-#ifndef __powerc
-	//SetA5(curA5);											// restore A5
-#endif
 }
 #pragma require_prototypes on
 

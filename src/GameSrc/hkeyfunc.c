@@ -222,7 +222,7 @@ uchar toggle_bool_func(short keycode, ulong context, bool *tgl) {
     return TRUE;
 }
 
-extern Boolean DoubleSize;
+extern bool DoubleSize;
 
 uchar change_mode_func(short keycode, ulong context, void *data) {
     int newm = (int)data;

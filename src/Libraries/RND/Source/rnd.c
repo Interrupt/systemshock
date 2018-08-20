@@ -126,36 +126,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 //	---------------------------------------------------------------
-//  Get the high 32-bit result of the unsigned multiply of 2 32-bit numbers.
-//	---------------------------------------------------------------
-/*
-#pragma aux high_umpy =\								// Original 386 code.
-   "mul    edx"      \
-	"mov    eax,edx"  \
-   parm [eax] [edx]  \
-   modify [eax edx];
-*/
-#if defined(powerc) || defined(__powerc)
-
-ulong high_umpy(ulong a, ulong b);					//  Code in RndAsm.s
-
-#else
-ulong high_umpy(ulong a, ulong b);					// Proto
-ulong asm high_umpy(ulong a, ulong b)
- {
- 	move.l	4(A7), d0
-	dc.w		0x4C2F,0x0401,0x0008		// 	mulu.l	8(A7),d1:d0
-	move.l	d1,d0
- 	rts
- }
-#endif
-
- ulong high_umpy(ulong a, ulong b)
- {
- 	return a * b;
- }
-
-//	---------------------------------------------------------------
 //		ROUTINES WHICH SCALE RNUMS INTO RANGE
 //	---------------------------------------------------------------
 //

@@ -120,7 +120,7 @@ extern frc *svga_render_context;
 // DEFINES
 // -------
 
-extern Boolean DoubleSize;
+extern bool DoubleSize;
 
 #define CFG_DCLICK_RATE_VAR "dclick_time"
 #define CFG_OOMPHOMETER "throw_oomph"
@@ -1093,8 +1093,8 @@ void alloc_cursor_bitmaps(void) {
 
 #include "frtypes.h"
 extern Boolean gPlayingGame;
-extern Boolean DoubleSize;
-extern Boolean SkipLines;
+extern bool DoubleSize;
+extern bool SkipLines;
 extern void change_svga_screen_mode(void);
 Boolean gShowFrameCounter = FALSE;
 Boolean gShowMusicGlobals = FALSE;

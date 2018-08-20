@@ -793,7 +793,7 @@ void activate_jumpjets(fix *xcntl, fix *ycntl, fix *zcntl) {
 //-----------------------
 void fullscreen_turnon(uchar visible, uchar real_start);
 void fullscreen_turnoff(uchar visible, uchar real_start);
-extern Boolean DoubleSize;
+extern bool DoubleSize;
 
 void fullscreen_turnon(uchar visible, uchar real_s) {
     if (visible) {

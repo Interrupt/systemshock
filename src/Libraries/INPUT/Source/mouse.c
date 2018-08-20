@@ -151,10 +151,6 @@ static void ReadMouseState(mouse_state *pMouseState);
 //---------------------------------------------------------------
 #pragma require_prototypes off
 
-#ifndef __powerc
-//MouseTaskPtr GetMouseTask(void) = 0x2049;							// MOVE.L A1,A0
-#endif
-
 // KLC - try calling this from the main timer task.
 //---------------------------------------------------------------
 //#ifdef __powerc

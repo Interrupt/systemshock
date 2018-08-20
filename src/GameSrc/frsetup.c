@@ -159,13 +159,8 @@ void (*fr_rend_start)(void);
 grs_bitmap *(*fr_get_tmap)(void);
 
 // Set by machine type
-#if (defined(powerc) || defined(__powerc))
-Boolean DoubleSize = false;
-Boolean SkipLines = false;
-#else
-Boolean DoubleSize = true;
-Boolean SkipLines = false;
-#endif
+bool DoubleSize = false;
+bool SkipLines = false;
 
 int (*_fr_glob_draw_call)(void *dest_canvas, void *dest_bm, int x, int y, int flags) = NULL;
 void (*_fr_glob_horizon_call)(void *dest_bm, int flags) = NULL;
