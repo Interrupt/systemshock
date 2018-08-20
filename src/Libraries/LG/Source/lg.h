@@ -58,18 +58,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define	lg_max(a,b) (((a) > (b)) ? (a) : (b))
 #define	lg_min(a,b) (((a) < (b)) ? (a) : (b))
 
-// optimized routines to replace standard C functions
-/*
-#if (defined(powerc) || defined(__powerc))	
-extern void *LG_memset(void *dest, int val, unsigned int count);
-extern void *LG_memcpy(void *dest, const void *src, unsigned int count);
-extern void *LG_memmove(void *dest, const void *src, unsigned int count);
-#else
-extern asm void *LG_memset(void *dest, int val, unsigned int count);
-extern asm void *LG_memcpy(void *dest, const void *src, unsigned int count);
-extern asm void *LG_memmove(void *dest, const void *src, unsigned int count);
-#endif
-*/
 #define LG_memset memset
 #define LG_memcpy memcpy
 #define LG_memmove memmove
@@ -91,4 +79,3 @@ extern asm void *LG_memmove(void *dest, const void *src, unsigned int count);
 #define AUDIOLOGS			1
 #define SVGA_CUTSCENES		1
 #define LOST_TREASURES_OF_MFD_GAMES		1
-
