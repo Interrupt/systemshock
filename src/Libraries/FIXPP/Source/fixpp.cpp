@@ -51,30 +51,23 @@ char *bitdump(Fixpoint &a) {
     return string;
 }
 
-#endif /* FIXDEBUG */
+uint8_t Fixpoint::click_bool = 1;
 
-Fixpoint Fixpoint_one_over_two_pi = f2Fixpoint(0.159154943);
-Fixpoint Fixpoint_two_pi = f2Fixpoint(6.283185306);
+uint32_t Fixpoint::constructor_void = 0, Fixpoint::constructor_Fixpoint = 0, Fixpoint::constructor_int = 0,
+    Fixpoint::constructor_uint = 0, Fixpoint::constructor_lint = 0, Fixpoint::constructor_ulint = 0,
+    Fixpoint::constructor_double = 0;
 
-#ifdef FIXDEBUG
+uint32_t Fixpoint::ass_Fixpoint = 0, Fixpoint::ass_int = 0, Fixpoint::ass_lint = 0, Fixpoint::ass_uint = 0,
+    Fixpoint::ass_ulint = 0, Fixpoint::ass_double = 0;
 
-uchar Fixpoint::click_bool = 1;
+uint32_t Fixpoint::binary_add = 0, Fixpoint::binary_div = 0, Fixpoint::binary_sub = 0, Fixpoint::binary_mul = 0;
 
-ulong Fixpoint::constructor_void = 0, Fixpoint::constructor_Fixpoint = 0, Fixpoint::constructor_int = 0,
-      Fixpoint::constructor_uint = 0, Fixpoint::constructor_lint = 0, Fixpoint::constructor_ulint = 0,
-      Fixpoint::constructor_double = 0;
+uint32_t Fixpoint::add_eq = 0, Fixpoint::sub_eq = 0, Fixpoint::mul_eq = 0, Fixpoint::div_eq = 0;
 
-ulong Fixpoint::ass_Fixpoint = 0, Fixpoint::ass_int = 0, Fixpoint::ass_lint = 0, Fixpoint::ass_uint = 0,
-      Fixpoint::ass_ulint = 0, Fixpoint::ass_double = 0;
+uint32_t Fixpoint::unary_minus = 0, Fixpoint::unary_plus = 0;
 
-ulong Fixpoint::binary_add = 0, Fixpoint::binary_div = 0, Fixpoint::binary_sub = 0, Fixpoint::binary_mul = 0;
-
-ulong Fixpoint::add_eq = 0, Fixpoint::sub_eq = 0, Fixpoint::mul_eq = 0, Fixpoint::div_eq = 0;
-
-ulong Fixpoint::unary_minus = 0, Fixpoint::unary_plus = 0;
-
-ulong Fixpoint::cond_l = 0, Fixpoint::cond_g = 0, Fixpoint::cond_le = 0, Fixpoint::cond_ge = 0, Fixpoint::cond_eq = 0,
-      Fixpoint::cond_neq = 0;
+uint32_t Fixpoint::cond_l = 0, Fixpoint::cond_g = 0, Fixpoint::cond_le = 0, Fixpoint::cond_ge = 0,
+    Fixpoint::cond_eq = 0, Fixpoint::cond_neq = 0;
 
 void Fixpoint::report(void) { report(std::cout); }
 
