@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // ЅЅЅ For now, turn debugging on, so we can run the test programs.
-#define FIXDEBUG 1
+//#define FIXDEBUG 1
 
 #include <math.h>
 
@@ -52,15 +52,6 @@ char *bitdump(Fixpoint &a) {
 }
 
 #endif /* FIXDEBUG */
-
-// Moved here from header file - KC
-/*Fixpoint rawConstruct( long l )
-{
-        Fixpoint f;
-        f.val = l;
-        return f;
-}
-#define f2Fixpoint(x) (rawConstruct( (long)((x)*SHIFTMULTIPLIER) ))*/
 
 Fixpoint Fixpoint_one_over_two_pi = f2Fixpoint(0.159154943);
 Fixpoint Fixpoint_two_pi = f2Fixpoint(6.283185306);
