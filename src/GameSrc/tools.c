@@ -235,9 +235,9 @@ errtype draw_full_res_bm(Ref id, int x, int y, uchar fade_in) {
     f->bm.bits = (uchar *)(f + 1);
     ss_bitmap(&f->bm, x, y); // KLC  ss_bitmap(&f->bm, x, y);
     RefUnlock(id);
-    ResDrop(REFID(id));
     if (fade_in)
         finish_pal_effect(pal_id);
+    ResDrop(REFID(id));
     return (OK);
 }
 
