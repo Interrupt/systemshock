@@ -44,11 +44,11 @@ void touch(Fixpoint &a) { a = a; }
 // ===========================================================
 
 char *bitdump(Fixpoint &a) {
-  static char string[30];
+    static char string[30];
 
-  sprintf(string, "[%#lx]", a.val);
+    sprintf(string, "[%#lx]", a.val);
 
-  return string;
+    return string;
 }
 
 #endif /* FIXDEBUG */
@@ -69,81 +69,66 @@ Fixpoint Fixpoint_two_pi = f2Fixpoint(6.283185306);
 
 uchar Fixpoint::click_bool = 1;
 
-ulong Fixpoint::constructor_void = 0, Fixpoint::constructor_Fixpoint = 0,
-      Fixpoint::constructor_int = 0, Fixpoint::constructor_uint = 0,
-      Fixpoint::constructor_lint = 0, Fixpoint::constructor_ulint = 0,
+ulong Fixpoint::constructor_void = 0, Fixpoint::constructor_Fixpoint = 0, Fixpoint::constructor_int = 0,
+      Fixpoint::constructor_uint = 0, Fixpoint::constructor_lint = 0, Fixpoint::constructor_ulint = 0,
       Fixpoint::constructor_double = 0;
 
-ulong Fixpoint::ass_Fixpoint = 0, Fixpoint::ass_int = 0, Fixpoint::ass_lint = 0,
-      Fixpoint::ass_uint = 0, Fixpoint::ass_ulint = 0, Fixpoint::ass_double = 0;
+ulong Fixpoint::ass_Fixpoint = 0, Fixpoint::ass_int = 0, Fixpoint::ass_lint = 0, Fixpoint::ass_uint = 0,
+      Fixpoint::ass_ulint = 0, Fixpoint::ass_double = 0;
 
-ulong Fixpoint::binary_add = 0, Fixpoint::binary_div = 0,
-      Fixpoint::binary_sub = 0, Fixpoint::binary_mul = 0;
+ulong Fixpoint::binary_add = 0, Fixpoint::binary_div = 0, Fixpoint::binary_sub = 0, Fixpoint::binary_mul = 0;
 
-ulong Fixpoint::add_eq = 0, Fixpoint::sub_eq = 0, Fixpoint::mul_eq = 0,
-      Fixpoint::div_eq = 0;
+ulong Fixpoint::add_eq = 0, Fixpoint::sub_eq = 0, Fixpoint::mul_eq = 0, Fixpoint::div_eq = 0;
 
 ulong Fixpoint::unary_minus = 0, Fixpoint::unary_plus = 0;
 
-ulong Fixpoint::cond_l = 0, Fixpoint::cond_g = 0, Fixpoint::cond_le = 0,
-      Fixpoint::cond_ge = 0, Fixpoint::cond_eq = 0, Fixpoint::cond_neq = 0;
+ulong Fixpoint::cond_l = 0, Fixpoint::cond_g = 0, Fixpoint::cond_le = 0, Fixpoint::cond_ge = 0, Fixpoint::cond_eq = 0,
+      Fixpoint::cond_neq = 0;
 
 void Fixpoint::report(void) { report(std::cout); }
 
 void Fixpoint::report(std::ostream &os) {
-  os << "Constructor     void: " << constructor_void << '\n';
-  os << "Constructor Fixpoint: " << constructor_Fixpoint << '\n';
-  os << "Constructor      int: " << constructor_int << '\n';
-  os << "Constructor     lint: " << constructor_lint << '\n';
-  os << "Constructor     uint: " << constructor_uint << '\n';
-  os << "Constructor    ulint: " << constructor_ulint << '\n';
-  os << "Constructor   double: " << constructor_double << '\n';
+    os << "Constructor     void: " << constructor_void << '\n';
+    os << "Constructor Fixpoint: " << constructor_Fixpoint << '\n';
+    os << "Constructor      int: " << constructor_int << '\n';
+    os << "Constructor     lint: " << constructor_lint << '\n';
+    os << "Constructor     uint: " << constructor_uint << '\n';
+    os << "Constructor    ulint: " << constructor_ulint << '\n';
+    os << "Constructor   double: " << constructor_double << '\n';
 
-  os << "Assign to Fixpoint:   " << ass_Fixpoint << '\n';
-  os << "Assign to int:        " << ass_int << '\n';
-  os << "Assign to uint:       " << ass_uint << '\n';
-  os << "Assign to lint:       " << ass_lint << '\n';
-  os << "Assign to ulint:      " << ass_ulint << '\n';
-  os << "Assign to double:     " << ass_double << '\n';
+    os << "Assign to Fixpoint:   " << ass_Fixpoint << '\n';
+    os << "Assign to int:        " << ass_int << '\n';
+    os << "Assign to uint:       " << ass_uint << '\n';
+    os << "Assign to lint:       " << ass_lint << '\n';
+    os << "Assign to ulint:      " << ass_ulint << '\n';
+    os << "Assign to double:     " << ass_double << '\n';
 
-  os << "Binary Add:           " << binary_add << '\n';
-  os << "Binary Sub:           " << binary_sub << '\n';
-  os << "Binary Div:           " << binary_div << '\n';
-  os << "Binary Mul:           " << binary_mul << '\n';
+    os << "Binary Add:           " << binary_add << '\n';
+    os << "Binary Sub:           " << binary_sub << '\n';
+    os << "Binary Div:           " << binary_div << '\n';
+    os << "Binary Mul:           " << binary_mul << '\n';
 
-  os << "Add-equals            " << add_eq << '\n';
-  os << "Sub-equals            " << sub_eq << '\n';
-  os << "Mul-equals            " << mul_eq << '\n';
-  os << "Div-equals            " << div_eq << '\n';
+    os << "Add-equals            " << add_eq << '\n';
+    os << "Sub-equals            " << sub_eq << '\n';
+    os << "Mul-equals            " << mul_eq << '\n';
+    os << "Div-equals            " << div_eq << '\n';
 
-  os << "Unary minus           " << unary_minus << '\n';
-  os << "Unary  plus           " << unary_plus << '\n';
+    os << "Unary minus           " << unary_minus << '\n';
+    os << "Unary  plus           " << unary_plus << '\n';
 
-  os << "<                     " << cond_l << '\n';
-  os << ">                     " << cond_g << '\n';
-  os << "<=                    " << cond_le << '\n';
-  os << ">=                    " << cond_ge << '\n';
-  os << "==                    " << cond_eq << '\n';
-  os << "!=                    " << cond_neq << '\n';
+    os << "<                     " << cond_l << '\n';
+    os << ">                     " << cond_g << '\n';
+    os << "<=                    " << cond_le << '\n';
+    os << ">=                    " << cond_ge << '\n';
+    os << "==                    " << cond_eq << '\n';
+    os << "!=                    " << cond_neq << '\n';
 }
 
 void Fixpoint::reset_report(void) {
-  constructor_void = constructor_Fixpoint = constructor_int = constructor_uint =
-      constructor_lint = constructor_ulint = constructor_double =
-
-          ass_Fixpoint = ass_int = ass_uint = ass_lint = ass_ulint =
-              ass_double =
-
-                  binary_add = binary_sub = binary_div = binary_mul =
-
-                      add_eq = sub_eq = mul_eq = div_eq =
-
-                          unary_minus = unary_plus =
-
-                              cond_l = cond_g = cond_le = cond_ge = cond_eq =
-                                  cond_neq =
-
-                                      0;
+    constructor_void = constructor_Fixpoint = constructor_int = constructor_uint = constructor_lint =
+        constructor_ulint = constructor_double = ass_Fixpoint = ass_int = ass_uint = ass_lint = ass_ulint =
+        ass_double = binary_add = binary_sub = binary_div = binary_mul = add_eq = sub_eq = mul_eq = div_eq =
+        unary_minus = unary_plus = cond_l = cond_g = cond_le = cond_ge = cond_eq = cond_neq = 0;
 }
 
 #endif /* FIXDEBUG */
