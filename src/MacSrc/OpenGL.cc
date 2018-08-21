@@ -58,6 +58,7 @@ struct Shader {
     GLint uniNightSight;
     GLint tcAttrib;
     GLint lightAttrib;
+    GLint colorAttrib;
 };
 
 struct FrameBuffer {
@@ -215,6 +216,7 @@ static int CreateShader(const char *vertexShaderFile, const char *fragmentShader
     outShader->uniNightSight = glGetUniformLocation(shaderProgram, "nightsight");
     outShader->tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
     outShader->lightAttrib = glGetAttribLocation(shaderProgram, "light");
+    outShader->colorAttrib = glGetAttribLocation(shaderProgram, "color");
 
     glUniformMatrix4fv(outShader->uniView, 1, false, IdentityMatrix);
     glUniformMatrix4fv(outShader->uniProj, 1, false, IdentityMatrix);
@@ -289,6 +291,7 @@ int init_opengl() {
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glEnable(GL_ALPHA_TEST);
+    glEnable(GL_POINT_SPRITE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glAlphaFunc(GL_GEQUAL, 0.05f);
 
@@ -667,7 +670,8 @@ static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttr
         light = 1.0f - (clut - grd_screen->ltab) / 4096.0f;
     }
 
-    glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
+    if (tcAttrib >= 0)
+        glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
     glVertexAttrib1f(lightAttrib, light);
     glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
 }
@@ -769,10 +773,7 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
 }
 
 static void set_color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
-    const uint8_t pixel[] = { red, green, blue, alpha };
-    bind_texture(dynTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-
+    glVertexAttrib4f(colorShaderProgram.colorAttrib, red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f);
     set_blend_mode(alpha < 255);
 }
 
@@ -817,15 +818,14 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    GLint tcAttrib = colorShaderProgram.tcAttrib;
     GLint lightAttrib = colorShaderProgram.lightAttrib;
 
     long a = 0, b = n_verts - 1;
     glBegin(GL_TRIANGLE_STRIP);
     while (true) {
-        draw_vertex(*(p[a]), tcAttrib, lightAttrib);
+        draw_vertex(*(p[a]), -1, lightAttrib);
         if (a++ == b) break;
-        draw_vertex(*(p[b]), tcAttrib, lightAttrib);
+        draw_vertex(*(p[b]), -1, lightAttrib);
         if (b-- == a) break;
     }
     glEnd();
@@ -852,7 +852,6 @@ void opengl_begin_stars() {
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     glStencilFunc(GL_EQUAL, 0xFF, ~0);
 
-    set_color(255, 255, 255, 255);
     set_blend_mode(true);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
