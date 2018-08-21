@@ -291,15 +291,6 @@ target_link_libraries(FixTest
 	LG_LIB
 )
 
-add_executable(FixPPTest
-	src/Libraries/FIXPP/Tests/FixppTest.cc
-)
-
-target_link_libraries(FixPPTest
-	FIX_LIB
-	FIXPP_LIB
-	LG_LIB
-)
 endif()
 
 # Include magic header file, set struct packing size
