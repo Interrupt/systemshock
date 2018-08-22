@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ЅЅЅ For now, turn debugging on, so we can run the test programs.
 //#define FIXDEBUG 1
 
-#include <math.h>
+#include <cmath>
 
 #include "fixpp.h"
 #include <iostream>

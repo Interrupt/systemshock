@@ -30,8 +30,8 @@ language.
 #define __FIXPP_H
 
 #include <istream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 extern "C" {
 //#include "mprintf.h"
@@ -141,17 +141,17 @@ class Fixpoint {
 
     Fixpoint operator+() const;
 
-    int operator<(const Fixpoint &) const;
+    int32_t operator<(const Fixpoint &) const;
 
-    int operator>(const Fixpoint &) const;
+    int32_t operator>(const Fixpoint &) const;
 
-    int operator<=(const Fixpoint &fp2) const;
+    int32_t operator<=(const Fixpoint &fp2) const;
 
-    int operator>=(const Fixpoint &fp2) const;
+    int32_t operator>=(const Fixpoint &fp2) const;
 
-    int operator==(const Fixpoint &fp2) const;
+    int32_t operator==(const Fixpoint &fp2) const;
 
-    int operator!=(const Fixpoint &fp2) const;
+    int32_t operator!=(const Fixpoint &fp2) const;
 
     // Signed shifts
     // =============
@@ -163,17 +163,17 @@ class Fixpoint {
     // (and a trip down memory lane for FORTRAN-ites)
     // ====================================
 
-    int gt_zero() const;
+    int32_t gt_zero() const;
 
-    int ge_zero() const;
+    int32_t ge_zero() const;
 
-    int eq_zero() const;
+    int32_t eq_zero() const;
 
-    int ne_zero() const;
+    int32_t ne_zero() const;
 
-    int le_zero() const;
+    int32_t le_zero() const;
 
-    int lt_zero() const;
+    int32_t lt_zero() const;
 
     // Friendly math function declarations.
     // ====================================
@@ -439,7 +439,7 @@ inline void Fixpoint::fixang_to(fixang f) {
 //   <   //
 //       //
 ///////////
-inline int Fixpoint::operator<(const Fixpoint &fp2) const {
+inline int32_t Fixpoint::operator<(const Fixpoint &fp2) const {
     CLICK(cond_l);
 
     return this->val < fp2.val;
@@ -450,7 +450,7 @@ inline int Fixpoint::operator<(const Fixpoint &fp2) const {
 //   >   //
 //       //
 ///////////
-inline int Fixpoint::operator>(const Fixpoint &fp2) const {
+inline int32_t Fixpoint::operator>(const Fixpoint &fp2) const {
     CLICK(cond_g);
 
     return this->val > fp2.val;
@@ -461,7 +461,7 @@ inline int Fixpoint::operator>(const Fixpoint &fp2) const {
 //   <=   //
 //        //
 ////////////
-inline int Fixpoint::operator<=(const Fixpoint &fp2) const {
+inline int32_t Fixpoint::operator<=(const Fixpoint &fp2) const {
     CLICK(cond_le);
 
     return this->val <= fp2.val;
@@ -472,7 +472,7 @@ inline int Fixpoint::operator<=(const Fixpoint &fp2) const {
 //   >=   //
 //        //
 ////////////
-inline int Fixpoint::operator>=(const Fixpoint &fp2) const {
+inline int32_t Fixpoint::operator>=(const Fixpoint &fp2) const {
     CLICK(cond_ge);
 
     return this->val >= fp2.val;
@@ -483,7 +483,7 @@ inline int Fixpoint::operator>=(const Fixpoint &fp2) const {
 //   ==   //
 //        //
 ////////////
-inline int Fixpoint::operator==(const Fixpoint &fp2) const {
+inline int32_t Fixpoint::operator==(const Fixpoint &fp2) const {
     CLICK(cond_eq);
 
     return this->val == fp2.val;
@@ -494,7 +494,7 @@ inline int Fixpoint::operator==(const Fixpoint &fp2) const {
 //   !=   //
 //        //
 ////////////
-inline int Fixpoint::operator!=(const Fixpoint &fp2) const {
+inline int32_t Fixpoint::operator!=(const Fixpoint &fp2) const {
     CLICK(cond_neq);
 
     return this->val != fp2.val;
@@ -506,17 +506,17 @@ inline int Fixpoint::operator!=(const Fixpoint &fp2) const {
 //
 // ======================================
 
-inline int Fixpoint::gt_zero() const { return (val > 0); }
+inline int32_t Fixpoint::gt_zero() const { return (val > 0); }
 
-inline int Fixpoint::ge_zero() const { return (val >= 0); }
+inline int32_t Fixpoint::ge_zero() const { return (val >= 0); }
 
-inline int Fixpoint::eq_zero() const { return (val == 0); }
+inline int32_t Fixpoint::eq_zero() const { return (val == 0); }
 
-inline int Fixpoint::ne_zero() const { return (val != 0); }
+inline int32_t Fixpoint::ne_zero() const { return (val != 0); }
 
-inline int Fixpoint::le_zero() const { return (val <= 0); }
+inline int32_t Fixpoint::le_zero() const { return (val <= 0); }
 
-inline int Fixpoint::lt_zero() const { return (val < 0); }
+inline int32_t Fixpoint::lt_zero() const { return (val < 0); }
 
 // ======================================
 //
