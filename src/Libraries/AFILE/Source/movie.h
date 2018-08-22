@@ -38,6 +38,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __CIRCBUFF_H
 #include "circbuff.h"
 #endif
+
+#include "afile.h"
+
 /*
 #ifndef AIL_H
 #include <ail.h>
