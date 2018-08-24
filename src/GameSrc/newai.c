@@ -114,7 +114,6 @@ uchar ice_fire_chances[] = {0x40, 0x80, 0xD0, 0xF0};
 ulong run_ice_time = 0;
 
 errtype run_cspace_ice() {
-    ObjID id;
     int dx, dy, dist;
     extern errtype ai_fire_special(ObjID src, ObjID target, int proj_triple, ObjLoc src_loc, ObjLoc target_loc, uchar a,
                                    int duration);
@@ -123,7 +122,7 @@ errtype run_cspace_ice() {
     // of course, only do so if we be in cspace
 
     // I'm agitated.  Yeah, agitated.  -- Devo
-    FORALLOBJS(id) {
+    for (ObjID id = (objs[OBJ_NULL]).headused; id != OBJ_NULL; id = objs[id].next) {
         // Are we an agitated ice encrusted thing?  Is it our stochastic time as determined by Lord Chaos?
         if (ICE_ICE_BABY(id) && ICE_AGIT(id) && ((rand() & 0xFF) < ice_fire_chances[ICE_LEVEL(id)])) {
             dx = PLAYER_BIN_X - OBJ_LOC_BIN_X(objs[id].loc);

@@ -109,7 +109,7 @@ void free_model_vtexts(char model_num);
 // Note that I have fixed this so that the cursor does not flicker.
 // It just works.  Note its simplistic beauty.	I love this job.
 void rend_mouse_hide(void) {
-    extern Boolean DoubleSize;
+    extern bool DoubleSize;
     extern grs_canvas gDoubleSizeOffCanvas;
     extern Boolean view360_is_rendering;
 

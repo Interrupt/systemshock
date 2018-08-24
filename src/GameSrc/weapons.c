@@ -73,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MIN_ENERGY_WPN_THRESHOLD 20
 #define FATIGUE_ACCURACY_RATIO 400
 
-extern Boolean DoubleSize;
+extern bool DoubleSize;
 
 // char ammo_type_letters[] = "stnths mphssb  ";
 

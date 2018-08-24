@@ -760,7 +760,6 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
     errtype retval = OK;
     bool make_player = FALSE;
     ObjLoc plr_loc;
-    ObjID oid;
     char *schedvec; // KLC - don't need an array.  Only one in map.
     // State          player_edms;
     curAMap saveAMaps[NUM_O_AMAP];
@@ -1474,7 +1473,7 @@ obj_out:
     if (anim_counter == 0)
         do_anims = TRUE;
 
-    FORALLOBJS(oid) {
+    for (ObjID oid = (objs[OBJ_NULL]).headused; oid != OBJ_NULL; oid = objs[oid].next) {
         switch (objs[oid].obclass) {
         case CLASS_DOOR:
             set_door_data(oid);
@@ -1548,7 +1547,7 @@ out:
         for (int x = 0; x < 64; x++) {
             uchar tiletype = global_fullmap->map[x + y * 64].tiletype;
             if (tiletype == 0)
-                printf("  ", tiletype);
+                printf("  ");
             else
                 printf(" %i", tiletype);
         }

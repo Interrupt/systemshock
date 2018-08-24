@@ -136,7 +136,7 @@ ulong obj_check_time = 0;
 #define OBJ_CHECK_RADIUS 7
 
 void unshodanizing_callback(ObjID id, void *user_data) {
-    uchar ud = (bool)user_data;
+    bool ud = (bool)user_data;
     if (ud) {
         objBigstuffs[objs[id].specID].data2 = SHODAN_STATIC_MAGIC_COOKIE | (TPOLY_TYPE_CUSTOM_MAT << TPOLY_INDEX_BITS);
         objBigstuffs[objs[id].specID].cosmetic_value = 0;
@@ -391,7 +391,9 @@ char surg_fx_frame = 0;
 short surge_duration = 60;
 
 #define NUM_SURG_FX_FRAMES 7
-short surge_vals[NUM_SURG_FX_FRAMES] = {-1 << 8, -5 << 8, 0 << 8, 2 << 8, 2 << 8, 1 << 8, 1 << 8};
+// WH: Unportable, replaced with actual values
+// short surge_vals[NUM_SURG_FX_FRAMES] = {-1 << 8, -5 << 8, 0 << 8, 2 << 8, 2 << 8, 1 << 8, 1 << 8};
+short surge_vals[NUM_SURG_FX_FRAMES] = {-256, -1280, 0, 512, 512, 256, 256};
 
 #define CONQUER_THRESHOLD 512
 #define UNCONQUER_THRESHOLD 32
@@ -576,8 +578,6 @@ errtype gamesys_run(void) {
 //
 // Checks to see if we're in a bio/radiation zone
 
-void expose_player_real(short damage, ubyte type, ushort tsecs);
-
 void check_hazard_regions(MapElem *newElem) {
     fix hdiff = fix_from_obj_height(PLAYER_OBJ) - fix_from_map_height(me_height_flr(newElem));
     if (me_hazard_rad(newElem) > 0 && hdiff <= fix_make(level_gamedata.hazard.rad_h, 0) / 8) {
@@ -663,7 +663,7 @@ void check_panel_ref(uchar puntme) {
             punt = punt || !panel_ref_sanity(id);
         }
         if (punt) {
-            uchar punt_mfd[NUM_MFDS], punting;
+            uchar punt_mfd[NUM_MFDS], punting = 0;
             int mfd_id;
 
             for (mfd_id = 0; mfd_id < NUM_MFDS; mfd_id++) {
@@ -906,7 +906,7 @@ void do_stuff_every_second() {
 
 int enviro_suit_absorb(int damage, int exposure, ubyte dtype);
 
-void expose_player_real(short damage, ubyte type, ushort undefined) {
+void expose_player_real(short damage, ubyte type, ushort tsecs) {
     int cval = player_struct.hit_points_lost[type - 1];
     if (damage == 0)
         return;

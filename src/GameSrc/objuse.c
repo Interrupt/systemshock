@@ -114,7 +114,7 @@ void zoom_mfd(int mfd) {
     LGPoint ucp;
 
     extern void mfd_zoom_rect(LGRect *, int);
-    extern Boolean DoubleSize;
+    extern bool DoubleSize;
 
     mouse_look_off();
 

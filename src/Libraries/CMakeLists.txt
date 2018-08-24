@@ -241,7 +241,6 @@ set(INPUT_SRC
 set(LG_SRC
 	LG/Source/LOG/src/log.c
 	LG/Source/dbg.c
-	LG/Source/LGmem.c
 	LG/Source/lgsprntf.c
 	LG/Source/memall.c
 	LG/Source/stack.c

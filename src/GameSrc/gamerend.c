@@ -328,7 +328,7 @@ extern short mouse_attack_y;
 extern ulong next_fire_time;
 extern uchar overload_beam;
 extern uchar saveload_static;
-extern Boolean DoubleSize;
+extern bool DoubleSize;
 
 byte beam_offset[NUM_BEAM_GUN] = {-12, -8, -4};
 #define DRAW_BEAM_LINE(c1, c2, c3, c4)                                                               \

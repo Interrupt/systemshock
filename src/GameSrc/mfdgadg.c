@@ -86,11 +86,11 @@ uchar mfd_buttonarray_handlerproc(MFD *mfd, uiEvent *ev, MFDhandler *h) {
 // ---------
 
 errtype MFDBttnArrayInit(MFDhandler *h, LGRect *r, LGPoint bdims, LGPoint bsize, MFDBttnCallback cb, void *cbdata) {
+    if (bsize.x < 1 || bsize.y < 1)
+        return ERR_RANGE;
     MFDBttnArray *ba = (MFDBttnArray *)malloc(sizeof(MFDBttnArray));
     if (ba == NULL)
         return ERR_NOMEM;
-    if (bsize.x < 1 || bsize.y < 1)
-        return ERR_RANGE;
     h->r = *r;
     h->data = ba;
     h->proc = mfd_buttonarray_handlerproc;

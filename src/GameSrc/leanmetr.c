@@ -614,7 +614,7 @@ void update_meters(uchar force) {
 
 void zoom_to_lean_meter(void) {
     extern void zoom_rect(LGRect *, LGRect *);
-    extern Boolean DoubleSize;
+    extern bool DoubleSize;
 
     LGPoint pos;
     LGRect start = {{-5, -5}, {+5, +5}};

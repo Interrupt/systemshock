@@ -185,6 +185,7 @@ static GLuint loadShader(GLenum type, const char *filename) {
             *(c--) = '\0';
         source << line << '\n';
     }
+    fclose(file);
 
     GLuint s = compileShader(type, source.str().c_str());
 

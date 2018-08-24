@@ -298,7 +298,7 @@ void tt_dump(TextTool *tt)
    _tt_top(tt);
    printf("DUMP:\n");
    for (ay=0; ay<_tt->max_h; ay++)
-      printf("%5.5d %s\n", ay, _tt->lines[ay]);
+      printf("%5.5ld %s\n", ay, _tt->lines[ay]);
 }
 
 // return the length of which_word (see defines TTWL_?) in char *s
@@ -408,7 +408,7 @@ uchar _tt_wrap_check(long *line_num, long *cur_pos)
    // first, do we wrap back to the last line (should use pixwid, not stl)
    if (LineExist(_tt,ln-1)&&((_tt->line_info[ln-1].flg&TTC_FLG_RET)==0))
       if (_tt->line_info[ln-1].stl+1+_tt_word_len(TTWL_FIRST,_tt->lines[ln],0)<_tt->es.right_m)
-         printf("Wrap back - note %d %d\n",_tt->line_info[ln-1].stl,_tt_word_len(TTWL_FIRST,_tt->lines[ln],0));
+         printf("Wrap back - note %ld %d\n",_tt->line_info[ln-1].stl,_tt_word_len(TTWL_FIRST,_tt->lines[ln],0));
    // now, does our line wrap
    if (_tt->line_info[ln].stl>=_tt->es.right_m)
    {
@@ -427,7 +427,7 @@ uchar _tt_wrap_check(long *line_num, long *cur_pos)
          tt_fill_line(NULL,TTF_INSFRONT,ln+1,s);
          _tt_break_line(ln,brk-1);
          _tt->line_info[ln].flg&=(~TTC_FLG_RET); /* punt the return */
-         printf("Note strlen %d and stl %d for .%s./.%s.\n",strlen(s),_tt->line_info[(*line_num)+1].stl,s,_tt->lines[(*line_num)+1]);
+         printf("Note strlen %d and stl %ld for .%s./.%s.\n",strlen(s),_tt->line_info[(*line_num)+1].stl,s,_tt->lines[(*line_num)+1]);
          if ((*cur_pos)>brk)
           { (*line_num)++; (*cur_pos)-=brk; }
          wr=TRUE;

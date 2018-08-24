@@ -103,7 +103,7 @@ typedef struct old_Obj {
     old_ObjInfo info; // extra, application-specific information
 } old_Obj;
 
-#define FORALLOBJS(pmo) for (pmo = (objs[OBJ_NULL]).headused; pmo != OBJ_NULL; pmo = objs[pmo].next)
+//#define FORALLOBJS(pmo) for (pmo = (objs[OBJ_NULL]).headused; pmo != OBJ_NULL; pmo = objs[pmo].next)
 
 // The "next" field of object 0 is the ID of the first element of the chain
 // of "free" objects; objects that are not currently in the world.  The "next"

@@ -1435,8 +1435,8 @@ void DoZoomCurrMap(short cmd)
 #include "Profiler.h"
 #endif
 
-extern Boolean DoubleSize;
-extern Boolean SkipLines;
+extern bool DoubleSize;
+extern bool SkipLines;
 extern cams* player_cam;
 
 void RenderTest(void)

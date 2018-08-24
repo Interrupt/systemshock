@@ -219,7 +219,7 @@ void change_svga_screen_mode() {
     extern void view360_update_screen_mode();
     extern void amap_pixratio_set(fix ratio);
     extern uchar redraw_paused;
-    extern Boolean DoubleSize;
+    extern bool DoubleSize;
 
     uchar cur_pal[768];
     uchar *s_table;

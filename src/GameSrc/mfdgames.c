@@ -1534,7 +1534,7 @@ static void games_expose_mcom(MFD *m, ubyte control) {
     // print current score behind floating guys
     {
         char buffer[16];
-        sprintf(buffer, "%06d", ms->score);
+        sprintf(buffer, "%06ld", ms->score);
         gr_set_fcolor(WHITE);
         ss_string(buffer, MFD_VIEW_WID - 5 * 6 + 4, 0);
     }
@@ -1560,8 +1560,7 @@ static void games_expose_mcom(MFD *m, ubyte control) {
 
     gr_set_fcolor(AQUA_8_BASE + 3);
     if (ms->state == MCOM_WAIT_NEW_GAME) {
-        int i;
-        for (i = 0; i < 8; ++i) {
+        for (int i = 0; i < 8; ++i) {
             char buffer[16];
             if (HISCORE > DIEGO_SCORE) {
                 strncpy(buffer, player_struct.name, 8);
@@ -1577,7 +1576,7 @@ static void games_expose_mcom(MFD *m, ubyte control) {
             // out right unless their score-painting code printed from the
             // right, but that's not unreasonable since conversion to decimal
             // starts from the right.
-            sprintf(buffer, i < 7 ? "%07d" : "  %06d",
+            sprintf(buffer, i < 7 ? "%07ld" : "  %06ld",
                     i < 7 ? shodan_score[i] : HISCORE < DIEGO_SCORE ? DIEGO_SCORE : HISCORE);
             ss_string(buffer, MFD_VIEW_WID - 30, i * 5 + 9);
         }
