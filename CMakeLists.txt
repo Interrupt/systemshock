@@ -37,16 +37,11 @@ if(OPENGL_FOUND)
 	add_definitions(-DUSE_OPENGL)
 ENDIF(OPENGL_FOUND)
 
-# Find SDL, trying the easy way and then the hard way
-find_package(SDL2)
-
+# Find SDL
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/findsdl2-cmake" ${CMAKE_MODULE_PATH})
-IF(NOT SDL2_LIBRARIES)
-	message(STATUS "Trying SDL2 search fallback")
-	find_package(SDL2 REQUIRED)
-	set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
-	set(SDL2_LIBRARIES ${SDL2_LIBRARY})
-ENDIF(NOT SDL2_LIBRARIES)
+find_package(SDL2 REQUIRED)
+set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
+set(SDL2_LIBRARIES ${SDL2_LIBRARY})
 
 # Try to find SDL_mixer, for sound
 find_package(SDL2_mixer)
