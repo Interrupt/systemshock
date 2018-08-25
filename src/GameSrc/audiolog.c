@@ -39,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools.h"
 //#include "MacTune.h"
 #include "musicai.h"
+#include "mainloop.h"
 
 #include "bark.h"
 #include "miscqvar.h"
@@ -269,9 +270,12 @@ void audiolog_stop() {
     curr_alog = -1;
 
     if (secret_pending_hack) {
+        INFO("Game over.");
         secret_pending_hack = 0;
-        gDeadPlayerQuit = TRUE; // The player is dead.
-        gPlayingGame = FALSE;   // Hop out of the game loop.
+
+        // Back to the main menu
+        _new_mode = SETUP_LOOP;
+        chg_set_flg(GL_CHG_LOOP);
     }
 }
 
