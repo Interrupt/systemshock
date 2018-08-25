@@ -57,13 +57,14 @@ SDL_Surface* offscreenDrawSurface;
 //------------------------------------------------------------------------------------
 void SetupOffscreenBitmaps(void)
 {	
-	drawSurface = SDL_CreateRGBSurface(0, 1024, 768, 8, 0, 0, 0, 0);
+	// TODO: This should probably get re-initialized dynamically based on screen size
+	drawSurface = SDL_CreateRGBSurface(0, 1280, 800, 8, 0, 0, 0, 0);
 	if(!drawSurface) {
 		ERROR("SDL: Failed to create draw surface");
 		return;
 	}
 
-	offscreenDrawSurface = SDL_CreateRGBSurface(0, 1024, 768, 8, 0, 0, 0, 0);
+	offscreenDrawSurface = SDL_CreateRGBSurface(0, 1280, 800, 8, 0, 0, 0, 0);
 	if(!offscreenDrawSurface) {
 		ERROR("SDL: Failed to create offscreen draw surface");
 		return;
