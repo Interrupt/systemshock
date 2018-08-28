@@ -147,28 +147,6 @@ void MacTuneUpdateVolume(void) {
 
 int is_playing = 0;
 
-static void SDL_MidiAudioCallback(void *adl_midi_player, Uint8 *stream, int len)
-{
-    /* Convert bytes length into total count of samples in all channels */
-    int samples_count = len / 2;
-    SDL_memset(stream, 0, len);
-
-    /* Take some samples from the ADLMIDI */
-    for(int i = 0; i < CHANNELS; i++) {
-    	int read = 0;
-    	if(adlDevice[i] != NULL) {
-    		short adl_buffer[SAMPLES * 2];
-    		read = adl_play(adlDevice[i], samples_count, (short*)adl_buffer);
-	    	for(int x = 0; x < read * 2; x++) {
-	    		stream[x] += ((Uint8*)adl_buffer)[x];
-	    	}
-    	}
-	}
-
-    //mlimbs_callback(NULL, 1);
-    mlimbs_timer_callback();
-}
-
 int MacTuneLoadTheme(char* theme_base, int themeID) {
 	char filename[30];
 	FILE *f;

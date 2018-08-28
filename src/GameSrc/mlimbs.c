@@ -33,6 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "musicai.h"
 #include "adlmidi.h"
 
+#include "Xmi.h"
+
 #define CHANNEL_MAP
 
 #define LOCK_ALL_CHANNELS
@@ -60,8 +62,6 @@ volatile void (*mlimbs_AI)(void) = NULL;
 extern volatile ulong mlimbs_counter;
 volatile long mlimbs_error;
 extern volatile uchar mlimbs_semaphore;
-
-extern struct ADL_MIDIPlayer *adlDevice[MLIMBS_MAX_CHANNELS];
 
 int master_volume = 100;
 
@@ -105,27 +105,6 @@ int snd_sequence_play(int snd_ref, uchar *seq_dat, int seq_num, snd_midi_parms *
     int seq_id;
     if ((seq_id=snd_find_free_sequence(SND_DEF_PRI,FALSE))==SND_PERROR)
     { snd_error=SND_NO_HANDLE; return SND_PERROR; }
-
-    if(adlDevice[seq_id] == NULL) {
-        struct ADL_MIDIPlayer *adlD = adl_init(44100);
-
-        // Bank 45 is System Shock?
-        adl_setBank(adlD, 45);
-        adl_switchEmulator(adlD, 1);
-        adl_setLoopEnabled(adlD, 1);
-        adl_setNumChips(adlD, 1);
-        adl_setVolumeRangeModel(adlD, 1);
-
-        adl_openFile(adlD, current_music_filename);
-
-        adlDevice[seq_id] = adlD;
-    }
-
-    if(adlDevice[seq_id] != NULL) {
-        DEBUG("Playing track %i on %i", seq_num, seq_id);
-        adl_setTrackOptions(adlDevice[seq_id], seq_num, ADLMIDI_TrackOption_Solo);
-        adl_positionRewind(adlDevice[seq_id]);
-    }
 
     return seq_id;
 }
@@ -339,8 +318,6 @@ int mlimbs_load_theme(char *xname, char *xinfo, int thmid) {
         fread(xseq_info[i].channel_voices, sizeof(uchar), 7, fil); // Now read in channel voice usage
     }
     fclose(fil);
-
-    adl_setCallback(adlDevice[0], mlimbs_special_callback);
 
     mlimbs_update_requests = TRUE;
     // secret_sprint((ss_temp,"load themed %s (%d) a-ok\n",xname,thmid));
@@ -566,11 +543,6 @@ void mlimbs_mute_sequence_channel(int usernum, int x, bool mute) {
     if (channel_info[phys_ch].status == MLIMBS_PLAYING_PIECE) { /* Remap the channel if it is playing in a sequence */
         // secret_sprint((ss_temp,"is playing, remapping it %d from %d\n",phys_ch,x));
 
-        if(adlDevice != NULL) {
-            adl_setTrackOptions(adlDevice[usernum], userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Off);
-            adl_positionSeek(adlDevice[usernum], adl_positionTell(adlDevice[usernum]));
-        }
-
         seq_ch = x;
         if (seq_ch >= 11) { /* First check if the XMIDI bank select controller was set*/
             /* If it's < 0,this means the controller wasn't initialized.  Thus, we need to initialize it
@@ -653,12 +625,7 @@ int mlimbs_unmute_sequence_channel(int usernum, int x) {
             //AIL_map_sequence_channel(_uiD_seq(usernum), x, channel_info[i].mchannel);
             //AIL_resume_sequence(_uiD_seq(usernum));
 
-            DEBUG("Unmuted sequence %i on channel %i.", usernum, channel_info[i].mchannel);
-
-            if(adlDevice[usernum] != NULL) {
-                adl_setTrackOptions(adlDevice[usernum], userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Solo);
-                adl_positionSeek(adlDevice[usernum], adl_positionTell(adlDevice[usernum]));
-            }
+            INFO("Unmuted sequence %i on channel %i.", usernum, channel_info[i].mchannel);
 
             channel_info[i].status = MLIMBS_PLAYING_PIECE;
             channel_info[i].usernum = usernum;
@@ -1045,12 +1012,6 @@ void mlimbs_punt_piece(int usernum) {
         // secret_sprint((ss_temp,"end seq it is\n",slot,usernum));
         snd_end_sequence(slot);
 
-        if(adlDevice != NULL) {
-            DEBUG("mlimbs_punt_piece %i on %i", userID[usernum].pieceID, usernum);
-            adl_setTrackOptions(adlDevice[usernum], userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Off);
-            adl_positionSeek(adlDevice[usernum], adl_positionTell(adlDevice[usernum]));
-        }
-
         for (i = 11; i < 17; i++) {
             ch = userID[usernum].sequence_channel_status[i - 10];
             if (ch >= 0) {
@@ -1247,8 +1208,7 @@ void mlimbs_timer_callback(void) {
     for (i=0; i < MLIMBS_MAX_SEQUENCES -1; i++) {
         if (current_request[i].pieceID != -1)
         {
-            //DEBUG("request %d is %d (%d %d %d)",i,current_request[i].pieceID,
-             //   current_request[i].ramp,current_request[i].crossfade,current_request[i].ramp_time);
+            INFO("request %d is %d (%d %d %d)",i,current_request[i].pieceID, current_request[i].ramp,current_request[i].crossfade,current_request[i].ramp_time);
         }
     }
 
@@ -1263,11 +1223,7 @@ void mlimbs_timer_callback(void) {
                         {
                             userID[i].rel_vol = 0;
 
-                            DEBUG("AIL_set_sequence_volume: %i %i", i, current_request[j].ramp_time);
-
-                            #ifdef NOT_YET
-                            AIL_set_sequence_volume(_uiD_seq(i), 0, current_request[j].ramp_time);
-                            #endif
+                            SetTrackVolume(i, 0, current_request[i].ramp_time);
                             // secret_sprint((ss_temp,"start ramp out for %d (req %d)\n",i,j));
                         }
                     }
@@ -1391,15 +1347,11 @@ void mlimbs_timer_callback(void) {
                                     // so that crossfading out will work.
                                     // wait, what if we _are_ crossfading out?
 
-                        #ifdef NOT_YET
                         if (current_request[i].ramp > 0)
-                            AIL_set_sequence_volume(_uiD_seq(usernum),
-                                                    (unsigned)(userID[usernum].rel_vol * master_volume / 100),
+                            SetTrackVolume(usernum, (unsigned)(userID[usernum].rel_vol * master_volume / 100),
                                                     current_request[i].ramp_time);
                         else
-                            AIL_set_sequence_volume(_uiD_seq(usernum),
-                                                    (unsigned)(userID[usernum].rel_vol * master_volume / 100), 0);
-                        #endif
+                            SetTrackVolume(usernum, (unsigned)(userID[usernum].rel_vol * master_volume / 100), 0);
                     }
                 }
             }
@@ -1517,9 +1469,7 @@ void mlimbs_change_master_volume(int vol) {
     for (i = 0; i < (MLIMBS_MAX_SEQUENCES - 1); i++) {
         percent = userID[i].rel_vol * master_volume / 100;
         if (userID[i].seq_id >= 0) {
-            #ifdef NOT_YET
-            AIL_set_sequence_volume(_uiD_seq(i), (unsigned)percent, 0);
-            #endif
+            SetTrackVolume(i, (unsigned)percent, 0);
         }
     }
 }

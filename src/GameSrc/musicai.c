@@ -232,6 +232,9 @@ void mlimbs_do_ai() {
         // then queue it up.
         //  Does not handle layering.  Just one music track!
         if (gReadyToQueue) {
+            extern bool mlimbs_update_requests;
+            mlimbs_update_requests = TRUE;
+
             if (!global_fullmap->cyber)
                 check_asynch_ai(TRUE);
 
@@ -422,7 +425,7 @@ errtype load_score_from_cfg(FSSpec *specPtr)
         BlockMoveData(p, layering_table, NUM_LAYERS * MAX_KEYS);
         p += NUM_LAYERS * MAX_KEYS;
         BlockMoveData(p, key_table, NUM_LAYERABLE_SUPERCHUNKS * KEY_BAR_RESOLUTION);
-        HUnlock(binHdl);
+        HUnlock(binHdl);f
 
         CloseResFile(filenum);
         return(OK);

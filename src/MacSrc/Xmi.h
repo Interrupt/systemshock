@@ -20,6 +20,7 @@ void StopTrack(int i);
 int IsPlaying(int i);
 void InitReadXMI(void);
 void ShutdownReadXMI(void);
+void SetTrackVolume(int i, int volume, int rampTime);
 
 struct midi_event_struct
 {

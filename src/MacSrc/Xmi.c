@@ -11,6 +11,9 @@ static void AdlAudioCallback(void * d, Uint8 *stream, int len)
     SDL_LockAudio();
     adl_generate(adlD, len / 2, stream);
     SDL_UnlockAudio();
+
+    extern void mlimbs_timer_callback();
+    mlimbs_timer_callback();
 }
 
 void FreeXMI(void)
@@ -544,7 +547,11 @@ int IsPlaying(int i)
   return SDL_AtomicGet(&ThreadPlaying[i]);
 }
 
-
+void SetTrackVolume(int i, int volume, int rampTime) {
+	// Todo: do something with rampTime
+	INFO("SetTrackVolume %i %i", i, volume);
+	SDL_AtomicSet(&ThreadVolume[i], volume);
+}
 
 void InitReadXMI(void)
 {
@@ -554,6 +561,10 @@ void InitReadXMI(void)
   adlD = adl_init(44100);
 
   // Bank 45 is System Shock?
+  // Might be different for different tracks
+  // 45: Good title screen
+  // 44: Sounds better for the Elevator, and for the Puzzle areas
+
   adl_setBank(adlD, 45);
   adl_switchEmulator(adlD, 1);
   adl_setNumChips(adlD, 4);
