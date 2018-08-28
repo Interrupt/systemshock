@@ -162,6 +162,8 @@ void mlimbs_do_ai() {
     extern ObjID damage_sound_id;
     extern char damage_sound_fx;
 
+    if (!IsPlaying(0)) gReadyToQueue = 1;
+
     /* Is this really necessary?  It's already called twice in fr_rend().
     #ifdef AUDIOLOGS
             audiolog_loop_callback();
@@ -223,8 +225,6 @@ void mlimbs_do_ai() {
                 make_request(0, play_me); // otherwise just queue up next tune.
             cyber_play = play_me;
         }
-
-        gReadyToQueue = (count++ % 300) == 0;
 
         // This is all pretty temporary right now, but here's what's happening.
         // If the gReadyToQueue flag is set, that means the 6-second timer has

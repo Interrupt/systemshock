@@ -33,6 +33,9 @@ void FreeXMI(void)
   if (TrackUsedChannels) {free(TrackUsedChannels); TrackUsedChannels = 0;}
 
   NumTracks = 0;
+
+  SDL_PauseAudio(1);
+  adl_panic(adlD); // Reset adl
 }
 
 
@@ -115,11 +118,9 @@ int ReadXMI(const char *filename)
 
   INFO("Reading XMI %s", filename);
 
-  adl_panic(adlD);
-
   f = fopen(filename, "rb");
   if (f == 0) {
-  	INFO("Could not read XMI");
+  	ERROR("Could not read XMI");
   	return 0;
   }
   fseek(f, 0, SEEK_END);
@@ -128,8 +129,6 @@ int ReadXMI(const char *filename)
   data = (unsigned char *)malloc(size);
   if (fread(data, size, 1, f) != 1) {free(data); fclose(f); return 0;}
   fclose(f);
-
-  INFO("Got Tracks?\n");
 
   p = data;
 
@@ -364,49 +363,39 @@ int MyThread(void *arg)
         channel = (event->status & 15);
         if (channel != 9) channel = ThreadChannelRemap[channel+16*i]; //remap channel, except 9 (percussion)
 
-        /*if ((event->status & ~15) == 0xB0 && event->data[0] == 0x07) //set volume msb
-        {
-          midiOutShortMsg(MIDIOut, 0xB0 | channel | (0x07 << 8) | (((ThreadVolume[i] * event->data[1]) >> 7) << 16));
-        }
-        else //everything else
-        {
-          midiOutShortMsg(MIDIOut, (event->status & ~15) | channel | (event->data[0] << 8) | (event->data[1] << 16));
-        }*/
-
-        //uint8_t p1 = (p_block->i_buffer > 1) ? (p_block->p_buffer[1] & 0x7f) : 0;
-    	//uint8_t p2 = (p_block->i_buffer > 2) ? (p_block->p_buffer[2] & 0x7f) : 0;
-
     	uint8_t p1 = event->data[0];
     	uint8_t p2 = event->data[1];
 
-    	//INFO("event->status & ~15: %x", event->status & ~15);
-    	//INFO("p1: %x", p1);
-    	//INFO("p2: %x", p2);
-
-        switch (event->status & ~15)
-	    {
-	        case 0x80:
-	            adl_rt_noteOff(adlD, channel, p1);
-	            break;
-	        case 0x90:
-	            adl_rt_noteOn(adlD, channel, p1, p2);
-	            break;
-	        case 0xA0:
-	            adl_rt_noteAfterTouch(adlD, channel, p1, p2);
-	            break;
-	        case 0xB0:
-	            adl_rt_controllerChange(adlD, channel, p1, p2);
-	            break;
-	        case 0xC0:
-	            adl_rt_patchChange(adlD, channel, p1);
-	            break;
-	        case 0xD0:
-	            adl_rt_channelAfterTouch(adlD, channel, p1);
-	            break;
-	        case 0xE0:
-	            adl_rt_pitchBendML(adlD, channel, p2, p1);
-	            break;
-	    }
+    	if ((event->status & ~15) == 0xB0 && event->data[0] == 0x07) { //set volume msb
+    		// TODO: Also divide by base music volume here
+    		adl_rt_controllerChange(adlD, channel, p1, ((int)(ThreadVolume[i] / 1.25f) * p2) >> 7);
+    	}
+    	else {
+	        switch (event->status & ~15)
+		    {
+		        case 0x80:
+		            adl_rt_noteOff(adlD, channel, p1);
+		            break;
+		        case 0x90:
+		            adl_rt_noteOn(adlD, channel, p1, p2);
+		            break;
+		        case 0xA0:
+		            adl_rt_noteAfterTouch(adlD, channel, p1, p2);
+		            break;
+		        case 0xB0:
+		            adl_rt_controllerChange(adlD, channel, p1, p2);
+		            break;
+		        case 0xC0:
+		            adl_rt_patchChange(adlD, channel, p1);
+		            break;
+		        case 0xD0:
+		            adl_rt_channelAfterTouch(adlD, channel, p1);
+		            break;
+		        case 0xE0:
+		            adl_rt_pitchBendML(adlD, channel, p2, p1);
+		            break;
+		    }
+		}
       }
 
       event = event->next;
@@ -424,15 +413,13 @@ int MyThread(void *arg)
 
       for (channel=0; channel<16; channel++) if (ChannelThread[channel] == i)
       {
-        //midiOutShortMsg(MIDIOut, (0xB0 & ~15) | channel | (0x7B << 8) | (0 << 16)); //all notes off
-
-        adl_rt_noteOff(adlD, channel, (0x7B << 8) | (0 << 16));
+        adl_rt_noteOff(adlD, channel, (0x7B << 8)); //all notes off
 
         ChannelThread[channel] = -1;
         NumUsedChannels--;
       }
 
-      //midiOutShortMsg(MIDIOut, (0xB0 & ~15) | 9 | (0x7B << 8) | (0 << 16)); //all notes off: channel 9 (percussion)
+      adl_rt_noteOff(adlD, 9, (0x7B << 8)); //all notes off: channel 9 (percussion)
 
       SDL_AtomicSet(&ThreadPlaying[i], 0);
       SDL_AtomicSet(&ThreadCommand[i], THREAD_READY);
@@ -531,6 +518,8 @@ void StartTrack(int i, unsigned int track, int volume)
   
     while (SDL_AtomicGet(&ThreadCommand[i]) != THREAD_READY) SDL_Delay(1);
   }
+
+  SDL_PauseAudio(0);
 }
 
 
@@ -559,15 +548,13 @@ void InitReadXMI(void)
 {
   int i, channel;
 
-  //if (midiOutOpen(&MIDIOut, MIDI_MAPPER, 0, 0, 0) != MMSYSERR_NOERROR) return;
-
+  // Start the ADL Midi device
   adlD = adl_init(44100);
 
   // Bank 45 is System Shock?
   adl_setBank(adlD, 45);
   adl_switchEmulator(adlD, 1);
-  adl_setLoopEnabled(adlD, 1);
-  adl_setNumChips(adlD, 1);
+  adl_setNumChips(adlD, 4);
   adl_setVolumeRangeModel(adlD, 1);
 
   for (channel=0; channel<16; channel++) ChannelThread[channel] = -1;
@@ -600,8 +587,7 @@ void InitReadXMI(void)
   	ERROR("Could not open SDL audio");
   }
   else {
-  	INFO("Opened Audio");
-  	SDL_PauseAudio(0);
+  	INFO("Opened Music Stream");
   }
 }
 
