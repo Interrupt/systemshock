@@ -31,13 +31,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <ail.h>
 #include "mlimbs.h"
 #include "musicai.h"
+#include "adlmidi.h"
 
 #define CHANNEL_MAP
 
 #define LOCK_ALL_CHANNELS
 
-uchar mlimbs_on = FALSE;
-char mlimbs_status = 0; // could make this one bitfield of status, on/off, enable/not, so on
+extern uchar mlimbs_on;
+extern char mlimbs_status; // could make this one bitfield of status, on/off, enable/not, so on
 int mlimbs_timer_id;    // what our timer handle is
 
 static uchar *mlimbs_theme = NULL; // data about the current theme
@@ -56,9 +57,11 @@ volatile uchar voices_used = 0;
 volatile uchar max_voices = 0;
 
 volatile void (*mlimbs_AI)(void) = NULL;
-volatile ulong mlimbs_counter = 0;
+extern volatile ulong mlimbs_counter;
 volatile long mlimbs_error;
-volatile uchar mlimbs_semaphore = FALSE;
+extern volatile uchar mlimbs_semaphore;
+
+extern struct ADL_MIDIPlayer *adlDevice[MLIMBS_MAX_CHANNELS];
 
 int master_volume = 100;
 
@@ -66,8 +69,12 @@ char curr_play_list[10];
 char loop_list[10];
 char cpl_num;
 
+int snd_error;
+
 // gruesome hacks to try and get this working for now
 int mlimbs_priority[MLIMBS_MAX_SEQUENCES];
+
+extern uchar run_asynch_music_ai;
 
 // convienience psuedo-function defines
 #define _uiD_seq(i) ((SEQUENCE *)snd_get_sequence(userID[i].seq_id))
@@ -75,7 +82,75 @@ int mlimbs_priority[MLIMBS_MAX_SEQUENCES];
     if (mlimbs_status == 0) \
     return -1
 
+int used_sequences[10];
+int snd_find_free_sequence(uchar smp_pri, bool check_only)
+{
+    for(int i = 0; i < 5; i++) {
+        if(used_sequences[i] == 0) {
+            used_sequences[i] = 1;
+            return i + 1;
+        }
+    }
+
+    return SND_PERROR;
+}
+
 // LONG mlimbs_timbre_callback(MDI_DRIVER *mdi, LONG bank, LONG patch);
+
+// CC: HAX HAX HAX
+int snd_sequence_play(int snd_ref, uchar *seq_dat, int seq_num, snd_midi_parms *mparm)
+{
+    DEBUG("snd_sequence_play: %i %s", seq_num, current_music_filename);
+
+    int seq_id;
+    if ((seq_id=snd_find_free_sequence(SND_DEF_PRI,FALSE))==SND_PERROR)
+    { snd_error=SND_NO_HANDLE; return SND_PERROR; }
+
+    if(adlDevice[seq_id] == NULL) {
+        struct ADL_MIDIPlayer *adlD = adl_init(44100);
+
+        // Bank 45 is System Shock?
+        adl_setBank(adlD, 45);
+        adl_switchEmulator(adlD, 1);
+        adl_setLoopEnabled(adlD, 1);
+        adl_setNumChips(adlD, 1);
+        adl_setVolumeRangeModel(adlD, 1);
+
+        adl_openFile(adlD, current_music_filename);
+
+        adlDevice[seq_id] = adlD;
+    }
+
+    if(adlDevice[seq_id] != NULL) {
+        DEBUG("Playing track %i on %i", seq_num, seq_id);
+        adl_setTrackOptions(adlDevice[seq_id], seq_num, ADLMIDI_TrackOption_Solo);
+        adl_positionRewind(adlDevice[seq_id]);
+    }
+
+    return seq_id;
+}
+
+// CC: HAX HAX HAX
+char *snd_load_raw(char *fname, int *ldat)
+{
+    int len = 10;
+    void* ptr;
+    if ((ptr=(uchar *)malloc(len))!=NULL)
+    {
+        if (ldat!=NULL) { ldat[0]=len; ldat[1]=(int)ptr; }
+        return ptr;
+    }
+    if (ldat!=NULL) { ldat[0]=0; ldat[1]=NULL; }
+    return NULL;
+}
+
+// CC: HAX HAX HAX
+void snd_end_sequence(int slot) {
+    DEBUG("snd_end_sequence %i", slot);
+    used_sequences[slot - 1] = 0;
+}
+
+void snd_kill_all_sequences() { }
 
 /////////////////////////////////////////////////////////////////
 //	mlimbs_init (void)
@@ -97,6 +172,7 @@ int mlimbs_init(void) {
     for (i = 0; i < 10; i++) {
         curr_play_list[i] = -1;
         loop_list[i] = -1;
+        used_sequences[i] = 0;
     }
     cpl_num = 0;
 
@@ -194,7 +270,19 @@ void mlimbs_shutdown(void) {
     mlimbs_status = 0;
 }
 
-#ifdef NOT_YET //
+
+// Callback for XMIDI 119
+void mlimbs_special_callback() {
+    DEBUG("AIL callback 119 triggered, running music AI");
+
+    if (mlimbs_AI != NULL) {
+        mlimbs_update_requests = TRUE;
+        mlimbs_AI();
+
+        // Do we need to do this now?
+        // mlimbs_timer_callback();
+    }
+}
 
 /////////////////////////////////////////////////////////////////
 // int mlimbs_load_theme
@@ -220,6 +308,8 @@ int mlimbs_load_theme(char *xname, char *xinfo, int thmid) {
     int i;
     FILE *fil;
 
+    DEBUG("Loading XMI theme");
+
     // secret_sprint((ss_temp,"try to load themed %s (%d) (%d)\n",xname,thmid,mlimbs_status));
     _mlimbs_top;
     mlimbs_purge_theme(); // Purge any previously loaded mlimbs theme
@@ -232,19 +322,27 @@ int mlimbs_load_theme(char *xname, char *xinfo, int thmid) {
           fil); // Number of sequences in this XMIDI file, NOT COUNTING THE MASTER SEQUENCE
     fread(&num_master_measures, sizeof(uchar), 1,
           fil); // Number of measures in the master sequence - i.e. # of measures per loop
-    num_XMIDI_sequences = min(num_XMIDI_sequences, MAX_SEQUENCES);
+
+    DEBUG("num_XMIDI_sequences: %i", num_XMIDI_sequences);
+    DEBUG("num_master_measures: %i", num_master_measures);
+
+    num_XMIDI_sequences = lg_min(num_XMIDI_sequences, MAX_SEQUENCES);
     for (i = 0; i < num_XMIDI_sequences; i++) {
         fread(&(xseq_info[i].max_voices), sizeof(uchar), 1, fil);   // Maximum # of simultaneous voices
         fread(&(xseq_info[i].avg_voices), sizeof(uchar), 1, fil);   // Normal # of simultaneous voices
         fread(&(xseq_info[i].channel_map), sizeof(ushort), 1, fil); // Bitmap of channel usage
         fread(&(xseq_info[i].num_measures), sizeof(uchar), 1, fil); // # of measures
-        xseq_info[i].num_measures = max(
+        xseq_info[i].num_measures = lg_max(
             1,
             xseq_info[i].num_measures); // Don't allow 0 measure chunks (prevents divide by 0 in mlimbs_timer_callback)
         fread(&(xseq_info[i].priority), sizeof(int), 1, fil);      // Default priority
         fread(xseq_info[i].channel_voices, sizeof(uchar), 7, fil); // Now read in channel voice usage
     }
     fclose(fil);
+
+    adl_setCallback(adlDevice[0], mlimbs_special_callback);
+
+    mlimbs_update_requests = TRUE;
     // secret_sprint((ss_temp,"load themed %s (%d) a-ok\n",xname,thmid));
     return 1;
 }
@@ -279,13 +377,15 @@ int mlimbs_start_theme(void) {
         SND_PERROR) { // better make sure this is looping, eh...
         return -2;
     }
-    AIL_set_sequence_loop_count(snd_sequence_ptr_from_id(mlimbs_master_slot), 0);
+    //AIL_set_sequence_loop_count(snd_sequence_ptr_from_id(mlimbs_master_slot), 0);
 
 #ifdef CALLBACK_ON
     // Start the mlimbs timer callback which will now start and stop
     //	various tracks according to how the current_request structures are set
     tm_activate_process(mlimbs_timer_id);
 #endif
+
+    mlimbs_semaphore = FALSE;
 
     // secret_sprint((ss_temp,"start theme %d callback %d\n",mlimbs_cur_theme_id,mlimbs_timer_id));
 
@@ -294,6 +394,7 @@ int mlimbs_start_theme(void) {
 
 // i hate these, thank you
 void _mlimbs_clear_req(int i) {
+    DEBUG("_mlimbs_clear_req");
     current_request[i].pieceID = -1;
     current_request[i].rel_vol = DEFAULT_REL_VOL;
     current_request[i].ramp_time = DEFAULT_RAMP_TIME;
@@ -307,6 +408,8 @@ void _mlimbs_clear_req(int i) {
 
 void _mlimbs_clear_uid(int i) {
     int j;
+
+    DEBUG("_mlimbs_clear_uid");
     userID[i].pieceID = -1;
     userID[i].current_channel_map = 0;
     userID[i].seq_id = -1;
@@ -371,6 +474,8 @@ void mlimbs_stop_theme(void) {
 void mlimbs_purge_theme(void) {
     int i;
 
+    DEBUG("mlimbs_purge_theme");
+
     mlimbs_update_requests = FALSE;
     /* Clear the current_request[] and arrays */
 
@@ -393,7 +498,7 @@ void mlimbs_purge_theme(void) {
 
     snd_kill_all_sequences();
     if (mlimbs_theme != NULL)
-        Free(mlimbs_theme);
+        free(mlimbs_theme);
     mlimbs_theme = NULL;
 
     mlimbs_update_requests = FALSE;
@@ -430,9 +535,11 @@ void mlimbs_purge_theme(void) {
 //							// status to SEQUENCE_CHANNEL_PENDING
 /////////////////////////////////////////////////////////////////
 
-void mlimbs_mute_sequence_channel(int usernum, int x, uchar mute) {
+void mlimbs_mute_sequence_channel(int usernum, int x, bool mute) {
     int val, seq_ch;
     int phys_ch;
+
+    DEBUG("Mute sequence %i on channel %i", usernum, userID[usernum].pieceID + 1);
 
     if (usernum < 0)
         return;
@@ -458,10 +565,18 @@ void mlimbs_mute_sequence_channel(int usernum, int x, uchar mute) {
 
     if (channel_info[phys_ch].status == MLIMBS_PLAYING_PIECE) { /* Remap the channel if it is playing in a sequence */
         // secret_sprint((ss_temp,"is playing, remapping it %d from %d\n",phys_ch,x));
+
+        if(adlDevice != NULL) {
+            adl_setTrackOptions(adlDevice[usernum], userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Off);
+            adl_positionSeek(adlDevice[usernum], adl_positionTell(adlDevice[usernum]));
+        }
+
         seq_ch = x;
         if (seq_ch >= 11) { /* First check if the XMIDI bank select controller was set*/
             /* If it's < 0,this means the controller wasn't initialized.  Thus, we need to initialize it
                     to 0 in order for the stop/resume trick to work */
+
+            #ifdef NOT_YET
             val = AIL_controller_value(_uiD_seq(usernum), seq_ch, XMIDI_BANK_SELECT);
 #ifdef SND_CHANGE
             // hey, this isnt supported in AIL3
@@ -475,6 +590,8 @@ void mlimbs_mute_sequence_channel(int usernum, int x, uchar mute) {
             AIL_stop_sequence(_uiD_seq(usernum));
             AIL_map_sequence_channel(_uiD_seq(usernum), seq_ch, seq_ch);
             AIL_resume_sequence(_uiD_seq(usernum));
+            #endif
+
             channel_info[phys_ch].status = MLIMBS_STOPPED;
         }
     }
@@ -504,6 +621,8 @@ void mlimbs_mute_sequence_channel(int usernum, int x, uchar mute) {
 int mlimbs_unmute_sequence_channel(int usernum, int x) {
     int i;
 
+    DEBUG("Unmute sequence %i for piece %i", usernum, userID[usernum].pieceID + 1);
+
     if (usernum < 0)
         return 1;
     if (userID[usernum].pieceID < 0)
@@ -530,9 +649,16 @@ int mlimbs_unmute_sequence_channel(int usernum, int x) {
         if (channel_info[i].status == MLIMBS_STOPPED) {
             // secret_sprint((ss_temp,"undoing %d (%d)\n",i,channel_info[i].mchannel));
 
-            AIL_stop_sequence(_uiD_seq(usernum));
-            AIL_map_sequence_channel(_uiD_seq(usernum), x, channel_info[i].mchannel);
-            AIL_resume_sequence(_uiD_seq(usernum));
+            //AIL_stop_sequence(_uiD_seq(usernum));
+            //AIL_map_sequence_channel(_uiD_seq(usernum), x, channel_info[i].mchannel);
+            //AIL_resume_sequence(_uiD_seq(usernum));
+
+            DEBUG("Unmuted sequence %i on channel %i.", usernum, channel_info[i].mchannel);
+
+            if(adlDevice[usernum] != NULL) {
+                adl_setTrackOptions(adlDevice[usernum], userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Solo);
+                adl_positionSeek(adlDevice[usernum], adl_positionTell(adlDevice[usernum]));
+            }
 
             channel_info[i].status = MLIMBS_PLAYING_PIECE;
             channel_info[i].usernum = usernum;
@@ -545,6 +671,7 @@ int mlimbs_unmute_sequence_channel(int usernum, int x) {
             return 1;
         }
     }
+
     // secret_sprint((ss_temp,"we lost, no joy\n"));
     return -1;
 }
@@ -573,6 +700,8 @@ int mlimbs_channel_prioritize(int priority, int pieceID, int voices_needed, ucha
     int punt_list[MLIMBS_MAX_SEQUENCES];
     int min;
     int min_voices_needed;
+
+    DEBUG("mlimbs_channel_prioritize %i", pieceID);
 
     if (pieceID >= num_XMIDI_sequences)
         return -1;
@@ -750,7 +879,7 @@ int mlimbs_channel_prioritize(int priority, int pieceID, int voices_needed, ucha
 //          // code can unmute channels as the sequence is crossfaded in.
 //
 /////////////////////////////////////////////////////////////////
-int mlimbs_assign_channels(int usernum, uchar crossfade) {
+int mlimbs_assign_channels(int usernum, bool crossfade) {
     uint j;
     ushort c_map;
 
@@ -802,8 +931,10 @@ int mlimbs_assign_channels(int usernum, uchar crossfade) {
 //		usernum	- an integer index into the userID[] array
 /////////////////////////////////////////////////////////////////
 
-int mlimbs_play_piece(int pieceID, int priority, int loops, int rel_vol, uchar channel_prioritize, uchar crossfade) {
+int mlimbs_play_piece(int pieceID, int priority, int loops, int rel_vol, bool channel_prioritize, bool crossfade) {
     int i, slot, usernum, voices_needed, voices_available;
+
+    DEBUG("mlimbs_play_piece %i, times %i", pieceID, loops);
 
     if (pieceID >= num_XMIDI_sequences)
         return -1;
@@ -829,8 +960,10 @@ int mlimbs_play_piece(int pieceID, int priority, int loops, int rel_vol, uchar c
     voices_needed = 0;
     voices_available = max_voices - voices_used;
 
+    // CC: Hax! This keeps things from playing?
+
     // First, free as many voices and channels as possible.
-    if (channel_prioritize) { // Only need to count # of voices needed if we're not crossfading.  since channel 10
+    /*if (channel_prioritize) { // Only need to count # of voices needed if we're not crossfading.  since channel 10
                               // voices
         // are used by mlimbs_channel_prioritize as the # of voices needed if we are crossfading
         if (crossfade != TRUE) {
@@ -848,7 +981,7 @@ int mlimbs_play_piece(int pieceID, int priority, int loops, int rel_vol, uchar c
 #endif
         if (mlimbs_channel_prioritize(priority, pieceID, voices_needed, crossfade, FALSE) < 0)
             return -1;
-    }
+    }*/
 
     /***********************************/
     /* Now, attempt to load the piece. */
@@ -870,7 +1003,11 @@ int mlimbs_play_piece(int pieceID, int priority, int loops, int rel_vol, uchar c
             return -1;
         }
         // Now set the initial volume
+
+        #ifdef NOT_YET
         AIL_set_sequence_volume(_uiD_seq(usernum), (unsigned)rel_vol * master_volume / 100, 0);
+        #endif
+
         return (usernum); // Return entry of userID[]
     } else
         return -1;
@@ -907,6 +1044,12 @@ void mlimbs_punt_piece(int usernum) {
 
         // secret_sprint((ss_temp,"end seq it is\n",slot,usernum));
         snd_end_sequence(slot);
+
+        if(adlDevice != NULL) {
+            DEBUG("mlimbs_punt_piece %i on %i", userID[usernum].pieceID, usernum);
+            adl_setTrackOptions(adlDevice[usernum], userID[usernum].pieceID + 1, ADLMIDI_TrackOption_Off);
+            adl_positionSeek(adlDevice[usernum], adl_positionTell(adlDevice[usernum]));
+        }
 
         for (i = 11; i < 17; i++) {
             ch = userID[usernum].sequence_channel_status[i - 10];
@@ -945,7 +1088,7 @@ void mlimbs_punt_piece(int usernum) {
 //
 ///////////////////////////////////////////////////////////////
 
-schar mlimbs_get_crossfade_status(int pieceID) {
+char mlimbs_get_crossfade_status(int pieceID) {
     int i;
 
     for (i = 0; i < MLIMBS_MAX_SEQUENCES - 1; i++)
@@ -966,10 +1109,11 @@ schar mlimbs_get_crossfade_status(int pieceID) {
 //
 ////////////////////////////////////////////////////////////////
 #pragma disable_message(202)
-void cdecl mlimbs_callback(snd_midi_parms *mprm, unsigned trigger_value) {
-    if (trigger_value) {
+void mlimbs_callback(snd_midi_parms *mprm, unsigned trigger_value) {
+    if (trigger_value)
         mlimbs_update_requests = TRUE;
-    } else {
+
+    {
         if (mlimbs_AI != NULL) // This routine accesses the music AI which should set the structures in
         {
             mlimbs_AI(); // current_request[] to tell mlimbs which pieces should be playing.
@@ -991,7 +1135,7 @@ void cdecl mlimbs_callback(snd_midi_parms *mprm, unsigned trigger_value) {
 #ifdef COW
 // the key, here, is we need to update all sequences which are done
 //  ie. clear out their state and such....
-void cdecl mlimbs_seq_done_call(snd_midi_parms *seq) {}
+void mlimbs_seq_done_call(snd_midi_parms *seq) {}
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1005,7 +1149,7 @@ void cdecl mlimbs_seq_done_call(snd_midi_parms *seq) {}
 void mlimbs_reassign_channels(void) {
     int i, j;
     int highest;
-    schar checked[7];
+    char checked[7];
 
     for (i = 0; i < 7; i++)
         checked[i] = 0;
@@ -1065,11 +1209,13 @@ void mlimbs_reassign_channels(void) {
     } while (1);
 }
 
+#ifdef NOT_YET
 #pragma disable_message(202)
-LONG cdecl mlimbs_timbre_callback(MDI_DRIVER *mdi, LONG bank, LONG patch) { // dont allow the timbre to load
+long mlimbs_timbre_callback(MDI_DRIVER *mdi, long bank, long patch) { // dont allow the timbre to load
     return 1;
 }
 #pragma enable_message(202)
+#endif
 
 ////////////////////////////////////////////////////////////////
 //	mlimbs_timer_callback
@@ -1084,6 +1230,8 @@ LONG cdecl mlimbs_timbre_callback(MDI_DRIVER *mdi, LONG bank, LONG patch) { // d
 //	to FALSE and increments the mlimbs_counter.
 //
 ////////////////////////////////////////////////////////////////
+
+long callback_count = 1;
 void mlimbs_timer_callback(void) {
     int i, j, k, loop, rvol;
     int usernum;
@@ -1095,15 +1243,14 @@ void mlimbs_timer_callback(void) {
         return;
     }
 
-    /*KLC
        // show current requests
-       for (i=0; i < MLIMBS_MAX_SEQUENCES -1; i++)
-          if (current_request[i].pieceID != -1)
-          {
-             secret_sprint((ss_temp,"request %d is %d (%d %d %d)\n",i,current_request[i].pieceID,
-               current_request[i].ramp,current_request[i].crossfade,current_request[i].ramp_time));
-          }
-    */
+    for (i=0; i < MLIMBS_MAX_SEQUENCES -1; i++) {
+        if (current_request[i].pieceID != -1)
+        {
+            //DEBUG("request %d is %d (%d %d %d)",i,current_request[i].pieceID,
+             //   current_request[i].ramp,current_request[i].crossfade,current_request[i].ramp_time);
+        }
+    }
 
     // First punt everything that is not requested.  Also crossfade out pieces here.
     k = 0;
@@ -1115,7 +1262,12 @@ void mlimbs_timer_callback(void) {
                         if (userID[i].rel_vol != 0) // Check whether this chunk is already being ramped out.
                         {
                             userID[i].rel_vol = 0;
+
+                            DEBUG("AIL_set_sequence_volume: %i %i", i, current_request[j].ramp_time);
+
+                            #ifdef NOT_YET
                             AIL_set_sequence_volume(_uiD_seq(i), 0, current_request[j].ramp_time);
+                            #endif
                             // secret_sprint((ss_temp,"start ramp out for %d (req %d)\n",i,j));
                         }
                     }
@@ -1177,9 +1329,13 @@ void mlimbs_timer_callback(void) {
             // Don't play empty sequences
             if (xseq_info[current_request[i].pieceID].channel_map == 0)
                 continue;
+
             /* Make sure the piece isn't already playing */
-            for (j = 0; j < MLIMBS_MAX_SEQUENCES - 1;
-                 j++) { // If the piece is playing, see if we should fade any channels in.
+            bool already_playing = FALSE;
+            for (j = 0; j < MLIMBS_MAX_SEQUENCES - 1; j++) {
+
+                // If the piece is playing, see if we should fade any channels in.
+
                 if (userID[j].pieceID == current_request[i].pieceID) {
                     if (current_request[i].crossfade > 0) {
                         if (userID[j].crossfade_status < 11)
@@ -1198,10 +1354,13 @@ void mlimbs_timer_callback(void) {
                         // secret_sprint((ss_temp,"%d already playing [%d req %d] cross
                         // %d\n",userID[j].pieceID,j,i,userID[j].crossfade_status));
                     }
+                    already_playing = TRUE;
                     break;
                 }
             }
-            if (j < MLIMBS_MAX_SEQUENCES - 1)
+
+            if (!already_playing) {
+                DEBUG("New piece %i", current_request[i].pieceID);
                 // secret_sprint((ss_temp,"no dup seq, new, bases %d %d, n_m %d for %d\n",
                 //  mlimbs_counter, num_master_measures, xseq_info[current_request[i].pieceID].num_measures,
                 //  current_request[i].pieceID));
@@ -1209,8 +1368,8 @@ void mlimbs_timer_callback(void) {
                 //					continue;
                 /* For now, only start playing a piece if the number of measures played is a multiple
                 of the measure size of the piece. */
-                if ((mlimbs_counter * num_master_measures) % xseq_info[current_request[i].pieceID].num_measures ==
-                    0) { // If the chunk is going to be ramped in, set its initial volume to 0.
+                if ((mlimbs_counter * num_master_measures) % xseq_info[current_request[i].pieceID].num_measures == 0) { 
+                    // If the chunk is going to be ramped in, set its initial volume to 0.
                     if (current_request[i].ramp > 0)
                         rvol = 0;
                     else
@@ -1231,6 +1390,8 @@ void mlimbs_timer_callback(void) {
                                 16; // If we're not crossfading in, set crossfade_status to 16
                                     // so that crossfading out will work.
                                     // wait, what if we _are_ crossfading out?
+
+                        #ifdef NOT_YET
                         if (current_request[i].ramp > 0)
                             AIL_set_sequence_volume(_uiD_seq(usernum),
                                                     (unsigned)(userID[usernum].rel_vol * master_volume / 100),
@@ -1238,14 +1399,17 @@ void mlimbs_timer_callback(void) {
                         else
                             AIL_set_sequence_volume(_uiD_seq(usernum),
                                                     (unsigned)(userID[usernum].rel_vol * master_volume / 100), 0);
+                        #endif
                     }
                 }
+            }
         }
     }
     mlimbs_update_requests = FALSE;
     mlimbs_counter++; // Only update the counter after the pieces playing have been updated
 }
 
+#ifdef NOT_YET
 SEQUENCE *_mlimbs_get_a_seq(void) {
     extern int snd_find_free_sequence(uchar smp_pri, uchar check_only);
     SEQUENCE *S;
@@ -1255,14 +1419,16 @@ SEQUENCE *_mlimbs_get_a_seq(void) {
     S = snd_sequence_ptr_from_id(seq_id);
     return S;
 }
-
-extern uchar run_asynch_music_ai;
+#endif
 
 // scan through all requested pieces, if not already playing, init_sequence them
 void mlimbs_preload_requested_timbres(void) {
     char *old;
     int i, j, piece;
+
+    #ifdef NOT_YET
     SEQUENCE *S;
+
     //   mprintf("preload requested, stat %d them %x\n",mlimbs_status,mlimbs_theme);
     if ((mlimbs_status == 0) || (mlimbs_theme == NULL))
         return;
@@ -1289,10 +1455,13 @@ void mlimbs_preload_requested_timbres(void) {
     }
     old = AIL_register_timbre_callback((MDI_DRIVER *)snd_midi, mlimbs_timbre_callback);
     //   mprintf("Old is %x, set to mtc\n",old);
+    #endif
 }
 
 void mlimbs_preload_full_timbres_and_go_asynch(void) {
     int piece;
+
+    #ifdef NOT_YET
     SEQUENCE *S;
     char *old;
     //   mprintf("preload full go asynch, stat %d them %x\n",mlimbs_status,mlimbs_theme);
@@ -1308,6 +1477,7 @@ void mlimbs_preload_full_timbres_and_go_asynch(void) {
     old = AIL_register_timbre_callback((MDI_DRIVER *)snd_midi, mlimbs_timbre_callback);
     //   mprintf("Old is %x, set to mtc\n",old);
     run_asynch_music_ai = TRUE;
+    #endif
 }
 
 void mlimbs_return_to_synch(void) {
@@ -1347,9 +1517,9 @@ void mlimbs_change_master_volume(int vol) {
     for (i = 0; i < (MLIMBS_MAX_SEQUENCES - 1); i++) {
         percent = userID[i].rel_vol * master_volume / 100;
         if (userID[i].seq_id >= 0) {
+            #ifdef NOT_YET
             AIL_set_sequence_volume(_uiD_seq(i), (unsigned)percent, 0);
+            #endif
         }
     }
 }
-
-#endif // NOT_YET

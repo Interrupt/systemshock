@@ -174,7 +174,7 @@ void grind_music_ai(void) {
     int current_key;
     short play_me = -1, seq;
 
-    if (mlimbs_counter == 4) // KLC - was 16
+    if (mlimbs_counter == 16) // KLC - was 16
     {
         mlimbs_counter = 0;
         boring_count++;
@@ -298,16 +298,16 @@ void grind_music_ai(void) {
         // if we aren't doing a layered transition, just jump
         // over to new score if possible
         if (transition_count == 0) {
-            //         if (mlimbs_counter % 4 == 0)		KLC - do it every time
-            //         {
-            mlimbs_boredom = 0;
-            last_score = current_score;
-            actual_score = current_score;
-            //         }
+            if (mlimbs_counter % 4 == 0)	//	KLC - do it every time
+            {
+                mlimbs_boredom = 0;
+                last_score = current_score;
+                actual_score = current_score;
+            }
         }
     }
 
-    if ((next_mode) /*&& ((mlimbs_counter %  4) == 0)*/) // KLC - do it every time.
+    if ((next_mode) && ((mlimbs_counter %  4) == 0)) // KLC - do it every time.
     {
         // If we are coming out of death, shut down music
         // Eventually this will segue back into the journey screen music, perhaps.
@@ -323,27 +323,25 @@ void grind_music_ai(void) {
             tmode_time--;
             if (tmode_time == 0) {
                 next_mode = NORMAL_MODE;
-                mlimbs_counter = 3; // so that next_mode will take effect next ai loop   KLC - was 15
+                mlimbs_counter = 15; // so that next_mode will take effect next ai loop   KLC - was 15
             }
         }
         break;
     case NORMAL_MODE:
         // Play basic superchunk
-        seq = mlimbs_counter; // KLC - was mlimbs_counter / 4
+        seq = mlimbs_counter / 4; // KLC - was mlimbs_counter / 4
         play_me = track_table[actual_score + mlimbs_boredom][seq];
 
         break;
     }
     open_track = 0;
 
-    /* KLC - no pb12 track in our stuff
-       // Play the pitchbend track if we are just starting out
-       if ((just_started) && (!mai_semaphor))
-       {
-          make_request(open_track++, PITCHBEND_CHUNK);
-          just_started = FALSE;
-       }
-    */
+   // Play the pitchbend track if we are just starting out
+   if ((just_started) && (!mai_semaphor))
+   {
+      make_request(open_track++, PITCHBEND_CHUNK);
+      just_started = FALSE;
+   }
 
     if (mai_semaphor) {
         current_request[0] = default_request;
@@ -407,8 +405,8 @@ void grind_music_ai(void) {
                     // Transitions...
                     if (transition_count > 0) {
                         if (layering_table[TRANSITION_LAYER_BASE + current_transition][current_key] != 255) {
-                            // KLC                     if ((((mlimbs_counter % 4) == 0) && (transition_count == 2)) ||
-                            // KLC                        (((mlimbs_counter % 4) == 1) && (transition_count == 1)))
+                            if ((((mlimbs_counter % 4) == 0) && (transition_count == 2)) ||
+                                (((mlimbs_counter % 4) == 1) && (transition_count == 1)))
                             {
                                 if (current_score == actual_score) {
                                     transition_count = 0;
@@ -419,7 +417,7 @@ void grind_music_ai(void) {
                                     transition_count--;
                                     if (transition_count == 0) {
                                         last_score = actual_score = current_score;
-                                        mlimbs_counter = 3; // KLC was 15
+                                        mlimbs_counter = 15; // KLC was 15
                                         mlimbs_boredom = 0;
                                     }
                                 }
@@ -442,8 +440,8 @@ void grind_music_ai(void) {
                 if (park_playing) {
                     make_request(open_track++, park_playing);
                     park_playing = 0;
-                } else if ((score_playing == PARK_ZONE) && (rand() % 100 < park_random))
-                // KLC                  && ((mlimbs_counter % 4)  == 0))
+                } else if ((score_playing == PARK_ZONE) && (rand() % 100 < park_random)
+                    && ((mlimbs_counter % 4)  == 0))
                 {
                     r = rand() % NUM_PARK_SOUNDS;
                     park_playing = r + PARK_LAYER_BASE;
@@ -455,8 +453,12 @@ void grind_music_ai(void) {
 
     // why!!!! why at the end, why randomly, hate hate hate
     // Clear out requests
-    for (i = open_track; i < MLIMBS_MAX_CHANNELS - 1; i++)
-        current_request[i].pieceID = 255; // was -1
+
+    if(rand() == 0) {
+        DEBUG("Clearing!");
+        for (i = open_track; i < MLIMBS_MAX_CHANNELS - 1; i++)
+            current_request[i].pieceID = 255; // was -1
+    }
 
     // Some end of cycle admin stuff...
     old_deconst = in_deconst;

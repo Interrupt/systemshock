@@ -118,7 +118,7 @@ struct snd_digi_parms *snd_sample_parms(int hnd_id);
 void  snd_kill_all_samples(void);
 void  snd_sample_reload_parms(struct snd_digi_parms *sdp);
 
-int snd_find_free_sequence(void);
+//int snd_find_free_sequence(void);
 //int   snd_sequence_play(int snd_ref, uchar *seq_dat, int seq_num, snd_midi_parms *mparm);
 //snd_midi_parms *snd_sequence_parms(int hnd_id);
 

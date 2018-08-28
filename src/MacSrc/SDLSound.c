@@ -1,6 +1,9 @@
 
 #include <Carbon/Carbon.h>
 #include "musicai.h"
+#include "adlmidi.h"
+#include "mlimbs.h"
+#include "Xmi.h"
 
 #ifdef USE_SDL_MIXER
 
@@ -9,6 +12,12 @@
 static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
 static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
 static Mix_Chunk *playing_audiolog_sample = NULL;
+
+#define SAMPLE_RATE 44100
+#define SAMPLES 4096
+#define CHANNELS MLIMBS_MAX_CHANNELS
+
+struct ADL_MIDIPlayer *adlDevice[MLIMBS_MAX_CHANNELS];
 
 int snd_start_digital(void) {
 
@@ -21,6 +30,10 @@ int snd_start_digital(void) {
 	if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
 		ERROR("%s: Couldn't open audio device", __FUNCTION__);
 	}
+
+	InitReadXMI();
+	atexit(FreeXMI);
+	atexit(ShutdownReadXMI);
 
 	Mix_AllocateChannels(SND_MAX_SAMPLES);
 
@@ -132,30 +145,82 @@ void MacTuneUpdateVolume(void) {
 	Mix_VolumeMusic(((curr_vol_lev * curr_vol_lev * 128 * music_vol_mod) / 10000) );
 }
 
+int is_playing = 0;
+
+static void SDL_MidiAudioCallback(void *adl_midi_player, Uint8 *stream, int len)
+{
+    /* Convert bytes length into total count of samples in all channels */
+    int samples_count = len / 2;
+    SDL_memset(stream, 0, len);
+
+    /* Take some samples from the ADLMIDI */
+    for(int i = 0; i < CHANNELS; i++) {
+    	int read = 0;
+    	if(adlDevice[i] != NULL) {
+    		short adl_buffer[SAMPLES * 2];
+    		read = adl_play(adlDevice[i], samples_count, (short*)adl_buffer);
+	    	for(int x = 0; x < read * 2; x++) {
+	    		stream[x] += ((Uint8*)adl_buffer)[x];
+	    	}
+    	}
+	}
+
+    //mlimbs_callback(NULL, 1);
+    mlimbs_timer_callback();
+}
+
 int MacTuneLoadTheme(char* theme_base, int themeID) {
 	char filename[30];
+	FILE *f;
+	int i;
+	
+	#define NUM_SCORES                  8
+	#define SUPERCHUNKS_PER_SCORE       4
+	#define NUM_TRANSITIONS             9
+	#define NUM_LAYERS                 32
+	#define MAX_KEYS                   10
+	#define NUM_LAYERABLE_SUPERCHUNKS  22
+	#define KEY_BAR_RESOLUTION          2
+	
+	extern uchar track_table[NUM_SCORES][SUPERCHUNKS_PER_SCORE];
+	extern uchar transition_table[NUM_TRANSITIONS];
+	extern uchar layering_table[NUM_LAYERS][MAX_KEYS];
+	extern uchar key_table[NUM_LAYERABLE_SUPERCHUNKS][KEY_BAR_RESOLUTION];
+	
+	for (i=0; i<NUM_THREADS; i++) StopTrack(i);
+	FreeXMI();
+	
+	if (strncmp(theme_base, "thm", 3))
+	{
+	  sprintf(filename, "res/sound/genmidi/%s.xmi", theme_base);
+	  ReadXMI(filename);
+	
+	  StartTrack(0, 0, 127); //title music
+	}
+	else
+	{
+	  sprintf(filename, "res/sound/genmidi/thm%i.xmi", themeID);
+	  ReadXMI(filename);
+	
+	  sprintf(filename, "res/sound/thm%i.bin", themeID);
+	  f = fopen(filename, "rb");
+	  if (f != 0)
+	  {
+	    fread(track_table,      NUM_SCORES * SUPERCHUNKS_PER_SCORE,             1, f);
+	    fread(transition_table, NUM_TRANSITIONS,                                1, f);
+	    fread(layering_table,   NUM_LAYERS * MAX_KEYS,                          1, f);
+	    fread(key_table,        NUM_LAYERABLE_SUPERCHUNKS * KEY_BAR_RESOLUTION, 1, f);
 
-	// Try to play some music! theme_base will be a string like 'thm0'
-
-	// FIXME: This should really try to play the .xmi files in res/sound/genmidi if there is a way!
-	// until then, I'm going to just attempt to play .mid files instead.
-
-	// Build the file name
-	strcpy(filename, "res/music/");
-	strcat(filename, theme_base);
-	strcat(filename, ".mid");
-
-	DEBUG("Playing music %s", filename);
-
-	Mix_Music *music;
-	music = Mix_LoadMUS(filename);
-	Mix_PlayMusic(music, -1);
-	MacTuneUpdateVolume();
+	    fclose(f);
+	  }
+	}
 
 	return OK;
 }
 
 void MacTuneKillCurrentTheme(void) {
+	int i;
+	for (i=0; i<NUM_THREADS; i++) StopTrack(i);
 	Mix_HaltMusic();
 }
 

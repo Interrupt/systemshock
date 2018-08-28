@@ -72,6 +72,7 @@ set(MAC_SRC
 	src/MacSrc/SDLSound.c
 	src/MacSrc/Modding.c
 	src/MacSrc/OpenGL.cc
+	src/MacSrc/Xmi.c
 )
 
 set(GAME_SRC
@@ -210,6 +211,7 @@ include_directories(
 	src/Libraries/H
 	src/Libraries/LG/Source
 	src/Libraries/LG/Source/LOG/src
+	src/Libraries/adlmidi/include
 	src/GameSrc/Headers
 	src/MacSrc
 )
@@ -317,6 +319,7 @@ target_link_libraries(systemshock
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
+	ADLMIDI_LIB
 	${SDL2_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
 	${OPENGL_LIBRARIES}
