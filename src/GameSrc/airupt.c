@@ -375,7 +375,7 @@ void grind_music_ai(void) {
 
             // Don't layer over fullmode transitions
             if (current_mode == NORMAL_MODE) {
-                current_key = key_table[play_me][mlimbs_counter / 2] - 1; // was (mlimbs_counter % 4) / 2
+                current_key = key_table[play_me][(mlimbs_counter % 4) / 2] - 1; // was (mlimbs_counter % 4) / 2
 
                 // Most layering is mutually exclusive with deconstructing
                 if (in_deconst && (layering_table[DECONSTRUCT_LAYER][current_key] != 0xFF)) {

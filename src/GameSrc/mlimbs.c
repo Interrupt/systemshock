@@ -548,6 +548,8 @@ void mlimbs_mute_sequence_channel(int usernum, int x, bool mute) {
             /* If it's < 0,this means the controller wasn't initialized.  Thus, we need to initialize it
                     to 0 in order for the stop/resume trick to work */
 
+            ERROR("Need to mute music channel %i: %i", usernum, mute);
+
             #ifdef NOT_YET
             val = AIL_controller_value(_uiD_seq(usernum), seq_ch, XMIDI_BANK_SELECT);
 #ifdef SND_CHANGE
@@ -901,7 +903,7 @@ int mlimbs_assign_channels(int usernum, bool crossfade) {
 int mlimbs_play_piece(int pieceID, int priority, int loops, int rel_vol, bool channel_prioritize, bool crossfade) {
     int i, slot, usernum, voices_needed, voices_available;
 
-    DEBUG("mlimbs_play_piece %i, times %i", pieceID, loops);
+    INFO("mlimbs_play_piece %i, times %i", pieceID, loops);
 
     if (pieceID >= num_XMIDI_sequences)
         return -1;
@@ -969,11 +971,9 @@ int mlimbs_play_piece(int pieceID, int priority, int loops, int rel_vol, bool ch
             mlimbs_punt_piece(usernum);
             return -1;
         }
-        // Now set the initial volume
 
-        #ifdef NOT_YET
-        AIL_set_sequence_volume(_uiD_seq(usernum), (unsigned)rel_vol * master_volume / 100, 0);
-        #endif
+        // Now set the initial volume
+        SetTrackVolume(usernum, (unsigned)rel_vol * master_volume / 100, 0);
 
         return (usernum); // Return entry of userID[]
     } else
@@ -1358,7 +1358,7 @@ void mlimbs_timer_callback(void) {
         }
     }
     mlimbs_update_requests = FALSE;
-    mlimbs_counter++; // Only update the counter after the pieces playing have been updated
+    mlimbs_counter += 4; // CC: Was just mlimbs_counter++ but this used to get called for every bar of music
 }
 
 #ifdef NOT_YET
