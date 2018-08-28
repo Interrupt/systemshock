@@ -2,6 +2,8 @@
 #include <SDL.h>
 #include "adlmidi.h"
 
+// CC: Based on work by Donnie Russell II 
+
 struct ADL_MIDIPlayer *adlD;
 
 static void AdlAudioCallback(void * d, Uint8 *stream, int len)
