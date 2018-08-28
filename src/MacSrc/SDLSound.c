@@ -148,7 +148,7 @@ void MacTuneUpdateVolume(void) {
 int is_playing = 0;
 
 int MacTuneLoadTheme(char* theme_base, int themeID) {
-	char filename[30];
+	char filename[40];
 	FILE *f;
 	int i;
 	
@@ -170,15 +170,27 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 	
 	if (strncmp(theme_base, "thm", 3))
 	{
-	  sprintf(filename, "res/sound/genmidi/%s.xmi", theme_base);
-	  ReadXMI(filename);
+	  // Try to use sblaster files, fall back to genmidi
+	  sprintf(filename, "res/sound/sblaster/%s.xmi", theme_base);
+	  int readFile = ReadXMI(filename);
+
+	  if(!readFile) {
+	  	sprintf(filename, "res/sound/genmidi/%s.xmi", theme_base);
+	  	ReadXMI(filename);
+	  }
 	
 	  StartTrack(0, 0, 127); //title music
 	}
 	else
 	{
-	  sprintf(filename, "res/sound/genmidi/thm%i.xmi", themeID);
-	  ReadXMI(filename);
+	  // Try to use sblaster files, fall back to genmidi
+	  sprintf(filename, "res/sound/sblaster/thm%i.xmi", themeID);
+	  int readFile = ReadXMI(filename);
+
+	  if(!readFile) {
+	  	sprintf(filename, "res/sound/genmidi/thm%i.xmi", themeID);
+	  	ReadXMI(filename);
+	  }
 	
 	  sprintf(filename, "res/sound/thm%i.bin", themeID);
 	  f = fopen(filename, "rb");

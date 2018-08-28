@@ -128,6 +128,7 @@ int ReadXMI(const char *filename)
   	ERROR("Could not read XMI");
   	return 0;
   }
+
   fseek(f, 0, SEEK_END);
   size = ftell(f);
   fseek(f, 0, SEEK_SET);
@@ -332,6 +333,17 @@ int ReadXMI(const char *filename)
 
 
   free(data);
+
+  // Check to see which sound bank should be used
+  if(strstr(filename, "sblaster") != NULL) {
+    // res/sound/sblaster - Bank 45 sounds good
+    adl_setBank(adlD, 45);
+  }
+  else {
+  	// res/sound/genmidi - 45 Sounds off on various tracks, try something else
+    adl_setBank(adlD, 0);
+  }
+
   return 1; //success
 }
 
@@ -560,12 +572,6 @@ void InitReadXMI(void)
   // Start the ADL Midi device
   adlD = adl_init(44100);
 
-  // Bank 45 is System Shock?
-  // Might be different for different tracks
-  // 45: Good title screen
-  // 44: Sounds better for the Elevator, and for the Puzzle areas
-
-  adl_setBank(adlD, 45);
   adl_switchEmulator(adlD, 1);
   adl_setNumChips(adlD, 4);
   adl_setVolumeRangeModel(adlD, 1);
