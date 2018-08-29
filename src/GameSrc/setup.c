@@ -76,7 +76,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "splshpal.h"
 
 #include "Shock.h"
-
 #include <SDL.h>
 
 /*
@@ -607,6 +606,10 @@ errtype journey_credits_func(uchar draw_stuff) {
             journey_credits_done();
         }
     }
+
+    extern void mlimbs_do_credits_ai(void);
+    mlimbs_do_credits_ai();
+
     return (OK);
 }
 

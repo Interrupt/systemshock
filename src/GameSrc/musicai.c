@@ -258,19 +258,15 @@ void mlimbs_do_ai() {
     }
 }
 
-#ifdef NOT_YET //
-
 void mlimbs_do_credits_ai() {
     extern uchar mlimbs_semaphore;
-    if (ai_cycle) {
+    //if (ai_cycle) {
         ai_cycle = 0;
         grind_credits_music_ai();
-        mlimbs_preload_requested_timbres();
+        //mlimbs_preload_requested_timbres();
         mlimbs_semaphore = FALSE;
-    }
+    //}
 }
-
-#endif // NOT_YET
 
 errtype mai_attack() {
     if (music_on) {

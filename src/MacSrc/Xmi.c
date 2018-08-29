@@ -570,7 +570,7 @@ void InitReadXMI(void)
   int i, channel;
 
   // Start the ADL Midi device
-  adlD = adl_init(44100);
+  adlD = adl_init(48000);
 
   adl_switchEmulator(adlD, 1);
   adl_setNumChips(adlD, 4);
