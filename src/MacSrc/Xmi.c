@@ -11,9 +11,6 @@ static void AdlAudioCallback(void * d, Uint8 *stream, int len)
     SDL_LockAudio();
     adl_generate(adlD, len / 2, stream);
     SDL_UnlockAudio();
-
-    extern void mlimbs_timer_callback();
-    mlimbs_timer_callback();
 }
 
 void FreeXMI(void)
