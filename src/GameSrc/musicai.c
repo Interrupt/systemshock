@@ -484,8 +484,10 @@ void load_score_guts(char score_playing) {
 
     rv = MacTuneLoadTheme(base, score_playing);
 
-    if (rv == 0)
+    if (rv == 0) {
         musicai_reset(TRUE);
+        grind_music_ai(); // CC: Hax! Why is this needed to get the medical intro transition to play?
+    }
     else // handle this a better way.
         DebugString("Load theme failed!");
 }
