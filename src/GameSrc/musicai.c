@@ -238,15 +238,13 @@ void mlimbs_do_ai() {
             if (!global_fullmap->cyber)
                 check_asynch_ai(TRUE);
 
-            /*int pid = current_request[0].pieceID;
+            int pid = current_request[0].pieceID;
             if (pid != 255 && pid != -1) // If there is a theme to play,
             {
-                //MacTuneQueueTune(pid); // Queue it up.
-                //mlimbs_counter++;      // Tell mlimbs we've queued another tune.
+                MacTuneQueueTune(pid); // Queue it up.
+                mlimbs_counter++;      // Tell mlimbs we've queued another tune.
                 gReadyToQueue = FALSE;
-            }*/
-
-            gReadyToQueue = FALSE;
+            }
         }
 
         // If a tune has finished playing, then another has just started, so prime the
@@ -333,7 +331,7 @@ errtype mlimbs_AI_init(void) {
     mlimbs_peril = DEFAULT_PERIL_MAX;
     current_transition = TRANS_INTRO;
     current_mode = TRANSITION_MODE;
-    tmode_time = 1; // KLC - was 4
+    tmode_time = 2; // KLC - was 4
     current_score = actual_score = last_score = WALKING_SCORE;
     current_zone = HOSPITAL_ZONE;
     mlimbs_AI = &music_ai;
@@ -346,16 +344,16 @@ errtype mai_transition(int new_trans) {
     if ((next_mode == TRANSITION_MODE) || (current_mode == TRANSITION_MODE))
         return (ERR_NOEFFECT);
 
-    DEBUG("mai_transition");
+    INFO("mai_transition");
 
     if (transition_table[new_trans] < LAYER_BASE) {
         current_transition = new_trans;
         next_mode = TRANSITION_MODE;
-        tmode_time = 4; // KLC - was 4
+        tmode_time = 2; // KLC - was 4
     } else if ((transition_count == 0) && (layering_table[TRANSITION_LAYER_BASE + new_trans][0] != 255)) {
         current_transition = new_trans;
         // For now, let's not do any layered transitions.
-        transition_count = 2;		//KLC - was 2
+        transition_count = 1;		//KLC - was 2
     }
     // temp
     /*
