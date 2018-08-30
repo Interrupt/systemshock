@@ -159,6 +159,7 @@ errtype audiolog_play(int email_id) {
     sdp->vol = curr_alog_vol;
     sdp->pan = ALOG_PAN;
     sdp->snd_ref = 0;
+    sdp->data = NULL;
 
     // Need to convert the movie's audio format to ours
     // FIXME: Might want to use SDL_AudioStream to do this on the fly
