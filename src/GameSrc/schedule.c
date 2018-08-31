@@ -110,6 +110,8 @@ int compare_events(void *e1, void *e2) {
 // SUPPORT FUNCTIONS
 // -----------------
 
+void stop_terrain_elevator_sound(short sem);
+
 uchar register_h_event(uchar x, uchar y, uchar floor, char *sem, char *key, uchar no_sfx) {
     int i, fr;
 
@@ -120,6 +122,9 @@ uchar register_h_event(uchar x, uchar y, uchar floor, char *sem, char *key, ucha
         else if (h_sems[i].x == x && h_sems[i].y == y && h_sems[i].floor == floor) {
 
             // conflict.  Take over the old semaphor.
+
+			stop_terrain_elevator_sound(i);
+
             if (h_sems[i].key < MAX_HSEM_KEY)
                 h_sems[i].key++;
             else
@@ -160,7 +165,10 @@ uchar register_h_event(uchar x, uchar y, uchar floor, char *sem, char *key, ucha
 void unregister_h_event(char sem) {
     if (sem < 0 || sem >= NUM_HEIGHT_SEMAPHORS)
         return;
-    h_sems[sem].inuse--;
+
+	stop_terrain_elevator_sound(sem);
+
+	h_sems[sem].inuse = 0;
 }
 
 // --------------
