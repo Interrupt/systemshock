@@ -200,10 +200,11 @@ short play_cutscene(int id, bool show_credits) {
 
     // Stop current music
 	MacTuneKillCurrentTheme();
-
+	
 	// Now play the sample
-    snd_alog_play(0x0, cvt.len_cvt, cvt.buf, sdp);
-
+    extern uchar sfx_on;
+    if (sfx_on) snd_alog_play(0x0, cvt.len_cvt, cvt.buf, sdp);
+	
     // Reset the movie reader
     AfileReadReset(amovie);
 
