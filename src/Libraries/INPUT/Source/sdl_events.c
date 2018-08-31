@@ -640,12 +640,12 @@ errtype mouse_put_xy(short x, short y)
 
 	if (scale_x >= scale_y) {
 		// physical aspect ratio is wider; black borders left and right
-		int ofs_x = (physical_width - logical_width * scale_y + 1) / 2;
+		int ofs_x = (physical_width - logical_width * scale_y) / 2;
 		x = x * scale_y + ofs_x;
 		y = y * scale_y;
 	} else {
 		// physical aspect ratio is narrower; black borders at top and bottom
-		int ofs_y = (physical_height - logical_height * scale_x + 1) / 2;
+		int ofs_y = (physical_height - logical_height * scale_x) / 2;
 		x = x * scale_x;
 		y = y * scale_x + ofs_y;
 	}
