@@ -36,8 +36,29 @@ static bool fullscreenActive = false;
 
 static void toggleFullScreen()
 {
+	// fullscreenActive = !fullscreenActive;
+	// SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+
+	SDL_DisplayMode dm;
+	static int w, h;
+	void CaptureMouse(bool capture);
+
+	CaptureMouse(FALSE);
+	if (fullscreenActive)
+	{
+		SDL_RestoreWindow(window);
+		SDL_SetWindowSize(window, w, h);
+	}
+	else
+	{
+		SDL_GetDesktopDisplayMode(0, &dm);
+		SDL_GetWindowSize(window, &w, &h);
+		SDL_RestoreWindow(window);
+		SDL_SetWindowSize(window, dm.w, dm.h + 10); //10 should be height of title bar
+	}
+	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	fullscreenActive = !fullscreenActive;
-	SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	CaptureMouse(TRUE);
 }
 
 // current state of the keys, based on the SystemShock/Mac Keycodes (sshockKeyStates[keyCode] has the state for that key)
