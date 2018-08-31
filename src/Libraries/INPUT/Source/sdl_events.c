@@ -271,6 +271,9 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 	return KBC_NONE;
 }
 
+static int MouseLookX;
+static int MouseLookY;
+
 void pump_events(void)
 {
 	SDL_Event ev;
@@ -385,6 +388,10 @@ void pump_events(void)
 				mouseEvent.timestamp = mouse_get_time();
 
 				addMouseEvent(&mouseEvent);
+
+				MouseLookX = ev.motion.x; //only update these when mouse actually moves
+				MouseLookY = ev.motion.y;
+
 				break;
 			}
 			case SDL_MOUSEWHEEL:
@@ -602,15 +609,22 @@ errtype mouse_flush(void)
 
 errtype mouse_get_xy(short* x, short* y)
 {
-	*x = latestMouseEvent.x;
-	*y = latestMouseEvent.y;
+	// *x = latestMouseEvent.x;
+	// *y = latestMouseEvent.y;
+
+	*x = MouseLookX; //these only updated when mouse cursor actually moves
+	*y = MouseLookY;
+
 	return OK;
 }
 
 errtype mouse_put_xy(short x, short y)
 {
-	latestMouseEvent.x = x;
+	latestMouseEvent.x = x; //still update these so mouse pointer doesn't jitter
 	latestMouseEvent.y = y;
+
+	MouseLookX = x;
+	MouseLookY = y;
 
 	// scale new mouse coordinates from logical (game resolution) to
 	// physical (SDL window size)
