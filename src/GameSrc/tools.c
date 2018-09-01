@@ -51,6 +51,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "cit2d.h"
 
+#include <SDL.h>
+
 //#include <gifd.h>
 
 #ifndef STORE_CLIP
@@ -853,9 +855,7 @@ void gamma_dealfunc(ushort gamma_qvar) {
 
     if (gamma_qvar > 99)
         gamma_qvar = 99;
-    gamma_qvar = (ushort)(((int)gamma_qvar * FIX_UNIT) / 100);
-    gamma = FIX_UNIT - fix_make(0, gamma_qvar);
-    gamma = fix_mul(gamma, gamma) + (FIX_UNIT / 2);
-    //	gamma=QVAR_TO_GAMMA(gamma_qvar);
-    gr_set_gamma_pal(0, 256, gamma);
+
+    extern SDL_Window *window;
+    SDL_SetWindowBrightness(window, (gamma_qvar / 70.0) + 0.6);
 }
