@@ -77,6 +77,8 @@ uchar cutscene_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data) {
 
 }
 
+void CaptureMouse(bool capture);
+
 void cutscene_start() {
 	DEBUG("Cutscene start");
 
@@ -91,6 +93,8 @@ void cutscene_start() {
 	uiSetCurrentSlab(&cutscene_slab);
 
 	uiHideMouse(NULL);
+
+	CaptureMouse(FALSE);
 }
 
 void cutscene_exit() {
