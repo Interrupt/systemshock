@@ -1165,7 +1165,7 @@ void pause_for_key(ulong wait_time) {
     waiting_for_key = false;
 }
 
-void splash_draw() {
+void splash_draw(bool show_splash) {
     int pal_file;
 
     // Need to load the splash palette file
@@ -1206,29 +1206,35 @@ void splash_draw() {
     #endif
 
     uiHideMouse(NULL);
+	if (show_splash) {
     draw_full_res_bm(REF_IMG_bmOriginSplash, 0, 0, do_fades);
     pause_for_key(500);
 
     if (do_fades)
         palfx_fade_down();
+	}
 
     // Draw LGS Logo
 
     uiHideMouse(NULL);
+	if (show_splash) {
     draw_full_res_bm(REF_IMG_bmLGSplash, 0, 0, do_fades);
     pause_for_key(500);
 
     if (do_fades)
         palfx_fade_down();
+	}
 
     // Draw System Shock title
 
     uiHideMouse(NULL);
+	if (show_splash) {
     draw_full_res_bm(REF_IMG_bmSystemShockTitle, 0, 0, do_fades);
     pause_for_key(500);
 
     if (do_fades)
         palfx_fade_down();
+	}
 
     // Original palette
     gr_set_pal(0, 256, ppall);
