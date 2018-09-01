@@ -334,6 +334,17 @@ void pump_events(void)
 					}
 				}
 
+				//hack to allow pressing shift after move key
+				if (c == 0x38 || c == 0x3C) //left or right shift
+				{
+					int i;
+					for (i=0; i<256; i++) if (sshockKeyStates[i])
+					{
+						if (ev.key.state == SDL_PRESSED) sshockKeyStates[i] |=  KB_MOD_SHIFT;
+						else                             sshockKeyStates[i] &= ~KB_MOD_SHIFT;
+					}
+				}
+
 				break;
 			}
 			case SDL_TEXTINPUT:
