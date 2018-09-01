@@ -32,18 +32,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 
-static bool fullscreenActive = false;
+bool fullscreenActive = false;
 
 static void toggleFullScreen()
 {
 	// fullscreenActive = !fullscreenActive;
 	// SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
-	SDL_DisplayMode dm;
 	static int w, h;
-	void CaptureMouse(bool capture);
 
-	CaptureMouse(FALSE);
+	SDL_bool grab = SDL_GetWindowGrab(window);
+	if (grab)
+	{
+		SDL_SetWindowGrab(window, SDL_FALSE);
+		SDL_SetWindowResizable(window, SDL_TRUE);
+	}
+
 	if (fullscreenActive)
 	{
 		SDL_RestoreWindow(window);
@@ -51,14 +55,23 @@ static void toggleFullScreen()
 	}
 	else
 	{
+		SDL_DisplayMode dm;
+
 		SDL_GetDesktopDisplayMode(0, &dm);
 		SDL_GetWindowSize(window, &w, &h);
 		SDL_RestoreWindow(window);
 		SDL_SetWindowSize(window, dm.w, dm.h + 10); //10 should be height of title bar
 	}
+
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+
+	if (grab)
+	{
+		SDL_SetWindowGrab(window, SDL_TRUE);
+		SDL_SetWindowResizable(window, SDL_FALSE);
+	}
+
 	fullscreenActive = !fullscreenActive;
-	CaptureMouse(TRUE);
 }
 
 // current state of the keys, based on the SystemShock/Mac Keycodes (sshockKeyStates[keyCode] has the state for that key)
