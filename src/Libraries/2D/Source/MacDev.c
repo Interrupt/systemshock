@@ -94,6 +94,9 @@ void mac_set_mode(void)
 
  void ChangeScreenSize(int width, int height)
  {
+    extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
+    if (gScreenWide == width && gScreenHigh == height) return;
+
     extern SDL_Renderer* renderer;
     extern SDL_Window* window;
 
@@ -130,7 +133,6 @@ void mac_set_mode(void)
 
     SDL_RenderSetLogicalSize(renderer, width, height);
 
-    extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
     gScreenWide = width;
     gScreenHigh = height;
     gActiveWide = width;
