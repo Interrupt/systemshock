@@ -89,6 +89,8 @@ void cutscene_start() {
 
 	_current_view = &cutscene_root_region;
 	uiSetCurrentSlab(&cutscene_slab);
+
+	uiHideMouse(NULL);
 }
 
 void cutscene_exit() {
