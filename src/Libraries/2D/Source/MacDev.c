@@ -98,9 +98,36 @@ void mac_set_mode(void)
     extern SDL_Window* window;
 
     SDL_RenderClear(renderer);
-    
-    SDL_SetWindowSize(window, width, height);
-    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+
+	SDL_bool grab = SDL_GetWindowGrab(window);
+	if (grab)
+	{
+		SDL_SetWindowGrab(window, SDL_FALSE);
+		SDL_SetWindowResizable(window, SDL_TRUE);
+	}
+
+	extern bool fullscreenActive;
+	if (fullscreenActive)
+	{
+		SDL_DisplayMode dm;
+
+		SDL_GetDesktopDisplayMode(0, &dm);
+		SDL_SetWindowSize(window, dm.w, dm.h + 10); //10 should be height of title bar
+	}
+	else
+	{
+		if (!(SDL_GetWindowFlags(window) & SDL_WINDOW_MAXIMIZED))
+			SDL_SetWindowSize(window, width, height);
+	}
+
+	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+
+	if (grab)
+	{
+		SDL_SetWindowGrab(window, SDL_TRUE);
+		SDL_SetWindowResizable(window, SDL_FALSE);
+	}
+
     SDL_RenderSetLogicalSize(renderer, width, height);
 
     extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
@@ -108,8 +135,6 @@ void mac_set_mode(void)
     gScreenHigh = height;
     gActiveWide = width;
     gActiveHigh = height;
-
-    // TODO: Fix up the screen sizes in fullscreen mode?
  }
 
 
