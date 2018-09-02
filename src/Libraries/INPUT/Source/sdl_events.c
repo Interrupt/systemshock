@@ -36,42 +36,19 @@ bool fullscreenActive = false;
 
 static void toggleFullScreen()
 {
-	// fullscreenActive = !fullscreenActive;
-	// SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	int x, y;
+	SDL_GetGlobalMouseState(&x, &y);
 
-	static int w, h;
-
-	SDL_bool grab = SDL_GetWindowGrab(window);
-	if (grab)
-	{
-		SDL_SetWindowGrab(window, SDL_FALSE);
-		SDL_SetWindowResizable(window, SDL_TRUE);
-	}
-
-	if (fullscreenActive)
-	{
-		SDL_RestoreWindow(window);
-		SDL_SetWindowSize(window, w, h);
-	}
-	else
-	{
-		SDL_DisplayMode dm;
-
-		SDL_GetDesktopDisplayMode(0, &dm);
-		SDL_GetWindowSize(window, &w, &h);
-		SDL_RestoreWindow(window);
-		SDL_SetWindowSize(window, dm.w, dm.h + 10); //10 should be height of title bar
-	}
+	fullscreenActive = !fullscreenActive;
+	SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
-	if (grab)
-	{
-		SDL_SetWindowGrab(window, SDL_TRUE);
-		SDL_SetWindowResizable(window, SDL_FALSE);
-	}
+	SDL_WarpMouseGlobal(x, y);
 
-	fullscreenActive = !fullscreenActive;
+	//On Windows fullscreen brightness is higher than windowed, so we compensate; other platforms?
+    float brightness = fullscreenActive ? 0.5 : 1.0;
+    SDL_SetWindowBrightness(window, brightness);
 }
 
 // current state of the keys, based on the SystemShock/Mac Keycodes (sshockKeyStates[keyCode] has the state for that key)
@@ -287,8 +264,25 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 static int MouseLookX;
 static int MouseLookY;
 
+//hack to keep captured mouse inside client area of window
+void KeepMouseCaptured(void)
+{
+	extern bool MouseCaptured;
+	if (MouseCaptured)
+	{
+		int mx, my;		SDL_GetGlobalMouseState(&mx, &my);
+		int x, y;		SDL_GetWindowPosition(window, &x, &y);
+		int w, h;		SDL_GetWindowSize(window, &w, &h);
+
+		if (mx > x+w-2) SDL_WarpMouseGlobal(x+w-2, my);
+		if (my > y+h-2) SDL_WarpMouseGlobal(mx, y+h-2);
+	}
+}
+
 void pump_events(void)
 {
+	KeepMouseCaptured();
+
 	SDL_Event ev;
 	while(SDL_PollEvent(&ev))
 	{
