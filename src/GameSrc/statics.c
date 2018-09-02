@@ -58,7 +58,7 @@ uchar frameBuffer[FRAME_BUFFER_SIZE];
 #define WACKY_SVGA_MFD_SIZE 52744
 uchar frameBuffer2[WACKY_SVGA_MFD_SIZE];
 
-uchar *mfd_canvas_bits = frameBuffer2;
+uchar *mfd_canvas_bits = NULL;
 
 #define ALTERNATE_BUFFER_SIZE ((MFD_VIEW_HGT * MFD_VIEW_WID) + FRAME_BUFFER_SIZE)
 

@@ -341,7 +341,7 @@ void change_svga_screen_mode() {
     status_bio_update_screenmode();
     ss_set_hack_mode(2, &temp);
     inventory_update_screen_mode();
-    //mfd_update_screen_mode();
+    mfd_update_screen_mode();
     view360_update_screen_mode();
     ss_set_hack_mode(0, &temp);
     olh_svga_deal();

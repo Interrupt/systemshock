@@ -164,7 +164,7 @@ void game_loop(void) {
             if (_change_flag & MFD_UPDATE) {
                 Spew("gameloop", "MFD_UPDATE\n");
                 chg_unset_flg(MFD_UPDATE);
-                //loopLine(GL | 0x18, mfd_update());
+                loopLine(GL | 0x18, mfd_update());
             }
 
             if (_change_flag & DEMOVIEW_UPDATE) {

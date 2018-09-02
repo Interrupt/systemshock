@@ -286,10 +286,14 @@ void screen_init_mfd(uchar fullscrn) {
     if (!done_init) {
         done_init = TRUE;
 
+        // CC: These bytes get made on the fly now
+        mfd_canvas_bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID) * MAX_HT(MFD_VIEW_HGT));
+
         // Pull in the background bitmap
         f = (FrameDesc *)RefLock(REF_IMG_bmBlankMFD);
         mfd_background = f->bm;
         mfd_background.bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID) * MAX_HT(MFD_VIEW_HGT));
+
         LG_memcpy(mfd_background.bits, (f + 1), f->bm.w * f->bm.h);
         RefUnlock(REF_IMG_bmBlankMFD);
 
@@ -308,8 +312,24 @@ errtype mfd_update_screen_mode() {
         gr_init_canvas(&_offscreen_mfd, mfd_canvas_bits, BMT_FLAT8, MFD_VIEW_WID, MFD_VIEW_HGT);
         gr_init_canvas(&_fullscreen_mfd, mfd_background.bits, BMT_FLAT8, MFD_VIEW_WID, MFD_VIEW_HGT);
     } else {
-        gr_init_canvas(&_offscreen_mfd, mfd_canvas_bits, BMT_FLAT8, SCONV_X(MFD_VIEW_WID), SCONV_Y(MFD_VIEW_HGT));
-        gr_init_canvas(&_fullscreen_mfd, mfd_background.bits, BMT_FLAT8, SCONV_X(MFD_VIEW_WID), SCONV_Y(MFD_VIEW_HGT));
+
+        int new_width = SCONV_X(MFD_VIEW_WID);
+        int new_height = SCONV_Y(MFD_VIEW_HGT);
+
+        // CC: Resize the MFD bytes to fit the new mode
+        free(mfd_background.bits);
+        free(mfd_canvas_bits);
+
+        mfd_background.bits = (uchar *)malloc(new_width * new_height);
+        mfd_canvas_bits = (uchar *)malloc(new_width * new_height);
+
+        // Copy the background bytes
+        grs_bitmap *bm = lock_bitmap_from_ref(REF_IMG_bmBlankMFD);
+        LG_memcpy(mfd_background.bits, bm->bits, bm->w * bm->h);
+        RefUnlock(REF_IMG_bmBlankMFD);
+
+        gr_init_canvas(&_offscreen_mfd, mfd_canvas_bits, BMT_FLAT8, new_width, new_height);
+        gr_init_canvas(&_fullscreen_mfd, mfd_background.bits, BMT_FLAT8, new_width, new_height);
     }
     return (OK);
 }
