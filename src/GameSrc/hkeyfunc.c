@@ -1281,6 +1281,7 @@ uchar pause_game_func(short keycode, ulong context, void *data) {
 
     if (game_paused) {
         redraw_paused = TRUE;
+		snd_kill_all_samples();
         return FALSE;
     }
 
