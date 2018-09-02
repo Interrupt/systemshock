@@ -102,34 +102,11 @@ void mac_set_mode(void)
 
     SDL_RenderClear(renderer);
 
-	SDL_bool grab = SDL_GetWindowGrab(window);
-	if (grab)
-	{
-		SDL_SetWindowGrab(window, SDL_FALSE);
-		SDL_SetWindowResizable(window, SDL_TRUE);
-	}
-
 	extern bool fullscreenActive;
-	if (fullscreenActive)
-	{
-		SDL_DisplayMode dm;
+	SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
-		SDL_GetDesktopDisplayMode(0, &dm);
-		SDL_SetWindowSize(window, dm.w, dm.h + 10); //10 should be height of title bar
-	}
-	else
-	{
-		if (!(SDL_GetWindowFlags(window) & SDL_WINDOW_MAXIMIZED))
-			SDL_SetWindowSize(window, width, height);
-	}
-
+	SDL_SetWindowSize(window, width, height);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-
-	if (grab)
-	{
-		SDL_SetWindowGrab(window, SDL_TRUE);
-		SDL_SetWindowResizable(window, SDL_FALSE);
-	}
 
     SDL_RenderSetLogicalSize(renderer, width, height);
 
