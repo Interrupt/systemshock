@@ -338,9 +338,12 @@ void SDLDraw()
 	}
 }
 
+bool MouseCaptured = FALSE;
+
 void CaptureMouse(bool capture)
 {
-	SDL_SetWindowGrab(window, capture && gShockPrefs.goCaptureMouse);
+	MouseCaptured = (capture && gShockPrefs.goCaptureMouse);
 
-	SDL_SetWindowResizable(window, !(capture && gShockPrefs.goCaptureMouse));
+	SDL_SetWindowGrab(window, MouseCaptured);
+	SDL_SetWindowResizable(window, !MouseCaptured);
 }
