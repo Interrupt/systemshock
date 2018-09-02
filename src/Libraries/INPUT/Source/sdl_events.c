@@ -45,10 +45,6 @@ static void toggleFullScreen()
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
 	SDL_WarpMouseGlobal(x, y);
-
-	//On Windows fullscreen brightness is higher than windowed, so we compensate; other platforms?
-    float brightness = fullscreenActive ? 0.5 : 1.0;
-    SDL_SetWindowBrightness(window, brightness);
 }
 
 // current state of the keys, based on the SystemShock/Mac Keycodes (sshockKeyStates[keyCode] has the state for that key)
