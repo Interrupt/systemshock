@@ -101,7 +101,7 @@ void mouse_look_physics() {
 }
 
 void center_mouse() {
-    uiHideMouse(NULL);
+//    uiHideMouse(NULL);
 
     short middle_x = (grd_cap->w / 2);
     short middle_y = (grd_cap->h / 2);
@@ -111,9 +111,9 @@ void center_mouse() {
     pump_events();
     mouse_flush();
     uiFlush();
-    uiPopGlobalCursor();
+//    uiPopGlobalCursor();
     // This will show the mouse again
-    uiSetCursor();
+//    uiSetCursor();
 }
 
 void mouse_look_toggle() {

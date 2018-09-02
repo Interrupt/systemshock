@@ -32,12 +32,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 
-static bool fullscreenActive = false;
+bool fullscreenActive = false;
 
 static void toggleFullScreen()
 {
+	int x, y;
+	SDL_GetGlobalMouseState(&x, &y);
+
 	fullscreenActive = !fullscreenActive;
 	SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+
+	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+
+	SDL_WarpMouseGlobal(x, y);
+
+	//On Windows fullscreen brightness is higher than windowed, so we compensate; other platforms?
+    float brightness = fullscreenActive ? 0.5 : 1.0;
+    SDL_SetWindowBrightness(window, brightness);
 }
 
 // current state of the keys, based on the SystemShock/Mac Keycodes (sshockKeyStates[keyCode] has the state for that key)
@@ -250,8 +261,28 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 	return KBC_NONE;
 }
 
+static int MouseLookX;
+static int MouseLookY;
+
+//hack to keep captured mouse inside client area of window
+void KeepMouseCaptured(void)
+{
+	extern bool MouseCaptured;
+	if (MouseCaptured)
+	{
+		int mx, my;		SDL_GetGlobalMouseState(&mx, &my);
+		int x, y;		SDL_GetWindowPosition(window, &x, &y);
+		int w, h;		SDL_GetWindowSize(window, &w, &h);
+
+		if (mx > x+w-2) SDL_WarpMouseGlobal(x+w-2, my);
+		if (my > y+h-2) SDL_WarpMouseGlobal(mx, y+h-2);
+	}
+}
+
 void pump_events(void)
 {
+	KeepMouseCaptured();
+
 	SDL_Event ev;
 	while(SDL_PollEvent(&ev))
 	{
@@ -310,6 +341,17 @@ void pump_events(void)
 					}
 				}
 
+				//hack to allow pressing shift after move key
+				if (c == 0x38 || c == 0x3C) //left or right shift
+				{
+					int i;
+					for (i=0; i<256; i++) if (sshockKeyStates[i])
+					{
+						if (ev.key.state == SDL_PRESSED) sshockKeyStates[i] |=  KB_MOD_SHIFT;
+						else                             sshockKeyStates[i] &= ~KB_MOD_SHIFT;
+					}
+				}
+
 				break;
 			}
 			case SDL_TEXTINPUT:
@@ -364,6 +406,10 @@ void pump_events(void)
 				mouseEvent.timestamp = mouse_get_time();
 
 				addMouseEvent(&mouseEvent);
+
+				MouseLookX = ev.motion.x; //only update these when mouse actually moves
+				MouseLookY = ev.motion.y;
+
 				break;
 			}
 			case SDL_MOUSEWHEEL:
@@ -581,15 +627,22 @@ errtype mouse_flush(void)
 
 errtype mouse_get_xy(short* x, short* y)
 {
-	*x = latestMouseEvent.x;
-	*y = latestMouseEvent.y;
+	// *x = latestMouseEvent.x;
+	// *y = latestMouseEvent.y;
+
+	*x = MouseLookX; //these only updated when mouse cursor actually moves
+	*y = MouseLookY;
+
 	return OK;
 }
 
 errtype mouse_put_xy(short x, short y)
 {
-	latestMouseEvent.x = x;
+	latestMouseEvent.x = x; //still update these so mouse pointer doesn't jitter
 	latestMouseEvent.y = y;
+
+	MouseLookX = x;
+	MouseLookY = y;
 
 	// scale new mouse coordinates from logical (game resolution) to
 	// physical (SDL window size)
@@ -605,12 +658,12 @@ errtype mouse_put_xy(short x, short y)
 
 	if (scale_x >= scale_y) {
 		// physical aspect ratio is wider; black borders left and right
-		int ofs_x = (physical_width - logical_width * scale_y + 1) / 2;
+		int ofs_x = (physical_width - logical_width * scale_y) / 2;
 		x = x * scale_y + ofs_x;
 		y = y * scale_y;
 	} else {
 		// physical aspect ratio is narrower; black borders at top and bottom
-		int ofs_y = (physical_height - logical_height * scale_x + 1) / 2;
+		int ofs_y = (physical_height - logical_height * scale_x) / 2;
 		x = x * scale_x;
 		y = y * scale_x + ofs_y;
 	}

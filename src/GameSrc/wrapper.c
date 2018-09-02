@@ -1818,8 +1818,8 @@ void video_screen_init(void) {
 
     standard_slider_rect(&r, i, 2, 2);
     r.ul.x = r.ul.x + 1;
-    sliderbase = ((r.lr.x - r.ul.x - 1) * ((29 * FIX_UNIT) / 100)) / USHRT_MAX;
-    slider_init(i, REF_STR_OptionsText + 3, sizeof(ushort), TRUE, &player_struct.questvars[GAMMACOR_QVAR], USHRT_MAX,
+    sliderbase = ((r.lr.x - r.ul.x - 1) * 29 / 100);
+    slider_init(i, REF_STR_OptionsText + 3, sizeof(ushort), TRUE, &(gShockPrefs.doGamma), 100,
                 sliderbase, gamma_dealfunc, &r);
 
 #if defined(VFX1_SUPPORT) || defined(CTM_SUPPORT)

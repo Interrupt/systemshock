@@ -77,6 +77,8 @@ uchar cutscene_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data) {
 
 }
 
+void CaptureMouse(bool capture);
+
 void cutscene_start() {
 	DEBUG("Cutscene start");
 
@@ -89,6 +91,10 @@ void cutscene_start() {
 
 	_current_view = &cutscene_root_region;
 	uiSetCurrentSlab(&cutscene_slab);
+
+	uiHideMouse(NULL);
+
+	CaptureMouse(FALSE);
 }
 
 void cutscene_exit() {
@@ -187,6 +193,7 @@ short play_cutscene(int id, bool show_credits) {
     sdp->vol = 128;
     sdp->pan = 64;
     sdp->snd_ref = 0;
+    sdp->data = NULL;
 
     // Need to convert the movie's audio format to ours
     // FIXME: Might want to use SDL_AudioStream to do this on the fly
@@ -202,7 +209,8 @@ short play_cutscene(int id, bool show_credits) {
 	MacTuneKillCurrentTheme();
 
 	// Now play the sample
-    snd_alog_play(0x0, cvt.len_cvt, cvt.buf, sdp);
+    extern uchar sfx_on;
+    if (sfx_on) snd_alog_play(0x0, cvt.len_cvt, cvt.buf, sdp);
 
     // Reset the movie reader
     AfileReadReset(amovie);

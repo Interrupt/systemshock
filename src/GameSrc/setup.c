@@ -1165,8 +1165,10 @@ void pause_for_key(ulong wait_time) {
     waiting_for_key = false;
 }
 
-void splash_draw() {
+void splash_draw(bool show_splash) {
     int pal_file;
+
+	if (!show_splash) return;
 
     // Need to load the splash palette file
 

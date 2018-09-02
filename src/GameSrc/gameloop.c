@@ -53,6 +53,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "game_screen.h"
 
+#include "Prefs.h"
+
 #undef RECT_FILL
 #define RECT_FILL(pr, x1, y1, x2, y2) \
     {                                 \
@@ -200,6 +202,8 @@ void game_loop(void) {
 
         if (pal_fx_on) {
             loopLine(GL | 0x1F, palette_advance_all_fx(*tmd_ticks));
+
+			gamma_dealfunc(gShockPrefs.doGamma);
         }
 
         Spew("gameloop", "destroy_destroyed_objects\n");

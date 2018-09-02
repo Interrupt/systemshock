@@ -167,10 +167,8 @@ int main(int argc, char** argv)
 
 	// Draw the splash screen
 
-	if(show_splash) {
-		INFO("Showing splash screen");
-		splash_draw();
-	}
+	INFO("Showing splash screen");
+	splash_draw(show_splash);
 
 	// Start in the Main Menu loop
 
@@ -340,7 +338,12 @@ void SDLDraw()
 	}
 }
 
+bool MouseCaptured = FALSE;
+
 void CaptureMouse(bool capture)
 {
-	SDL_SetWindowGrab(window, capture && gShockPrefs.goCaptureMouse);
+	MouseCaptured = (capture && gShockPrefs.goCaptureMouse);
+
+	SDL_SetWindowGrab(window, MouseCaptured);
+	SDL_SetWindowResizable(window, !MouseCaptured);
 }

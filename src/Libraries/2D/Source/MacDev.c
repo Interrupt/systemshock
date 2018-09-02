@@ -94,22 +94,26 @@ void mac_set_mode(void)
 
  void ChangeScreenSize(int width, int height)
  {
+    extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
+    if (gScreenWide == width && gScreenHigh == height) return;
+
     extern SDL_Renderer* renderer;
     extern SDL_Window* window;
 
     SDL_RenderClear(renderer);
-    
-    SDL_SetWindowSize(window, width, height);
-    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+
+	extern bool fullscreenActive;
+	SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+
+	SDL_SetWindowSize(window, width, height);
+	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+
     SDL_RenderSetLogicalSize(renderer, width, height);
 
-    extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
     gScreenWide = width;
     gScreenHigh = height;
     gActiveWide = width;
     gActiveHigh = height;
-
-    // TODO: Fix up the screen sizes in fullscreen mode?
  }
 
 
