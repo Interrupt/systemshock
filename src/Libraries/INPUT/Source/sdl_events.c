@@ -260,17 +260,44 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 static int MouseLookX;
 static int MouseLookY;
 
-//hack to keep captured mouse inside client area of window
+//hack to keep captured mouse inside play area of window
+//aspect ratio-preserving black bars are outside play area
 void KeepMouseCaptured(void)
 {
+	int x, y;
+	SDL_GetWindowPosition(window, &x, &y);
+
+	int physical_width, physical_height;
+	SDL_GetWindowSize(window, &physical_width, &physical_height);
+
+	int w, h;
+	SDL_RenderGetLogicalSize(renderer, &w, &h);
+
+	float scale_x = (float)physical_width  / w;
+	float scale_y = (float)physical_height / h;
+
+	if (scale_x >= scale_y) {w *= scale_y; x += (physical_width  - w) / 2; h = physical_height;}
+	else                    {h *= scale_x; y += (physical_height - h) / 2; w = physical_width ;}
+
+	w -= 2;
+	h -= 2;
+
+	int mx, my;
+	SDL_GetGlobalMouseState(&mx, &my);
+
 	if (SDL_GetGrabbedWindow() == window)
 	{
-		int mx, my;		SDL_GetGlobalMouseState(&mx, &my);
-		int x, y;		SDL_GetWindowPosition(window, &x, &y);
-		int w, h;		SDL_GetWindowSize(window, &w, &h);
+		if (mx < x) mx = x; else if (mx > x+w) mx = x+w;
+		if (my < y) my = y; else if (my > y+h) my = y+h;
+		SDL_WarpMouseGlobal(mx, my);
 
-		if (mx > x+w-2) SDL_WarpMouseGlobal(x+w-2, my);
-		if (my > y+h-2) SDL_WarpMouseGlobal(mx, y+h-2);
+		SDL_ShowCursor(SDL_DISABLE);
+	}
+	else
+	{
+		bool focus = (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS);
+
+		SDL_ShowCursor((!focus || mx < x || mx > x+w || my < y || my > y+h) ? SDL_ENABLE : SDL_DISABLE);
 	}
 }
 
@@ -360,7 +387,7 @@ void pump_events(void)
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 			{
-				if (!(SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS)) break;
+				if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE) break;
 
 				bool down = (ev.button.state == SDL_PRESSED);
 				mouse_event mouseEvent = {0};
@@ -398,7 +425,7 @@ void pump_events(void)
 			}
 			case SDL_MOUSEMOTION:
 			{
-				if (!(SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS)) break;
+				if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE) break;
 
 				mouse_event mouseEvent = {0};
 				mouseEvent.type = MOUSE_MOTION;
@@ -414,7 +441,8 @@ void pump_events(void)
 				break;
 			}
 			case SDL_MOUSEWHEEL:
-				if (!(SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS)) break;
+
+				if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE) break;
 
 				if (ev.wheel.y != 0) {
 					mouse_event mouseEvent = {0};
@@ -439,14 +467,12 @@ void pump_events(void)
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
 						SDL_SetWindowBordered(window, !MouseCaptured);
 						SDL_SetWindowGrab(window, MouseCaptured);
-						SDL_ShowCursor(SDL_DISABLE);
 					break;
 
 					case SDL_WINDOWEVENT_FOCUS_LOST:
 						SDL_SetWindowBordered(window, SDL_TRUE);
 						SDL_SetWindowResizable(window, SDL_TRUE);
 						SDL_SetWindowGrab(window, SDL_FALSE);
-						SDL_ShowCursor(SDL_ENABLE);
 					break;
 				}
 			break;
