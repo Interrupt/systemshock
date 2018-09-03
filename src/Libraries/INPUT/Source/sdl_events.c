@@ -426,25 +426,29 @@ void pump_events(void)
 				}
 				break;
 			case SDL_WINDOWEVENT:
-				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-					if(can_use_opengl()) {
-						opengl_resize(ev.window.data1, ev.window.data2);
-					}
-				}
-			// TODO: maybe handle other events as well..
+				switch (ev.window.event)
+				{
+					case SDL_WINDOWEVENT_SIZE_CHANGED:
+						if (can_use_opengl()) opengl_resize(ev.window.data1, ev.window.data2);
+					break;
 
-				if (ev.window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
-					SDL_SetWindowBordered(window, !MouseCaptured);
-					SDL_SetWindowGrab(window, MouseCaptured);
-					SDL_ShowCursor(SDL_DISABLE);
-				}
+					case SDL_WINDOWEVENT_MOVED:
+					case SDL_WINDOWEVENT_RESIZED:
+					break;
 
-				if (ev.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
-					SDL_SetWindowBordered(window, SDL_TRUE);
-					SDL_SetWindowGrab(window, SDL_FALSE);
-					SDL_ShowCursor(SDL_ENABLE);
-				}
+					case SDL_WINDOWEVENT_FOCUS_GAINED:
+						SDL_SetWindowBordered(window, !MouseCaptured);
+						SDL_SetWindowGrab(window, MouseCaptured);
+						SDL_ShowCursor(SDL_DISABLE);
+					break;
 
+					case SDL_WINDOWEVENT_FOCUS_LOST:
+						SDL_SetWindowBordered(window, SDL_TRUE);
+						SDL_SetWindowResizable(window, SDL_TRUE);
+						SDL_SetWindowGrab(window, SDL_FALSE);
+						SDL_ShowCursor(SDL_ENABLE);
+					break;
+				}
 			break;
 		}
 	}
