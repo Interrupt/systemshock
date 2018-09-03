@@ -344,6 +344,6 @@ void CaptureMouse(bool capture)
 {
 	MouseCaptured = (capture && gShockPrefs.goCaptureMouse);
 
-	SDL_SetWindowBordered(window, !MouseCaptured);
+	SDL_SetWindowResizable(window, !MouseCaptured);
 	SDL_SetWindowGrab(window, MouseCaptured);
 }
