@@ -263,8 +263,7 @@ static int MouseLookY;
 //hack to keep captured mouse inside client area of window
 void KeepMouseCaptured(void)
 {
-	extern bool MouseCaptured;
-	if (MouseCaptured)
+	if (SDL_GetGrabbedWindow() == window)
 	{
 		int mx, my;		SDL_GetGlobalMouseState(&mx, &my);
 		int x, y;		SDL_GetWindowPosition(window, &x, &y);
