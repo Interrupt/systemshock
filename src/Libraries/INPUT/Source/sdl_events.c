@@ -713,7 +713,12 @@ errtype mouse_put_xy(short x, short y)
 		y = y * scale_x + ofs_y;
 	}
 
-	SDL_WarpMouseInWindow(window, x, y);
+	int window_x, window_y;
+	SDL_GetWindowPosition(window, &window_x, &window_y);
+	SDL_WarpMouseGlobal(window_x + x, window_y + y);
+
+	//creates a SDL_MOUSEMOTION event; feedback causes mouselook to go crazy
+	//SDL_WarpMouseInWindow(window, x, y);
 
 	return OK;
 }
