@@ -281,38 +281,51 @@ void pump_events(void)
 	KeepMouseCaptured();
 
 	SDL_Event ev;
-
-	while (SDL_PollEvent(&ev))
+	while(SDL_PollEvent(&ev))
 	{
 		switch(ev.type)
 		{
-			case SDL_QUIT: exit(0); break;
+			case SDL_QUIT:
+				// a bit hacky at this place, but this would allow exiting the game via the window's [x] button
+				exit(0); // TODO: I guess there is a better way.
+				break;
 
+
+			// TODO: really also handle key up here? the mac code apparently didn't, but where else do
+			//       kbs_events with .state == KBS_UP come from?
 			case SDL_KEYUP:
 			case SDL_KEYDOWN:
 			{
 				uchar c = sdlKeyCodeToSSHOCKkeyCode(ev.key.keysym.sym);
-
-				if (c != KBC_NONE)
+				if(c != KBC_NONE)
 				{
 					kbs_event keyEvent = { 0 };
 					keyEvent.code = c;
 
-					if (ev.key.keysym.sym >= 0x08 && ev.key.keysym.sym <= '~') keyEvent.ascii = ev.key.keysym.sym;
-					else keyEvent.ascii = 0;
+					//printf("ev.key.keysym.sym: %x\n", ev.key.keysym.sym);
+
+					// FIXME: this is hacky, see comment in SDL_TEXTINPUT below..
+					if(ev.key.keysym.sym >= 0x08 && ev.key.keysym.sym <= '~')
+						keyEvent.ascii = ev.key.keysym.sym;
+					else
+						keyEvent.ascii = 0;
 
 					keyEvent.modifiers = 0;
-
 					Uint16 mod = ev.key.keysym.mod;
+					if(mod & KMOD_CTRL)
+						keyEvent.modifiers |= KB_MOD_CTRL;
+					if(mod & KMOD_SHIFT)
+						keyEvent.modifiers |= KB_MOD_SHIFT;
+					// TODO: what's 0x04 ? windows key?
+					if(mod & KMOD_ALT)
+						keyEvent.modifiers |= KB_MOD_ALT;
 
-					if (mod & KMOD_CTRL) keyEvent.modifiers |= KB_MOD_CTRL;
-					if (mod & KMOD_SHIFT) keyEvent.modifiers |= KB_MOD_SHIFT;
-					if (mod & KMOD_ALT) keyEvent.modifiers |= KB_MOD_ALT;
-
-					if (ev.key.state == SDL_PRESSED)
+					if(ev.key.state == SDL_PRESSED)
 					{
-						if (ev.key.keysym.sym == SDLK_RETURN && mod & KMOD_ALT) {toggleFullScreen(); break;}
-
+						if (ev.key.keysym.sym == SDLK_RETURN && mod & KMOD_ALT) {
+							toggleFullScreen();
+							break;
+						}
 						keyEvent.state = KBS_DOWN;
 						sshockKeyStates[c] = keyEvent.modifiers | KB_MOD_PRESSED;
 						addKBevent(&keyEvent);
@@ -338,6 +351,11 @@ void pump_events(void)
 
 				break;
 			}
+			case SDL_TEXTINPUT:
+				// ev.text.text is a char[32] UTF-8 string
+				// TODO: this is the proper way to get text input, and the only reliable way
+				//       to get the correct char for non-letter-key + shift (e.g. Shift+2 is " on German KB)
+				break;
 
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
@@ -351,35 +369,43 @@ void pump_events(void)
 				switch (ev.button.button)
 				{
 					case SDL_BUTTON_LEFT:
+						// TODO: the old mac code used to emulate right mouse clicks if space, enter, or return
+						//       was pressed at the same time - do the same? (=> could check sshockKeyStates[])
+
 						mouseEvent.type = down ? MOUSE_LDOWN : MOUSE_LUP;
-					break;
+						break;
 
 					case SDL_BUTTON_RIGHT:
 						mouseEvent.type = down ? MOUSE_RDOWN : MOUSE_RUP;
-					break;
+						break;
+
+					//case SDL_BUTTON_MIDDLE: // TODO: is this MOUSE_CDOWN/UP ?
+					//		break;
+
 				}
 
-				if (mouseEvent.type != 0)
+				if(mouseEvent.type != 0)
 				{
 					mouseEvent.x = ev.button.x;
 					mouseEvent.y = ev.button.y;
 					mouseEvent.timestamp = mouse_get_time();
 					mouseEvent.modifiers = 0;
+
 					addMouseEvent(&mouseEvent);
 				}
 
 				break;
 			}
-
 			case SDL_MOUSEMOTION:
 			{
 				if (!(SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS)) break;
 
 				mouse_event mouseEvent = {0};
 				mouseEvent.type = MOUSE_MOTION;
-				mouseEvent.x = ev.motion.x;
+				mouseEvent.x = ev.motion.x; // TODO: relative mode?
 				mouseEvent.y = ev.motion.y;
 				mouseEvent.timestamp = mouse_get_time();
+
 				addMouseEvent(&mouseEvent);
 
 				MouseLookX = ev.motion.x; //only update these when mouse actually moves
@@ -387,12 +413,10 @@ void pump_events(void)
 
 				break;
 			}
-
 			case SDL_MOUSEWHEEL:
 				if (!(SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS)) break;
 
-				if (ev.wheel.y != 0)
-				{
+				if (ev.wheel.y != 0) {
 					mouse_event mouseEvent = {0};
 					mouseEvent.type = ev.wheel.y < 0 ? MOUSE_WHEELDN : MOUSE_WHEELUP;
 					mouseEvent.x = latestMouseEvent.x;
@@ -400,23 +424,22 @@ void pump_events(void)
 					mouseEvent.timestamp = mouse_get_time();
 					addMouseEvent(&mouseEvent);
 				}
-			break;
-
+				break;
 			case SDL_WINDOWEVENT:
-				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-				{
-					if (can_use_opengl()) opengl_resize(ev.window.data1, ev.window.data2);
+				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+					if(can_use_opengl()) {
+						opengl_resize(ev.window.data1, ev.window.data2);
+					}
 				}
+			// TODO: maybe handle other events as well..
 
-				if (ev.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
-				{
+				if (ev.window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
 					SDL_SetWindowBordered(window, !MouseCaptured);
 					SDL_SetWindowGrab(window, MouseCaptured);
 					SDL_ShowCursor(SDL_DISABLE);
 				}
 
-				if (ev.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
-				{
+				if (ev.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
 					SDL_SetWindowBordered(window, SDL_TRUE);
 					SDL_SetWindowGrab(window, SDL_FALSE);
 					SDL_ShowCursor(SDL_ENABLE);
@@ -426,7 +449,6 @@ void pump_events(void)
 		}
 	}
 }
-
 
 //===============================================================
 //
