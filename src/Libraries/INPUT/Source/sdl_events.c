@@ -465,12 +465,11 @@ void pump_events(void)
 					break;
 
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
-						SDL_SetWindowBordered(window, !MouseCaptured);
+						SDL_SetWindowResizable(window, !MouseCaptured);
 						SDL_SetWindowGrab(window, MouseCaptured);
 					break;
 
 					case SDL_WINDOWEVENT_FOCUS_LOST:
-						SDL_SetWindowBordered(window, SDL_TRUE);
 						SDL_SetWindowResizable(window, SDL_TRUE);
 						SDL_SetWindowGrab(window, SDL_FALSE);
 					break;
