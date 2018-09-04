@@ -340,10 +340,19 @@ void SDLDraw()
 
 bool MouseCaptured = FALSE;
 
+extern int mlook_enabled;
+
 void CaptureMouse(bool capture)
 {
 	MouseCaptured = (capture && gShockPrefs.goCaptureMouse);
 
-	SDL_SetWindowResizable(window, !MouseCaptured);
-	SDL_SetWindowGrab(window, MouseCaptured);
+	if (!MouseCaptured && mlook_enabled && SDL_GetRelativeMouseMode() == SDL_TRUE)
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		SDL_WarpMouseInWindow(window, w/2, h/2);
+	}
+	else SDL_SetRelativeMouseMode(MouseCaptured ? SDL_TRUE : SDL_FALSE);
 }
