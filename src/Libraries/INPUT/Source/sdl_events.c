@@ -36,15 +36,11 @@ bool fullscreenActive = false;
 
 static void toggleFullScreen()
 {
-	int x, y;
-	SDL_GetGlobalMouseState(&x, &y);
-
 	fullscreenActive = !fullscreenActive;
 	SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
-	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-
-	SDL_WarpMouseGlobal(x, y);
+	if (!(SDL_GetWindowFlags(window) & SDL_WINDOW_MAXIMIZED))
+		SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }
 
 // current state of the keys, based on the SystemShock/Mac Keycodes (sshockKeyStates[keyCode] has the state for that key)
@@ -86,29 +82,6 @@ mouse_event latestMouseEvent;
 static void addMouseEvent(const mouse_event* ev)
 {
 	latestMouseEvent = *ev;
-
-	// Fill out the buttons
-	uint mouse_state = SDL_GetMouseState(NULL, NULL);
-	latestMouseEvent.buttons = 0;
-	if (mouse_state & SDL_BUTTON_LMASK)
-		latestMouseEvent.buttons |= (1 << MOUSE_LBUTTON);
-	if (mouse_state & SDL_BUTTON_RMASK)
-		latestMouseEvent.buttons |= (1 << MOUSE_RBUTTON);
-
-	// confine the mouse coordinates to the game window
-	int width, height;
-	SDL_RenderGetLogicalSize(renderer, &width, &height);
-
-	if (latestMouseEvent.x < 0) latestMouseEvent.x = 0;
-	if (latestMouseEvent.x >= width) latestMouseEvent.x = width - 1;
-	if (latestMouseEvent.y < 0) latestMouseEvent.y = 0;
-	if (latestMouseEvent.y >= height) latestMouseEvent.y = height - 1;
-
-	// in fullscreen mode, do not allow the mouse to leave the window; might
-	// be smarter to use SDL relative mouse mode instead
-	if (fullscreenActive && (latestMouseEvent.x != ev->x || latestMouseEvent.y != ev->y)) {
-		mouse_put_xy(latestMouseEvent.x, latestMouseEvent.y);
-	}
 
 	if(nextMouseEvent < kNumMouseEvents)
 	{
@@ -257,16 +230,13 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 	return KBC_NONE;
 }
 
-static int MouseLookX;
-static int MouseLookY;
+int MouseX;
+int MouseY;
 
-//hack to keep captured mouse inside play area of window
-//aspect ratio-preserving black bars are outside play area
-void KeepMouseCaptured(void)
+extern bool MouseCaptured;
+
+void SetMouseXY(int mx, int my)
 {
-	int x, y;
-	SDL_GetWindowPosition(window, &x, &y);
-
 	int physical_width, physical_height;
 	SDL_GetWindowSize(window, &physical_width, &physical_height);
 
@@ -276,37 +246,46 @@ void KeepMouseCaptured(void)
 	float scale_x = (float)physical_width  / w;
 	float scale_y = (float)physical_height / h;
 
-	if (scale_x >= scale_y) {w *= scale_y; x += (physical_width  - w) / 2; h = physical_height;}
-	else                    {h *= scale_x; y += (physical_height - h) / 2; w = physical_width ;}
-
-	w -= 2;
-	h -= 2;
-
-	int mx, my;
-	SDL_GetGlobalMouseState(&mx, &my);
-
-	if (SDL_GetGrabbedWindow() == window)
+	int x, y;
+	if (scale_x >= scale_y)
 	{
-		if (mx < x) mx = x; else if (mx > x+w) mx = x+w;
-		if (my < y) my = y; else if (my > y+h) my = y+h;
-		SDL_WarpMouseGlobal(mx, my);
-
-		SDL_ShowCursor(SDL_DISABLE);
+		x = (physical_width - w*scale_x) / 2;
+		y = 0;
 	}
 	else
 	{
-		bool focus = (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS);
-
-		SDL_ShowCursor((!focus || mx < x || mx > x+w || my < y || my > y+h) ? SDL_ENABLE : SDL_DISABLE);
+		x = 0;
+		y = (physical_height - h*scale_y) / 2;
 	}
+
+	bool inside = (mx >= x && mx < x+w && my >= y && my < y+h);
+	bool focus = (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS);
+
+	if (!inside && focus)
+	{
+		if (mx < x    ) mx = x    ;
+		if (mx > x+w-1) mx = x+w-1;
+		if (my < y    ) my = y    ;
+		if (my > y+h-1) my = y+h-1;
+	}
+
+	if (focus)
+	{
+		MouseX = mx;
+		MouseY = my;
+	}
+
+	SDL_ShowCursor((!focus || (!inside && !MouseCaptured)) ? SDL_ENABLE : SDL_DISABLE);
 }
+
+void get_mouselook_vel(int *vx, int *vy);
+
+extern bool TriggerRelMouseMode;
+
+static SDL_bool saved_rel_mouse = FALSE;
 
 void pump_events(void)
 {
-	extern bool MouseCaptured;
-
-	KeepMouseCaptured();
-
 	SDL_Event ev;
 	while(SDL_PollEvent(&ev))
 	{
@@ -387,23 +366,26 @@ void pump_events(void)
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 			{
-				if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE) break;
-
 				bool down = (ev.button.state == SDL_PRESSED);
 				mouse_event mouseEvent = {0};
 				mouseEvent.type = 0;
 
+				// TODO: the old mac code used to emulate right mouse clicks if space, enter, or return
+				//       was pressed at the same time - do the same? (=> could check sshockKeyStates[])
+
+				mouseEvent.buttons = 0;
+
 				switch (ev.button.button)
 				{
 					case SDL_BUTTON_LEFT:
-						// TODO: the old mac code used to emulate right mouse clicks if space, enter, or return
-						//       was pressed at the same time - do the same? (=> could check sshockKeyStates[])
 
 						mouseEvent.type = down ? MOUSE_LDOWN : MOUSE_LUP;
+						mouseEvent.buttons |= down ? (1 << MOUSE_LBUTTON) : 0;
 						break;
 
 					case SDL_BUTTON_RIGHT:
 						mouseEvent.type = down ? MOUSE_RDOWN : MOUSE_RUP;
+						mouseEvent.buttons |= down ? (1 << MOUSE_RBUTTON) : 0;
 						break;
 
 					//case SDL_BUTTON_MIDDLE: // TODO: is this MOUSE_CDOWN/UP ?
@@ -411,13 +393,12 @@ void pump_events(void)
 
 				}
 
-				if(mouseEvent.type != 0)
+				if (mouseEvent.type != 0)
 				{
-					mouseEvent.x = ev.button.x;
-					mouseEvent.y = ev.button.y;
+					mouseEvent.x = MouseX;
+					mouseEvent.y = MouseY;
 					mouseEvent.timestamp = mouse_get_time();
 					mouseEvent.modifiers = 0;
-
 					addMouseEvent(&mouseEvent);
 				}
 
@@ -425,30 +406,41 @@ void pump_events(void)
 			}
 			case SDL_MOUSEMOTION:
 			{
-				if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE) break;
+				//call this first; it sets MouseX and MouseY
+				if (SDL_GetRelativeMouseMode() == SDL_TRUE)
+					SetMouseXY(MouseX + ev.motion.xrel, MouseY + ev.motion.yrel);
+				else
+					SetMouseXY(ev.motion.x, ev.motion.y);
 
 				mouse_event mouseEvent = {0};
 				mouseEvent.type = MOUSE_MOTION;
-				mouseEvent.x = ev.motion.x; // TODO: relative mode?
-				mouseEvent.y = ev.motion.y;
+				mouseEvent.x = MouseX;
+				mouseEvent.y = MouseY;
+				mouseEvent.buttons = 0;
+				if (ev.motion.state & SDL_BUTTON_LMASK) mouseEvent.buttons |= (1 << MOUSE_LBUTTON);
+				if (ev.motion.state & SDL_BUTTON_RMASK) mouseEvent.buttons |= (1 << MOUSE_RBUTTON);
 				mouseEvent.timestamp = mouse_get_time();
-
 				addMouseEvent(&mouseEvent);
 
-				MouseLookX = ev.motion.x; //only update these when mouse actually moves
-				MouseLookY = ev.motion.y;
+				if (TriggerRelMouseMode)
+				{
+					TriggerRelMouseMode = FALSE;
+
+					SDL_SetRelativeMouseMode(SDL_TRUE);
+					//throw away this first relative mouse reading
+					int mvelx, mvely;
+					get_mouselook_vel(&mvelx, &mvely);
+				}
 
 				break;
 			}
 			case SDL_MOUSEWHEEL:
-
-				if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE) break;
-
 				if (ev.wheel.y != 0) {
 					mouse_event mouseEvent = {0};
 					mouseEvent.type = ev.wheel.y < 0 ? MOUSE_WHEELDN : MOUSE_WHEELUP;
-					mouseEvent.x = latestMouseEvent.x;
-					mouseEvent.y = latestMouseEvent.y;
+					mouseEvent.x = MouseX;
+					mouseEvent.y = MouseY;
+					mouseEvent.buttons = 0;
 					mouseEvent.timestamp = mouse_get_time();
 					addMouseEvent(&mouseEvent);
 				}
@@ -465,13 +457,20 @@ void pump_events(void)
 					break;
 
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
-						SDL_SetWindowResizable(window, !MouseCaptured);
-						SDL_SetWindowGrab(window, MouseCaptured);
+						SDL_SetRelativeMouseMode(saved_rel_mouse);
+						if (saved_rel_mouse == SDL_TRUE)
+						{
+							//throw away this first relative mouse reading
+							int mvelx, mvely;
+							get_mouselook_vel(&mvelx, &mvely);
+						}
+						SDL_ShowCursor(SDL_DISABLE);
 					break;
 
 					case SDL_WINDOWEVENT_FOCUS_LOST:
-						SDL_SetWindowResizable(window, SDL_TRUE);
-						SDL_SetWindowGrab(window, SDL_FALSE);
+						saved_rel_mouse = SDL_GetRelativeMouseMode();
+						SDL_SetRelativeMouseMode(SDL_FALSE);
+						SDL_ShowCursor(SDL_ENABLE);
 					break;
 				}
 			break;
@@ -672,54 +671,31 @@ errtype mouse_flush(void)
 
 errtype mouse_get_xy(short* x, short* y)
 {
-	// *x = latestMouseEvent.x;
-	// *y = latestMouseEvent.y;
-
-	*x = MouseLookX; //these only updated when mouse cursor actually moves
-	*y = MouseLookY;
+	*x = MouseX;
+	*y = MouseY;
 
 	return OK;
 }
 
+void middleize_mouse(void)
+{
+	int w, h;
+	SDL_RenderGetLogicalSize(renderer, &w, &h);
+
+	MouseX = latestMouseEvent.x = w / 2;
+	MouseY = latestMouseEvent.y = h / 2;
+}
+
+void get_mouselook_vel(int *vx, int *vy)
+{
+	if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE)
+		*vx = *vy = 0;
+	else
+		SDL_GetRelativeMouseState(vx, vy);
+}
+
 errtype mouse_put_xy(short x, short y)
 {
-	latestMouseEvent.x = x; //still update these so mouse pointer doesn't jitter
-	latestMouseEvent.y = y;
-
-	MouseLookX = x;
-	MouseLookY = y;
-
-	// scale new mouse coordinates from logical (game resolution) to
-	// physical (SDL window size)
-
-	int physical_width, physical_height;
-	SDL_GetWindowSize(window, &physical_width, &physical_height);
-
-	int logical_width, logical_height;
-	SDL_RenderGetLogicalSize(renderer, &logical_width, &logical_height);
-
-	float scale_x = (float)physical_width / logical_width;
-	float scale_y = (float)physical_height / logical_height;
-
-	if (scale_x >= scale_y) {
-		// physical aspect ratio is wider; black borders left and right
-		int ofs_x = (physical_width - logical_width * scale_y) / 2;
-		x = x * scale_y + ofs_x;
-		y = y * scale_y;
-	} else {
-		// physical aspect ratio is narrower; black borders at top and bottom
-		int ofs_y = (physical_height - logical_height * scale_x) / 2;
-		x = x * scale_x;
-		y = y * scale_x + ofs_y;
-	}
-
-	int window_x, window_y;
-	SDL_GetWindowPosition(window, &window_x, &window_y);
-	SDL_WarpMouseGlobal(window_x + x, window_y + y);
-
-	//creates a SDL_MOUSEMOTION event; feedback causes mouselook to go crazy
-	//SDL_WarpMouseInWindow(window, x, y);
-
 	return OK;
 }
 
