@@ -102,14 +102,16 @@ Amethods movMethods = {
 #define MOV_TEMP_FILENAME "__movie_.tmp"
 
 //assumes count is 1
-void mfread(void *p, int size, MFILE *mf)
+int mfread(void *p, int size, MFILE *mf)
 {
-	if (mf->pos < 0 || size <= 0) return;
+	if (mf->pos < 0 || size <= 0) return 0;
 	if (mf->pos + size > mf->size) size = mf->size - mf->pos;
-	if (size <= 0) return;
+	if (size <= 0) return 0;
 
-	memcpy((unsigned char *)p, mf->p + mf->pos, size);
+	memcpy(p, mf->p + mf->pos, size);
 	mf->pos += size;
+
+	return size;
 }
 
 //assumes origin is SEEK_SET
@@ -296,7 +298,7 @@ int32_t AmovReadFramePal(Afile *paf, Apalette *ppal) {
 int32_t AmovReadAudio(Afile *paf, void *paudio) {
 
     AmovInfo *pmi;
-    uint32_t i = 0;
+    uint32_t i = 0, size;
     void *p = (uint8_t *)malloc(MOVIE_DEFAULT_BLOCKLEN);
 
     pmi = (AmovInfo *)paf->pspec;
@@ -305,13 +307,22 @@ int32_t AmovReadAudio(Afile *paf, void *paudio) {
         if (pmi->pcurrChunk->chunkType == MOVIE_CHUNK_AUDIO) {
             // TRACE("%s: got audio chunk in 0x%08x offset", __FUNCTION__, pmi->pcurrChunk->offset);
             mfseek(paf->mf, pmi->pcurrChunk->offset);
-            mfread(p, MOVIE_DEFAULT_BLOCKLEN, paf->mf);
-            memcpy(paudio + i, p, MOVIE_DEFAULT_BLOCKLEN);
-            i += MOVIE_DEFAULT_BLOCKLEN;
+            size = mfread(p, MOVIE_DEFAULT_BLOCKLEN, paf->mf);
+            memcpy(paudio + i, p, size);
+			if (size < MOVIE_DEFAULT_BLOCKLEN)
+				memset(paudio + i + size, 128, MOVIE_DEFAULT_BLOCKLEN - size); //fill rest with silence (128)
+            i += size;
         }
         pmi->pcurrChunk++;
     }
     free(p);
+
+	//prevent pop at end of audio playback
+	float vol = 1.0;
+	size = i;
+	i -= 512; if (i >= size) i = 0;
+	for (; i < size; i++, vol *= 0.8)
+		*((uint8_t *)paudio + i) = 128 + (uint8_t)((*((uint8_t *)paudio + i) - 128) * vol);
 
     return 0;
 }
