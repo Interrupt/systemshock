@@ -88,16 +88,35 @@ Amethods movMethods = {
     AmovReadAudio,    // f_ReadAudio
     AmovReadReset,
     AmovReadClose,
+/*
     AmovWriteBegin,
     NULL, // f_WriteAudio
     AmovWriteFrame,
     NULL, // f_WriteFramePal
     AmovWriteClose,
+*/
 };
 
 #define MAX_MOV_FRAMES 4096
 
 #define MOV_TEMP_FILENAME "__movie_.tmp"
+
+//assumes count is 1
+void mfread(void *p, int size, MFILE *mf)
+{
+	if (mf->pos < 0 || size <= 0) return;
+	if (mf->pos + size > mf->size) size = mf->size - mf->pos;
+	if (size <= 0) return;
+
+	memcpy((unsigned char *)p, mf->p + mf->pos, size);
+	mf->pos += size;
+}
+
+//assumes origin is SEEK_SET
+void mfseek(MFILE *mf, int pos)
+{
+	mf->pos = pos;
+}
 
 //	------------------------------------------------------
 //		READER METHODS
@@ -115,7 +134,7 @@ int32_t AmovReadHeader(Afile *paf) {
     pmi = (AmovInfo *)paf->pspec;
 
     // Read in movie header
-    fread(&pmi->movieHdr, sizeof(pmi->movieHdr), 1, paf->fp);
+    mfread(&pmi->movieHdr, sizeof(pmi->movieHdr), paf->mf);
     if (pmi->movieHdr.magicId != MOVI_MAGIC_ID) {
         free(paf->pspec);
         return (-1);
@@ -139,7 +158,7 @@ int32_t AmovReadHeader(Afile *paf) {
 
     // Read in chunk offsets
     pmi->pmc = (MovieChunk *)malloc(pmi->movieHdr.sizeChunks);
-    fread(pmi->pmc, pmi->movieHdr.sizeChunks, 1, paf->fp);
+    mfread(pmi->pmc, pmi->movieHdr.sizeChunks, paf->mf);
 
     // Compute # frames
     paf->v.numFrames = 0;
@@ -189,10 +208,10 @@ NEXT_CHUNK:
         DEBUG("MOVIE_CHUNK_VIDEO");
         pbm->type = pmi->pcurrChunk->flags & MOVIE_FVIDEO_BMTMASK;
         if (pbm->type == MOVIE_FVIDEO_BMF_4X4) {
-            fseek(paf->fp, pmi->pcurrChunk->offset, SEEK_SET);
+            mfseek(paf->mf, pmi->pcurrChunk->offset);
             len = MovieChunkLength(pmi->pcurrChunk);
             p = (uint8_t *)malloc(len);
-            fread(p, len, 1, paf->fp);
+            mfread(p, len, paf->mf);
             pbm->type = BMT_FLAT8;
             pbm->flags = BMF_TRANS;
             gr_make_canvas(pbm, &cv);
@@ -201,9 +220,9 @@ NEXT_CHUNK:
             gr_pop_canvas();
             free(p);
         } else {
-            fseek(paf->fp, pmi->pcurrChunk->offset + sizeof(LGRect), SEEK_SET);
+            mfseek(paf->mf, pmi->pcurrChunk->offset + sizeof(LGRect));
             len = MovieChunkLength(pmi->pcurrChunk) - sizeof(LGRect);
-            fread(pbm->bits, len, 1, paf->fp);
+            mfread(pbm->bits, len, paf->mf);
         }
         *ptime = pmi->pcurrChunk->time;
         pmi->pcurrChunk++;
@@ -211,19 +230,19 @@ NEXT_CHUNK:
 
     case MOVIE_CHUNK_TABLE:
         DEBUG("MOVIE_CHUNK_TABLE");
-        fseek(paf->fp, pmi->pcurrChunk->offset, SEEK_SET);
+        mfseek(paf->mf, pmi->pcurrChunk->offset);
         switch (pmi->pcurrChunk->flags) {
         case MOVIE_FTABLE_COLORSET:
             if (pColorSet)
                 free(pColorSet);
             pColorSet = (uint8_t *)malloc(MovieChunkLength(pmi->pcurrChunk));
-            fread(pColorSet, MovieChunkLength(pmi->pcurrChunk), 1, paf->fp);
+            mfread(pColorSet, MovieChunkLength(pmi->pcurrChunk), paf->mf);
             break;
 
         case MOVIE_FTABLE_HUFFTAB: {
             uint32_t len, *pl;
             pHuffTabComp = (uint8_t *)malloc(MovieChunkLength(pmi->pcurrChunk));
-            fread(pHuffTabComp, MovieChunkLength(pmi->pcurrChunk), 1, paf->fp);
+            mfread(pHuffTabComp, MovieChunkLength(pmi->pcurrChunk), paf->mf);
             pl = (uint32_t *)pHuffTabComp;
             len = *pl++;
             if (pHuffTab)
@@ -240,8 +259,8 @@ NEXT_CHUNK:
     case MOVIE_CHUNK_PALETTE:
         DEBUG("MOVIE_CHUNK_PALETTE");
         if (pmi->pcurrChunk->flags == MOVIE_FPAL_SET) {
-            fseek(paf->fp, pmi->pcurrChunk->offset, SEEK_SET);
-            fread(pmi->pal, 768, 1, paf->fp);
+            mfseek(paf->mf, pmi->pcurrChunk->offset);
+            mfread(pmi->pal, 768, paf->mf);
             pmi->newPal = TRUE;
         }
         pmi->pcurrChunk++;
@@ -285,8 +304,8 @@ int32_t AmovReadAudio(Afile *paf, void *paudio) {
         // Got audio chunk
         if (pmi->pcurrChunk->chunkType == MOVIE_CHUNK_AUDIO) {
             // TRACE("%s: got audio chunk in 0x%08x offset", __FUNCTION__, pmi->pcurrChunk->offset);
-            fseek(paf->fp, pmi->pcurrChunk->offset, SEEK_SET);
-            fread(p, MOVIE_DEFAULT_BLOCKLEN, 1, paf->fp);
+            mfseek(paf->mf, pmi->pcurrChunk->offset);
+            mfread(p, MOVIE_DEFAULT_BLOCKLEN, paf->mf);
             memcpy(paudio + i, p, MOVIE_DEFAULT_BLOCKLEN);
             i += MOVIE_DEFAULT_BLOCKLEN;
         }
@@ -318,10 +337,14 @@ int32_t AmovReadClose(Afile *paf) {
 
     free(pmi->pmc);
     free(pmi);
-    fclose(paf->fp);
+
+	free(paf->mf->p);
+	free(paf->mf);
 
     return (0);
 }
+
+/*
 
 //	------------------------------------------------------
 //		WRITER METHODS
@@ -474,3 +497,5 @@ int32_t AmovWriteClose(Afile *paf) {
     unlink(MOV_TEMP_FILENAME);
     return (0);
 }
+
+*/
