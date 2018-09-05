@@ -260,51 +260,23 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 static int MouseLookX;
 static int MouseLookY;
 
-//hack to keep captured mouse inside play area of window
-//aspect ratio-preserving black bars are outside play area
+//hack to keep captured mouse inside client area of window
 void KeepMouseCaptured(void)
 {
-	int x, y;
-	SDL_GetWindowPosition(window, &x, &y);
-
-	int physical_width, physical_height;
-	SDL_GetWindowSize(window, &physical_width, &physical_height);
-
-	int w, h;
-	SDL_RenderGetLogicalSize(renderer, &w, &h);
-
-	float scale_x = (float)physical_width  / w;
-	float scale_y = (float)physical_height / h;
-
-	if (scale_x >= scale_y) {w *= scale_y; x += (physical_width  - w) / 2; h = physical_height;}
-	else                    {h *= scale_x; y += (physical_height - h) / 2; w = physical_width ;}
-
-	w -= 2;
-	h -= 2;
-
-	int mx, my;
-	SDL_GetGlobalMouseState(&mx, &my);
-
-	if (SDL_GetGrabbedWindow() == window)
+	extern bool MouseCaptured;
+	if (MouseCaptured)
 	{
-		if (mx < x) mx = x; else if (mx > x+w) mx = x+w;
-		if (my < y) my = y; else if (my > y+h) my = y+h;
-		SDL_WarpMouseGlobal(mx, my);
+		int mx, my;		SDL_GetGlobalMouseState(&mx, &my);
+		int x, y;		SDL_GetWindowPosition(window, &x, &y);
+		int w, h;		SDL_GetWindowSize(window, &w, &h);
 
-		SDL_ShowCursor(SDL_DISABLE);
-	}
-	else
-	{
-		bool focus = (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS);
-
-		SDL_ShowCursor((!focus || mx < x || mx > x+w || my < y || my > y+h) ? SDL_ENABLE : SDL_DISABLE);
+		if (mx > x+w-2) SDL_WarpMouseGlobal(x+w-2, my);
+		if (my > y+h-2) SDL_WarpMouseGlobal(mx, y+h-2);
 	}
 }
 
 void pump_events(void)
 {
-	extern bool MouseCaptured;
-
 	KeepMouseCaptured();
 
 	SDL_Event ev;
@@ -387,8 +359,6 @@ void pump_events(void)
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 			{
-				if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE) break;
-
 				bool down = (ev.button.state == SDL_PRESSED);
 				mouse_event mouseEvent = {0};
 				mouseEvent.type = 0;
@@ -425,8 +395,6 @@ void pump_events(void)
 			}
 			case SDL_MOUSEMOTION:
 			{
-				if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE) break;
-
 				mouse_event mouseEvent = {0};
 				mouseEvent.type = MOUSE_MOTION;
 				mouseEvent.x = ev.motion.x; // TODO: relative mode?
@@ -441,9 +409,6 @@ void pump_events(void)
 				break;
 			}
 			case SDL_MOUSEWHEEL:
-
-				if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE) break;
-
 				if (ev.wheel.y != 0) {
 					mouse_event mouseEvent = {0};
 					mouseEvent.type = ev.wheel.y < 0 ? MOUSE_WHEELDN : MOUSE_WHEELUP;
@@ -454,30 +419,16 @@ void pump_events(void)
 				}
 				break;
 			case SDL_WINDOWEVENT:
-				switch (ev.window.event)
-				{
-					case SDL_WINDOWEVENT_SIZE_CHANGED:
-						if (can_use_opengl()) opengl_resize(ev.window.data1, ev.window.data2);
-					break;
-
-					case SDL_WINDOWEVENT_MOVED:
-					case SDL_WINDOWEVENT_RESIZED:
-					break;
-
-					case SDL_WINDOWEVENT_FOCUS_GAINED:
-						SDL_SetWindowResizable(window, !MouseCaptured);
-						SDL_SetWindowGrab(window, MouseCaptured);
-					break;
-
-					case SDL_WINDOWEVENT_FOCUS_LOST:
-						SDL_SetWindowResizable(window, SDL_TRUE);
-						SDL_SetWindowGrab(window, SDL_FALSE);
-					break;
+				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+					if(can_use_opengl()) {
+						opengl_resize(ev.window.data1, ev.window.data2);
+					}
 				}
-			break;
+			// TODO: maybe handle other events as well..
 		}
 	}
 }
+
 
 //===============================================================
 //
@@ -713,12 +664,7 @@ errtype mouse_put_xy(short x, short y)
 		y = y * scale_x + ofs_y;
 	}
 
-	int window_x, window_y;
-	SDL_GetWindowPosition(window, &window_x, &window_y);
-	SDL_WarpMouseGlobal(window_x + x, window_y + y);
-
-	//creates a SDL_MOUSEMOTION event; feedback causes mouselook to go crazy
-	//SDL_WarpMouseInWindow(window, x, y);
+	SDL_WarpMouseInWindow(window, x, y);
 
 	return OK;
 }
