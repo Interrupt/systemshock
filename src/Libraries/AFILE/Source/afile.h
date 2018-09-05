@@ -82,8 +82,14 @@ typedef struct {
 
 struct Amethods_;
 
+typedef struct MFILE {
+	unsigned char *p;
+	int size;
+	int pos;
+} MFILE;
+
 typedef struct Afile_ {
-    FILE *fp;               // file access ptr
+    MFILE *mf;              // ptr to memory access "file"
     AfileType type;         // file type
     uint8_t writing;        // if TRUE, opened for write (FALSE = read)
     uint8_t writerWantsRsd; // if TRUE, writer wants rsd frames
@@ -105,22 +111,26 @@ typedef struct Amethods_ {
     int32_t (*f_ReadAudio)(Afile *paf, void *paudio);
     int32_t (*f_ReadReset)(Afile *paf);
     int32_t (*f_ReadClose)(Afile *paf);
+/*
     int32_t (*f_WriteBegin)(Afile *paf);
     int32_t (*f_WriteAudio)(Afile *paf, void *paudio);
     int32_t (*f_WriteFrame)(Afile *paf, grs_bitmap *pbm, int32_t bmlength, fix time);
     int32_t (*f_WriteFramePal)(Afile *paf, Apalette *ppal);
     int32_t (*f_WriteClose)(Afile *paf);
+*/
 } Amethods;
 
 //	Function prototypes: reading anim files
 
-int32_t AfileOpen(Afile *paf, FILE *file, AfileType aftype);
+int32_t AfileOpen(Afile *paf, MFILE *mf, AfileType aftype);
 int32_t AfileReadFullFrame(Afile *paf, grs_bitmap *pbm, fix *ptime);
 int32_t AfileReadDiffFrame(Afile *paf, grs_bitmap *pbm, fix *ptime);
 bool AfileGetFramePal(Afile *paf, Apalette *ppal);
 int32_t AfileGetAudio(Afile *paf, void *paudio);
 int32_t AfileReadReset(Afile *paf);
 void AfileFree(Afile *paf); // write also
+
+/*
 
 //	Function prototypes: writing anim files
 
@@ -129,6 +139,8 @@ int32_t AfilePutAudio(Afile *paf, AaudioInfo *pai, void *paudio);
 int32_t AfileWriteFrame(Afile *paf, grs_bitmap *pbm, fix time);
 void AfileSetPal(Afile *paf, Apalette *ppal);
 int32_t AfileSetFramePal(Afile *paf, Apalette *ppal);
+
+*/
 
 //	Function prototypes: information & miscellaneous
 
