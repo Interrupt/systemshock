@@ -88,17 +88,16 @@ static Amethods *methods[] = {
 /**
  * Opens an anim file and begins reading from it.
  * @param paf ptr to (unused) animation file struct
- * @param file ptr to opened FILE
+ * @param ptr to opened memory "file"
  * @param aftype type of file (see AfileType)
  * @return 0 - OK, -1 - unknown file type, -3 - bad file format
  */
-int32_t AfileOpen(Afile *paf, FILE *file, AfileType aftype) {
+int32_t AfileOpen(Afile *paf, MFILE *mf, AfileType aftype) {
     AfileType type = AFILE_BAD;
     uint8_t bmtype;
-    FILE *fp;
     char *p;
 
-    DEBUG("%s: trying to open file", __FUNCTION__);
+    DEBUG("%s: trying to open memory \"file\"", __FUNCTION__);
 
     // Extract file extension, get type
     for (int i = 0; i < (sizeof(afTypes)/sizeof(afTypes[0])); i++) {
@@ -115,7 +114,7 @@ int32_t AfileOpen(Afile *paf, FILE *file, AfileType aftype) {
 
     // Set up afile struct
     memset(paf, 0, sizeof(Afile));
-    paf->fp = file;
+    paf->mf = mf;
     paf->type = aftype;
     paf->writing = false;
     paf->pm = methods[paf->type];
@@ -337,8 +336,10 @@ void AfileFree(Afile *paf) {
     DEBUG("%s: freeing memory", __FUNCTION__);
 
     if (paf->writing) {
+/*
         paf->v.numFrames = paf->currFrame;
         (*paf->pm->f_WriteClose)(paf);
+*/
     } else
         (*paf->pm->f_ReadClose)(paf);
 
@@ -384,6 +385,8 @@ int32_t AfileAudioLength(Afile *paf) {
     else
         return (paf->a.numChans * paf->a.sampleSize * paf->a.numSamples);
 }
+
+/*
 
 //	-------------------------------------------------------------
 //		GENERAL ACCESS ROUTINES - WRITING
@@ -584,3 +587,5 @@ int AfileSetFramePal(Afile *paf, Apalette *ppal) {
         return (-1);
     return ((*paf->pm->f_WriteFramePal)(paf, ppal));
 }
+
+*/
