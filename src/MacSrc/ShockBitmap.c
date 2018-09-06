@@ -34,6 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "InitMac.h"
 #include "ShockBitmap.h"
 
+#include "2d.h"
+
 //#import <Cocoa/Cocoa.h>
 
 //--------------------
@@ -57,14 +59,19 @@ SDL_Surface* offscreenDrawSurface;
 //------------------------------------------------------------------------------------
 void SetupOffscreenBitmaps(void)
 {	
-	// TODO: This should probably get re-initialized dynamically based on screen size
-	drawSurface = SDL_CreateRGBSurface(0, 1280, 800, 8, 0, 0, 0, 0);
+	SDL_DisplayMode displayMode;
+	SDL_GetCurrentDisplayMode(0, &displayMode);
+
+	int width = displayMode.w;
+	int height = displayMode.h;
+
+	drawSurface = SDL_CreateRGBSurface(0, displayMode.w, displayMode.h, 8, 0, 0, 0, 0);
 	if(!drawSurface) {
 		ERROR("SDL: Failed to create draw surface");
 		return;
 	}
 
-	offscreenDrawSurface = SDL_CreateRGBSurface(0, 1280, 800, 8, 0, 0, 0, 0);
+	offscreenDrawSurface = SDL_CreateRGBSurface(0, displayMode.w, displayMode.h, 8, 0, 0, 0, 0);
 	if(!offscreenDrawSurface) {
 		ERROR("SDL: Failed to create offscreen draw surface");
 		return;
