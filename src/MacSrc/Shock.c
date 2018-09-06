@@ -258,7 +258,7 @@ void InitSDL()
 
 	// Open our window!
 
-	sprintf(&window_title, "System Shock - %s", SHOCKOLATE_VERSION);
+	sprintf(window_title, "System Shock - %s", SHOCKOLATE_VERSION);
 
 	window = SDL_CreateWindow(
 		window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -340,10 +340,19 @@ void SDLDraw()
 
 bool MouseCaptured = FALSE;
 
+extern int mlook_enabled;
+
 void CaptureMouse(bool capture)
 {
 	MouseCaptured = (capture && gShockPrefs.goCaptureMouse);
 
-	SDL_SetWindowGrab(window, MouseCaptured);
-	SDL_SetWindowResizable(window, !MouseCaptured);
+	if (!MouseCaptured && mlook_enabled && SDL_GetRelativeMouseMode() == SDL_TRUE)
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		SDL_WarpMouseInWindow(window, w/2, h/2);
+	}
+	else SDL_SetRelativeMouseMode(MouseCaptured ? SDL_TRUE : SDL_FALSE);
 }
