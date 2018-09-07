@@ -751,6 +751,8 @@ errtype journey_continue_func(uchar draw_stuff) {
 	if (retval != OK) return retval;
 	change_mode_func(0, 0, (void *)GAME_LOOP);
 	startup_music = TRUE;
+	// CC: This fixed popups cursors drawing tiny after loading
+	gr2ss_override = OVERRIDE_ALL;
 
     return OK;
 }
