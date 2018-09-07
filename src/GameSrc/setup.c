@@ -718,7 +718,7 @@ errtype load_that_thar_game(int which_slot) {
             strcpy(comments[which_slot], "<< INVALID GAME >>");
             // KLC         end_wait();
             uiHideMouse(NULL);
-			draw_savegame_names();
+            draw_savegame_names();
             return (retval);
         }
         // KLC - don't do the following.
@@ -738,21 +738,21 @@ errtype load_that_thar_game(int which_slot) {
 
 errtype journey_continue_func(uchar draw_stuff) {
 
-	FILE *f = fopen(CURRENT_GAME_FNAME, "rb");
-	if (f == NULL) return OK;
-	fclose(f);
+    FILE *f = fopen(CURRENT_GAME_FNAME, "rb");
+    if (f == NULL) return OK;
+    fclose(f);
 
-	extern uchar clear_player_data;
-	clear_player_data = TRUE; // initializes the player struct in object_data_load
-	object_data_load();
-	player_create_initial();
-	player_struct.level = 0xFF; // make sure we load textures
-	change_mode_func(0, 0, (void *)GAME_LOOP); //load_game may set FULLSCREEN_LOOP
-	errtype retval = load_game(CURRENT_GAME_FNAME);
-	if (retval != OK) return retval;
-	startup_music = TRUE;
-	// CC: This fixed popups cursors drawing tiny after loading
-	gr2ss_override = OVERRIDE_ALL;
+    extern uchar clear_player_data;
+    clear_player_data = TRUE; // initializes the player struct in object_data_load
+    object_data_load();
+    player_create_initial();
+    player_struct.level = 0xFF; // make sure we load textures
+    change_mode_func(0, 0, (void *)GAME_LOOP); //load_game may set FULLSCREEN_LOOP
+    errtype retval = load_game(CURRENT_GAME_FNAME);
+    if (retval != OK) return retval;
+    startup_music = TRUE;
+    // CC: This fixed popups cursors drawing tiny after loading
+    gr2ss_override = OVERRIDE_ALL;
 
     return OK;
 }
