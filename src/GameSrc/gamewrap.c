@@ -97,6 +97,8 @@ errtype copy_file(char *src_fname, char *dest_fname) {
     FILE *fsrc, *fdst;
     DEBUG("copy_file: %s to %s", src_fname, dest_fname);
 
+	if (!strcmp(src_fname, dest_fname)) return OK; //copying file to itself
+
     fsrc = fopen_caseless(src_fname, "rb");
     if (fsrc == NULL) {
         return ERR_FOPEN;
