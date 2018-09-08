@@ -263,6 +263,11 @@ errtype save_game(char *fname, char *comment) {
         ERROR("No good copy, dude!");
         //		string_message_info(REF_STR_SaveGameFail);
     }
+
+    if (copy_file(CURRENT_GAME_FNAME, "LastSavedGame.dat") != OK) {
+        ERROR("No good copy, dude!");
+    }
+
     // KLC	else
     // KLC		string_message_info(REF_STR_SaveGameSaved);
     old_ticks = *tmd_ticks;
