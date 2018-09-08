@@ -738,7 +738,7 @@ errtype load_that_thar_game(int which_slot) {
 
 errtype journey_continue_func(uchar draw_stuff) {
 
-    FILE *f = fopen(CURRENT_GAME_FNAME, "rb");
+    FILE *f = fopen("LastSavedGame.dat", "rb");
     if (f == NULL) return OK;
     fclose(f);
 
@@ -748,7 +748,7 @@ errtype journey_continue_func(uchar draw_stuff) {
     player_create_initial();
     player_struct.level = 0xFF; // make sure we load textures
     change_mode_func(0, 0, (void *)GAME_LOOP); //load_game may set FULLSCREEN_LOOP
-    errtype retval = load_game(CURRENT_GAME_FNAME);
+    errtype retval = load_game("LastSavedGame.dat");
     if (retval != OK) return retval;
     startup_music = TRUE;
     // CC: This fixed popups cursors drawing tiny after loading
