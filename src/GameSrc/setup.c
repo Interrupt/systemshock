@@ -597,24 +597,27 @@ errtype journey_credits_func(uchar draw_stuff) {
 
         //Credits display reverse-engineered from text resources
 
-        int line = 0, x, y = 15, columns = 1, cur_col = 0, len, i, underline = 0, last_underline = 0;
+        int end = 0, line = 0, x, y = 15, columns = 1, cur_col = 0;
+        int underline = 0, last_underline = 0;
         char buf[256];
-        short w, h;
         void pause_for_key(ulong wait_time);
 
         gr_clear(0);
         res_draw_text(RES_coloraliasedFont, " ", 0, 0); //without this, next call won't be centered (why?)
 
-        while (line < 154)
+        while (!end)
         {
             get_string((RES_credits << 16) | line, buf, sizeof(buf));
             line++;
-            len = strlen(buf);
+
+            int len = strlen(buf);
 
             if (*buf == '^')
             {
-                for (i=1; i<len; i++) switch (buf[i])
+                for (int i=1; i<len; i++)
+                switch (buf[i])
                 {
+                    case 'E': end = 1; break;
                     case 'p': pause_for_key(200); uiHideMouse(NULL); break;
                     case 'G': pause_for_key(2000); uiHideMouse(NULL); gr_clear(0); y = 15; break;
                     case 'N': break; //dunno
@@ -630,6 +633,7 @@ errtype journey_credits_func(uchar draw_stuff) {
                 continue;
             }
 
+            short w, h;
             gr_string_size(buf, &w, &h);
             x = (columns == 1) ? (320-w)/2 : (cur_col == 0) ? 320/2-8-w : 320/2+8;
             res_draw_text(RES_coloraliasedFont, buf, x, y);
