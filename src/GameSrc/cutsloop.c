@@ -102,6 +102,33 @@ void cutscene_exit() {
 	MacTuneKillCurrentTheme();
 }
 
+//filled in amov.c when chunk contains subtitle data
+extern char EngSubtitle[256];
+extern char FrnSubtitle[256];
+extern char GerSubtitle[256];
+
+//find palette color closest to color 255
+//why not use 255? res_draw_text() doesn't draw anything when set to that color
+//need to figure out how to avoid this
+int GetSubtitleColor(void)
+{
+    uint8_t pal[3*256], *p = pal;
+    int r, g, b, score, best_score = 65536*3;
+    int i, best_i = 0;
+
+    gr_get_pal(0, 256, pal);
+
+    for (i=0; i<256-1; i++)
+    {
+        r = (*p++) - pal[3*255+0];
+        g = (*p++) - pal[3*255+1];
+        b = (*p++) - pal[3*255+2];
+        score = r*r + g*g + b*b;
+        if (score < best_score) {best_score = score; best_i = i;}
+    }
+    return best_i;
+}
+
 void cutscene_loop() {
 
     fix time;
@@ -118,6 +145,8 @@ void cutscene_loop() {
 
     	// Set the initial palette
     	gr_set_pal(0, 256, amovie->v.pal.rgb);
+    	gr_set_fcolor(GetSubtitleColor());
+
     	gr_clear(0x00);
     }
 
@@ -125,6 +154,7 @@ void cutscene_loop() {
     	// Get the palette for this frame, if any
     	if(AfileGetFramePal(amovie, &pal)) {
 	    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
+            gr_set_fcolor(GetSubtitleColor());
 	    }
 
 	    // Draw this frame
@@ -134,6 +164,25 @@ void cutscene_loop() {
 
 	    int offset = (320 - (amovie->v.width / 2)) / 2;
 		ss_scale_bitmap(&movie_bitmap, offset, offset / 1.25, amovie->v.width / 2, amovie->v.height / 2);
+
+        //draw subtitles
+        char *buf = 0;
+        extern char which_lang;
+        switch (which_lang)
+        {
+            case 0: default: buf = EngSubtitle; break;
+            case 1: buf = FrnSubtitle; break;
+            case 2: buf = GerSubtitle; break;
+        }
+        if (buf && *buf)
+        {
+            res_draw_text(RES_cutsceneFont, " ", 0, 0); //hack: needed for next call to be centered; why though?
+            short w, h, x, y;
+            gr_string_size(buf, &w, &h);
+            x = (320-w)/2;
+            y = 158+(200-158-h)/2;
+            res_draw_text(RES_cutsceneFont, buf, x, y);
+        }
 
 		if(done_playing_movie) {
 			// Go back to the main menu
@@ -163,6 +212,10 @@ void cutscene_loop() {
 
 short play_cutscene(int id, bool show_credits) {
 	INFO("Playing Cutscene %i", id);
+
+    *EngSubtitle = 0;
+    *FrnSubtitle = 0;
+    *GerSubtitle = 0;
 
 	_new_mode = CUTSCENE_LOOP;
 	chg_set_flg(GL_CHG_LOOP);
