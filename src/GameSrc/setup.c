@@ -580,6 +580,26 @@ errtype journey_difficulty_func(uchar draw_stuff) {
 int credits_inp = 0;
 void *credits_txtscrn;
 
+//ticks: 0 wait forever
+void WaitForKey(ulong ticks, int ch)
+{
+    ulong end_ticks = (ulong)TickCount();
+    ulong key_ticks = end_ticks + (!ticks ? 500 : (ticks*1/8));
+    end_ticks = ticks ? end_ticks + ticks : 0;
+
+    //wait for specified elapsed ticks or keypress
+    for (;;)
+    {
+        extern void pump_events(void);
+        pump_events();
+        SDLDraw();
+        kbs_event ev = kb_next();
+        ticks = (ulong)TickCount();
+        if ((ev.ascii == ch || ev.ascii == ' ' || ev.ascii == '\r') && ticks >= key_ticks) break;
+        if (end_ticks && ticks >= end_ticks) break;
+    }
+}
+
 void PrintWinStats(void)
 {
     char buf[256], buf_temp[256];
@@ -587,7 +607,6 @@ void PrintWinStats(void)
     short w, h;
 
     extern void second_format(int sec_remain, char *s);
-    void pause_for_key(ulong wait_time);
 
     gr_clear(0);
     res_draw_text(RES_coloraliasedFont, " ", 0, 0); //without this, next call won't be centered (why?)
@@ -648,8 +667,7 @@ void PrintWinStats(void)
     sprintf(buf, "SCORE: %s", buf_temp);
     gr_string_size(buf, &w, &h); res_draw_text(RES_coloraliasedFont, buf, (320-w)/2, y);
 
-    pause_for_key(10000);
-    uiHideMouse(NULL);
+    WaitForKey(0, 27); //escape key
     uiFlush();
 }
 
@@ -660,8 +678,6 @@ void PrintCredits(void)
     int end = 0, line = 0, x, y = 15, columns = 1, cur_col = 0;
     int underline = 0, last_underline = 0;
     char buf[256];
-
-    void pause_for_key(ulong wait_time);
 
     gr_clear(0);
     res_draw_text(RES_coloraliasedFont, " ", 0, 0); //without this, next call won't be centered (why?)
@@ -679,8 +695,8 @@ void PrintCredits(void)
             switch (buf[i])
             {
                 case 'E': end = 1; break;
-                case 'p': pause_for_key(200); uiHideMouse(NULL); break;
-                case 'G': pause_for_key(2000); uiHideMouse(NULL); gr_clear(0); y = 15; break;
+                case 'p': WaitForKey(200, ' '); break;
+                case 'G': WaitForKey(2000, ' '); gr_clear(0); y = 15; break;
                 case 'N': break; //dunno
                 case '1': columns = 1; cur_col = 0; break;
                 case '2': columns = 2; cur_col = 0; break;
@@ -737,8 +753,7 @@ void PrintCredits(void)
         }
     }
 
-    pause_for_key(10000);
-    uiHideMouse(NULL);
+    WaitForKey(0, ' ');
     uiFlush();
 }
 
