@@ -188,6 +188,11 @@ int32_t AmovReadHeader(Afile *paf) {
 //
 //	AmovReadFrame() reads the next frame.
 
+//filled when chunk contains subtitle data; used extern in cutsloop.c
+char EngSubtitle[256];
+char FrnSubtitle[256];
+char GerSubtitle[256];
+
 int32_t AmovReadFrame(Afile *paf, grs_bitmap *pbm, fix *ptime) {
     static uint8_t *pColorSet;    // ptr to color set table (4x4 codec)
     static uint8_t *pHuffTabComp; // ptr to compressed huffman tab (4x4 codec)
@@ -265,8 +270,44 @@ NEXT_CHUNK:
             mfread(pmi->pal, 768, paf->mf);
             pmi->newPal = TRUE;
         }
+
+        *EngSubtitle = 0;
+        *FrnSubtitle = 0;
+        *GerSubtitle = 0;
+
         pmi->pcurrChunk++;
         goto NEXT_CHUNK;
+
+    case MOVIE_CHUNK_TEXT:
+    {
+        DEBUG("MOVIE_CHUNK_TEXT");
+        mfseek(paf->mf, pmi->pcurrChunk->offset);
+
+        char tag[4];
+        uint32_t offset;
+        char string[256], ch;
+        int i;
+
+        mfread(tag, sizeof(tag), paf->mf);
+        mfread(&offset, sizeof(offset), paf->mf);
+        mfseek(paf->mf, pmi->pcurrChunk->offset + offset);
+
+        for (i=0; i<sizeof(string)-1; i++)
+        {
+            mfread(&ch, sizeof(ch), paf->mf);
+            if (ch == 0) break;
+            string[i] = ch;
+        }
+        string[i] = 0;
+
+        if (!memcmp(tag, "AREA", 4)) {} // "# # # # CLR" : left, top, right, bottom
+        else if (!memcmp(tag, "STD ", 4)) strcpy(EngSubtitle, string);
+        else if (!memcmp(tag, "FRN ", 4)) strcpy(FrnSubtitle, string);
+        else if (!memcmp(tag, "GER ", 4)) strcpy(GerSubtitle, string);
+
+        pmi->pcurrChunk++;
+        goto NEXT_CHUNK;
+    }
 
     default:
         pmi->pcurrChunk++;
