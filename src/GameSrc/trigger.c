@@ -1697,6 +1697,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
             p3 |= 0x10;
         head += (p3 & 0xFF0000) ? -(p3 & 0xFF) : (p3 & 0xFF);
         if ((p3 & 0xFF00) == 0) {
+            if (hi != lo)
             head = lo + (head - lo) % (hi - lo);
         } else {
             if (head > hi) {
