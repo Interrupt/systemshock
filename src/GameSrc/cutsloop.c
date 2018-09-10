@@ -169,12 +169,15 @@ void cutscene_loop() {
         }
         if (buf && *buf)
         {
-            res_draw_text(RES_cutsceneFont, " ", 0, 0); //hack: needed for next call to be centered; why though?
             short w, h, x, y;
+            grs_font *fon = gr_get_font();
+            gr_set_font((grs_font *)ResLock(RES_cutsceneFont));
             gr_string_size(buf, &w, &h);
             x = (320-w)/2;
             y = 158+(200-158-h)/2;
-            res_draw_text(RES_cutsceneFont, buf, x, y);
+            ss_string(buf, x, y);
+            ResUnlock(RES_cutsceneFont);
+            gr_set_font(fon);
         }
 
 		if(done_playing_movie) {
