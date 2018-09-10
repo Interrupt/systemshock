@@ -608,20 +608,22 @@ void PrintWinStats(void)
 
     extern void second_format(int sec_remain, char *s);
 
+    grs_font *fon = gr_get_font();
+    gr_set_font((grs_font *)ResLock(RES_coloraliasedFont));
+
     gr_clear(0);
-    res_draw_text(RES_coloraliasedFont, " ", 0, 0); //without this, next call won't be centered (why?)
 
     sprintf(buf, "CONGRATULATIONS!");
-    gr_string_size(buf, &w, &h); res_draw_text(RES_coloraliasedFont, buf, (320-w)/2, y); y += 12 * 2;
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12 * 2;
 
     sprintf(buf, "YOU HAVE COMPLETED SYSTEM SHOCK!");
-    gr_string_size(buf, &w, &h); res_draw_text(RES_coloraliasedFont, buf, (320-w)/2, y); y += 12;
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
     sprintf(buf, "HIT ESC TO VIEW CREDITS.");
-    gr_string_size(buf, &w, &h); res_draw_text(RES_coloraliasedFont, buf, (320-w)/2, y); y += 12 * 2;
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12 * 2;
 
     sprintf(buf, "STATISTICS");
-    gr_string_size(buf, &w, &h); res_draw_text(RES_coloraliasedFont, buf, (320-w)/2, y); y += 12;
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
     //underline
     short x1 = SCONV_X((320-w)/2);
@@ -638,22 +640,22 @@ void PrintWinStats(void)
 
     second_format(player_struct.game_time / CIT_CYCLE, buf_temp);
     sprintf(buf, "TIME: %s", buf_temp);
-    gr_string_size(buf, &w, &h); res_draw_text(RES_coloraliasedFont, buf, (320-w)/2, y); y += 12;
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
     numtostring(player_struct.num_victories, buf_temp);
     sprintf(buf, "KILLS: %s", buf_temp);
-    gr_string_size(buf, &w, &h); res_draw_text(RES_coloraliasedFont, buf, (320-w)/2, y); y += 12;
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
     numtostring(player_struct.num_deaths, buf_temp);
     sprintf(buf, "REGENERATIONS: %s", buf_temp);
-    gr_string_size(buf, &w, &h); res_draw_text(RES_coloraliasedFont, buf, (320-w)/2, y); y += 12;
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
     char stupid = 0, i;
     for (i = 0; i < 4; i++)
         stupid += (player_struct.difficulty[i] * player_struct.difficulty[i]);
     numtostring(stupid, buf_temp);
     sprintf(buf, "DIFFICULTY INDEX: %s", buf_temp);
-    gr_string_size(buf, &w, &h); res_draw_text(RES_coloraliasedFont, buf, (320-w)/2, y); y += 12;
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
     int score;
     // death is 10 anti-kills, but you always keep at least a third of your kills.
@@ -665,7 +667,10 @@ void PrintWinStats(void)
     if (stupid == 36) score += 2222222; // secret kevin bonus
     numtostring(score, buf_temp);
     sprintf(buf, "SCORE: %s", buf_temp);
-    gr_string_size(buf, &w, &h); res_draw_text(RES_coloraliasedFont, buf, (320-w)/2, y);
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y);
+
+    ResUnlock(RES_coloraliasedFont);
+    gr_set_font(fon);
 
     WaitForKey(0, 27); //escape key
     uiFlush();
@@ -680,7 +685,6 @@ void PrintCredits(void)
     char buf[256];
 
     gr_clear(0);
-    res_draw_text(RES_coloraliasedFont, " ", 0, 0); //without this, next call won't be centered (why?)
 
     while (!end)
     {
@@ -710,10 +714,14 @@ void PrintCredits(void)
             continue;
         }
 
+        grs_font *fon = gr_get_font();
+        gr_set_font((grs_font *)ResLock(RES_coloraliasedFont));
         short w, h;
         gr_string_size(buf, &w, &h);
         x = (columns == 1) ? (320-w)/2 : (cur_col == 0) ? 320/2-8-w : 320/2+8;
-        res_draw_text(RES_coloraliasedFont, buf, x, y);
+        ss_string(buf, x, y);
+        ResUnlock(RES_coloraliasedFont);
+        gr_set_font(fon);
 
         if (underline)
         {
