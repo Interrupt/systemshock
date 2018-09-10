@@ -107,32 +107,11 @@ extern char EngSubtitle[256];
 extern char FrnSubtitle[256];
 extern char GerSubtitle[256];
 
-//find palette color closest to color 255
-//why not use 255? res_draw_text() doesn't draw anything when set to that color
-//need to figure out how to avoid this
-int GetSubtitleColor(void)
-{
-    uint8_t pal[3*256], *p = pal;
-    int r, g, b, score, best_score = 65536*3;
-    int i, best_i = 0;
-
-    gr_get_pal(0, 256, pal);
-
-    for (i=0; i<256-1; i++)
-    {
-        r = (*p++) - pal[3*255+0];
-        g = (*p++) - pal[3*255+1];
-        b = (*p++) - pal[3*255+2];
-        score = r*r + g*g + b*b;
-        if (score < best_score) {best_score = score; best_i = i;}
-    }
-    return best_i;
-}
-
 void cutscene_loop() {
 
     fix time;
     long cur_time = SDL_GetTicks();
+    static uint8_t palette[3*256];
 
     if(is_first_frame) {
     	is_first_frame = FALSE;
@@ -144,18 +123,32 @@ void cutscene_loop() {
     	next_draw_time = start_time + fix_float(time) * 1000.0;
 
     	// Set the initial palette
-    	gr_set_pal(0, 256, amovie->v.pal.rgb);
-    	gr_set_fcolor(GetSubtitleColor());
-
+        memcpy(palette, amovie->v.pal.rgb, 3*256);
     	gr_clear(0x00);
     }
 
     if(cur_time > next_draw_time) {
     	// Get the palette for this frame, if any
     	if(AfileGetFramePal(amovie, &pal)) {
-	    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
-            gr_set_fcolor(GetSubtitleColor());
+            memcpy(palette+3*pal.index, pal.rgb, 3*pal.numcols);
 	    }
+
+        //not really a hack: find unused color in movie bitmap and use it as subtitle color
+        {
+            uint32_t used[256], used_min = 0xFFFFFFFF;
+            memset(used, 0, sizeof(used));
+            uint8_t *bits = movie_bitmap.bits;
+            int count = (int)movie_bitmap.w * movie_bitmap.h;
+            while (count--) used[*bits++]++;
+            int i, used_min_i = 1;
+            for (i=1; i<256-1; i++)
+                if (used[i] < used_min) {used_min = used[i]; used_min_i = i;}
+            uint8_t temp_pal[3*256];
+            memcpy(temp_pal, palette, 3*256);
+            for (i=0; i<3; i++) temp_pal[3*used_min_i+i] = temp_pal[3*255+i];
+            gr_set_pal(0, 256, temp_pal);
+            gr_set_fcolor(used_min_i);
+        }
 
 	    // Draw this frame
 	    gr_clear(0x00);
