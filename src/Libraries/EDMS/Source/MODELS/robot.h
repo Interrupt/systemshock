@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 //	This seems silly now, but later it will all make sense, sensei...
 //	=================================================================
-int make_robot(Q init_state[6][3], Q params[10]);
-void robot_set_control(int robot, Q X, Q Y, Q Z);
-void robot_set_ai_control(int robot, Q desired_heading, Q desired_speed, Q sidestep, Q urgency, Q &there_yet,
+int32_t make_robot(Q init_state[6][3], Q params[10]);
+void robot_set_control(int32_t robot, Q X, Q Y, Q Z);
+void robot_set_ai_control(int32_t robot, Q desired_heading, Q desired_speed, Q sidestep, Q urgency, Q &there_yet,
                           Q distance);

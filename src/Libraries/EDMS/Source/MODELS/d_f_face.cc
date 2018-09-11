@@ -80,7 +80,7 @@ physics_handle EDMS_make_Dirac_frame(Dirac_frame *d, State *s) {
 
     Q mass, hardness, gravity, roughness;
 
-    int on = 0;
+    int32_t on = 0;
 
     physics_handle ph = 0;
 
@@ -139,7 +139,7 @@ void EDMS_get_Dirac_frame_viewpoint(physics_handle ph, State *s) {
     Q dirac_temp[9];
     Q alpha, beta, gamma;
 
-    int on = ph2on[ph];
+    int32_t on = ph2on[ph];
 
     Q delta = 0;
 
@@ -250,7 +250,7 @@ void EDMS_set_Dirac_frame_parameters(physics_handle ph, Dirac_frame *d) {
     gravity.fix_to(d->gravity);
     roughness.fix_to(d->roughness);
 
-    int on = physics_handle_to_object_number(ph);
+    int32_t on = physics_handle_to_object_number(ph);
 
     hardness = hardness * (mass * DIRAC_HARD_FAC / size);
     I[on][20] = mass;
@@ -272,7 +272,7 @@ void EDMS_set_Dirac_frame_parameters(physics_handle ph, Dirac_frame *d) {
 //	And the weak minded...
 //	======================
 void EDMS_get_Dirac_frame_parameters(physics_handle ph, Dirac_frame *d) {
-    int on = physics_handle_to_object_number(ph);
+    int32_t on = physics_handle_to_object_number(ph);
 
     d->roughness = (I[on][23] / I[on][26]).to_fix();
     d->hardness = (I[on][26] / I[on][20] * DIRAC_HARD_FAC).to_fix();
@@ -282,7 +282,7 @@ void EDMS_get_Dirac_frame_parameters(physics_handle ph, Dirac_frame *d) {
 
 void EDMS_control_Dirac_frame(physics_handle ph, fix forward, fix pitch, fix yaw, fix roll) {
 
-    int on = ph2on[ph];
+    int32_t on = ph2on[ph];
 
     Q F, P, Y, R;
 
@@ -298,7 +298,7 @@ void EDMS_control_Dirac_frame(physics_handle ph, fix forward, fix pitch, fix yaw
     control_dirac_frame(on, F, P, Y, R);
 }
 
-void render_localize(Q &X, Q &Y, Q &Z, int object) {
+void render_localize(Q &X, Q &Y, Q &Z, int32_t object) {
 
     Q e0, e1, e2, e3;
 

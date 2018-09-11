@@ -44,13 +44,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	==================================
 extern EDMS_Argblock_Pointer A;
 extern Q S[MAX_OBJ][7][4], I[MAX_OBJ][DOF_MAX];
-extern int no_no_not_me[MAX_OBJ];
+extern int32_t no_no_not_me[MAX_OBJ];
 
 #define SOLITION_FRAME_CNT
 
 //	Functions...
 //	============
-extern void (*idof_functions[MAX_OBJ])(int), (*equation_of_motion[MAX_OBJ][7])(int);
+extern void (*idof_functions[MAX_OBJ])(int32_t), (*equation_of_motion[MAX_OBJ][7])(int32_t);
 
 //	Callbacks themselves...
 //	-----------------------
@@ -71,7 +71,7 @@ static Q object0, object1, object2, object3, object4, // Howzat??
 
 //	First, here are the equations of motion (outdated!)...
 //	======================================================
-int EDMS_robot_global_badness_indicator = 0;
+int32_t EDMS_robot_global_badness_indicator = 0;
 
 //	Variables that are NOT on the stack...
 //	======================================
@@ -87,7 +87,7 @@ const Q wt_pos = 0.001, wt_neg = -wt_pos;
 
 //	Here are the internal degrees of freedom:
 //	=========================================
-void robot_idof(int object) {
+void robot_idof(int32_t object) {
 
     //	Call me instead of having special code everywhere...
     //	====================================================
@@ -350,7 +350,7 @@ void robot_idof(int object) {
 
 //	We might for now want to set some external forces on the robot...
 //	==================================================================
-void robot_set_control(int robot, Q thrust_lever, Q attitude_jet, Q jump) {
+void robot_set_control(int32_t robot, Q thrust_lever, Q attitude_jet, Q jump) {
 
     sincos(S[robot][3][0], &object0, &object1);
 
@@ -376,7 +376,7 @@ void robot_set_control(int robot, Q thrust_lever, Q attitude_jet, Q jump) {
 
 //	Here is a separate control routine for robots under AI domination...
 //	====================================================================
-void robot_set_ai_control(int robot, Q desired_heading, Q desired_speed, Q sidestep, Q urgency, Q &there_yet,
+void robot_set_ai_control(int32_t robot, Q desired_heading, Q desired_speed, Q sidestep, Q urgency, Q &there_yet,
                           Q distance) {
 
     const Q one_by_pi = 0.31830, pi = 3.14159, two_pi = 6.28318;
@@ -444,7 +444,7 @@ void robot_set_ai_control(int robot, Q desired_heading, Q desired_speed, Q sides
     //+ abs( I[robot][17] ) ) << ".\n";;
 }
 
-int make_robot(Q init_state[6][3], Q params[10]) {
+int32_t make_robot(Q init_state[6][3], Q params[10]) {
 
     //	Sets up everything needed to manufacture a robot with initial state vector
     //	init_state[][] and EDMS motion parameters params[] into soliton. Returns the
@@ -453,12 +453,12 @@ int make_robot(Q init_state[6][3], Q params[10]) {
 
     //	Have some variables...
     //	======================
-    int object_number = -1, // Three guesses...
+    int32_t object_number = -1, // Three guesses...
         error_code = -1;    // Guilty until...
 
     //	We need ignorable coordinates...
     //	================================
-    extern void null_function(int);
+    extern void null_function(int32_t);
 
     //	First find out which object we're going to be...
     //	================================================
@@ -471,8 +471,8 @@ int make_robot(Q init_state[6][3], Q params[10]) {
 
         //		Now we can create the robot:  first dump the initial state vector...
         //		=====================================================================
-        for (int coord = 0; coord < 6; coord++) {
-            for (int deriv = 0; deriv < 3; deriv++) { // Has alpha now...
+        for (int32_t coord = 0; coord < 6; coord++) {
+            for (int32_t deriv = 0; deriv < 3; deriv++) { // Has alpha now...
                 S[object_number][coord][deriv] = A[object_number][coord][deriv] =
                     init_state[coord][deriv]; // For collisions...
             }
@@ -480,7 +480,7 @@ int make_robot(Q init_state[6][3], Q params[10]) {
 
         //		Put in the appropriate robot parameters...
         //		===========================================
-        for (int copy = 0; copy < 10; copy++) {
+        for (int32_t copy = 0; copy < 10; copy++) {
             I[object_number][copy + 20] = params[copy];
         }
         I[object_number][30] = ROBOT; // Hey, you are what you eat.

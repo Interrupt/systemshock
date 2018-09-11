@@ -36,22 +36,22 @@ extern Q EDMS_CYBER_FLOW1X;
 extern Q EDMS_CYBER_FLOW2X;
 extern Q EDMS_CYBER_FLOW3X;
 
-extern int EDMS_BCD;
+extern int32_t EDMS_BCD;
 
 //	Here are the internal degrees of freedom.  First we get the aerodynamic forces
 //	from the (external) aero model, then the interactions and solid B/C here...
 //	===========================================================================
-void dirac_frame_idof(int object) {
+void dirac_frame_idof(int32_t object) {
 
     //      Here's the real work...
     //      -----------------------
-    extern void dirac_mechanicals(int object, Q F[3], Q T[3]);
-    extern void shall_we_dance(int object, Q &result0, Q &result1, Q &result2);
+    extern void dirac_mechanicals(int32_t object, Q F[3], Q T[3]);
+    extern void shall_we_dance(int32_t object, Q &result0, Q &result1, Q &result2);
 
     //      For alignment...
     //      ----------------
-    extern void mech_localize(Q &, Q &, Q &);
-    extern void mech_globalize(Q &, Q &, Q &);
+    extern void mech_localize(Q &X, Q &Y, Q &Z);
+    extern void mech_globalize(Q &X, Q &Y, Q &Z);
     Q F_T[3];
 
     Q e0, e1, e2, e3, // For speed plus beauty!
@@ -174,8 +174,7 @@ void dirac_frame_idof(int object) {
 
 //      Control dirac_frame...
 //      ======================
-void control_dirac_frame(int object, Q forward, Q pitch, Q yaw, Q roll) {
-
+void control_dirac_frame(int32_t object, Q forward, Q pitch, Q yaw, Q roll) {
     I[object][0] = 3 * forward;
     I[object][1] = pitch;
     I[object][2] = yaw;
@@ -186,18 +185,18 @@ void control_dirac_frame(int object, Q forward, Q pitch, Q yaw, Q roll) {
 //	of angles to spinors and such.  Probably should have an external utility for
 //	resetting these...
 //	==================
-int make_Dirac_frame(Q init_state[6][3], Q params[10]) {
+int32_t make_Dirac_frame(Q init_state[6][3], Q params[10]) {
 
     //	Have some variables...
     //	======================
-    int object_number = -1, // Three guesses...
+    int32_t object_number = -1, // Three guesses...
         error_code = -1;    // Guilty until...
 
     //	We need ignorable coordinates...
     //	================================
     extern void null_function(int);
 
-    int coord = 0, deriv = 0;
+    int32_t coord = 0, deriv = 0;
 
     Q sin_alpha = 0, cos_alpha = 0, sin_beta = 0, cos_beta = 0, sin_gamma = 0, cos_gamma = 0;
 

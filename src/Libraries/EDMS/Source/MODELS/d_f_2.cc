@@ -96,7 +96,7 @@ void dirac_mechanicals(int object, Q F[3], Q T[3]) {
     //      -----------
     sincos(0 /*I[object][xxx]*/, &sin_wheel, &cos_wheel);
 
-    int count = 0;
+    int32_t count = 0;
 
     //	Check every @#!$ point...
     //	=========================
@@ -181,6 +181,7 @@ void dirac_mechanicals(int object, Q F[3], Q T[3]) {
 
     //              Auto alignment...
     //              -----------------
+    // FIXME Error?
     if (!ss_edms_bcd_flags & SS_BCD_CURR_ON) {
         //              if ( (EDMS_BCD < 10) || (EDMS_BCD > 27) ) {
 

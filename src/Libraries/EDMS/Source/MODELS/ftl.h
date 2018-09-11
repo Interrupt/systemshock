@@ -18,4 +18,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 //	This seems silly now, but later it will all make sense, sensei...
 //	=================================================================
-int EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q range, int exclude, physics_handle shooter);
+int32_t EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q range, int32_t exclude, physics_handle shooter);

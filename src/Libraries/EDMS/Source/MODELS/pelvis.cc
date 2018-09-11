@@ -41,11 +41,12 @@ Q EDMS_CYBER_FLOW1X = 100;
 Q EDMS_CYBER_FLOW2X = 200;
 Q EDMS_CYBER_FLOW3X = 270;
 
-int EDMS_BCD = 0;
-int EDMS_pelvis_is_climbing = 0;
-int edms_ss_head_bcd_flags;
+int32_t EDMS_BCD = 0;
+int32_t EDMS_pelvis_is_climbing = 0;
+int32_t edms_ss_head_bcd_flags;
 
-fix hacked_head_bob_1 = fix_make(1, 0), hacked_head_bob_2 = fix_make(1, 0);
+fix hacked_head_bob_1 = fix_make(1, 0);
+fix hacked_head_bob_2 = fix_make(1, 0);
 
 //}
 
@@ -59,11 +60,11 @@ static Q V_ceiling[3], V_floor[3], V_wall[3];
 //	==================================
 extern EDMS_Argblock_Pointer A;
 extern Q S[MAX_OBJ][7][4], I[MAX_OBJ][DOF_MAX];
-extern int no_no_not_me[MAX_OBJ];
+extern int32_t no_no_not_me[MAX_OBJ];
 
 //	Functions...
 //	============
-extern void (*idof_functions[MAX_OBJ])(int), (*equation_of_motion[MAX_OBJ][7])(int);
+extern void (*idof_functions[MAX_OBJ])(int32_t), (*equation_of_motion[MAX_OBJ][7])(int32_t);
 
 //	Callbacks themselves...
 //	-----------------------
@@ -96,7 +97,7 @@ Q bob_arg = 0;
 
 //	Here are the internal degrees of freedom:
 //	=========================================
-void pelvis_idof(int object) {
+void pelvis_idof(int32_t object) {
 
     // attemp to speed up something
     Q *i_object = I[object];
@@ -104,7 +105,7 @@ void pelvis_idof(int object) {
 
     //      To do the head motion, collisions, and climbing...
     //      --------------------------------------------------
-    void get_head_of_death(int), get_body_of_death(int), do_climbing(int object);
+    void get_head_of_death(int32_t), get_body_of_death(int32_t), do_climbing(int32_t object);
 
     //	Call me instead of having special code everywhere...
     //	====================================================
@@ -238,8 +239,8 @@ void pelvis_idof(int object) {
 
     //      The head...
     //      ===========
-    int edms_ss_bcd_flags_save = ss_edms_bcd_flags; // Save off info for after head call...
-    int edms_ss_param_save = ss_edms_bcd_param;
+    int32_t edms_ss_bcd_flags_save = ss_edms_bcd_flags; // Save off info for after head call...
+    int32_t edms_ss_param_save = ss_edms_bcd_param;
 
     Q head_check_x = 0;
     Q head_check_y = 0;
@@ -441,7 +442,7 @@ void pelvis_idof(int object) {
 
 //      Here we'll get the head information we all want so badly...
 //      ===========================================================
-void get_head_of_death(int object) {
+void get_head_of_death(int32_t object) {
     Q *i_object = I[object];
     Q vec0, vec1, vec2, test, mul, vv0, vv1, vv2, dmag, kmag;
 
@@ -495,7 +496,7 @@ void get_head_of_death(int object) {
     head_kappa[2] = kmag * vec2;
 }
 
-void get_body_of_death(int object) {
+void get_body_of_death(int32_t object) {
     Q *i_object = I[object];
 
     Q vec0, vec1, vec2, test, mul, vv0, vv1, vv2, dmag, kmag;
@@ -566,7 +567,7 @@ void get_body_of_death(int object) {
 
 //      Climbing stuff also removed for speed of compilations...
 //      ========================================================
-void do_climbing(int object) {
+void do_climbing(int32_t object) {
     Q *i_object = I[object];
 
     //      Hellishness...
@@ -620,7 +621,7 @@ void do_climbing(int object) {
 
 //	We might for now want to set some external forces on the pelvis...
 //	==================================================================
-void pelvis_set_control(int pelvis, Q forward, Q turn, Q sidestep, Q lean, Q jump, int crouch) {
+void pelvis_set_control(int32_t pelvis, Q forward, Q turn, Q sidestep, Q lean, Q jump, int32_t crouch) {
     const Q pi_by_two = 1.5707; // Yea, flixpoint...
 
     sincos(S[pelvis][3][0], &object0, &object1);
@@ -671,10 +672,10 @@ void pelvis_set_control(int pelvis, Q forward, Q turn, Q sidestep, Q lean, Q jum
 //	init_state[][] and EDMS motion parameters params[] into soliton. Returns the
 //	object number, or else a negative error code (see Soliton.CPP for error handling and codes).
 //	============================================================================================
-int make_pelvis(Q init_state[6][3], Q params[10]) {
+int32_t make_pelvis(Q init_state[6][3], Q params[10]) {
     //	Have some variables...
     //	======================
-    int object_number = -1, // Three guesses...
+    int32_t object_number = -1, // Three guesses...
         error_code = -1;    // Guilty until...
 
     //	We need ignorable coordinates...
@@ -692,8 +693,8 @@ int make_pelvis(Q init_state[6][3], Q params[10]) {
 
         //		Now we can create the pelvis:  first dump the initial state vector...
         //		=====================================================================
-        for (int coord = 0; coord < 6; coord++) {
-            for (int deriv = 0; deriv < 3; deriv++) { // Has alpha now...
+        for (int32_t coord = 0; coord < 6; coord++) {
+            for (int32_t deriv = 0; deriv < 3; deriv++) { // Has alpha now...
                 S[object_number][coord][deriv] = A[object_number][coord][deriv] =
                     init_state[coord][deriv]; // For collisions...
             }
@@ -780,7 +781,7 @@ void EDMS_lean_o_meter(physics_handle ph, fix &lean, fix &crouch) {
     //      -----------------
     if (ph > -1) {
 
-        int on = ph2on[ph];
+        int32_t on = ph2on[ph];
 
         //              Are you a pelvis...
         //              -------------------

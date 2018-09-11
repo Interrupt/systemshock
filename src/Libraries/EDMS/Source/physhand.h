@@ -26,6 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __PHYSHAND_H
 #define __PHYSHAND_H
 
-typedef int physics_handle;
+typedef int32_t physics_handle;
 
 #endif /* __PHYSHAND_H */

@@ -45,7 +45,7 @@ typedef struct {
 
     fix mass, size, hardness, pep, gravity, height;
 
-    int cyber_space;
+    int32_t cyber_space;
 
 } Pelvis;
 
@@ -155,7 +155,7 @@ void EDMS_control_pelvis(physics_handle ph, fix F, fix T, fix S, fix L, fix J, i
     LL.fix_to(L);
     JJ.fix_to(J);
 
-    int on = physics_handle_to_object_number(ph);
+    int32_t on = physics_handle_to_object_number(ph);
 
     if (I[on][30] == PELVIS)
         pelvis_set_control(on, FF, TT, SS, LL, JJ, C);
@@ -165,7 +165,7 @@ void EDMS_control_pelvis(physics_handle ph, fix F, fix T, fix S, fix L, fix J, i
 //      ----------------------------------------------------------
 void EDMS_get_pelvic_viewpoint(physics_handle ph, State *s) {
 
-    int on = ph2on[ph];
+    int32_t on = ph2on[ph];
 
     Q delta = 0;
 
@@ -248,7 +248,7 @@ void EDMS_get_pelvic_viewpoint(physics_handle ph, State *s) {
 void EDMS_set_pelvis_parameters(physics_handle ph, Pelvis *p) {
     Q mass, hardness, size, pep, height, gravity;
 
-    int cyber_space = 0;
+    int32_t cyber_space = 0;
 
     mass.fix_to(p->mass);
     size.fix_to(p->size);
@@ -259,7 +259,7 @@ void EDMS_set_pelvis_parameters(physics_handle ph, Pelvis *p) {
     if (height > 3 * size)
         height = 3 * size;
 
-    int on = physics_handle_to_object_number(ph);
+    int32_t on = physics_handle_to_object_number(ph);
 
     //	hardness = hardness*(mass*4/size);
     hardness = hardness * (mass * HARD_FAC / size);
@@ -298,7 +298,7 @@ void EDMS_set_pelvis_parameters(physics_handle ph, Pelvis *p) {
 //	And the weak minded...
 //	======================
 void EDMS_get_pelvis_parameters(physics_handle ph, Pelvis *p) {
-    int on = physics_handle_to_object_number(ph);
+    int32_t on = physics_handle_to_object_number(ph);
 
     p->pep = (I[on][23] / I[on][26]).to_fix();
     p->size = I[on][22].to_fix();
@@ -314,7 +314,7 @@ void EDMS_get_pelvis_parameters(physics_handle ph, Pelvis *p) {
 //	===============================================
 fix EDMS_get_pelvis_damage(physics_handle ph, fix delta_t) {
 
-    int object;
+    int32_t object;
     Q worker_bee_buzz_buzz = 0;
 
     object = ph2on[ph]; // As stupid as it gets...

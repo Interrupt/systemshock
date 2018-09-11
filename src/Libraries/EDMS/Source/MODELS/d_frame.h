@@ -18,5 +18,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 //	This seems silly now, but later it will all make sense, sensei...
 //	=================================================================
-int make_Dirac_frame(Q init_state[6][3], Q params[10]);
-void control_dirac_frame(int object, Q forward, Q pitch, Q yaw, Q roll);
+int32_t make_Dirac_frame(Q init_state[6][3], Q params[10]);
+void control_dirac_frame(int32_t object, Q forward, Q pitch, Q yaw, Q roll);

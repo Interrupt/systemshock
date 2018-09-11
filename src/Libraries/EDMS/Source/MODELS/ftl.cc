@@ -40,25 +40,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	==============================================================================
 static Q initial_X[3] = {0, 0, 0}, final_X[3] = {0, 0, 0};
 
-extern int EDMS_integrating;
+extern int32_t EDMS_integrating;
 
-extern int alarm_clock[MAX_OBJ];
+extern int32_t alarm_clock[MAX_OBJ];
 
-physics_handle object_check(unsigned int data_word, Q size, Q range, int exclude, int steps,
+physics_handle object_check(uint32_t data_word, Q size, Q range, int32_t exclude, int32_t steps,
                             Q &dist); // Checks for hits...
 
 //	Here is the high velocity weapon primitive...
 //	=============================================
-physics_handle EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q range, int exclude, int shooter) {
+physics_handle EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q range, int32_t exclude, int32_t shooter) {
     extern Q PELVIS;
-    int stepper = 0,
+    int32_t stepper = 0,
         max_step = (2 * range / size).to_int(), // samples per meter...
         victim_on = 0, shooter_on = 0, object_pointer = 0, i = 0;
 
-    unsigned int must_check_objects[MAX_OBJ];
+    uint32_t must_check_objects[MAX_OBJ];
 
-    unsigned int test_data;
-    unsigned int last_test_data = 0;
+    uint32_t test_data;
+    uint32_t last_test_data = 0;
 
     physics_handle victim = -1, // It is what is says it is...
         return_victim = -1;     // The number actually returned...
@@ -72,7 +72,7 @@ physics_handle EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q ran
 
     //	Reset the object collisions...
     //	==============================
-    int no_dont_do_it = 0;
+    int32_t no_dont_do_it = 0;
 
     //	Looks at terrain...
     //	===================
@@ -148,8 +148,8 @@ physics_handle EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q ran
 
             //	Check for object collisions...
             //	==============================
-            int hx = floor(hash_scale * X[0]);
-            int hy = floor(hash_scale * X[1]);
+            int32_t hx = floor(hash_scale * X[0]);
+            int32_t hy = floor(hash_scale * X[1]);
             test_data = data[hx][hy];
 
             if (test_data != last_test_data && test_data != 0) {
@@ -287,10 +287,10 @@ physics_handle EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q ran
 //	Here, since we know the line segment we're interested in, we check to make sure that we
 //	didn't hit any objects, and return the one we did...
 //	====================================================
-physics_handle object_check(unsigned int data_word, Q size, Q range, int exclude, int stepper, Q &dist) {
+physics_handle object_check(uint32_t data_word, Q size, Q range, int32_t exclude, int32_t stepper, Q &dist) {
     //		General purpose...
     //		==================
-    int object;
+    int32_t object;
     physics_handle victim = -1;
 
     //	For the lines...
@@ -298,7 +298,7 @@ physics_handle object_check(unsigned int data_word, Q size, Q range, int exclude
     Q a = initial_X[0] - final_X[0], b = initial_X[1] - final_X[1], c = initial_X[2] - final_X[2], top_1 = 0, top_2 = 0,
       top_3 = 0, bottom = 0, kill_zone = 0, kzdist = 0, kzdisto = 10000;
 
-    ulong bit = 0; // which object bit we're checking
+    uint32_t bit = 0; // which object bit we're checking
 
     while (data_word != 0) {
         if (data_word & 1) {

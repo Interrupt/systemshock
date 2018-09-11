@@ -58,7 +58,7 @@ physics_handle EDMS_beam_weapon(fix X[3], fix D[3], fix kick, fix knock, fix siz
     //	Return me, baby...
     //	------------------
     physics_handle ph = -1;
-    int EXCLUDE = 0;
+    int32_t EXCLUDE = 0;
 
     Q DD[3];
 
