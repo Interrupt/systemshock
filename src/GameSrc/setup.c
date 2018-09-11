@@ -595,6 +595,13 @@ void WaitForKey(ulong ticks, int ch)
         SDLDraw();
         kbs_event ev = kb_next();
         ticks = (ulong)TickCount();
+
+        // Close the credits when ESC is pressed
+        if(ev.ascii == 27 && ch != 27) {
+            journey_credits_done();
+            break;
+        }
+
         if ((ev.ascii == ch || ev.ascii == ' ' || ev.ascii == '\r') && ticks >= key_ticks) break;
         if (end_ticks && ticks >= end_ticks) break;
     }
@@ -686,7 +693,7 @@ void PrintCredits(void)
 
     gr_clear(0);
 
-    while (!end)
+    while (!end && setup_mode == SETUP_CREDITS)
     {
         get_string((RES_credits << 16) | line, buf, sizeof(buf));
         line++;
@@ -695,21 +702,25 @@ void PrintCredits(void)
 
         if (*buf == '^')
         {
-            for (int i=1; i<len; i++)
-            switch (buf[i])
-            {
-                case 'E': end = 1; break;
-                case 'p': WaitForKey(200, ' '); break;
-                case 'G': WaitForKey(2000, ' '); gr_clear(0); y = 15; break;
-                case 'N': break; //dunno
-                case '1': columns = 1; cur_col = 0; break;
-                case '2': columns = 2; cur_col = 0; break;
-                case 'H': underline = 3; break;
-                case 'T': underline = 2; break;
-                case 'h': underline = 1; break;
-                case 'c': underline = 0; break;
-                case 'S': y += 10; break;
-                case 'L': y = 15 * (buf[++i] - '0'); break;
+            for (int i=1; i<len; i++) {
+                if(setup_mode != SETUP_CREDITS)
+                    return;
+
+                switch (buf[i])
+                {
+                    case 'E': end = 1; break;
+                    case 'p': WaitForKey(200, ' '); break;
+                    case 'G': WaitForKey(2000, ' '); gr_clear(0); y = 15; break;
+                    case 'N': break; //dunno
+                    case '1': columns = 1; cur_col = 0; break;
+                    case '2': columns = 2; cur_col = 0; break;
+                    case 'H': underline = 3; break;
+                    case 'T': underline = 2; break;
+                    case 'h': underline = 1; break;
+                    case 'c': underline = 0; break;
+                    case 'S': y += 10; break;
+                    case 'L': y = 15 * (buf[++i] - '0'); break;
+                }
             }
             continue;
         }
