@@ -580,6 +580,194 @@ errtype journey_difficulty_func(uchar draw_stuff) {
 int credits_inp = 0;
 void *credits_txtscrn;
 
+//ticks: 0 wait forever
+void WaitForKey(ulong ticks, int ch)
+{
+    ulong end_ticks = (ulong)TickCount();
+    ulong key_ticks = end_ticks + (!ticks ? 500 : (ticks*1/8));
+    end_ticks = ticks ? end_ticks + ticks : 0;
+
+    //wait for specified elapsed ticks or keypress
+    for (;;)
+    {
+        extern void pump_events(void);
+        pump_events();
+        SDLDraw();
+        kbs_event ev = kb_next();
+        ticks = (ulong)TickCount();
+        if ((ev.ascii == ch || ev.ascii == ' ' || ev.ascii == '\r') && ticks >= key_ticks) break;
+        if (end_ticks && ticks >= end_ticks) break;
+    }
+}
+
+void PrintWinStats(void)
+{
+    char buf[256], buf_temp[256];
+    int x, y = 15;
+    short w, h;
+
+    extern void second_format(int sec_remain, char *s);
+
+    grs_font *fon = gr_get_font();
+    gr_set_font((grs_font *)ResLock(RES_coloraliasedFont));
+
+    gr_clear(0);
+
+    sprintf(buf, "CONGRATULATIONS!");
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12 * 2;
+
+    sprintf(buf, "YOU HAVE COMPLETED SYSTEM SHOCK!");
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
+
+    sprintf(buf, "HIT ESC TO VIEW CREDITS.");
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12 * 2;
+
+    sprintf(buf, "STATISTICS");
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
+
+    //underline
+    short x1 = SCONV_X((320-w)/2);
+    short x2 = SCONV_X((320-w)/2+w-1);
+    for (; x1 <= x2; x1++)
+    {
+      short y1 = SCONV_Y(y);
+      short y2 = SCONV_Y(y+1);
+      y2 = y1 + (y2-y1) / 3;
+      for (; y1 <= y2; y1++) gr_set_pixel(GREEN_BASE + 4, x1, y1);
+    }
+
+    y += 4;
+
+    second_format(player_struct.game_time / CIT_CYCLE, buf_temp);
+    sprintf(buf, "TIME: %s", buf_temp);
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
+
+    numtostring(player_struct.num_victories, buf_temp);
+    sprintf(buf, "KILLS: %s", buf_temp);
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
+
+    numtostring(player_struct.num_deaths, buf_temp);
+    sprintf(buf, "REGENERATIONS: %s", buf_temp);
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
+
+    char stupid = 0, i;
+    for (i = 0; i < 4; i++)
+        stupid += (player_struct.difficulty[i] * player_struct.difficulty[i]);
+    numtostring(stupid, buf_temp);
+    sprintf(buf, "DIFFICULTY INDEX: %s", buf_temp);
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
+
+    int score;
+    // death is 10 anti-kills, but you always keep at least a third of your kills.
+    score = player_struct.num_victories -
+                lg_min(player_struct.num_deaths * 10, player_struct.num_victories * 2 / 3);
+    score = score * 10000;
+    score = score - lg_min(score * 2 / 3, ((player_struct.game_time / (CIT_CYCLE * 36)) * 100));
+    score = score * (stupid + 1) / 37; // 9 * 4 + 1 is best difficulty factor
+    if (stupid == 36) score += 2222222; // secret kevin bonus
+    numtostring(score, buf_temp);
+    sprintf(buf, "SCORE: %s", buf_temp);
+    gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y);
+
+    ResUnlock(RES_coloraliasedFont);
+    gr_set_font(fon);
+
+    WaitForKey(0, 27); //escape key
+    uiFlush();
+}
+
+void PrintCredits(void)
+{
+    //Credits display reverse-engineered from text resources
+
+    int end = 0, line = 0, x, y = 15, columns = 1, cur_col = 0;
+    int underline = 0, last_underline = 0;
+    char buf[256];
+
+    gr_clear(0);
+
+    while (!end)
+    {
+        get_string((RES_credits << 16) | line, buf, sizeof(buf));
+        line++;
+
+        int len = strlen(buf);
+
+        if (*buf == '^')
+        {
+            for (int i=1; i<len; i++)
+            switch (buf[i])
+            {
+                case 'E': end = 1; break;
+                case 'p': WaitForKey(200, ' '); break;
+                case 'G': WaitForKey(2000, ' '); gr_clear(0); y = 15; break;
+                case 'N': break; //dunno
+                case '1': columns = 1; cur_col = 0; break;
+                case '2': columns = 2; cur_col = 0; break;
+                case 'H': underline = 3; break;
+                case 'T': underline = 2; break;
+                case 'h': underline = 1; break;
+                case 'c': underline = 0; break;
+                case 'S': y += 10; break;
+                case 'L': y = 15 * (buf[++i] - '0'); break;
+            }
+            continue;
+        }
+
+        grs_font *fon = gr_get_font();
+        gr_set_font((grs_font *)ResLock(RES_coloraliasedFont));
+        short w, h;
+        gr_string_size(buf, &w, &h);
+        x = (columns == 1) ? (320-w)/2 : (cur_col == 0) ? 320/2-8-w : 320/2+8;
+        ss_string(buf, x, y);
+        ResUnlock(RES_coloraliasedFont);
+        gr_set_font(fon);
+
+        if (underline)
+        {
+            short x1, x2, y1, y2;
+
+            x1 = SCONV_X(x);
+            x2 = SCONV_X(x+w-1);
+            for (; x1 <= x2; x1++)
+            {
+                y1 = SCONV_Y(y+h+1);
+                y2 = SCONV_Y(y+h+2);
+                if (underline == 2) y2 = y1 + (y2-y1) / 2;
+                else y2 = y1 + (y2-y1) / 3;
+                for (; y1 <= y2; y1++) gr_set_pixel(GREEN_BASE + 4, x1, y1);
+            }
+
+            if (underline == 3)
+            {
+                x1 = SCONV_X(x + 1);
+                x2 = SCONV_X(x+w-1 - 1);
+                for (; x1 <= x2; x1++)
+                {
+                    y1 = SCONV_Y(y+h+1);
+                    y2 = SCONV_Y(y+h+2);
+                    y1 = y1 + (y2-y1) / 3;
+                    for (; y1 <= y2; y1++) gr_set_pixel(GREEN_BASE + 4, x1, y1);
+                }
+            }
+        }
+
+        if (columns == 1) {y += underline ? 14 : 11; underline = 0;}
+        else
+        {
+            if (!cur_col) last_underline = underline;
+            else {y += (underline || last_underline) ? 14 : 11; underline = 0;}
+            cur_col ^= 1;
+        }
+    }
+
+    WaitForKey(0, ' ');
+    uiFlush();
+}
+
+//set this when game is won, then stats will be shown once before credits
+int WonGame_ShowStats = 0;
+
 errtype journey_credits_func(uchar draw_stuff) {
     // if (draw_stuff)
     //   res_draw_string(RES_citadelFont, SETUP_STRING_BASE + 2, JOURNEY_OPT_LEFT + 15, JOURNEY_OPT3_TOP + 2);
@@ -595,10 +783,15 @@ errtype journey_credits_func(uchar draw_stuff) {
         load_score_guts(7);
         grind_credits_music_ai();
 
-        // Hax: Just put something here, for now
-        res_draw_text(RES_coloraliasedFont,
-                      "Shockolate v0.5\n\n // consider them salted.\n\n www.github.com/\n Interrupt/systemshock",
-                      JOURNEY_OPT_LEFT, JOURNEY_OPT1_TOP);
+        if (WonGame_ShowStats) {WonGame_ShowStats = 0; PrintWinStats();}
+        PrintCredits();
+
+        journey_credits_done();
+
+//        // Hax: Just put something here, for now
+//        res_draw_text(RES_coloraliasedFont,
+//                      "Shockolate v0.5\n\n // consider them salted.\n\n www.github.com/\n Interrupt/systemshock",
+//                      JOURNEY_OPT_LEFT, JOURNEY_OPT1_TOP);
 
         // FIXME: music!
         // mlimbs_preload_requested_timbres();

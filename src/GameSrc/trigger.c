@@ -1205,6 +1205,9 @@ errtype trap_cutscene_func(int p1, int p2, int p3, int p4) {
         // KLC   play_cutscene(qdata_get(p1), qdata_get(p2));
 
         play_cutscene(WIN_CUTSCENE, TRUE);
+        setup_mode = SETUP_CREDITS;
+        extern int WonGame_ShowStats;
+        WonGame_ShowStats = 1;
     //}
 
     alternate_death = (qdata_get(p2) != 0);
