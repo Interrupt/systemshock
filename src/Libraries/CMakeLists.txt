@@ -346,6 +346,45 @@ set(EDMS_SRC
 	EDMS/Source/MODELS/d_f_2.cc
 )
 
+set(ADLMIDI_SRC
+	adlmidi/adlmidi_sequencer.cpp
+	adlmidi/adlmidi_bankmap.tcc
+	adlmidi/cvt_mus2mid.hpp
+	adlmidi/adlmidi_bankmap.h
+	adlmidi/midi_sequencer.hpp
+	adlmidi/chips/dosbox_opl3.h
+	adlmidi/chips/opl_chip_base.h
+	adlmidi/chips/nuked_opl3.h
+	adlmidi/chips/dosbox/dbopl.h
+	adlmidi/chips/dosbox/dbopl.cpp
+	adlmidi/chips/dosbox_opl3.cpp
+	adlmidi/chips/nuked_opl3_v174.cpp
+	adlmidi/chips/nuked/nukedopl3_174.c
+	adlmidi/chips/nuked/nukedopl3.c
+	adlmidi/chips/nuked/nukedopl3_174.h
+	adlmidi/chips/nuked/nukedopl3.h
+	adlmidi/chips/opl_chip_base.tcc
+	adlmidi/chips/nuked_opl3.cpp
+	adlmidi/chips/nuked_opl3_v174.h
+	adlmidi/wopl/wopl_file.c
+	adlmidi/wopl/wopl_file.h
+	adlmidi/include/adlmidi.hpp
+	adlmidi/include/adlmidi.h
+	adlmidi/adlmidi_private.hpp
+	adlmidi/file_reader.hpp
+	adlmidi/adlmidi_ptr.hpp
+	adlmidi/adlmidi_opl3.cpp
+	adlmidi/midi_sequencer_impl.hpp
+	adlmidi/adldata.hh
+	adlmidi/adlmidi_private.cpp
+	adlmidi/adlmidi_midiplay.cpp
+	adlmidi/adlmidi.cpp
+	adlmidi/cvt_xmi2mid.hpp
+	adlmidi/adlmidi_load.cpp
+	adlmidi/adldata.cpp
+	adlmidi/fraction.hpp
+	adlmidi/midi_sequencer.h
+)
 
 set(VOX_SRC
 	VOX/Source/vox2d.c
@@ -355,6 +394,7 @@ set(VOX_SRC
 
 include_directories(
 	${CMAKE_SOURCE_DIR}/src/MacSrc
+	${CMAKE_SOURCE_DIR}/src/Libraries/adlmidi/include
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/GR
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/Clip
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/Flat8
@@ -395,4 +435,4 @@ add_library(UI_LIB ${UI_SRC})
 add_library(VOX_LIB ${VOX_SRC})
 add_library(FIXPP_LIB ${FIXPP_SRC})
 add_library(EDMS_LIB ${EDMS_SRC})
-
+add_library(ADLMIDI_LIB ${ADLMIDI_SRC})

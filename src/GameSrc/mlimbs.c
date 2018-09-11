@@ -36,8 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define LOCK_ALL_CHANNELS
 
-uchar mlimbs_on = FALSE;
-char mlimbs_status = 0; // could make this one bitfield of status, on/off, enable/not, so on
+extern uchar mlimbs_on;
+extern char mlimbs_status; // could make this one bitfield of status, on/off, enable/not, so on
 int mlimbs_timer_id;    // what our timer handle is
 
 static uchar *mlimbs_theme = NULL; // data about the current theme
@@ -56,9 +56,9 @@ volatile uchar voices_used = 0;
 volatile uchar max_voices = 0;
 
 volatile void (*mlimbs_AI)(void) = NULL;
-volatile ulong mlimbs_counter = 0;
+extern volatile ulong mlimbs_counter;
 volatile long mlimbs_error;
-volatile uchar mlimbs_semaphore = FALSE;
+extern volatile uchar mlimbs_semaphore;
 
 int master_volume = 100;
 
@@ -78,14 +78,14 @@ int mlimbs_priority[MLIMBS_MAX_SEQUENCES];
 // LONG mlimbs_timbre_callback(MDI_DRIVER *mdi, LONG bank, LONG patch);
 
 /////////////////////////////////////////////////////////////////
-//	mlimbs_init (void)
+//  mlimbs_init (void)
 //
-//	purpose:
-//		This routine initializes the MLIMBS system.  This also
-//		must be used if you want to switch the SndMIDIDevice that
-//		MLIMBS uses.  This must be called before using mlimbs.
+//  purpose:
+//      This routine initializes the MLIMBS system.  This also
+//      must be used if you want to switch the SndMIDIDevice that
+//      MLIMBS uses.  This must be called before using mlimbs.
 //
-//	inputs:
+//  inputs:
 //    now uses the default global midi device always
 int mlimbs_init(void) {
     int i;
@@ -113,9 +113,9 @@ int mlimbs_init(void) {
                             case MT32:
                                     // Switch max_voices to 32 when Roland specific dat files are
                                     // available, since voices usage should be tracked using partials on a Roland.
-    //				max_voices = 32;	// Note that this here is actually the # of partials available.
-                                    max_voices = 9;	// For now, since we're using only SB/ADLIB dat files, set voice
-    limit to 9. master_volume = 90;	// Reduces distortion in Roland MT-32's break; default: max_voices = 9; break;
+    //              max_voices = 32;    // Note that this here is actually the # of partials available.
+                                    max_voices = 9; // For now, since we're using only SB/ADLIB dat files, set voice
+    limit to 9. master_volume = 90; // Reduces distortion in Roland MT-32's break; default: max_voices = 9; break;
                     }
     #else
        max_voices=18;
@@ -131,7 +131,7 @@ int mlimbs_init(void) {
 
     //   seq_finish=mlimbs_seq_done_call;
 
-    //	Since we cannot stop and start XMIDI sequences from within a MIDI callback, use
+    //  Since we cannot stop and start XMIDI sequences from within a MIDI callback, use
     // a timer, running at 100 hz to start and stop XMIDI sequences. The mlimbs_callback
     // simply sets a flag, letting the timer know when to update sequence status.
             if ((mlimbs_timer_id = tm_add_process(mlimbs_timer_callback, 0, (TMD_FREQ/MLIMBS_TIMER_FREQUENCY))) == -1)
@@ -139,13 +139,13 @@ int mlimbs_init(void) {
     #endif
 
     #ifdef LOCK_ALL_CHANNELS
-    //	Lock all MIDI channels on the current mlimbs_device, and
-    //	initialize the channel_info[] array.
+    //  Lock all MIDI channels on the current mlimbs_device, and
+    //  initialize the channel_info[] array.
             for (i = 0; i < MLIMBS_MAX_CHANNELS; i++)
             {
                     channel_info[i].mchannel = AIL_lock_channel((MDI_DRIVER *)snd_midi);
-                    channel_info[i].usernum = -1;	// This indicates what sequence is using this channel. -1 is stale
-    handle. channel_info[i].status = MLIMBS_STOPPED;	// Current status of the channel.
+                    channel_info[i].usernum = -1;   // This indicates what sequence is using this channel. -1 is stale
+    handle. channel_info[i].status = MLIMBS_STOPPED;    // Current status of the channel.
             }
     #endif
     */
@@ -158,11 +158,11 @@ die:
 }
 
 /////////////////////////////////////////////////////////////////
-//	mlimbs_shutdown
+//  mlimbs_shutdown
 //
-//	purpose:
-//		This shuts down the mlimbs system.  After calling this,
-//		call mlimbs_init again to restart it.
+//  purpose:
+//      This shuts down the mlimbs system.  After calling this,
+//      call mlimbs_init again to restart it.
 //
 /////////////////////////////////////////////////////////////////
 void mlimbs_shutdown(void) {
@@ -180,7 +180,7 @@ void mlimbs_shutdown(void) {
     #endif
 
     #ifdef LOCK_ALL_CHANNELS
-       {	// Release all the locked MIDI channels, and clear the channel_info[] array
+       {    // Release all the locked MIDI channels, and clear the channel_info[] array
           int i;
                     for (i = 0; i < MLIMBS_MAX_CHANNELS; i++)
                     {
@@ -199,22 +199,22 @@ void mlimbs_shutdown(void) {
 /////////////////////////////////////////////////////////////////
 // int mlimbs_load_theme
 //
-//	purpose:
-//		Load theme will load an XMIDI file into theme, stopping
-//		playback and purging the previous XMIDI file from theme.
-//		It will also allocate state tables if needed and preload all
-//		timbres used by any sequence in the XMIDI file.
+//  purpose:
+//      Load theme will load an XMIDI file into theme, stopping
+//      playback and purging the previous XMIDI file from theme.
+//      It will also allocate state tables if needed and preload all
+//      timbres used by any sequence in the XMIDI file.
 //
-//	inputs:
-//		char *xname				Filename for the XMIDI theme file.
-//		char *xinfo				Filename for the file to be used in filling out xseq_info[].
-//		char *GTL_filename	Global Timbre Library filename, for preloading all timbres.
-//	return:
-//		1 if successful
-//		-1 if unsuccessful
-// 	Also set mlimbs_error to the following values if unsuccessful:
-//			-2 if it failed to load the XMIDI file
-//			-3 if it failed to load the data file.
+//  inputs:
+//      char *xname             Filename for the XMIDI theme file.
+//      char *xinfo             Filename for the file to be used in filling out xseq_info[].
+//      char *GTL_filename  Global Timbre Library filename, for preloading all timbres.
+//  return:
+//      1 if successful
+//      -1 if unsuccessful
+//  Also set mlimbs_error to the following values if unsuccessful:
+//          -2 if it failed to load the XMIDI file
+//          -3 if it failed to load the data file.
 /////////////////////////////////////////////////////////////////
 int mlimbs_load_theme(char *xname, char *xinfo, int thmid) {
     int i;
@@ -252,20 +252,20 @@ int mlimbs_load_theme(char *xname, char *xinfo, int thmid) {
 /////////////////////////////////////////////////////////////////
 // int mlimbs_start_theme
 //
-//	purpose:
-//		This begins playback of the theme by playing the
-//		master_sequence (sequence 0).  NOTE:  This doesn't clear
-//		the current_request array and doesn't reset mlimbs_counter.
+//  purpose:
+//      This begins playback of the theme by playing the
+//      master_sequence (sequence 0).  NOTE:  This doesn't clear
+//      the current_request array and doesn't reset mlimbs_counter.
 //
-//	inputs:
+//  inputs:
 //
-//	return:
-//	1 if successful
-//		-1 if  not
-//	Sets mlimbs_error to the following error codes if unsuccessful.
-//		-1 if no mlimbs device present
-//		-2 if it failed to load the master track.
-//		-3 if it failed to start the master track.
+//  return:
+//  1 if successful
+//      -1 if  not
+//  Sets mlimbs_error to the following error codes if unsuccessful.
+//      -1 if no mlimbs device present
+//      -2 if it failed to load the master track.
+//      -3 if it failed to start the master track.
 //
 /////////////////////////////////////////////////////////////////
 int mlimbs_start_theme(void) {
@@ -283,7 +283,7 @@ int mlimbs_start_theme(void) {
 
 #ifdef CALLBACK_ON
     // Start the mlimbs timer callback which will now start and stop
-    //	various tracks according to how the current_request structures are set
+    //  various tracks according to how the current_request structures are set
     tm_activate_process(mlimbs_timer_id);
 #endif
 
@@ -320,15 +320,15 @@ void _mlimbs_clear_uid(int i) {
 /////////////////////////////////////////////////////////////////
 // void mlimbs_stop_theme
 //
-//	purpose:
-//		This routine stops all mlimbs XMIDI playback.  After
-//		calling this routine, a call to mlimbs_start_theme is
-//		needed to restart playback.  Note that this doesn't
-//		clear the current_request[] array and doesn't reset the
-//		mlimbs_counter.
+//  purpose:
+//      This routine stops all mlimbs XMIDI playback.  After
+//      calling this routine, a call to mlimbs_start_theme is
+//      needed to restart playback.  Note that this doesn't
+//      clear the current_request[] array and doesn't reset the
+//      mlimbs_counter.
 //
 //
-//	inputs:
+//  inputs:
 //
 //
 /////////////////////////////////////////////////////////////////
@@ -358,13 +358,13 @@ void mlimbs_stop_theme(void) {
 /////////////////////////////////////////////////////////////////
 // void mlimbs_purge_theme
 //
-//	purpose:
-//		This routine, stops all XMIDI sequence playback, unloads
-//		the XMIDI sequence from theme, and clears the xseq_info[]
-//		array.  Note that it also reinitializes the current_request[]
-//		and xseq_info[] arrays.
+//  purpose:
+//      This routine, stops all XMIDI sequence playback, unloads
+//      the XMIDI sequence from theme, and clears the xseq_info[]
+//      array.  Note that it also reinitializes the current_request[]
+//      and xseq_info[] arrays.
 //
-//	inputs:
+//  inputs:
 //
 //
 /////////////////////////////////////////////////////////////////
@@ -414,20 +414,20 @@ void mlimbs_purge_theme(void) {
 
 /////////////////////////////////////////////////////////////////
 //
-//	mlimbs_mute_sequence_channel
+//  mlimbs_mute_sequence_channel
 //
-//	purpose: This will free a physical channel being used by a chunk's
-//	sequence channel and will set the sequence channel's status to
-//	SEQUENCE_CHANNEL_MUTED, or SEQUENCE_CHANNEL_PENDING.  This routine is
-//	used when a chunk must give up a channel to a higher priority chunk,
-//	or when a chunk must be muted.
+//  purpose: This will free a physical channel being used by a chunk's
+//  sequence channel and will set the sequence channel's status to
+//  SEQUENCE_CHANNEL_MUTED, or SEQUENCE_CHANNEL_PENDING.  This routine is
+//  used when a chunk must give up a channel to a higher priority chunk,
+//  or when a chunk must be muted.
 //
-//	inputs:
-//		int usernum		// The sequence instance to give up a channel.
-//		int x				// Which channel to relenquish.
-//		uchar mute			// If TRUE, mute the channel.  If FALSE merely,
-//							//	relenquish the channel, and set the sequence channel's
-//							// status to SEQUENCE_CHANNEL_PENDING
+//  inputs:
+//      int usernum     // The sequence instance to give up a channel.
+//      int x               // Which channel to relenquish.
+//      uchar mute          // If TRUE, mute the channel.  If FALSE merely,
+//                          //  relenquish the channel, and set the sequence channel's
+//                          // status to SEQUENCE_CHANNEL_PENDING
 /////////////////////////////////////////////////////////////////
 
 void mlimbs_mute_sequence_channel(int usernum, int x, uchar mute) {
@@ -492,12 +492,12 @@ void mlimbs_mute_sequence_channel(int usernum, int x, uchar mute) {
 //////////////////////////////////////////////////////////////////
 // mlimbs_unmute_sequence_channel
 //
-//	This routine attempts to map a sequence channel of a given
-//	chunk to a physical channel.  It searches for physical channels
-//	not currently used by other chunks.
+//  This routine attempts to map a sequence channel of a given
+//  chunk to a physical channel.  It searches for physical channels
+//  not currently used by other chunks.
 //
-//	NOTE: mlimbs_unmute_sequence_channel will not attempt to free
-//	channels or voices.
+//  NOTE: mlimbs_unmute_sequence_channel will not attempt to free
+//  channels or voices.
 //
 //////////////////////////////////////////////////////////////////
 
@@ -553,15 +553,15 @@ int mlimbs_unmute_sequence_channel(int usernum, int x) {
 // mlimbs_channel_prioritize
 //
 // This routine attempts to acquire free channels and voices
-//	from lower priority chunks for a given chunk.
+//  from lower priority chunks for a given chunk.
 // For channels used by lower priority chunks, this routine simply
-//	frees them. Call mlimbs_assign_channels to give them to a
-//	chunk.  The minimum number of voices required is the number of
-//	voices the chunk plays on channel 10.  If not enough voices
-//	can be freed, then nothing	is punted, and the chunk is not played.
-//	If channel_prioritize is set to FALSE, then mlimbs_channel_prioritize
-//	will attempt to acquire all necessary free channels and voices,else
-//	fail.
+//  frees them. Call mlimbs_assign_channels to give them to a
+//  chunk.  The minimum number of voices required is the number of
+//  voices the chunk plays on channel 10.  If not enough voices
+//  can be freed, then nothing  is punted, and the chunk is not played.
+//  If channel_prioritize is set to FALSE, then mlimbs_channel_prioritize
+//  will attempt to acquire all necessary free channels and voices,else
+//  fail.
 //
 /////////////////////////////////////////////////////////////////
 
@@ -599,7 +599,7 @@ int mlimbs_channel_prioritize(int priority, int pieceID, int voices_needed, ucha
                              // doesn't need to get channels for this piece, right now.
 
     // Minimum # of voices needed to play = # of voices on channel 10 since MIDI on
-    //	channel 10 is never remapped to a nonphysical channel
+    //  channel 10 is never remapped to a nonphysical channel
 
     min_voices_needed = xseq_info[pieceID].channel_voices[0] - (max_voices - voices_used);
 
@@ -613,7 +613,7 @@ int mlimbs_channel_prioritize(int priority, int pieceID, int voices_needed, ucha
 
     /*************************************/
     /* Find all the channels we can punt */
-    /* and voices we can free.				 */
+    /* and voices we can free.               */
     /*************************************/
     for (i = 0; i < MLIMBS_MAX_SEQUENCES - 1; i++) {
         if (userID[i].pieceID >= 0) {
@@ -699,13 +699,13 @@ int mlimbs_channel_prioritize(int priority, int pieceID, int voices_needed, ucha
             }
 
             // If punting channels 11-16 wasn't enough, punt entire
-            //	piece, thus freeing channel 10 voices as well
+            //  piece, thus freeing channel 10 voices as well
             if (j == 10) {
                 mlimbs_punt_piece(punt_list[min]);
                 voices_punted += xseq_info[userID[punt_list[min]].pieceID].channel_voices[0];
             } else {
                 // If we got enough voices and channels, only punt entire
-                //	piece if nothing is playing on channel 10
+                //  piece if nothing is playing on channel 10
                 for (j = 16; j > 10; j--) {
                     if (userID[punt_list[min]].sequence_channel_status[j - 10] >= 0)
                         break;
@@ -737,16 +737,16 @@ int mlimbs_channel_prioritize(int priority, int pieceID, int voices_needed, ucha
 /////////////////////////////////////////////////////////////////
 // int mlimbs_assign_channels
 //
-//	purpose:
-//		This routine will mark the userID[].sequence_channel_status[] array
-//		according to what sequence channels need to use.  It then maps as
-//		many sequence channels as it can to physical	channels, in order,
+//  purpose:
+//      This routine will mark the userID[].sequence_channel_status[] array
+//      according to what sequence channels need to use.  It then maps as
+//      many sequence channels as it can to physical    channels, in order,
 //    from 11 to 16, unless the crossfade argument is TRUE.
 //
-//	inputs:
-//		int usernum
-//		bool	crossfade	// If TRUE, all the sequence channels used by
-//		      // the sequence are set to SEQUENCE_CHANNEL_MUTED so crossfade
+//  inputs:
+//      int usernum
+//      bool    crossfade   // If TRUE, all the sequence channels used by
+//            // the sequence are set to SEQUENCE_CHANNEL_MUTED so crossfade
 //          // code can unmute channels as the sequence is crossfaded in.
 //
 /////////////////////////////////////////////////////////////////
@@ -780,26 +780,26 @@ int mlimbs_assign_channels(int usernum, uchar crossfade) {
 /////////////////////////////////////////////////////////////////
 // int mlimbs_play_piece
 //
-//	purpose:
-//		This routine will begin playback of a single 'snippet' in
-//		the theme.
+//  purpose:
+//      This routine will begin playback of a single 'snippet' in
+//      the theme.
 //
-//	inputs:
-//		int pieceID			Index into the xseq_info array.
-//		int priority		Priority of the request.  If < 0, then
-//								use the default priority (in xseq_info[]).
-//		int loops			Number of times to play the piece
-//		int rel_vol			Relative volume to start the piece at.  This will
-//								be set to 0 for pieces that will ramp up.
-//		uchar channel_prioritize		- if TRUE, then its ok to play the
-//								chunk even if not enough channels are available,
-//								If FALSE, then only play chunk if all channels can
-//								be played.
-//		uchar crossfade
+//  inputs:
+//      int pieceID         Index into the xseq_info array.
+//      int priority        Priority of the request.  If < 0, then
+//                              use the default priority (in xseq_info[]).
+//      int loops           Number of times to play the piece
+//      int rel_vol         Relative volume to start the piece at.  This will
+//                              be set to 0 for pieces that will ramp up.
+//      uchar channel_prioritize        - if TRUE, then its ok to play the
+//                              chunk even if not enough channels are available,
+//                              If FALSE, then only play chunk if all channels can
+//                              be played.
+//      uchar crossfade
 //
-//	return:
-//		-1	if failed
-//		usernum	- an integer index into the userID[] array
+//  return:
+//      -1  if failed
+//      usernum - an integer index into the userID[] array
 /////////////////////////////////////////////////////////////////
 
 int mlimbs_play_piece(int pieceID, int priority, int loops, int rel_vol, uchar channel_prioritize, uchar crossfade) {
@@ -880,8 +880,8 @@ int mlimbs_play_piece(int pieceID, int priority, int loops, int rel_vol, uchar c
 //  we can clearly change it back if we want to
 
 // void mlimbs_punt_piece
-// 	This routine will stop playback of a single 'snippet' in the theme.
-//	inputs: usernum			Index into the userID array.
+//  This routine will stop playback of a single 'snippet' in the theme.
+//  inputs: usernum         Index into the userID array.
 void mlimbs_punt_piece(int usernum) {
     int i, slot, ch;
 
@@ -927,21 +927,21 @@ void mlimbs_punt_piece(int usernum) {
 ////////////////////////////////////////////////////////////////
 // mlimbs_get_crossfade_status
 //
-//	purpose:
-//		Given a chunkID, it returns its current crossfade_status.
-//		Whether it is getting crossfaded in or out depends on
-//		the crossfade field in the current_request structure.  It
-//		basically searches the array of userID[]'s for a userID that
-//		is currently playing the given chunk.
+//  purpose:
+//      Given a chunkID, it returns its current crossfade_status.
+//      Whether it is getting crossfaded in or out depends on
+//      the crossfade field in the current_request structure.  It
+//      basically searches the array of userID[]'s for a userID that
+//      is currently playing the given chunk.
 //
-//	inputs:
-//		int pieceID		- id of the chunk to get the status of
-//	outputs:
-//		>= 0				- the correct crossfade_status
-//									0 - not crossfading)
-//									10-16	- next channel to be crossfaded
+//  inputs:
+//      int pieceID     - id of the chunk to get the status of
+//  outputs:
+//      >= 0                - the correct crossfade_status
+//                                  0 - not crossfading)
+//                                  10-16   - next channel to be crossfaded
 //
-//		< 0				- the chunk is not currently playing.
+//      < 0             - the chunk is not currently playing.
 //
 ///////////////////////////////////////////////////////////////
 
@@ -956,13 +956,13 @@ schar mlimbs_get_crossfade_status(int pieceID) {
 }
 
 ////////////////////////////////////////////////////////////////
-//	mlimbs_callback
+//  mlimbs_callback
 //
-//	purpose:
-//		This is the routine that gets called by an XMIDI controller
-//		119.  All the mlimbs_callback does is call the mlimbs_AI, and
-//		then set mlimbs_update_requests to TRUE, which tells the mlimbs_timer_callback
-//		to actual execute its code, when next it is called.
+//  purpose:
+//      This is the routine that gets called by an XMIDI controller
+//      119.  All the mlimbs_callback does is call the mlimbs_AI, and
+//      then set mlimbs_update_requests to TRUE, which tells the mlimbs_timer_callback
+//      to actual execute its code, when next it is called.
 //
 ////////////////////////////////////////////////////////////////
 #pragma disable_message(202)
@@ -997,8 +997,8 @@ void cdecl mlimbs_seq_done_call(snd_midi_parms *seq) {}
 //////////////////////////////////////////////////////////////////////////////
 // mlimbs_reassign_channels(void)
 //
-//	This routine assigns currently free channels to chunks that are playing,
-//	and are lacking channels.
+//  This routine assigns currently free channels to chunks that are playing,
+//  and are lacking channels.
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -1025,8 +1025,8 @@ void mlimbs_reassign_channels(void) {
         }
 
         // If the previous highest priority chunk needs no more channels, or
-        //	a highest priority chunk hasn't been found yet, get the highest
-        //	priority chunk
+        //  a highest priority chunk hasn't been found yet, get the highest
+        //  priority chunk
 
         if (highest < 0) {
             for (i = 0; i < MLIMBS_MAX_SEQUENCES - 1; i++) {
@@ -1072,16 +1072,16 @@ LONG cdecl mlimbs_timbre_callback(MDI_DRIVER *mdi, LONG bank, LONG patch) { // d
 #pragma enable_message(202)
 
 ////////////////////////////////////////////////////////////////
-//	mlimbs_timer_callback
+//  mlimbs_timer_callback
 //
-//	This timer callback is necessary since starting and stopping
-//	XMIDI sequences from within an XMIDI callback is not a good
-//	thing to do.  It is currently called at 100 hz.  Whenever it
-//	is called, it first checks whether mlimbs_update_requests has
-//	been set to TRUE by mlimbs_callback and whether mlimbs_semaphore
-//	is FALSE.  If both the above conditions are met, then mlimbs_timer_callback
-//	executes the main body of its code, then resets mlimbs_update_requests
-//	to FALSE and increments the mlimbs_counter.
+//  This timer callback is necessary since starting and stopping
+//  XMIDI sequences from within an XMIDI callback is not a good
+//  thing to do.  It is currently called at 100 hz.  Whenever it
+//  is called, it first checks whether mlimbs_update_requests has
+//  been set to TRUE by mlimbs_callback and whether mlimbs_semaphore
+//  is FALSE.  If both the above conditions are met, then mlimbs_timer_callback
+//  executes the main body of its code, then resets mlimbs_update_requests
+//  to FALSE and increments the mlimbs_counter.
 //
 ////////////////////////////////////////////////////////////////
 void mlimbs_timer_callback(void) {
@@ -1133,8 +1133,8 @@ void mlimbs_timer_callback(void) {
                         _mlimbs_clear_req(j);
                         k++;
                     }
-                    //	Crossfade out pieces here, so that their channels become
-                    //	available to pieces to be crossfaded in, later in the callback.
+                    //  Crossfade out pieces here, so that their channels become
+                    //  available to pieces to be crossfaded in, later in the callback.
                     else if (userID[i].channel_prioritize == TRUE) {
                         if (current_request[j].crossfade < 0) {
                             if (userID[i].crossfade_status > 16)
@@ -1206,7 +1206,7 @@ void mlimbs_timer_callback(void) {
                 //  mlimbs_counter, num_master_measures, xseq_info[current_request[i].pieceID].num_measures,
                 //  current_request[i].pieceID));
                 // I took this out in order to solve the layering timing problem -- Rob F.
-                //					continue;
+                //                  continue;
                 /* For now, only start playing a piece if the number of measures played is a multiple
                 of the measure size of the piece. */
                 if ((mlimbs_counter * num_master_measures) % xseq_info[current_request[i].pieceID].num_measures ==
@@ -1318,25 +1318,25 @@ void mlimbs_return_to_synch(void) {
 ///////////////////////////////////////////////////////
 // mlimbs_change_master_volume
 //
-//	master_volume_scheme:
-//		Here's how the master volume scheme works.  mlimbs
-//		has an overall master_volume which is given as a
-//		percentage.  This is normally set to 100.  Each
-//		sequence that is playing has a relative volume (the
-//		rel_vol field in the userID structures).  Whenever
-//		the master_volume or a sequence relative volume
-//		is changed, a call to AIL_set_relative_volume is
-//		made for each affected sequence.  The volume is
-//		passed to AIL_set_relative_volume as a percentage
-//		by which all the actual XMIDI sequence volume controller
-//		values are multiplied.  The percentage passed =
-//		master_volume * userID[].rel_vol.
-//		Since changing the master_volume itself affects all
-//		sequences, a call to AIL_set_relative_volume is
-//		made for all currently playing sequences.
+//  master_volume_scheme:
+//      Here's how the master volume scheme works.  mlimbs
+//      has an overall master_volume which is given as a
+//      percentage.  This is normally set to 100.  Each
+//      sequence that is playing has a relative volume (the
+//      rel_vol field in the userID structures).  Whenever
+//      the master_volume or a sequence relative volume
+//      is changed, a call to AIL_set_relative_volume is
+//      made for each affected sequence.  The volume is
+//      passed to AIL_set_relative_volume as a percentage
+//      by which all the actual XMIDI sequence volume controller
+//      values are multiplied.  The percentage passed =
+//      master_volume * userID[].rel_vol.
+//      Since changing the master_volume itself affects all
+//      sequences, a call to AIL_set_relative_volume is
+//      made for all currently playing sequences.
 //
-//	inputs:
-//		int vol
+//  inputs:
+//      int vol
 //
 ///////////////////////////////////////////////////////
 void mlimbs_change_master_volume(int vol) {

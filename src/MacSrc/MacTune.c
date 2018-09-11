@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "MacTune.h"
 #include "musicai.h"
+#include "Xmi.h"
 
 
 //-----------------
@@ -263,6 +264,15 @@ void MacTuneStartCurrentTheme(void)
 			gTuneDone = TRUE;								// else make sure we check again soon.
 
 	}*/
+
+	int track = 1+current_request[0].pieceID;
+	if (track >= 0 && track < NumTracks)
+	{
+	  int i = 0;
+	  int volume = 127;
+	
+	  if (!IsPlaying(i)) StartTrack(i, track, volume);
+	}
 }
 
 //------------------------------------------------------------------------------

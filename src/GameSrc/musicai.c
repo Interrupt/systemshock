@@ -42,6 +42,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sfxlist.h"
 #include "tools.h"
 
+#include "adlmidi.h"
+#include "Xmi.h"
+
 /*
 #include <mainloop.h>
 #include <_audio.h>
@@ -95,6 +98,7 @@ extern errtype make_request(int chunk_num, int piece_ID);
 extern int digifx_volume_shift(short x, short y, short z, short phi, short theta, short basevol);
 extern int digifx_pan_shift(short x, short y, short z, short phi, short theta);
 extern uchar mai_semaphor;
+extern volatile void (*mlimbs_AI)();
 
 uchar park_random = 75;
 uchar park_playing = 0;
@@ -151,11 +155,14 @@ void musicai_clear() {
     mlimbs_combat = 0;
 }
 
+long count = 0;
 void mlimbs_do_ai() {
     //   extern uchar mlimbs_semaphore;
     extern errtype check_asynch_ai(uchar new_score_ok);
     extern ObjID damage_sound_id;
     extern char damage_sound_fx;
+
+    if (!IsPlaying(0)) gReadyToQueue = 1;
 
     /* Is this really necessary?  It's already called twice in fr_rend().
     #ifdef AUDIOLOGS
@@ -225,10 +232,14 @@ void mlimbs_do_ai() {
         // then queue it up.
         //  Does not handle layering.  Just one music track!
         if (gReadyToQueue) {
+            extern bool mlimbs_update_requests;
+            mlimbs_update_requests = TRUE;
+
             if (!global_fullmap->cyber)
                 check_asynch_ai(TRUE);
+
             int pid = current_request[0].pieceID;
-            if (pid != 255) // If there is a theme to play,
+            if (pid != 255 && pid != -1) // If there is a theme to play,
             {
                 MacTuneQueueTune(pid); // Queue it up.
                 mlimbs_counter++;      // Tell mlimbs we've queued another tune.
@@ -245,19 +256,15 @@ void mlimbs_do_ai() {
     }
 }
 
-#ifdef NOT_YET //
-
 void mlimbs_do_credits_ai() {
     extern uchar mlimbs_semaphore;
-    if (ai_cycle) {
+    //if (ai_cycle) {
         ai_cycle = 0;
         grind_credits_music_ai();
-        mlimbs_preload_requested_timbres();
+        //mlimbs_preload_requested_timbres();
         mlimbs_semaphore = FALSE;
-    }
+    //}
 }
-
-#endif // NOT_YET
 
 errtype mai_attack() {
     if (music_on) {
@@ -324,10 +331,10 @@ errtype mlimbs_AI_init(void) {
     mlimbs_peril = DEFAULT_PERIL_MAX;
     current_transition = TRANS_INTRO;
     current_mode = TRANSITION_MODE;
-    tmode_time = 1; // KLC - was 4
+    tmode_time = 2; // KLC - was 4
     current_score = actual_score = last_score = WALKING_SCORE;
     current_zone = HOSPITAL_ZONE;
-    //   mlimbs_AI = &music_ai;
+    mlimbs_AI = &music_ai;
     cyber_play = 255;
 
     return (OK);
@@ -337,14 +344,16 @@ errtype mai_transition(int new_trans) {
     if ((next_mode == TRANSITION_MODE) || (current_mode == TRANSITION_MODE))
         return (ERR_NOEFFECT);
 
+    INFO("mai_transition");
+
     if (transition_table[new_trans] < LAYER_BASE) {
         current_transition = new_trans;
         next_mode = TRANSITION_MODE;
-        tmode_time = 1; // KLC - was 4
+        tmode_time = 2; // KLC - was 4
     } else if ((transition_count == 0) && (layering_table[TRANSITION_LAYER_BASE + new_trans][0] != 255)) {
         current_transition = new_trans;
         // For now, let's not do any layered transitions.
-        //      transition_count = 1;		//KLC - was 2
+        transition_count = 1;		//KLC - was 2
     }
     // temp
     /*
@@ -375,6 +384,15 @@ errtype make_request(int chunk_num, int piece_ID) {
     current_request[chunk_num].crossfade = curr_crossfade;
     current_request[chunk_num].ramp_time = curr_ramp_time;
     current_request[chunk_num].ramp = curr_ramp;
+
+    DEBUG("make_request %i %i", chunk_num, piece_ID);
+
+    int i = chunk_num;
+    int track = 1+piece_ID;
+    int volume = 127;
+    if (i >= 0 && i < NUM_THREADS && track >= 0 && track < NumTracks)
+    if (!IsPlaying(i)) StartTrack(i, track, volume);
+
     return (OK);
 }
 
@@ -401,7 +419,7 @@ errtype load_score_from_cfg(FSSpec *specPtr)
         BlockMoveData(p, layering_table, NUM_LAYERS * MAX_KEYS);
         p += NUM_LAYERS * MAX_KEYS;
         BlockMoveData(p, key_table, NUM_LAYERABLE_SUPERCHUNKS * KEY_BAR_RESOLUTION);
-        HUnlock(binHdl);
+        HUnlock(binHdl);f
 
         CloseResFile(filenum);
         return(OK);
@@ -466,8 +484,10 @@ void load_score_guts(char score_playing) {
 
     rv = MacTuneLoadTheme(base, score_playing);
 
-    if (rv == 0)
+    if (rv == 0) {
         musicai_reset(TRUE);
+        grind_music_ai(); // CC: Hax! Why is this needed to get the medical intro transition to play?
+    }
     else // handle this a better way.
         DebugString("Load theme failed!");
 }

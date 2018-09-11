@@ -53,7 +53,7 @@ void sound_frame_update(void);
 #define MLIMBS_REF 0xFF0000
 #define mrefBuild(themeid, seq) (MLIMBS_REF | (themeid << 16) | seq)
 
-#define CALLBACK_ON
+//#define CALLBACK_ON //CC: NO AIL to use this
 
 /* XMIDI_info contains 'permanent' information about a given piece. */
 struct mlimbs_piece_info {
@@ -108,9 +108,11 @@ extern volatile ulong mlimbs_counter;
 extern volatile void (*mlimbs_AI)();
 extern volatile int mlimbs_master_slot;
 
+char current_music_filename[255];
+
 /* Function prototypes */
 int mlimbs_init(void);
-//¥¥¥void cdecl  mlimbs_callback(snd_midi_parms *mprm, int trigger_value);
+void mlimbs_callback(snd_midi_parms *mprm, unsigned trigger_value);
 //¥¥¥void cdecl  mlimbs_seq_done_call(snd_midi_parms *mprm);
 
 void mlimbs_shutdown(void);
@@ -123,7 +125,7 @@ int mlimbs_unmute_sequence_channel(int usernum, int x);
 int mlimbs_channel_prioritize(int priority, int pieceID, int voices_needed, uchar crossfade, uchar channel_prioritize);
 int mlimbs_assign_channels(int, bool);
 int mlimbs_play_piece(int, int, int, int, bool, bool);
-int mlimbs_punt_piece(int);
+void mlimbs_punt_piece(int);
 char mlimbs_get_crossfade_status(int);
 void mlimbs_reassign_channels(void);
 void mlimbs_timer_callback(void);
