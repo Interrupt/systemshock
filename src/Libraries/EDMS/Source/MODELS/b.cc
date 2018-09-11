@@ -49,9 +49,9 @@ extern Q	S[MAX_OBJ][7][4],
 
 //	Functions...
 //	============
-extern void	( *idof_functions[MAX_OBJ] )( int ),
-		( *equation_of_motion[MAX_OBJ][7] )( int ),
-		null_function( int dummy );
+extern void	( *idof_functions[MAX_OBJ] )( int32_t );
+extern void ( *equation_of_motion[MAX_OBJ][7] )( int32_t );
+extern void null_function(int32_t dummy);
 
 extern Q	*utility_pointer[MAX_OBJ];
 

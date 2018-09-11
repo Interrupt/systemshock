@@ -105,7 +105,7 @@ int active_objects = 0;
 
 // Are non-sleeping objects in the middle of doing their integrating thing,
 // and thus using A[][][] instead of S[][][]?
-uchar A_is_active = FALSE;
+bool A_is_active = false;
 
 //	Here is a slower converging, albeit hopefully equally stable integrator, soliton_light, which
 //	we'll subject to some speed trials.  This could be used for certain applications, such as

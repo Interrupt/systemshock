@@ -47,8 +47,8 @@ extern int EDMS_integrating;
 
 //	Callbacks...
 //	============
-void (*EDMS_object_collision)(physics_handle caller, physics_handle victim, int badness, long DATA1, long DATA2,
-                              fix location[3]) = NULL,
+void (*EDMS_object_collision)(physics_handle caller, physics_handle victim, int32_t badness, int32_t DATA1,
+                              int32_t DATA2, fix location[3]) = NULL,
                                   (*EDMS_autodestruct)(physics_handle caller) = NULL,
                                   (*EDMS_off_playfield)(physics_handle caller) = NULL,
                                   (*EDMS_sleepy_snoozy)(physics_handle caller) = NULL;
@@ -57,8 +57,7 @@ void (*EDMS_object_collision)(physics_handle caller, physics_handle victim, int 
 //	---------
 typedef struct {
     fix mass, size, hardness, pep, gravity;
-    int cyber_space;
-
+    int32_t cyber_space;
 } Robot;
 
 //	Conversions...
@@ -82,7 +81,7 @@ Q fix_zero = 0.;
 //	because it is not called by the user,
 //	but rather calls the user function Terrain().
 //	=============================================
-Q terrain(Q X, Q Y, int deriv) {
+Q terrain(Q X, Q Y, int32_t deriv) {
     Q ans;
 
     printf("There is no terrain in space!\n");
@@ -120,17 +119,17 @@ void indoor_terrain(Q X, Q Y, Q Z, Q R, physics_handle ph) {
 
 //      And with Freefall...
 //      --------------------
-uchar ff_terrain(Q X, Q Y, Q Z, uchar fast, terrain_ff *FFT) {
+bool ff_terrain(Q X, Q Y, Q Z, uchar fast, terrain_ff *FFT) {
     return FF_terrain(X.to_fix(), Y.to_fix(), Z.to_fix(), fast, FFT);
 }
 
-uchar ff_raycast(Q x, Q y, Q z, Q vec[3], Q range, Q where_hit[3], terrain_ff *FFT) {
+bool ff_raycast(Q x, Q y, Q z, Fixpoint *vec, Q range, Fixpoint *where_hit, terrain_ff *FFT) {
     return FF_raycast(x.to_fix(), y.to_fix(), z.to_fix(), (fix *)vec, range.to_fix(), (fix *)where_hit, FFT);
 }
 
-uchar FF_terrain(fix X, fix Y, fix Z, uchar fast, terrain_ff *TFF) { return (TRUE); }
+bool FF_terrain(fix X, fix Y, fix Z, uchar fast, terrain_ff *TFF) { return (true); }
 
-uchar FF_raycast(fix x, fix y, fix z, fix vec[3], fix range, fix where_hit[3], terrain_ff *tff) { return (TRUE); }
+bool FF_raycast(fix x, fix y, fix z, fix *vec, fix range, fix *where_hit, terrain_ff *tff) { return (true); }
 
 //	We need to link to c...
 //	=======================
@@ -171,7 +170,7 @@ void EDMS_set_workspace(void *place) { A = (EDMS_Argblock_Pointer)place; }
 //	==============================
 void EDMS_set_autodestruct(physics_handle ph) {
     if (ph > -1) {
-        int object = ph2on[ph];
+        int32_t object = ph2on[ph];
         I[object][38] = 1;
     }
 }
@@ -185,30 +184,30 @@ void EDMS_defuse_autodestruct(physics_handle ph) {
     }
 }
 
-//	I am death incarnate.  666. So there.
-//	=====================================
+// I am death incarnate.  666. So there.
+// =====================================
 void EDMS_kill_object(physics_handle ph) {
-    //	Are you there, really???
-    //	========================
+    // Are you there, really???
+    // ========================
     if (ph > -1) {
         int on = physics_handle_to_object_number(ph), i;
 
-        //	Do it, just do it...
-        //	--------------------
+        // Do it, just do it...
+        // --------------------
         EDMS_kill(on);
         EDMS_release_object(ph);
 
-        //	Simulate the action of soliton packing...
-        //	-----------------------------------------
+        // Simulate the action of soliton packing...
+        // -----------------------------------------
         for (i = (on + 1); (i < MAX_OBJ); i++) {
             EDMS_remap_object_number(i, (i - 1));
         }
 
         if (EDMS_integrating == 1) {
-            //                mout << "Killed " << on << " while integrating!\n";
+            // mout << "Killed " << on << " while integrating!\n";
 
-            //	You were...
-            //	===========
+            // You were...
+            // ===========
         }
     }
 }
@@ -270,12 +269,12 @@ void EDMS_holistic_teleport(physics_handle ph, State *s) {
         } else {
             Q alpha, beta, gamma, sin_alpha, cos_alpha, sin_beta, cos_beta, sin_gamma, cos_gamma;
 
-            //       	alpha.fix_to( s -> alpha);
-            //       	beta.fix_to( s -> beta);
-            //      	 gamma.fix_to( s -> gamma);
+            // alpha.fix_to( s -> alpha);
+            // beta.fix_to( s -> beta);
+            // gamma.fix_to( s -> gamma);
 
-            //       	For shock...
-            //       	------------
+            // For shock...
+            // ------------
             alpha.fix_to(s->beta);
             beta.fix_to(s->gamma);
             gamma.fix_to(s->alpha);
@@ -291,7 +290,8 @@ void EDMS_holistic_teleport(physics_handle ph, State *s) {
             S[on][5][0] = cos_gamma * sin_alpha * cos_beta + sin_gamma * cos_alpha * sin_beta;
             S[on][6][0] = -cos_gamma * sin_alpha * sin_beta + sin_gamma * cos_alpha * cos_beta;
 
-            S[on][3][1] = 0; // Derivatives
+            // Derivatives
+            S[on][3][1] = 0;
             S[on][4][1] = 0;
             S[on][5][1] = 0;
             S[on][6][1] = 0;
@@ -301,18 +301,18 @@ void EDMS_holistic_teleport(physics_handle ph, State *s) {
         //	===========================
         state_write_object(on);
 
-        //	Gee, I hope that that is a good location, sunny, and free of solid objects...
-        //	==================================================
+        // Gee, I hope that that is a good location, sunny, and free of solid objects...
+        // ==================================================
     }
 }
 
 //	Here we exclude objects from hitting each specific others...
 //	============================================================
 void EDMS_ignore_collisions(physics_handle ph1, physics_handle ph2) {
-    int on1, on2;
+    int32_t on1, on2;
 
-    //	Safety dance...
-    //	---------------
+    // Safety dance...
+    // ---------------
     if ((ph1 > -1) && (ph2 > -1)) {
         on1 = ph2on[ph1];
         on2 = ph2on[ph2];
@@ -324,7 +324,7 @@ void EDMS_ignore_collisions(physics_handle ph1, physics_handle ph2) {
 //	Here we reallow collisions...
 //	=============================
 void EDMS_obey_collisions(physics_handle ph1) {
-    int on1;
+    int32_t on1;
 
     //	Safety ballet...
     //	---------------
@@ -337,44 +337,36 @@ void EDMS_obey_collisions(physics_handle ph1) {
 //      Turns collisions OFF for a given robot, useful in a variety of household chores...
 //      ==================================================================================
 void EDMS_make_robot_antisocial(physics_handle ph) {
+    int32_t on = 0;
 
-    int on = 0;
-
-    //      Do you suck...
-    //      --------------
+    // Do you suck...
+    // --------------
     if (ph > -1) {
-
         on = ph2on[ph];
-
         if (I[on][30] == ROBOT)
             I[on][5] = -1;
-
     } // You suck...
 }
 
 //      Turns collisions ON for a given robot, useful in a variety of household chores...
 //      =================================================================================
 void EDMS_make_robot_social(physics_handle ph) {
+    int32_t on = 0;
 
-    int on = 0;
-
-    //      Do you suck...
-    //      --------------
+    // Do you suck...
+    // --------------
     if (ph > -1) {
-
         on = ph2on[ph];
-
         if (I[on][30] == ROBOT)
             I[on][5] = 0;
-
     } // You suck...
 }
 
 // Here is a routine that will attempt to settle an object to the local b/c.  It is NOT intended for
 // online use.  A negative return value indicates a badly placed or unphysical model...
 // =================================================================
-int EDMS_settle_object(physics_handle ph) {
-    int on = 0, return_value = -1;
+int32_t EDMS_settle_object(physics_handle ph) {
+    int32_t on = 0, return_value = -1;
 
     // Are you really there?
     // ---------------------
@@ -391,18 +383,18 @@ int EDMS_settle_object(physics_handle ph) {
 //      Prints out a state vector...
 //      ============================
 void EDMS_mprint_state(physics_handle ph) {
-    int on = ph2on[ph];
+    int32_t on = ph2on[ph];
 
     mprint_state(on);
 }
 
 //	Here is the beginning of an EDMS diagnostic statistics tool...
 //	==============================================================
-void EDMS_inventory_and_statistics(int show_sleepers) { inventory_and_statistics(show_sleepers); }
+void EDMS_inventory_and_statistics(int32_t show_sleepers) { inventory_and_statistics(show_sleepers); }
 
 //	Here is the sanity checker, but you already can read that, can't you...
 //	=======================================================================
-int EDMS_sanity_check(void) { return sanity_check(); }
+int32_t EDMS_sanity_check() { return sanity_check(); }
 
 //	Here are the bridge routines to the "default" EDMS models, others are segregates(d)...
 //	======================================================================================
@@ -417,7 +409,7 @@ int EDMS_sanity_check(void) { return sanity_check(); }
 //	This guy is BROKEN FOR NOW (until we get the params finalized)...
 //	------------------------------------------------
 void EDMS_get_robot_parameters(physics_handle ph, Robot *m) {
-    int on = physics_handle_to_object_number(ph);
+    int32_t on = physics_handle_to_object_number(ph);
 
 #ifdef EDMS_SHIPPABLE
     if (I[on][IDOF_MODEL] != ROBOT)
@@ -436,7 +428,7 @@ void EDMS_get_robot_parameters(physics_handle ph, Robot *m) {
 //	And the compression test for terrain "traps..."
 //	===============================================
 fix EDMS_get_robot_damage(physics_handle ph) {
-    int object;
+    int32_t object;
 
     object = ph2on[ph]; // As stupid as it gets...
     return (I[object][14]).to_fix();
@@ -445,6 +437,7 @@ fix EDMS_get_robot_damage(physics_handle ph) {
 //	In flux (Thrust, attitude and JumpJets)...
 //	==========================================
 void EDMS_control_robot(physics_handle ph, fix T, fix A, fix J) {
+
     Q TT,   // thrust
         AA, // attitude jets
         JJ; // jump jets
@@ -458,7 +451,7 @@ void EDMS_control_robot(physics_handle ph, fix T, fix A, fix J) {
     AA.fix_to(A);
     JJ.fix_to(J);
 
-    int on = physics_handle_to_object_number(ph);
+    int32_t on = physics_handle_to_object_number(ph);
     robot_set_control(on, TT, AA, JJ);
 }
 
@@ -483,7 +476,7 @@ void EDMS_ai_control_robot(physics_handle ph, fix D_H, fix D_S, fix S_S, fix U, 
     UU.fix_to(U);
     DD.fix_to(D);
 
-    int on = physics_handle_to_object_number(ph);
+    int32_t on = physics_handle_to_object_number(ph);
     robot_set_ai_control(on, DH, DS, SS, UU, TU, DD);
 
     *T_Y = TU.to_fix();
@@ -496,9 +489,9 @@ physics_handle EDMS_make_robot(Robot *m, State *s) {
 
     Q mass, pep, hardness, size, gravity;
 
-    int cyber_space;
+    int32_t cyber_space;
 
-    int on = 0;
+    int32_t on = 0;
     physics_handle ph = 0;
 
     init_state[DOF_X][0].fix_to(s->X);
@@ -513,13 +506,13 @@ physics_handle EDMS_make_robot(Robot *m, State *s) {
 
     mass.fix_to(m->mass);
     size.fix_to(m->size);
-    //	if ( size > .45/hash_scale ) size = .45/hash_scale;
+    // if ( size > .45/hash_scale ) size = .45/hash_scale;
     hardness.fix_to(m->hardness);
     pep.fix_to(m->pep);
     gravity.fix_to(m->gravity);
     cyber_space = m->cyber_space;
 
-    //        if (hardness > 15) { mout << "Hardness too too too: " << hardness << "\n"; hardness = 15; }
+    // if (hardness > 15) { mout << "Hardness too too too: " << hardness << "\n"; hardness = 15; }
 
     if (mass < 1)
         mass = 1;
@@ -529,22 +522,22 @@ physics_handle EDMS_make_robot(Robot *m, State *s) {
     hardness = hardness * (mass * ROBOT_HARD_FAC / size);
     if (hardness > 4000) {
         hardness = 4000;
-        //                               mout << "Hard cap!\n";
+        // mout << "Hard cap!\n";
     }
 
     params[OFFSET(IDOF_ROBOT_K)] = hardness;
     params[OFFSET(IDOF_ROBOT_D)] = 1.5 * sqrt(params[OFFSET(IDOF_ROBOT_K)]) * sqrt(mass);
     params[OFFSET(IDOF_ROBOT_RADIUS)] = size;
 
-    //        mout << params[OFFSET(IDOF_ROBOT_D)] << "\n";
+    // mout << params[OFFSET(IDOF_ROBOT_D)] << "\n";
 
     params[OFFSET(IDOF_ROBOT_ROLL_DRAG)] = 1.5 * pep * mass;
     params[OFFSET(IDOF_ROBOT_MASS_RECIP)] = 1. / mass;
     params[OFFSET(IDOF_ROBOT_GRAVITY)] = gravity;
     params[OFFSET(IDOF_ROBOT_MASS)] = mass;
-    //	params[7] = 1. / ( .4*mass*size*size );
-    //	params[8] = 5.*(1. / params[7]);
-    //	params[9] = .4*mass*size*size;
+    // params[7] = 1. / ( .4*mass*size*size );
+    // params[8] = 5.*(1. / params[7]);
+    // params[9] = .4*mass*size*size;
     params[OFFSET(IDOF_ROBOT_MOI)] = .4 * mass * size * size;
     params[OFFSET(IDOF_ROBOT_ROT_DRAG)] = 5 * params[OFFSET(IDOF_ROBOT_MOI)];
 
@@ -557,7 +550,7 @@ physics_handle EDMS_make_robot(Robot *m, State *s) {
     on = make_robot(init_state, params);
 
     // Here is where cyberspace gets turned on...
-    //	------------------------------------------
+    // ------------------------------------------
     I[on][IDOF_CYBERSPACE] = (cyber_space > 0);
 
     ph = EDMS_bind_object_number(on);
@@ -573,7 +566,7 @@ physics_handle EDMS_make_robot(Robot *m, State *s) {
 void EDMS_set_robot_parameters(physics_handle ph, Robot *m) {
     Q mass, hardness, size, pep, gravity;
 
-    int cyber_space;
+    int32_t cyber_space;
 
     mass.fix_to(m->mass);
     size.fix_to(m->size);
@@ -583,7 +576,7 @@ void EDMS_set_robot_parameters(physics_handle ph, Robot *m) {
     gravity.fix_to(m->gravity);
     cyber_space = m->cyber_space;
 
-    int on = physics_handle_to_object_number(ph);
+    int32_t on = physics_handle_to_object_number(ph);
 
 #ifdef EDMS_SHIPPABLE
     if (I[on][IDOF_MODEL] != ROBOT)
@@ -677,11 +670,9 @@ void EDMS_soliton_vector_holistic(fix timestep) {
 //	Initialization... must call this, man...
 //	========================================
 void EDMS_init_handles(void) {
-    int i;
-
     //	Fill with the 'end' code...
     //	---------------------------
-    for (i = 0; i < MAX_OBJ; ++i)
+    for (int32_t i = 0; i < MAX_OBJ; ++i)
         ph2on[i] = on2ph[i] = -1;
 }
 
@@ -715,39 +706,35 @@ void EDMS_remap_object_number(object_number old, object_number nu) {
     ph2on[ph] = nu;
 }
 
-//	To release the mapping between physics handle and object number
-//	(say, when deleting an object)...
-//	=================================
+// To release the mapping between physics handle and object number
+// (say, when deleting an object)...
+// =================================
 
 void EDMS_release_object(physics_handle ph) {
     object_number on = ph2on[ph];
 
-    //	First, clear out the object number...
-    //	-------------------------------------
+    // First, clear out the object number...
+    // -------------------------------------
     on2ph[on] = -1;
 
-    //	Then clear out the physics_handle...
-    //	------------------------------------
+    // Then clear out the physics_handle...
+    // ------------------------------------
     ph2on[ph] = -1;
 }
 
-//	Internal routine to find an unused physics_handle.
-//	==================================================
+// Internal routine to find an unused physics_handle.
+// ==================================================
 
 physics_handle EDMS_get_free_ph(void) {
-    int i;
-
-    for (i = min_physics_handle; i < MAX_OBJ; ++i) {
-        //		Ho, ho...
-        //		---------
+    for (int32_t i = min_physics_handle; i < MAX_OBJ; ++i) {
+        // Ho, ho...
+        // ---------
         if (ph2on[i] == -1)
             return i;
     }
-
-    //	Failed to find one...
-    //	---------------------
+    // Failed to find one...
+    // ---------------------
     return -1;
-
     //	Fun...
     //	======
 }

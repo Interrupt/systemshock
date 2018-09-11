@@ -57,7 +57,7 @@ static fix		location[3];
 
 //	Callbacks themselves...
 //	-----------------------
-extern void		( *EDMS_object_collision )( physics_handle caller, physics_handle victim, int badness, long DATA1, long DATA2, fix location[3] ),
+extern void		( *EDMS_object_collision )( physics_handle caller, physics_handle victim, int32_t badness, int32_t DATA1, int32_t DATA2, fix location[3] ),
 			( *EDMS_wall_contact )( physics_handle caller );
 
 
@@ -77,7 +77,7 @@ static Q		object0, object1, object2, object3, object4,		//Howzat??
 
 //	Marble (world) z coordinate...
 //	==============================
-void	marble_Z( int object ) {
+void	marble_Z( int32_t object ) {
 
 	S[object][2][2] = I[object][24]*( I[object][3]*I[object][8] )		//Elasticity...
 					- I[object][25];
@@ -89,7 +89,7 @@ void	marble_Z( int object ) {
 
 //	Marble (world) x coordinate...
 //	==============================
-void	marble_X( int object ) {
+void	marble_X( int32_t object ) {
 
 	S[object][0][2] = I[object][24]*( I[object][4]*I[object][8] 		//Elasticity...
 					- I[object][23]*A[object][0][1]		//Drag... 
@@ -102,7 +102,7 @@ void	marble_X( int object ) {
 
 //	Marble (world) y coordinate...
 //	==============================
-void	marble_Y( int object ) {
+void	marble_Y( int32_t object ) {
 
 	S[object][1][2] = I[object][24]*( I[object][5]*I[object][8]		//Elasticity... 
 					- I[object][23]*A[object][1][1]		//Drag...

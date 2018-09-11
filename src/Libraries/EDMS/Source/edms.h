@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __EDMS_H
 #define __EDMS_H
 
+#include <stdbool.h>
+#include <stdint.h>
 #include "fix.h"
 
 //	Max and Min
@@ -41,8 +43,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	Stuff that used to be in physhand.h...
 //	--------------------------------------
-typedef int object_number;
-extern int min_physics_handle;
+typedef int32_t object_number;
+extern int32_t min_physics_handle;
 
 extern object_number ph2on[MAX_OBJ];
 extern physics_handle on2ph[MAX_OBJ];
@@ -87,21 +89,21 @@ void EDMS_soliton_vector_holistic(fix timestep);
 // Here is a routine that will attempt to settle an object to the local b/c.  It is NOT intended for
 // online use.  A negative return value indicates a badly placed or unphysical model...
 // ====================================================================================
-int EDMS_settle_object(physics_handle ph);
+int32_t EDMS_settle_object(physics_handle ph);
 
 void EDMS_mprint_state(physics_handle ph);
 
 //	Prints out state and sleep information on ALL objects.  Show sleepers is 1 to display sleeping objects...
 //	---------------------------------------------------------------------------------------------------------
-void EDMS_inventory_and_statistics(int show_sleepers);
+void EDMS_inventory_and_statistics(int32_t show_sleepers);
 
 // Returns TRUE if an object is awake, FLASE otherwise...
 // ------------------------------------------------------
-uchar EDMS_frere_jaques(physics_handle ph);
+bool EDMS_frere_jaques(physics_handle ph);
 
 //	Checks integrity of EDMS.  Returns EDMS error codes, as seen below.
 //	-------------------------------------------------------------------
-int EDMS_sanity_check(void);
+int32_t EDMS_sanity_check();
 
 //	Here we exclude objects from hitting specific others...
 //	-------------------------------------------------------
@@ -125,10 +127,10 @@ void EDMS_crystal_meth(physics_handle ph);
 typedef struct {
 
     fix playfield_size;
-    int min_physics_handle;
+    int32_t min_physics_handle;
 
-    void (*collision_callback)(physics_handle caller, physics_handle victim, int badness, long DATA1, long DATA2,
-                               fix location[3]),
+    void (*collision_callback)(physics_handle caller, physics_handle victim, int32_t badness, int32_t DATA1,
+                               int32_t DATA2, fix location[3]),
         (*autodestruct_callback)(physics_handle caller), (*awol_callback)(physics_handle caller),
         (*snooz_callback)(physics_handle caller);
 
@@ -137,16 +139,16 @@ typedef struct {
 } EDMS_data;
 
 typedef struct {
-
     fix X, Y, Z, alpha, beta, gamma;
     fix X_dot, Y_dot, Z_dot, alpha_dot, beta_dot, gamma_dot;
-
 } State;
 
 //	Master control...
 //	=================
-void EDMS_get_state(physics_handle ph, State *s), EDMS_startup(EDMS_data *D), EDMS_kill_object(physics_handle ph),
-    EDMS_holistic_teleport(physics_handle ph, State *s);
+void EDMS_get_state(physics_handle ph, State *s);
+void EDMS_startup(EDMS_data *D);
+void EDMS_kill_object(physics_handle ph);
+void EDMS_holistic_teleport(physics_handle ph, State *s);
 
 //	Object packages...
 //	==================
@@ -154,9 +156,7 @@ void EDMS_get_state(physics_handle ph, State *s), EDMS_startup(EDMS_data *D), ED
 //	Marble:
 //	-------
 typedef struct {
-
     fix mass, size, pep;
-
 } Marble;
 
 physics_handle EDMS_make_marble(Marble *m, State *s);
@@ -167,10 +167,8 @@ void EDMS_control_marble(physics_handle ph, fix X, fix Y, fix Z);
 //	Robot:
 //	------
 typedef struct {
-
     fix mass, size, hardness, pep, gravity;
     int cyber_space;
-
 } Robot;
 
 physics_handle EDMS_make_robot(Robot *m, State *s);
@@ -191,15 +189,12 @@ void EDMS_ai_control_robot(physics_handle ph, fix desired_heading, fix desired_s
 //	Pelvis:
 //	------
 typedef struct {
-
     fix mass, size, hardness, pep, gravity, height;
-
-    int cyber_space;
-
+    int32_t cyber_space;
 } Pelvis;
 
 physics_handle EDMS_make_pelvis(Pelvis *p, State *s);
-void EDMS_control_pelvis(physics_handle ph, fix forward, fix turn, fix sidestep, fix lean, fix jump, int crouch);
+void EDMS_control_pelvis(physics_handle ph, fix forward, fix turn, fix sidestep, fix lean, fix jump, int32_t crouch);
 void EDMS_get_pelvic_viewpoint(physics_handle ph, State *s);
 void EDMS_get_pelvis_parameters(physics_handle ph, Pelvis *p);
 void EDMS_set_pelvis_parameters(physics_handle ph, Pelvis *p);
@@ -219,25 +214,22 @@ void EDMS_set_death_parameters(physics_handle ph, Death *d);
 
 //	Aggregate objects:
 //	------------------
-extern int make_jello_cube(fix X, fix Y, fix Z, fix size, int points);
-extern int make_octahedron(fix X, fix Y, fix Z, fix size);
-extern int make_chair(fix X, fix Y, fix Z, fix size, int points);
+extern int32_t make_jello_cube(fix X, fix Y, fix Z, fix size, int32_t points);
+extern int32_t make_octahedron(fix X, fix Y, fix Z, fix size);
+extern int32_t make_chair(fix X, fix Y, fix Z, fix size, int32_t points);
 
 //	Bipeds...
 //	---------
 typedef struct {
-
     fix mass, max_speed, skill, gravity;
-
     fix hip_radius, thigh, shin, torso;
-
-    fix shoulders, // Arms have 1/2 length segments, i.e. elbow always at 1/2*arms
-        arms;
+    // Arms have 1/2 length segments, i.e. elbow always at 1/2*arms
+    fix shoulders, arms;
 } Biped;
 
 physics_handle EDMS_make_biped(Biped *b, State *s, fix *skeleton);
 void EDMS_make_biped_skeleton(physics_handle ph);
-void EDMS_control_biped(physics_handle ph, fix forward, fix side_rotate, int mode);
+void EDMS_control_biped(physics_handle ph, fix forward, fix side_rotate, int32_t mode);
 void EDMS_set_biped_parameters(physics_handle ph, Biped *b);
 
 //	"Faster than light" objects... Objects that move over their entire trajectory in a frame or two...
@@ -268,27 +260,23 @@ physics_handle EDMS_FF_beam_weapon(fix X[3],               // Location of gun, *
 // Freefall terrain data structures...
 // ===================================
 typedef struct {
-
-    fix g_height, // The ground...
-        g_dx, g_dy, g_dz,
-
-        w_x, // Any walls...
-        w_y, w_z;
-
-    fix terrain_information; // Squishiness, friction, et cetera...
-
-    long DATA1, // For terrain return information...
-        DATA2;
-
-    physics_handle caller; // Who's responsible...
-
+    // The ground...
+    fix g_height, g_dx, g_dy, g_dz;
+    // Any walls...
+    fix w_x, w_y, w_z;
+    // Squishiness, friction, et cetera...
+    fix terrain_information;
+    // For terrain return information...
+    int32_t DATA1, DATA2;
+    // Who's responsible...
+    physics_handle caller;
 } terrain_ff;
 
 //	The indoor terrain data structures...
 //	=====================================
-typedef struct { // Filled by user when
-                 // Indoor_Terrain is
-    fix cx, cy, cz; // called...
+typedef struct {
+    // Filled by user when Indoor_Terrain is called
+    fix cx, cy, cz;
     fix fx, fy, fz;
     fix wx, wy, wz;
 

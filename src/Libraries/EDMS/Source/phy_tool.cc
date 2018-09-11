@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	INTERNAL STUFF
 //	==============
 
-void snobby_soliton_lite(Q timestep, int object);
+void snobby_soliton_lite(Q timestep, int32_t object);
 
 extern void (*idof_functions[MAX_OBJ])(int), // Pointers to the appropriate places...
     (*equation_of_motion[MAX_OBJ][7])(int);  // The integer is the object number...
@@ -52,13 +52,13 @@ static Q one_sixth = .1666666666667, // Overboard?
 
 //	Here is a routine that should help in the placement of EDMS objects.  3D+ only!
 //	===============================================================================
-int settle_object(int object) {
+int32_t settle_object(int32_t object) {
     int return_value = -1; // Failure...
 
     Q nrg = 1000., nrg_min = .1,
       pass_time = .01; // Not meta-stable!
 
-    int count = 0, max_count = 1000;
+    int32_t count = 0, max_count = 1000;
 
     //	First, are you for real?
     //	------------------------
@@ -93,8 +93,8 @@ int settle_object(int object) {
 //	Here is a version of soliton_lite which runs on only one object.  This should be useful for
 //	settling objects at level starts, placing things exactly on the ground, etc...
 //	==============================================================================
-void snobby_soliton_lite(Q timestep, int object) {
-    int coord = 0;
+void snobby_soliton_lite(Q timestep, int32_t object) {
+    int32_t coord;
 
     //	Copy the state vector initially into the argument vector...
     //	===========================================================
@@ -140,7 +140,7 @@ void snobby_soliton_lite(Q timestep, int object) {
 
 //      Here is a tool that Marc LeBlanc has requested...
 //      =================================================
-void mprint_state(int /*object*/) {
+void mprint_state(int object) {
     /*
        int coord = 0,
            deriv = 0;
@@ -160,13 +160,11 @@ void mprint_state(int /*object*/) {
 
 //	Here is an inventory of everything in the system...
 //	===================================================
-void inventory_and_statistics(int show_sleepers) {
-    int object = 0;
+void inventory_and_statistics(int32_t show_sleepers) {
+    int32_t object = 0;
 
     for (object = 0; object < MAX_OBJ && S[object][0][0] > END; object++) {
-
         if ((no_no_not_me[object] == 1) || show_sleepers == 1) {
-
 #ifdef EDMS_SHIPPABLE
 
             //   		mout << object << ".) ";
@@ -193,7 +191,7 @@ void inventory_and_statistics(int show_sleepers) {
 //	This is EDMS' sanity checker.  Call it to see what's wrong.  Problems
 //	will return a nonzero result...
 //	===============================
-int sanity_check(void) {
+int sanity_check() {
     //	The idof functions...
     //	=====================
     // extern void	biped_idof( int ),
@@ -205,7 +203,7 @@ int sanity_check(void) {
     //		Have some variables...
     //		----------------------
 
-    int object = 0, coord = 0, dof = 0, object_number = 0;
+    int32_t object = 0, coord = 0, dof = 0, object_number = 0;
 
     physics_handle ph = 0;
 
@@ -218,7 +216,7 @@ int sanity_check(void) {
 
     //		Here's the return value...
     //		--------------------------
-    int return_value = 0; // Innocent until...
+    int32_t return_value = 0; // Innocent until...
 
     //	First check the number of active objects...
     //	===========================================
@@ -295,7 +293,7 @@ int sanity_check(void) {
 
 //	Get the Euler angles we need from the stuff in the state...
 //	===========================================================
-void EDMS_get_Euler_angles(Q &alpha, Q &beta, Q &gamma, int object) {
+void EDMS_get_Euler_angles(Q &alpha, Q &beta, Q &gamma, int32_t object) {
     Q e0, e1, e2, e3;
 
     e0 = S[object][DOF_ALPHA][0];
@@ -334,14 +332,14 @@ extern "C" {
 
 //      Call this to see if an object is asleep...
 //      ==========================================
-uchar EDMS_frere_jaques(physics_handle ph) {
-    uchar rval = FALSE;
+bool EDMS_frere_jaques(physics_handle ph) {
+    bool rval = false;
 
     // condomate...
     // ------------
     if (ph > -1) {
         if (no_no_not_me[ph2on[ph]] == 1)
-            rval = TRUE;
+            rval = true;
     }
 
     return rval;

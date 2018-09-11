@@ -53,7 +53,7 @@ static physics_handle	C,
 
 //	Callbacks themselves...
 //	-----------------------
-extern void		( *EDMS_object_collision )( physics_handle caller, physics_handle victim, int badness, long DATA1, long DATA2 ),
+extern void	( *EDMS_object_collision )( physics_handle caller, physics_handle victim, int32_t badness, int32_t DATA1, int32_t DATA2),
 			( *EDMS_wall_contact )( physics_handle caller );
 
 static Q		fix_one = 1.,

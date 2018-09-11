@@ -33,9 +33,9 @@ typedef struct {
 // globals
 #define SS_MAX_FACELETS 16
 extern ss_facelet_return ss_edms_facelets[SS_MAX_FACELETS];
-extern uchar ss_edms_facelet_cnt;
-extern int ss_edms_bcd_flags;
-extern int ss_edms_bcd_param;
+extern uint8_t ss_edms_facelet_cnt;
+extern int32_t ss_edms_bcd_flags;
+extern int32_t ss_edms_bcd_param;
 extern uchar ss_edms_stupid_flag;
 
 // bitfield values

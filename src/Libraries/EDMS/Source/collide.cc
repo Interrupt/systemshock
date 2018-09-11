@@ -57,10 +57,10 @@ void generic_write_object(int object, EDMS_Argblock_Pointer state) {
     Q q_hash_x = hash_scale * state[object][DOF_X][0];
     Q q_hash_y = hash_scale * state[object][DOF_Y][0];
 
-    unsigned int obit = object_bit(object);
+    uint32_t obit = object_bit(object);
 
-    int hash_x = (q_hash_x).to_int(); // The floor should be a function
-    int hash_y = (q_hash_y).to_int(); // that returns the edges of the ref. squares...
+    int32_t hash_x = (q_hash_x).to_int(); // The floor should be a function
+    int32_t hash_y = (q_hash_y).to_int(); // that returns the edges of the ref. squares...
 
     if ((hash_x > 1) && (hash_y > 1) && (hash_x < collision_max) && (hash_y < collision_max)) {
         // We want to write a 2x2 block.  We adjust the upper left corner of it
@@ -83,12 +83,12 @@ void generic_write_object(int object, EDMS_Argblock_Pointer state) {
     }
 }
 
-void write_object(int object) {
+void write_object(int32_t object) {
     //   mout << "Write A\n";
     generic_write_object(object, A);
 }
 
-void state_write_object(int object) {
+void state_write_object(int32_t object) {
     //   mout << "Write S\n";
     generic_write_object(object, S);
 }
@@ -98,14 +98,14 @@ void state_write_object(int object) {
 // And here's a generic function for delete_object.
 //
 
-void generic_delete_object(int object, EDMS_Argblock_Pointer state) {
+void generic_delete_object(int32_t object, EDMS_Argblock_Pointer state) {
     Q q_hash_x = hash_scale * state[object][DOF_X][0];
     Q q_hash_y = hash_scale * state[object][DOF_Y][0];
 
-    unsigned int obit = object_bit(object);
+    uint32_t obit = object_bit(object);
 
-    int hash_x = (q_hash_x).to_int(); // The floor should be a function
-    int hash_y = (q_hash_y).to_int(); // that returns the edges of the ref. squares...
+    int32_t hash_x = (q_hash_x).to_int(); // The floor should be a function
+    int32_t hash_y = (q_hash_y).to_int(); // that returns the edges of the ref. squares...
 
     // AAAAAhhhhhhhhh...
     // mout << "DA" << object << ": (" << hash_x << ", " << hash_y << ")\n";
@@ -136,12 +136,12 @@ void generic_delete_object(int object, EDMS_Argblock_Pointer state) {
     }
 }
 
-void delete_object(int object) {
+void delete_object(int32_t object) {
     //   mout << "Delete A\n";
     generic_delete_object(object, A);
 }
 
-void state_delete_object(int object) {
+void state_delete_object(int32_t object) {
     //   mout << "Delete S\n";
     generic_delete_object(object, S);
 }
@@ -152,14 +152,14 @@ void state_delete_object(int object) {
 // <hx, hy>.  This is a handy way to find out which of the three objects with
 // a given object bit is actually meant.
 
-uchar object_check_hash(int object, int hx, int hy) {
+bool object_check_hash(int32_t object, int32_t hx, int32_t hy) {
     // We use A if we are in the middle of integrating, and the object
     // is not asleep.
 
     EDMS_Argblock_Pointer state = (A_is_active && no_no_not_me[object]) ? A : S;
 
-    int my_hx = (hash_scale * state[object][DOF_X][0]).to_int();
-    int my_hy = (hash_scale * state[object][DOF_Y][0]).to_int();
+    int32_t my_hx = (hash_scale * state[object][DOF_X][0]).to_int();
+    int32_t my_hy = (hash_scale * state[object][DOF_Y][0]).to_int();
 
     return (abs(my_hx - hx) <= 1 && abs(my_hy - hy) <= 1);
 }
@@ -169,7 +169,7 @@ uchar object_check_hash(int object, int hx, int hy) {
 
 //	Turn it off...
 //	==============
-void reset_collisions(int object) {
+void reset_collisions(int32_t object) {
     //	Are we really inactivated?
     //	--------------------------
     if (I[object][IDOF_COLLIDE] > -1) {
@@ -180,7 +180,7 @@ void reset_collisions(int object) {
 
 //	Turn it on...
 //	=============
-void exclude_from_collisions(int guy_1, int guy_2) {
+void exclude_from_collisions(int32_t guy_1, int32_t guy_2) {
     //	Are we ready?
     //	-------------
     if ((I[guy_1][IDOF_COLLIDE] > -1) || (I[guy_2][IDOF_COLLIDE] > -1)) {
@@ -196,11 +196,11 @@ void exclude_from_collisions(int guy_1, int guy_2) {
 //	Read'n'...
 //	==========
 
-unsigned int test_bitmask; // used to be clean_test_bit
+uint32_t test_bitmask; // used to be clean_test_bit
 
 //	Basically subtract out the bit representing the calling object...
 //	=================================================================
-int are_you_there(int object) {
+int32_t are_you_there(int32_t object) {
     return (test_bitmask =
                 data[(hash_scale * A[object][DOF_X][0]).to_int()][(hash_scale * A[object][DOF_Y][0]).to_int()]);
 }

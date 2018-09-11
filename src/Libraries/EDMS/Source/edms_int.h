@@ -93,14 +93,12 @@ typedef Q (*EDMS_Argblock_Pointer)[DOF][DOF_DERIVS];
 //	--------------------
 typedef struct {
     fix playfield_size;
-    int min_physics_handle;
-    void (*collision_callback)(physics_handle caller, physics_handle victim, int badness, long DATA1, long DATA2,
-                               fix location[3]),
+    int32_t min_physics_handle;
+    void (*collision_callback)(physics_handle caller, physics_handle victim, int32_t badness, int32_t DATA1,
+                               int32_t DATA2, fix location[3]),
         (*autodestruct_callback)(physics_handle caller), (*awol_callback)(physics_handle caller),
         (*snooz_callback)(physics_handle caller);
-
     void *argblock_pointer;
-
 } EDMS_data;
 
 //	Structs...
@@ -112,87 +110,95 @@ typedef struct {
 
 //	Stuff that used to be in physhand.h....
 //	=======================================
-typedef int object_number;
+typedef int32_t object_number;
 
 #define physics_handle_to_object_number(ph) (ph2on[ph])
 #define object_number_to_physics_handle(on) (on2ph[on])
 
 extern "C" {
+
 void EDMS_init_handles(void);
 physics_handle EDMS_bind_object_number(object_number on);
 void EDMS_remap_object_number(object_number old, object_number nu);
 physics_handle EDMS_get_free_ph(void);
 void EDMS_release_object(physics_handle ph);
+
 }
 
 //	Terrain
 //	=======
-Q terrain(Q X, Q Y, int deriv);                             // This calls Terrain()
+Q terrain(Q X, Q Y, int32_t deriv);                         // This calls Terrain()
 void indoor_terrain(Q X, Q Y, Q Z, Q R, physics_handle ph); // Indoor for Citadel, FBO, etc...
 
 extern "C" {
 
-fix Terrain(fix X, fix Y, int deriv);                               // This is provided by the user...
+fix Terrain(fix X, fix Y, int32_t deriv);                           // This is provided by the user...
 void Indoor_Terrain(fix X, fix Y, fix Z, fix R, physics_handle ph); // As is this...
 
 //	Here's the actual indoor guy we ask for...
 //	------------------------------------------
-typedef struct {    // Filled by user when
-    fix cx, cy, cz; // Indoor_Terrain is
-    fix fx, fy, fz; // called...
+typedef struct {
+    // Filled by user when Indoor_Terrain is called...
+    fix cx, cy, cz;
+    fix fx, fy, fz;
     fix wx, wy, wz;
 } TerrainData;
+
 extern TerrainData terrain_info; // Struct name EDMS expects...
 
 // Freefall terrain data structures...
 // -----------------------------------
 typedef struct {
-    fix g_height, // The ground...
-        g_dx, g_dy, g_dz,
-
-        w_x, // Any walls...
-        w_y, w_z;
-
-    fix terrain_information; // Squishiness, friction, et cetera...
-
-    long DATA1, // For terrain return information...
-        DATA2;
-
-    fix my_size; // Only needed for "fast" terrain calls
-
-    physics_handle caller; // Who's responsible...
-
+    // The ground...
+    fix g_height, g_dx, g_dy, g_dz;
+    // Any walls...
+    fix w_x, w_y, w_z;
+    // Squishiness, friction, et cetera...
+    fix terrain_information;
+    // For terrain return information...
+    int32_t DATA1, DATA2;
+    // Only needed for "fast" terrain calls
+    fix my_size;
+    // Who's responsible...
+    physics_handle caller;
 } terrain_ff;
-uchar FF_terrain(fix X, fix Y, fix Z, uchar fast, terrain_ff *TFF); // From Freefall...
-uchar FF_raycast(fix x, fix y, fix z, fix vec[3], fix range, fix where_hit[3], terrain_ff *tff);
+
+bool FF_terrain(fix X, fix Y, fix Z, uchar fast, terrain_ff *TFF); // From Freefall...
+bool FF_raycast(fix x, fix y, fix z, fix *vec, fix range, fix *where_hit, terrain_ff *tff);
 }
 
-uchar ff_terrain(Q X, Q Y, Q Z, uchar fast, terrain_ff *TFF); // For the refined...
-uchar ff_raycast(Q x, Q y, Q z, Q vec[3], Q range, Q where_hit[3], terrain_ff *FFT);
+bool ff_terrain(Q X, Q Y, Q Z, uchar fast, terrain_ff *TFF); // For the refined...
+bool ff_raycast(Q x, Q y, Q z, Fixpoint *vec, Q range, Fixpoint *where_hit, terrain_ff *FFT);
 
 //		Motion package functions...
 //		===========================
 
 //		Marble...
 //		---------
-void marble_X(int), marble_Y(int), marble_Z(int);
+void marble_X(int32_t object);
+void marble_Y(int32_t object);
+void marble_Z(int32_t object);
 
 //		Robot...
 //		--------
-void robot_X(int), robot_Y(int), robot_Z(int);
+void robot_X(int32_t object);
+void robot_Y(int32_t object);
+void robot_Z(int32_t object);
 
 //		Deformable objects...
 //		---------------------
-void field_point_X(int), field_point_Y(int), field_point_Z(int);
+void field_point_X(int32_t object);
+void field_point_Y(int32_t object);
+void field_point_Z(int32_t object);
 
-//	Have some arrays...
-//	===================
+// Have some arrays...
+// ===================
 
-//		binary database (collision) operators...
-//		========================================
+// binary database (collision) operators...
+// ========================================
 
-//		Playfield information and scaling...
-//		------------------------------------
+// Playfield information and scaling...
+// ------------------------------------
 //#define COLLISION_SIZE 100
 #define DELTA_BY_TWO .5
 
@@ -200,20 +206,20 @@ void field_point_X(int), field_point_Y(int), field_point_Z(int);
 
 #define object_bit(n) (1 << (n & 31))
 
-//		To turn on an element...
-//		------------------------
+// To turn on an element...
+// ------------------------
 #define write_object_bit(X, Y, obit) (data[X][Y] |= obit)
 
-//		Turn it off...
-//		--------------
+// Turn it off...
+// --------------
 #define delete_object_bit(X, Y, obit) (data[X][Y] &= ~(obit))
 
-//		Test a bit...
-//		-------------
+// Test a bit...
+// -------------
 #define test_object_bit(X, Y, object) (data[X][Y] & object_bit(object))
 
-//		Check for a given collision...
-//		------------------------------
+// Check for a given collision...
+// ------------------------------
 #define check_object(caller, looker)                                                                  \
     (data[(hash_scale * A[caller][DOF_X][0]).to_int()][(hash_scale * A[caller][DOF_Y][0]).to_int()] & \
      object_bit(looker))

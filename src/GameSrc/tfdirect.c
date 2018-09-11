@@ -70,7 +70,7 @@ void _tf_get_crosses(void);
 fix tf_solve_2d_case(int flags);
 int _stair_check(fix walls[4][2], int flags);
 void terrfunc_one_map_square(int fmask);
-uchar tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type);
+bool tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type);
 
 // old style physics...
 extern TerrainData terrain_info;
@@ -634,8 +634,8 @@ uchar tf_wall_check[5][2][5] = {
     {{fcs(Z, Z), fcs(S, Z), fcs(S, N), fcs(Z, Z)}, {fcs(Z, Z), fcs(S, N), fcs(Z, N), fcs(Z, Z)}},
     {{fcs(Z, Z), fcs(S, Z), fcs(S, N), fcs(Z, N), fcs(Z, Z)}, {fcs(Z, Z), fcs(S, Z), fcs(S, N), fcs(Z, N), fcs(Z, Z)}}};
 
-uchar tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type) {
-    int fce_minc, xd, yd, xo, yo, centered; // fce_minc is map increment between lines, ?d LGRect size, xo clip offset
+bool tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int32_t ph, int32_t tf_type) {
+    int32_t fce_minc, xd, yd, xo, yo, centered; // fce_minc is map increment between lines, ?d LGRect size, xo clip offset
     fix minx, miny, maxx, maxy, cenx, ceny; // for full radius of us, center for us, all really ints in the end
 
     tf_Spew(Calls, ("indoor %d at %x %x %x r %x\n", ph, fix_x, fix_y, fix_z, rad));
@@ -646,7 +646,7 @@ uchar tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type) {
     // wacky bcd stuff....
     if (global_fullmap->cyber) {
         MapElem *mp;
-        int mb = -1, mt;
+        int32_t mb = -1, mt;
         mp = MAP_GET_XY(cenx, ceny);
         if ((mt = me_light_flr(mp)) != 0)
             mb = mt - 1;
@@ -656,7 +656,7 @@ uchar tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type) {
             ss_edms_bcd_flags |= ((uint)v_to_cur[mb]) << SS_BCD_CURR_SHF;
     }
     if (tf_type == TFD_BCD)
-        return FALSE;
+        return false;
 
     ObjsClearDealt();
     tf_talk_setup();
@@ -713,7 +713,7 @@ uchar tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type) {
         tf_Stat(single);
     } else {
         uchar *xmsk_base, *ymsk_base, *xmsk_now, *ymsk_now;
-        int xb;
+        int32_t xb;
 
         centered = (((xd & 1) == 0) && ((minx - xo + (xd >> 1)) == cenx)) ? 0 : 1;
         xmsk_base = &tf_wall_check[xd - 1][centered][xo];
@@ -728,7 +728,7 @@ uchar tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type) {
                 terrfunc_one_map_square(((*xmsk_now) << 1) | (*ymsk_now) | FACELET_MASK_I);
                 tf_Stat(multi);
                 if ((tf_type == TFD_RCAST) && ss_edms_facelet_cnt)
-                    return TRUE;
+                    return true;
             }
     }
     if (tf_type == TFD_FULL) { // actually figure out what is up with the facelets, send and all

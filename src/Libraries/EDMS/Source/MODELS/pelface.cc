@@ -172,7 +172,7 @@ physics_handle	ph = 0;
 
 //      This works just like the robot model...
 //      ---------------------------------------
-void EDMS_control_pelvis( physics_handle ph, fix F, fix T, fix S, fix L, fix J, int C ) {
+void EDMS_control_pelvis( physics_handle ph, fix F, fix T, fix S, fix L, fix J, int32_t C ) {
 
 Q	FF,			//Silly, no?
 	TT,

@@ -221,7 +221,7 @@ int		on = ph2on[ph];
 //	Here we control the silly thing. Here "mode" is 0 for heading control, 1 for
 //	sidestepping...
 //	===============
-void EDMS_control_biped( physics_handle ph, fix forward, fix side_rotate, int mode ) {
+void EDMS_control_biped( physics_handle ph, fix forward, fix side_rotate, int32_t mode ) {
 
 int	on = ph2on[ph];
 Q	F,
