@@ -922,7 +922,7 @@ errtype load_that_thar_game(int which_slot) {
             strcpy(comments[which_slot], "<< INVALID GAME >>");
             // KLC         end_wait();
             uiHideMouse(NULL);
-            journey_continue_func(TRUE);
+            draw_savegame_names();
             return (retval);
         }
         // KLC - don't do the following.
@@ -940,20 +940,26 @@ errtype load_that_thar_game(int which_slot) {
     // journey_continue_func
     //
 
-#pragma disable_message(202)
 errtype journey_continue_func(uchar draw_stuff) {
-#ifndef DEMO
-    if (save_game_exists) {
-        draw_raw_res_bm_extract(REF_IMG_bmContinueScreen, 0, 0);
-        setup_mode = SETUP_CONTINUE;
-        draw_savegame_names();
-    }
-#endif
 
-    uiShowMouse(NULL);
-    return (OK);
+    FILE *f = fopen("LastSavedGame.dat", "rb");
+    if (f == NULL) return OK;
+    fclose(f);
+
+    extern uchar clear_player_data;
+    clear_player_data = TRUE; // initializes the player struct in object_data_load
+    object_data_load();
+    player_create_initial();
+    player_struct.level = 0xFF; // make sure we load textures
+    change_mode_func(0, 0, (void *)GAME_LOOP); //load_game may set FULLSCREEN_LOOP
+    errtype retval = load_game("LastSavedGame.dat");
+    if (retval != OK) return retval;
+    startup_music = TRUE;
+    // CC: This fixed popups cursors drawing tiny after loading
+    gr2ss_override = OVERRIDE_ALL;
+
+    return OK;
 }
-#pragma enable_message(202)
 
 #define SECRET_MISSION_DIFFICULTY_QB 0xB0
 char diff_qvars[4] = {COMBAT_DIFF_QVAR, MISSION_DIFF_QVAR, PUZZLE_DIFF_QVAR, CYBER_DIFF_QVAR};
