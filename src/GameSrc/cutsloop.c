@@ -102,10 +102,16 @@ void cutscene_exit() {
 	MacTuneKillCurrentTheme();
 }
 
+//filled in amov.c when chunk contains subtitle data
+extern char EngSubtitle[256];
+extern char FrnSubtitle[256];
+extern char GerSubtitle[256];
+
 void cutscene_loop() {
 
     fix time;
     long cur_time = SDL_GetTicks();
+    static uint8_t palette[3*256];
 
     if(is_first_frame) {
     	is_first_frame = FALSE;
@@ -117,15 +123,32 @@ void cutscene_loop() {
     	next_draw_time = start_time + fix_float(time) * 1000.0;
 
     	// Set the initial palette
-    	gr_set_pal(0, 256, amovie->v.pal.rgb);
+        memcpy(palette, amovie->v.pal.rgb, 3*256);
     	gr_clear(0x00);
     }
 
     if(cur_time > next_draw_time) {
     	// Get the palette for this frame, if any
     	if(AfileGetFramePal(amovie, &pal)) {
-	    	gr_set_pal(pal.index, pal.numcols, pal.rgb);
+            memcpy(palette+3*pal.index, pal.rgb, 3*pal.numcols);
 	    }
+
+        //not really a hack: find unused color in movie bitmap and use it as subtitle color
+        {
+            uint32_t used[256], used_min = 0xFFFFFFFF;
+            memset(used, 0, sizeof(used));
+            uint8_t *bits = movie_bitmap.bits;
+            int count = (int)movie_bitmap.w * movie_bitmap.h;
+            while (count--) used[*bits++]++;
+            int i, used_min_i = 1;
+            for (i=1; i<256-1; i++)
+                if (used[i] < used_min) {used_min = used[i]; used_min_i = i;}
+            uint8_t temp_pal[3*256];
+            memcpy(temp_pal, palette, 3*256);
+            for (i=0; i<3; i++) temp_pal[3*used_min_i+i] = temp_pal[3*255+i];
+            gr_set_pal(0, 256, temp_pal);
+            gr_set_fcolor(used_min_i);
+        }
 
 	    // Draw this frame
 	    gr_clear(0x00);
@@ -134,6 +157,28 @@ void cutscene_loop() {
 
 	    int offset = (320 - (amovie->v.width / 2)) / 2;
 		ss_scale_bitmap(&movie_bitmap, offset, offset / 1.25, amovie->v.width / 2, amovie->v.height / 2);
+
+        //draw subtitles
+        char *buf = 0;
+        extern char which_lang;
+        switch (which_lang)
+        {
+            case 0: default: buf = EngSubtitle; break;
+            case 1: buf = FrnSubtitle; break;
+            case 2: buf = GerSubtitle; break;
+        }
+        if (buf && *buf)
+        {
+            short w, h, x, y;
+            grs_font *fon = gr_get_font();
+            gr_set_font((grs_font *)ResLock(RES_cutsceneFont));
+            gr_string_size(buf, &w, &h);
+            x = (320-w)/2;
+            y = 158+(200-158-h)/2;
+            ss_string(buf, x, y);
+            ResUnlock(RES_cutsceneFont);
+            gr_set_font(fon);
+        }
 
 		if(done_playing_movie) {
 			// Go back to the main menu
@@ -163,6 +208,10 @@ void cutscene_loop() {
 
 short play_cutscene(int id, bool show_credits) {
 	INFO("Playing Cutscene %i", id);
+
+    *EngSubtitle = 0;
+    *FrnSubtitle = 0;
+    *GerSubtitle = 0;
 
 	_new_mode = CUTSCENE_LOOP;
 	chg_set_flg(GL_CHG_LOOP);
