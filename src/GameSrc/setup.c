@@ -944,7 +944,20 @@ errtype load_that_thar_game(int which_slot) {
 errtype journey_continue_func(uchar draw_stuff) {
 #ifndef DEMO
     if (save_game_exists) {
-        draw_raw_res_bm_extract(REF_IMG_bmContinueScreen, 0, 0);
+//        draw_raw_res_bm_extract(REF_IMG_bmContinueScreen, 0, 0);
+        Ref rid = REF_IMG_bmContinueScreen;
+        int i = REFINDEX(rid);
+        RefTable *rt = ResReadRefTable(REFID(rid));
+        if (RefIndexValid(rt, i))
+        {
+            FrameDesc *f = (FrameDesc *)malloc(RefSize(rt, i));
+            RefExtract(rt, rid, f);
+            f->bm.bits = (void *)(f+1);
+            f->bm.h = 200; //SUPER HACK: resource reports 320
+            ss_bitmap(&(f->bm), 0, 0);
+            free(f);
+        }
+        ResFreeRefTable(rt);
         setup_mode = SETUP_CONTINUE;
         draw_savegame_names();
     }
