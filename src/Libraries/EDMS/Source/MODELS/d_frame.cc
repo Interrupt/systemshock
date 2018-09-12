@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //	Super secret Church-Blackley Boundary Condition Descriptor (BCD)...
 //	===================================================================
+#include "idof.h"
 #include "ss_flet.h"
 
 extern Q EDMS_CYBER_FLOW1X;
@@ -194,7 +195,7 @@ int32_t make_Dirac_frame(Q init_state[6][3], Q params[10]) {
 
     //	We need ignorable coordinates...
     //	================================
-    extern void null_function(int);
+    extern void null_function(int32_t);
 
     int32_t coord = 0, deriv = 0;
 
@@ -273,7 +274,7 @@ int32_t make_Dirac_frame(Q init_state[6][3], Q params[10]) {
         for (int copy = 0; copy < 10; copy++) {
             I[object_number][copy + 20] = params[copy];
         }
-        I[object_number][30] = D_FRAME; // Hey, you are what you eat.
+        I[object_number][IDOF_MODEL] = D_FRAME; // Hey, you are what you eat.
 
         //		Now tell Soliton where to look for the equations of motion...
         //		=============================================================
@@ -289,8 +290,8 @@ int32_t make_Dirac_frame(Q init_state[6][3], Q params[10]) {
         I[object_number][31] = I[object_number][26];
         I[object_number][32] = I[object_number][33] = I[object_number][34] = I[object_number][35] = 0;
         I[object_number][36] = I[object_number][26]; // Shrugoff "mass"...
-        I[object_number][37] = -1;
-        I[object_number][38] = 0; // No kill I...
+        I[object_number][IDOF_COLLIDE] = -1;
+        I[object_number][IDOF_AUTODESTRUCT] = 0; // No kill I...
 
         //              Zero the controls...
         //              ====================

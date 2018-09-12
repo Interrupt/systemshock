@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////#include <conio.h>
 #include "edms_int.h" //This is the object type library. It is universal.
 #include "edms_vt.h"
+#include "idof.h"
 
 //	Super secret Church-Blackley Boundary Condition Descriptor (BCD)...
 //	===================================================================
@@ -337,8 +338,8 @@ void pelvis_idof(int32_t object) {
 
     //	Cyberspace for real...
     //	======================
-    Q drug_addict0 = i_object[23] * A[object][0][1];
-    Q drug_addict1 = i_object[23] * A[object][1][1];
+    Q drug_addict0 = i_object[IDOF_PELVIS_ROLL_DRAG] * A[object][0][1];
+    Q drug_addict1 = i_object[IDOF_PELVIS_ROLL_DRAG] * A[object][1][1];
     if (abs(io18) == 0 && i_object[10] > 0)
         drug_addict0 *= .2; // Skateware drag reduction...
     if (abs(io19) == 0 && i_object[10] > 0)
@@ -364,7 +365,7 @@ void pelvis_idof(int32_t object) {
 
     i_object[14] = abs(dam0) + abs(dam1) + abs(dam2) - 2 * i_object[26] * i_object[25]; // Damage??
     if (i_object[14] > 0)
-        i_object[14] *= i_object[24] * (io17 < .5);
+        i_object[14] *= i_object[IDOF_PELVIS_MASS_RECIP] * (io17 < .5);
     else
         i_object[14] = 0;
 
@@ -425,14 +426,14 @@ void pelvis_idof(int32_t object) {
 
     //	Try the equations of motion here for grins...
     //	=============================================
-    S[object][0][2] = i_object[24] * (object20);
-    S[object][1][2] = i_object[24] * (object21);
-    S[object][2][2] = i_object[24] * (object22)-i_object[25];
-    S[object][3][2] = i_object[27] * (i_object[16] - object17 * A[object][3][1]);
-    S[object][4][2] = i_object[27] * (T_beta - 1.5 * i_object[1] * A[object][4][0] /**(1-.5*(i_object[10]==1))*/
+    S[object][0][2] = i_object[IDOF_PELVIS_MASS_RECIP] * (object20);
+    S[object][1][2] = i_object[IDOF_PELVIS_MASS_RECIP] * (object21);
+    S[object][2][2] = i_object[IDOF_PELVIS_MASS_RECIP] * (object22)-i_object[IDOF_PELVIS_GRAVITY];
+    S[object][3][2] = i_object[IDOF_PELVIS_MOI_RECIP] * (i_object[16] - object17 * A[object][3][1]);
+    S[object][4][2] = i_object[IDOF_PELVIS_MOI_RECIP] * (T_beta - 1.5 * i_object[1] * A[object][4][0] /**(1-.5*(i_object[10]==1))*/
                                       - .8 * i_object[2] * A[object][4][1] /**(1-.5*(i_object[10]==1))*/);
 
-    S[object][5][2] = i_object[27] * (T_gamma - i_object[1] * A[object][5][0] /**(1-.5*(i_object[10]==1))*/
+    S[object][5][2] = i_object[IDOF_PELVIS_MOI_RECIP] * (T_gamma - i_object[1] * A[object][5][0] /**(1-.5*(i_object[10]==1))*/
                                       - .8 * i_object[2] * A[object][5][1]    /**(1-.5*(i_object[10]==1))*/
                                       + i_object[15]);
 
@@ -480,7 +481,7 @@ void get_head_of_death(int32_t object) {
     vv1 = mul * vec1;
     vv2 = mul * vec2;
 
-    dmag = i_object[21] * (A[object][0][1] * vv0 // Delta_magnitude...
+    dmag = i_object[IDOF_PELVIS_D] * (A[object][0][1] * vv0 // Delta_magnitude...
                            + A[object][1][1] * vv1 + A[object][2][1] * vv2);
 
     head_delta[0] = dmag * vv0; // Delta...
@@ -489,7 +490,7 @@ void get_head_of_death(int32_t object) {
 
     //		if (test < .5*i_object[22]) kmag = i_object[20];			//Omega_magnitude...
     //              else kmag = i_object[20]/test;
-    kmag = i_object[20];
+    kmag = i_object[IDOF_PELVIS_K];
 
     head_kappa[0] = kmag * vec0;
     head_kappa[1] = kmag * vec1;
@@ -549,7 +550,7 @@ void get_body_of_death(int32_t object) {
 
         vec2 = vv2 = 0;
 
-        dmag = i_object[21] * (A[object][0][1] * vv0 // Delta_magnitude...
+        dmag = i_object[IDOF_PELVIS_D] * (A[object][0][1] * vv0 // Delta_magnitude...
                                + A[object][1][1] * vv1 + A[object][2][1] * vv2);
 
         body_delta[0] = dmag * vv0; // Delta...
@@ -586,8 +587,8 @@ void do_climbing(int32_t object) {
             io17 = .02 * ass; // + 100*( .2*i_object[22] - V_[floor][2] );
             if ((terrain_info.cz != 0))
                 io17 = 0;
-            io18 = -.4 * i_object[22] * object0 * object8 / checker + .5 * i_object[18];
-            io19 = -.4 * i_object[22] * object1 * object8 / checker + .5 * i_object[19];
+            io18 = -.4 * i_object[IDOF_PELVIS_RADIUS] * object0 * object8 / checker + .5 * i_object[18];
+            io19 = -.4 * i_object[IDOF_PELVIS_RADIUS] * object1 * object8 / checker + .5 * i_object[19];
             i_object[16] *= .5;
 
             //                    Set the mojo...
@@ -605,8 +606,8 @@ void do_climbing(int32_t object) {
             if (ratio <= 0) {
                 io17 = .5;
 
-                io18 = -.3 * i_object[22] * object0 * object8 / checker + .2 * i_object[18];
-                io19 = -.3 * i_object[22] * object1 * object8 / checker + .2 * i_object[19];
+                io18 = -.3 * i_object[IDOF_PELVIS_RADIUS] * object0 * object8 / checker + .2 * i_object[18];
+                io19 = -.3 * i_object[IDOF_PELVIS_RADIUS] * object1 * object8 / checker + .2 * i_object[19];
 
                 //                              Set the mojo...
                 //                              ===============
@@ -632,25 +633,25 @@ void pelvis_set_control(int32_t pelvis, Q forward, Q turn, Q sidestep, Q lean, Q
 
     //		Here's the thrust of the situation...
     //		-------------------------------------
-    I[pelvis][18] = forward * object1 * I[pelvis][26];
-    I[pelvis][19] = forward * object0 * I[pelvis][26];
+    I[pelvis][18] = forward * object1 * I[pelvis][IDOF_PELVIS_MASS];
+    I[pelvis][19] = forward * object0 * I[pelvis][IDOF_PELVIS_MASS];
 
     //		And the sidestep is off by pi/two...
     //      	------------------------------------
     sincos((S[pelvis][3][0] - pi_by_two), &object0, &object1);
-    I[pelvis][18] += sidestep * object1 * I[pelvis][26];
-    I[pelvis][19] += sidestep * object0 * I[pelvis][26];
+    I[pelvis][18] += sidestep * object1 * I[pelvis][IDOF_PELVIS_MASS];
+    I[pelvis][19] += sidestep * object0 * I[pelvis][IDOF_PELVIS_MASS];
 
     //		And the turn of the...
     //		----------------------
-    I[pelvis][16] = turn * I[pelvis][29];
+    I[pelvis][16] = turn * I[pelvis][IDOF_PELVIS_MOI];
 
     //		Jump jets of joy...
     //		-------------------
     if (jump > 0)
-        I[pelvis][17] = .003 * I[pelvis][26] * jump;
+        I[pelvis][17] = .003 * I[pelvis][IDOF_PELVIS_MASS] * jump;
     if (jump < 0)
-        I[pelvis][17] = .0006 * I[pelvis][26] * jump;
+        I[pelvis][17] = .0006 * I[pelvis][IDOF_PELVIS_MASS] * jump;
 
     //		And finally leaning about...
     //		----------------------------
@@ -706,30 +707,30 @@ int32_t make_pelvis(Q init_state[6][3], Q params[10]) {
             I[object_number][copy + 20] = params[copy];
         }
 
-        I[object_number][30] = PELVIS; // Hey, you are what you eat.
+        I[object_number][IDOF_MODEL] = PELVIS; // Hey, you are what you eat.
 
-        //              We need some information that won't fit in the usual areas...
-        //              =============================================================
-        //              I[object_number][0] =                                           //For reference...
-        I[object_number][6] = .5 * I[object_number][22];
-        I[object_number][1] = 20 * I[object_number][29];
-        I[object_number][2] = 4 * sqrt(I[object_number][29] * I[object_number][1]);
+        // We need some information that won't fit in the usual areas...
+        // =============================================================
+        // I[object_number][0] =                                           //For reference...
+        I[object_number][6] = .5 * I[object_number][IDOF_PELVIS_RADIUS];
+        I[object_number][1] = 20 * I[object_number][IDOF_PELVIS_MOI];
+        I[object_number][2] = 4 * sqrt(I[object_number][IDOF_PELVIS_MOI] * I[object_number][1]);
 
-        //		Put in the collision information...
-        //		===================================
-        I[object_number][31] = I[object_number][22];
+        // Put in the collision information...
+        // ===================================
+        I[object_number][31] = I[object_number][IDOF_PELVIS_RADIUS];
         I[object_number][32] = I[object_number][33] = I[object_number][34] = I[object_number][35] = 0;
-        I[object_number][36] = I[object_number][24]; // Shrugoff "mass"...
-        I[object_number][37] = -1;
-        I[object_number][38] = 0; // No kill I...
+        I[object_number][36] = I[object_number][IDOF_PELVIS_MASS_RECIP]; // Shrugoff "mass"...
+        I[object_number][IDOF_COLLIDE] = -1;
+        I[object_number][IDOF_AUTODESTRUCT] = 0; // No kill I...
 
-        //		Zero the control initially...
-        //		=============================
+        // Zero the control initially...
+        // =============================
         I[object_number][7] = I[object_number][8] = I[object_number][9] = I[object_number][15] = I[object_number][16] =
             I[object_number][18] = I[object_number][19] = I[object_number][17] = 0;
 
-        //		Now tell Soliton where to look for the equations of motion...
-        //		=============================================================
+        // Now tell Soliton where to look for the equations of motion...
+        // =============================================================
         idof_functions[object_number] = pelvis_idof;
 
         equation_of_motion[object_number][0] = // Nice symmetries, huh.
@@ -783,9 +784,9 @@ void EDMS_lean_o_meter(physics_handle ph, fix &lean, fix &crouch) {
 
         int32_t on = ph2on[ph];
 
-        //              Are you a pelvis...
-        //              -------------------
-        if (I[on][30] == PELVIS) {
+        // Are you a pelvis...
+        // -------------------
+        if (I[on][IDOF_MODEL] == PELVIS) {
             lean = S[on][5][0].to_fix();
             crouch = I[on][0].to_fix() - 3 * V_floor[2].to_fix();
 

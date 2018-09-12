@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////#include <conio.h>
 #include "fixpp.h"
 #include "edms_int.h"
-
+#include "idof.h"
 //#ifdef EDMS_SHIPPABLE
 ////#include <mout.h>
 //#endif
@@ -157,7 +157,7 @@ void EDMS_control_pelvis(physics_handle ph, fix F, fix T, fix S, fix L, fix J, i
 
     int32_t on = physics_handle_to_object_number(ph);
 
-    if (I[on][30] == PELVIS)
+    if (I[on][IDOF_MODEL] == PELVIS)
         pelvis_set_control(on, FF, TT, SS, LL, JJ, C);
 }
 
@@ -169,7 +169,7 @@ void EDMS_get_pelvic_viewpoint(physics_handle ph, State *s) {
 
     Q delta = 0;
 
-    if (I[on][30] == PELVIS) {
+    if (I[on][IDOF_MODEL] == PELVIS) {
 
         Q new_neck = I[on][0]; // Rendered height...
 
@@ -263,16 +263,16 @@ void EDMS_set_pelvis_parameters(physics_handle ph, Pelvis *p) {
 
     //	hardness = hardness*(mass*4/size);
     hardness = hardness * (mass * HARD_FAC / size);
-    I[on][20] = hardness;
-    I[on][21] = 3 * sqrt(I[on][20] * mass);
-    I[on][22] = size;
-    I[on][23] = pep * mass;
-    I[on][24] = 1. / mass;
-    I[on][25] = gravity;
-    I[on][26] = mass;
-    I[on][27] = 1. / (.4 * mass * size * size);
-    I[on][28] = 5. * (1. / I[on][27]);
-    I[on][29] = .4 * mass * size * size;
+    I[on][IDOF_PELVIS_K] = hardness;
+    I[on][IDOF_PELVIS_D] = 3 * sqrt(I[on][IDOF_PELVIS_K] * mass);
+    I[on][IDOF_PELVIS_RADIUS] = size;
+    I[on][IDOF_PELVIS_ROLL_DRAG] = pep * mass;
+    I[on][IDOF_PELVIS_MASS_RECIP] = 1. / mass;
+    I[on][IDOF_PELVIS_GRAVITY] = gravity;
+    I[on][IDOF_PELVIS_MASS] = mass;
+    I[on][IDOF_PELVIS_MOI_RECIP] = 1. / (.4 * mass * size * size);
+    I[on][IDOF_PELVIS_ROT_DRAG] = 5. * (1. / I[on][IDOF_PELVIS_MOI_RECIP]);
+    I[on][IDOF_PELVIS_MOI] = .4 * mass * size * size;
     //      mout << "I29 from set! " << I[on][29] << "\n";
     //        if ( I[on][30] != PELVIS ) mout << "!EDMS: You just screwed up the pelvis...\n";
 
@@ -300,14 +300,14 @@ void EDMS_set_pelvis_parameters(physics_handle ph, Pelvis *p) {
 void EDMS_get_pelvis_parameters(physics_handle ph, Pelvis *p) {
     int32_t on = physics_handle_to_object_number(ph);
 
-    p->pep = (I[on][23] / I[on][26]).to_fix();
-    p->size = I[on][22].to_fix();
+    p->pep = (I[on][IDOF_PELVIS_ROLL_DRAG] / I[on][IDOF_PELVIS_MASS]).to_fix();
+    p->size = I[on][IDOF_PELVIS_RADIUS].to_fix();
     //	p -> hardness = ( I[on][20]*I[on][22]/(I[on][26]*4) ).to_fix();
-    p->hardness = (I[on][20] * I[on][22] / (I[on][26] * HARD_FAC)).to_fix();
-    p->mass = I[on][26].to_fix();
-    p->gravity = I[on][25].to_fix();
+    p->hardness = (I[on][IDOF_PELVIS_K] * I[on][IDOF_PELVIS_RADIUS] / (I[on][IDOF_PELVIS_MASS] * HARD_FAC)).to_fix();
+    p->mass = I[on][IDOF_PELVIS_MASS].to_fix();
+    p->gravity = I[on][IDOF_PELVIS_GRAVITY].to_fix();
     p->cyber_space = I[on][10].to_int();
-    p->height = (I[on][6] + I[on][22]).to_fix();
+    p->height = (I[on][6] + I[on][IDOF_PELVIS_RADIUS]).to_fix();
 }
 
 //	And the compression test for terrain "traps..."

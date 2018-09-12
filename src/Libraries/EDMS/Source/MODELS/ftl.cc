@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	==================================================================================
 
 #include "edms_int.h"
-
+#include "idof.h"
 //#ifdef EDMS_SHIPPABLE
 ////#include <mout.h>
 //#endif
@@ -190,7 +190,7 @@ physics_handle EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q ran
 
                 victim_on = ph2on[victim];
 
-                Q inv_mass = (I[victim_on][30] == ROBOT ? I[victim_on][24] : I[victim_on][36]);
+                Q inv_mass = (I[victim_on][IDOF_MODEL] == ROBOT ? I[victim_on][IDOF_ROBOT_MASS_RECIP] : I[victim_on][36]);
 
                 if (inv_mass > 0.05 && knock * inv_mass > 10.0 / inv_mass) {
                     //             mout << "Clamping knock from " << knock;
@@ -199,8 +199,8 @@ physics_handle EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q ran
 
                     //             mout << " to " << knock << "\n";
                 }
-
-                if (I[victim_on][30] == ROBOT)
+                // FIXME this statement does nothing
+                if (I[victim_on][IDOF_MODEL] == ROBOT)
                     iota_c = 200 * inv_mass * inv_mass * knock;
                 else
                     iota_c = 200 * inv_mass * inv_mass * knock;
@@ -268,7 +268,7 @@ physics_handle EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q ran
             shooter_on = ph2on[shooter];
             iota_c = I[shooter_on][29] * kick;
 
-            if (I[shooter_on][30] == PELVIS) {
+            if (I[shooter_on][IDOF_MODEL] == PELVIS) {
                 I[shooter_on][8] = D_old[0] * iota_c;
                 I[shooter_on][9] = D_old[1] * iota_c;
             }
@@ -335,7 +335,7 @@ physics_handle object_check(uint32_t data_word, Q size, Q range, int32_t exclude
 
                     // Is it a pelvis, and, if so, do I check for your head?  (sooooo clean..)
                     // =======================================================================
-                    if (I[object][30] == PELVIS) {
+                    if (I[object][IDOF_MODEL] == PELVIS) {
 
                         Q position[3];
 
@@ -368,7 +368,7 @@ physics_handle object_check(uint32_t data_word, Q size, Q range, int32_t exclude
 
                         kill_zone = sqrt((top_1 + top_2 + top_3) / bottom);
 
-                        if (kill_zone < (.75 * I[object][22] + size)) {
+                        if (kill_zone < (.75 * I[object][IDOF_PELVIS_RADIUS] + size)) {
                             kzdist = sqrt((initial_X[0] - position[0]) * (initial_X[0] - position[0]) +
                                           (initial_X[1] - position[1]) * (initial_X[1] - position[1]) +
                                           (initial_X[2] - position[2]) * (initial_X[2] - position[2]));

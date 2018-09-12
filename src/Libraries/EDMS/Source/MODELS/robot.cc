@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <conio.h>
 #include "edms_int.h" //This is the object type library. It is universal.
 #include "edms_vt.h"
-
+#include "idof.h"
 //#ifdef EDMS_SHIPPABLE
 ////#include <mout.h>
 //#endif
@@ -106,8 +106,8 @@ void robot_idof(int32_t object) {
 
     EDMS_robot_global_badness_indicator = 0;
 
-    indoor_terrain(A00, // Get the info...
-                   A10, A20, I[object][22], on2ph[object]);
+    // Get the info...
+    indoor_terrain(A00, A10, A20, I[object][IDOF_ROBOT_RADIUS], on2ph[object]);
 
     //        if (EDMS_robot_global_badness_indicator != 0 ) {
     //                                        mout << "!Robot.cc: thinks that X: " << A00 << ", Y: " << A10 << ", Z: "
@@ -307,7 +307,7 @@ void robot_idof(int32_t object) {
     Q dam1 = object8 * object1 - object5;
     Q dam2 = object8 * object2 - object6;
 
-    I[object][14] = I[object][24] * (abs(dam0) + abs(dam1) + abs(dam2)); // Damage??
+    I[object][14] = I[object][IDOF_ROBOT_MASS_RECIP] * (abs(dam0) + abs(dam1) + abs(dam2)); // Damage??
 
     //	Is there a projectile hit?
     //	==========================
@@ -361,13 +361,13 @@ void robot_set_control(int32_t robot, Q thrust_lever, Q attitude_jet, Q jump) {
 
     //	Here's the thrust of the situation...
     //	-------------------------------------
-    I[robot][18] = thrust_lever * object1 * I[robot][26];
-    I[robot][19] = thrust_lever * object0 * I[robot][26];
+    I[robot][18] = thrust_lever * object1 * I[robot][IDOF_ROBOT_MASS];
+    I[robot][19] = thrust_lever * object0 * I[robot][IDOF_ROBOT_MASS];
     I[robot][17] = I[robot][26] * jump;
 
     //	And the turn of the...
     //	----------------------
-    I[robot][16] = attitude_jet * I[robot][29];
+    I[robot][16] = attitude_jet * I[robot][IDOF_ROBOT_MOI];
 
     //	Wakee wakee...
     //	--------------
@@ -483,22 +483,22 @@ int32_t make_robot(Q init_state[6][3], Q params[10]) {
         for (int32_t copy = 0; copy < 10; copy++) {
             I[object_number][copy + 20] = params[copy];
         }
-        I[object_number][30] = ROBOT; // Hey, you are what you eat.
+        I[object_number][IDOF_MODEL] = ROBOT; // Hey, you are what you eat.
 
-        //		Put in the collision information...
-        //		===================================
-        I[object_number][31] = I[object_number][22];
+        // Put in the collision information...
+        // ===================================
+        I[object_number][IDOF_RADIUS] = I[object_number][IDOF_ROBOT_RADIUS];
         I[object_number][32] = I[object_number][33] = I[object_number][34] = I[object_number][35] = 0;
-        I[object_number][36] = I[object_number][24]; // Shrugoff "mass"...
-        I[object_number][37] = -1;
-        I[object_number][38] = 0; // No kill I...
+        I[object_number][36] = I[object_number][IDOF_ROBOT_MASS_RECIP]; // Shrugoff "mass"...
+        I[object_number][IDOF_COLLIDE] = -1;
+        I[object_number][IDOF_AUTODESTRUCT] = 0; // No kill I...
 
-        //              Turn ON collisions for this robot...
-        //              ------------------------------------
+        // Turn ON collisions for this robot...
+        // ------------------------------------
         I[object_number][5] = 0; // negative values are off...
 
-        //		Zero the control initially...
-        //		=============================
+        // Zero the control initially...
+        // =============================
         I[object_number][16] = I[object_number][18] = I[object_number][19] = I[object_number][17] = 0;
 
         //		Now tell Soliton where to look for the equations of motion...
