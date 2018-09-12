@@ -28,20 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ss_flet.h"
 extern int EDMS_BCD;
 
-//	Cross products for the totally deranged...
-//	------------------------------------------
-#define XPT_0(Q) (-Q[1] * gamma_dot + Q[2] * alpha_dot)
-#define XPT_1(Q) (-Q[2] * beta_dot + Q[0] * gamma_dot)
-#define XPT_2(Q) (-Q[0] * alpha_dot + Q[1] * beta_dot)
-
-#define XP_0(Q, W) (Q[1] * W[2] - Q[2] * W[1])
-#define XP_1(Q, W) (Q[2] * W[0] - Q[0] * W[2])
-#define XP_2(Q, W) (Q[0] * W[1] - Q[1] * W[0])
-
-//	Print a 3D vector using mout...
-//	-------------------------------
-#define PRINT3D(N) mout << #N << ": " << N[0] << " : " << N[1] << " : " << N[2] << "\n";
-
 //	Utilities...
 //	============
 static Q n = 0, r = 0, e = 0, mag = 0, roll_delta = 0, kappa = 0, delta = 0, sin_wheel, cos_wheel;

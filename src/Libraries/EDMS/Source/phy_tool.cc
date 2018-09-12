@@ -140,7 +140,7 @@ void snobby_soliton_lite(Q timestep, int32_t object) {
 
 //      Here is a tool that Marc LeBlanc has requested...
 //      =================================================
-void mprint_state(int object) {
+void mprint_state(int32_t object) {
     /*
        int coord = 0,
            deriv = 0;

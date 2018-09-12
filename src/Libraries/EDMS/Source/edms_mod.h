@@ -50,4 +50,4 @@ extern int32_t are_you_there(int32_t object); // May not be needed by most model
 
 // Sleepy Snoozy...
 // ----------------
-extern int no_no_not_me[MAX_OBJ];
+extern int32_t no_no_not_me[MAX_OBJ];

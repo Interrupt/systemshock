@@ -185,7 +185,7 @@ bool do_work(int32_t object, int32_t other_object, Q my_rad, Q your_rad, Fixpoin
     dz = my_pos[2] - other_pos[2];
 
     if (dx >= cm_radius || dy >= cm_radius || dz >= cm_radius) {
-        return FALSE; // couldn't possibly collide
+        return false; // couldn't possibly collide
     }
 
     // Test for primary collision...

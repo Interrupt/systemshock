@@ -38,12 +38,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Each <x,y> bin in the grid contains (possibly) object n if
 // data[x][y] & (1 << n) != 0.
 //
-unsigned int data[EDMS_DATA_SIZE][EDMS_DATA_SIZE];
+uint32_t data[EDMS_DATA_SIZE][EDMS_DATA_SIZE];
 
 //	Constants for the fixpoint...
 //	=============================
-const int collision_max = EDMS_DATA_SIZE - 1;
-extern int EDMS_integrating;
+const int32_t collision_max = EDMS_DATA_SIZE - 1;
+extern int32_t EDMS_integrating;
 
 //////////////////////////////
 //
@@ -51,7 +51,7 @@ extern int EDMS_integrating;
 // will both call.  When I can check out the appropriate files, they'll turn
 // into macros.
 //
-void generic_write_object(int object, EDMS_Argblock_Pointer state) {
+void generic_write_object(int32_t object, EDMS_Argblock_Pointer state) {
     extern void (*EDMS_off_playfield)(physics_handle caller);
 
     Q q_hash_x = hash_scale * state[object][DOF_X][0];

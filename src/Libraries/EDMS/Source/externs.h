@@ -111,8 +111,8 @@ extern int32_t EDMS_robot_global_badness_indicator;
 //	Killers and snoozers...
 //	=======================
 void EDMS_initialize(EDMS_data *D);
-int32_t EDMS_kill(int object);
-void collision_wakeup(int object);
+int32_t EDMS_kill(int32_t object);
+void collision_wakeup(int32_t object);
 
 //	Solvers
 //	=======
@@ -126,17 +126,17 @@ void soliton_vector_holistic(Q timestep);
 // =====
 int32_t settle_object(int32_t object);
 void mprint_state(int32_t object);
-void inventory_and_statistics(int show_sleepers);
+void inventory_and_statistics(int32_t show_sleepers);
 int32_t sanity_check();
 
 //	Collisions
 //	==========
-void exclude_from_collisions(int guy_1, int guy_2);
-void reset_collisions(int object);
+void exclude_from_collisions(int32_t guy_1, int32_t guy_2);
+void reset_collisions(int32_t object);
 
 //	EDMS internal testbed wireframe...
 //	==================================
-void draw_object(int);
+void draw_object(int32_t);
 void setup_graphics();
 void kill_graphics();
 
@@ -148,11 +148,11 @@ void EDMS_get_Euler_angles(Q &alpha, Q &beta, Q &gamma, int32_t object);
 
 // Collision handling...
 // ---------------------
-void write_object(int);       // Write and unwrite to the collision table
-void delete_object(int);      // based on arguments...
-void state_write_object(int); // and state.
-void state_delete_object(int);
-int are_you_there(int object);
+void write_object(int32_t object);       // Write and unwrite to the collision table
+void delete_object(int32_t object);      // based on arguments...
+void state_write_object(int32_t object); // and state.
+void state_delete_object(int32_t object);
+int are_you_there(int32_t object);
 bool object_check_hash(int32_t object, int32_t hx, int32_t hy);
 
 extern uint32_t test_bitmask;
