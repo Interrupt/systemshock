@@ -27,8 +27,6 @@ int snd_start_digital(void) {
     //Everything is hopefully closed in proper order on exit
 
 	InitReadXMI();
-	atexit(FreeXMI);
-	atexit(ShutdownReadXMI);
 
 	return OK;
 }
