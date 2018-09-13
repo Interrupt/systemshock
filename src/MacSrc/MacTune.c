@@ -27,6 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "MacTune.h"
 #include "musicai.h"
+#include "player.h"
+#include "miscqvar.h"
+#include "Xmi.h"
 
 
 //-----------------
@@ -37,9 +40,9 @@ char		mlimbs_status = 0;
 
 mlimbs_request_info current_request[MLIMBS_MAX_SEQUENCES - 1]; // Request information
 
-ulong		mlimbs_counter = 0;
+//ulong		mlimbs_counter = 0;
 long		mlimbs_error;
-uchar		mlimbs_semaphore = FALSE;
+//uchar		mlimbs_semaphore = FALSE;
 
 Handle			gHeaderHdl, gTuneHdl, gOfsHdl;			// Holds the tune-related data for the current theme file.
 long			*gOffsets;										// Array of offsets for the beginning of each tune.
@@ -263,6 +266,15 @@ void MacTuneStartCurrentTheme(void)
 			gTuneDone = TRUE;								// else make sure we check again soon.
 
 	}*/
+
+	int track = 1+current_request[0].pieceID;
+	if (track >= 0 && track < NumTracks)
+	{
+	  int i = 0;
+      int volume = long_sqrt(127 * QUESTVAR_GET(MUSIC_VOLUME_QVAR)); //0-127
+	
+	  if (!IsPlaying(i)) StartTrack(i, track, volume);
+	}
 }
 
 //------------------------------------------------------------------------------
