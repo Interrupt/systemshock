@@ -645,6 +645,9 @@ void InitReadXMI(void)
   
     while (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_INIT) SDL_Delay(1);
   }
+
+
+  atexit(ShutdownReadXMI);
 }
 
 
@@ -659,7 +662,9 @@ void ShutdownReadXMI(void)
     SDL_AtomicSet(&ThreadCommand[i], THREAD_EXIT);
   }
 
-  SDL_Delay(200); //wait a bit for the threads to all hopefully exit
+  SDL_Delay(50); //wait a bit for the threads to all hopefully exit
+
+  FreeXMI();
 
   Mix_CloseAudio();
   SDL_CloseAudio();
