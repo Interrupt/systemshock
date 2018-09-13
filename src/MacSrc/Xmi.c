@@ -6,11 +6,15 @@
 
 struct ADL_MIDIPlayer *adlD;
 
+SDL_mutex *MyMutex;
 
 
-static void AdlAudioCallback(void * d, Uint8 *stream, int len)
+
+static void AdlAudioCallback(void *d, unsigned char *stream, int len)
 {
-    adl_generate(adlD, len / 2, stream);
+  SDL_LockMutex(MyMutex);
+  adl_generate(adlD, len / 2, (short *)stream);
+  SDL_UnlockMutex(MyMutex);
 }
 
 
@@ -37,12 +41,6 @@ void FreeXMI(void)
   if (TrackUsedChannels) {free(TrackUsedChannels); TrackUsedChannels = 0;}
 
   NumTracks = 0;
-
-
-  SDL_PauseAudio(1);
-  SDL_Delay(1);
-
-  adl_reset(adlD);
 }
 
 
@@ -337,15 +335,11 @@ int ReadXMI(const char *filename)
   free(data);
 
 
-  // Check to see which sound bank should be used
-  if(strstr(filename, "sblaster") != NULL) {
-    // res/sound/sblaster - Bank 45 sounds good
-    adl_setBank(adlD, 45);
-  }
-  else {
-  	// res/sound/genmidi - 45 Sounds off on various tracks, try something else
-    adl_setBank(adlD, 0);
-  }
+  //Use sound bank 45 for res/sound/sblaster, 0 for res/sound/genmidi
+  SDL_LockMutex(MyMutex);
+  if (strstr(filename, "sblaster") != NULL) adl_setBank(adlD, 45);
+  else                                      adl_setBank(adlD, 0);
+  SDL_UnlockMutex(MyMutex);
 
   return 1; //success
 }
@@ -385,39 +379,33 @@ int MyThread(void *arg)
         channel = (event->status & 15);
         if (channel != 9) channel = ThreadChannelRemap[channel+16*i]; //remap channel, except 9 (percussion)
 
-    	uint8_t p1 = event->data[0];
-    	uint8_t p2 = event->data[1];
+        uint8_t p1 = event->data[0];
+        uint8_t p2 = event->data[1];
 
-    	if ((event->status & ~15) == 0xB0 && event->data[0] == 0x07) { //set volume msb
-    		// TODO: Also divide by base music volume here
-    		adl_rt_controllerChange(adlD, channel, p1, ((int)(ThreadVolume[i] / 1.25f) * p2) >> 7);
+        if ((event->status & ~15) == 0xB0 && event->data[0] == 0x07)
+        {
+          //set volume msb
+          //TODO: Also divide by base music volume here
+
+          SDL_LockMutex(MyMutex);
+          adl_rt_controllerChange(adlD, channel, p1, ((int)(SDL_AtomicGet(&ThreadVolume[i]) / 1.25f) * p2) >> 7);
+          SDL_UnlockMutex(MyMutex);
     	}
-    	else {
-	        switch (event->status & ~15)
-		    {
-		        case 0x80:
-		            adl_rt_noteOff(adlD, channel, p1);
-		            break;
-		        case 0x90:
-		            adl_rt_noteOn(adlD, channel, p1, p2);
-		            break;
-		        case 0xA0:
-		            adl_rt_noteAfterTouch(adlD, channel, p1, p2);
-		            break;
-		        case 0xB0:
-		            adl_rt_controllerChange(adlD, channel, p1, p2);
-		            break;
-		        case 0xC0:
-		            adl_rt_patchChange(adlD, channel, p1);
-		            break;
-		        case 0xD0:
-		            adl_rt_channelAfterTouch(adlD, channel, p1);
-		            break;
-		        case 0xE0:
-		            adl_rt_pitchBendML(adlD, channel, p2, p1);
-		            break;
-		    }
-		}
+    	else
+        {
+          SDL_LockMutex(MyMutex);
+          switch (event->status & ~15)
+          {
+            case 0x80: adl_rt_noteOff(adlD, channel, p1); break;
+            case 0x90: adl_rt_noteOn(adlD, channel, p1, p2); break;
+            case 0xA0: adl_rt_noteAfterTouch(adlD, channel, p1, p2); break;
+            case 0xB0: adl_rt_controllerChange(adlD, channel, p1, p2); break;
+            case 0xC0: adl_rt_patchChange(adlD, channel, p1); break;
+            case 0xD0: adl_rt_channelAfterTouch(adlD, channel, p1); break;
+            case 0xE0: adl_rt_pitchBendML(adlD, channel, p2, p1); break;
+          }
+          SDL_UnlockMutex(MyMutex);
+        }
       }
 
       event = event->next;
@@ -433,15 +421,12 @@ int MyThread(void *arg)
       last_tick = 0;
       last_time = 0;
 
+      //here we should turn off all notes for these channels plus 9 (percussion)
       for (channel=0; channel<16; channel++) if (ChannelThread[channel] == i)
       {
-        adl_rt_noteOff(adlD, channel, (0x7B << 8)); //all notes off
-
         ChannelThread[channel] = -1;
         NumUsedChannels--;
       }
-
-      adl_rt_noteOff(adlD, 9, (0x7B << 8)); //all notes off: channel 9 (percussion)
 
       SDL_AtomicSet(&ThreadPlaying[i], 0);
       SDL_AtomicSet(&ThreadCommand[i], THREAD_READY);
@@ -531,10 +516,10 @@ void StartTrack(int i, unsigned int track, int volume)
     ThreadEventList[i] = TrackEvents[track];
     ThreadTiming[i] = TrackTiming[track];
     memcpy(ThreadChannelRemap+16*i, channel_remap, 16);
-    ThreadVolume[i] = volume;
+
+    SDL_AtomicSet(&ThreadVolume[i], volume);
 
     //printf("thread %i playing track %i, channels: %i, total: %i\n", i, track, num, NumUsedChannels);
-  
 
     SDL_AtomicSet(&ThreadCommand[i], THREAD_PLAYTRACK);
   
@@ -569,7 +554,9 @@ void StopTheMusic(void)
   SDL_PauseAudio(1);
   SDL_Delay(1);
 
+  SDL_LockMutex(MyMutex);
   adl_reset(adlD);
+  SDL_UnlockMutex(MyMutex);
 }
 
 
@@ -581,10 +568,13 @@ int IsPlaying(int i)
 
 
 
-void SetTrackVolume(int i, int volume, int rampTime) {
-	// Todo: do something with rampTime
-	INFO("SetTrackVolume %i %i", i, volume);
-	SDL_AtomicSet(&ThreadVolume[i], volume);
+void SetTrackVolume(int i, int volume, int rampTime)
+{
+  // Todo: do something with rampTime
+
+  INFO("SetTrackVolume %i %i", i, volume);
+
+  SDL_AtomicSet(&ThreadVolume[i], volume);
 }
 
 
@@ -629,6 +619,10 @@ void InitReadXMI(void)
 
   for (channel=0; channel<16; channel++) ChannelThread[channel] = -1;
 
+
+  MyMutex = SDL_CreateMutex();
+
+
   for (i=0; i<NUM_THREADS; i++)
   {
     //data is argument to MyThread function; it must "outlive" thread, so it is malloc'ed
@@ -667,6 +661,10 @@ void ShutdownReadXMI(void)
   FreeXMI();
 
   Mix_CloseAudio();
+
   SDL_CloseAudio();
+
   adl_close(adlD);
+
+  SDL_DestroyMutex(MyMutex);
 }
