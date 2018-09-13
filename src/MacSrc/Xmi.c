@@ -587,16 +587,18 @@ void InitReadXMI(void)
   // Start the ADL Midi device
   adlD = adl_init(48000);
 
-  adl_switchEmulator(adlD, 1);
-  adl_setNumChips(adlD, 4);
-  adl_setVolumeRangeModel(adlD, 1);
+  adl_switchEmulator(adlD, ADLMIDI_EMU_NUKED_174);
+  adl_setNumChips(adlD, 1);
+  adl_setVolumeRangeModel(adlD, ADLMIDI_VolumeModel_AUTO);
+  adl_setRunAtPcmRate(adlD, TRUE);
+
 
 
   SDL_AudioSpec spec, obtained;
   spec.freq     = 48000;
   spec.format   = AUDIO_S16SYS;
   spec.channels = 2;
-  spec.samples  = 4096;
+  spec.samples  = 2048;
   spec.callback = AdlAudioCallback;
   if (SDL_OpenAudio(&spec, &obtained)) {
   	ERROR("Could not open SDL audio");
