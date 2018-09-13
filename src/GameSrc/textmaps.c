@@ -108,7 +108,7 @@ errtype load_small_texturemaps(void) {
     // Figure out which animations are in use
     osid = objBigstuffs[0].id;
     while (osid != OBJ_SPEC_NULL) {
-        if (obj_is_display(ID2TRIP(objSmallstuffs[osid].id))) {
+        if (obj_is_display(ID2TRIP(objBigstuffs[osid].id))) { //was objSmallstuffs
             d = objBigstuffs[osid].data2;
             if ((d & TPOLY_INDEX_MASK) && ((d & TPOLY_TYPE_MASK) == 0x100))
                 rv = set_animations(d & TPOLY_INDEX_MASK, objBigstuffs[osid].cosmetic_value, anim_used);
