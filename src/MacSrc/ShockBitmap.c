@@ -46,36 +46,59 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Globals
 //--------------------
-PixMapHandle 	gScreenPixMap;
-CTabHandle			gMainColorHand;
-Boolean				gChangedColors = false;
-//ShockBitmap		gMainOffScreen;
-
 SDL_Surface* drawSurface;
 SDL_Surface* offscreenDrawSurface;
+
+int cur_bm_width;
+int cur_bm_height;
 
 //------------------------------------------------------------------------------------
 //		Setup the main offscreen bitmaps.
 //------------------------------------------------------------------------------------
-void SetupOffscreenBitmaps(void)
+void SetupOffscreenBitmaps(int width, int height)
 {	
-	SDL_DisplayMode displayMode;
-	SDL_GetCurrentDisplayMode(0, &displayMode);
+	if(drawSurface != NULL && offscreenDrawSurface != NULL) {
+		if(cur_bm_width >= width && cur_bm_height >= height) {
+			// Nothing to do here.
+			return;
+		}
+	}
 
-	int width = displayMode.w;
-	int height = displayMode.h;
+	INFO("SetupOffscreenBitmaps %i %i", width, height);
 
-	drawSurface = SDL_CreateRGBSurface(0, displayMode.w, displayMode.h, 8, 0, 0, 0, 0);
+	if(drawSurface != NULL) {
+		SDL_FreeSurface(drawSurface);
+	}
+	if(offscreenDrawSurface != NULL) {
+		SDL_FreeSurface(offscreenDrawSurface);
+	}
+
+	drawSurface = SDL_CreateRGBSurface(0, width, height, 8, 0, 0, 0, 0);
 	if(!drawSurface) {
 		ERROR("SDL: Failed to create draw surface");
 		return;
 	}
 
-	offscreenDrawSurface = SDL_CreateRGBSurface(0, displayMode.w, displayMode.h, 8, 0, 0, 0, 0);
+	offscreenDrawSurface = SDL_CreateRGBSurface(0, width, height, 8, 0, 0, 0, 0);
 	if(!offscreenDrawSurface) {
 		ERROR("SDL: Failed to create offscreen draw surface");
 		return;
 	}
+
+    // Point the renderer at the screen bytes
+	gScreenRowbytes = drawSurface->w;
+	gScreenAddress = drawSurface->pixels;
+	gScreenWide = 320;
+	gScreenHigh = 200;
+	gActiveLeft = 0;
+	gActiveTop = 0;
+	gActiveWide = 320;
+	gActiveHigh = 200;
+
+	grd_mode_cap.vbase = (uchar *)gScreenAddress;
+
+    cur_bm_width = width;
+    cur_bm_height = height;
 }
 
 //------------------------------------------------------------------------------------

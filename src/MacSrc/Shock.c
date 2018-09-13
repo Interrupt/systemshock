@@ -240,17 +240,7 @@ void InitSDL()
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
 
-	SetupOffscreenBitmaps();
-
-	// Point the renderer at the screen bytes
-	gScreenRowbytes = drawSurface->w;
-	gScreenAddress = drawSurface->pixels;
-	gScreenWide = 320;
-	gScreenHigh = 200;
-	gActiveLeft = 0;
-	gActiveTop = 0;
-	gActiveWide = 320;
-	gActiveHigh = 200;
+	SetupOffscreenBitmaps(1024, 768);
 
 	gr_init();
 

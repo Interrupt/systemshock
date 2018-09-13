@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fcntab.h"
 #include "lintab.h"
 #include "dbg.h"
-// #include "ShockBitmap.h"
+#include "ShockBitmap.h"
 
 #include <SDL.h>
 
@@ -97,19 +97,24 @@ void mac_set_mode(void)
     extern SDL_Renderer* renderer;
     extern SDL_Window* window;
 
+    extern Ptr gScreenAddress;
+    extern long gScreenRowbytes;
+
+    INFO("ChangeScreenSize");
+
     SDL_RenderClear(renderer);
     
     SDL_SetWindowSize(window, width, height);
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
     SDL_RenderSetLogicalSize(renderer, width, height);
 
+    SetupOffscreenBitmaps(width, height);
+
     extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
     gScreenWide = width;
     gScreenHigh = height;
     gActiveWide = width;
     gActiveHigh = height;
-
-    // TODO: Fix up the screen sizes in fullscreen mode?
  }
 
 
