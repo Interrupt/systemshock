@@ -40,7 +40,7 @@ void FreeXMI(void)
 
 
   SDL_PauseAudio(1);
-  SDL_Delay(10);
+  SDL_Delay(1);
 
   adl_reset(adlD);
 }
@@ -567,7 +567,7 @@ void StopTheMusic(void)
   for (i=0; i<NUM_THREADS; i++) StopTrack(i);
 
   SDL_PauseAudio(1);
-  SDL_Delay(10);
+  SDL_Delay(1);
 
   adl_reset(adlD);
 }
