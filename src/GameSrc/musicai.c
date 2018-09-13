@@ -401,9 +401,11 @@ errtype make_request(int chunk_num, int piece_ID) {
 
     DEBUG("make_request %i %i", chunk_num, piece_ID);
 
+    extern int WonGame_ShowStats;
+
     int i = chunk_num;
     int track = 1+piece_ID;
-    if (i >= 0 && i < NUM_THREADS && track >= 0 && track < NumTracks && !IsPlaying(i))
+    if (i >= 0 && i < NUM_THREADS && track >= 0 && track < NumTracks && !WonGame_ShowStats && !IsPlaying(i))
     {
         int volume = long_sqrt(127 * QUESTVAR_GET(MUSIC_VOLUME_QVAR)); //0-127
         StartTrack(i, track, volume);
