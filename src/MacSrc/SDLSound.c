@@ -134,8 +134,9 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) {
 
 void MacTuneUpdateVolume(void) {
 	extern uchar curr_vol_lev;
-	float music_vol_mod = 0.8f;
-	Mix_VolumeMusic(((curr_vol_lev * curr_vol_lev * 128 * music_vol_mod) / 10000) );
+
+    int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
+    ForceMusicVolume(volume);
 }
 
 int is_playing = 0;
