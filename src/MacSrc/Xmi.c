@@ -385,10 +385,8 @@ int MyThread(void *arg)
         if ((event->status & ~15) == 0xB0 && event->data[0] == 0x07)
         {
           //set volume msb
-          //TODO: Also divide by base music volume here
-
           SDL_LockMutex(MyMutex);
-          adl_rt_controllerChange(adlD, channel, p1, ((int)(SDL_AtomicGet(&ThreadVolume[i]) / 1.25f) * p2) >> 7);
+          adl_rt_controllerChange(adlD, channel, p1, (int)SDL_AtomicGet(&ThreadVolume[i]) * p2 / 128);
           SDL_UnlockMutex(MyMutex);
     	}
     	else
@@ -488,8 +486,6 @@ void StartTrack(int i, unsigned int track, int volume)
   int num, channel, remap;
   char channel_remap[16];
 
-  INFO("Playing track %i", track);
-
   if (track >= NumTracks) return;
 
   num = GetTrackNumChannels(track);
@@ -518,8 +514,6 @@ void StartTrack(int i, unsigned int track, int volume)
     memcpy(ThreadChannelRemap+16*i, channel_remap, 16);
 
     SDL_AtomicSet(&ThreadVolume[i], volume);
-
-    //printf("thread %i playing track %i, channels: %i, total: %i\n", i, track, num, NumUsedChannels);
 
     SDL_AtomicSet(&ThreadCommand[i], THREAD_PLAYTRACK);
   
@@ -568,13 +562,19 @@ int IsPlaying(int i)
 
 
 
-void SetTrackVolume(int i, int volume, int rampTime)
+void ForceMusicVolume(int volume)
 {
-  // Todo: do something with rampTime
+  int i;
 
-  INFO("SetTrackVolume %i %i", i, volume);
-
-  SDL_AtomicSet(&ThreadVolume[i], volume);
+  //force all playing channels to volume
+  for (i=0; i<NUM_THREADS; i++) if (IsPlaying(i))
+  {
+    SDL_AtomicSet(&ThreadVolume[i], volume);
+  
+    SDL_LockMutex(MyMutex);
+    adl_rt_controllerChange(adlD, i, 0x07, volume); //0-127 msb
+    SDL_UnlockMutex(MyMutex);
+  }
 }
 
 
