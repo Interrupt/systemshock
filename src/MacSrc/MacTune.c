@@ -271,9 +271,14 @@ void MacTuneStartCurrentTheme(void)
 	if (track >= 0 && track < NumTracks)
 	{
 	  int i = 0;
-      int volume = long_sqrt(127 * QUESTVAR_GET(MUSIC_VOLUME_QVAR)); //0-127
 	
-	  if (!IsPlaying(i)) StartTrack(i, track, volume);
+	  if (!IsPlaying(i))
+      {
+        extern uchar curr_vol_lev;
+
+        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
+        StartTrack(i, track, volume);
+      }
 	}
 }
 
