@@ -41,7 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "sfxlist.h"
 #include "tools.h"
-#include "miscqvar.h"
 
 #include "adlmidi.h"
 #include "Xmi.h"
@@ -407,7 +406,9 @@ errtype make_request(int chunk_num, int piece_ID) {
     int track = 1+piece_ID;
     if (i >= 0 && i < NUM_THREADS && track >= 0 && track < NumTracks && !WonGame_ShowStats && !IsPlaying(i))
     {
-        int volume = long_sqrt(127 * QUESTVAR_GET(MUSIC_VOLUME_QVAR)); //0-127
+        extern uchar curr_vol_lev;
+
+        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
         StartTrack(i, track, volume);
     }
 
