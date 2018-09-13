@@ -42,7 +42,7 @@ unsigned short *TrackUsedChannels;
 MIDI_EVENT *ThreadEventList[NUM_THREADS];
 int ThreadTiming[NUM_THREADS];
 char ThreadChannelRemap[16*NUM_THREADS];
-int ThreadVolume[NUM_THREADS]; //only msb: 0-127
+SDL_atomic_t ThreadVolume[NUM_THREADS]; //only msb: 0-127
 SDL_atomic_t ThreadPlaying[NUM_THREADS];
 SDL_atomic_t ThreadCommand[NUM_THREADS];
 
