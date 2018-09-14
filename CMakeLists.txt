@@ -10,12 +10,12 @@ set(CMAKE_C_STANDARD 99)
 # hide Windows console in distributable packages
 if(DEFINED ENV{APPVEYOR}) 
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -mwindows")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -mwindows")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -mwindows -D__STDC_LIMIT_MACROS")
 endif()
 
 if(NOT DEFINED ENV{APPVEYOR}) 
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -D__STDC_LIMIT_MACROS")
 endif()
 
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
