@@ -62,37 +62,40 @@ static const char *PREF_MUSIC_VOL    = "music-volume";
 static const char *PREF_SFX_VOL      = "sfx-volume";
 static const char *PREF_ALOG_VOL     = "alog-volume";
 static const char *PREF_VIDEOMODE    = "video-mode";
-static const char *PREF_HALFRES      = "half-resoultion";
+static const char *PREF_HALFRES      = "half-resolution";
 static const char *PREF_DETAIL       = "detail";
 static const char *PREF_USE_OPENGL   = "use-opengl";
 static const char *PREF_LIN_SCALING  = "linear-scaling";
+static const char *PREF_ONSCR_HELP   = "onscreen-help";
+static const char *PREF_GAMMA        = "gamma";
 
 //--------------------------------------------------------------------
 //	  Initialize the preferences to their default settings.
 //--------------------------------------------------------------------
 void SetDefaultPrefs(void) {
+
     gShockPrefs.prefVer = 0;
     gShockPrefs.prefPlayIntro = 1;      // First time through, play the intro
-
     gShockPrefs.goMsgLength = 0;        // Normal
     gShockPrefs.goPopupLabels = true;
-    gShockPrefs.goOnScreenHelp = true;
-    gShockPrefs.goLanguage = 0;         // English
-    gShockPrefs.goCaptureMouse = true;
-
     gShockPrefs.soBackMusic = true;
     gShockPrefs.soSoundFX = true;
+    gShockPrefs.doUseQD = false;
+
+    //saved in prefs file
+
+    gShockPrefs.goLanguage = 0;         // English
+    gShockPrefs.goCaptureMouse = true;
     gShockPrefs.soMusicVolume = 75;
     gShockPrefs.soSfxVolume = 100;
     gShockPrefs.soAudioLogVolume = 100;
-
     gShockPrefs.doVideoMode = 3;
     gShockPrefs.doResolution = 0;       // High-res.
     gShockPrefs.doDetail = 3;           // Max detail.
-    gShockPrefs.doGamma = 29;           // Default gamma (29 out of 100).
-    gShockPrefs.doUseQD = false;
     gShockPrefs.doUseOpenGL = false;
     gShockPrefs.doLinearScaling = false;
+    gShockPrefs.goOnScreenHelp = true;
+    gShockPrefs.doGamma = 29;           // Default gamma (29 out of 100).
 
     SetShockGlobals();
 }
@@ -131,10 +134,9 @@ OSErr LoadPrefs(void) {
     char line[64];
     while (fgets(line, sizeof(line), f)) {
         char *eq = strchr(line, '=');
-        if (!eq)
-            continue;
-
+        if (!eq) continue;
         *eq = '\0';
+
         const char *key = trim(line);
         const char *value = trim(eq + 1);
 
@@ -174,6 +176,12 @@ OSErr LoadPrefs(void) {
             gShockPrefs.doUseOpenGL = is_true(value);
         } else if (strcasecmp(key, PREF_LIN_SCALING) == 0) {
             gShockPrefs.doLinearScaling = is_true(value);
+        } else if (strcasecmp(key, PREF_ONSCR_HELP) == 0) {
+            gShockPrefs.goOnScreenHelp = is_true(value);
+        } else if (strcasecmp(key, PREF_GAMMA) == 0) {
+            int gamma = atoi(value);
+            if (gamma >= 0 && gamma <= 100)
+                gShockPrefs.doGamma = gamma;
         }
     }
 
@@ -187,6 +195,7 @@ OSErr LoadPrefs(void) {
 //--------------------------------------------------------------------
 OSErr SavePrefs(void) {
     INFO("Saving preferences");
+
     FILE *f = open_prefs("w");
     if (!f) {
         printf("ERROR: Failed to open preferences file\n");
@@ -203,8 +212,9 @@ OSErr SavePrefs(void) {
     fprintf(f, "%s = %d\n", PREF_DETAIL, _fr_global_detail);
     fprintf(f, "%s = %s\n", PREF_USE_OPENGL, gShockPrefs.doUseOpenGL ? "yes" : "no");
     fprintf(f, "%s = %s\n", PREF_LIN_SCALING, gShockPrefs.doLinearScaling ? "yes" : "no");
+    fprintf(f, "%s = %s\n", PREF_ONSCR_HELP, gShockPrefs.goOnScreenHelp ? "yes" : "no");
+    fprintf(f, "%s = %d\n", PREF_GAMMA, gShockPrefs.doGamma);
     fclose(f);
-
     return 0;
 }
 
