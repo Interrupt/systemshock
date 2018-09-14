@@ -54,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "player.h"
 #include "popups.h"
+#include "olhext.h"
 #include "Prefs.h"
 
 #include "OpenGL.h"
@@ -1948,7 +1949,7 @@ void options_screen_init(void) {
 
     // olh_temp=(QUESTBIT_GET(OLH_QBIT)==0);
 
-    olh_temp = TRUE;
+    olh_temp = olh_active;
 
     // okay, I admit it, we're going to tweak these "standard"
     // button rects a little bit.
