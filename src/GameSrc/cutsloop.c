@@ -207,6 +207,11 @@ void cutscene_loop() {
 }
 
 short play_cutscene(int id, bool show_credits) {
+	// Open the movie file
+	int cf = ResOpenFile(cutscene_files[id]);
+	if(cf <= 0)
+		return 0;
+
 	INFO("Playing Cutscene %i", id);
 
     *EngSubtitle = 0;
@@ -219,14 +224,14 @@ short play_cutscene(int id, bool show_credits) {
 	// Set some initial variables
 	is_first_frame = TRUE;
     done_playing_movie = FALSE;
-	movie_bitmap.bits = NULL;
 
-	// Open the movie file
-	int cf = ResOpenFile(cutscene_files[id]);
-	if(cf <= 0)
-		return 0;
+    //fix memory leaks
+    if (movie_bitmap.bits != NULL) {free(movie_bitmap.bits); movie_bitmap.bits = NULL;}
+    if (amovie != NULL) {free(amovie); amovie = NULL;}
 
 	amovie = malloc(sizeof(Afile));
+	memset(amovie, 0, sizeof(Afile)); //fix some members left uninitialized
+
     if (AfilePrepareRes(cutscene_anims[id], amovie) < 0) {
         WARN("%s: Cannot open Afile by id $%x", __FUNCTION__, cutscene_anims[id]);
         free(amovie);
