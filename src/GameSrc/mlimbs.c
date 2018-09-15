@@ -36,8 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define LOCK_ALL_CHANNELS
 
-uchar mlimbs_on = FALSE;
-char mlimbs_status = 0; // could make this one bitfield of status, on/off, enable/not, so on
+//uchar mlimbs_on = FALSE;
+//char mlimbs_status = 0; // could make this one bitfield of status, on/off, enable/not, so on
 int mlimbs_timer_id;    // what our timer handle is
 
 static uchar *mlimbs_theme = NULL; // data about the current theme
