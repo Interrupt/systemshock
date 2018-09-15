@@ -78,7 +78,7 @@ static Amethods *methods[] = {
 
 //	Allocate enough room in case RSD goes overboard
 
-#define BM_PLENTY_SIZE(szuncomp) (((szuncomp)*2) + 512)
+#define BM_PLENTY_SIZE(szuncomp)  (szuncomp*3)
 
 //	-------------------------------------------------------
 //		GENERAL ACCESS ROUTINES - READING
