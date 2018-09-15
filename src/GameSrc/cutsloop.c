@@ -74,6 +74,15 @@ extern void CaptureMouse(bool capture);
 
 
 
+void AudioStreamCallback(void *userdata, unsigned char *stream, int len)
+{
+  SDL_AudioStream *as = *(SDL_AudioStream **)userdata;
+
+  if (as != NULL) SDL_AudioStreamGet(as, stream, len);
+}
+
+
+
 uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
 {
   uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
