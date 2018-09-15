@@ -172,6 +172,8 @@ void cutscene_loop(void)
   
     if (cutscene_audiobuffer_size > 0)
     {
+      // === adjust volume in buffer here ===
+
       SDL_AudioStreamPut(cutscene_audiostream, cutscene_audiobuffer_pos, MOVIE_DEFAULT_BLOCKLEN);
       cutscene_audiobuffer_pos += MOVIE_DEFAULT_BLOCKLEN;
       cutscene_audiobuffer_size--;
