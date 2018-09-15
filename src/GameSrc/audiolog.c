@@ -164,7 +164,7 @@ errtype audiolog_play(int email_id) {
     // Need to convert the movie's audio format to ours
     // FIXME: Might want to use SDL_AudioStream to do this on the fly
     SDL_AudioCVT cvt;
-    SDL_BuildAudioCVT(&cvt, AUDIO_U8, 1, fix_int(palog->a.sampleRate), MIX_DEFAULT_FORMAT, 2, MIX_DEFAULT_FREQUENCY);
+    SDL_BuildAudioCVT(&cvt, AUDIO_U8, 1, fix_int(palog->a.sampleRate), AUDIO_S16SYS, 2, 48000);
     cvt.len = audio_length;  // 1024 stereo float32 sample frames.
     cvt.buf = (Uint8 *) SDL_malloc(cvt.len * cvt.len_mult);
     alog_buffer = cvt.buf;
