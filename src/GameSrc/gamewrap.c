@@ -56,6 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sideicon.h"
 #include "status.h"
 #include "tools.h"
+#include "wares.h"
 
 #include "otrip.h"
 
@@ -395,6 +396,15 @@ errtype load_game(char *fname) {
         _new_mode = FULLSCREEN_LOOP;
         chg_set_flg(GL_CHG_LOOP);
     }
+
+    extern uchar muzzle_fire_light;
+    extern void lamp_turnon(uchar visible, uchar real);
+    extern void lamp_turnoff(uchar visible, uchar real);
+    muzzle_fire_light = FALSE;
+    if (!(player_struct.hardwarez_status[CPTRIP(LANTERN_HARD_TRIPLE)] & WARE_ON))
+        lamp_turnoff(TRUE, FALSE);
+    else
+        lamp_turnon(TRUE, FALSE);
 
     //Â¥Â¥ temp
     // BlockMove(0, saveArray, 16);
