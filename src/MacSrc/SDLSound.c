@@ -13,20 +13,43 @@ static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
 static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
 static Mix_Chunk *playing_audiolog_sample = NULL;
 
-#define SAMPLE_RATE 44100
-#define SAMPLES 4096
-#define CHANNELS MLIMBS_MAX_CHANNELS
+extern SDL_AudioStream *cutscene_audiostream;
+extern struct ADL_MIDIPlayer *adlD;
 
-struct ADL_MIDIPlayer *adlDevice[MLIMBS_MAX_CHANNELS];
+extern void AudioStreamCallback(void *userdata, unsigned char *stream, int len);
+extern void MusicCallback(void *userdata, Uint8 *stream, int len);
 
 int snd_start_digital(void) {
 
 	// Startup the sound system
 
-    //ReadXMI also opens SDL mixer
-    //Everything is hopefully closed in proper order on exit
+    SDL_AudioSpec spec, obtained;
+    spec.freq     = 48000;
+    spec.format   = AUDIO_S16SYS;
+    spec.channels = 2;
+    spec.samples  = 2048;
+    spec.callback = AudioStreamCallback;
+    spec.userdata = (void *)&cutscene_audiostream;
+
+    if (SDL_OpenAudio(&spec, &obtained)) {ERROR("Could not open SDL audio");}
+    else {INFO("Opened Music Stream");}
+
+
+    if (Mix_Init(MIX_INIT_MP3) < 0) {ERROR("%s: Init failed", __FUNCTION__);}
+
+    if (Mix_OpenAudio(48000, AUDIO_S16SYS, 2, 2048) < 0)
+      {ERROR("%s: Couldn't open audio device", __FUNCTION__);}
+
+    Mix_AllocateChannels(SND_MAX_SAMPLES);
+
+    Mix_HookMusic(MusicCallback, (void *)&adlD);
+
 
 	InitReadXMI();
+
+
+    atexit(Mix_CloseAudio);
+    atexit(SDL_CloseAudio);
 
 	return OK;
 }
