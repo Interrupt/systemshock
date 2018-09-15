@@ -10,11 +10,21 @@ SDL_mutex *MyMutex;
 
 
 
+extern SDL_AudioStream *cutscene_audiostream;
+
+
+
 static void AdlAudioCallback(void *d, unsigned char *stream, int len)
 {
-  SDL_LockMutex(MyMutex);
-  adl_generate(adlD, len / 2, (short *)stream);
-  SDL_UnlockMutex(MyMutex);
+  SDL_AudioStream *as = *(SDL_AudioStream **)d;
+
+  if (as != NULL) SDL_AudioStreamGet(as, stream, len);
+  else
+  {
+    SDL_LockMutex(MyMutex);
+    adl_generate(adlD, len / 2, (short *)stream);
+    SDL_UnlockMutex(MyMutex);
+  }
 }
 
 
@@ -600,6 +610,8 @@ void InitReadXMI(void)
   spec.channels = 2;
   spec.samples  = 2048;
   spec.callback = AdlAudioCallback;
+  spec.userdata = (void *)&cutscene_audiostream;
+
   if (SDL_OpenAudio(&spec, &obtained)) {
   	ERROR("Could not open SDL audio");
   }
