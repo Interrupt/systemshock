@@ -78,7 +78,8 @@ void AudioStreamCallback(void *userdata, unsigned char *stream, int len)
 {
   SDL_AudioStream *as = *(SDL_AudioStream **)userdata;
 
-  if (as != NULL) SDL_AudioStreamGet(as, stream, len);
+  if (as != NULL && SDL_AudioStreamAvailable(as) > 0)
+    SDL_AudioStreamGet(as, stream, len);
 }
 
 
