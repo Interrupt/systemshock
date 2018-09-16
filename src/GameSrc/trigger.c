@@ -367,6 +367,8 @@ errtype trap_transmogrify_func(int p1, int p2, int p3, int p4) {
                 // counting backwards from zero
                 add_obj_to_animlist(p1, FALSE, TRUE, FALSE, 16, 0, NULL, 0);
                 if (source == NON_BRIDGE_TRIPLE) {
+                    //hack: on level 4 only allow one simultaneously playing force bridge sound
+                    if (player_struct.level != 4 || !digi_fx_playing(SFX_FORCE_BRIDGE, NULL))
                     play_digi_fx_obj(SFX_FORCE_BRIDGE, 1, p1);
                 }
             }
