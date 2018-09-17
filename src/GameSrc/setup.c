@@ -1615,6 +1615,10 @@ void setup_start(void)
 
   if (music_on) MacTuneLoadTheme("titloop", 0);
 
+  //need to reset this; it is essentially the endgame flag
+  extern uchar *shodan_bitmask;
+  shodan_bitmask = NULL;
+
   CaptureMouse(false);
 }
 
