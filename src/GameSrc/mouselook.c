@@ -37,11 +37,15 @@ void mouse_look_physics() {
 
     int mvelx, mvely;
 	get_mouselook_vel(&mvelx, &mvely);
-    mvelx *= -mlook_hsens;
-    mvely *= -mlook_vsens;
 
-    if (global_fullmap->cyber == FALSE) {
+    if (global_fullmap->cyber) {
+        //see physics_run() in physics.c
+        mlook_vel_x = -mvelx;
+        mlook_vel_y = -mvely;
+    } else {
         // player head controls
+        mvelx *= -mlook_hsens;
+        mvely *= -mlook_vsens;
 
         if (mvely != 0) {
             // Moving the eye up angle is easy
