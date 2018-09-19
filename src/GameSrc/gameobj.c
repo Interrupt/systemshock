@@ -1193,9 +1193,10 @@ void show_obj(ObjID cobjid) {
                             (objCritters[_fr_cobj->specID].mood == AI_MOOD_ATTACKING)) {
                             uchar c = CyberCritterProps[SCNUM(cobjid)].alt_vcolors[foog], nc;
                             int hp_state;
+                            int denom = ObjProps[objtrip].hit_points; if (denom == 0) denom = 1;
                             hp_state =
                                 256 * 14 -
-                                ((256 * 14 * _fr_cobj->info.current_hp / ObjProps[objtrip].hit_points) & (~0xff));
+                                ((256 * 14 * _fr_cobj->info.current_hp / denom) & (~0xff));
                             if (hp_state > 0xf00)
                                 hp_state = 0xf00;
                             else if (hp_state < 0)
