@@ -114,7 +114,7 @@ extern void amap_pixratio_set(fix);
 
 // limit framerate while scrolling to avoid flicker?
 // should really do something real about flicker anyway.
-#define SCROLL_FRATE 90
+#define SCROLL_FRATE 100
 
 frc *full_map_context;
 #define FULLMAP_CANVAS ((grs_canvas *)fr_get_canvas(full_map_context))
@@ -495,50 +495,54 @@ uchar pend_check(void) {
 
 #define hack_kb_callback(am, k) amap_kb_callback(am, k | KB_FLAG_DOWN)
 
-#define UP_ARROW_CODE    0xc8
-#define DOWN_ARROW_CODE  0xd0
-#define LEFT_ARROW_CODE  0xcb
-#define RIGHT_ARROW_CODE 0xcd
+#define UP_ARROW_CODE    0x7E
+#define DOWN_ARROW_CODE  0x7D
+#define LEFT_ARROW_CODE  0x7B
+#define RIGHT_ARROW_CODE 0x7C
 
 uchar amap_scroll_handler(uiEvent *ev, LGRegion *reg, void *v) {
     int elapsed, now;
     short code;
     curAMap *amptr = oAMap(MFD_FULLSCR_MAP);
 
+    if (!map_scroll_code) {
+        if (ev->type == UI_EVENT_KBD_POLL) {
+            code = ((uiRawKeyEvent *)ev)->scancode;
+            switch (code) {
+            case UP_ARROW_CODE:
+                map_scroll_code = AMAP_PAN_N;
+                break;
+            case DOWN_ARROW_CODE:
+                map_scroll_code = AMAP_PAN_S;
+                break;
+            case LEFT_ARROW_CODE:
+                map_scroll_code = AMAP_PAN_W;
+                break;
+            case RIGHT_ARROW_CODE:
+                map_scroll_code = AMAP_PAN_E;
+                break;
+            }
+        }
+    }
+
     if (map_scroll_code == 0)
         return FALSE;
-
-    if (ev->type == UI_EVENT_KBD_POLL) {
-        map_scroll_code = 0;
-        code = ((uiRawKeyEvent *)ev)->scancode;
-        switch (code) {
-        case UP_ARROW_CODE:
-            map_scroll_code = AMAP_PAN_N;
-            break;
-        case DOWN_ARROW_CODE:
-            map_scroll_code = AMAP_PAN_S;
-            break;
-        case LEFT_ARROW_CODE:
-            map_scroll_code = AMAP_PAN_W;
-            break;
-        case RIGHT_ARROW_CODE:
-            map_scroll_code = AMAP_PAN_E;
-            break;
-        }
-        if (map_scroll_code == 0)
-            return FALSE;
-    }
 
     now = *tmd_ticks;
     elapsed = now - map_scrolltime;
     if (elapsed < (CIT_CYCLE / SCROLL_FRATE))
         return TRUE;
+    if (elapsed > 20) elapsed = 20;
     map_scrolltime = now;
     map_scroll_d += (elapsed * MAP_SCROLL_SPEED * AMAP_DEF_DST) / CIT_CYCLE;
+
     amap_pan(amptr, map_scroll_code, &map_scroll_d);
     s_bf(BTN_RECENTER, AMAP_SET);
     pend_check();
     chg_set_flg(AMAP_MAP_EV);
+
+    map_scroll_code = 0;
+
     return TRUE;
 }
 
@@ -619,12 +623,10 @@ uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
         {
             x -= AMAP_RGT(grd_bm.w) + 2 * AMAP_BORDER + 1; // normalize to middle of pan region
             x -= 38;
-            x *= 2;
+            x *= 5;
             y -= GET_BTN_TOP(7);
-            y -= 54;
-            y *= 3;
-
-            map_scrolltime = *tmd_ticks;
+            y -= 90;
+            y *= 2;
 
             if ((abs(abs(x) - abs(y))) < 3)
                 return TRUE;     // null pan area...
@@ -637,6 +639,15 @@ uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
                 map_scroll_code = AMAP_PAN_S;
             else
                 map_scroll_code = AMAP_PAN_N;
+
+            if (map_scroll_code) {
+                map_scroll_d += (100 * MAP_SCROLL_SPEED * AMAP_DEF_DST) / CIT_CYCLE;
+
+                amap_pan(amptr, map_scroll_code, &map_scroll_d);
+                s_bf(BTN_RECENTER, AMAP_SET);
+                pend_check();
+                chg_set_flg(AMAP_MAP_EV);
+            }
         }
     } else {
         void *deal_data;
