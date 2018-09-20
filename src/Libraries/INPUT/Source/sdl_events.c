@@ -311,10 +311,37 @@ void pump_events(void)
 					//printf("ev.key.keysym.sym: %x\n", ev.key.keysym.sym);
 
 					// FIXME: this is hacky, see comment in SDL_TEXTINPUT below..
-					if(ev.key.keysym.sym >= 0x08 && ev.key.keysym.sym <= '~')
+					if(ev.key.keysym.sym >= 0x08 && ev.key.keysym.sym <= 127)
 						keyEvent.ascii = ev.key.keysym.sym;
 					else
-						keyEvent.ascii = 0;
+                    {
+                        keyEvent.ascii = 0;
+
+                        //use these invented "ascii" codes for hotkey system
+                        //see MacSrc/Prefs.c
+                        switch (ev.key.keysym.sym)
+                        {
+                            case SDLK_F1:          keyEvent.ascii = 128 +  0; break;
+                            case SDLK_F2:          keyEvent.ascii = 128 +  1; break;
+                            case SDLK_F3:          keyEvent.ascii = 128 +  2; break;
+                            case SDLK_F4:          keyEvent.ascii = 128 +  3; break;
+                            case SDLK_F5:          keyEvent.ascii = 128 +  4; break;
+                            case SDLK_F6:          keyEvent.ascii = 128 +  5; break;
+                            case SDLK_F7:          keyEvent.ascii = 128 +  6; break;
+                            case SDLK_F8:          keyEvent.ascii = 128 +  7; break;
+                            case SDLK_F9:          keyEvent.ascii = 128 +  8; break;
+                            case SDLK_F10:         keyEvent.ascii = 128 +  9; break;
+                            case SDLK_F11:         keyEvent.ascii = 128 + 10; break;
+                            case SDLK_F12:         keyEvent.ascii = 128 + 11; break;
+                            case SDLK_KP_DIVIDE:   keyEvent.ascii = 128 + 12; break;
+                            case SDLK_KP_MULTIPLY: keyEvent.ascii = 128 + 13; break;
+                            case SDLK_KP_MINUS:    keyEvent.ascii = 128 + 14; break;
+                            case SDLK_KP_PLUS:     keyEvent.ascii = 128 + 15; break;
+                            case SDLK_KP_ENTER:    keyEvent.ascii = 128 + 16; break;
+                            case SDLK_KP_DECIMAL:  keyEvent.ascii = 128 + 17; break;
+                            case SDLK_KP_0:        keyEvent.ascii = 128 + 18; break;
+                        }
+                    }
 
 					keyEvent.modifiers = 0;
 					Uint16 mod = ev.key.keysym.mod;
