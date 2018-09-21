@@ -15,6 +15,8 @@ static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
 extern SDL_AudioStream *cutscene_audiostream;
 extern struct ADL_MIDIPlayer *adlD;
 
+extern char *MusicCallbackBuffer;
+
 extern void AudioStreamCallback(void *userdata, unsigned char *stream, int len);
 extern void MusicCallback(void *userdata, Uint8 *stream, int len);
 
@@ -40,6 +42,8 @@ int snd_start_digital(void) {
       {ERROR("%s: Couldn't open audio device", __FUNCTION__);}
 
     Mix_AllocateChannels(SND_MAX_SAMPLES);
+
+    MusicCallbackBuffer = (char *)malloc(2048*5); //larger than needed paranoia
 
     Mix_HookMusic(MusicCallback, (void *)&adlD);
 
@@ -126,10 +130,7 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) {
 }
 
 void MacTuneUpdateVolume(void) {
-	extern uchar curr_vol_lev;
 
-    int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
-    ForceMusicVolume(volume);
 }
 
 int is_playing = 0;
