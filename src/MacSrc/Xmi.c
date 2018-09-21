@@ -496,6 +496,9 @@ void StartTrack(int i, unsigned int track, int volume)
 
   num = GetTrackNumChannels(track);
 
+  // Adjust the volume mix
+  volume = (volume * volume) / 127;
+  volume *= 0.5f;
 
   while (SDL_AtomicGet(&ThreadCommand[i]) != THREAD_READY) SDL_Delay(1);
 
