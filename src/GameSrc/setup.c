@@ -555,9 +555,7 @@ void WaitForKey(ulong ticks, int ch)
 
       if (track >= 0 && track < NumTracks)
       {
-        int volume = 127;
-        //int volume = long_sqrt(127 * QUESTVAR_GET(MUSIC_VOLUME_QVAR)); //0-127
-
+        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
         StartTrack(i, track, volume);
 
         if (!WonGame_ShowStats) CreditsTune = (CreditsTune + 1) % 8;
@@ -1500,9 +1498,7 @@ void setup_loop(void)
     int track = 0;
     if (track >= 0 && track < NumTracks)
     {
-      int volume = 127;
-      //int volume = long_sqrt(127 * QUESTVAR_GET(MUSIC_VOLUME_QVAR)); //0-127
-
+      int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
       StartTrack(i, track, volume);
     }
   }
@@ -1614,6 +1610,10 @@ void setup_start(void)
   }
 
   if (music_on) MacTuneLoadTheme("titloop", 0);
+
+  //need to reset this; it is essentially the endgame flag
+  extern uchar *shodan_bitmask;
+  shodan_bitmask = NULL;
 
   CaptureMouse(false);
 }
