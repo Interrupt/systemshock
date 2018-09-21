@@ -11,22 +11,44 @@
 
 static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
 static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
-static Mix_Chunk *playing_audiolog_sample = NULL;
 
-#define SAMPLE_RATE 44100
-#define SAMPLES 4096
-#define CHANNELS MLIMBS_MAX_CHANNELS
+extern SDL_AudioStream *cutscene_audiostream;
+extern struct ADL_MIDIPlayer *adlD;
 
-struct ADL_MIDIPlayer *adlDevice[MLIMBS_MAX_CHANNELS];
+extern void AudioStreamCallback(void *userdata, unsigned char *stream, int len);
+extern void MusicCallback(void *userdata, Uint8 *stream, int len);
 
 int snd_start_digital(void) {
 
 	// Startup the sound system
 
-    //ReadXMI also opens SDL mixer
-    //Everything is hopefully closed in proper order on exit
+    SDL_AudioSpec spec, obtained;
+    spec.freq     = 48000;
+    spec.format   = AUDIO_S16SYS;
+    spec.channels = 2;
+    spec.samples  = 2048;
+    spec.callback = AudioStreamCallback;
+    spec.userdata = (void *)&cutscene_audiostream;
+
+    if (SDL_OpenAudio(&spec, &obtained)) {ERROR("Could not open SDL audio");}
+    else {INFO("Opened Music Stream");}
+
+
+    if (Mix_Init(MIX_INIT_MP3) < 0) {ERROR("%s: Init failed", __FUNCTION__);}
+
+    if (Mix_OpenAudio(48000, AUDIO_S16SYS, 2, 2048) < 0)
+      {ERROR("%s: Couldn't open audio device", __FUNCTION__);}
+
+    Mix_AllocateChannels(SND_MAX_SAMPLES);
+
+    Mix_HookMusic(MusicCallback, (void *)&adlD);
+
 
 	InitReadXMI();
+
+
+    atexit(Mix_CloseAudio);
+    atexit(SDL_CloseAudio);
 
 	return OK;
 }
@@ -59,37 +81,6 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 	return channel;
 }
 
-int snd_alog_play(int snd_ref, int len, Uint8 *smp, struct snd_digi_parms *dprm) {
-
-	// Get rid of the last playing audiolog
-
-	if(playing_audiolog_sample != NULL) {
-		Mix_FreeChunk(playing_audiolog_sample);
-		playing_audiolog_sample = NULL;
-	}
-
-	// Play one of the Audiolog sounds
-
-	playing_audiolog_sample = Mix_QuickLoad_RAW(smp, len);
-	if (playing_audiolog_sample == NULL) {
-		DEBUG("%s: Failed to load sample", __FUNCTION__);
-		return ERR_NOEFFECT;
-	}
-
-	int channel = Mix_PlayChannel(-1, playing_audiolog_sample, 0);
-	if (channel < 0) {
-		DEBUG("%s: Failed to play sample", __FUNCTION__);
-		Mix_FreeChunk(playing_audiolog_sample);
-		playing_audiolog_sample = NULL;
-		return ERR_NOEFFECT;
-	}
-
-	digi_parms_by_channel[channel] = *dprm;
-	Mix_Volume(channel, dprm->vol * 128 / 100);
-
-	return channel;
-}
-
 void snd_end_sample(int hnd_id) {
 	Mix_HaltChannel(hnd_id);
 	if (samples_by_channel[hnd_id]) {
@@ -112,7 +103,9 @@ void snd_kill_all_samples(void) {
 		snd_end_sample(channel);
 	}
 
-    StopTheMusic(); //assume we want this too
+    //assume we want these too
+    StopTheMusic();
+    if (cutscene_audiostream != NULL) SDL_AudioStreamClear(cutscene_audiostream);
 }
 
 void snd_sample_reload_parms(snd_digi_parms *sdp) {

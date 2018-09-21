@@ -47,6 +47,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools.h"
 #include "wares.h"
 #include "mouselook.h"
+#include "audiolog.h"
+#include "Xmi.h"
 
 //--------------
 //  PROTOTYPES
@@ -309,13 +311,11 @@ void stop_music(void) {
 uchar toggle_music_func(short keycode, ulong context, void *data) {
     if (music_on) {
         message_info("Music off.");
+        StopTheMusic(); //do this here, not in stop_music(), to prevent silence when changing levels
         stop_music();
     } else {
         start_music();
-        if (mlimbs_status == 1)
-            message_info("Music on.");
-        else
-            message_info("Not enough memory to start music.");
+        message_info("Music on.");
     }
 
     gShockPrefs.soBackMusic = music_on;
@@ -1282,6 +1282,7 @@ uchar pause_game_func(short keycode, ulong context, void *data) {
     if (game_paused) {
         redraw_paused = TRUE;
 		snd_kill_all_samples();
+        audiolog_stop();
         return FALSE;
     }
 

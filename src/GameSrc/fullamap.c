@@ -76,7 +76,7 @@ errtype amap_init(void) {
     LGRect mac_rect = {{0, 0}, {640, 480}};
 
     generic_reg_init(TRUE, &amap_root_region, &mac_rect, &amap_slab, amap_key_handler, amap_mouse_handler);
-    uiInstallRegionHandler(&amap_root_region, UI_EVENT_KBD_POLL | UI_EVENT_MOUSE_MOVE, amap_scroll_handler, NULL, &id);
+    uiInstallRegionHandler(&amap_root_region, UI_EVENT_KBD_POLL | UI_EVENT_MOUSE, amap_scroll_handler, NULL, &id);
     return (OK);
 }
 

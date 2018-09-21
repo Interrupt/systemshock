@@ -142,6 +142,7 @@ static uchar last_msg_ok = TRUE;
 static ulong map_scrolltime = 0L;
 static int map_scroll_d = 0;
 static char map_scroll_code = 0;
+static bool map_scroll_clicked = 0;
 
 uchar pend_check(void);
 
@@ -495,50 +496,64 @@ uchar pend_check(void) {
 
 #define hack_kb_callback(am, k) amap_kb_callback(am, k | KB_FLAG_DOWN)
 
-#define UP_ARROW_CODE    0xc8
-#define DOWN_ARROW_CODE  0xd0
-#define LEFT_ARROW_CODE  0xcb
-#define RIGHT_ARROW_CODE 0xcd
+#define UP_ARROW_CODE    0x7E
+#define DOWN_ARROW_CODE  0x7D
+#define LEFT_ARROW_CODE  0x7B
+#define RIGHT_ARROW_CODE 0x7C
+
+#define KP_UP_CODE       0x5B
+#define KP_DOWN_CODE     0x54
+#define KP_LEFT_CODE     0x56
+#define KP_RIGHT_CODE    0x58
 
 uchar amap_scroll_handler(uiEvent *ev, LGRegion *reg, void *v) {
     int elapsed, now;
     short code;
     curAMap *amptr = oAMap(MFD_FULLSCR_MAP);
 
+    if (!map_scroll_code || !map_scroll_clicked) {
+        if (ev->type == UI_EVENT_KBD_POLL) {
+            code = ((uiRawKeyEvent *)ev)->scancode;
+            switch (code) {
+            case UP_ARROW_CODE:
+            case KP_UP_CODE:
+                map_scroll_code = AMAP_PAN_N;
+                break;
+            case DOWN_ARROW_CODE:
+            case KP_DOWN_CODE:
+                map_scroll_code = AMAP_PAN_S;
+                break;
+            case LEFT_ARROW_CODE:
+            case KP_LEFT_CODE:
+                map_scroll_code = AMAP_PAN_W;
+                break;
+            case RIGHT_ARROW_CODE:
+            case KP_RIGHT_CODE:
+                map_scroll_code = AMAP_PAN_E;
+                break;
+            }
+        }
+    }
+
     if (map_scroll_code == 0)
         return FALSE;
-
-    if (ev->type == UI_EVENT_KBD_POLL) {
-        map_scroll_code = 0;
-        code = ((uiRawKeyEvent *)ev)->scancode;
-        switch (code) {
-        case UP_ARROW_CODE:
-            map_scroll_code = AMAP_PAN_N;
-            break;
-        case DOWN_ARROW_CODE:
-            map_scroll_code = AMAP_PAN_S;
-            break;
-        case LEFT_ARROW_CODE:
-            map_scroll_code = AMAP_PAN_W;
-            break;
-        case RIGHT_ARROW_CODE:
-            map_scroll_code = AMAP_PAN_E;
-            break;
-        }
-        if (map_scroll_code == 0)
-            return FALSE;
-    }
 
     now = *tmd_ticks;
     elapsed = now - map_scrolltime;
     if (elapsed < (CIT_CYCLE / SCROLL_FRATE))
         return TRUE;
+    if (elapsed > 10) elapsed = 10; //prevent jumping of map
     map_scrolltime = now;
+    if (map_scroll_clicked) elapsed *= 10; //clicking nswe acts like a longer elapsed time
     map_scroll_d += (elapsed * MAP_SCROLL_SPEED * AMAP_DEF_DST) / CIT_CYCLE;
     amap_pan(amptr, map_scroll_code, &map_scroll_d);
     s_bf(BTN_RECENTER, AMAP_SET);
     pend_check();
     chg_set_flg(AMAP_MAP_EV);
+
+    map_scroll_code = 0;
+    map_scroll_clicked = FALSE;
+
     return TRUE;
 }
 
@@ -567,10 +582,6 @@ uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
 
     if (action & MOUSE_UPS) {
         mouse_unconstrain();
-        if (map_scroll_code != 0) {
-            map_scrolltime = 0;
-            map_scroll_code = 0;
-        }
         pend_check();
         return TRUE;
     }
@@ -619,12 +630,10 @@ uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
         {
             x -= AMAP_RGT(grd_bm.w) + 2 * AMAP_BORDER + 1; // normalize to middle of pan region
             x -= 38;
-            x *= 2;
+            x *= 5;
             y -= GET_BTN_TOP(7);
-            y -= 54;
-            y *= 3;
-
-            map_scrolltime = *tmd_ticks;
+            y -= 90;
+            y *= 2;
 
             if ((abs(abs(x) - abs(y))) < 3)
                 return TRUE;     // null pan area...
@@ -637,6 +646,7 @@ uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
                 map_scroll_code = AMAP_PAN_S;
             else
                 map_scroll_code = AMAP_PAN_N;
+            map_scroll_clicked = TRUE;
         }
     } else {
         void *deal_data;
@@ -821,6 +831,7 @@ uchar amap_kb_callback(curAMap *amptr, int code) {
     else {
         char btn = -1, todo = AMAP_TOGGLE;
         map_scroll_code = 0;
+        map_scroll_clicked = FALSE;
         switch (code & (~KB_FLAG_DOWN)) {
             // KLC      case KEY_PGUP:   case '[': if (!zoom_deal(amptr,BTN_ZOOMOUT)) exp=0; break;
             // KLC      case KEY_PGDN:   case ']': if (!zoom_deal(amptr,BTN_ZOOMIN))  exp=0; break;

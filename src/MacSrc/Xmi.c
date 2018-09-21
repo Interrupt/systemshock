@@ -1,5 +1,6 @@
-#include "Xmi.h"
 #include <SDL.h>
+
+#include "Xmi.h"
 #include "adlmidi.h"
 
 
@@ -10,11 +11,16 @@ SDL_mutex *MyMutex;
 
 
 
-static void AdlAudioCallback(void *d, unsigned char *stream, int len)
+void MusicCallback(void *userdata, Uint8 *stream, int len)
 {
-  SDL_LockMutex(MyMutex);
-  adl_generate(adlD, len / 2, (short *)stream);
-  SDL_UnlockMutex(MyMutex);
+  struct ADL_MIDIPlayer *adl_dev = *(struct ADL_MIDIPlayer **)userdata;
+
+  if (adl_dev != NULL)
+  {
+    SDL_LockMutex(MyMutex);
+    adl_generate(adl_dev, len / 2, (short *)stream); //generates len/2 short ints
+    SDL_UnlockMutex(MyMutex);
+  }
 }
 
 
@@ -490,6 +496,9 @@ void StartTrack(int i, unsigned int track, int volume)
 
   num = GetTrackNumChannels(track);
 
+  // Adjust the volume mix
+  volume = (volume * volume) / 127;
+  volume *= 0.5f;
 
   while (SDL_AtomicGet(&ThreadCommand[i]) != THREAD_READY) SDL_Delay(1);
 
@@ -519,9 +528,6 @@ void StartTrack(int i, unsigned int track, int volume)
   
     while (SDL_AtomicGet(&ThreadCommand[i]) != THREAD_READY) SDL_Delay(1);
   }
-
-
-  SDL_PauseAudio(0);
 }
 
 
@@ -544,9 +550,6 @@ void StopTheMusic(void)
   int i;
 
   for (i=0; i<NUM_THREADS; i++) StopTrack(i);
-
-  SDL_PauseAudio(1);
-  SDL_Delay(1);
 
   SDL_LockMutex(MyMutex);
   adl_reset(adlD);
@@ -593,37 +596,10 @@ void InitReadXMI(void)
   adl_setRunAtPcmRate(adlD, TRUE);
 
 
-
-  SDL_AudioSpec spec, obtained;
-  spec.freq     = 48000;
-  spec.format   = AUDIO_S16SYS;
-  spec.channels = 2;
-  spec.samples  = 2048;
-  spec.callback = AdlAudioCallback;
-  if (SDL_OpenAudio(&spec, &obtained)) {
-  	ERROR("Could not open SDL audio");
-  }
-  else {
-  	INFO("Opened Music Stream");
-  }
-
-
-  if (Mix_Init(MIX_INIT_MP3) < 0) {
-    ERROR("%s: Init failed", __FUNCTION__);
-  }
-
-  if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
-    ERROR("%s: Couldn't open audio device", __FUNCTION__);
-  }
-
-  Mix_AllocateChannels(SND_MAX_SAMPLES);
+  MyMutex = SDL_CreateMutex();
 
 
   for (channel=0; channel<16; channel++) ChannelThread[channel] = -1;
-
-
-  MyMutex = SDL_CreateMutex();
-
 
   for (i=0; i<NUM_THREADS; i++)
   {
@@ -652,6 +628,11 @@ void ShutdownReadXMI(void)
 {
   int i;
 
+  SDL_LockMutex(MyMutex);
+  adl_close(adlD);
+  adlD = NULL;
+  SDL_UnlockMutex(MyMutex);
+
   for (i=0; i<NUM_THREADS; i++)
   {
     StopTrack(i);
@@ -661,12 +642,6 @@ void ShutdownReadXMI(void)
   SDL_Delay(50); //wait a bit for the threads to all hopefully exit
 
   FreeXMI();
-
-  Mix_CloseAudio();
-
-  SDL_CloseAudio();
-
-  adl_close(adlD);
 
   SDL_DestroyMutex(MyMutex);
 }
