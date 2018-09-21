@@ -64,6 +64,9 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 	
 	*cooked |= (short)ev.state << KB_DOWN_SHF; // Add in the key-down state.
 
+    //text input events are used to get printable characters (see sdl_events.c)
+    //note that text input events don't work for ctrl'd or alt'd keys
+
 	if (ev.modifiers & KB_MOD_CTRL)		// If command-key was down,
 		*cooked |= KB_FLAG_CTRL;	// simulate a control key
 		
@@ -71,30 +74,8 @@ errtype kb_cook(kbs_event ev, ushort *cooked, uchar *results)
 		*cooked |= KB_FLAG_SHIFT;
 		
 	if (ev.modifiers & KB_MOD_ALT)		// If option-key was down,
-	{								// simulate an alt key.
-		long	tk = 0;
-		uint32_t	state = 0;
-		
-		// Unfortunately, option-key changes the character that was
-		// pressed.  So we need to find out what the unmodified
-		// character is.
-#if 1
-		STUB_ONCE("TODO: Figure out what this should do and do it with SDL.."); // TODO
-#else
-		Handle	kHdl;
-		// Note: this apprently gets the keyboard layout from MacOS
-		//       not sure we can do that with SDL, we should try to use SDL_TEXTINPUT events..
-		kHdl = GetIndResource('KCHR', 1);
-		HLock(kHdl);
-		tk = KeyTranslate(*kHdl, ev.code, &state);
-		HUnlock(kHdl);
-#endif
-		
-		// We've got the character, so or it into the "cooked" short.
-		*cooked &= 0xFF00;
-		*cooked |= (ushort)(tk & 0x00FF) | KB_FLAG_ALT;
-	}
-		
+		*cooked |= KB_FLAG_ALT;         // simulate an alt key.
+
 	return OK;
 /*
    ushort flags = KB_CNV(ev.code,0);
