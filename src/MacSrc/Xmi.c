@@ -9,6 +9,8 @@ struct ADL_MIDIPlayer *adlD;
 
 SDL_mutex *MyMutex;
 
+char *MusicCallbackBuffer;
+
 
 
 void MusicCallback(void *userdata, Uint8 *stream, int len)
@@ -18,8 +20,14 @@ void MusicCallback(void *userdata, Uint8 *stream, int len)
   if (adl_dev != NULL)
   {
     SDL_LockMutex(MyMutex);
-    adl_generate(adl_dev, len / 2, (short *)stream); //generates len/2 short ints
+    adl_generate(adl_dev, len / 2, (short *)MusicCallbackBuffer); //generates len/2 short ints
     SDL_UnlockMutex(MyMutex);
+
+	extern uchar curr_vol_lev;
+    int volume = (int)curr_vol_lev * 128 / 100; //convert from 0-100 to 0-128
+
+    SDL_memset(stream, 0, len);
+    SDL_MixAudioFormat(stream, MusicCallbackBuffer, AUDIO_S16SYS, len, volume);
   }
 }
 
@@ -487,6 +495,8 @@ int GetTrackNumChannels(unsigned int track)
 
 
 
+//note that volume parameter is ignored; track is played at max volume
+//master music volume is modified in music callback (MMVMMC)
 void StartTrack(int i, unsigned int track, int volume)
 {
   int num, channel, remap;
@@ -496,9 +506,6 @@ void StartTrack(int i, unsigned int track, int volume)
 
   num = GetTrackNumChannels(track);
 
-  // Adjust the volume mix
-  volume = (volume * volume) / 127;
-  volume *= 0.5f;
 
   while (SDL_AtomicGet(&ThreadCommand[i]) != THREAD_READY) SDL_Delay(1);
 
@@ -522,7 +529,8 @@ void StartTrack(int i, unsigned int track, int volume)
     ThreadTiming[i] = TrackTiming[track];
     memcpy(ThreadChannelRemap+16*i, channel_remap, 16);
 
-    SDL_AtomicSet(&ThreadVolume[i], volume);
+    //ignore volume passed to this function and play track at max volume
+    SDL_AtomicSet(&ThreadVolume[i], 128);
 
     SDL_AtomicSet(&ThreadCommand[i], THREAD_PLAYTRACK);
   
@@ -561,23 +569,6 @@ void StopTheMusic(void)
 int IsPlaying(int i)
 {
   return SDL_AtomicGet(&ThreadPlaying[i]);
-}
-
-
-
-void ForceMusicVolume(int volume)
-{
-  int i;
-
-  //force all playing channels to volume
-  for (i=0; i<NUM_THREADS; i++) if (IsPlaying(i))
-  {
-    SDL_AtomicSet(&ThreadVolume[i], volume);
-  
-    SDL_LockMutex(MyMutex);
-    adl_rt_controllerChange(adlD, i, 0x07, volume); //0-127 msb
-    SDL_UnlockMutex(MyMutex);
-  }
 }
 
 
