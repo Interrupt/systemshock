@@ -439,7 +439,6 @@ extern uchar posture_hotkey_func(short keycode, ulong context, void *data);
 extern uchar toggle_mouse_look(short keycode, ulong context, void *data);
 extern uchar change_mode_func(short keycode, ulong context, void *data);
 extern uchar clear_fullscreen_func(short keycode, ulong context, void *data);
-extern uchar save_hotkey_func(short keycode, ulong context, void *data);
 extern uchar saveload_hotkey_func(short keycode, ulong context, void *data);
 extern uchar pause_game_func(short keycode, ulong context, void *data);
 extern uchar reload_weapon_hotkey(short keycode, ulong context, void *data);
@@ -496,7 +495,7 @@ HOTKEYLOOKUP HotKeyLookup[] =
   { "\"normal_view\"",      DEMO_CONTEXT, change_mode_func,       (void *)GAME_LOOP      , 0, CTRL('d'),     0 },
   { "\"map_view\"",         DEMO_CONTEXT, change_mode_func,       (void *)AUTOMAP_LOOP   , 0, CTRL('a'),     0 },
   { "\"clear_fullscreen\"", DEMO_CONTEXT, clear_fullscreen_func,  NULL                   , 0, DOWN(KEY_BS),  0 },
-  { "\"save_game\"",        DEMO_CONTEXT, save_hotkey_func,       NULL                   , 0, CTRL('s'),     0 },
+  { "\"save_game\"",        DEMO_CONTEXT, saveload_hotkey_func,   (void *)FALSE          , 0, CTRL('s'),     0 },
   { "\"load_game\"",        DEMO_CONTEXT, saveload_hotkey_func,   (void *)TRUE           , 0, CTRL('l'),     0 },
   { "\"pause\"",            DEMO_CONTEXT, pause_game_func,        (void *)TRUE           , 0, DOWN('p'),     0 },
   { "\"reload_weapon 1\"",  DEMO_CONTEXT, reload_weapon_hotkey,   (void *)1              , 0, CTRL(KEY_BS),  0 },
