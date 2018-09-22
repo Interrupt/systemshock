@@ -175,22 +175,26 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 		case SDLK_KP_8 : return 0x5B; //  kVK_ANSI_Keypad8 = 0x5B, aka _UP2_
 		case SDLK_KP_9 : return 0x5C; //  kVK_ANSI_Keypad9 = 0x5C, aka _PGUP2_
 
-		// keycodes for keys that are independent of keyboard layout*/
+		// keycodes for keys that are independent of keyboard layout
 		case SDLK_RETURN : return 0x24; //  kVK_Return  = 0x24,
 		case SDLK_TAB : return 0x30; //  kVK_Tab     = 0x30,
 		case SDLK_SPACE : return 0x31; //  kVK_Space   = 0x31,
 		case SDLK_DELETE : return 0x33; //  kVK_Delete  = 0x33,
 		case SDLK_BACKSPACE : return 0x33; //  kVK_Delete  = 0x33,
 		case SDLK_ESCAPE : return 0x35; //  kVK_Escape  = 0x35,
-		case SDLK_LGUI : // fall-through
-		case SDLK_RGUI : return 0x37; //  kVK_Command = 0x37, // FIXME: I think command is the windows/meta key?
-		case SDLK_LSHIFT : return 0x38; //  kVK_Shift   = 0x38,
-		case SDLK_CAPSLOCK : return 0x39; //  kVK_CapsLock= 0x39,
-		case SDLK_LALT : return 0x3A; //  kVK_Option  = 0x3A, Option == Aalt
-		case SDLK_LCTRL : return 0x3B; //  kVK_Control = 0x3B,
-		case SDLK_RSHIFT : return 0x3C; //  kVK_RightShift  = 0x3C,
-		case SDLK_RALT : return 0x3D; //  kVK_RightOption = 0x3D,
-		case SDLK_RCTRL : return 0x3E; //  kVK_RightControl = 0x3E,
+
+        //    returning these is unnecessary and can cause keypresses to be missed
+        //    (esp keys with modifiers)
+		//case SDLK_LGUI : // fall-through
+		//case SDLK_RGUI : return 0x37; //  kVK_Command = 0x37, // FIXME: I think command is the windows/meta key?
+		//case SDLK_LSHIFT : return 0x38; //  kVK_Shift   = 0x38,
+		//case SDLK_CAPSLOCK : return 0x39; //  kVK_CapsLock= 0x39,
+		//case SDLK_LALT : return 0x3A; //  kVK_Option  = 0x3A, Option == Aalt
+		//case SDLK_LCTRL : return 0x3B; //  kVK_Control = 0x3B,
+		//case SDLK_RSHIFT : return 0x3C; //  kVK_RightShift  = 0x3C,
+		//case SDLK_RALT : return 0x3D; //  kVK_RightOption = 0x3D,
+		//case SDLK_RCTRL : return 0x3E; //  kVK_RightControl = 0x3E,
+
 		//case SDLK_ : return 0x3F; //  kVK_Function = 0x3F, // TODO: what's this?
 		case SDLK_F17 : return 0x40; //  kVK_F17 = 0x40,
 		case SDLK_VOLUMEUP : return 0x48; //  kVK_VolumeUp = 0x48,
@@ -403,83 +407,84 @@ void pump_events(void)
       case SDL_KEYDOWN:
       {
         uchar c = sdlKeyCodeToSSHOCKkeyCode(ev.key.keysym.sym);
-        if (c == KBC_NONE) break;
-
-        kbs_event keyEvent = { 0 };
-
-        keyEvent.code = c;
-        keyEvent.ascii = 0;
-        keyEvent.modifiers = 0;
-
-        //https://wiki.libsdl.org/SDLKeycodeLookup
-        //Keycodes for keys with printable characters are represented by the
-        //character byte in parentheses. Keycodes without character representations
-        //are determined by their scancode bitwise OR-ed with 1<<30 (0x40000000).
-
-        if (ev.key.keysym.sym >= 0x08 && ev.key.keysym.sym <= 127)
-          keyEvent.ascii = ev.key.keysym.sym;
-        else
+        if (c != KBC_NONE)
         {
-          //use these invented "ascii" codes for hotkey system
-          //see MacSrc/Prefs.c
-          switch (ev.key.keysym.sym)
+          kbs_event keyEvent = { 0 };
+  
+          keyEvent.code = c;
+          keyEvent.ascii = 0;
+          keyEvent.modifiers = 0;
+  
+          //https://wiki.libsdl.org/SDLKeycodeLookup
+          //Keycodes for keys with printable characters are represented by the
+          //character byte in parentheses. Keycodes without character representations
+          //are determined by their scancode bitwise OR-ed with 1<<30 (0x40000000).
+  
+          if (ev.key.keysym.sym >= 0x08 && ev.key.keysym.sym <= 127)
+            keyEvent.ascii = ev.key.keysym.sym;
+          else
           {
-            case SDLK_F1:          keyEvent.ascii = 128 +  0; break;
-            case SDLK_F2:          keyEvent.ascii = 128 +  1; break;
-            case SDLK_F3:          keyEvent.ascii = 128 +  2; break;
-            case SDLK_F4:          keyEvent.ascii = 128 +  3; break;
-            case SDLK_F5:          keyEvent.ascii = 128 +  4; break;
-            case SDLK_F6:          keyEvent.ascii = 128 +  5; break;
-            case SDLK_F7:          keyEvent.ascii = 128 +  6; break;
-            case SDLK_F8:          keyEvent.ascii = 128 +  7; break;
-            case SDLK_F9:          keyEvent.ascii = 128 +  8; break;
-            case SDLK_F10:         keyEvent.ascii = 128 +  9; break;
-            case SDLK_F11:         keyEvent.ascii = 128 + 10; break;
-            case SDLK_F12:         keyEvent.ascii = 128 + 11; break;
-            case SDLK_KP_DIVIDE:   keyEvent.ascii = 128 + 12; break;
-            case SDLK_KP_MULTIPLY: keyEvent.ascii = 128 + 13; break;
-            case SDLK_KP_MINUS:    keyEvent.ascii = 128 + 14; break;
-            case SDLK_KP_PLUS:     keyEvent.ascii = 128 + 15; break;
-            case SDLK_KP_ENTER:    keyEvent.ascii = 128 + 16; break;
-            case SDLK_KP_DECIMAL:  keyEvent.ascii = 128 + 17; break;
-            case SDLK_KP_0:        keyEvent.ascii = 128 + 18; break;
+            //use these invented "ascii" codes for hotkey system
+            //see MacSrc/Prefs.c
+            switch (ev.key.keysym.sym)
+            {
+              case SDLK_F1:          keyEvent.ascii = 128 +  0; break;
+              case SDLK_F2:          keyEvent.ascii = 128 +  1; break;
+              case SDLK_F3:          keyEvent.ascii = 128 +  2; break;
+              case SDLK_F4:          keyEvent.ascii = 128 +  3; break;
+              case SDLK_F5:          keyEvent.ascii = 128 +  4; break;
+              case SDLK_F6:          keyEvent.ascii = 128 +  5; break;
+              case SDLK_F7:          keyEvent.ascii = 128 +  6; break;
+              case SDLK_F8:          keyEvent.ascii = 128 +  7; break;
+              case SDLK_F9:          keyEvent.ascii = 128 +  8; break;
+              case SDLK_F10:         keyEvent.ascii = 128 +  9; break;
+              case SDLK_F11:         keyEvent.ascii = 128 + 10; break;
+              case SDLK_F12:         keyEvent.ascii = 128 + 11; break;
+              case SDLK_KP_DIVIDE:   keyEvent.ascii = 128 + 12; break;
+              case SDLK_KP_MULTIPLY: keyEvent.ascii = 128 + 13; break;
+              case SDLK_KP_MINUS:    keyEvent.ascii = 128 + 14; break;
+              case SDLK_KP_PLUS:     keyEvent.ascii = 128 + 15; break;
+              case SDLK_KP_ENTER:    keyEvent.ascii = 128 + 16; break;
+              case SDLK_KP_DECIMAL:  keyEvent.ascii = 128 + 17; break;
+              case SDLK_KP_0:        keyEvent.ascii = 128 + 18; break;
+            }
           }
-        }
-
-        Uint16 mod = ev.key.keysym.mod;
-
-        if (mod & KMOD_SHIFT) keyEvent.modifiers |= KB_MOD_SHIFT;
-        if (mod & KMOD_CTRL ) keyEvent.modifiers |= KB_MOD_CTRL;
-        if (mod & KMOD_ALT  ) keyEvent.modifiers |= KB_MOD_ALT;
-
-        if (ev.key.state == SDL_PRESSED)
-        {
-          if (ev.key.keysym.sym == SDLK_RETURN && mod & KMOD_ALT)
-            {toggleFullScreen(); break;}
-
-          //handle non-printable or ctrl'd or alt'd keys here
-          //other cases are handled by text input event below
-          if (ev.key.keysym.sym < 32 || ev.key.keysym.sym > 126 || (mod & KMOD_CTRL) || (mod & KMOD_ALT))
+  
+          Uint16 mod = ev.key.keysym.mod;
+  
+          if (mod & KMOD_SHIFT) keyEvent.modifiers |= KB_MOD_SHIFT;
+          if (mod & KMOD_CTRL ) keyEvent.modifiers |= KB_MOD_CTRL;
+          if (mod & KMOD_ALT  ) keyEvent.modifiers |= KB_MOD_ALT;
+  
+          if (ev.key.state == SDL_PRESSED)
           {
-            keyEvent.state = KBS_DOWN;
+            if (ev.key.keysym.sym == SDLK_RETURN && mod & KMOD_ALT)
+              {toggleFullScreen(); break;}
+  
+            //handle non-printable or ctrl'd or alt'd keys here
+            //other cases are handled by text input event below
+            if (ev.key.keysym.sym < 32 || ev.key.keysym.sym > 126 || (mod & KMOD_CTRL) || (mod & KMOD_ALT))
+            {
+              keyEvent.state = KBS_DOWN;
+              addKBevent(&keyEvent);
+    
+              sshockKeyStates[c] = keyEvent.modifiers | KB_MOD_PRESSED;
+            }
+          }
+          else
+          {
+            //key up following text input event case below is handled here
+  
+            keyEvent.state = KBS_UP;
             addKBevent(&keyEvent);
-  
-            sshockKeyStates[c] = keyEvent.modifiers | KB_MOD_PRESSED;
+    
+            sshockKeyStates[c] = 0;
           }
-        }
-        else
-        {
-          //key up following text input event case below is handled here
-
-          keyEvent.state = KBS_UP;
-          addKBevent(&keyEvent);
-  
-          sshockKeyStates[c] = 0;
         }
 
         //hack to allow pressing shift after move key
         //sets all current shock states in array to shifted or non-shifted
-        if (c == 0x38 || c == 0x3C) //left or right shift
+        if (ev.key.keysym.sym == SDLK_LSHIFT || ev.key.keysym.sym == SDLK_RSHIFT)
         {
           int i;
           for (i=0; i<256; i++) if (sshockKeyStates[i])
