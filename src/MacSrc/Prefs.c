@@ -446,7 +446,7 @@ extern uchar select_grenade_hotkey(short keycode, ulong context, void *data);
 extern uchar toggle_olh_func(short keycode, ulong context, void *data);
 extern uchar select_drug_hotkey(short keycode, ulong context, void *data);
 extern uchar toggle_music_func(short keycode, ulong context, void *data);
-extern uchar MacQuitFunc(short keycode, ulong context, void *data);
+extern uchar demo_quit_func(short keycode, ulong context, void *data);
 extern uchar cycle_weapons_func(short keycode, ulong context, void *data);
 extern uchar MacDetailFunc(short keycode, ulong context, void *data);
 extern uchar toggle_opengl_func(short keycode, ulong context, void *data);
@@ -504,7 +504,7 @@ HOTKEYLOOKUP HotKeyLookup[] =
   { "\"toggle_olh\"",       DEMO_CONTEXT, toggle_olh_func,        NULL                   , 0, CTRL('h'),     0 },
   { "\"select_drug\"",      DEMO_CONTEXT, select_drug_hotkey,     (void *)0              , 0, CTRL(';'),     0 },
   { "\"toggle_music\"",     DEMO_CONTEXT, toggle_music_func,      NULL                   , 0, CTRL('m'),     0 },
-  { "\"quit\"",             DEMO_CONTEXT, MacQuitFunc,            NULL                   , 0, CTRL('q'),     0 },
+  { "\"quit\"",             DEMO_CONTEXT, demo_quit_func,         NULL                   , 0, CTRL('q'),     0 },
   { "\"cycle_weapons 1\"",  DEMO_CONTEXT, cycle_weapons_func,     (void *)1              , 0, TAB_KEY,       0 },
   { "\"cycle_weapons -1\"", DEMO_CONTEXT, cycle_weapons_func,     (void *)-1             , 0, S_TAB_KEY,     0 },
   { "\"cycle_detail\"",     DEMO_CONTEXT, MacDetailFunc,          NULL                   , 0, CTRL('1'),     0 },
