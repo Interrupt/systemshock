@@ -203,7 +203,7 @@ int sanity_check() {
     //		Have some variables...
     //		----------------------
 
-    int32_t object = 0, coord = 0, dof = 0, object_number = 0;
+    int32_t object = 0;
 
     physics_handle ph = 0;
 

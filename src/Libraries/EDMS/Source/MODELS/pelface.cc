@@ -139,26 +139,26 @@ physics_handle EDMS_make_pelvis(Pelvis *p, State *s) {
 
 //      This works just like the robot model...
 //      ---------------------------------------
-void EDMS_control_pelvis(physics_handle ph, fix F, fix T, fix S, fix L, fix J, int32_t C) {
+void EDMS_control_pelvis(physics_handle ph, fix forward, fix turn, fix sidestep, fix lean, fix jump, int32_t crouch) {
 
-    Q FF, // Silly, no?
-        TT, SS, LL, JJ;
+    // Silly, no?
+    Q FF, TT, SS, LL, JJ;
 
 #ifdef EDMS_SHIPPABLE
     if (ph < 0)
         mout << "Hey, you are and idiot...";
 #endif
 
-    FF.fix_to(F);
-    TT.fix_to(T);
-    SS.fix_to(S);
-    LL.fix_to(L);
-    JJ.fix_to(J);
+    FF.fix_to(forward);
+    TT.fix_to(turn);
+    SS.fix_to(sidestep);
+    LL.fix_to(lean);
+    JJ.fix_to(jump);
 
     int32_t on = physics_handle_to_object_number(ph);
 
     if (I[on][IDOF_MODEL] == PELVIS)
-        pelvis_set_control(on, FF, TT, SS, LL, JJ, C);
+        pelvis_set_control(on, FF, TT, SS, LL, JJ, crouch);
 }
 
 //      At some point we need the viewpoint offered by the neck...
@@ -313,12 +313,13 @@ void EDMS_get_pelvis_parameters(physics_handle ph, Pelvis *p) {
 //	And the compression test for terrain "traps..."
 //	===============================================
 fix EDMS_get_pelvis_damage(physics_handle ph, fix delta_t) {
-
     int32_t object;
     Q worker_bee_buzz_buzz = 0;
 
     object = ph2on[ph]; // As stupid as it gets...
     worker_bee_buzz_buzz = I[object][14];
+
+    // FIXME What going on there?
     I[object][14] = 0;
 
     return fix_mul(delta_t, I[object][14].to_fix());

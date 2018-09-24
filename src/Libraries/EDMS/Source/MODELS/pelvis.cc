@@ -110,7 +110,7 @@ void pelvis_idof(int32_t object) {
 
     //	Call me instead of having special code everywhere...
     //	====================================================
-    extern void shall_we_dance(int object, Q &result0, Q &result1, Q &result2);
+    extern void shall_we_dance(int32_t object, Q &result0, Q &result1, Q &result2);
 
     EDMS_pelvis_is_climbing = 0;
 

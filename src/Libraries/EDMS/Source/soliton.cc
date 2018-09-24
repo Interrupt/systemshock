@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //#include <iostream>
 #include "edms_int.h" //Object types, END conventions, etc.
-
+#include "idof.h"
 #include "physhand.h"
 #include "lg.h"
 
@@ -114,13 +114,12 @@ bool A_is_active = false;
 void soliton_lite(Q timestep) {
     extern void robot_idof(int32_t), pelvis_idof(int32_t);
 
-    register int32_t object = 0;
-    register int32_t coord = 0;
-    register Q *S_Object;
+    int32_t object = 0;
+    int32_t coord = 0;
+    Q *S_Object;
 
     Q frequency_check;
     Q average_frequency;
-    int32_t ccount = 0;
     int32_t count = 0;
 
     // Copy the state vector initially into the argument vector...
@@ -174,7 +173,7 @@ void soliton_lite(Q timestep) {
                 }
 
                 // This is angular velocity I think - DS
-                if ((I[object][30] == ROBOT) && (coord == 3))
+                if ((I[object][IDOF_MODEL] == ROBOT) && (coord == 3))
                     frequency_check += abs(50 * S_Object[(coord << 2) + 2]);
             }
 
@@ -194,11 +193,11 @@ void soliton_lite(Q timestep) {
             if (frequency_check < snooz_threshold) {
                 EDMS_sleepy_snoozy(on2ph[object]);
                 no_no_not_me[object] = 0;
-                if (I[object][30] == PELVIS)
+                if (I[object][IDOF_MODEL] == PELVIS)
                     no_no_not_me[object] = 1; // Hack for now...
-                if (I[object][30] == BIPED)
+                if (I[object][IDOF_MODEL] == BIPED)
                     no_no_not_me[object] = 1;
-                if (I[object][30] == D_FRAME)
+                if (I[object][IDOF_MODEL] == D_FRAME)
                     no_no_not_me[object] = 1;
                 //          if (no_no_not_me[object] == 0) { mout << "!EDMS: sleeping f = " << frequency_check << "\n";}
             }
@@ -336,7 +335,7 @@ void soliton_lite(Q timestep) {
 
             // Calculate the multiplier...
             // ---------------------------
-            if (I[object][30] == D_FRAME) {
+            if (I[object][IDOF_MODEL] == D_FRAME) {
                 Q lagrange_multiplier = .5 / timestep;
                 Q l_m;
                 Q lagrange;
@@ -363,7 +362,7 @@ void soliton_lite(Q timestep) {
 
                     // Check for Dirac...
                     // ------------------
-                    if (I[object][30] == D_FRAME) {
+                    if (I[object][IDOF_MODEL] == D_FRAME) {
                         //                mout << "D";
 
                         S_Object[(coord << 2) + 0].val += fix_mul(
@@ -390,7 +389,7 @@ void soliton_lite(Q timestep) {
 
                     // Use the multiplier...
                     // ---------------------
-                    if (I[object][30] == D_FRAME) {
+                    if (I[object][IDOF_MODEL] == D_FRAME) {
                         S_Object[(coord << 2) + 0].val =
                             S_Object[(coord << 2) + 0].val +
                             fix_mul(timestep.val, (S_Object[(coord << 2) + 1].val + anus[coord].val)) +
@@ -412,7 +411,7 @@ void soliton_lite(Q timestep) {
             delete_object(object);
             state_write_object(object);
 
-            if (I[object][38] < 0)
+            if (I[object][IDOF_AUTODESTRUCT] < 0)
                 EDMS_kill_object(on2ph[object]); // You deserve to die!
         }
     }
@@ -475,7 +474,7 @@ void soliton_vector_holistic(Q /*timestep*/) {}
 //	get soliton running...
 //	======================
 void EDMS_initialize(EDMS_data *D) {
-    extern unsigned int data[EDMS_DATA_SIZE][EDMS_DATA_SIZE];
+    extern uint32_t data[EDMS_DATA_SIZE][EDMS_DATA_SIZE];
     int32_t object = 0, coord = 0, deriv = 0;
     const Q collision_size = EDMS_DATA_SIZE;
 
@@ -520,8 +519,8 @@ void EDMS_initialize(EDMS_data *D) {
             I[object][coord] = END;
         }
 
-        I[object][30] = VACUUM; // Look, Ma, no object!
-        I[object][38] = 0;      // Don't kill...
+        I[object][IDOF_MODEL] = VACUUM; // Look, Ma, no object!
+        I[object][IDOF_AUTODESTRUCT] = 0;      // Don't kill...
     }
 
     // Finally, set all the sleepers to waking states...
@@ -577,8 +576,8 @@ int32_t EDMS_kill(int32_t deadguy) {
 
             // Fix the excluded collision information...
             // =========================================
-            if (I[(object - 1)][37] > -1)
-                I[I[(object - 1)][37].to_int()][37] = object - 1;
+            if (I[(object - 1)][IDOF_COLLIDE] > -1)
+                I[I[(object - 1)][IDOF_COLLIDE].to_int()][IDOF_COLLIDE] = object - 1;
 
             // Utility pointers also need fixing...
             // ====================================
@@ -604,7 +603,7 @@ int32_t EDMS_kill(int32_t deadguy) {
             state_delete_object(object - 1); // For collisions...
 
         for (int32_t coord = 0; coord < 7; coord++) {
-            for (int deriv = 0; deriv < 3; deriv++) {
+            for (int32_t deriv = 0; deriv < 3; deriv++) {
                 S[(object - 1)][coord][deriv] = END;
             }
         }
@@ -720,8 +719,8 @@ void collision_wakeup(int32_t object) {
 
     // Fix the excluded collision information...
     // =========================================
-    if (I[new_object][37] > -1)
-        I[I[new_object][37].to_int()][37] = new_object;
+    if (I[new_object][IDOF_COLLIDE] > -1)
+        I[I[new_object][IDOF_COLLIDE].to_int()][IDOF_COLLIDE] = new_object;
 }
 
 #pragma require_prototypes off

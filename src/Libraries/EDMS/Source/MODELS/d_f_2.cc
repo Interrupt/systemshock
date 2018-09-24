@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //      Auto-alignment...
 //      -----------------
 #include "ss_flet.h"
-extern int EDMS_BCD;
 
 //	Utilities...
 //	============
@@ -34,7 +33,7 @@ static Q n = 0, r = 0, e = 0, mag = 0, roll_delta = 0, kappa = 0, delta = 0, sin
 
 static Q X[3], XD[3], Z[3], FW[3], D[3];
 
-int counter, dummy1, dummy2;
+int32_t counter, dummy1, dummy2;
 
 //      Orientation...
 //      --------------
@@ -51,7 +50,7 @@ void dirac_mechanicals(int object, Q F[3], Q T[3]) {
 
     void mech_globalize(Q &, Q &, Q &), mech_localize(Q &, Q &, Q &);
 
-    void get_boundary_conditions(int object, Q raduis, Q position[3], Q derivitaves[3]);
+    void get_boundary_conditions(int32_t object, Q raduis, Q position[3], Q derivitaves[3]);
 
     Q kappa, delta, mechanical_drag;
 

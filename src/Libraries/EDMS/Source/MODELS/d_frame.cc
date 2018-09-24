@@ -197,8 +197,6 @@ int32_t make_Dirac_frame(Q init_state[6][3], Q params[10]) {
     //	================================
     extern void null_function(int32_t);
 
-    int32_t coord = 0, deriv = 0;
-
     Q sin_alpha = 0, cos_alpha = 0, sin_beta = 0, cos_beta = 0, sin_gamma = 0, cos_gamma = 0;
 
     //        mout << "Making dframe1\n";
@@ -214,8 +212,8 @@ int32_t make_Dirac_frame(Q init_state[6][3], Q params[10]) {
 
         //		Now we can create the frame:  first dump the initial state vector...
         //		=====================================================================
-        for (coord = 0; coord < 3; coord++) {
-            for (deriv = 0; deriv < 2; deriv++) {
+        for (int32_t coord = 0; coord < 3; coord++) {
+            for (int32_t deriv = 0; deriv < 2; deriv++) {
                 S[object_number][coord][deriv] = A[object_number][coord][deriv] =
                     init_state[coord][deriv]; // For collisions...
             }
