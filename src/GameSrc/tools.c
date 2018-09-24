@@ -799,6 +799,8 @@ void zoom_rect(LGRect *start, LGRect *end) {
         extern void SDLDraw(void);
         SDLDraw();
 
+        tight_loop(TRUE);
+
         ss_box(ulx, uly, lrx, lry);
         ss_box(ulx - 1, uly - 1, lrx + 1, lry + 1);
         last_time = *tmd_ticks;
