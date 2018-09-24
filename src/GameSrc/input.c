@@ -1007,76 +1007,56 @@ extern uchar location_spew_func(short keycode, ulong context, void *data);
 
 #define ckpoint_input(val) Spew(DSRC_TESTING_Test0, ("ii %s @%d\n", val, *tmd_ticks));
 
-#define CYB_CURS_ID(i) (CYBER_CURSOR_BASE + (i))
-#define REAL_CURS_ID(i) (motion_cursor_ids[i])
+void reload_motion_cursors(uchar cyber)
+{
+  extern short cursor_color_offset;
 
-void reload_motion_cursors(uchar cyber) {
-    int i;
-    extern short cursor_color_offset;
+  for (int i = 0; i < NUM_MOTION_CURSORS; i++)
+  {
+    grs_bitmap *bm = &motion_cursor_bitmaps[i];
+    if (bm->bits != NULL)
+    {
+      free(bm->bits);
+      memset(bm, 0, sizeof(grs_bitmap));
+    }
+  }
 
-    // KLC   uiHideMouse(NULL);
-    if (!cyber) {
-        for (i = 0; i < NUM_MOTION_CURSORS; i++) {
-            grs_bitmap *bm = &motion_cursor_bitmaps[i];
-            if (REAL_CURS_ID(i) != 0) {
-                load_res_bitmap_cursor(&motion_cursors[i], bm, REAL_CURS_ID(i), FALSE);
-            }
-        }
+  if (!cyber)
+  {
+    for (int i = 0; i < NUM_MOTION_CURSORS; i++)
+    {
+      grs_bitmap *bm = &motion_cursor_bitmaps[i];
+      if (motion_cursor_ids[i] != 0)
+        load_res_bitmap_cursor(&motion_cursors[i], bm, motion_cursor_ids[i], TRUE);
+    }
 
-        // slam the cursor color back to it's childhood colors
-        cursor_color_offset = RED_BASE + 4;
-    } else
-        for (i = 0; i < NUM_CYBER_CURSORS; i++) {
-            grs_bitmap *bm = &motion_cursor_bitmaps[i];
-            load_res_bitmap_cursor(&motion_cursors[i], bm, CYB_CURS_ID(i), FALSE);
-        }
-    // KLC   uiShowMouse(NULL);
+    // slam the cursor color back to it's childhood colors
+    cursor_color_offset = RED_BASE + 4;
+
+    void SetMotionCursorsColorForActiveWeapon(void);
+    SetMotionCursorsColorForActiveWeapon();
+  }
+  else
+  {
+    for (int i = 0; i < NUM_CYBER_CURSORS; i++)
+    {
+      grs_bitmap *bm = &motion_cursor_bitmaps[i];
+      load_res_bitmap_cursor(&motion_cursors[i], bm, CYBER_CURSOR_BASE + i, TRUE);
+    }
+  }
 }
 
-void free_cursor_bitmaps() {
-    int i = 0;
-    for (; i < lg_max(NUM_MOTION_CURSORS, NUM_CYBER_CURSORS); i++) {
-        grs_bitmap *bm = &motion_cursor_bitmaps[i];
-        if (bm->bits != NULL)
-            free(bm->bits);
-    }
+void free_cursor_bitmaps(void)
+{
+  //reload_motion_cursors() does everything now
 }
 
-void alloc_cursor_bitmaps(void) {
-    int i;
-    short w, h;
-    for (i = 0; i < lg_min(NUM_MOTION_CURSORS, NUM_CYBER_CURSORS); i++) {
-        int cybsz;
-        int realsz = 0;
-        grs_bitmap *bm = &motion_cursor_bitmaps[i];
-        w = res_bm_width(CYB_CURS_ID(i));
-        h = res_bm_height(CYB_CURS_ID(i));
-        ss_point_convert(&w, &h, FALSE);
-        cybsz = w * h;
+void alloc_cursor_bitmaps(void)
+{
+  //reload_motion_cursors() does everything now
 
-        if (REAL_CURS_ID(i) != 0) {
-            w = res_bm_width(REAL_CURS_ID(i));
-            h = res_bm_height(REAL_CURS_ID(i));
-            ss_point_convert(&w, &h, FALSE);
-            realsz = w * h;
-        }
-
-        bm->bits = (uchar *)malloc(lg_max(cybsz, realsz));
-    }
-    for (; i < lg_max(NUM_MOTION_CURSORS, NUM_CYBER_CURSORS); i++) {
-        grs_bitmap *bm = &motion_cursor_bitmaps[i];
-        int sz = 0;
-        if (REAL_CURS_ID(i) == 0) {
-            bm->bits = NULL; // lets check this
-            continue;
-        } else {
-            w = res_bm_width(REAL_CURS_ID(i));
-            h = res_bm_height(REAL_CURS_ID(i));
-            ss_point_convert(&w, &h, FALSE);
-            sz = w * h;
-        }
-        bm->bits = (uchar *)malloc(sz);
-    }
+  //I would just like to point out that this function
+  //was a good example of what were they thinking?
 }
 
 #include "frtypes.h"
@@ -1547,6 +1527,73 @@ uchar weapon_button_up = TRUE;
 // ---------
 // INTERNALS
 // ---------
+
+// -------------------------------------------------------------------------------------------
+// SetMotionCursorForMouseXY sets motion cursor for current mouse x,y position
+
+// This function is based view3d_mouse_input(); any changes there should be made here as well
+
+// Used to set cursor to weapon color immediately without having to move the mouse
+
+// called at end of:
+//    fullscreen_start()     fullscrn.c
+//    screen_start()         screen.c
+
+void SetMotionCursorForMouseXY(void)
+{
+  if (global_fullmap->cyber) return;
+
+  int cnum;
+
+  LGRegion *reg;
+
+  if (full_game_3d)
+    reg = fullview_region;
+  else
+    reg = mainview_region;
+
+  extern int mlook_enabled;
+
+  if (mlook_enabled)
+    cnum = VIEW_HCENTER | VIEW_VCENTER;
+  else
+  {
+    short x, y;
+    mouse_get_xy(&x, &y);
+  
+    if (DoubleSize)
+    {
+      x *= 2;
+      y *= 2;
+    }
+  
+    short cx = reg->abs_x + RectWidth(reg->r) / 2;
+    short cy = reg->abs_y + 2 * RectHeight(reg->r) / 3;
+    short cw = RectWidth(reg->r) * CENTER_WD_N / CENTER_WD_D;
+    short ch = RectHeight(reg->r) * CENTER_HT_N / CENTER_HT_D;
+  
+    ss_point_convert(&cx, &cy, FALSE);
+    ss_point_convert(&cw, &ch, FALSE);
+  
+    x -= cx;
+    y -= cy;
+  
+    if      (x < -cw) cnum = VIEW_LSIDE;
+    else if (x >  cw) cnum = VIEW_RSIDE;
+    else              cnum = VIEW_HCENTER;
+  
+    if      (y < -ch) cnum |= VIEW_TOP;
+    else if (y >  ch) cnum |= VIEW_BOTTOM;
+    else              cnum |= VIEW_VCENTER;
+  }
+
+  LGCursor *c = &motion_cursors[cnum];
+
+  if (reg == fullview_region)
+    uiSetGlobalDefaultCursor(c);
+  else
+    uiSetRegionDefaultCursor(reg, c);
+}
 
 // -------------------------------------------------------------------------------------------
 // view3d_mouse_input sets/unsets physics controls based on mouse position in 3d
