@@ -65,7 +65,7 @@ static void addKBevent(const kbs_event* ev)
 	}
 	else
 	{
-		printf("WTF, the kbEvents queue is full?!");
+		//printf("WTF, the kbEvents queue is full?!");
 		// drop the oldest event
 		memmove(&kbEvents[0], &kbEvents[1], sizeof(kbs_event)*(kNumKBevents-1));
 		kbEvents[kNumKBevents-1] = *ev;
@@ -90,7 +90,7 @@ static void addMouseEvent(const mouse_event* ev)
 	}
 	else
 	{
-		printf("WTF, the mouseEvents queue is full?!");
+		//printf("WTF, the mouseEvents queue is full?!");
 		// drop the oldest event
 		memmove(&mouseEvents[0], &mouseEvents[1], sizeof(mouse_event)*(kNumMouseEvents-1));
 		mouseEvents[kNumMouseEvents-1] = latestMouseEvent;
@@ -175,22 +175,26 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 		case SDLK_KP_8 : return 0x5B; //  kVK_ANSI_Keypad8 = 0x5B, aka _UP2_
 		case SDLK_KP_9 : return 0x5C; //  kVK_ANSI_Keypad9 = 0x5C, aka _PGUP2_
 
-		// keycodes for keys that are independent of keyboard layout*/
+		// keycodes for keys that are independent of keyboard layout
 		case SDLK_RETURN : return 0x24; //  kVK_Return  = 0x24,
 		case SDLK_TAB : return 0x30; //  kVK_Tab     = 0x30,
 		case SDLK_SPACE : return 0x31; //  kVK_Space   = 0x31,
 		case SDLK_DELETE : return 0x33; //  kVK_Delete  = 0x33,
 		case SDLK_BACKSPACE : return 0x33; //  kVK_Delete  = 0x33,
 		case SDLK_ESCAPE : return 0x35; //  kVK_Escape  = 0x35,
-		case SDLK_LGUI : // fall-through
-		case SDLK_RGUI : return 0x37; //  kVK_Command = 0x37, // FIXME: I think command is the windows/meta key?
-		case SDLK_LSHIFT : return 0x38; //  kVK_Shift   = 0x38,
-		case SDLK_CAPSLOCK : return 0x39; //  kVK_CapsLock= 0x39,
-		case SDLK_LALT : return 0x3A; //  kVK_Option  = 0x3A, Option == Aalt
-		case SDLK_LCTRL : return 0x3B; //  kVK_Control = 0x3B,
-		case SDLK_RSHIFT : return 0x3C; //  kVK_RightShift  = 0x3C,
-		case SDLK_RALT : return 0x3D; //  kVK_RightOption = 0x3D,
-		case SDLK_RCTRL : return 0x3E; //  kVK_RightControl = 0x3E,
+
+        //    returning these is unnecessary and can cause keypresses to be missed
+        //    (esp keys with modifiers)
+		//case SDLK_LGUI : // fall-through
+		//case SDLK_RGUI : return 0x37; //  kVK_Command = 0x37, // FIXME: I think command is the windows/meta key?
+		//case SDLK_LSHIFT : return 0x38; //  kVK_Shift   = 0x38,
+		//case SDLK_CAPSLOCK : return 0x39; //  kVK_CapsLock= 0x39,
+		//case SDLK_LALT : return 0x3A; //  kVK_Option  = 0x3A, Option == Aalt
+		//case SDLK_LCTRL : return 0x3B; //  kVK_Control = 0x3B,
+		//case SDLK_RSHIFT : return 0x3C; //  kVK_RightShift  = 0x3C,
+		//case SDLK_RALT : return 0x3D; //  kVK_RightOption = 0x3D,
+		//case SDLK_RCTRL : return 0x3E; //  kVK_RightControl = 0x3E,
+
 		//case SDLK_ : return 0x3F; //  kVK_Function = 0x3F, // TODO: what's this?
 		case SDLK_F17 : return 0x40; //  kVK_F17 = 0x40,
 		case SDLK_VOLUMEUP : return 0x48; //  kVK_VolumeUp = 0x48,
@@ -284,198 +288,365 @@ extern bool TriggerRelMouseMode;
 
 static SDL_bool saved_rel_mouse = FALSE;
 
+//same codes as returned by sdlKeyCodeToSSHOCKkeyCode()
+uchar Ascii2Code[95] =
+{
+  0x31, // space
+  0x12, // !
+  0x27, // "
+  0x14, // #
+  0x15, // $
+  0x17, // %
+  0x1A, // &
+  0x27, // '
+  0x19, // (
+  0x1D, // )
+  0x1C, // *
+  0x18, // +
+  0x2B, // ,
+  0x1B, // -
+  0x2F, // .
+  0x2C, // /
+  0x1D, // 0
+  0x12, // 1
+  0x13, // 2
+  0x14, // 3
+  0x15, // 4
+  0x17, // 5
+  0x16, // 6
+  0x1A, // 7
+  0x1C, // 8
+  0x19, // 9
+  0x29, // :
+  0x29, // ;
+  0x2B, // <
+  0x18, // =
+  0x2F, // >
+  0x2C, // ?
+  0x13, // @
+  0x00, // A
+  0x0B, // B
+  0x08, // C
+  0x02, // D
+  0x0E, // E
+  0x03, // F
+  0x05, // G
+  0x04, // H
+  0x22, // I
+  0x26, // J
+  0x28, // K
+  0x25, // L
+  0x2E, // M
+  0x2D, // N
+  0x1F, // O
+  0x23, // P
+  0x0C, // Q
+  0x0F, // R
+  0x01, // S
+  0x11, // T
+  0x20, // U
+  0x09, // V
+  0x0D, // W
+  0x07, // X
+  0x10, // Y
+  0x06, // Z
+  0x21, // [
+  0x2A, // backslash
+  0x1E, // ]
+  0x16, // ^
+  0x1B, // _
+  0x32, // `
+  0x00, // a
+  0x0B, // b
+  0x08, // c
+  0x02, // d
+  0x0E, // e
+  0x03, // f
+  0x05, // g
+  0x04, // h
+  0x22, // i
+  0x26, // j
+  0x28, // k
+  0x25, // l
+  0x2E, // m
+  0x2D, // n
+  0x1F, // o
+  0x23, // p
+  0x0C, // q
+  0x0F, // r
+  0x01, // s
+  0x11, // t
+  0x20, // u
+  0x09, // v
+  0x0D, // w
+  0x07, // x
+  0x10, // y
+  0x06, // z
+  0x21, // {
+  0x2A, // |
+  0x1E, // }
+  0x32  // ~
+};
+
 void pump_events(void)
 {
-	SDL_Event ev;
-	while(SDL_PollEvent(&ev))
-	{
-		switch(ev.type)
-		{
-			case SDL_QUIT:
-				// a bit hacky at this place, but this would allow exiting the game via the window's [x] button
-				exit(0); // TODO: I guess there is a better way.
-				break;
+  SDL_Event ev;
 
+  while (SDL_PollEvent(&ev))
+  {
+    switch (ev.type)
+    {
+      case SDL_QUIT:
+        // a bit hacky at this place, but this would allow exiting the game via the window's [x] button
+        exit(0); // TODO: I guess there is a better way.
+      break;
 
-			// TODO: really also handle key up here? the mac code apparently didn't, but where else do
-			//       kbs_events with .state == KBS_UP come from?
-			case SDL_KEYUP:
-			case SDL_KEYDOWN:
-			{
-				uchar c = sdlKeyCodeToSSHOCKkeyCode(ev.key.keysym.sym);
-				if(c != KBC_NONE)
-				{
-					kbs_event keyEvent = { 0 };
-					keyEvent.code = c;
+      // TODO: really also handle key up here? the mac code apparently didn't, but where else do
+      //       kbs_events with .state == KBS_UP come from?
+      case SDL_KEYUP:
+      case SDL_KEYDOWN:
+      {
+        uchar c = sdlKeyCodeToSSHOCKkeyCode(ev.key.keysym.sym);
+        if (c != KBC_NONE)
+        {
+          kbs_event keyEvent = { 0 };
+  
+          keyEvent.code = c;
+          keyEvent.ascii = 0;
+          keyEvent.modifiers = 0;
+  
+          //https://wiki.libsdl.org/SDLKeycodeLookup
+          //Keycodes for keys with printable characters are represented by the
+          //character byte in parentheses. Keycodes without character representations
+          //are determined by their scancode bitwise OR-ed with 1<<30 (0x40000000).
+  
+          if (ev.key.keysym.sym >= 0x08 && ev.key.keysym.sym <= 127)
+            keyEvent.ascii = ev.key.keysym.sym;
+          else
+          {
+            //use these invented "ascii" codes for hotkey system
+            //see MacSrc/Prefs.c
+            switch (ev.key.keysym.sym)
+            {
+              case SDLK_F1:          keyEvent.ascii = 128 +  0; break;
+              case SDLK_F2:          keyEvent.ascii = 128 +  1; break;
+              case SDLK_F3:          keyEvent.ascii = 128 +  2; break;
+              case SDLK_F4:          keyEvent.ascii = 128 +  3; break;
+              case SDLK_F5:          keyEvent.ascii = 128 +  4; break;
+              case SDLK_F6:          keyEvent.ascii = 128 +  5; break;
+              case SDLK_F7:          keyEvent.ascii = 128 +  6; break;
+              case SDLK_F8:          keyEvent.ascii = 128 +  7; break;
+              case SDLK_F9:          keyEvent.ascii = 128 +  8; break;
+              case SDLK_F10:         keyEvent.ascii = 128 +  9; break;
+              case SDLK_F11:         keyEvent.ascii = 128 + 10; break;
+              case SDLK_F12:         keyEvent.ascii = 128 + 11; break;
+              case SDLK_KP_DIVIDE:   keyEvent.ascii = 128 + 12; break;
+              case SDLK_KP_MULTIPLY: keyEvent.ascii = 128 + 13; break;
+              case SDLK_KP_MINUS:    keyEvent.ascii = 128 + 14; break;
+              case SDLK_KP_PLUS:     keyEvent.ascii = 128 + 15; break;
+              case SDLK_KP_ENTER:    keyEvent.ascii = 128 + 16; break;
+              case SDLK_KP_DECIMAL:  keyEvent.ascii = 128 + 17; break;
+              case SDLK_KP_0:        keyEvent.ascii = 128 + 18; break;
+            }
+          }
+  
+          Uint16 mod = ev.key.keysym.mod;
+  
+          if (mod & KMOD_SHIFT) keyEvent.modifiers |= KB_MOD_SHIFT;
+          if (mod & KMOD_CTRL ) keyEvent.modifiers |= KB_MOD_CTRL;
+          if (mod & KMOD_ALT  ) keyEvent.modifiers |= KB_MOD_ALT;
+  
+          if (ev.key.state == SDL_PRESSED)
+          {
+            if (ev.key.keysym.sym == SDLK_RETURN && mod & KMOD_ALT)
+              {toggleFullScreen(); break;}
+  
+            //handle non-printable or ctrl'd or alt'd keys here
+            //other cases are handled by text input event below
+            if (ev.key.keysym.sym < 32 || ev.key.keysym.sym > 126 || (mod & KMOD_CTRL) || (mod & KMOD_ALT))
+            {
+              keyEvent.state = KBS_DOWN;
+              addKBevent(&keyEvent);
+    
+              sshockKeyStates[c] = keyEvent.modifiers | KB_MOD_PRESSED;
+            }
+          }
+          else
+          {
+            //key up following text input event case below is handled here
+  
+            keyEvent.state = KBS_UP;
+            addKBevent(&keyEvent);
+    
+            sshockKeyStates[c] = 0;
+          }
+        }
 
-					//printf("ev.key.keysym.sym: %x\n", ev.key.keysym.sym);
+        //hack to allow pressing shift after move key
+        //sets all current shock states in array to shifted or non-shifted
+        if (ev.key.keysym.sym == SDLK_LSHIFT || ev.key.keysym.sym == SDLK_RSHIFT)
+        {
+          int i;
+          for (i=0; i<256; i++) if (sshockKeyStates[i])
+          {
+            if (ev.key.state == SDL_PRESSED) sshockKeyStates[i] |=  KB_MOD_SHIFT;
+            else                             sshockKeyStates[i] &= ~KB_MOD_SHIFT;
+          }
+        }
+      }
+      break;
 
-					// FIXME: this is hacky, see comment in SDL_TEXTINPUT below..
-					if(ev.key.keysym.sym >= 0x08 && ev.key.keysym.sym <= '~')
-						keyEvent.ascii = ev.key.keysym.sym;
-					else
-						keyEvent.ascii = 0;
+      case SDL_TEXTINPUT:
+      {
+        int len = strlen(ev.text.text), i;
 
-					keyEvent.modifiers = 0;
-					Uint16 mod = ev.key.keysym.mod;
-					if(mod & KMOD_CTRL)
-						keyEvent.modifiers |= KB_MOD_CTRL;
-					if(mod & KMOD_SHIFT)
-						keyEvent.modifiers |= KB_MOD_SHIFT;
-					// TODO: what's 0x04 ? windows key?
-					if(mod & KMOD_ALT)
-						keyEvent.modifiers |= KB_MOD_ALT;
+        //for every utf8 char in null-terminated string
+        for (i = 0; i < len; i++)
+        {
+          int ch = ev.text.text[i];
 
-					if(ev.key.state == SDL_PRESSED)
-					{
-						if (ev.key.keysym.sym == SDLK_RETURN && mod & KMOD_ALT) {
-							toggleFullScreen();
-							break;
-						}
-						keyEvent.state = KBS_DOWN;
-						sshockKeyStates[c] = keyEvent.modifiers | KB_MOD_PRESSED;
-						addKBevent(&keyEvent);
-					}
-					else
-					{
-						sshockKeyStates[c] = 0;
-						keyEvent.state = KBS_UP;
-						addKBevent(&keyEvent);
-					}
-				}
+          //ignore if non-printable key
+          if (ch < 32 || ch > 126) continue;
 
-				//hack to allow pressing shift after move key
-				if (c == 0x38 || c == 0x3C) //left or right shift
-				{
-					int i;
-					for (i=0; i<256; i++) if (sshockKeyStates[i])
-					{
-						if (ev.key.state == SDL_PRESSED) sshockKeyStates[i] |=  KB_MOD_SHIFT;
-						else                             sshockKeyStates[i] &= ~KB_MOD_SHIFT;
-					}
-				}
+          kbs_event keyEvent = { 0 };
 
-				break;
-			}
-			case SDL_TEXTINPUT:
-				// ev.text.text is a char[32] UTF-8 string
-				// TODO: this is the proper way to get text input, and the only reliable way
-				//       to get the correct char for non-letter-key + shift (e.g. Shift+2 is " on German KB)
-				break;
+          keyEvent.modifiers = 0;
 
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-			{
-				bool down = (ev.button.state == SDL_PRESSED);
-				mouse_event mouseEvent = {0};
-				mouseEvent.type = 0;
+          //if uppercase, lower it and set shift modifier
+          if (ch >= 'A' && ch <= 'Z')
+          {
+            ch = ch - 'A' + 'a';
+            keyEvent.modifiers |= KB_MOD_SHIFT;
+          }
 
-				// TODO: the old mac code used to emulate right mouse clicks if space, enter, or return
-				//       was pressed at the same time - do the same? (=> could check sshockKeyStates[])
+          //get code for this printable ascii key
+          int c = Ascii2Code[ch - 32];
 
-				mouseEvent.buttons = 0;
+          keyEvent.code = c;
+          keyEvent.ascii = ch;
 
-				switch (ev.button.button)
-				{
-					case SDL_BUTTON_LEFT:
+          //this is a key down event; key up will be handled in event case above
+          keyEvent.state = KBS_DOWN;
+          addKBevent(&keyEvent);
 
-						mouseEvent.type = down ? MOUSE_LDOWN : MOUSE_LUP;
-						mouseEvent.buttons |= down ? (1 << MOUSE_LBUTTON) : 0;
-						break;
+          sshockKeyStates[c] = keyEvent.modifiers | KB_MOD_PRESSED;
+        }
+      }
+      break;
 
-					case SDL_BUTTON_RIGHT:
-						mouseEvent.type = down ? MOUSE_RDOWN : MOUSE_RUP;
-						mouseEvent.buttons |= down ? (1 << MOUSE_RBUTTON) : 0;
-						break;
+      case SDL_MOUSEBUTTONDOWN:
+      case SDL_MOUSEBUTTONUP:
+      {
+        bool down = (ev.button.state == SDL_PRESSED);
+        mouse_event mouseEvent = {0};
+        mouseEvent.type = 0;
 
-					//case SDL_BUTTON_MIDDLE: // TODO: is this MOUSE_CDOWN/UP ?
-					//		break;
+        // TODO: the old mac code used to emulate right mouse clicks if space, enter, or return
+        //       was pressed at the same time - do the same? (=> could check sshockKeyStates[])
 
-				}
+        mouseEvent.buttons = 0;
 
-				if (mouseEvent.type != 0)
-				{
-					mouseEvent.x = MouseX;
-					mouseEvent.y = MouseY;
-					mouseEvent.timestamp = mouse_get_time();
-					mouseEvent.modifiers = 0;
-					addMouseEvent(&mouseEvent);
-				}
+        switch (ev.button.button)
+        {
+          case SDL_BUTTON_LEFT:
+            mouseEvent.type = down ? MOUSE_LDOWN : MOUSE_LUP;
+            mouseEvent.buttons |= down ? (1 << MOUSE_LBUTTON) : 0;
+          break;
 
-				break;
-			}
-			case SDL_MOUSEMOTION:
-			{
-				//call this first; it sets MouseX and MouseY
-				if (SDL_GetRelativeMouseMode() == SDL_TRUE)
-					SetMouseXY(MouseX + ev.motion.xrel, MouseY + ev.motion.yrel);
-				else
-					SetMouseXY(ev.motion.x, ev.motion.y);
+          case SDL_BUTTON_RIGHT:
+            mouseEvent.type = down ? MOUSE_RDOWN : MOUSE_RUP;
+            mouseEvent.buttons |= down ? (1 << MOUSE_RBUTTON) : 0;
+          break;
 
-				mouse_event mouseEvent = {0};
-				mouseEvent.type = MOUSE_MOTION;
-				mouseEvent.x = MouseX;
-				mouseEvent.y = MouseY;
-				mouseEvent.buttons = 0;
-				if (ev.motion.state & SDL_BUTTON_LMASK) mouseEvent.buttons |= (1 << MOUSE_LBUTTON);
-				if (ev.motion.state & SDL_BUTTON_RMASK) mouseEvent.buttons |= (1 << MOUSE_RBUTTON);
-				mouseEvent.timestamp = mouse_get_time();
-				addMouseEvent(&mouseEvent);
+          //case SDL_BUTTON_MIDDLE: // TODO: is this MOUSE_CDOWN/UP ?
+          //break;
+        }
 
-				if (TriggerRelMouseMode)
-				{
-					TriggerRelMouseMode = FALSE;
+        if (mouseEvent.type != 0)
+        {
+          mouseEvent.x = MouseX;
+          mouseEvent.y = MouseY;
+          mouseEvent.timestamp = mouse_get_time();
+          mouseEvent.modifiers = 0;
+          addMouseEvent(&mouseEvent);
+        }
+      }
+      break;
 
-					SDL_SetRelativeMouseMode(SDL_TRUE);
-					//throw away this first relative mouse reading
-					int mvelx, mvely;
-					get_mouselook_vel(&mvelx, &mvely);
-				}
+      case SDL_MOUSEMOTION:
+      {
+        //call this first; it sets MouseX and MouseY
+        if (SDL_GetRelativeMouseMode() == SDL_TRUE)
+          SetMouseXY(MouseX + ev.motion.xrel, MouseY + ev.motion.yrel);
+        else
+          SetMouseXY(ev.motion.x, ev.motion.y);
 
-				break;
-			}
-			case SDL_MOUSEWHEEL:
-				if (ev.wheel.y != 0) {
-					mouse_event mouseEvent = {0};
-					mouseEvent.type = ev.wheel.y < 0 ? MOUSE_WHEELDN : MOUSE_WHEELUP;
-					mouseEvent.x = MouseX;
-					mouseEvent.y = MouseY;
-					mouseEvent.buttons = 0;
-					mouseEvent.timestamp = mouse_get_time();
-					addMouseEvent(&mouseEvent);
-				}
-				break;
-			case SDL_WINDOWEVENT:
-				switch (ev.window.event)
-				{
-					case SDL_WINDOWEVENT_SIZE_CHANGED:
-						if (can_use_opengl()) opengl_resize(ev.window.data1, ev.window.data2);
-					break;
+        mouse_event mouseEvent = {0};
+        mouseEvent.type = MOUSE_MOTION;
+        mouseEvent.x = MouseX;
+        mouseEvent.y = MouseY;
+        mouseEvent.buttons = 0;
+        if (ev.motion.state & SDL_BUTTON_LMASK) mouseEvent.buttons |= (1 << MOUSE_LBUTTON);
+        if (ev.motion.state & SDL_BUTTON_RMASK) mouseEvent.buttons |= (1 << MOUSE_RBUTTON);
+        mouseEvent.timestamp = mouse_get_time();
+        addMouseEvent(&mouseEvent);
 
-					case SDL_WINDOWEVENT_MOVED:
-					case SDL_WINDOWEVENT_RESIZED:
-					break;
+        if (TriggerRelMouseMode)
+        {
+          TriggerRelMouseMode = FALSE;
 
-					case SDL_WINDOWEVENT_FOCUS_GAINED:
-						SDL_SetRelativeMouseMode(saved_rel_mouse);
-						if (saved_rel_mouse == SDL_TRUE)
-						{
-							//throw away this first relative mouse reading
-							int mvelx, mvely;
-							get_mouselook_vel(&mvelx, &mvely);
-						}
-						SDL_ShowCursor(SDL_DISABLE);
-					break;
+          SDL_SetRelativeMouseMode(SDL_TRUE);
+          //throw away this first relative mouse reading
+          int mvelx, mvely;
+          get_mouselook_vel(&mvelx, &mvely);
+        }
+      }
+      break;
 
-					case SDL_WINDOWEVENT_FOCUS_LOST:
-						saved_rel_mouse = SDL_GetRelativeMouseMode();
-						SDL_SetRelativeMouseMode(SDL_FALSE);
-						SDL_ShowCursor(SDL_ENABLE);
-					break;
-				}
-			break;
-		}
-	}
+      case SDL_MOUSEWHEEL:
+        if (ev.wheel.y != 0)
+        {
+          mouse_event mouseEvent = {0};
+          mouseEvent.type = ev.wheel.y < 0 ? MOUSE_WHEELDN : MOUSE_WHEELUP;
+          mouseEvent.x = MouseX;
+          mouseEvent.y = MouseY;
+          mouseEvent.buttons = 0;
+          mouseEvent.timestamp = mouse_get_time();
+          addMouseEvent(&mouseEvent);
+        }
+      break;
+
+      case SDL_WINDOWEVENT:
+        switch (ev.window.event)
+        {
+          case SDL_WINDOWEVENT_SIZE_CHANGED:
+            if (can_use_opengl()) opengl_resize(ev.window.data1, ev.window.data2);
+          break;
+
+          case SDL_WINDOWEVENT_MOVED:
+          case SDL_WINDOWEVENT_RESIZED:
+          break;
+
+          case SDL_WINDOWEVENT_FOCUS_GAINED:
+            SDL_SetRelativeMouseMode(saved_rel_mouse);
+            if (saved_rel_mouse == SDL_TRUE)
+            {
+              //throw away this first relative mouse reading
+              int mvelx, mvely;
+              get_mouselook_vel(&mvelx, &mvely);
+            }
+            SDL_ShowCursor(SDL_DISABLE);
+          break;
+
+          case SDL_WINDOWEVENT_FOCUS_LOST:
+            saved_rel_mouse = SDL_GetRelativeMouseMode();
+            SDL_SetRelativeMouseMode(SDL_FALSE);
+            SDL_ShowCursor(SDL_ENABLE);
+          break;
+        }
+      break;
+    }
+  }
 }
 
 //===============================================================

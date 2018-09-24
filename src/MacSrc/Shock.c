@@ -113,6 +113,11 @@ extern void object_data_flush(void);
 extern errtype load_da_palette(void);
 extern void ShockMain(void);
 
+//see Prefs.c
+extern void CreateDefaultKeybindsFile(void);
+extern void LoadHotkeyKeybinds(void);
+extern void LoadMoveKeybinds(void);
+
 void InitSDL();
 void SDLDraw(void);
 errtype CheckFreeSpace(short	checkRefNum);
@@ -140,6 +145,12 @@ int main(int argc, char** argv)
 
 	SetDefaultPrefs();
 	LoadPrefs();
+
+    //see Prefs.c
+    CreateDefaultKeybindsFile(); //only if it doesn't already exist
+    //even if keybinds file still doesn't exist, defaults will be set here
+    LoadHotkeyKeybinds();
+    LoadMoveKeybinds();
 	
 #ifdef TESTING
 	SetupTests();

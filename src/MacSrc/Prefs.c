@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
 //
 //		Prefs.c	-	Handles saving and loading preferences.
+//                  Also loads and sets default keybinds.
 //
 //====================================================================================
 
@@ -32,8 +33,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "popups.h"
 #include "olhext.h"
+#include "hotkey.h"
+#include "input.h"
+#include "mainloop.h"
+#include "movekeys.h"
 
-static void SetShockGlobals(void);
+//--------------------
+//  Filenames
+//--------------------
+static const char *PREFS_FILENAME = "prefs.txt";
+static const char *KEYBINDS_FILENAME = "keybinds.txt";
 
 //--------------------
 //  Globals
@@ -54,8 +63,6 @@ extern uchar curr_vol_lev;
 extern uchar curr_sfx_vol;
 extern uchar curr_alog_vol;
 
-static const char *PREFS_FILENAME = "prefs.txt";
-
 static const char *PREF_LANGUAGE     = "language";
 static const char *PREF_CAPTUREMOUSE = "capture-mouse";
 static const char *PREF_MUSIC_VOL    = "music-volume";
@@ -68,6 +75,8 @@ static const char *PREF_USE_OPENGL   = "use-opengl";
 static const char *PREF_LIN_SCALING  = "linear-scaling";
 static const char *PREF_ONSCR_HELP   = "onscreen-help";
 static const char *PREF_GAMMA        = "gamma";
+
+static void SetShockGlobals(void);
 
 //--------------------------------------------------------------------
 //	  Initialize the preferences to their default settings.
@@ -235,4 +244,900 @@ static void SetShockGlobals(void) {
     DoubleSize = (gShockPrefs.doResolution == 1); // Set this True for low-res.
     SkipLines = gShockPrefs.doUseQD;
     _fr_global_detail = gShockPrefs.doDetail;
+}
+
+
+
+//************************************************************************************
+
+
+
+//********
+//Keybinds
+//********
+
+
+
+//Note that Alt / Option (on Mac) modifier key won't work until it is implemented in sdl_events.c
+
+
+
+static struct {const char *s; int ch, code;} KeyName2ChCode[] =
+{
+  { "backspace ",       8, 0x33 },
+  { "tab ",             9, 0x30 },
+  { "enter ",          13, 0x24 },
+  { "escape ",         27, 0x35 },
+  { "space ",          32, 0x31 },
+  { "1 ",              49, 0x12 },
+  { "exclamation ",    33, 0x12 },
+  { "2 ",              50, 0x13 },
+  { "atsign ",         64, 0x13 },
+  { "3 ",              51, 0x14 },
+  { "numbersign ",     35, 0x14 },
+  { "4 ",              52, 0x15 },
+  { "dollar ",         36, 0x15 },
+  { "5 ",              53, 0x17 },
+  { "percent ",        37, 0x17 },
+  { "6 ",              54, 0x16 },
+  { "caret ",          94, 0x16 },
+  { "7 ",              55, 0x1A },
+  { "ampersand ",      38, 0x1A },
+  { "8 ",              56, 0x1C },
+  { "asterisk ",       42, 0x1C },
+  { "9 ",              57, 0x19 },
+  { "lparenthesis ",   40, 0x19 },
+  { "0 ",              48, 0x1D },
+  { "rparenthesis ",   41, 0x1D },
+  { "equals ",         61, 0x18 },
+  { "plus ",           43, 0x18 },
+  { "comma ",          44, 0x2B },
+  { "lessthan ",       60, 0x2B },
+  { "minus ",          45, 0x1B },
+  { "underscore ",     95, 0x1B },
+  { "period ",         46, 0x2F },
+  { "greaterthan ",    62, 0x2F },
+  { "slash ",          47, 0x2C },
+  { "questionmark ",   63, 0x2C },
+  { "quote ",          39, 0x27 },
+  { "doublequote ",    34, 0x27 },
+  { "semicolon ",      59, 0x29 },
+  { "colon ",          58, 0x29 },
+  { "a ",              97, 0x00 },
+  { "b ",              98, 0x0B },
+  { "c ",              99, 0x08 },
+  { "d ",             100, 0x02 },
+  { "e ",             101, 0x0E },
+  { "f ",             102, 0x03 },
+  { "g ",             103, 0x05 },
+  { "h ",             104, 0x04 },
+  { "i ",             105, 0x22 },
+  { "j ",             106, 0x26 },
+  { "k ",             107, 0x28 },
+  { "l ",             108, 0x25 },
+  { "m ",             109, 0x2E },
+  { "n ",             110, 0x2D },
+  { "o ",             111, 0x1F },
+  { "p ",             112, 0x23 },
+  { "q ",             113, 0x0C },
+  { "r ",             114, 0x0F },
+  { "s ",             115, 0x01 },
+  { "t ",             116, 0x11 },
+  { "u ",             117, 0x20 },
+  { "v ",             118, 0x09 },
+  { "w ",             119, 0x0D },
+  { "x ",             120, 0x07 },
+  { "y ",             121, 0x10 },
+  { "z ",             122, 0x06 },
+  { "A ",              65, 0x00 },
+  { "B ",              66, 0x0B },
+  { "C ",              67, 0x08 },
+  { "D ",              68, 0x02 },
+  { "E ",              69, 0x0E },
+  { "F ",              70, 0x03 },
+  { "G ",              71, 0x05 },
+  { "H ",              72, 0x04 },
+  { "I ",              73, 0x22 },
+  { "J ",              74, 0x26 },
+  { "K ",              75, 0x28 },
+  { "L ",              76, 0x25 },
+  { "M ",              77, 0x2E },
+  { "N ",              78, 0x2D },
+  { "O ",              79, 0x1F },
+  { "P ",              80, 0x23 },
+  { "Q ",              81, 0x0C },
+  { "R ",              82, 0x0F },
+  { "S ",              83, 0x01 },
+  { "T ",              84, 0x11 },
+  { "U ",              85, 0x20 },
+  { "V ",              86, 0x09 },
+  { "W ",              87, 0x0D },
+  { "X ",              88, 0x07 },
+  { "Y ",              89, 0x10 },
+  { "Z ",              90, 0x06 },
+  { "lbracket ",       91, 0x21 },
+  { "lcurbrace ",     123, 0x21 },
+  { "backslash ",      92, 0x2A },
+  { "vertline ",      124, 0x2A },
+  { "rbracket ",       93, 0x1E },
+  { "rcurbrace ",     125, 0x1E },
+  { "backquote ",      96, 0x32 },
+  { "tilde ",         126, 0x32 },
+  { "delete ",        127, 0x33 },
+
+  //use these invented "ascii" codes for hotkey system
+  //see sdl_events.c
+  { "f1 ",              128 +  0, 0x7A },
+  { "f2 ",              128 +  1, 0x78 },
+  { "f3 ",              128 +  2, 0x63 },
+  { "f4 ",              128 +  3, 0x76 },
+  { "f5 ",              128 +  4, 0x60 },
+  { "f6 ",              128 +  5, 0x61 },
+  { "f7 ",              128 +  6, 0x62 },
+  { "f8 ",              128 +  7, 0x64 },
+  { "f9 ",              128 +  8, 0x65 },
+  { "f10 ",             128 +  9, 0x6D },
+  { "f11 ",             128 + 10, 0x67 },
+  { "f12 ",             128 + 11, 0x6F },
+  { "keypad_divide ",   128 + 12, 0x4B },
+  { "keypad_multiply ", 128 + 13, 0x43 },
+  { "keypad_minus ",    128 + 14, 0x4E },
+  { "keypad_plus ",     128 + 15, 0x45 },
+  { "keypad_enter ",    128 + 16, 0x4C },
+  { "keypad_decimal ",  128 + 17, 0x41 },
+  { "keypad_0 ",        128 + 18, 0x52 },
+
+  //these have no invented "ascii" codes so they can't be used as hotkeys, only move keys
+  { "keypad_home ",     0, 0x59 },
+  { "keypad_up ",       0, 0x5B },
+  { "keypad_pgup ",     0, 0x5C },
+  { "keypad_left ",     0, 0x56 },
+  { "keypad_5 ",        0, 0x57 },
+  { "keypad_right ",    0, 0x58 },
+  { "keypad_end ",      0, 0x53 },
+  { "keypad_down ",     0, 0x54 },
+  { "keypad_pgdn ",     0, 0x55 },
+  { "home ",            0, 0x73 },
+  { "up ",              0, 0x7E },
+  { "pageup ",          0, 0x74 },
+  { "left ",            0, 0x7B },
+  { "right ",           0, 0x7C },
+  { "end ",             0, 0x77 },
+  { "down ",            0, 0x7D },
+  { "pagedown ",        0, 0x79 },
+
+  { NULL,               0,    0 }
+};
+
+
+
+//lower cases all characters in string p
+//also converts tabs to spaces
+static void LowerCaseInPlace(char *p)
+{
+  while (*p)
+  {
+    if (*p >= 'A' && *p <= 'Z') *p = *p - 'A' + 'a'; //convert upper to lower case
+    if (*p == '\t') *p = ' '; //convert tab to space
+    p++;
+  }
+}
+
+
+
+//*********************************
+//Set hotkey keybinds (see input.c)
+//Also handles fire keybinds
+//*********************************
+
+
+
+#ifdef AUDIOLOGS
+extern uchar audiolog_cancel_func(short keycode, ulong context, void *data);
+#endif
+extern uchar posture_hotkey_func(short keycode, ulong context, void *data);
+extern uchar toggle_mouse_look(short keycode, ulong context, void *data);
+extern uchar change_mode_func(short keycode, ulong context, void *data);
+extern uchar clear_fullscreen_func(short keycode, ulong context, void *data);
+extern uchar saveload_hotkey_func(short keycode, ulong context, void *data);
+extern uchar pause_game_func(short keycode, ulong context, void *data);
+extern uchar reload_weapon_hotkey(short keycode, ulong context, void *data);
+extern uchar select_grenade_hotkey(short keycode, ulong context, void *data);
+extern uchar toggle_olh_func(short keycode, ulong context, void *data);
+extern uchar select_drug_hotkey(short keycode, ulong context, void *data);
+extern uchar toggle_music_func(short keycode, ulong context, void *data);
+extern uchar demo_quit_func(short keycode, ulong context, void *data);
+extern uchar cycle_weapons_func(short keycode, ulong context, void *data);
+extern uchar MacDetailFunc(short keycode, ulong context, void *data);
+extern uchar toggle_opengl_func(short keycode, ulong context, void *data);
+extern uchar arm_grenade_hotkey(short keycode, ulong context, void *data);
+extern uchar use_drug_hotkey(short keycode, ulong context, void *data);
+extern uchar hud_color_bank_cycle(short keycode, ulong context, void *data);
+extern uchar olh_overlay_func(short keycode, ulong context, void *data);
+extern uchar keypad_hotkey_func(short keycode, ulong context, void *data);
+extern uchar MacHelpFunc(short keycode, ulong context, void *data);
+extern uchar wrapper_options_func(short keycode, ulong context, void *data);
+extern uchar toggle_giveall_func(short keycode, ulong context, void *data);
+extern uchar toggle_physics_func(short keycode, ulong context, void *data);
+extern uchar toggle_up_level_func(short keycode, ulong context, void *data);
+extern uchar toggle_down_level_func(short keycode, ulong context, void *data);
+
+
+
+#define TAB_KEY    (KEY_TAB | KB_FLAG_DOWN)
+#define S_TAB_KEY  (KEY_TAB | KB_FLAG_DOWN | KB_FLAG_SHIFT)
+
+#define DOWN(x)    ((x) | KB_FLAG_DOWN)
+#define SHIFT(x)   (DOWN(x) | KB_FLAG_SHIFT)
+#define CTRL(x)    (DOWN(x) | KB_FLAG_CTRL)
+#define ALT(x)     (DOWN(x) | KB_FLAG_ALT)
+
+
+
+typedef struct HOTKEYLOOKUP_STRUCT
+{
+  const char *s; ulong contexts; hotkey_callback func; void *state; bool used; int def1, def2;
+} HOTKEYLOOKUP;
+
+
+
+HOTKEYLOOKUP HotKeyLookup[] =
+{
+//  name                    contexts      func                    state                 used  default key 1,2
+#ifdef AUDIOLOGS
+  { "\"audiolog_cancel\"",  DEMO_CONTEXT, audiolog_cancel_func,   NULL                   , 0, CTRL('.'),     0 },
+#endif
+  { "\"stand\"",            DEMO_CONTEXT, posture_hotkey_func,    (void *)0              , 0, DOWN('t'), SHIFT('t') },
+  { "\"crouch\"",           DEMO_CONTEXT, posture_hotkey_func,    (void *)1              , 0, DOWN('g'), SHIFT('g') },
+  { "\"prone\"",            DEMO_CONTEXT, posture_hotkey_func,    (void *)2              , 0, DOWN('b'), SHIFT('b') },
+  { "\"toggle_freelook\"",  DEMO_CONTEXT, toggle_mouse_look,      (void *)TRUE           , 0, DOWN('f'),     0 },
+  { "\"full_view\"",        DEMO_CONTEXT, change_mode_func,       (void *)FULLSCREEN_LOOP, 0, CTRL('f'),     0 },
+  { "\"normal_view\"",      DEMO_CONTEXT, change_mode_func,       (void *)GAME_LOOP      , 0, CTRL('d'),     0 },
+  { "\"map_view\"",         DEMO_CONTEXT, change_mode_func,       (void *)AUTOMAP_LOOP   , 0, CTRL('a'),     0 },
+  { "\"clear_fullscreen\"", DEMO_CONTEXT, clear_fullscreen_func,  NULL                   , 0, DOWN(KEY_BS),  0 },
+  { "\"save_game\"",        DEMO_CONTEXT, saveload_hotkey_func,   (void *)FALSE          , 0, CTRL('s'),     0 },
+  { "\"load_game\"",        DEMO_CONTEXT, saveload_hotkey_func,   (void *)TRUE           , 0, CTRL('l'),     0 },
+  { "\"pause\"",            DEMO_CONTEXT, pause_game_func,        (void *)TRUE           , 0, DOWN('p'),     0 },
+  { "\"reload_weapon 1\"",  DEMO_CONTEXT, reload_weapon_hotkey,   (void *)1              , 0, CTRL(KEY_BS),  0 },
+  { "\"reload_weapon 0\"",  DEMO_CONTEXT, reload_weapon_hotkey,   (void *)0              , 0, ALT(KEY_BS),   0 },
+  { "\"select_grenade\"",   DEMO_CONTEXT, select_grenade_hotkey,  (void *)0              , 0, CTRL('\''),    0 },
+  { "\"toggle_olh\"",       DEMO_CONTEXT, toggle_olh_func,        NULL                   , 0, CTRL('h'),     0 },
+  { "\"select_drug\"",      DEMO_CONTEXT, select_drug_hotkey,     (void *)0              , 0, CTRL(';'),     0 },
+  { "\"toggle_music\"",     DEMO_CONTEXT, toggle_music_func,      NULL                   , 0, CTRL('m'),     0 },
+  { "\"quit\"",             DEMO_CONTEXT, demo_quit_func,         NULL                   , 0, CTRL('q'),     0 },
+  { "\"cycle_weapons 1\"",  DEMO_CONTEXT, cycle_weapons_func,     (void *)1              , 0, TAB_KEY,       0 },
+  { "\"cycle_weapons -1\"", DEMO_CONTEXT, cycle_weapons_func,     (void *)-1             , 0, S_TAB_KEY,     0 },
+  { "\"cycle_detail\"",     DEMO_CONTEXT, MacDetailFunc,          NULL                   , 0, CTRL('1'),     0 },
+  { "\"toggle_opengl\"",   EVERY_CONTEXT, toggle_opengl_func,     NULL                   , 0, CTRL('g'),     0 },
+  { "\"arm_grenade\"",      DEMO_CONTEXT, arm_grenade_hotkey,     (void *)0              , 0, ALT('\''),     0 },
+  { "\"use_drug\"",         DEMO_CONTEXT, use_drug_hotkey,        (void *)0              , 0, ALT(';'),      0 },
+  { "\"hud_color\"",        DEMO_CONTEXT, hud_color_bank_cycle,   NULL                   , 0, ALT('h'),      0 },
+  { "\"showhelp\"",         DEMO_CONTEXT, olh_overlay_func,       &olh_overlay_on        , 0, ALT('o'),      0 },
+  { "\"keypad 0\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('0'),     0 },
+  { "\"keypad 1\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('1'),     0 },
+  { "\"keypad 2\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('2'),     0 },
+  { "\"keypad 3\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('3'),     0 },
+  { "\"keypad 4\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('4'),     0 },
+  { "\"keypad 5\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('5'),     0 },
+  { "\"keypad 6\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('6'),     0 },
+  { "\"keypad 7\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('7'),     0 },
+  { "\"keypad 8\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('8'),     0 },
+  { "\"keypad 9\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('9'),     0 },
+  { "\"mac_help\"",         DEMO_CONTEXT, MacHelpFunc,            NULL                   , 0, CTRL('/'),     0 },
+  { "\"toggle_options\"",   DEMO_CONTEXT, wrapper_options_func,   (void *)TRUE           , 0, DOWN(KEY_ESC), 0 },
+  { "\"cheat_give_all\"",   DEMO_CONTEXT, toggle_giveall_func,    (void *)TRUE           , 0, CTRL('2'),     0 },
+  { "\"cheat_physics\"",    DEMO_CONTEXT, toggle_physics_func,    (void *)TRUE           , 0, CTRL('3'),     0 },
+  { "\"cheat_up_level\"",   DEMO_CONTEXT, toggle_up_level_func,   (void *)TRUE           , 0, CTRL('4'),     0 },
+  { "\"cheat_down_level\"", DEMO_CONTEXT, toggle_down_level_func, (void *)TRUE           , 0, CTRL('5'),     0 },
+
+  { NULL, 0, 0, 0 }
+};
+
+
+
+//ought to be enough for anybody
+#define MAX_FIRE_KEYS  16
+
+int FireKeys[MAX_FIRE_KEYS+1]; //see input.c
+
+
+
+//all hotkey initialization and hotkey_add()s are done in this function
+//also handles setting fire keybinds
+void LoadHotkeyKeybinds(void)
+{
+  FILE *f;
+  char temp[512], *p;
+  const char *string;
+  int len, i, flags, ch, fire_key_index = 0;
+
+  hotkey_init(NUM_HOTKEYS);
+
+  //clear hotkey used flags so we can tell which weren't specified in file
+  //later we can add default key chars for them
+  i = 0;
+  while (HotKeyLookup[i].s != NULL)
+  {
+    HotKeyLookup[i].used = FALSE;
+    i++;
+  }
+
+  //get path and filename of keybinds file
+  p = SDL_GetPrefPath("Interrupt", "SystemShock");
+  snprintf(temp, sizeof(temp), "%s%s", p, KEYBINDS_FILENAME);
+  free(p);
+
+  f = fopen(temp, "r");
+  if (f)
+  {
+    //scan keybinds file line by line
+    while (fgets(temp, sizeof(temp), f))
+    {
+      LowerCaseInPlace(temp);
+      p = temp;
+
+      while (*p && isspace(*p)) p++; //skip leading spaces
+
+      string = "bind"; len = strlen(string);
+      if (strncmp(p, string, len)) continue;
+      p += len;
+
+      while (*p && isspace(*p)) p++; //skip leading spaces
+
+      flags = KB_FLAG_DOWN;
+      ch = 0;
+
+      string = "shift+"; len = strlen(string);
+      if (!strncmp(p, string, len)) {p += len; flags |= KB_FLAG_SHIFT;}
+
+      string = "ctrl+"; len = strlen(string);
+      if (!strncmp(p, string, len)) {p += len; flags |= KB_FLAG_CTRL;}
+
+      string = "alt+"; len = strlen(string);
+      if (!strncmp(p, string, len)) {p += len; flags |= KB_FLAG_ALT;}
+
+      //get ascii char from key name
+      i = 0;
+      while (KeyName2ChCode[i].s != NULL)
+      {
+        string = KeyName2ChCode[i].s; len = strlen(string);
+        if (!strncmp(p, string, len)) {p += len; ch = KeyName2ChCode[i].ch | flags; break;}
+        i++;
+      }
+      if (ch == 0) continue;
+
+      while (*p && isspace(*p)) p++; //skip leading spaces
+
+      //lookup and add specified hotkey info
+      i = 0;
+      while (HotKeyLookup[i].s != NULL)
+      {
+        string = HotKeyLookup[i].s; len = strlen(string);
+        if (!strncmp(p, string, len))
+        {
+          hotkey_add(ch, HotKeyLookup[i].contexts, HotKeyLookup[i].func, HotKeyLookup[i].state);
+          HotKeyLookup[i].used = TRUE;
+          break;
+        }
+        i++;
+      }
+
+      //special case for fire keys
+      string = "\"fire\""; len = strlen(string);
+      if (!strncmp(p, string, len))
+      {
+        if (fire_key_index < MAX_FIRE_KEYS)
+          FireKeys[fire_key_index++] = (ch & ~KB_FLAG_DOWN);
+      }
+    }
+
+    fclose(f);
+  }
+
+  //add defaults for unused hotkeys
+  i = 0;
+  while (HotKeyLookup[i].s != NULL)
+  {
+    if (!HotKeyLookup[i].used)
+    {
+      //add default 1
+      ch = HotKeyLookup[i].def1;
+      if (ch) hotkey_add(ch, HotKeyLookup[i].contexts, HotKeyLookup[i].func, HotKeyLookup[i].state);
+
+      //add default 2
+      ch = HotKeyLookup[i].def2;
+      if (ch) hotkey_add(ch, HotKeyLookup[i].contexts, HotKeyLookup[i].func, HotKeyLookup[i].state);
+    }
+    i++;
+  }
+
+  //add default fire key if none were specified
+  if (fire_key_index == 0)
+    FireKeys[fire_key_index++] = KEY_ENTER;
+
+  //signal end of fire key list
+  FireKeys[fire_key_index] = 0;
+}
+
+
+
+//************************************************************************************
+
+
+
+//**********************************
+//Set move keybinds (see movekeys.c)
+//**********************************
+
+
+
+extern MOVE_KEYBIND      MoveKeybinds[MAX_MOVE_KEYBINDS+1];
+extern MOVE_KEYBIND MoveCyberKeybinds[MAX_MOVE_KEYBINDS+1];
+
+
+
+#define CODE_Q         0x0C
+#define CODE_W         0x0D
+#define CODE_E         0x0E
+#define CODE_A         0x00
+#define CODE_S         0x01
+#define CODE_D         0x02
+#define CODE_Z         0x06
+#define CODE_X         0x07
+#define CODE_C         0x08
+#define CODE_R         0x0F
+#define CODE_V         0x09
+#define CODE_J         0x26
+#define CODE_SPACE     0x31
+#define CODE_UP        0x7E
+#define CODE_LEFT      0x7B
+#define CODE_RIGHT     0x7C
+#define CODE_DOWN      0x7D
+#define CODE_KP_HOME   0x59
+#define CODE_KP_UP     0x5B
+#define CODE_KP_PGUP   0x5C
+#define CODE_KP_LEFT   0x56
+#define CODE_KP_5      0x57
+#define CODE_KP_RIGHT  0x58
+#define CODE_KP_END    0x53
+#define CODE_KP_DOWN   0x54
+#define CODE_KP_PGDN   0x55
+
+
+
+static MOVE_KEYBIND MoveKeybindsDefault[] =
+{
+  { CODE_W        | KB_FLAG_SHIFT, M_RUNFORWARD    },
+  { CODE_UP       | KB_FLAG_SHIFT, M_RUNFORWARD    },
+  { CODE_UP       | KB_FLAG_ALT  , M_RUNFORWARD    },
+  { CODE_KP_UP    | KB_FLAG_SHIFT, M_RUNFORWARD    },
+  { CODE_KP_UP    | KB_FLAG_ALT  , M_RUNFORWARD    },
+  { CODE_W                       , M_FORWARD       },
+  { CODE_UP                      , M_FORWARD       },
+  { CODE_KP_UP                   , M_FORWARD       },
+  { CODE_Z        | KB_FLAG_SHIFT, M_FASTTURNLEFT  },
+  { CODE_LEFT     | KB_FLAG_SHIFT, M_FASTTURNLEFT  },
+  { CODE_KP_LEFT  | KB_FLAG_SHIFT, M_FASTTURNLEFT  },
+  { CODE_Z                       , M_TURNLEFT      },
+  { CODE_LEFT                    , M_TURNLEFT      },
+  { CODE_KP_LEFT                 , M_TURNLEFT      },
+  { CODE_C        | KB_FLAG_SHIFT, M_FASTTURNRIGHT },
+  { CODE_RIGHT    | KB_FLAG_SHIFT, M_FASTTURNRIGHT },
+  { CODE_KP_RIGHT | KB_FLAG_SHIFT, M_FASTTURNRIGHT },
+  { CODE_C                       , M_TURNRIGHT     },
+  { CODE_RIGHT                   , M_TURNRIGHT     },
+  { CODE_KP_RIGHT                , M_TURNRIGHT     },
+  { CODE_S                       , M_BACK          },
+  { CODE_S        | KB_FLAG_SHIFT, M_BACK          },
+  { CODE_DOWN                    , M_BACK          },
+  { CODE_DOWN     | KB_FLAG_SHIFT, M_BACK          },
+  { CODE_DOWN     | KB_FLAG_ALT  , M_BACK          },
+  { CODE_KP_DOWN                 , M_BACK          },
+  { CODE_KP_DOWN  | KB_FLAG_SHIFT, M_BACK          },
+  { CODE_KP_DOWN  | KB_FLAG_ALT  , M_BACK          },
+  { CODE_A                       , M_SLIDELEFT     },
+  { CODE_A        | KB_FLAG_SHIFT, M_SLIDELEFT     },
+  { CODE_LEFT     | KB_FLAG_ALT  , M_SLIDELEFT     },
+  { CODE_KP_LEFT  | KB_FLAG_ALT  , M_SLIDELEFT     },
+  { CODE_KP_END                  , M_SLIDELEFT     },
+  { CODE_D                       , M_SLIDERIGHT    },
+  { CODE_D        | KB_FLAG_SHIFT, M_SLIDERIGHT    },
+  { CODE_RIGHT    | KB_FLAG_ALT  , M_SLIDERIGHT    },
+  { CODE_KP_RIGHT | KB_FLAG_ALT  , M_SLIDERIGHT    },
+  { CODE_KP_PGDN                 , M_SLIDERIGHT    },
+  { CODE_J                       , M_JUMP          },
+  { CODE_J        | KB_FLAG_SHIFT, M_JUMP          },
+  { CODE_SPACE                   , M_JUMP          },
+  { CODE_SPACE    | KB_FLAG_SHIFT, M_JUMP          },
+  { CODE_SPACE    | KB_FLAG_CTRL , M_JUMP          },
+  { CODE_SPACE    | KB_FLAG_ALT  , M_JUMP          },
+  { CODE_X                       , M_LEANUP        },
+  { CODE_X        | KB_FLAG_SHIFT, M_LEANUP        },
+  { CODE_X        | KB_FLAG_CTRL , M_LEANUP        },
+  { CODE_X        | KB_FLAG_ALT  , M_LEANUP        },
+  { CODE_Q                       , M_LEANLEFT      },
+  { CODE_Q        | KB_FLAG_SHIFT, M_LEANLEFT      },
+  { CODE_LEFT     | KB_FLAG_CTRL , M_LEANLEFT      },
+  { CODE_KP_LEFT  | KB_FLAG_CTRL , M_LEANLEFT      },
+  { CODE_E                       , M_LEANRIGHT     },
+  { CODE_E        | KB_FLAG_SHIFT, M_LEANRIGHT     },
+  { CODE_RIGHT    | KB_FLAG_CTRL , M_LEANRIGHT     },
+  { CODE_KP_RIGHT | KB_FLAG_CTRL , M_LEANRIGHT     },
+  { CODE_R                       , M_LOOKUP        },
+  { CODE_R        | KB_FLAG_SHIFT, M_LOOKUP        },
+  { CODE_R        | KB_FLAG_CTRL , M_LOOKUP        },
+  { CODE_UP       | KB_FLAG_CTRL , M_LOOKUP        },
+  { CODE_KP_UP    | KB_FLAG_CTRL , M_LOOKUP        },
+  { CODE_V                       , M_LOOKDOWN      },
+  { CODE_V        | KB_FLAG_SHIFT, M_LOOKDOWN      },
+  { CODE_V        | KB_FLAG_CTRL , M_LOOKDOWN      },
+  { CODE_DOWN     | KB_FLAG_CTRL , M_LOOKDOWN      },
+  { CODE_KP_DOWN  | KB_FLAG_CTRL , M_LOOKDOWN      },
+  { CODE_KP_HOME                 , M_RUNLEFT       },
+  { CODE_KP_PGUP                 , M_RUNRIGHT      },
+  { CODE_S                       , M_THRUST        }, //cyber start
+  { CODE_S        | KB_FLAG_SHIFT, M_THRUST        },
+  { CODE_KP_5                    , M_THRUST        },
+  { CODE_W                       , M_CLIMB         },
+  { CODE_W        | KB_FLAG_SHIFT, M_CLIMB         },
+  { CODE_UP                      , M_CLIMB         },
+  { CODE_UP       | KB_FLAG_SHIFT, M_CLIMB         },
+  { CODE_UP       | KB_FLAG_CTRL , M_CLIMB         },
+  { CODE_UP       | KB_FLAG_ALT  , M_CLIMB         },
+  { CODE_KP_UP                   , M_CLIMB         },
+  { CODE_KP_UP    | KB_FLAG_SHIFT, M_CLIMB         },
+  { CODE_KP_UP    | KB_FLAG_CTRL , M_CLIMB         },
+  { CODE_KP_UP    | KB_FLAG_ALT  , M_CLIMB         },
+  { CODE_A                       , M_BANKLEFT      },
+  { CODE_A        | KB_FLAG_SHIFT, M_BANKLEFT      },
+  { CODE_KP_LEFT                 , M_BANKLEFT      },
+  { CODE_KP_LEFT  | KB_FLAG_SHIFT, M_BANKLEFT      },
+  { CODE_KP_LEFT  | KB_FLAG_CTRL , M_BANKLEFT      },
+  { CODE_KP_LEFT  | KB_FLAG_ALT  , M_BANKLEFT      },
+  { CODE_D                       , M_BANKRIGHT     },
+  { CODE_D        | KB_FLAG_SHIFT, M_BANKRIGHT     },
+  { CODE_KP_RIGHT                , M_BANKRIGHT     },
+  { CODE_KP_RIGHT | KB_FLAG_SHIFT, M_BANKRIGHT     },
+  { CODE_KP_RIGHT | KB_FLAG_CTRL , M_BANKRIGHT     },
+  { CODE_KP_RIGHT | KB_FLAG_ALT  , M_BANKRIGHT     },
+  { CODE_X                       , M_DIVE          },
+  { CODE_X        | KB_FLAG_SHIFT, M_DIVE          },
+  { CODE_DOWN                    , M_DIVE          },
+  { CODE_DOWN     | KB_FLAG_SHIFT, M_DIVE          },
+  { CODE_DOWN     | KB_FLAG_CTRL , M_DIVE          },
+  { CODE_DOWN     | KB_FLAG_ALT  , M_DIVE          },
+  { CODE_KP_DOWN                 , M_DIVE          },
+  { CODE_KP_DOWN  | KB_FLAG_SHIFT, M_DIVE          },
+  { CODE_KP_DOWN  | KB_FLAG_CTRL , M_DIVE          },
+  { CODE_KP_DOWN  | KB_FLAG_ALT  , M_DIVE          },
+  { CODE_Q                       , M_ROLLRIGHT     },
+  { CODE_Q        | KB_FLAG_SHIFT, M_ROLLRIGHT     },
+  { CODE_Z                       , M_ROLLRIGHT     },
+  { CODE_Z        | KB_FLAG_SHIFT, M_ROLLRIGHT     },
+  { CODE_E                       , M_ROLLLEFT      },
+  { CODE_E        | KB_FLAG_SHIFT, M_ROLLLEFT      },
+  { CODE_C                       , M_ROLLLEFT      },
+  { CODE_C        | KB_FLAG_SHIFT, M_ROLLLEFT      },
+  { CODE_KP_HOME                 , M_CLIMBLEFT     },
+  { CODE_KP_HOME  | KB_FLAG_SHIFT, M_CLIMBLEFT     },
+  { CODE_KP_HOME  | KB_FLAG_CTRL , M_CLIMBLEFT     },
+  { CODE_KP_HOME  | KB_FLAG_ALT  , M_CLIMBLEFT     },
+  { CODE_KP_PGUP                 , M_CLIMBRIGHT    },
+  { CODE_KP_PGUP  | KB_FLAG_SHIFT, M_CLIMBRIGHT    },
+  { CODE_KP_PGUP  | KB_FLAG_CTRL , M_CLIMBRIGHT    },
+  { CODE_KP_PGUP  | KB_FLAG_ALT  , M_CLIMBRIGHT    },
+  { CODE_KP_PGDN                 , M_DIVERIGHT     },
+  { CODE_KP_PGDN  | KB_FLAG_SHIFT, M_DIVERIGHT     },
+  { CODE_KP_PGDN  | KB_FLAG_CTRL , M_DIVERIGHT     },
+  { CODE_KP_PGDN  | KB_FLAG_ALT  , M_DIVERIGHT     },
+  { CODE_KP_END                  , M_DIVELEFT      },
+  { CODE_KP_END   | KB_FLAG_SHIFT, M_DIVELEFT      },
+  { CODE_KP_END   | KB_FLAG_CTRL , M_DIVELEFT      },
+  { CODE_KP_END   | KB_FLAG_ALT  , M_DIVELEFT      },
+
+  { 255                          , -1              }
+};
+
+
+
+static struct {const char *s; int move;} MoveName2Move[] =
+{
+  { "\"runforward\"",    M_RUNFORWARD    },
+  { "\"forward\"",       M_FORWARD       },
+  { "\"fastturnleft\"",  M_FASTTURNLEFT  },
+  { "\"turnleft\"",      M_TURNLEFT      },
+  { "\"fastturnright\"", M_FASTTURNRIGHT },
+  { "\"turnright\"",     M_TURNRIGHT     },
+  { "\"back\"",          M_BACK          },
+  { "\"slideleft\"",     M_SLIDELEFT     },
+  { "\"slideright\"",    M_SLIDERIGHT    },
+  { "\"jump\"",          M_JUMP          },
+  { "\"leanup\"",        M_LEANUP        },
+  { "\"leanleft\"",      M_LEANLEFT      },
+  { "\"leanright\"",     M_LEANRIGHT     },
+  { "\"lookup\"",        M_LOOKUP        },
+  { "\"lookdown\"",      M_LOOKDOWN      },
+  { "\"runleft\"",       M_RUNLEFT       },
+  { "\"runright\"",      M_RUNRIGHT      },
+  { "\"thrust\"",        M_THRUST        }, //cyber start
+  { "\"climb\"",         M_CLIMB         },
+  { "\"bankleft\"",      M_BANKLEFT      },
+  { "\"bankright\"",     M_BANKRIGHT     },
+  { "\"dive\"",          M_DIVE          },
+  { "\"rollright\"",     M_ROLLRIGHT     },
+  { "\"rollleft\"",      M_ROLLLEFT      },
+  { "\"climbleft\"",     M_CLIMBLEFT     },
+  { "\"climbright\"",    M_CLIMBRIGHT    },
+  { "\"diveright\"",     M_DIVERIGHT     },
+  { "\"diveleft\"",      M_DIVELEFT      },
+
+  { NULL,                0               }
+};
+
+
+
+void LoadMoveKeybinds(void)
+{
+  FILE *f;
+  char temp[512], *p, move_used[NUM_MOVES];
+  const char *string;
+  int len, i, flags, code, move, num_bound = 0, num_cyber_bound = 0;
+
+  //keep track of which moves are specified so we can add default ones for those that are missing
+  memset(move_used, 0, NUM_MOVES);
+
+  //get path and filename of keybinds file
+  p = SDL_GetPrefPath("Interrupt", "SystemShock");
+  snprintf(temp, sizeof(temp), "%s%s", p, KEYBINDS_FILENAME);
+  free(p);
+
+  f = fopen(temp, "r");
+  if (f)
+  {
+    //scan keybinds file line by line
+    while (fgets(temp, sizeof(temp), f))
+    {
+      LowerCaseInPlace(temp);
+      p = temp;
+
+      while (*p && isspace(*p)) p++; //skip leading spaces
+
+      string = "bind"; len = strlen(string);
+      if (strncmp(p, string, len)) continue;
+      p += len;
+
+      while (*p && isspace(*p)) p++; //skip leading spaces
+
+      flags = 0;
+      code = 255;
+
+      string = "shift+"; len = strlen(string);
+      if (!strncmp(p, string, len)) {p += len; flags |= KB_FLAG_SHIFT;}
+
+      string = "ctrl+"; len = strlen(string);
+      if (!strncmp(p, string, len)) {p += len; flags |= KB_FLAG_CTRL;}
+
+      string = "alt+"; len = strlen(string);
+      if (!strncmp(p, string, len)) {p += len; flags |= KB_FLAG_ALT;}
+
+      //get code from key name
+      i = 0;
+      while (KeyName2ChCode[i].s != NULL)
+      {
+        string = KeyName2ChCode[i].s; len = strlen(string);
+        if (!strncmp(p, string, len)) {p += len; code = KeyName2ChCode[i].code | flags; break;}
+        i++;
+      }
+      if (code == 255) continue;
+
+      while (*p && isspace(*p)) p++; //skip leading spaces
+
+      //lookup move
+      i = 0;
+      while (MoveName2Move[i].s != NULL)
+      {
+        string = MoveName2Move[i].s; len = strlen(string);
+        if (!strncmp(p, string, len))
+        {
+          move = MoveName2Move[i].move;
+          move_used[move] = 1;
+
+          if (move < M_THRUST) //non-cyber
+          {
+            if (num_bound < MAX_MOVE_KEYBINDS)
+            {
+              //add keybind to list
+              MoveKeybinds[num_bound].code = code;
+              MoveKeybinds[num_bound].move = move;
+              num_bound++;
+            }
+          }
+          else
+          {
+            if (num_cyber_bound < MAX_MOVE_KEYBINDS)
+            {
+              //add cyber keybind to list
+              MoveCyberKeybinds[num_cyber_bound].code = code;
+              MoveCyberKeybinds[num_cyber_bound].move = move;
+              num_cyber_bound++;
+            }
+          }
+
+          break;
+        }
+        i++;
+      }
+    }
+
+    fclose(f);
+  }
+
+  //for moves that weren't referenced in file, bind default codes to them
+  for (move = 0; move < NUM_MOVES; move++) if (!move_used[move])
+  {
+    i = 0;
+    while (MoveKeybindsDefault[i].code != 255)
+    {
+      if (MoveKeybindsDefault[i].move == move)
+      {
+        code = MoveKeybindsDefault[i].code;
+
+        if (move < M_THRUST) //non-cyber
+        {
+          if (num_bound < MAX_MOVE_KEYBINDS)
+          {
+            //add keybind to list
+            MoveKeybinds[num_bound].code = code;
+            MoveKeybinds[num_bound].move = move;
+            num_bound++;
+          }
+        }
+        else
+        {
+          if (num_cyber_bound < MAX_MOVE_KEYBINDS)
+          {
+            //add cyber keybind to list
+            MoveCyberKeybinds[num_cyber_bound].code = code;
+            MoveCyberKeybinds[num_cyber_bound].move = move;
+            num_cyber_bound++;
+          }
+        }
+      }
+      i++;
+    }
+  }
+
+  //signal end of lists
+  MoveKeybinds[num_bound].code = 255;
+  MoveCyberKeybinds[num_cyber_bound].code = 255;
+
+  extern void init_motion_polling(void); //see movekeys.c
+  init_motion_polling();
+}
+
+
+
+//************************************************************************************
+
+
+
+//*******************************
+//Create default keybinds file
+//*******************************
+
+
+
+#define JUSTIFY_COLUMN  30
+
+
+
+//if ch is 0, use code instead
+static bool WriteKeyName(int ch, int code, FILE *f)
+{
+  int i = 0, len = 0;
+
+  while (KeyName2ChCode[i].s != NULL)
+  {
+    if (ch) { if (KeyName2ChCode[i].ch   == (ch   & 255)) break; }
+    else    { if (KeyName2ChCode[i].code == (code & 255)) break; }
+    i++;
+  }
+  if (KeyName2ChCode[i].s == NULL) return 0;
+
+  fputs("bind  ", f); len += 6;
+
+  if ((ch ? ch : code) & KB_FLAG_SHIFT) {fputs("shift+", f); len += 6;}
+  if ((ch ? ch : code) &  KB_FLAG_CTRL) {fputs("ctrl+",  f); len += 5;}
+  if ((ch ? ch : code) &   KB_FLAG_ALT) {fputs("alt+",   f); len += 4;}
+
+  fputs(KeyName2ChCode[i].s, f); len += strlen(KeyName2ChCode[i].s);
+
+  //add spaces to justify following text
+  while (len < JUSTIFY_COLUMN) {fputc(' ', f); len++;}
+
+  return 1;
+}
+
+
+
+static void WriteMoveName(int move, FILE *f)
+{
+  int i;
+
+  //find move name that matches move
+  i = 0;
+  while (MoveName2Move[i].s != NULL)
+  {
+    if (MoveName2Move[i].move == move) break;
+    i++;
+  }
+
+  if (MoveName2Move[i].s != NULL)
+  {
+    fputs(MoveName2Move[i].s, f);
+    fputs("\n", f);
+  }
+}
+
+
+
+//create default keybinds file if it doesn't already exist
+void CreateDefaultKeybindsFile(void)
+{
+  FILE *f;
+  char temp[512], *p;
+  int i, ch;
+
+  //get path and filename of keybinds file
+  p = SDL_GetPrefPath("Interrupt", "SystemShock");
+  snprintf(temp, sizeof(temp), "%s%s", p, KEYBINDS_FILENAME);
+  free(p);
+
+  //check if file already exists; if so, return
+  f = fopen(temp, "r");
+  if (f != NULL) {fclose(f); return;}
+
+  //open new file for writing
+  f = fopen(temp, "w");
+  if (f == NULL) return;
+
+  //write default hotkey keybinds
+  i = 0;
+  while (HotKeyLookup[i].s)
+  {
+    //default 1 if it exists (it should)
+    ch = HotKeyLookup[i].def1;
+    if (ch && WriteKeyName(ch, 0, f))
+    {
+      fputs(HotKeyLookup[i].s, f);
+      fputs("\n", f);
+    }
+
+    //default 2 if it exists (it might not)
+    ch = HotKeyLookup[i].def2;
+    if (ch && WriteKeyName(ch, 0, f))
+    {
+      fputs(HotKeyLookup[i].s, f);
+      fputs("\n", f);
+    }
+
+    i++;
+  }
+
+  //write default fire keybind
+  fputs("\n", f);
+  WriteKeyName(KEY_ENTER, 0, f);
+  fputs("\"fire\"\n\n", f);
+
+  //write default move keybinds
+  i = 0;
+  while (MoveKeybindsDefault[i].code != 255)
+  {
+    if (WriteKeyName(0, MoveKeybindsDefault[i].code, f))
+      WriteMoveName(MoveKeybindsDefault[i].move, f);
+
+    i++;
+  }
+
+  fclose(f);
 }
