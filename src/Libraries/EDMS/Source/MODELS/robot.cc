@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <iostream>
 //#include <conio.h>
 #include "edms_int.h" //This is the object type library. It is universal.
-#include "edms_vt.h"
 #include "idof.h"
 //#ifdef EDMS_SHIPPABLE
 ////#include <mout.h>

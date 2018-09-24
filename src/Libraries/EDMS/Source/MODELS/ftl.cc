@@ -29,7 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <lg.h>
 //#include <_edms.h>
 
-#include "edms_vt.h"
 #include "physhand.h"
 
 // extern "C" {
