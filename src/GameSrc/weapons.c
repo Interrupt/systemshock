@@ -1346,6 +1346,67 @@ ubyte weapon_colors[NUM_SC_GUN] = {RED_BASE + 4,        // pistol
                                    TURQUOISE_BASE + 3}; // beam proj
 
 extern ubyte handart_count;
+
+// -----------------------------------------------------------------------------
+// SetMotionCursorsColorForWeapon()
+//
+// modifies motion cursor bitmap color according to specified weapon
+//
+
+void SetMotionCursorsColorForWeapon(int w)
+{
+  if (global_fullmap->cyber) return;
+
+  short new_offset = RED_BASE + 4;
+
+  if (w >= 0 && w < NUM_WEAPON_SLOTS)
+  {
+    weapon_slot *ws = &player_struct.weapons[w];
+
+    if (ws->type != EMPTY_WEAPON_SLOT)
+      new_offset = weapon_colors[ws->type];
+  }
+
+  if (new_offset != cursor_color_offset)
+  {
+    for (int i = 0; i < NUM_MOTION_CURSORS; i++)
+    {
+      uchar *bits = motion_cursor_bitmaps[i].bits;
+      if (bits != NULL)
+      {
+        int size = motion_cursor_bitmaps[i].w * motion_cursor_bitmaps[i].h;
+        for (int j = 0; j < size; j++, bits++)
+        {
+          if (*bits && !(*bits & 1))
+            *bits += (new_offset - cursor_color_offset);
+        }
+      }
+    }
+
+    cursor_color_offset = new_offset;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SetMotionCursorsColorForActiveWeapon()
+//
+// modifies motion cursor bitmap color according to currently active weapon
+//
+
+// called at end of:
+//    weapons_add_func()         invent.c
+//    weapon_drop_func()         invent.c
+//    fullscreen_start()         fullscrn.c
+//    screen_start()             screen.c
+
+void SetMotionCursorsColorForActiveWeapon(void)
+{
+  if (global_fullmap->cyber) return;
+
+  int w = player_struct.actives[ACTIVE_WEAPON];
+  SetMotionCursorsColorForWeapon(w);
+}
+
 // -----------------------------------------------------------------------------
 // change_selected_weapon()
 //
@@ -1354,28 +1415,13 @@ extern ubyte handart_count;
 
 void change_selected_weapon(int new_weapon) {
     extern void reset_handart_count(int wpn);
-    weapon_slot *ws = &player_struct.weapons[new_weapon];
-    grs_bitmap *curs = motion_cursor_bitmaps;
-    uchar *bits;
-    int i, j, size;
-    short new_offset;
 
     if (global_fullmap->cyber)
         return;
 
-    new_offset = weapon_colors[ws->type];
+    SetMotionCursorsColorForWeapon(new_weapon);
 
-    for (i = 0; i < NUM_MOTION_CURSORS; i++) {
-        bits = curs->bits;
-        size = curs->w * curs->h;
-        for (j = 0; j < size; j++, bits++) {
-            if ((*bits) && (!((*bits) % 2)))
-                *bits = *bits + (new_offset - cursor_color_offset);
-        }
-        curs++;
-    }
-    cursor_color_offset = new_offset;
-
+    weapon_slot *ws = &player_struct.weapons[new_weapon];
     check_temperature(ws, TRUE);
     if ((ws->type == GUN_SUBCLASS_BEAM) || (ws->type == GUN_SUBCLASS_BEAMPROJ)) {
         check_temperature(ws, FALSE);
