@@ -51,6 +51,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "cit2d.h"
 
+#include <SDL.h>
+
 //#include <gifd.h>
 
 #ifndef STORE_CLIP
@@ -772,44 +774,49 @@ errtype end_wait() {
  * around 286 milliseconds. Assuming a refresh rate of 60 Hz that's around 17
  * frames.
  */
-//#define NUM_BOXES 8
-//#define TICKS_PER_BOX 10
-#define NUM_BOXES 17
 
-#define INTERP(s, f, i) (((f) * (i) + (s) * (NUM_BOXES - (i)-1)) / (NUM_BOXES - 1))
+#define ZOOM_MS  286
 
-void zoom_rect(LGRect *start, LGRect *end) {
-    extern ulong last_real_time;
-    long fillt = gr_get_fill_type();
-    ulong start_time = *tmd_ticks;
-    ulong last_time = *tmd_ticks;
-    int i;
-    uiHideMouse(NULL);
-    gr_set_fill_type(FILL_XOR);
-    gr_set_fcolor(WHITE);
+#define INTERP(s, f, i) (((f) * (i) + (s) * (ZOOM_MS - (i)-1)) / (ZOOM_MS - 1))
 
-    for (i = 0; i < NUM_BOXES; i++) {
-        short ulx = INTERP(start->ul.x, end->ul.x, i);
-        short uly = INTERP(start->ul.y, end->ul.y, i);
-        short lrx = INTERP(start->lr.x, end->lr.x, i);
-        short lry = INTERP(start->lr.y, end->lr.y, i);
-        ss_box(ulx, uly, lrx, lry);
-        ss_box(ulx - 1, uly - 1, lrx + 1, lry + 1);
+bool ZoomEnable;
+LGRect ZoomStart, ZoomEnd;
+Uint32 ZoomTicks, ZoomI;
 
-        extern void SDLDraw(void);
-        SDLDraw();
+void zoom_rect(LGRect *start, LGRect *end)
+{
+  //set global variables used by ZoomProc()
+  ZoomEnable = TRUE;
+  ZoomStart = *start;
+  ZoomEnd = *end;
+  ZoomTicks = SDL_GetTicks();
+}
 
-        tight_loop(TRUE);
+//called twice within SDLDraw(); see Shock.c
+void ZoomDrawProc(int erase)
+{
+  if (!ZoomEnable) return;
 
-        ss_box(ulx, uly, lrx, lry);
-        ss_box(ulx - 1, uly - 1, lrx + 1, lry + 1);
-        last_time = *tmd_ticks;
-        // KLC      synchronous_update();
-    }
-    uiShowMouse(NULL);
-    gr_set_fill_type(fillt);
-    if (time_passes)
-        last_real_time += last_time - start_time;
+  if (!erase)
+  {
+    ZoomI = SDL_GetTicks() - ZoomTicks;
+    if (ZoomI >= ZOOM_MS) {ZoomEnable = 0; return;}
+  }
+
+  int ft = gr_get_fill_type();
+  int c = gr_get_fcolor();
+  gr_set_fill_type(FILL_XOR);
+  gr_set_fcolor(WHITE);
+
+  short ulx = INTERP(ZoomStart.ul.x, ZoomEnd.ul.x, ZoomI);
+  short uly = INTERP(ZoomStart.ul.y, ZoomEnd.ul.y, ZoomI);
+  short lrx = INTERP(ZoomStart.lr.x, ZoomEnd.lr.x, ZoomI);
+  short lry = INTERP(ZoomStart.lr.y, ZoomEnd.lr.y, ZoomI);
+  ss_box(ulx, uly, lrx, lry);
+  ss_box(ulx - 1, uly - 1, lrx + 1, lry + 1);
+
+  gr_set_fill_type(ft);
+  gr_set_fcolor(c);
 }
 
 // Returns the angle of difference between look_facing and the true direction
