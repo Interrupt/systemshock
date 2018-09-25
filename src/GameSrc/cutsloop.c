@@ -217,6 +217,11 @@ void cutscene_loop(void)
       for (i=0; i<3; i++) temp_pal[3*used_min_i+i] = temp_pal[3*255+i];
       gr_set_pal(0, 256, temp_pal);
       gr_set_fcolor(used_min_i);
+
+      //change color 255s in bitmap to subtitle color
+      bits = movie_bitmap.bits;
+      count = (int)movie_bitmap.w * movie_bitmap.h;
+      while (count--) {if (*bits == 255) *bits = used_min_i; bits++;}
     }
 
     // Draw this frame
