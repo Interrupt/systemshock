@@ -112,6 +112,8 @@ ushort fr_get_real(fauxrend_context *cur_fr, int x, int y) {
     int col, tmpcol;
     if ((_fr_glob_flags | _fr->flags) & (FR_NORENDR_MASK | FR_SOLIDFR_MASK)) /* dont really render, call a game thing */
         return 0;
+    if (x < 0 || x >= cur_fr->draw_canvas.bm.w ||
+        y < 0 || y >= cur_fr->draw_canvas.bm.h) return 0;
     col = (int)(*((cur_fr->draw_canvas.bm.bits) + (y * cur_fr->draw_canvas.bm.row) + (x)));
     // mprintf("Color %d, obj %d, max c %d at %d
     // %d\n",col,(col>=FR_CUR_OBJ_BASE)?fr_col_to_obj[col-FR_CUR_OBJ_BASE]:0,fr_cur_obj_col,x,y);
