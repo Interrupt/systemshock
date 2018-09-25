@@ -1168,7 +1168,7 @@ void show_obj(ObjID cobjid) {
         corn[1] = g3_copy_add_delta_x(corn[0], fix_xoff << 1);
         corn[2] = g3_copy_add_delta_y(corn[1], fix_yoff << 1);
         corn[3] = g3_copy_add_delta_y(corn[0], fix_yoff << 1);
-        if (tpdata != NULL) _fr_draw_tmtile(tpdata, tluc_val, corn, (_fr_cobj->obclass == CLASS_DOOR), light_me);
+        _fr_draw_tmtile(tpdata, tluc_val, corn, (_fr_cobj->obclass == CLASS_DOOR), light_me);
         if (use_cache)
             release_obj_cache_bitmap(ref);
         g3_end_object();
