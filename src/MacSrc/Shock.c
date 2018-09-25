@@ -329,6 +329,9 @@ void SetSDLPalette(int index, int count, uchar *pal)
 
 void SDLDraw()
 {
+    extern void ZoomDrawProc(int erase);
+    ZoomDrawProc(FALSE); //draw zoom rectangle if enabled; if not, returns immediately
+
 	sdlPalette->colors[255].a = 0x00;
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, drawSurface);
 	sdlPalette->colors[255].a = 0xff;
@@ -347,6 +350,8 @@ void SDLDraw()
 		SDL_RenderPresent(renderer);
 		SDL_RenderClear(renderer);
 	}
+
+    ZoomDrawProc(TRUE); //erase zoom rectangle if enabled; if not, returns immediately
 }
 
 bool MouseCaptured = FALSE;
