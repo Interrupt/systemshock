@@ -28,8 +28,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "init.h"
 #include "palfx.h"
 
+#include <SDL.h>
+
 byte pal_fade_id;
 byte cyc_id0, cyc_id1, cyc_id2, cyc_id3, cyc_id4, cyc_id5;
+
+static Uint32 FadeStartTicks;
 
 #define FADE_DOWN_DELAY 3
 #define FADE_DOWN_STEPS 30
@@ -46,14 +50,19 @@ byte palfx_start_fade_up(uchar *new_pal);
 //-------------------------------------
 void finish_pal_effect(byte id) {
     while (palette_query_effect(id) == ACTIVE) {
-        palette_advance_effect(id, 1);
+        Uint32 ticks = SDL_GetTicks() - FadeStartTicks;
+        ticks /= 400;
+        while (ticks > 0 && palette_query_effect(id) == ACTIVE) {
+            palette_advance_effect(id, 1);
+            ticks--;
+        }
 
         // Update the screen
         extern void SDLDraw(void);
-        extern void SDL_PumpEvents(void);
-
         SDLDraw();
-        SDL_PumpEvents();
+
+        void pump_events(void);
+        pump_events();
     }
 }
 
@@ -62,6 +71,8 @@ void palfx_fade_down() {
     byte id;
     static uchar blackp[768];
     static uchar savep[768];
+
+    FadeStartTicks = SDL_GetTicks();
 
     LG_memset(blackp, 0, sizeof(blackp));
     gr_get_pal(0, 256, savep);
@@ -89,6 +100,9 @@ byte palfx_start_fade_up(uchar *new_pal) {
 
 //-------------------------------------
 void palfx_fade_up(uchar do_now) {
+
+    FadeStartTicks = SDL_GetTicks();
+
     // ppall is defined as the main shadow palette in init.c
     pal_fade_id = palfx_start_fade_up(ppall);
 
