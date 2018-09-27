@@ -149,7 +149,12 @@ void mainloop(int argc, char *argv[]) {
 
         status_bio_update();
 
+        extern void ZoomDrawProc(int erase);
+        ZoomDrawProc(FALSE); //draw zoom rectangle if enabled; if not, returns immediately
+
         SDLDraw();
+
+        ZoomDrawProc(TRUE); //erase zoom rectangle if enabled; if not, returns immediately
     }
 
     cit_success = TRUE;
