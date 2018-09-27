@@ -808,6 +808,12 @@ void ZoomDrawProc(int erase)
   gr_set_fill_type(FILL_XOR);
   gr_set_fcolor(WHITE);
 
+  // make the zoom rectanle visible in OpenGL as well
+  extern bool use_opengl();
+  if(full_game_3d && use_opengl()) {
+    gr_set_fcolor(0x1);
+  }
+
   short ulx = INTERP(ZoomStart.ul.x, ZoomEnd.ul.x, ZoomI);
   short uly = INTERP(ZoomStart.ul.y, ZoomEnd.ul.y, ZoomI);
   short lrx = INTERP(ZoomStart.lr.x, ZoomEnd.lr.x, ZoomI);
