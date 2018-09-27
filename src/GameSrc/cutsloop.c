@@ -243,6 +243,9 @@ void cutscene_loop(void)
 
     if (done_playing_movie)
     {
+      void palfx_fade_down(void);
+      palfx_fade_down();
+
       // Go back to the main menu
       _new_mode = SETUP_LOOP;
       chg_set_flg(GL_CHG_LOOP);
@@ -255,7 +258,7 @@ void cutscene_loop(void)
       DEBUG("Done playing movie!");
       done_playing_movie = TRUE;
       // Still want a bit of a delay before finishing
-      next_draw_time += 100;
+      next_draw_time += 5200;
     }
    	else next_draw_time = start_time + fix_float(time) * 1000.0;
   }
