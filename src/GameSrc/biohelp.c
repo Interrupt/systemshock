@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdint.h"
 #include "tools.h"
 #include "cit2d.h"
+#include "citres.h"
 #include "fullscrn.h"
 
 #include "cybstrng.h"
@@ -237,17 +238,19 @@ uchar biohelp_region_mouse_handler(uiMouseEvent *ev, LGRegion *reg, void *v) {
 LGCursor biohelp_cursor;
 grs_bitmap biohelp_cursor_bmap;
 
-errtype biohelp_load_cursor() {
-    errtype err;
-    static uchar cursor_loaded = FALSE;
-    extern errtype simple_load_res_bitmap_cursor(LGCursor * c, grs_bitmap * bmp, Ref rid);
-    if (cursor_loaded)
-        free(biohelp_cursor_bmap.bits);
-    err = simple_load_res_bitmap_cursor(&biohelp_cursor, &biohelp_cursor_bmap, REF_IMG_QuestionCursor);
-    if (err != OK)
-        return err;
-    cursor_loaded = TRUE;
-    return (err);
+errtype biohelp_load_cursor(void)
+{
+  if (biohelp_cursor_bmap.bits != NULL)
+  {
+    free(biohelp_cursor_bmap.bits);
+
+    memset(&biohelp_cursor, 0, sizeof(LGCursor));
+    memset(&biohelp_cursor_bmap, 0, sizeof(grs_bitmap));
+  }
+
+  load_res_bitmap_cursor(&biohelp_cursor, &biohelp_cursor_bmap, REF_IMG_QuestionCursor, TRUE);
+
+  return OK;
 }
 
 errtype biohelp_create_mouse_region(LGRegion *root) {

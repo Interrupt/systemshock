@@ -407,6 +407,9 @@ void fullscreen_start() {
     // KLC   uiShowMouse(NULL);
 
     CaptureMouse(true);
+
+    extern void SetMotionCursorForMouseXY(void);
+    SetMotionCursorForMouseXY();
 }
 
 // Restore all appropriate things to put us back in normal

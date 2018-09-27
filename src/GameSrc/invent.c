@@ -838,6 +838,10 @@ ubyte weapons_add_func(inv_display *dp, int row, ObjID *objP, uchar select) {
     }
     // in case ammo mfd
     mfd_notify_func(NOTIFY_ANY_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, TRUE);
+
+    void SetMotionCursorsColorForActiveWeapon(void);
+    SetMotionCursorsColorForActiveWeapon();
+
     return retval;
 }
 
@@ -878,6 +882,9 @@ void weapon_drop_func(inv_display *dp, int itemnum) {
     else
         set_inventory_mfd(MFD_INV_WEAPON, player_struct.actives[ACTIVE_WEAPON], TRUE);
     INVENT_CHANGED;
+
+    void SetMotionCursorsColorForActiveWeapon(void);
+    SetMotionCursorsColorForActiveWeapon();
 }
 
 // -------------
