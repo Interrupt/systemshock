@@ -3356,6 +3356,9 @@ void push_cursor_object(short obj) {
         bmp = bitmaps_3d[BMAP_NUM_3D(ObjProps[OPNUM(obj)].bitmap_3d) + objs[obj].info.current_frame];
     else
         bmp = bitmaps_2d[OPNUM(obj)];
+
+    if (bmp == NULL) return;
+
     object_on_cursor = obj;
     input_cursor_mode = INPUT_OBJECT_CURSOR;
 #ifdef SVGA_SUPPORT
