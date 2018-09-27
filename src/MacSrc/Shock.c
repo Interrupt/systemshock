@@ -304,22 +304,26 @@ void InitSDL()
 }
 
 SDL_Color gamePalette[256];
+bool UseCutscenePalette = FALSE; //see cutsloop.c
 void SetSDLPalette(int index, int count, uchar *pal)
 {
-	for(int i = index; i < count; i++) {
-		gamePalette[index+i].r = *pal++;
-		gamePalette[index+i].g = *pal++;
-		gamePalette[index+i].b = *pal++;
-		gamePalette[index+i].a = 0xFF;
+	for(int i = index; i < index+count; i++) {
+		gamePalette[i].r = *pal++;
+		gamePalette[i].g = *pal++;
+		gamePalette[i].b = *pal++;
+		gamePalette[i].a = 0xFF;
 	}
 
-	// Hack black!
-	gamePalette[255].r = 0x0;
-	gamePalette[255].g = 0x0;
-	gamePalette[255].b = 0x0;
-	gamePalette[255].a = 0xff;
+    if (!UseCutscenePalette)
+    {
+        // Hack black!
+        gamePalette[255].r = 0x0;
+        gamePalette[255].g = 0x0;
+        gamePalette[255].b = 0x0;
+        gamePalette[255].a = 0xff;
+    }
 
-	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
+	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, 256);
 	SDL_SetSurfacePalette(drawSurface, sdlPalette);
 	SDL_SetSurfacePalette(offscreenDrawSurface, sdlPalette);
 
