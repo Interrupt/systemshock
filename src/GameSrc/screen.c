@@ -255,7 +255,7 @@ void screen_start() {
 
     CaptureMouse(true);
 
-    void SetMotionCursorForMouseXY(void);
+    extern void SetMotionCursorForMouseXY(void);
     SetMotionCursorForMouseXY();
 
     return;
