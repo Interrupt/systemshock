@@ -203,26 +203,12 @@ void cutscene_loop(void)
     if (AfileGetFramePal(amovie, &cutscene_pal))
       memcpy(palette+3*cutscene_pal.index, cutscene_pal.rgb, 3*cutscene_pal.numcols);
 
-    //not really a hack: find unused color in movie bitmap and use it as subtitle color
-    {
-      uint32_t used[256], used_min = 0xFFFFFFFF;
-      memset(used, 0, sizeof(used));
-      uint8_t *bits = movie_bitmap.bits;
-      int count = (int)movie_bitmap.w * movie_bitmap.h;
-      while (count--) used[*bits++]++;
-      int i, used_min_i = 1;
-      for (i=1; i<256-1; i++) if (used[i] < used_min) {used_min = used[i]; used_min_i = i;}
-      uint8_t temp_pal[3*256];
-      memcpy(temp_pal, palette, 3*256);
-      for (i=0; i<3; i++) temp_pal[3*used_min_i+i] = temp_pal[3*255+i];
-      gr_set_pal(0, 256, temp_pal);
-      gr_set_fcolor(used_min_i);
+    extern bool UseCutscenePalette; //see Shock.c
+    UseCutscenePalette = TRUE;
+    gr_set_pal(0, 256, palette);
+    UseCutscenePalette = FALSE;
 
-      //change color 255s in bitmap to subtitle color
-      bits = movie_bitmap.bits;
-      count = (int)movie_bitmap.w * movie_bitmap.h;
-      while (count--) {if (*bits == 255) *bits = used_min_i; bits++;}
-    }
+    gr_set_fcolor(255);
 
     // Draw this frame
     gr_clear(0x00);
