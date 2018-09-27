@@ -1529,9 +1529,43 @@ uchar weapon_button_up = TRUE;
 // ---------
 
 // -------------------------------------------------------------------------------------------
-// SetMotionCursorForMouseXY sets motion cursor for current mouse x,y position
+// CalcMotionCurOffset gets cursor position offset data for
+//   SetMotionCursorForMouseXY() and view3d_mouse_input()
 
-// This function is based view3d_mouse_input(); any changes there should be made here as well
+void CalcMotionCurOffset(uchar cyber, LGRegion *reg, short *cx, short *cy, short *cw, short *ch, short *x, short *y)
+{
+  if (DoubleSize)
+  {
+    (*x) *= 2;
+    (*y) *= 2;
+  }
+
+  if (!cyber)
+  {
+    (*cx) = reg->abs_x + RectWidth(reg->r) / 2;
+    (*cy) = reg->abs_y + 2 * RectHeight(reg->r) / 3;
+    (*cw) = RectWidth(reg->r) * CENTER_WD_N / CENTER_WD_D;
+    (*ch) = RectHeight(reg->r) * CENTER_HT_N / CENTER_HT_D;
+  }
+  else
+  {
+    (*cx) = reg->abs_x + RectWidth(reg->r) / 2;
+    (*cy) = reg->abs_y + RectHeight(reg->r) / 2;
+    (*cw) = RectWidth(reg->r) * CENTER_WD_N / CYBER_CENTER_WD_D;
+    (*ch) = RectHeight(reg->r) * CENTER_HT_N / CYBER_CENTER_HT_D;
+  }
+
+#ifdef SVGA_SUPPORT
+  ss_point_convert(cx, cy, FALSE);
+  ss_point_convert(cw, ch, FALSE);
+#endif
+
+  (*x) -= (*cx);
+  (*y) -= (*cy);
+}
+
+// -------------------------------------------------------------------------------------------
+// SetMotionCursorForMouseXY sets motion cursor for current mouse x,y position
 
 // Used to set cursor to weapon color immediately without having to move the mouse
 
@@ -1558,26 +1592,12 @@ void SetMotionCursorForMouseXY(void)
     cnum = VIEW_HCENTER | VIEW_VCENTER;
   else
   {
-    short x, y;
+    short cx, cy, cw, ch, x, y;
+
     mouse_get_xy(&x, &y);
-  
-    if (DoubleSize)
-    {
-      x *= 2;
-      y *= 2;
-    }
-  
-    short cx = reg->abs_x + RectWidth(reg->r) / 2;
-    short cy = reg->abs_y + 2 * RectHeight(reg->r) / 3;
-    short cw = RectWidth(reg->r) * CENTER_WD_N / CENTER_WD_D;
-    short ch = RectHeight(reg->r) * CENTER_HT_N / CENTER_HT_D;
-  
-    ss_point_convert(&cx, &cy, FALSE);
-    ss_point_convert(&cw, &ch, FALSE);
-  
-    x -= cx;
-    y -= cy;
-  
+
+    CalcMotionCurOffset(FALSE, reg, &cx, &cy, &cw, &ch, &x, &y);
+
     if      (x < -cw) cnum = VIEW_LSIDE;
     else if (x >  cw) cnum = VIEW_RSIDE;
     else              cnum = VIEW_HCENTER;
@@ -1613,28 +1633,10 @@ int view3d_mouse_input(LGPoint pos, LGRegion *reg, uchar move,
 
     short cx, cy, cw, ch, x, y;
 
-    if (DoubleSize) {
-        pos.x *= 2;
-        pos.y *= 2;
-    }
+    x = pos.x;
+    y = pos.y;
 
-    if (!cyber) {
-        cx = reg->abs_x + RectWidth(reg->r) / 2;
-        cy = reg->abs_y + 2 * RectHeight(reg->r) / 3;
-        cw = RectWidth(reg->r) * CENTER_WD_N / CENTER_WD_D;
-        ch = RectHeight(reg->r) * CENTER_HT_N / CENTER_HT_D;
-    } else {
-        cx = reg->abs_x + RectWidth(reg->r) / 2;
-        cy = reg->abs_y + RectHeight(reg->r) / 2;
-        cw = RectWidth(reg->r) * CENTER_WD_N / CYBER_CENTER_WD_D;
-        ch = RectHeight(reg->r) * CENTER_HT_N / CYBER_CENTER_HT_D;
-    }
-#ifdef SVGA_SUPPORT
-    ss_point_convert(&(cx), &(cy), FALSE);
-    ss_point_convert(&(cw), &(ch), FALSE);
-#endif
-    x = pos.x - cx;
-    y = pos.y - cy;
+    CalcMotionCurOffset(cyber, reg, &cx, &cy, &cw, &ch, &x, &y);
 
     // ok, the idea here is to make sure single left click doesnt move, or at least tells you whats up...
     if ((dougs_goofy_hack == FALSE) && move) {
