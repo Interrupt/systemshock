@@ -546,9 +546,9 @@ void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar 
         fpoly_rend(col_val, 4, plst);
         gr_set_fill_type(cur_ft);
     } else if (use_opengl()) {
-        opengl_light_tmap(4, plst, draw_bm);
+        if (draw_bm != NULL) opengl_light_tmap(4, plst, draw_bm);
     } else {
-        g3_light_tmap(4, plst, draw_bm);
+        if (draw_bm != NULL) g3_light_tmap(4, plst, draw_bm);
     }
     if (dblface) // draw the bleeding backside, nudge nudge
     {
@@ -572,9 +572,9 @@ void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar 
                 fpoly_rend(col_val, 4, plst);
                 gr_set_fill_type(cur_ft);
             } else if (use_opengl()) {
-                opengl_light_tmap(4, plst, draw_bm);
+                if (draw_bm != NULL) opengl_light_tmap(4, plst, draw_bm);
             } else {
-                g3_light_tmap(4, plst, draw_bm);
+                if (draw_bm != NULL) g3_light_tmap(4, plst, draw_bm);
             }
         }
     }
