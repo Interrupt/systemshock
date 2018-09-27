@@ -895,6 +895,8 @@ uchar fire_player_weapon(LGPoint *pos, LGRegion *r, uchar pull) {
     if (player_struct.dead || game_paused || !time_passes)
         return (FALSE);
 
+    if (player_struct.weapons[w].type == EMPTY_WEAPON_SLOT) return FALSE;
+
     region_abs_rect(r, r->r, &rc);
     if (DoubleSize)
         rc.lr.y = SCONV_Y(rc.lr.y) >> 1;
@@ -911,8 +913,8 @@ uchar fire_player_weapon(LGPoint *pos, LGRegion *r, uchar pull) {
     }
 #endif
     if (!RECT_TEST_PT(&rc, cp)) {
-        realpos.x = r->abs_x + RectWidth(r->r) / 2;
-        realpos.y = r->abs_y + RectHeight(r->r) / 2;
+        //realpos.x = r->abs_x + RectWidth(r->r) / 2;
+        //realpos.y = r->abs_y + RectHeight(r->r) / 2;
 
         //      ui_mouse_put_xy(realpos.x,realpos.y);
         // Heck we know this is the first time you're firing.
