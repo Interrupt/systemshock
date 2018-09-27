@@ -792,7 +792,7 @@ void zoom_rect(LGRect *start, LGRect *end)
   ZoomTicks = SDL_GetTicks();
 }
 
-//called twice within SDLDraw(); see Shock.c
+//called just before and after SDLDraw() in mainloop()
 void ZoomDrawProc(int erase)
 {
   if (!ZoomEnable) return;
