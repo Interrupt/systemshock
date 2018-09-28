@@ -449,6 +449,7 @@ errtype message_info(const char *info_text) {
 
         ss_safe_set_cliprect(r->ul.x, r->ul.y, r->lr.x, r->lr.y);
         if (!full_game_3d) {
+            y += 1;
             if (!view360_message_obscured || game_paused) {
                 draw_raw_resource_bm(REF_IMG_bmBlankMessageLine, x, y);
                 // draw_hires_resource_bm(REF_IMG_bmBlankMessageLine,
@@ -456,7 +457,6 @@ errtype message_info(const char *info_text) {
                 //SCONV_Y(y));
             }
             x += 2;
-            y += 1;
         } else if (game_paused) {
             extern grs_canvas inv_view360_canvas;
             ss_noscale_bitmap(&inv_view360_canvas.bm, x, y);
