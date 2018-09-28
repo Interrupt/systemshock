@@ -1254,41 +1254,34 @@ void cool_off_beam_weapons(void) {
 // Jerks the cursor around randomly, to a degree determined by
 // a percentage which is from 0->100%
 
-void randomize_cursor_pos(LGPoint *cpos, LGRegion *reg, ubyte p) {
-    int newx, newy;
-    LGRect r;
+void randomize_cursor_pos(LGPoint *cpos, LGRegion *reg, ubyte p)
+{
+  if (p < 2) return;
 
-    if (p < 2)
-        return;
-
-    newx = cpos->x + (rand() % (p + 1)) - (p / 2);
-    newy = cpos->y + (rand() % (p + 1)) - (p / 2);
-
-    r = *(reg->r);
+  LGRect r = *(reg->r);
 #ifdef SVGA_SUPPORT
-    ss_mouse_convert(&(r.ul.x), &(r.ul.y), FALSE);
-    ss_mouse_convert(&(r.lr.x), &(r.lr.y), FALSE);
+  ss_mouse_convert(&(r.ul.x), &(r.ul.y), FALSE);
+  ss_mouse_convert(&(r.lr.x), &(r.lr.y), FALSE);
 #endif
-    cpos->x = lg_max(r.ul.x, (lg_min(newx, r.lr.x)));
-    cpos->y = lg_max(r.ul.y, (lg_min(newy, r.lr.y)));
 
-#ifdef STEREO_SUPPORT
-    if (convert_use_mode == 5) {
-        switch (i6d_device) {
-        case I6D_VFX1:
-            mouse_put_xy(cpos->x >> 1, cpos->y);
-            break;
-        default:
-            mouse_put_xy(cpos->x, cpos->y);
-            break;
-        }
-    } else
-#endif
-        if (DoubleSize)
-        mouse_put_xy(cpos->x * 2, cpos->y * 2);
-    else
-        mouse_put_xy(cpos->x, cpos->y);
-    uiSetCursor();
+  short x, y, dx, dy;
+
+  mouse_get_xy(&x, &y);
+
+  dx = (rand() % (p + 1)) - (p / 2);
+  dy = (rand() % (p + 1)) - (p / 2);
+
+  x += dx;
+  y += dy;
+
+  if (x >= r.ul.x && x < r.lr.x &&
+      y >= r.ul.y && y < r.lr.y)
+  {
+    mouse_put_xy(x, y);
+
+    extern void set_mouse_chaos(short dx, short dy); //see sdl_events.c
+    set_mouse_chaos(dx, dy);
+  }
 }
 
     // ---------------------------------------------------------------------------
