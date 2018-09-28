@@ -237,6 +237,9 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc)
 int MouseX;
 int MouseY;
 
+int MouseChaosX;
+int MouseChaosY;
+
 extern bool MouseCaptured;
 
 void SetMouseXY(int mx, int my)
@@ -862,12 +865,26 @@ void get_mouselook_vel(int *vx, int *vy)
 	if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE)
 		*vx = *vy = 0;
 	else
+    {
 		SDL_GetRelativeMouseState(vx, vy);
+
+        *vx += MouseChaosX; MouseChaosX = 0;
+        *vy += MouseChaosY; MouseChaosY = 0;
+    }
 }
 
 errtype mouse_put_xy(short x, short y)
 {
+	MouseX = x;
+	MouseY = y;
+
 	return OK;
+}
+
+void set_mouse_chaos(short dx, short dy)
+{
+	MouseChaosX = dx;
+	MouseChaosY = dy;
 }
 
 void sdl_mouse_init(void)
