@@ -52,6 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cit2d.h"
 
 #include <SDL.h>
+#include "OpenGL.h"
 
 //#include <gifd.h>
 
@@ -809,7 +810,6 @@ void ZoomDrawProc(int erase)
   gr_set_fcolor(WHITE);
 
   // make the zoom rectanle visible in OpenGL as well
-  extern bool use_opengl();
   if(full_game_3d && use_opengl()) {
     gr_set_fcolor(0x1);
   }
