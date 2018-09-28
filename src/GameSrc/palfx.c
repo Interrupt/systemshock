@@ -35,11 +35,11 @@ byte cyc_id0, cyc_id1, cyc_id2, cyc_id3, cyc_id4, cyc_id5;
 
 static Uint32 FadeStartTicks;
 
-#define FADE_DOWN_DELAY 3
-#define FADE_DOWN_STEPS 30
+#define FADE_DOWN_DELAY 30
+#define FADE_DOWN_STEPS (1000/30)
 
 #define FADE_UP_DELAY 0
-#define FADE_UP_STEPS 30
+#define FADE_UP_STEPS 500
 
 extern uchar ppall[]; // pointer to main shadow palette
 
@@ -49,12 +49,17 @@ byte palfx_start_fade_up(uchar *new_pal);
 
 //-------------------------------------
 void finish_pal_effect(byte id) {
+    Uint32 inc, inc_last = 0;
+
     while (palette_query_effect(id) == ACTIVE) {
-        Uint32 ticks = SDL_GetTicks() - FadeStartTicks;
-        ticks /= 400;
-        while (ticks > 0 && palette_query_effect(id) == ACTIVE) {
+
+        Uint32 elapsed = SDL_GetTicks() - FadeStartTicks;
+        inc = elapsed - inc_last;
+        inc_last = elapsed;
+
+        while (inc > 0 && palette_query_effect(id) == ACTIVE) {
             palette_advance_effect(id, 1);
-            ticks--;
+            inc--;
         }
 
         // Update the screen
@@ -91,6 +96,8 @@ void palfx_fade_down() {
 byte palfx_start_fade_up(uchar *new_pal) {
     static uchar blackp[768];
     byte id;
+
+    FadeStartTicks = SDL_GetTicks();
 
     LG_memset(blackp, 0, sizeof(blackp));
     id = palette_install_fade(REAL_TIME, 0, 255, FADE_UP_DELAY, FADE_UP_STEPS, blackp, new_pal);
