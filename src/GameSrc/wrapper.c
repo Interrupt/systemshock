@@ -1813,7 +1813,7 @@ void video_screen_init(void) {
     standard_button_rect(&r, i, 2, 2, 2);
     r.lr.x += 2;
     multi_init(i, keys[1], REF_STR_OptionsText + 4, REF_STR_DetailLvl, REF_STR_DetailLvlFeedback,
-               sizeof(player_struct.detail_level), &player_struct.detail_level, 4, detail_dealfunc, &r);
+               sizeof(_fr_global_detail), &_fr_global_detail, 4, detail_dealfunc, &r);
 
     i++;
 
