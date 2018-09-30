@@ -555,9 +555,7 @@ void WaitForKey(ulong ticks, int ch)
 
       if (track >= 0 && track < NumTracks)
       {
-        int volume = 127;
-        //int volume = long_sqrt(127 * QUESTVAR_GET(MUSIC_VOLUME_QVAR)); //0-127
-
+        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
         StartTrack(i, track, volume);
 
         if (!WonGame_ShowStats) CreditsTune = (CreditsTune + 1) % 8;
@@ -1500,9 +1498,7 @@ void setup_loop(void)
     int track = 0;
     if (track >= 0 && track < NumTracks)
     {
-      int volume = 127;
-      //int volume = long_sqrt(127 * QUESTVAR_GET(MUSIC_VOLUME_QVAR)); //0-127
-
+      int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
       StartTrack(i, track, volume);
     }
   }
@@ -1527,11 +1523,41 @@ void setup_loop(void)
   }
 }
 
+//if these don't get reset, sticky residue of any old game sticks around
+void empty_slate(void)
+{
+  extern int flush_resource_cache(void);
+  flush_resource_cache();
 
+  extern uint _fr_glob_flags;
+  _fr_glob_flags = 0;
+
+  extern void reset_input_system(void);
+  reset_input_system();
+
+  extern short inventory_page;
+  inventory_page = 0;
+
+  extern short inv_last_page;
+  inv_last_page = -1;
+
+  extern void physics_zero_all_controls(void);
+  physics_zero_all_controls();
+
+  extern int mlook_enabled;
+  mlook_enabled = 0;
+}
 
 void setup_start(void)
 {
   int do_i_svg = -1, i_invuln = 0;
+
+  empty_slate();
+
+  player_struct.name[0] = 0;
+
+  for (int i = 0; i < 4; i++)
+    player_struct.difficulty[i] = 2;
 
   MacTuneKillCurrentTheme();
 
