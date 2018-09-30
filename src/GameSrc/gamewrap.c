@@ -344,6 +344,10 @@ errtype load_game(char *fname) {
 
     INFO("load_game %s", fname);
 
+    //see setup.c
+    extern void empty_slate(void);
+    empty_slate();
+
     closedown_game(TRUE);
     // KLC - don't do this here   stop_music();
 
