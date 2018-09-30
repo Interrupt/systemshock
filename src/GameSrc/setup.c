@@ -1535,8 +1535,16 @@ void empty_slate(void)
   extern uchar *shodan_bitmask;
   shodan_bitmask = NULL;
 
-  extern void reset_input_system(void);
-  reset_input_system();
+  extern uchar alternate_death;
+  alternate_death = FALSE;
+
+  extern uiSlab fullscreen_slab;
+  extern uiSlab main_slab;
+  uiPopSlabCursor(&fullscreen_slab);
+  uiPopSlabCursor(&main_slab);
+
+  extern uchar fire_slam;
+  fire_slam = FALSE;
 
   extern short inventory_page;
   inventory_page = 0;
