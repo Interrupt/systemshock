@@ -1532,6 +1532,9 @@ void empty_slate(void)
   extern uint _fr_glob_flags;
   _fr_glob_flags = 0;
 
+  extern uchar *shodan_bitmask;
+  shodan_bitmask = NULL;
+
   extern void reset_input_system(void);
   reset_input_system();
 
@@ -1640,10 +1643,6 @@ void setup_start(void)
   }
 
   if (music_on) MacTuneLoadTheme("titloop", 0);
-
-  //need to reset this; it is essentially the endgame flag
-  extern uchar *shodan_bitmask;
-  shodan_bitmask = NULL;
 
   CaptureMouse(false);
 }
