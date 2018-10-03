@@ -72,7 +72,7 @@ extern SDL_Surface* offscreenDrawSurface;
 //--------------------
 //  Prototypes
 //--------------------
-void SetupOffscreenBitmaps(void);
+void SetupOffscreenBitmaps(int width, int height);
 void ResetCTSeed(void);
 void RememberSeed(void);
 void FixPalette(void);
