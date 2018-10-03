@@ -62,6 +62,8 @@ static Ref cutscene_anims[3] =
 extern uchar sfx_on;
 extern char which_lang;
 
+extern bool UseCutscenePalette; //see Shock.c
+
 //filled in amov.c when chunk contains subtitle data
 extern char EngSubtitle[256];
 extern char FrnSubtitle[256];
@@ -203,10 +205,9 @@ void cutscene_loop(void)
     if (AfileGetFramePal(amovie, &cutscene_pal))
       memcpy(palette+3*cutscene_pal.index, cutscene_pal.rgb, 3*cutscene_pal.numcols);
 
-    extern bool UseCutscenePalette; //see Shock.c
-    UseCutscenePalette = TRUE;
+    UseCutscenePalette = TRUE; //see Shock.c
     gr_set_pal(0, 256, palette);
-    UseCutscenePalette = FALSE;
+    UseCutscenePalette = FALSE; //see Shock.c
 
     gr_set_fcolor(255);
 
@@ -243,6 +244,11 @@ void cutscene_loop(void)
 
     if (done_playing_movie)
     {
+      UseCutscenePalette = TRUE; //see Shock.c
+      extern void palfx_fade_down(void);
+      palfx_fade_down();
+      UseCutscenePalette = FALSE; //see Shock.c
+
       // Go back to the main menu
       _new_mode = SETUP_LOOP;
       chg_set_flg(GL_CHG_LOOP);
@@ -255,7 +261,7 @@ void cutscene_loop(void)
       DEBUG("Done playing movie!");
       done_playing_movie = TRUE;
       // Still want a bit of a delay before finishing
-      next_draw_time += 100;
+      next_draw_time += 5200;
     }
    	else next_draw_time = start_time + fix_float(time) * 1000.0;
   }
