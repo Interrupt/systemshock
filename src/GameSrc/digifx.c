@@ -171,20 +171,10 @@ uchar set_sample_pan_gain(snd_digi_parms *sdp) {
     extern uchar curr_sfx_vol;
 
     if (raw_data & 0x80000000) {
-        short x, y, i;
-        extern height_semaphor h_sems[NUM_HEIGHT_SEMAPHORS];
-        height_semaphor h;
+		//terrain elevator
+        short x = (raw_data & 0x7FFF0000) >> 16;
+        short y = (raw_data & 0xFFFF);
 
-        x = (raw_data & 0x7FFF0000) >> 16;
-        y = (raw_data & 0xFFFF);
-        // Check whether we should stop playing...totally hacked for terrain elevators
-        for (i = 0; i < NUM_HEIGHT_SEMAPHORS; i++) {
-            h = h_sems[i];
-            if ((h.x == (x >> 8)) && (h.y == (y >> 8)) && (h.inuse == 1)) {
-                h_sems[i].inuse--;
-                return (TRUE);
-            }
-        }
         temp_vol = compute_sfx_vol(x, y, objs[PLAYER_OBJ].loc.x, objs[PLAYER_OBJ].loc.y);
         sdp->pan = compute_sfx_pan(x, y, objs[PLAYER_OBJ].loc.x, objs[PLAYER_OBJ].loc.y, objs[PLAYER_OBJ].loc.h << 8);
     } else if (raw_data != 0) {
@@ -209,6 +199,29 @@ uchar set_sample_pan_gain(snd_digi_parms *sdp) {
     sdp->vol = vol * temp_vol / VOL_FULL;
     snd_sample_reload_parms(sdp);
     return (FALSE);
+}
+
+void stop_terrain_elevator_sound(short sem)
+{
+  int i;
+
+  //stop all sound channels that are playing terrain elevator sound with semaphore index sem
+  for (i = 0; i < SND_MAX_SAMPLES; i++)
+  {
+    snd_digi_parms *sdp = snd_sample_parms(i);
+    uint raw_data = (uint)sdp->data;
+
+    if (raw_data & 0x80000000)
+    {
+      short x = (raw_data & 0x7FFF0000) >> 16;
+      short y = (raw_data & 0xFFFF);
+
+      extern height_semaphor h_sems[NUM_HEIGHT_SEMAPHORS];
+
+      if (h_sems[sem].x == (x >> 8) && h_sems[sem].y == (y >> 8) && h_sems[sem].inuse)
+        snd_end_sample(i);
+    }
+  }
 }
 
 #ifdef NOT_YET //

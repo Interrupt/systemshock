@@ -10,12 +10,12 @@ set(CMAKE_C_STANDARD 99)
 # hide Windows console in distributable packages
 if(DEFINED ENV{APPVEYOR}) 
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -mwindows")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -mwindows")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -mwindows -D__STDC_LIMIT_MACROS")
 endif()
 
 if(NOT DEFINED ENV{APPVEYOR}) 
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -D__STDC_LIMIT_MACROS")
 endif()
 
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
@@ -72,6 +72,7 @@ set(MAC_SRC
 	src/MacSrc/SDLSound.c
 	src/MacSrc/Modding.c
 	src/MacSrc/OpenGL.cc
+	src/MacSrc/Xmi.c
 )
 
 set(GAME_SRC
@@ -210,6 +211,7 @@ include_directories(
 	src/Libraries/H
 	src/Libraries/LG/Source
 	src/Libraries/LG/Source/LOG/src
+	src/Libraries/adlmidi/include
 	src/GameSrc/Headers
 	src/MacSrc
 )
@@ -317,6 +319,7 @@ target_link_libraries(systemshock
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
+	ADLMIDI_LIB
 	${SDL2_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
 	${OPENGL_LIBRARIES}

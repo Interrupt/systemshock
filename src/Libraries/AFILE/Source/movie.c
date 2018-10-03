@@ -23,21 +23,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "movie.h"
 #include "res.h"
 
-FILE *temp_file;
-static uint8_t *tempfile_name = ".temp.audio";
-
 int32_t AfilePrepareRes(Id id, Afile *afile) {
 
     uint8_t *ptr = ResLock(id);
+	int size = ResSize(id);
+	MFILE *mf;
 
-    // FIXME That's ugly. We need fmemopen() analog.
-    temp_file = fopen(tempfile_name, "wb+");
-    fwrite(ptr, ResSize(id), 1, temp_file);
-    fseek(temp_file, 0, 0);
+	mf = (MFILE *)malloc(sizeof(MFILE));
+	mf->p = (unsigned char *)malloc(size);
+	memcpy(mf->p, ptr, size);
+	mf->size = size;
+	mf->pos = 0;
 
     ResUnlock(id);
 
-    int32_t error = AfileOpen(afile, temp_file, AFILE_MOV);
+    int32_t error = AfileOpen(afile, mf, AFILE_MOV);
 
     return error;
 }

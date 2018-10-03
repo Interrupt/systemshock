@@ -15,12 +15,6 @@ Join our Discord to follow along with development: https://discord.gg/m45xPan
 
 ![work so far](https://i.imgur.com/kbVWQj4.gif)
 
-# Missing Features:
-- Generative Music
-  - SDL_Mixer can't play the multi track XMI midi files, need to find another solution for those
-  - There is basic midi music support if there are .mid files in `/res/music/` like `thm0.mid`.
-    Try this [example music pack made of Chicajo midi's](https://drive.google.com/open?id=18KhiHpmPHGuTedMCPifnox2DWLd2GnCW)
-
 Prerequisites
 =======
   - Original cd-rom or SS:EE assets in a `res/data` folder next to the executable

@@ -51,6 +51,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "cit2d.h"
 
+#include <SDL.h>
+#include "OpenGL.h"
+
 //#include <gifd.h>
 
 #ifndef STORE_CLIP
@@ -447,6 +450,7 @@ errtype message_info(const char *info_text) {
 
         ss_safe_set_cliprect(r->ul.x, r->ul.y, r->lr.x, r->lr.y);
         if (!full_game_3d) {
+            y += 1;
             if (!view360_message_obscured || game_paused) {
                 draw_raw_resource_bm(REF_IMG_bmBlankMessageLine, x, y);
                 // draw_hires_resource_bm(REF_IMG_bmBlankMessageLine,
@@ -454,7 +458,6 @@ errtype message_info(const char *info_text) {
                 //SCONV_Y(y));
             }
             x += 2;
-            y += 1;
         } else if (game_paused) {
             extern grs_canvas inv_view360_canvas;
             ss_noscale_bitmap(&inv_view360_canvas.bm, x, y);
@@ -772,42 +775,54 @@ errtype end_wait() {
  * around 286 milliseconds. Assuming a refresh rate of 60 Hz that's around 17
  * frames.
  */
-//#define NUM_BOXES 8
-//#define TICKS_PER_BOX 10
-#define NUM_BOXES 17
 
-#define INTERP(s, f, i) (((f) * (i) + (s) * (NUM_BOXES - (i)-1)) / (NUM_BOXES - 1))
+#define ZOOM_MS  286
 
-void zoom_rect(LGRect *start, LGRect *end) {
-    extern ulong last_real_time;
-    long fillt = gr_get_fill_type();
-    ulong start_time = *tmd_ticks;
-    ulong last_time = *tmd_ticks;
-    int i;
-    uiHideMouse(NULL);
-    gr_set_fill_type(FILL_XOR);
-    gr_set_fcolor(WHITE);
+#define INTERP(s, f, i) (((f) * (i) + (s) * (ZOOM_MS - (i)-1)) / (ZOOM_MS - 1))
 
-    for (i = 0; i < NUM_BOXES; i++) {
-        short ulx = INTERP(start->ul.x, end->ul.x, i);
-        short uly = INTERP(start->ul.y, end->ul.y, i);
-        short lrx = INTERP(start->lr.x, end->lr.x, i);
-        short lry = INTERP(start->lr.y, end->lr.y, i);
-        ss_box(ulx, uly, lrx, lry);
-        ss_box(ulx - 1, uly - 1, lrx + 1, lry + 1);
+bool ZoomEnable;
+LGRect ZoomStart, ZoomEnd;
+Uint32 ZoomTicks, ZoomI;
 
-        extern void SDLDraw(void);
-        SDLDraw();
+void zoom_rect(LGRect *start, LGRect *end)
+{
+  //set global variables used by ZoomProc()
+  ZoomEnable = TRUE;
+  ZoomStart = *start;
+  ZoomEnd = *end;
+  ZoomTicks = SDL_GetTicks();
+}
 
-        ss_box(ulx, uly, lrx, lry);
-        ss_box(ulx - 1, uly - 1, lrx + 1, lry + 1);
-        last_time = *tmd_ticks;
-        // KLC      synchronous_update();
-    }
-    uiShowMouse(NULL);
-    gr_set_fill_type(fillt);
-    if (time_passes)
-        last_real_time += last_time - start_time;
+//called just before and after SDLDraw() in mainloop()
+void ZoomDrawProc(int erase)
+{
+  if (!ZoomEnable) return;
+
+  if (!erase)
+  {
+    ZoomI = SDL_GetTicks() - ZoomTicks;
+    if (ZoomI >= ZOOM_MS) {ZoomEnable = 0; return;}
+  }
+
+  int ft = gr_get_fill_type();
+  int c = gr_get_fcolor();
+  gr_set_fill_type(FILL_XOR);
+  gr_set_fcolor(WHITE);
+
+  // make the zoom rectanle visible in OpenGL as well
+  if(full_game_3d && use_opengl()) {
+    gr_set_fcolor(0x1);
+  }
+
+  short ulx = INTERP(ZoomStart.ul.x, ZoomEnd.ul.x, ZoomI);
+  short uly = INTERP(ZoomStart.ul.y, ZoomEnd.ul.y, ZoomI);
+  short lrx = INTERP(ZoomStart.lr.x, ZoomEnd.lr.x, ZoomI);
+  short lry = INTERP(ZoomStart.lr.y, ZoomEnd.lr.y, ZoomI);
+  ss_box(ulx, uly, lrx, lry);
+  ss_box(ulx - 1, uly - 1, lrx + 1, lry + 1);
+
+  gr_set_fill_type(ft);
+  gr_set_fcolor(c);
 }
 
 // Returns the angle of difference between look_facing and the true direction

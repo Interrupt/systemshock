@@ -367,6 +367,8 @@ errtype trap_transmogrify_func(int p1, int p2, int p3, int p4) {
                 // counting backwards from zero
                 add_obj_to_animlist(p1, FALSE, TRUE, FALSE, 16, 0, NULL, 0);
                 if (source == NON_BRIDGE_TRIPLE) {
+                    //hack: on level 4 only allow one simultaneously playing force bridge sound
+                    if (player_struct.level != 4 || !digi_fx_playing(SFX_FORCE_BRIDGE, NULL))
                     play_digi_fx_obj(SFX_FORCE_BRIDGE, 1, p1);
                 }
             }
@@ -1205,6 +1207,9 @@ errtype trap_cutscene_func(int p1, int p2, int p3, int p4) {
         // KLC   play_cutscene(qdata_get(p1), qdata_get(p2));
 
         play_cutscene(WIN_CUTSCENE, TRUE);
+        setup_mode = SETUP_CREDITS;
+        extern int WonGame_ShowStats;
+        WonGame_ShowStats = 1;
     //}
 
     alternate_death = (qdata_get(p2) != 0);
@@ -1697,6 +1702,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
             p3 |= 0x10;
         head += (p3 & 0xFF0000) ? -(p3 & 0xFF) : (p3 & 0xFF);
         if ((p3 & 0xFF00) == 0) {
+            if (hi != lo)
             head = lo + (head - lo) % (hi - lo);
         } else {
             if (head > hi) {

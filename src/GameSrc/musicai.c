@@ -42,6 +42,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sfxlist.h"
 #include "tools.h"
 
+#include "adlmidi.h"
+#include "Xmi.h"
+
 /*
 #include <mainloop.h>
 #include <_audio.h>
@@ -157,6 +160,22 @@ void mlimbs_do_ai() {
     extern ObjID damage_sound_id;
     extern char damage_sound_fx;
 
+    if (!IsPlaying(0)) gReadyToQueue = 1;
+
+
+    //repeat shorter tracks while thread 0 is still playing
+    if (!gReadyToQueue)
+    {
+        for (int i = 1; i < MLIMBS_MAX_CHANNELS - 1; i++)
+            if (current_request[i].pieceID != 255)
+                if (!IsPlaying(i))
+                {
+                    make_request(i, current_request[i].pieceID);
+                    current_request[i].pieceID = 255; //make sure it only plays this time
+                }
+    }
+
+
     /* Is this really necessary?  It's already called twice in fr_rend().
     #ifdef AUDIOLOGS
             audiolog_loop_callback();
@@ -225,6 +244,9 @@ void mlimbs_do_ai() {
         // then queue it up.
         //  Does not handle layering.  Just one music track!
         if (gReadyToQueue) {
+            extern bool mlimbs_update_requests;
+            mlimbs_update_requests = TRUE;
+
             if (!global_fullmap->cyber)
                 check_asynch_ai(TRUE);
             int pid = current_request[0].pieceID;
@@ -375,6 +397,21 @@ errtype make_request(int chunk_num, int piece_ID) {
     current_request[chunk_num].crossfade = curr_crossfade;
     current_request[chunk_num].ramp_time = curr_ramp_time;
     current_request[chunk_num].ramp = curr_ramp;
+
+    DEBUG("make_request %i %i", chunk_num, piece_ID);
+
+    extern int WonGame_ShowStats;
+
+    int i = chunk_num;
+    int track = 1+piece_ID;
+    if (i >= 0 && i < NUM_THREADS && track >= 0 && track < NumTracks && !WonGame_ShowStats && !IsPlaying(i))
+    {
+        extern uchar curr_vol_lev;
+
+        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
+        StartTrack(i, track, volume);
+    }
+
     return (OK);
 }
 
@@ -466,10 +503,8 @@ void load_score_guts(char score_playing) {
 
     rv = MacTuneLoadTheme(base, score_playing);
 
-    if (rv == 0)
-        musicai_reset(TRUE);
-    else // handle this a better way.
-        DebugString("Load theme failed!");
+    if (rv == 0) musicai_reset(FALSE);
+    else DebugString("Load theme failed!"); // handle this a better way.
 }
 
 errtype load_score_for_location(int x, int y) {

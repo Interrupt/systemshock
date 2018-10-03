@@ -84,7 +84,7 @@ void go_and_start_the_game_already(void);
 errtype load_that_thar_game(int which_slot);
 
 // Show splash screens
-void splash_draw(void);
+void splash_draw(bool show_splash);
 
 // Globals
 

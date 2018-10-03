@@ -126,10 +126,6 @@ extern bool DoubleSize;
 #define CFG_OOMPHOMETER "throw_oomph"
 #define CFG_INP6D_GO "inp6d"
 
-#define DOWN(x) ((x) | KB_FLAG_DOWN)
-#define CONTROL(x) (DOWN(x) | KB_FLAG_CTRL)
-#define ALT(x) (DOWN(x) | KB_FLAG_ALT)
-
 ubyte use_distance_mod = 0;
 ubyte pickup_distance_mod = 0;
 ubyte fatigue_threshold = 5;
@@ -244,7 +240,6 @@ uchar change_gamma(short keycode, ulong context, void *data);
 // -------------
 void handle_keyboard_fatigue(void);
 void poll_mouse(void);
-uchar posture_hotkey_func(short keycode, ulong context, void *data);
 uchar eye_hotkey_func(short keycode, ulong context, int data);
 
 void reload_motion_cursors(uchar cyber);
@@ -259,11 +254,12 @@ void view3d_rightbutton_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data
 uchar view3d_key_handler(uiCookedKeyEvent *ev, LGRegion *r, void *data);
 void use_object_in_3d(ObjID obj);
 
-uchar MacQuitFunc(short keycode, ulong context, void *data);
 uchar MacResFunc(short keycode, ulong context, void *data);
 uchar MacSkiplinesFunc(short keycode, ulong context, void *data);
-uchar MacDetailFunc(short keycode, ulong context, void *data);
-uchar MacHelpFunc(short keycode, ulong context, void *data);
+
+//EXTERN FUNCTIONS
+
+extern uchar cycle_weapons_func(short keycode, ulong context, void *data);
 
 // -------------
 // INPUT POLLING
@@ -989,16 +985,10 @@ static ushort eye_lvl_keys[] = {
 #define NUM_EYE_LVL_KEYS (sizeof(eye_lvl_keys) / sizeof(ushort))
 // -------------------------------------
 // INITIALIZATION
-extern uchar reload_weapon_hotkey(short keycode, ulong context, void *data);
 extern errtype simple_load_res_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid);
 extern uchar unpause_game_func(short keycode, ulong context, void *data);
-extern uchar saveload_hotkey_func(short keycode, ulong context, void *data);
-#ifdef AUDIOLOGS
-extern uchar audiolog_cancel_func(short keycode, ulong context, void *data);
-#endif
 extern uchar keyhelp_hotkey_func(short keycode, ulong context, void *data);
 extern uchar demo_quit_func(short keycode, ulong context, void *data);
-extern uchar hud_color_bank_cycle(short keycode, ulong context, void *data);
 extern void init_side_icon_hotkeys(void);
 extern void init_invent_hotkeys(void);
 extern uchar toggle_view_func(short keycode, ulong context, void *data);
@@ -1015,80 +1005,58 @@ extern uchar version_spew_func(short keycode, ulong context, void *data);
 extern uchar location_spew_func(short keycode, ulong context, void *data);
 #endif
 
-extern uchar toggle_mouse_look(short keycode, ulong context, void *data);
-
 #define ckpoint_input(val) Spew(DSRC_TESTING_Test0, ("ii %s @%d\n", val, *tmd_ticks));
 
-#define CYB_CURS_ID(i) (CYBER_CURSOR_BASE + (i))
-#define REAL_CURS_ID(i) (motion_cursor_ids[i])
+void reload_motion_cursors(uchar cyber)
+{
+  extern short cursor_color_offset;
 
-void reload_motion_cursors(uchar cyber) {
-    int i;
-    extern short cursor_color_offset;
+  for (int i = 0; i < NUM_MOTION_CURSORS; i++)
+  {
+    grs_bitmap *bm = &motion_cursor_bitmaps[i];
+    if (bm->bits != NULL)
+    {
+      free(bm->bits);
+      memset(bm, 0, sizeof(grs_bitmap));
+    }
+  }
 
-    // KLC   uiHideMouse(NULL);
-    if (!cyber) {
-        for (i = 0; i < NUM_MOTION_CURSORS; i++) {
-            grs_bitmap *bm = &motion_cursor_bitmaps[i];
-            if (REAL_CURS_ID(i) != 0) {
-                load_res_bitmap_cursor(&motion_cursors[i], bm, REAL_CURS_ID(i), FALSE);
-            }
-        }
+  if (!cyber)
+  {
+    for (int i = 0; i < NUM_MOTION_CURSORS; i++)
+    {
+      grs_bitmap *bm = &motion_cursor_bitmaps[i];
+      if (motion_cursor_ids[i] != 0)
+        load_res_bitmap_cursor(&motion_cursors[i], bm, motion_cursor_ids[i], TRUE);
+    }
 
-        // slam the cursor color back to it's childhood colors
-        cursor_color_offset = RED_BASE + 4;
-    } else
-        for (i = 0; i < NUM_CYBER_CURSORS; i++) {
-            grs_bitmap *bm = &motion_cursor_bitmaps[i];
-            load_res_bitmap_cursor(&motion_cursors[i], bm, CYB_CURS_ID(i), FALSE);
-        }
-    // KLC   uiShowMouse(NULL);
+    // slam the cursor color back to it's childhood colors
+    cursor_color_offset = RED_BASE + 4;
+
+    void SetMotionCursorsColorForActiveWeapon(void);
+    SetMotionCursorsColorForActiveWeapon();
+  }
+  else
+  {
+    for (int i = 0; i < NUM_CYBER_CURSORS; i++)
+    {
+      grs_bitmap *bm = &motion_cursor_bitmaps[i];
+      load_res_bitmap_cursor(&motion_cursors[i], bm, CYBER_CURSOR_BASE + i, TRUE);
+    }
+  }
 }
 
-void free_cursor_bitmaps() {
-    int i = 0;
-    for (; i < lg_max(NUM_MOTION_CURSORS, NUM_CYBER_CURSORS); i++) {
-        grs_bitmap *bm = &motion_cursor_bitmaps[i];
-        if (bm->bits != NULL)
-            free(bm->bits);
-    }
+void free_cursor_bitmaps(void)
+{
+  //reload_motion_cursors() does everything now
 }
 
-void alloc_cursor_bitmaps(void) {
-    int i;
-    short w, h;
-    for (i = 0; i < lg_min(NUM_MOTION_CURSORS, NUM_CYBER_CURSORS); i++) {
-        int cybsz;
-        int realsz = 0;
-        grs_bitmap *bm = &motion_cursor_bitmaps[i];
-        w = res_bm_width(CYB_CURS_ID(i));
-        h = res_bm_height(CYB_CURS_ID(i));
-        ss_point_convert(&w, &h, FALSE);
-        cybsz = w * h;
+void alloc_cursor_bitmaps(void)
+{
+  //reload_motion_cursors() does everything now
 
-        if (REAL_CURS_ID(i) != 0) {
-            w = res_bm_width(REAL_CURS_ID(i));
-            h = res_bm_height(REAL_CURS_ID(i));
-            ss_point_convert(&w, &h, FALSE);
-            realsz = w * h;
-        }
-
-        bm->bits = (uchar *)malloc(lg_max(cybsz, realsz));
-    }
-    for (; i < lg_max(NUM_MOTION_CURSORS, NUM_CYBER_CURSORS); i++) {
-        grs_bitmap *bm = &motion_cursor_bitmaps[i];
-        int sz = 0;
-        if (REAL_CURS_ID(i) == 0) {
-            bm->bits = NULL; // lets check this
-            continue;
-        } else {
-            w = res_bm_width(REAL_CURS_ID(i));
-            h = res_bm_height(REAL_CURS_ID(i));
-            ss_point_convert(&w, &h, FALSE);
-            sz = w * h;
-        }
-        bm->bits = (uchar *)malloc(sz);
-    }
+  //I would just like to point out that this function
+  //was a good example of what were they thinking?
 }
 
 #include "frtypes.h"
@@ -1217,6 +1185,19 @@ uchar toggle_opengl_func(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
+//most of original init_input() is now either commented out or done elsewhere, so do what's left here
+//and comment out original function below
+void init_input(void) {
+    uiDoubleClickDelay = 8;
+    uiDoubleClickTime = 45;
+    uiDoubleClicksOn[MOUSE_LBUTTON] = TRUE; // turn on left double clicks
+    uiAltDoubleClick = TRUE;
+
+    alloc_cursor_bitmaps();
+    reload_motion_cursors(FALSE);
+}
+
+/*
 void init_input(void) {
     extern void init_motion_polling();
     int i = 0;
@@ -1228,14 +1209,14 @@ void init_input(void) {
     // KLC	kb_clear_state(i,KBA_REPEAT);
     hotkey_init(NUM_HOTKEYS);
 
-    /* KLC
-       kbdt=dt_keyboard();
-       if (kbdt!=kb_get_country())
-       {
-               kb_set_country(kbdt);
-          Warning(("Setting kb country to %d\n",kbdt));
-       }
-    */
+    // KLC
+    // kbdt=dt_keyboard();
+    // if (kbdt!=kb_get_country())
+    // {
+    //         kb_set_country(kbdt);
+    //    Warning(("Setting kb country to %d\n",kbdt));
+    // }
+    //
     init_motion_polling();
 
     // init mouse
@@ -1272,11 +1253,11 @@ void init_input(void) {
     hotkey_add(CONTROL('l'), DEMO_CONTEXT, saveload_hotkey_func, (void *)TRUE);
     hotkey_add(CONTROL('L'), DEMO_CONTEXT, saveload_hotkey_func, (void *)TRUE);
 
-    /*KLC - not in Mac version
-       hotkey_add('?', DEMO_CONTEXT, keyhelp_hotkey_func, NULL);
-
-       hotkey_add('/',DEMO_CONTEXT,toggle_bool_func,&joystick_mouse_emul);
-    */
+    //KLC - not in Mac version
+    // hotkey_add('?', DEMO_CONTEXT, keyhelp_hotkey_func, NULL);
+    //
+    // hotkey_add('/',DEMO_CONTEXT,toggle_bool_func,&joystick_mouse_emul);
+    //
     hotkey_add(ALT(KEY_BS), DEMO_CONTEXT, reload_weapon_hotkey, (void *)0);
     hotkey_add(CONTROL(KEY_BS), DEMO_CONTEXT, reload_weapon_hotkey, (void *)1);
     hotkey_add(ALT('\''), DEMO_CONTEXT, arm_grenade_hotkey, (void *)0);
@@ -1314,13 +1295,13 @@ void init_input(void) {
     hotkey_add(CONTROL('/'), DEMO_CONTEXT, MacHelpFunc, NULL);
     hotkey_add(CONTROL('?'), DEMO_CONTEXT, MacHelpFunc, NULL);
 
-    /*
-       hotkey_add(ALT('x'),DEMO_CONTEXT,demo_quit_func,NULL);
-       hotkey_add(ALT('x'),SETUP_CONTEXT,really_quit_key_func,NULL);
-       hotkey_add(ALT('v'),DEMO_CONTEXT,toggle_view_func,NULL);
-       hotkey_add(ALT('V'),DEMO_CONTEXT,toggle_view_func,NULL);
-       hotkey_add(ALT(KEY_F7),DEMO_CONTEXT,version_spew_func,NULL);
-    */
+    //
+    // hotkey_add(ALT('x'),DEMO_CONTEXT,demo_quit_func,NULL);
+    // hotkey_add(ALT('x'),SETUP_CONTEXT,really_quit_key_func,NULL);
+    // hotkey_add(ALT('v'),DEMO_CONTEXT,toggle_view_func,NULL);
+    // hotkey_add(ALT('V'),DEMO_CONTEXT,toggle_view_func,NULL);
+    // hotkey_add(ALT(KEY_F7),DEMO_CONTEXT,version_spew_func,NULL);
+    //
     //   hotkey_add(CONTROL('8'),DEMO_CONTEXT,location_spew_func,NULL);  //testing
     //   hotkey_add(CONTROL('0'),DEMO_CONTEXT,temp_FrameCounter_func, NULL); //testing
 
@@ -1328,153 +1309,154 @@ void init_input(void) {
     hotkey_add(CONTROL('D'), DEMO_CONTEXT, change_mode_func, (void *)FULLSCREEN_LOOP);
     hotkey_add(CONTROL('a'), DEMO_CONTEXT, change_mode_func, (void *)AUTOMAP_LOOP);
     hotkey_add(CONTROL('A'), DEMO_CONTEXT, change_mode_func, (void *)AUTOMAP_LOOP);
-    /*
-    #else
-       hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,(void *)TRUE);
-       hotkey_add(CONTROL('a'), DEMO_CONTEXT, change_mode_func,  (void *) AUTOMAP_LOOP);
-       hotkey_add(CONTROL('A'), DEMO_CONTEXT, change_mode_func,  (void *) AUTOMAP_LOOP);
-
-       hotkey_add_help(DOWN(KEY_BS), DEMO_CONTEXT,clear_fullscreen_func, NULL,
-          "Clears all overlays from the fullscreen view.");
-       hotkey_add_help(DOWN(KEY_PAUSE),DEMO_CONTEXT,pause_game_func,(void *)TRUE, "pause the game, gee.");
-       hotkey_add_help(DOWN('p'),DEMO_CONTEXT,pause_game_func,(void *)TRUE, "pause the game, gee.");
-       hotkey_add_help(DOWN(KEY_ESC),DEMO_CONTEXT,wrapper_options_func,(void *)TRUE,
-          "Opens up the options menu on the main game screen.");
-       hotkey_add_help(CONTROL('h'), DEMO_CONTEXT, hud_color_bank_cycle, NULL, "cycle hud colors");
-       hotkey_add_help(CONTROL('H'), DEMO_CONTEXT, hud_color_bank_cycle, NULL, "cycle hud colors");
-       hotkey_add_help(CONTROL(ALT('~')),EVERY_CONTEXT,toggle_profile,(void *)TRUE, "toggle profile");
-
-       for (i = 0; i < NUM_POSTURES; i++)
-       {
-          hotkey_add_help(DOWN(posture_keys[i]),DEMO_CONTEXT,posture_hotkey_func,(void*)i,"change posture");
-          hotkey_add_help(DOWN(toupper(posture_keys[i])),DEMO_CONTEXT,posture_hotkey_func,(void*)i,"change posture");
-       }
-       hotkey_add_help(ALT('x'),EDIT_CONTEXT|SETUP_CONTEXT,quit_key_func,NULL,"quit, but ask for confirm.");
-       hotkey_add_help(ALT('x'),DEMO_CONTEXT,demo_quit_func,NULL,"quit, but ask for confirm on options panel.");
-       hotkey_add_help(ALT('X'),EVERY_CONTEXT,really_quit_key_func,NULL, "quit, no questions asked.");
-       hotkey_add_help(ALT('v'),EVERY_CONTEXT,toggle_view_func,NULL, "toggles between game mode and fullscreen mode.");
-       hotkey_add_help(ALT('V'),EVERY_CONTEXT,toggle_view_func,NULL, "toggles between game mode and fullscreen mode.");
-       hotkey_add(ALT('d'),EVERY_CONTEXT,mono_config_func,NULL);
-
-       // these are some random hotkeys - debugging
-       hotkey_add(CONTROL('q'),EVERY_CONTEXT,maim_player,"maim player");
-       hotkey_add(CONTROL('z'),EVERY_CONTEXT,change_clipper,"maim player");
-       hotkey_add(ALT(KEY_F2),EVERY_CONTEXT,salt_the_player, "Salt the Player");
-       hotkey_add(ALT(KEY_F3),EVERY_CONTEXT,give_player_hotkey, "Give Player Loot");
-
-       // Meta-slewing
-       hotkey_add(DOWN('r'), EDIT_CONTEXT, stupid_slew_func, (void *)13);
-       hotkey_add(DOWN('>'), DEMO_CONTEXT|EDIT_CONTEXT, stupid_slew_func, (void *)14);
-       hotkey_add(DOWN('<'), DEMO_CONTEXT|EDIT_CONTEXT, stupid_slew_func, (void *)15);
-
-       // 3d zoomin
-       hotkey_add(CONTROL('['), DEMO_CONTEXT|EDIT_CONTEXT, zoom_3d_func, (void *)TRUE);
-       hotkey_add(CONTROL(']'), DEMO_CONTEXT|EDIT_CONTEXT, zoom_3d_func, (void *)FALSE);
-
-       ckpoint_input("hotkeys in");
-
+    //
+    //#else
+    //   hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,(void *)TRUE);
+    //   hotkey_add(CONTROL('a'), DEMO_CONTEXT, change_mode_func,  (void *) AUTOMAP_LOOP);
+    //   hotkey_add(CONTROL('A'), DEMO_CONTEXT, change_mode_func,  (void *) AUTOMAP_LOOP);
+    //
+    //   hotkey_add_help(DOWN(KEY_BS), DEMO_CONTEXT,clear_fullscreen_func, NULL,
+    //      "Clears all overlays from the fullscreen view.");
+    //   hotkey_add_help(DOWN(KEY_PAUSE),DEMO_CONTEXT,pause_game_func,(void *)TRUE, "pause the game, gee.");
+    //   hotkey_add_help(DOWN('p'),DEMO_CONTEXT,pause_game_func,(void *)TRUE, "pause the game, gee.");
+    //   hotkey_add_help(DOWN(KEY_ESC),DEMO_CONTEXT,wrapper_options_func,(void *)TRUE,
+    //      "Opens up the options menu on the main game screen.");
+    //   hotkey_add_help(CONTROL('h'), DEMO_CONTEXT, hud_color_bank_cycle, NULL, "cycle hud colors");
+    //   hotkey_add_help(CONTROL('H'), DEMO_CONTEXT, hud_color_bank_cycle, NULL, "cycle hud colors");
+    //   hotkey_add_help(CONTROL(ALT('~')),EVERY_CONTEXT,toggle_profile,(void *)TRUE, "toggle profile");
+    //
+    //   for (i = 0; i < NUM_POSTURES; i++)
+    //   {
+    //      hotkey_add_help(DOWN(posture_keys[i]),DEMO_CONTEXT,posture_hotkey_func,(void*)i,"change posture");
+    //      hotkey_add_help(DOWN(toupper(posture_keys[i])),DEMO_CONTEXT,posture_hotkey_func,(void*)i,"change posture");
+    //   }
+    //   hotkey_add_help(ALT('x'),EDIT_CONTEXT|SETUP_CONTEXT,quit_key_func,NULL,"quit, but ask for confirm.");
+    //   hotkey_add_help(ALT('x'),DEMO_CONTEXT,demo_quit_func,NULL,"quit, but ask for confirm on options panel.");
+    //   hotkey_add_help(ALT('X'),EVERY_CONTEXT,really_quit_key_func,NULL, "quit, no questions asked.");
+    //   hotkey_add_help(ALT('v'),EVERY_CONTEXT,toggle_view_func,NULL, "toggles between game mode and fullscreen mode.");
+    //   hotkey_add_help(ALT('V'),EVERY_CONTEXT,toggle_view_func,NULL, "toggles between game mode and fullscreen mode.");
+    //   hotkey_add(ALT('d'),EVERY_CONTEXT,mono_config_func,NULL);
+    //
+    //   // these are some random hotkeys - debugging
+    //   hotkey_add(CONTROL('q'),EVERY_CONTEXT,maim_player,"maim player");
+    //   hotkey_add(CONTROL('z'),EVERY_CONTEXT,change_clipper,"maim player");
+    //   hotkey_add(ALT(KEY_F2),EVERY_CONTEXT,salt_the_player, "Salt the Player");
+    //   hotkey_add(ALT(KEY_F3),EVERY_CONTEXT,give_player_hotkey, "Give Player Loot");
+    //
+    //   // Meta-slewing
+    //   hotkey_add(DOWN('r'), EDIT_CONTEXT, stupid_slew_func, (void *)13);
+    //   hotkey_add(DOWN('>'), DEMO_CONTEXT|EDIT_CONTEXT, stupid_slew_func, (void *)14);
+    //   hotkey_add(DOWN('<'), DEMO_CONTEXT|EDIT_CONTEXT, stupid_slew_func, (void *)15);
+    //
+    //   // 3d zoomin
+    //   hotkey_add(CONTROL('['), DEMO_CONTEXT|EDIT_CONTEXT, zoom_3d_func, (void *)TRUE);
+    //   hotkey_add(CONTROL(']'), DEMO_CONTEXT|EDIT_CONTEXT, zoom_3d_func, (void *)FALSE);
+    //
+    //   ckpoint_input("hotkeys in");
+    //
     //   hotkey_add(DOWN('['),EDIT_CONTEXT,zoom_func,(void *)ZOOM_IN);
     //   hotkey_add(DOWN(']'),EDIT_CONTEXT,zoom_func,(void *)ZOOM_OUT);
     //   hotkey_add(CONTROL('d'),EDIT_CONTEXT,to_demo_mode_func,NULL);
-
-    #endif
-       hotkey_add(KEY_F11,DEMO_CONTEXT|EDIT_CONTEXT,change_gamma,(void *) 1);
-       hotkey_add(KEY_F12,DEMO_CONTEXT|EDIT_CONTEXT,change_gamma,(void *)-1);
-    */
+    //
+    //#endif
+    //   hotkey_add(KEY_F11,DEMO_CONTEXT|EDIT_CONTEXT,change_gamma,(void *) 1);
+    //   hotkey_add(KEY_F12,DEMO_CONTEXT|EDIT_CONTEXT,change_gamma,(void *)-1);
+    //
     hotkey_add(CONTROL('h'), DEMO_CONTEXT, toggle_olh_func, NULL);
     hotkey_add(CONTROL('H'), DEMO_CONTEXT, toggle_olh_func, NULL);
     hotkey_add(ALT('o'), DEMO_CONTEXT, olh_overlay_func, &olh_overlay_on);
     hotkey_add(ALT('O'), DEMO_CONTEXT, olh_overlay_func, &olh_overlay_on);
     hotkey_add(CONTROL('g'), EVERY_CONTEXT, toggle_opengl_func, NULL);
-    /*
-       // take these ifdefs out if memory bashing on shippable
-    //   hotkey_add(ALT(CONTROL(KEY_F4)),EVERY_CONTEXT,texture_annihilate_func,NULL);
-    #ifdef RCACHE_TEST
-       hotkey_add(ALT(KEY_F4),EVERY_CONTEXT,res_cache_usage_func,(void *)TRUE);
-       hotkey_add(CONTROL(KEY_F4),EVERY_CONTEXT,res_cache_usage_func,(void *)FALSE);
-    #endif
-       init_side_icon_hotkeys();
-    */
+    //
+    //   // take these ifdefs out if memory bashing on shippable
+    ////   hotkey_add(ALT(CONTROL(KEY_F4)),EVERY_CONTEXT,texture_annihilate_func,NULL);
+    //#ifdef RCACHE_TEST
+    //   hotkey_add(ALT(KEY_F4),EVERY_CONTEXT,res_cache_usage_func,(void *)TRUE);
+    //   hotkey_add(CONTROL(KEY_F4),EVERY_CONTEXT,res_cache_usage_func,(void *)FALSE);
+    //#endif
+    //   init_side_icon_hotkeys();
+    //
     init_invent_hotkeys();
 
-    /*for (i = 0; i < NUM_EYE_LVL_KEYS; i++)
-    {
-       hotkey_add(DOWN(eye_lvl_keys[i]),DEMO_CONTEXT,(hotkey_callback)eye_hotkey_func,(void*)0);
-    }*/
+    //for (i = 0; i < NUM_EYE_LVL_KEYS; i++)
+    //{
+    //   hotkey_add(DOWN(eye_lvl_keys[i]),DEMO_CONTEXT,(hotkey_callback)eye_hotkey_func,(void*)0);
+    //}
 
-    /* KLC - stuff for VR headsets
-       if (config_get_raw(CFG_INP6D_GO,NULL,0))
-       {
-               ckpoint_input("inp6d start");
-
-          // hack for these config variables, not sure where else to put them
-          inp6d_hdouble = config_get_raw("inp6d_hdouble",NULL,0);
-          inp6d_pdouble = config_get_raw("inp6d_pdouble",NULL,0);
-          inp6d_bdouble = config_get_raw("inp6d_bdouble",NULL,0);
-
-    #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)||defined(SPACEBALL_SUPPORT)
-               inp6d_exists=(i6_probe()==0 && i6_startup()==0);
-          if ((config_get_raw("inp6d_force",NULL,0)))
-            inp6d_exists=(i6_force(I6D_VFX1) == 0);
-    #else
-               inp6d_exists=(i6_probe_small()==0 && i6_startup()==0);
-    #endif
-    #if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
-          if ((i6d_device==I6D_VFX1)||(i6d_device==I6D_CTM)||(i6d_device==I6D_ALLPRO))
-          {
-             extern uchar fullscrn_vitals, fullscrn_icons;
-             i6s_event *inp6d_geth;
-             do {
-                inp6d_geth=i6_poll();
-             } while (inp6d_geth==NULL);
-
-             {
-                hotkey_add(ALT('g'),DEMO_CONTEXT|EDIT_CONTEXT,recenter_headset,NULL);
-                inp6d_headset=TRUE;
-                     tracker_initial_pos[0]= inp6d_geth->ry;
-                     tracker_initial_pos[1]= inp6d_geth->rx;
-                     tracker_initial_pos[2]=-inp6d_geth->rz;
-                     fullscrn_vitals=fullscrn_icons=FALSE;
-                if (i6_video(I6VID_STARTUP,NULL))
-                   Warning(("Headset video startup failed\n"));
-                  if ((config_get_raw("inp6d_stereo",NULL,0))&&(i6d_device!=I6D_ALLPRO))
-                {
-                   int cnt=1, rval[1];
-                        if (i6_video(I6VID_STR_START,NULL))
-                           Warning(("Headset stereo startup failed\n"));
-                   else
-                    { inp6d_stereo=TRUE; inp6d_stereo_active=FALSE; }
-                   config_get_value("inp6d_stereo",CONFIG_INT_TYPE,rval,&cnt);
-                   if (cnt>0) inp6d_stereo_div=rval[0];
-                }
-                  if (config_get_raw("inp6d_doom",NULL,0))
-                   inp6d_doom=TRUE;
-             }
-          }     // end of is it a tracker....
-    #endif
-               ckpoint_input("inp6d end");
-       } else inp6d_exists=FALSE;
-       {
-          int cnt=1, rval[1];
-          config_get_value("joystick",CONFIG_INT_TYPE,rval,&cnt);
-          if (cnt>0)
-          {
-             extern ushort wrap_joy_type;
-             extern ushort high_joy_flags;
-             joy_type=rval[0];
-             wrap_joy_type  = joy_type & ~JOY_NO_NGP;
-             high_joy_flags = joy_type & JOY_NO_NGP;
-          }
-       }
-       if (joystick_count=joy_init(joy_type))
-       {
-    #ifdef PLAYTEST
-          mprintf("Got %d joystick pots\n",joystick_count);
-    #endif
-          hotkey_add(ALT('j'),DEMO_CONTEXT|EDIT_CONTEXT,recenter_joystick,NULL);
-       }
-     */
+    // KLC - stuff for VR headsets
+    //   if (config_get_raw(CFG_INP6D_GO,NULL,0))
+    //   {
+    //           ckpoint_input("inp6d start");
+    //
+    //      // hack for these config variables, not sure where else to put them
+    //      inp6d_hdouble = config_get_raw("inp6d_hdouble",NULL,0);
+    //      inp6d_pdouble = config_get_raw("inp6d_pdouble",NULL,0);
+    //      inp6d_bdouble = config_get_raw("inp6d_bdouble",NULL,0);
+    //
+    //#if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)||defined(SPACEBALL_SUPPORT)
+    //           inp6d_exists=(i6_probe()==0 && i6_startup()==0);
+    //      if ((config_get_raw("inp6d_force",NULL,0)))
+    //        inp6d_exists=(i6_force(I6D_VFX1) == 0);
+    //#else
+    //           inp6d_exists=(i6_probe_small()==0 && i6_startup()==0);
+    //#endif
+    //#if defined(VFX1_SUPPORT)||defined(CTM_SUPPORT)
+    //      if ((i6d_device==I6D_VFX1)||(i6d_device==I6D_CTM)||(i6d_device==I6D_ALLPRO))
+    //      {
+    //         extern uchar fullscrn_vitals, fullscrn_icons;
+    //         i6s_event *inp6d_geth;
+    //         do {
+    //            inp6d_geth=i6_poll();
+    //         } while (inp6d_geth==NULL);
+    //
+    //         {
+    //            hotkey_add(ALT('g'),DEMO_CONTEXT|EDIT_CONTEXT,recenter_headset,NULL);
+    //            inp6d_headset=TRUE;
+    //                 tracker_initial_pos[0]= inp6d_geth->ry;
+    //                 tracker_initial_pos[1]= inp6d_geth->rx;
+    //                 tracker_initial_pos[2]=-inp6d_geth->rz;
+    //                 fullscrn_vitals=fullscrn_icons=FALSE;
+    //            if (i6_video(I6VID_STARTUP,NULL))
+    //               Warning(("Headset video startup failed\n"));
+    //              if ((config_get_raw("inp6d_stereo",NULL,0))&&(i6d_device!=I6D_ALLPRO))
+    //            {
+    //               int cnt=1, rval[1];
+    //                    if (i6_video(I6VID_STR_START,NULL))
+    //                       Warning(("Headset stereo startup failed\n"));
+    //               else
+    //                { inp6d_stereo=TRUE; inp6d_stereo_active=FALSE; }
+    //               config_get_value("inp6d_stereo",CONFIG_INT_TYPE,rval,&cnt);
+    //               if (cnt>0) inp6d_stereo_div=rval[0];
+    //            }
+    //              if (config_get_raw("inp6d_doom",NULL,0))
+    //               inp6d_doom=TRUE;
+    //         }
+    //      }     // end of is it a tracker....
+    //#endif
+    //           ckpoint_input("inp6d end");
+    //   } else inp6d_exists=FALSE;
+    //   {
+    //      int cnt=1, rval[1];
+    //      config_get_value("joystick",CONFIG_INT_TYPE,rval,&cnt);
+    //      if (cnt>0)
+    //      {
+    //         extern ushort wrap_joy_type;
+    //         extern ushort high_joy_flags;
+    //         joy_type=rval[0];
+    //         wrap_joy_type  = joy_type & ~JOY_NO_NGP;
+    //         high_joy_flags = joy_type & JOY_NO_NGP;
+    //      }
+    //   }
+    //   if (joystick_count=joy_init(joy_type))
+    //   {
+    //#ifdef PLAYTEST
+    //      mprintf("Got %d joystick pots\n",joystick_count);
+    //#endif
+    //      hotkey_add(ALT('j'),DEMO_CONTEXT|EDIT_CONTEXT,recenter_joystick,NULL);
+    //   }
+    //
 }
+*/
 
 void shutdown_input(void) {
     hotkey_shutdown();
@@ -1547,6 +1529,93 @@ uchar weapon_button_up = TRUE;
 // ---------
 
 // -------------------------------------------------------------------------------------------
+// CalcMotionCurOffset gets cursor position offset data for
+//   SetMotionCursorForMouseXY() and view3d_mouse_input()
+
+void CalcMotionCurOffset(uchar cyber, LGRegion *reg, short *cx, short *cy, short *cw, short *ch, short *x, short *y)
+{
+  if (DoubleSize)
+  {
+    (*x) *= 2;
+    (*y) *= 2;
+  }
+
+  if (!cyber)
+  {
+    (*cx) = reg->abs_x + RectWidth(reg->r) / 2;
+    (*cy) = reg->abs_y + 2 * RectHeight(reg->r) / 3;
+    (*cw) = RectWidth(reg->r) * CENTER_WD_N / CENTER_WD_D;
+    (*ch) = RectHeight(reg->r) * CENTER_HT_N / CENTER_HT_D;
+  }
+  else
+  {
+    (*cx) = reg->abs_x + RectWidth(reg->r) / 2;
+    (*cy) = reg->abs_y + RectHeight(reg->r) / 2;
+    (*cw) = RectWidth(reg->r) * CENTER_WD_N / CYBER_CENTER_WD_D;
+    (*ch) = RectHeight(reg->r) * CENTER_HT_N / CYBER_CENTER_HT_D;
+  }
+
+#ifdef SVGA_SUPPORT
+  ss_point_convert(cx, cy, FALSE);
+  ss_point_convert(cw, ch, FALSE);
+#endif
+
+  (*x) -= (*cx);
+  (*y) -= (*cy);
+}
+
+// -------------------------------------------------------------------------------------------
+// SetMotionCursorForMouseXY sets motion cursor for current mouse x,y position
+
+// Used to set cursor to weapon color immediately without having to move the mouse
+
+// called at end of:
+//    fullscreen_start()     fullscrn.c
+//    screen_start()         screen.c
+
+void SetMotionCursorForMouseXY(void)
+{
+  if (global_fullmap->cyber) return;
+
+  int cnum;
+
+  LGRegion *reg;
+
+  if (full_game_3d)
+    reg = fullview_region;
+  else
+    reg = mainview_region;
+
+  extern int mlook_enabled;
+
+  if (mlook_enabled)
+    cnum = VIEW_HCENTER | VIEW_VCENTER;
+  else
+  {
+    short cx, cy, cw, ch, x, y;
+
+    mouse_get_xy(&x, &y);
+
+    CalcMotionCurOffset(FALSE, reg, &cx, &cy, &cw, &ch, &x, &y);
+
+    if      (x < -cw) cnum = VIEW_LSIDE;
+    else if (x >  cw) cnum = VIEW_RSIDE;
+    else              cnum = VIEW_HCENTER;
+  
+    if      (y < -ch) cnum |= VIEW_TOP;
+    else if (y >  ch) cnum |= VIEW_BOTTOM;
+    else              cnum |= VIEW_VCENTER;
+  }
+
+  LGCursor *c = &motion_cursors[cnum];
+
+  if (reg == fullview_region)
+    uiSetGlobalDefaultCursor(c);
+  else
+    uiSetRegionDefaultCursor(reg, c);
+}
+
+// -------------------------------------------------------------------------------------------
 // view3d_mouse_input sets/unsets physics controls based on mouse position in 3d
 
 // return whether any control was applied
@@ -1564,28 +1633,10 @@ int view3d_mouse_input(LGPoint pos, LGRegion *reg, uchar move,
 
     short cx, cy, cw, ch, x, y;
 
-    if (DoubleSize) {
-        pos.x *= 2;
-        pos.y *= 2;
-    }
+    x = pos.x;
+    y = pos.y;
 
-    if (!cyber) {
-        cx = reg->abs_x + RectWidth(reg->r) / 2;
-        cy = reg->abs_y + 2 * RectHeight(reg->r) / 3;
-        cw = RectWidth(reg->r) * CENTER_WD_N / CENTER_WD_D;
-        ch = RectHeight(reg->r) * CENTER_HT_N / CENTER_HT_D;
-    } else {
-        cx = reg->abs_x + RectWidth(reg->r) / 2;
-        cy = reg->abs_y + RectHeight(reg->r) / 2;
-        cw = RectWidth(reg->r) * CENTER_WD_N / CYBER_CENTER_WD_D;
-        ch = RectHeight(reg->r) * CENTER_HT_N / CYBER_CENTER_HT_D;
-    }
-#ifdef SVGA_SUPPORT
-    ss_point_convert(&(cx), &(cy), FALSE);
-    ss_point_convert(&(cw), &(ch), FALSE);
-#endif
-    x = pos.x - cx;
-    y = pos.y - cy;
+    CalcMotionCurOffset(cyber, reg, &cx, &cy, &cw, &ch, &x, &y);
 
     // ok, the idea here is to make sure single left click doesnt move, or at least tells you whats up...
     if ((dougs_goofy_hack == FALSE) && move) {
@@ -2273,8 +2324,7 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
     }
 
     if (ev->action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
-        extern uchar cycle_weapons_func(ushort keycode, ulong context, int data);
-        cycle_weapons_func(0, 0, ev->action & MOUSE_WHEELUP ? -1 : 1);
+        cycle_weapons_func(0, 0, (void *)(ev->action & MOUSE_WHEELUP ? -1 : 1));
     }
 
     // data->ldown = TRUE;
@@ -2290,47 +2340,39 @@ typedef struct _view3d_kdata {
     int maxctrl; // max control as affected by fatigue
 } view3d_kdata;
 
-#define FIRE_KEY KEY_ENTER // KLC for PC was KEY_ENTER
+extern int FireKeys[]; //see MacSrc/Prefs.c
 
-uchar view3d_key_handler(uiCookedKeyEvent *ev, LGRegion *r, void *data) {
-    uchar retval = FALSE;
-    // KLC   static uchar fire_key_down = FALSE;
-    LGPoint evp;
+uchar view3d_key_handler(uiCookedKeyEvent *ev, LGRegion *r, void *data)
+{
+  int i, detect = 0, fire_pressed = 0;
 
-    if (ev->code == DOWN(FIRE_KEY)) // If fire key was pressed
+  i = 0;
+  while (FireKeys[i] != 0)
+  {
+    if (ev->code == FireKeys[i]) detect = 1;
+    if (ev->code == (FireKeys[i] | KB_FLAG_DOWN)) {detect = 1; fire_pressed = 1; break;}
+    i++;
+  }
+  if (!detect) return FALSE;
+
+  if (fire_pressed)
+  {
+    if (weapon_button_up) // if we haven't fired already
     {
-        if (weapon_button_up) // and we haven't fired already
-        {
-            evp = ev->pos;
-            ss_point_convert(&(evp.x), &(evp.y), FALSE);
-            fire_player_weapon(&evp, r, !fire_slam);
-            fire_slam = TRUE;
-            weapon_button_up = FALSE;
-        }
-        /*
-              evp = ev->pos;
-        #ifdef SVGA_SUPPORT
-              ss_point_convert(&(evp.x),&(evp.y),FALSE);
-        #endif
-        //temp      fire_player_weapon(&evp,r,!fire_key_down);
-              fire_player_weapon(&evp, r, !fire_slam);
-        //      view3d_constrain_mouse(_current_view,FIREKEY_CONSTRAIN_BIT);
-        //KLC      retval = fire_key_down = TRUE;
-              fire_slam = TRUE;
-           }
-           else if (ev->code == FIRE_KEY)
-           {
-        //      view3d_unconstrain_mouse(FIREKEY_CONSTRAIN_BIT);
-              retval = TRUE;
-        //KLC      fire_key_down = FALSE;
-              fire_slam = FALSE;
-        */
-    } else if (ev->code == FIRE_KEY) {
-        weapon_button_up = TRUE;
-        fire_slam = FALSE;
+      LGPoint evp = ev->pos;
+      ss_point_convert(&(evp.x), &(evp.y), FALSE);
+      fire_player_weapon(&evp, r, !fire_slam);
+      fire_slam = TRUE;
+      weapon_button_up = FALSE;
     }
+  }
+  else
+  {
+    weapon_button_up = TRUE;
+    fire_slam = FALSE;
+  }
 
-    return retval;
+  return FALSE;
 }
 
 #ifdef NOT_YET // KLC - for VR headsets
@@ -3314,6 +3356,9 @@ void push_cursor_object(short obj) {
         bmp = bitmaps_3d[BMAP_NUM_3D(ObjProps[OPNUM(obj)].bitmap_3d) + objs[obj].info.current_frame];
     else
         bmp = bitmaps_2d[OPNUM(obj)];
+
+    if (bmp == NULL) return;
+
     object_on_cursor = obj;
     input_cursor_mode = INPUT_OBJECT_CURSOR;
 #ifdef SVGA_SUPPORT

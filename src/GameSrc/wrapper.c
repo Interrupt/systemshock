@@ -54,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "player.h"
 #include "popups.h"
+#include "olhext.h"
 #include "Prefs.h"
 
 #include "OpenGL.h"
@@ -1812,14 +1813,14 @@ void video_screen_init(void) {
     standard_button_rect(&r, i, 2, 2, 2);
     r.lr.x += 2;
     multi_init(i, keys[1], REF_STR_OptionsText + 4, REF_STR_DetailLvl, REF_STR_DetailLvlFeedback,
-               sizeof(player_struct.detail_level), &player_struct.detail_level, 4, detail_dealfunc, &r);
+               sizeof(_fr_global_detail), &_fr_global_detail, 4, detail_dealfunc, &r);
 
     i++;
 
     standard_slider_rect(&r, i, 2, 2);
     r.ul.x = r.ul.x + 1;
-    sliderbase = ((r.lr.x - r.ul.x - 1) * ((29 * FIX_UNIT) / 100)) / USHRT_MAX;
-    slider_init(i, REF_STR_OptionsText + 3, sizeof(ushort), TRUE, &player_struct.questvars[GAMMACOR_QVAR], USHRT_MAX,
+    sliderbase = ((r.lr.x - r.ul.x - 1) * 29 / 100);
+    slider_init(i, REF_STR_OptionsText + 3, sizeof(ushort), TRUE, &(gShockPrefs.doGamma), 100,
                 sliderbase, gamma_dealfunc, &r);
 
 #if defined(VFX1_SUPPORT) || defined(CTM_SUPPORT)
@@ -1948,7 +1949,7 @@ void options_screen_init(void) {
 
     // olh_temp=(QUESTBIT_GET(OLH_QBIT)==0);
 
-    olh_temp = TRUE;
+    olh_temp = olh_active;
 
     // okay, I admit it, we're going to tweak these "standard"
     // button rects a little bit.

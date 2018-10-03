@@ -546,9 +546,9 @@ void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar 
         fpoly_rend(col_val, 4, plst);
         gr_set_fill_type(cur_ft);
     } else if (use_opengl()) {
-        opengl_light_tmap(4, plst, draw_bm);
+        if (draw_bm != NULL) opengl_light_tmap(4, plst, draw_bm);
     } else {
-        g3_light_tmap(4, plst, draw_bm);
+        if (draw_bm != NULL) g3_light_tmap(4, plst, draw_bm);
     }
     if (dblface) // draw the bleeding backside, nudge nudge
     {
@@ -572,9 +572,9 @@ void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar 
                 fpoly_rend(col_val, 4, plst);
                 gr_set_fill_type(cur_ft);
             } else if (use_opengl()) {
-                opengl_light_tmap(4, plst, draw_bm);
+                if (draw_bm != NULL) opengl_light_tmap(4, plst, draw_bm);
             } else {
-                g3_light_tmap(4, plst, draw_bm);
+                if (draw_bm != NULL) g3_light_tmap(4, plst, draw_bm);
             }
         }
     }
@@ -1084,14 +1084,14 @@ void show_obj(ObjID cobjid) {
             }
             switch (ID2TRIP(cobjid)) {
             case SUPERSCREEN_TRIPLE:
-                scale = 7 - tpdata->wlog;
+                if (tpdata != NULL) scale = 7 - tpdata->wlog;
                 break;
             case TMAP_TRIPLE:
             case BIGSCREEN_TRIPLE:
-                scale = 6 - tpdata->wlog;
+                if (tpdata != NULL) scale = 6 - tpdata->wlog;
                 break;
             case SCREEN_TRIPLE:
-                scale = 5 - tpdata->wlog;
+                if (tpdata != NULL) scale = 5 - tpdata->wlog;
                 break;
             }
             switch (ID2TRIP(cobjid)) {
@@ -1193,9 +1193,11 @@ void show_obj(ObjID cobjid) {
                             (objCritters[_fr_cobj->specID].mood == AI_MOOD_ATTACKING)) {
                             uchar c = CyberCritterProps[SCNUM(cobjid)].alt_vcolors[foog], nc;
                             int hp_state;
+                            int denom = ObjProps[objtrip].hit_points;
+                            if (denom == 0) denom = 1;
                             hp_state =
                                 256 * 14 -
-                                ((256 * 14 * _fr_cobj->info.current_hp / ObjProps[objtrip].hit_points) & (~0xff));
+                                ((256 * 14 * _fr_cobj->info.current_hp / denom) & (~0xff));
                             if (hp_state > 0xf00)
                                 hp_state = 0xf00;
                             else if (hp_state < 0)

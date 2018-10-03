@@ -1,6 +1,9 @@
 
 #include <Carbon/Carbon.h>
 #include "musicai.h"
+#include "adlmidi.h"
+#include "mlimbs.h"
+#include "Xmi.h"
 
 #ifdef USE_SDL_MIXER
 
@@ -8,21 +11,48 @@
 
 static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
 static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
-static Mix_Chunk *playing_audiolog_sample = NULL;
+
+extern SDL_AudioStream *cutscene_audiostream;
+extern struct ADL_MIDIPlayer *adlD;
+
+extern char *MusicCallbackBuffer;
+
+extern void AudioStreamCallback(void *userdata, unsigned char *stream, int len);
+extern void MusicCallback(void *userdata, Uint8 *stream, int len);
 
 int snd_start_digital(void) {
 
 	// Startup the sound system
 
-	if(Mix_Init(MIX_INIT_MP3) < 0) {
-		ERROR("%s: Init failed", __FUNCTION__);
-	}
+    SDL_AudioSpec spec, obtained;
+    spec.freq     = 48000;
+    spec.format   = AUDIO_S16SYS;
+    spec.channels = 2;
+    spec.samples  = 2048;
+    spec.callback = AudioStreamCallback;
+    spec.userdata = (void *)&cutscene_audiostream;
 
-	if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
-		ERROR("%s: Couldn't open audio device", __FUNCTION__);
-	}
+    if (SDL_OpenAudio(&spec, &obtained)) {ERROR("Could not open SDL audio");}
+    else {INFO("Opened Music Stream");}
 
-	Mix_AllocateChannels(SND_MAX_SAMPLES);
+
+    if (Mix_Init(MIX_INIT_MP3) < 0) {ERROR("%s: Init failed", __FUNCTION__);}
+
+    if (Mix_OpenAudio(48000, AUDIO_S16SYS, 2, 2048) < 0)
+      {ERROR("%s: Couldn't open audio device", __FUNCTION__);}
+
+    Mix_AllocateChannels(SND_MAX_SAMPLES);
+
+    MusicCallbackBuffer = (char *)malloc(2048*5); //larger than needed paranoia
+
+    Mix_HookMusic(MusicCallback, (void *)&adlD);
+
+
+	InitReadXMI();
+
+
+    atexit(Mix_CloseAudio);
+    atexit(SDL_CloseAudio);
 
 	return OK;
 }
@@ -55,37 +85,6 @@ int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dpr
 	return channel;
 }
 
-int snd_alog_play(int snd_ref, int len, Uint8 *smp, struct snd_digi_parms *dprm) {
-
-	// Get rid of the last playing audiolog
-
-	if(playing_audiolog_sample != NULL) {
-		Mix_FreeChunk(playing_audiolog_sample);
-		playing_audiolog_sample = NULL;
-	}
-
-	// Play one of the Audiolog sounds
-
-	playing_audiolog_sample = Mix_QuickLoad_RAW(smp, len);
-	if (playing_audiolog_sample == NULL) {
-		DEBUG("%s: Failed to load sample", __FUNCTION__);
-		return ERR_NOEFFECT;
-	}
-
-	int channel = Mix_PlayChannel(-1, playing_audiolog_sample, 0);
-	if (channel < 0) {
-		DEBUG("%s: Failed to play sample", __FUNCTION__);
-		Mix_FreeChunk(playing_audiolog_sample);
-		playing_audiolog_sample = NULL;
-		return ERR_NOEFFECT;
-	}
-
-	digi_parms_by_channel[channel] = *dprm;
-	Mix_Volume(channel, dprm->vol * 128 / 100);
-
-	return channel;
-}
-
 void snd_end_sample(int hnd_id) {
 	Mix_HaltChannel(hnd_id);
 	if (samples_by_channel[hnd_id]) {
@@ -107,6 +106,10 @@ void snd_kill_all_samples(void) {
 	for (int channel = 0; channel < SND_MAX_SAMPLES; channel++) {
 		snd_end_sample(channel);
 	}
+
+    //assume we want these too
+    StopTheMusic();
+    if (cutscene_audiostream != NULL) SDL_AudioStreamClear(cutscene_audiostream);
 }
 
 void snd_sample_reload_parms(snd_digi_parms *sdp) {
@@ -127,36 +130,73 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) {
 }
 
 void MacTuneUpdateVolume(void) {
-	extern uchar curr_vol_lev;
-	float music_vol_mod = 0.8f;
-	Mix_VolumeMusic(((curr_vol_lev * curr_vol_lev * 128 * music_vol_mod) / 10000) );
+
 }
 
+int is_playing = 0;
+
 int MacTuneLoadTheme(char* theme_base, int themeID) {
-	char filename[30];
+	char filename[40];
+	FILE *f;
+	int i;
+	
+	#define NUM_SCORES                  8
+	#define SUPERCHUNKS_PER_SCORE       4
+	#define NUM_TRANSITIONS             9
+	#define NUM_LAYERS                 32
+	#define MAX_KEYS                   10
+	#define NUM_LAYERABLE_SUPERCHUNKS  22
+	#define KEY_BAR_RESOLUTION          2
+	
+	extern uchar track_table[NUM_SCORES][SUPERCHUNKS_PER_SCORE];
+	extern uchar transition_table[NUM_TRANSITIONS];
+	extern uchar layering_table[NUM_LAYERS][MAX_KEYS];
+	extern uchar key_table[NUM_LAYERABLE_SUPERCHUNKS][KEY_BAR_RESOLUTION];
+	
+    StopTheMusic();
 
-	// Try to play some music! theme_base will be a string like 'thm0'
+	FreeXMI();
+	
+	if (strncmp(theme_base, "thm", 3))
+	{
+	  // Try to use sblaster files, fall back to genmidi
+	  sprintf(filename, "res/sound/sblaster/%s.xmi", theme_base);
+	  int readFile = ReadXMI(filename);
 
-	// FIXME: This should really try to play the .xmi files in res/sound/genmidi if there is a way!
-	// until then, I'm going to just attempt to play .mid files instead.
+	  if(!readFile) {
+	  	sprintf(filename, "res/sound/genmidi/%s.xmi", theme_base);
+	  	ReadXMI(filename);
+	  }
+	}
+	else
+	{
+	  // Try to use sblaster files, fall back to genmidi
+	  sprintf(filename, "res/sound/sblaster/thm%i.xmi", themeID);
+	  int readFile = ReadXMI(filename);
 
-	// Build the file name
-	strcpy(filename, "res/music/");
-	strcat(filename, theme_base);
-	strcat(filename, ".mid");
+	  if(!readFile) {
+	  	sprintf(filename, "res/sound/genmidi/thm%i.xmi", themeID);
+	  	ReadXMI(filename);
+	  }
+	
+	  sprintf(filename, "res/sound/thm%i.bin", themeID);
+	  f = fopen(filename, "rb");
+	  if (f != 0)
+	  {
+	    fread(track_table,      NUM_SCORES * SUPERCHUNKS_PER_SCORE,             1, f);
+	    fread(transition_table, NUM_TRANSITIONS,                                1, f);
+	    fread(layering_table,   NUM_LAYERS * MAX_KEYS,                          1, f);
+	    fread(key_table,        NUM_LAYERABLE_SUPERCHUNKS * KEY_BAR_RESOLUTION, 1, f);
 
-	DEBUG("Playing music %s", filename);
-
-	Mix_Music *music;
-	music = Mix_LoadMUS(filename);
-	Mix_PlayMusic(music, -1);
-	MacTuneUpdateVolume();
+	    fclose(f);
+	  }
+	}
 
 	return OK;
 }
 
 void MacTuneKillCurrentTheme(void) {
-	Mix_HaltMusic();
+    StopTheMusic();
 }
 
 #else

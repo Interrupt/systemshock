@@ -488,6 +488,7 @@ void olh_overlay(void) {
     uiPopGlobalCursor();
     uiFlush();
     olh_overlay_on = FALSE;
+	gr_clear(0); //makes red pixels go away, but real problem is probably in REF_IMG_bmBlankMFD
     screen_draw();
     status_bio_start();
 }

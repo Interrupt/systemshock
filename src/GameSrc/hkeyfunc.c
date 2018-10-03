@@ -47,6 +47,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools.h"
 #include "wares.h"
 #include "mouselook.h"
+#include "audiolog.h"
+#include "Xmi.h"
 
 //--------------
 //  PROTOTYPES
@@ -309,13 +311,11 @@ void stop_music(void) {
 uchar toggle_music_func(short keycode, ulong context, void *data) {
     if (music_on) {
         message_info("Music off.");
+        StopTheMusic(); //do this here, not in stop_music(), to prevent silence when changing levels
         stop_music();
     } else {
         start_music();
-        if (mlimbs_status == 1)
-            message_info("Music on.");
-        else
-            message_info("Not enough memory to start music.");
+        message_info("Music on.");
     }
 
     gShockPrefs.soBackMusic = music_on;
@@ -1020,27 +1020,54 @@ uchar toggle_giveall_func(short keycode, ulong context, void *data) {
         player_struct.hardwarez[i] = 1;
     player_struct.hardwarez[HARDWARE_360] = 3;
 
+    //rail gun
     player_struct.weapons[0].type = 2;
     player_struct.weapons[0].subtype = 1;
     player_struct.weapons[0].ammo = 50;
-    player_struct.weapons[2].ammo = 25;
+    player_struct.weapons[0].ammo_type = 0;
+    player_struct.weapons[0].make_info = 0;
+
+    //ion beam
     player_struct.weapons[1].type = 4;
     player_struct.weapons[1].subtype = 2;
+    player_struct.weapons[1].heat = 0;
     player_struct.weapons[1].setting = 40;
+    player_struct.weapons[1].make_info = 0;
+
+    //riot gun, hollow
     player_struct.weapons[2].type = 0;
     player_struct.weapons[2].subtype = 4;
     player_struct.weapons[2].ammo = 100;
+    player_struct.weapons[2].ammo_type = 0;
+    player_struct.weapons[2].make_info = 0;
+
+    //skorpion, slag
     player_struct.weapons[3].type = 1;
     player_struct.weapons[3].subtype = 1;
     player_struct.weapons[3].ammo = 150;
+    player_struct.weapons[3].ammo_type = 0;
+    player_struct.weapons[3].make_info = 0;
+
+    //magpulse
     player_struct.weapons[4].type = 2;
     player_struct.weapons[4].subtype = 0;
     player_struct.weapons[4].ammo = 50;
+    player_struct.weapons[4].ammo_type = 0;
+    player_struct.weapons[4].make_info = 0;
+
+    //sparq
     player_struct.weapons[5].type = 4;
     player_struct.weapons[5].subtype = 0;
+    player_struct.weapons[5].heat = 0;
     player_struct.weapons[5].setting = 40;
+    player_struct.weapons[5].make_info = 0;
+
+    //laser rapier
     player_struct.weapons[6].type = 3;
     player_struct.weapons[6].subtype = 1;
+    player_struct.weapons[6].heat = 0;
+    player_struct.weapons[6].setting = 0;
+    player_struct.weapons[6].make_info = 0;
 
     player_struct.hit_points = 255;
     player_struct.energy = 255;
@@ -1055,13 +1082,13 @@ uchar toggle_giveall_func(short keycode, ulong context, void *data) {
 uchar toggle_up_level_func(short keycode, ulong context, void *data) {
     extern errtype go_to_different_level(int level_num);
     message_info("Changing level!");
-    go_to_different_level(player_struct.level + 1);
+    go_to_different_level((player_struct.level + 1 + 15) % 15);
 }
 
 uchar toggle_down_level_func(short keycode, ulong context, void *data) {
     extern errtype go_to_different_level(int level_num);
     message_info("Changing level!");
-    go_to_different_level(player_struct.level - 1);
+    go_to_different_level((player_struct.level - 1 + 15) % 15);
 }
 
 #ifdef NOT_YET //
@@ -1281,6 +1308,8 @@ uchar pause_game_func(short keycode, ulong context, void *data) {
 
     if (game_paused) {
         redraw_paused = TRUE;
+		snd_kill_all_samples();
+        audiolog_stop();
         return FALSE;
     }
 

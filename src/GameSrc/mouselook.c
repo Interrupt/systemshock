@@ -8,12 +8,8 @@
 #include <stdio.h>
 #include <SDL.h>
 
-int mlook_enabled = FALSE;
 float mlook_hsens = 250;
 float mlook_vsens = 50;
-
-int mouse_look_xvel;
-int mouse_look_yvel;
 
 extern void pump_events();
 extern void player_set_eye_fixang(int ang);
@@ -28,52 +24,28 @@ extern long eye_mods[3];
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 
-void mouse_look_stop() {
-    if (!mlook_enabled && !game_paused) {
-        mlook_enabled = false;
-        center_mouse();
-    }
-}
+void middleize_mouse(void);
+void get_mouselook_vel(int *vx, int *vy);
+
+int mlook_enabled = FALSE;
 
 void mouse_look_physics() {
-    mlook_vel_x = mlook_vel_y = 0;
 
-    if (game_paused || !global_fullmap) {
-        return;
-    }
+	if (game_paused || !global_fullmap || !mlook_enabled) return;
 
-    if (!mlook_enabled)
-        return;
+	middleize_mouse();
 
-    short mx, my;
     int mvelx, mvely;
-    short middle_x = (grd_cap->w / 2);
-    short middle_y = (grd_cap->h / 2);
+	get_mouselook_vel(&mvelx, &mvely);
 
-    // Where is the mouse this time?
-    mouse_get_xy(&mx, &my);
-
-    // How far have we moved?
-    mvelx = mlook_vel_x = (middle_x - mx);
-    mvely = mlook_vel_y = (middle_y - my);
-
-    mvelx *= mlook_hsens;
-    mvely *= mlook_vsens;
-
-    // Scale mouselook based on window size
-    int w, h, lw, lh;
-    SDL_GetWindowSize(window, &w, &h);
-    SDL_RenderGetLogicalSize(renderer, &lw, &lh);
-
-    mvelx *= w / (float)lw;
-    mvely *= h / (float)lh;
-
-    // Can put the mouse back now
-    if (mvelx != 0 || mvely != 0)
-        mouse_put_xy(middle_x, middle_y);
-
-    if (global_fullmap->cyber == FALSE) {
+    if (global_fullmap->cyber) {
+        //see physics_run() in physics.c
+        mlook_vel_x = -mvelx;
+        mlook_vel_y = -mvely;
+    } else {
         // player head controls
+        mvelx *= -mlook_hsens;
+        mvely *= -mlook_vsens;
 
         if (mvely != 0) {
             // Moving the eye up angle is easy
@@ -100,34 +72,56 @@ void mouse_look_physics() {
     }
 }
 
-void center_mouse() {
-    uiHideMouse(NULL);
+bool TriggerRelMouseMode = FALSE;
 
-    short middle_x = (grd_cap->w / 2);
-    short middle_y = (grd_cap->h / 2);
-    mouse_put_xy(middle_x, middle_y);
-
-    // Flush mouse events, because we don't care about the past anymore
-    pump_events();
-    mouse_flush();
-    uiFlush();
-    uiPopGlobalCursor();
-    // This will show the mouse again
-    uiSetCursor();
-}
-
-void mouse_look_toggle() {
+void mouse_look_toggle(void)
+{
     mlook_enabled = !mlook_enabled;
 
-    if (mlook_enabled) {
-        // Now we can center the mouse
-        center_mouse();
-    }
+	if (mlook_enabled)
+	{
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+
+		//throw away this first relative mouse reading
+		int mvelx, mvely;
+		get_mouselook_vel(&mvelx, &mvely);
+	}
+	else
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		SDL_WarpMouseInWindow(window, w/2, h/2);
+
+		TriggerRelMouseMode = TRUE;
+	}
 }
 
-void mouse_look_off() { mlook_enabled = FALSE; }
+void mouse_look_off(void)
+{
+	if (mlook_enabled)
+	{
+		mlook_enabled = FALSE;
 
-void mouse_look_unpause() {
-    if (mlook_enabled)
-        center_mouse();
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		SDL_WarpMouseInWindow(window, w/2, h/2);
+
+		TriggerRelMouseMode = TRUE;
+	}
+}
+
+void mouse_look_unpause(void)
+{
+	if (mlook_enabled)
+	{
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+
+		//throw away this first relative mouse reading
+		int mvelx, mvely;
+		get_mouselook_vel(&mvelx, &mvely);
+	}
 }

@@ -113,6 +113,11 @@ extern void object_data_flush(void);
 extern errtype load_da_palette(void);
 extern void ShockMain(void);
 
+//see Prefs.c
+extern void CreateDefaultKeybindsFile(void);
+extern void LoadHotkeyKeybinds(void);
+extern void LoadMoveKeybinds(void);
+
 void InitSDL();
 void SDLDraw(void);
 errtype CheckFreeSpace(short	checkRefNum);
@@ -140,6 +145,12 @@ int main(int argc, char** argv)
 
 	SetDefaultPrefs();
 	LoadPrefs();
+
+    //see Prefs.c
+    CreateDefaultKeybindsFile(); //only if it doesn't already exist
+    //even if keybinds file still doesn't exist, defaults will be set here
+    LoadHotkeyKeybinds();
+    LoadMoveKeybinds();
 	
 #ifdef TESTING
 	SetupTests();
@@ -167,10 +178,8 @@ int main(int argc, char** argv)
 
 	// Draw the splash screen
 
-	if(show_splash) {
-		INFO("Showing splash screen");
-		splash_draw();
-	}
+	INFO("Showing splash screen");
+	splash_draw(show_splash);
 
 	// Start in the Main Menu loop
 
@@ -250,7 +259,7 @@ void InitSDL()
 
 	// Open our window!
 
-	sprintf(&window_title, "System Shock - %s", SHOCKOLATE_VERSION);
+	sprintf(window_title, "System Shock - %s", SHOCKOLATE_VERSION);
 
 	window = SDL_CreateWindow(
 		window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -285,22 +294,26 @@ void InitSDL()
 }
 
 SDL_Color gamePalette[256];
+bool UseCutscenePalette = FALSE; //see cutsloop.c
 void SetSDLPalette(int index, int count, uchar *pal)
 {
-	for(int i = index; i < count; i++) {
-		gamePalette[index+i].r = *pal++;
-		gamePalette[index+i].g = *pal++;
-		gamePalette[index+i].b = *pal++;
-		gamePalette[index+i].a = 0xFF;
+	for(int i = index; i < index+count; i++) {
+		gamePalette[i].r = *pal++;
+		gamePalette[i].g = *pal++;
+		gamePalette[i].b = *pal++;
+		gamePalette[i].a = 0xFF;
 	}
 
-	// Hack black!
-	gamePalette[255].r = 0x0;
-	gamePalette[255].g = 0x0;
-	gamePalette[255].b = 0x0;
-	gamePalette[255].a = 0xff;
+    if (!UseCutscenePalette)
+    {
+        // Hack black!
+        gamePalette[255].r = 0x0;
+        gamePalette[255].g = 0x0;
+        gamePalette[255].b = 0x0;
+        gamePalette[255].a = 0xff;
+    }
 
-	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, count);
+	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, 256);
 	SDL_SetSurfacePalette(drawSurface, sdlPalette);
 	SDL_SetSurfacePalette(offscreenDrawSurface, sdlPalette);
 
@@ -330,7 +343,21 @@ void SDLDraw()
 	}
 }
 
+bool MouseCaptured = FALSE;
+
+extern int mlook_enabled;
+
 void CaptureMouse(bool capture)
 {
-	SDL_SetWindowGrab(window, capture && gShockPrefs.goCaptureMouse);
+	MouseCaptured = (capture && gShockPrefs.goCaptureMouse);
+
+	if (!MouseCaptured && mlook_enabled && SDL_GetRelativeMouseMode() == SDL_TRUE)
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		SDL_WarpMouseInWindow(window, w/2, h/2);
+	}
+	else SDL_SetRelativeMouseMode(MouseCaptured ? SDL_TRUE : SDL_FALSE);
 }
