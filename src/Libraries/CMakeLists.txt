@@ -320,29 +320,14 @@ set(EDMS_SRC
 	EDMS/Source/intrsect.cc
 	EDMS/Source/globals.cc
 	EDMS/Source/phy_tool.cc
-#	EDMS/Source/terrain.cc
 	EDMS/Source/soliton.cc
 	EDMS/Source/MODELS/robot.cc
-#	EDMS/Source/MODELS/pelgud.cc
 	EDMS/Source/MODELS/pelface.cc
-	EDMS/Source/MODELS/marbface.cc
 	EDMS/Source/MODELS/ftl.cc
 	EDMS/Source/MODELS/pelvis.cc
-	EDMS/Source/MODELS/marble.cc
 	EDMS/Source/MODELS/d_frame.cc
 	EDMS/Source/MODELS/d_f_face.cc
-	EDMS/Source/MODELS/ff_face.cc
-	EDMS/Source/MODELS/fodeath.cc
 	EDMS/Source/MODELS/ftlface.cc
-	EDMS/Source/MODELS/biped.cc
-#	EDMS/Source/MODELS/b.cc
-#	EDMS/Source/MODELS/ff_ftl.cc
-	EDMS/Source/MODELS/cr_biped.cc
-#	EDMS/Source/MODELS/old_ftl.cc
-	EDMS/Source/MODELS/bip_skel.cc
-	EDMS/Source/MODELS/bipface.cc
-#	EDMS/Source/MODELS/bb.cc
-	EDMS/Source/MODELS/death.cc
 	EDMS/Source/MODELS/d_f_2.cc
 )
 
