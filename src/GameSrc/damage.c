@@ -497,6 +497,9 @@ void player_dies() {
     reset_input_system();
     chg_set_sta(GL_CHG_2); // disable the input system
 
+    extern uchar weapon_button_up;
+    weapon_button_up = TRUE;
+
     // clear off hud & prep for funky regen FX
     //   hud_unset(HUD_ALL);
     physics_zero_all_controls();
