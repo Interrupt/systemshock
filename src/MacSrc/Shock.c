@@ -249,13 +249,15 @@ void InitSDL()
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
 
-	SetupOffscreenBitmaps(1024, 768);
-
 	gr_init();
 
 	gr_set_mode(GRM_320x200x8, TRUE);
 
 	INFO("Setting up screen and render contexts");
+
+	// Create a canvas to draw to
+	
+	SetupOffscreenBitmaps(grd_cap->w, grd_cap->h);
 
 	// Open our window!
 

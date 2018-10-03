@@ -57,14 +57,7 @@ int cur_bm_height;
 //------------------------------------------------------------------------------------
 void SetupOffscreenBitmaps(int width, int height)
 {	
-	if(drawSurface != NULL && offscreenDrawSurface != NULL) {
-		if(cur_bm_width >= width && cur_bm_height >= height) {
-			// Nothing to do here.
-			return;
-		}
-	}
-
-	INFO("SetupOffscreenBitmaps %i %i", width, height);
+	DEBUG("SetupOffscreenBitmaps %i %i", width, height);
 
 	if(drawSurface != NULL) {
 		SDL_FreeSurface(drawSurface);
@@ -88,12 +81,6 @@ void SetupOffscreenBitmaps(int width, int height)
     // Point the renderer at the screen bytes
 	gScreenRowbytes = drawSurface->w;
 	gScreenAddress = drawSurface->pixels;
-	gScreenWide = 320;
-	gScreenHigh = 200;
-	gActiveLeft = 0;
-	gActiveTop = 0;
-	gActiveWide = 320;
-	gActiveHigh = 200;
 
 	grd_mode_cap.vbase = (uchar *)gScreenAddress;
 
