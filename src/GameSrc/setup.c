@@ -533,11 +533,12 @@ int WonGame_ShowStats = 0;
 
 
 //ticks: 0 wait forever
-void WaitForKey(ulong ticks, int ch)
+int WaitForKey(ulong ticks)
 {
   ulong end_ticks = (ulong)TickCount();
   ulong key_ticks = end_ticks + (!ticks ? 500 : (ticks*1/8));
   end_ticks = ticks ? end_ticks + ticks : 0;
+  int ch;
 
   //wait for specified elapsed ticks or keypress
   for (;;)
@@ -567,18 +568,14 @@ void WaitForKey(ulong ticks, int ch)
     SDLDraw();
 
     kbs_event ev = kb_next();
+    ch = ev.ascii;
     ticks = (ulong)TickCount();
 
-    // Close the credits when ESC is pressed
-    if (ev.ascii == 27 && ch != 27)
-    {
-      journey_credits_done();
-      break;
-    }
-
-    if ((ev.ascii == ch || ev.ascii == ' ' || ev.ascii == '\r') && ticks >= key_ticks) break;
+    if ((ch == 27 || ch == ' ' || ch == '\r') && ticks >= key_ticks) break;
     if (end_ticks && ticks >= end_ticks) break;
   }
+
+  return ch;
 }
 
 
@@ -653,7 +650,7 @@ void PrintWinStats(void)
   ResUnlock(RES_coloraliasedFont);
   gr_set_font(fon);
 
-  WaitForKey(0, 27); //escape key
+  WaitForKey(0);
 }
 
 
@@ -668,7 +665,7 @@ void PrintCredits(void)
 
   gr_clear(0);
 
-  while (!end && setup_mode == SETUP_CREDITS)
+  while (!end)
   {
     get_string((RES_credits << 16) | line, buf, sizeof(buf));
     line++;
@@ -679,13 +676,11 @@ void PrintCredits(void)
     {
       for (int i=1; i<len; i++)
       {
-        if (setup_mode != SETUP_CREDITS) return;
-
         switch (buf[i])
         {
-          case 'E': end = 1; break;
-          case 'p': WaitForKey(200, ' '); break;
-          case 'G': WaitForKey(2000, ' '); gr_clear(0); y = 15; break;
+          case 'E': WaitForKey(0); end = 1; break;
+          case 'p': WaitForKey(200); break;
+          case 'G': if (WaitForKey(2000) == 27) end = 1; gr_clear(0); y = 15; break;
           case 'N': break; //dunno
           case '1': columns = 1; cur_col = 0; break;
           case '2': columns = 2; cur_col = 0; break;
@@ -746,8 +741,6 @@ void PrintCredits(void)
       cur_col ^= 1;
     }
   }
-
-  WaitForKey(0, ' ');
 }
 
 
@@ -1557,6 +1550,9 @@ void empty_slate(void)
 
   extern int mlook_enabled;
   mlook_enabled = 0;
+
+  extern uchar weapon_button_up;
+  weapon_button_up = TRUE;
 }
 
 void setup_start(void)
