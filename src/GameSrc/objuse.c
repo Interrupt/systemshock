@@ -80,8 +80,8 @@ errtype accesspanel_trigger(ObjID id);
 // -----------
 //  PROTOTYPES
 // -----------
-void zoom_mfd(int mfd);
-int grab_and_zoom_mfd(int mfd_func, int mfd_slot);
+void zoom_mfd(int mfd, bool shifted);
+int grab_and_zoom_mfd(int mfd_func, int mfd_slot, bool shifted);
 errtype obj_access_fail_message(int stringref, char access_level, char offset);
 uchar really_really_locked(int qvar);
 uchar use_door(ObjID id, uchar in_inv, ObjID cursor_obj);
@@ -108,7 +108,7 @@ uchar shameful_obselete_flag;
 
 #define DOOR_TIME_UNIT 2 // how many time-setting units in a second
 
-void zoom_mfd(int mfd) {
+void zoom_mfd(int mfd, bool shifted) {
     LGRect start = {{-5, -5}, {5, 5}};
     extern LGPoint use_cursor_pos;
     LGPoint ucp;
@@ -116,7 +116,8 @@ void zoom_mfd(int mfd) {
     extern void mfd_zoom_rect(LGRect *, int);
     extern bool DoubleSize;
 
-    mouse_look_off();
+    if (!shifted)
+        mouse_look_off();
 
     ucp = use_cursor_pos;
     if (!DoubleSize)
@@ -125,9 +126,9 @@ void zoom_mfd(int mfd) {
     mfd_zoom_rect(&start, mfd);
 }
 
-int grab_and_zoom_mfd(int mfd_func, int mfd_slot) {
+int grab_and_zoom_mfd(int mfd_func, int mfd_slot, bool shifted) {
     int mfd = mfd_grab_func(mfd_func, mfd_slot);
-    zoom_mfd(mfd);
+    zoom_mfd(mfd, shifted);
     return mfd;
 }
 
@@ -479,7 +480,7 @@ uchar obj_fixture_zoom(ObjID id, uchar in_inv, uchar *messagep) {
     uchar retval = FALSE;
     uchar zoom = (objs[id].info.inst_flags & CLASS_INST_FLAG);
     if (zoom && !in_inv) {
-        int mfd = grab_and_zoom_mfd(MFD_FIXTURE_FUNC, MFD_INFO_SLOT);
+        int mfd = grab_and_zoom_mfd(MFD_FIXTURE_FUNC, MFD_INFO_SLOT, FALSE);
         save_mfd_slot(mfd);
         mfd_notify_func(MFD_FIXTURE_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
         player_struct.panel_ref = id;
@@ -567,6 +568,8 @@ uchar try_use_epick(ObjID panel, ObjID cursor_obj) {
 extern void remove_general_item(ObjID obj);
 extern Boolean gKeypadOverride;
 
+bool ObjectUseShifted = FALSE; //set if shift key was held when using object
+
 // We return whether or not we used the message line.
 uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
     uchar retval = FALSE, rv;
@@ -582,18 +585,22 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
     extern errtype inventory_draw_new_page(int num);
     extern void read_email(Id new_base, int num);
     int *d1, *d2;
+    bool shifted;
+
+    shifted = ObjectUseShifted;
+    ObjectUseShifted = FALSE;
 
     // First, the multi-class behavior objects
     if (is_container(id, &d1, &d2)) {
         int mfd;
-        extern uchar gump_get_useful(void);
+        extern uchar gump_get_useful(bool shifted);
         extern void gump_clear(void);
 
         if (id == player_struct.panel_ref && object_on_cursor == 0) {
-            gump_get_useful();
+            gump_get_useful(shifted);
             return TRUE;
         }
-        mfd = grab_and_zoom_mfd(MFD_GUMP_FUNC, MFD_INFO_SLOT);
+        mfd = grab_and_zoom_mfd(MFD_GUMP_FUNC, MFD_INFO_SLOT, shifted);
         do_random_loot(id);
         save_mfd_slot(mfd);
         mfd_notify_func(MFD_GUMP_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
@@ -702,7 +709,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
 #endif
                     rv = comparator_check(pfixt->comparator, id, &special);
                 if (rv || (special != 0)) {
-                    int mfd = grab_and_zoom_mfd(MFD_ELEV_FUNC, MFD_INFO_SLOT);
+                    int mfd = grab_and_zoom_mfd(MFD_ELEV_FUNC, MFD_INFO_SLOT, FALSE);
                     // Set our reference...
                     save_mfd_slot(mfd);
 
@@ -730,7 +737,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
             }
 #endif
             else if (rv || (special != 0)) {
-                int mfd = grab_and_zoom_mfd(MFD_KEYPAD_FUNC, MFD_INFO_SLOT);
+                int mfd = grab_and_zoom_mfd(MFD_KEYPAD_FUNC, MFD_INFO_SLOT, FALSE);
                 // Set our reference...
                 save_mfd_slot(mfd);
 
@@ -758,7 +765,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
                 int accessmfd = NUM_MFDS;
 
                 if (player_struct.panel_ref != id) {
-                    accessmfd = grab_and_zoom_mfd(mfd_type_accesspanel(id), MFD_INFO_SLOT);
+                    accessmfd = grab_and_zoom_mfd(mfd_type_accesspanel(id), MFD_INFO_SLOT, FALSE);
                     save_mfd_slot(accessmfd);
 
                     // Call appropriate MFD function so that later, in turn, we get called
@@ -769,7 +776,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
                 } else {
                     int mfd_id = NUM_MFDS;
                     if (mfd_yield_func(mfd_type_accesspanel(id), &mfd_id)) {
-                        zoom_mfd(mfd_id);
+                        zoom_mfd(mfd_id, FALSE);
                     }
                 }
 
