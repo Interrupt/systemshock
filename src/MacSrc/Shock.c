@@ -286,7 +286,7 @@ void InitSDL()
 	SDL_RaiseWindow(window);
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-	SDL_RenderSetLogicalSize(renderer, gScreenWide, gScreenHigh);
+	SDL_RenderSetLogicalSize(renderer, grd_cap->w, grd_cap->h);
 
 	// Startup OpenGL
 
