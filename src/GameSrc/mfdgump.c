@@ -82,7 +82,7 @@ uchar gump_num_objs;
 void mfd_gump_expose(MFD *mfd, ubyte control);
 void gump_clear(void);
 uchar gump_pickup(byte row);
-uchar gump_get_useful(void);
+uchar gump_get_useful(bool shifted);
 uchar mfd_gump_handler(MFD *m, uiEvent *uie);
 
 // ---------------
@@ -208,7 +208,7 @@ uchar gump_pickup(byte row) {
     return TRUE;
 }
 
-uchar gump_get_useful(void) {
+uchar gump_get_useful(bool shifted) {
     int row;
     uchar useless;
     uchar obj_is_useless(ObjID oid);
@@ -216,7 +216,13 @@ uchar gump_get_useful(void) {
     for (useless = 0; useless <= 1; useless++) {
         for (row = 0; row < gump_num_objs; row++) {
             if (gump_idlist[row] && obj_is_useless(gump_idlist[row]) == useless) {
-                return (gump_pickup(row));
+                uchar result = gump_pickup(row);
+                if (result && shifted)
+                {
+                    extern void absorb_object_on_cursor(short keycode, ulong context, void *data); //see invent.c
+                    absorb_object_on_cursor(0, 0, 0); //parameters unused
+                }
+                return result;
             }
         }
     }
@@ -264,9 +270,21 @@ uchar mfd_gump_handler(MFD *m, uiEvent *uie) {
         }
         LAST_DOUBLE = FALSE;
         if (e->action & MOUSE_LDOWN) {
-            extern void look_at_object(ObjID);
-            if (gump_idlist[row] != OBJ_NULL)
-                look_at_object(gump_idlist[row]);
+            if (gump_idlist[row] != OBJ_NULL) {
+                if (e->modifiers & 1) { //shifted click; see sdl_events.c
+                    //try to pickup and absorb object
+                    uchar result = gump_pickup(row);
+                    if (result) {
+                        extern void absorb_object_on_cursor(short keycode, ulong context, void *data); //see invent.c
+                        absorb_object_on_cursor(0, 0, 0); //parameters unused
+                    }
+                    return result;
+                }
+                else {
+                    extern void look_at_object(ObjID);
+                    look_at_object(gump_idlist[row]);
+                }
+            }
         }
 #ifdef RIGHT_BUTTON_GUMP_UI
         if (e->action & MOUSE_RDOWN) {
