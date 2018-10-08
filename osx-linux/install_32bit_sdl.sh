@@ -39,4 +39,5 @@ build_sdl_mixer
 # Clean up download artifacts
 rm SDL2-${SDL_version}.tar.gz
 rm -fr SDL2-${SDL_version}
-rm -fr SDL_mixer
+rm SDL2_mixer-${SDL2_mixer_version}.tar.gz
+rm -fr SDL2_mixer-${SDL2_mixer_version}
