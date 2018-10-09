@@ -27,7 +27,10 @@ function build_sdl {
 
 function build_sdl_mixer {
 	curl -O https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-${SDL2_mixer_version}.tar.gz
-	tar xf SDL2_mixer-${SDL2_mixer_version}.tar.gz
+	# Do not extract the Xcode subdirectory because it contains symlinks.
+	# They cannot be extracted on Windows because the files in the archive are in the wrong order so
+	# the target of the link cannot be found at the time of the extraction.
+	tar xf SDL2_mixer-${SDL2_mixer_version}.tar.gz --exclude=Xcode
 	pushd SDL2_mixer-${SDL2_mixer_version}
 	curl -O https://github.com/SDL-mirror/SDL_mixer/commit/7cad09d4d479df2b21b3e489f8e155bdf8254fd4.patch
 	patch < 7cad09d4d479df2b21b3e489f8e155bdf8254fd4.patch
