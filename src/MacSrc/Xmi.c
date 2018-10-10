@@ -137,7 +137,8 @@ int ReadXMI(const char *filename)
 
   INFO("Reading XMI %s", filename);
 
-  f = fopen(filename, "rb");
+  extern FILE *fopen_caseless(const char *path, const char *mode); //see caseless.c
+  f = fopen_caseless(filename, "rb");
   if (f == 0) {
   	ERROR("Could not read XMI");
   	return 0;

@@ -180,7 +180,8 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 	  }
 	
 	  sprintf(filename, "res/sound/thm%i.bin", themeID);
-	  f = fopen(filename, "rb");
+	  extern FILE *fopen_caseless(const char *path, const char *mode); //see caseless.c
+	  f = fopen_caseless(filename, "rb");
 	  if (f != 0)
 	  {
 	    fread(track_table,      NUM_SCORES * SUPERCHUNKS_PER_SCORE,             1, f);
