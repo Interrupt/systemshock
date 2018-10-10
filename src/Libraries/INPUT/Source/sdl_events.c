@@ -567,10 +567,12 @@ void pump_events(void)
 
         if (mouseEvent.type != 0)
         {
+          bool shifted = ((SDL_GetModState() & KMOD_SHIFT) != 0);
+
           mouseEvent.x = MouseX;
           mouseEvent.y = MouseY;
           mouseEvent.timestamp = mouse_get_time();
-          mouseEvent.modifiers = 0;
+          mouseEvent.modifiers = (shifted ? 1 : 0);
           addMouseEvent(&mouseEvent);
         }
       }

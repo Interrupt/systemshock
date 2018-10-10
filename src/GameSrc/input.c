@@ -247,12 +247,12 @@ void free_cursor_bitmaps();
 void alloc_cursor_bitmaps(void);
 
 int view3d_mouse_input(LGPoint pos, LGRegion *reg, uchar move, int *lastsect);
-void view3d_dclick(LGPoint pos, frc *fr);
+void view3d_dclick(LGPoint pos, frc *fr, bool shifted);
 void look_at_object(ObjID id);
 uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data);
 void view3d_rightbutton_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data);
 uchar view3d_key_handler(uiCookedKeyEvent *ev, LGRegion *r, void *data);
-void use_object_in_3d(ObjID obj);
+void use_object_in_3d(ObjID obj, bool shifted);
 
 uchar MacResFunc(short keycode, ulong context, void *data);
 uchar MacSkiplinesFunc(short keycode, ulong context, void *data);
@@ -1862,7 +1862,7 @@ uchar check_object_dist(ObjID obj1, ObjID obj2, fix crit) {
 
 #define TELE_ROD_DIST 16 // 16 feet
 
-void use_object_in_3d(ObjID obj) {
+void use_object_in_3d(ObjID obj, bool shifted) {
     uchar success = FALSE;
     ObjID telerod = OBJ_NULL;
     uchar showname = FALSE;
@@ -1956,7 +1956,13 @@ void use_object_in_3d(ObjID obj) {
         if (objs[obj].obclass == CLASS_GRENADE)
             grenade_contact(obj, INT_MAX);
 
-        mouse_look_off();
+        if (shifted)
+        {
+            extern void absorb_object_on_cursor(short keycode, ulong context, void *data); //see invent.c
+            absorb_object_on_cursor(0, 0, 0); //parameters unused
+        }
+        else
+            mouse_look_off();
 
         success = TRUE;
     } break;
@@ -1967,6 +1973,9 @@ void use_object_in_3d(ObjID obj) {
             string_message_info(REF_STR_UseTooFar);
             break;
         }
+
+        extern bool ObjectUseShifted; //see objuse.c
+        ObjectUseShifted = shifted;
         if (!object_use(obj, FALSE, object_on_cursor)) {
             if (objs[obj].obclass != CLASS_DOOR)
                 goto cantuse;
@@ -2145,7 +2154,7 @@ void look_at_object(ObjID id) {
 // view3d_dclick dispatches double clicks based on cursor mode
 
 // Not a directly-installed mouse handler, called from view3d_mouse_handler
-void view3d_dclick(LGPoint pos, frc *fr) {
+void view3d_dclick(LGPoint pos, frc *fr, bool shifted) {
     extern short loved_textures[];
     extern char *get_texture_use_string(int, char *, int);
     extern uchar hack_takeover;
@@ -2182,7 +2191,7 @@ void view3d_dclick(LGPoint pos, frc *fr) {
                 message_info(get_texture_use_string(loved_textures[~obj], NULL, 0));
         } else if ((short)obj > 0) {
             use_cursor_pos = pos;
-            use_object_in_3d(obj);
+            use_object_in_3d(obj, shifted);
         } else {
             if (!global_fullmap->cyber) {
                 if (!(_fr_glob_flags & FR_SOLIDFR_STATIC))
@@ -2266,34 +2275,41 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
     }
     if (ev->action & MOUSE_LUP && abs(evp.y - data->lastleft.y) < uiDoubleClickTolerance &&
         abs(evp.x - data->lastleft.x) < uiDoubleClickTolerance) {
-        ObjID id;
-        frc *use_frc;
-        short rabsx, rabsy;
-
-        use_frc = svga_render_context;
-        rabsx = r->abs_x;
-        rabsy = r->abs_y;
-        if (!DoubleSize)
-            ss_point_convert(&rabsx, &rabsy, FALSE);
-
-        id = fr_get_at(use_frc, evp.x - rabsx, evp.y - rabsy, TRUE);
-        if ((short)id > 0) {
-            look_at_object(id);
-        } else if ((short)id < 0) {
-            extern short loved_textures[];
-            extern char *get_texture_name(int, char *, int);
-            int tnum = loved_textures[~id];
-            if (global_fullmap->cyber)
-                string_message_info(REF_STR_CybWall);
-            else
-                message_info(get_texture_name(tnum, NULL, 0));
-        } else {
-            if (!global_fullmap->cyber) {
-                if (!(_fr_glob_flags & FR_SOLIDFR_STATIC))
-                    string_message_info(REF_STR_InkyBlack);
-            }
+        //make shift+leftclick act as double-leftclick with alternate effects
+        if (ev->modifiers & 1) { //shifted click; see sdl_events.c
+            view3d_dclick(evp, data->fr, TRUE); //TRUE indicates shifted
+            data->lastleft = MakePoint(-100, -100);
         }
-        data->lastleft.x = -255;
+        else {
+            ObjID id;
+            frc *use_frc;
+            short rabsx, rabsy;
+    
+            use_frc = svga_render_context;
+            rabsx = r->abs_x;
+            rabsy = r->abs_y;
+            if (!DoubleSize)
+                ss_point_convert(&rabsx, &rabsy, FALSE);
+    
+            id = fr_get_at(use_frc, evp.x - rabsx, evp.y - rabsy, TRUE);
+            if ((short)id > 0) {
+                look_at_object(id);
+            } else if ((short)id < 0) {
+                extern short loved_textures[];
+                extern char *get_texture_name(int, char *, int);
+                int tnum = loved_textures[~id];
+                if (global_fullmap->cyber)
+                    string_message_info(REF_STR_CybWall);
+                else
+                    message_info(get_texture_name(tnum, NULL, 0));
+            } else {
+                if (!global_fullmap->cyber) {
+                    if (!(_fr_glob_flags & FR_SOLIDFR_STATIC))
+                        string_message_info(REF_STR_InkyBlack);
+                }
+            }
+            data->lastleft.x = -255;
+        }
     }
     if ((ev->action & (MOUSE_RDOWN | MOUSE_RUP)) || (ev->buttons & (1 << MOUSE_RBUTTON)))
         view3d_rightbutton_handler(ev, r, data);
@@ -2319,7 +2335,7 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
 
     if (ev->action & UI_MOUSE_LDOUBLE) {
         // Spew(DSRC_USER_I_Motion,("use this, bay-bee!\n"));
-        view3d_dclick(evp, data->fr);
+        view3d_dclick(evp, data->fr, FALSE);
         data->lastleft = MakePoint(-100, -100);
     }
 
@@ -2620,7 +2636,7 @@ void inp_use_sidestep_junk() {
             ss_point_convert(&pos.x, &pos.y, FALSE);
 #endif
             mouse_put_xy(pos.x, pos.y);
-            view3d_dclick(pos, NULL);
+            view3d_dclick(pos, NULL, FALSE);
         }
         use_but_time = 0;
     } else
