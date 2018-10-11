@@ -478,8 +478,6 @@ void gamesys_render_effects(void) {
 uchar use_ir_hack(void) { return (WareActive(player_struct.hardwarez_status[HARDWARE_GOGGLE_INFRARED])); }
 
 //#pragma aux c_ror_by_5 = "ror eax,5" parm [eax] modify exact [eax];
-// MLA- optimize this
-#define c_ror_by_5(v_to_ror) ((v_to_ror >> 5 & 0x07ffffff) | (v_to_ror << 27))
 
 // stolen from RND.LIB, without shift gruesomeness...
 #define LC16_MULT 2053
@@ -499,7 +497,7 @@ void draw_single_static_line(uchar *line_base, int lx, int rx, int c_base) {
         if (our_seed & 0x300) {
             *cur_pix = c_base + (our_seed & 0x7);
             our_seed += (long)cur_pix;
-            c_ror_by_5(our_seed);
+            our_seed = ((our_seed >> 5) & 0x07ffffff) | (our_seed << 27); //ror by 5
         } else {
             *cur_pix = 0;
             our_seed += (our_seed * LC16_MULT) + LC16_ADD;
