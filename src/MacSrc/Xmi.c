@@ -363,120 +363,141 @@ int ReadXMI(const char *filename)
 
 int MyThread(void *arg)
 {
-  int i = ((struct thread_data *)arg)->i; //thread index passed by arg
-  MIDI_EVENT *event = 0, *evntlist = 0;
-  int ppqn = 1, tempo = 0x07A120, channel;
-  unsigned int start = 0;
-  double Ippqn = 1, tick = 1, last_tick = 0, last_time = 0, aim = 0, diff = 0;
+  int i;
 
+  MIDI_EVENT *event[NUM_THREADS];
+  int ppqn[NUM_THREADS];
+  double Ippqn[NUM_THREADS];
+  int tempo[NUM_THREADS];
+  double tick[NUM_THREADS];
+  double last_tick[NUM_THREADS];
+  double last_time[NUM_THREADS];
+  unsigned int start[NUM_THREADS];
 
-  SDL_AtomicSet(&ThreadPlaying[i], 0);
-  SDL_AtomicSet(&ThreadCommand[i], THREAD_READY);
+  for (i=0; i<NUM_THREADS; i++)
+  {
+    event[i] = 0;
+    ppqn[i] = 1;
+    Ippqn[i] = 1;
+    tempo[i] = 0x07A120;
+    tick[i] = 1;
+    last_tick[i] = 0;
+    last_time[i] = 0;
+    start[i] = 0;
 
+    SDL_AtomicSet(&ThreadPlaying[i], 0);
+    SDL_AtomicSet(&ThreadCommand[i], THREAD_READY);
+  }
 
   for (;;)
   {
-    while (event && SDL_AtomicGet(&ThreadCommand[i]) != THREAD_STOPTRACK)
+    int delay = 1;
+
+    for (i=0; i<NUM_THREADS; i++)
     {
-      aim = last_time + (event->time - last_tick) * tick;
-      diff = aim - ((SDL_GetTicks() - start) * 1000.0);
-      if (diff > 0) break;
-      last_tick = event->time;
-      last_time = aim;
-
-      if (event->status == 0xFF && event->data[0] == 0x51) //tempo change
+      if (event[i] && SDL_AtomicGet(&ThreadCommand[i]) != THREAD_STOPTRACK)
       {
-        tempo = (event->buffer[0] << 16) | (event->buffer[1] << 8) | event->buffer[2];
-        tick = tempo * Ippqn;
-      }
-      else if (event->status >= 0x80 && event->status < 0xF0)
-      {
-        channel = (event->status & 15);
-        if (channel != 9) channel = ThreadChannelRemap[channel+16*i]; //remap channel, except 9 (percussion)
-
-        uint8_t p1 = event->data[0];
-        uint8_t p2 = event->data[1];
-
-        if ((event->status & ~15) == 0xB0 && event->data[0] == 0x07)
+        double aim = last_time[i] + (event[i]->time - last_tick[i]) * tick[i];
+        double diff = aim - ((SDL_GetTicks() - start[i]) * 1000.0);
+  
+        if (diff > 0)
         {
-          //set volume msb
-          SDL_LockMutex(MyMutex);
-          adl_rt_controllerChange(adlD, channel, p1, (int)SDL_AtomicGet(&ThreadVolume[i]) * p2 / 128);
-          SDL_UnlockMutex(MyMutex);
-    	}
-    	else
-        {
-          SDL_LockMutex(MyMutex);
-          switch (event->status & ~15)
-          {
-            case 0x80: adl_rt_noteOff(adlD, channel, p1); break;
-            case 0x90: adl_rt_noteOn(adlD, channel, p1, p2); break;
-            case 0xA0: adl_rt_noteAfterTouch(adlD, channel, p1, p2); break;
-            case 0xB0: adl_rt_controllerChange(adlD, channel, p1, p2); break;
-            case 0xC0: adl_rt_patchChange(adlD, channel, p1); break;
-            case 0xD0: adl_rt_channelAfterTouch(adlD, channel, p1); break;
-            case 0xE0: adl_rt_pitchBendML(adlD, channel, p2, p1); break;
-          }
-          SDL_UnlockMutex(MyMutex);
+          if (diff < 1200.0) delay = 0;
+          continue;
         }
+        delay = 0;
+  
+        last_tick[i] = event[i]->time;
+        last_time[i] = aim;
+  
+        if (event[i]->status == 0xFF && event[i]->data[0] == 0x51) //tempo change
+        {
+          tempo[i] = (event[i]->buffer[0] << 16) | (event[i]->buffer[1] << 8) | event[i]->buffer[2];
+          tick[i] = tempo[i] * Ippqn[i];
+        }
+        else if (event[i]->status >= 0x80 && event[i]->status < 0xF0)
+        {
+          int channel = (event[i]->status & 15);
+  
+          if (channel != 9) channel = ThreadChannelRemap[channel+16*i]; //remap channel, except 9 (percussion)
+  
+          uint8_t p1 = event[i]->data[0];
+          uint8_t p2 = event[i]->data[1];
+  
+          if ((event[i]->status & ~15) == 0xB0 && event[i]->data[0] == 0x07)
+          {
+            //set volume msb
+            SDL_LockMutex(MyMutex);
+            adl_rt_controllerChange(adlD, channel, p1, (int)SDL_AtomicGet(&ThreadVolume[i]) * p2 / 128);
+            SDL_UnlockMutex(MyMutex);
+      	}
+      	else
+          {
+            SDL_LockMutex(MyMutex);
+            switch (event[i]->status & ~15)
+            {
+              case 0x80: adl_rt_noteOff(adlD, channel, p1); break;
+              case 0x90: adl_rt_noteOn(adlD, channel, p1, p2); break;
+              case 0xA0: adl_rt_noteAfterTouch(adlD, channel, p1, p2); break;
+              case 0xB0: adl_rt_controllerChange(adlD, channel, p1, p2); break;
+              case 0xC0: adl_rt_patchChange(adlD, channel, p1); break;
+              case 0xD0: adl_rt_channelAfterTouch(adlD, channel, p1); break;
+              case 0xE0: adl_rt_pitchBendML(adlD, channel, p2, p1); break;
+            }
+            SDL_UnlockMutex(MyMutex);
+          }
+        }
+  
+        event[i] = event[i]->next;
+        if (event[i] == 0) SDL_AtomicSet(&ThreadCommand[i], THREAD_STOPTRACK);
       }
-
-      event = event->next;
-      if (event == 0) SDL_AtomicSet(&ThreadCommand[i], THREAD_STOPTRACK);
-    }
-
-
-    if (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_STOPTRACK)
-    {
-      event = evntlist = 0;
-
-      start = SDL_GetTicks();
-      last_tick = 0;
-      last_time = 0;
-
-      //here we should turn off all notes for these channels plus 9 (percussion)
-      for (channel=0; channel<16; channel++) if (ChannelThread[channel] == i)
+  
+  
+      if (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_STOPTRACK)
       {
-        ChannelThread[channel] = -1;
-        NumUsedChannels--;
+        int channel;
+
+        delay = 0;
+  
+        event[i] = 0;
+        last_tick[i] = 0;
+        last_time[i] = 0;
+        start[i] = SDL_GetTicks();
+  
+        //here we should turn off all notes for these channels plus 9 (percussion)
+        for (channel=0; channel<16; channel++) if (ChannelThread[channel] == i)
+        {
+          ChannelThread[channel] = -1;
+          NumUsedChannels--;
+        }
+  
+        SDL_AtomicSet(&ThreadPlaying[i], 0);
+        SDL_AtomicSet(&ThreadCommand[i], THREAD_READY);
       }
+  
+  
+      if (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_PLAYTRACK)
+      {
+        delay = 0;
 
-      SDL_AtomicSet(&ThreadPlaying[i], 0);
-      SDL_AtomicSet(&ThreadCommand[i], THREAD_READY);
+        event[i] = ThreadEventList[i];
+        ppqn[i] = ThreadTiming[i];
+        Ippqn[i] = 1.0 / ppqn[i];
+        tempo[i] = 0x07A120;
+        tick[i] = tempo[i] * Ippqn[i];
+        last_tick[i] = 0;
+        last_time[i] = 0;
+        start[i] = SDL_GetTicks();
+  
+        SDL_AtomicSet(&ThreadPlaying[i], 1);
+        SDL_AtomicSet(&ThreadCommand[i], THREAD_READY);
+      }
+  
+  
+      if (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_EXIT) return 0;
     }
 
-
-    if (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_PLAYTRACK)
-    {
-      event = evntlist = ThreadEventList[i];
-      ppqn = ThreadTiming[i];
-
-      tempo = 0x07A120;
-      Ippqn = 1.0 / ppqn;
-      tick = tempo * Ippqn;
-
-      start = SDL_GetTicks();
-      last_tick = 0;
-      last_time = 0;
-
-      SDL_AtomicSet(&ThreadPlaying[i], 1);
-      SDL_AtomicSet(&ThreadCommand[i], THREAD_READY);
-    }
-
-
-    if (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_EXIT) break;
-
-
-    if (event)
-    {
-      aim = last_time + (event->time - last_tick) * tick;
-      diff = aim - ((SDL_GetTicks() - start) * 1000.0);
-    }
-    else diff = 1000;
-
-
-    if (diff >= 1000) SDL_Delay(1);
-    else if (diff >= 200) SDL_Delay(0);
+    SDL_Delay(delay);
   }
 
   return 0;
@@ -576,8 +597,8 @@ int IsPlaying(int i)
 
 void InitReadXMI(void)
 {
-  int i, channel;
-
+  int channel, i;
+  SDL_Thread *thread;
 
   // Start the ADL Midi device
   adlD = adl_init(48000);
@@ -587,29 +608,21 @@ void InitReadXMI(void)
   adl_setVolumeRangeModel(adlD, ADLMIDI_VolumeModel_AUTO);
   adl_setRunAtPcmRate(adlD, TRUE);
 
-
   MyMutex = SDL_CreateMutex();
-
 
   for (channel=0; channel<16; channel++) ChannelThread[channel] = -1;
 
   for (i=0; i<NUM_THREADS; i++)
   {
-    //data is argument to MyThread function; it must "outlive" thread, so it is malloc'ed
-    //data->i tells thread function which thread index to use
-    struct thread_data *data = (struct thread_data *)malloc(sizeof(struct thread_data));
-    SDL_Thread *thread;
-
     SDL_AtomicSet(&ThreadPlaying[i], 0);
     SDL_AtomicSet(&ThreadCommand[i], THREAD_INIT);
-
-    data->i = i;
-    thread = SDL_CreateThread(MyThread, "MyThread", (void *)data);
-    SDL_DetachThread(thread); //thread will go away on its own upon completion
-  
-    while (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_INIT) SDL_Delay(1);
   }
 
+  thread = SDL_CreateThread(MyThread, "MyThread", NULL);
+  SDL_DetachThread(thread); //thread will go away on its own upon completion
+
+  i = 0;
+  while (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_INIT) SDL_Delay(1);
 
   atexit(ShutdownReadXMI);
 }
@@ -631,7 +644,7 @@ void ShutdownReadXMI(void)
     SDL_AtomicSet(&ThreadCommand[i], THREAD_EXIT);
   }
 
-  SDL_Delay(50); //wait a bit for the threads to all hopefully exit
+  SDL_Delay(50); //wait a bit for thread to hopefully exit
 
   FreeXMI();
 
