@@ -520,16 +520,16 @@ uchar expand_one_square(spt sq, char path_id) {
         newsq = sq;
         switch (i) {
         case 0:
-            newsq = SPT_Y_SET(newsq, SPT_Y(newsq) + 1);
+            SPT_Y_SET(newsq, SPT_Y(newsq) + 1);
             break; // N
         case 1:
-            newsq = SPT_X_SET(newsq, SPT_X(newsq) + 1);
+            SPT_X_SET(newsq, SPT_X(newsq) + 1);
             break; // E
         case 2:
-            newsq = SPT_Y_SET(newsq, SPT_Y(newsq) - 1);
+            SPT_Y_SET(newsq, SPT_Y(newsq) - 1);
             break; // S
         case 3:
-            newsq = SPT_X_SET(newsq, SPT_X(newsq) - 1);
+            SPT_X_SET(newsq, SPT_X(newsq) - 1);
             break; // W
         }
         ppfe = PFE_GET_XY(SPT_X(newsq), SPT_Y(newsq));
