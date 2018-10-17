@@ -116,8 +116,8 @@ uchar olh_candidate(ObjID obj) {
             extern ObjID hack_cam_objs[NUM_HACK_CAMERAS];
             ObjSpecID sid = objs[obj].specID;
             short v = objBigstuffs[sid].data2 & 0x7F;
-            if ((v >= FIRST_CAMERA_TMAP) && (v <= FIRST_CAMERA_TMAP + NUM_HACK_CAMERAS)) {
-                if (camera_map[NUM_HACK_CAMERAS] && hack_cam_objs[v - FIRST_CAMERA_TMAP])
+            if ((v >= FIRST_CAMERA_TMAP) && (v < FIRST_CAMERA_TMAP + NUM_HACK_CAMERAS)) {
+                if (camera_map[v - FIRST_CAMERA_TMAP] && hack_cam_objs[v - FIRST_CAMERA_TMAP])
                     check_dist = TRUE;
             }
             break;
