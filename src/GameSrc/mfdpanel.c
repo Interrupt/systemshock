@@ -526,14 +526,18 @@ void mfd_setup_wirepanel(uchar special, ObjID id) {
 
 uchar mfd_solve_wirepanel() {
     wirePosPuzzle *wppz = (wirePosPuzzle *)&player_struct.mfd_access_puzzles[0];
-    int wire, swapper, targ;
+    int wire, swapper, targ, num_wires;
     int score;
 
     if (wppz->have_won) {
         return EPICK_PRESOL;
     }
 
-    for (wire = 0; wire < wppz->wirecnt; wire++) {
+    //keep within array bounds
+    num_wires = wppz->wirecnt;
+    if (num_wires > MAX_P_WIRES) num_wires = MAX_P_WIRES;
+
+    for (wire = 0; wire < num_wires; wire++) {
 #define MINIMAL_SOLUTION
 #ifdef MINIMAL_SOLUTION
         // move one wire to target, swapping it with a later wire if
@@ -542,7 +546,7 @@ uchar mfd_solve_wirepanel() {
         // which should never share pins with our target position.
 
         targ = wppz->wires[wire].targ.lpos;
-        for (swapper = wire + 1; swapper < wppz->wirecnt; swapper++) {
+        for (swapper = wire + 1; swapper < num_wires; swapper++) {
             if (wppz->wires[swapper].cur.lpos == targ) {
                 wppz->wires[swapper].cur.lpos = wppz->wires[wire].cur.lpos;
                 wppz->wires[wire].cur.lpos = targ;
@@ -552,7 +556,7 @@ uchar mfd_solve_wirepanel() {
             wppz->wires[wire].cur.lpos = targ;
 
         targ = wppz->wires[wire].targ.rpos;
-        for (swapper = wire + 1; swapper < wppz->wirecnt; swapper++) {
+        for (swapper = wire + 1; swapper < num_wires; swapper++) {
             if (wppz->wires[swapper].cur.rpos == targ) {
                 wppz->wires[swapper].cur.rpos = wppz->wires[wire].cur.rpos;
                 wppz->wires[wire].cur.rpos = targ;
