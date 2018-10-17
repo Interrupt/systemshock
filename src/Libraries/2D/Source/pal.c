@@ -61,21 +61,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "pal.h"
 #include "lg.h"
 
-/* this needs to go into the fix library */
-
-
-static uchar tmp_pal [3*256];  /* bogus -- need to use the tmp buffer */
-
+//gamma param not used here; see SetSDLPalette() in Shock.c
 void gr_set_gamma_pal (int start, int n, fix gamma)
 {
-  int i;
- 
-  /* set gamma corrected values from grd_pal into tmp buf */
-  for (i=start*3;i<3*(start+n);++i) 
-    tmp_pal[i] = (uchar)fix_rint(fix_pow(fix_make(grd_pal[i],0)/255,gamma)*255);
-
-  /* write tmp buf into hardware */
-  gr_set_screen_pal (0, 256, tmp_pal);
+  gr_set_screen_pal (start, n, grd_pal+3*start);
 }
 
 /* copy user's palette into shadow palette, then set real palette. */
