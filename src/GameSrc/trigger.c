@@ -648,8 +648,10 @@ errtype trap_scheduler_func(int p1, int p2, int p3, int p4) {
         switch (objs[current_trap].obclass) {
         case CLASS_TRAP:
             p = &(objTraps[objs[current_trap].specID].p3);
+            break; //looks like there should be a break here!
         case CLASS_FIXTURE:
             p = &(objFixtures[objs[current_trap].specID].p3);
+            break; //feeling generous, one here too
         }
         if ((p3 < 0x1000) && (p3 > 0))
             (*p)--;
