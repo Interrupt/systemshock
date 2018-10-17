@@ -812,7 +812,7 @@ LGPoint (*ai_order_funcs[])(ObjSpecID, ObjID) = {ai_none_func,   ai_roam_func,  
                                                  ai_patrol_func, ai_highway_func, ai_none_func};
 
 #define MAX_ROAM_PATH 32
-#define MAX_ROAM_TRIES 255
+#define MAX_ROAM_TRIES 126
 
 #define TRANQ_RAND_MASK 0xFFF
 #define TRANQ_RAND_LEVEL 5
