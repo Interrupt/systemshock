@@ -1127,7 +1127,7 @@ void regenetron_door_hack() {
 errtype elevator_janitor_run() {
     short x0, x1, y0, y1, x, y;
     int i, j, obj_count = 0;
-    ObjLoc dump_loc, newloc;
+    ObjLoc dump_loc = {0, 0, 0, 0, 0, 0}, newloc;
     ObjID objlist[MAX_JANITOR_OBJS], id;
     uchar dupe;
     ObjRefID orefid;
@@ -1136,7 +1136,7 @@ errtype elevator_janitor_run() {
     // clear out our movelist
     for (i = 0; i < MAX_JANITOR_OBJS; i++)
         objlist[i] = OBJ_NULL;
-    dump_loc.x = -1;
+    dump_loc.x = 65535;
 
     // Compute bounding box of the elevator, see comments in compute_elev_objs
     x0 = PLAYER_BIN_X;
@@ -1162,7 +1162,7 @@ errtype elevator_janitor_run() {
             orefid = me_objref(MAP_GET_XY(x, y));
             while (orefid != OBJ_NULL) {
                 id = objRefs[orefid].obj;
-                if ((objs[id].obclass == CLASS_DOOR) && (dump_loc.x == -1)) {
+                if ((objs[id].obclass == CLASS_DOOR) && (dump_loc.x == 65535)) {
                     dump_loc.x = objs[id].loc.x & (~0xFF);
                     dump_loc.y = objs[id].loc.y & (~0xFF);
                     if ((objs[id].loc.y & 0xFF) <= 0x2)
