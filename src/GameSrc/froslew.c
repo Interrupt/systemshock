@@ -181,7 +181,7 @@ uchar fr_objslew_moveone(Obj *cobj, ObjID objnum, int which, int how, uchar conf
     fr_objslew_obj_to_list(eye, cobj, 4);
     switch (which) {
     case EYE_HEADH:
-        eye_mods[0] += how * cam_slew_scale[which];
+        //eye_mods[0] += how * cam_slew_scale[which]; //outside array bounds
         return valid_pos; // break;
     case EYE_H:
         cobj->loc.h += (how * cam_slew_scale[which]) >> 8;
