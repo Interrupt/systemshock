@@ -189,8 +189,9 @@ OSErr LoadPrefs(void) {
             gShockPrefs.goOnScreenHelp = is_true(value);
         } else if (strcasecmp(key, PREF_GAMMA) == 0) {
             int gamma = atoi(value);
-            if (gamma >= 0 && gamma <= 100)
-                gShockPrefs.doGamma = gamma;
+            if (gamma < 10) gamma = 10;
+            if (gamma > 100) gamma = 100;
+            gShockPrefs.doGamma = gamma;
         }
     }
 
