@@ -1306,6 +1306,10 @@ uchar pause_game_func(short keycode, ulong context, void *data) {
     game_paused = !game_paused;
     CaptureMouse(!game_paused);
 
+    extern LGCursor globcursor;
+    if (game_paused) uiPushGlobalCursor(&globcursor);
+    else uiPopGlobalCursor();
+
     if (game_paused) {
         redraw_paused = TRUE;
 		snd_kill_all_samples();
