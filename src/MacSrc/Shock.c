@@ -299,32 +299,36 @@ SDL_Color gamePalette[256];
 bool UseCutscenePalette = FALSE; //see cutsloop.c
 void SetSDLPalette(int index, int count, uchar *pal)
 {
-  double gamma = (double)gShockPrefs.doGamma;
+  static bool gammalut_init = 0;
+  static uchar gammalut[100-10+1][256];
+  if (!gammalut_init)
+  {
+    int i, j;
+    for (i = 10; i <= 100; i++)
+    {
+      double gamma = (double)i * 1.0 / 100;
+      gamma = 1 - gamma;
+      gamma *= gamma;
+      gamma = 1 - gamma;
+      gamma = 1 / gamma;
+      for (j = 0; j < 256; j++)
+        gammalut[i-10][j] = (uchar)(pow((double)j / 255, gamma) * 255);
+    }
+    gammalut_init = 1;
+	INFO("Gamma LUT init\'ed");
+  }
 
-  if (gamma <  10) gamma = 10;
-  if (gamma > 100) gamma = 100;
-
-  gamma = gamma * 1.0 / 100;
-
-  gamma = 1 - gamma;
-  gamma *= gamma;
-  gamma = 1 - gamma;
-  gamma = 1 / gamma;
+  int gam = gShockPrefs.doGamma;
+  if (gam <  10) gam = 10;
+  if (gam > 100) gam = 100;
+  gam -= 10;
 
   for (int i = index; i < index+count; i++)
   {
-    double r = (double)(*pal++) / 255;
-    double g = (double)(*pal++) / 255;
-    double b = (double)(*pal++) / 255;
-
-    r = pow(r, gamma);
-    g = pow(g, gamma);
-    b = pow(b, gamma);
-
-    gamePalette[i].r = (int)(r * 255);
-    gamePalette[i].g = (int)(g * 255);
-    gamePalette[i].b = (int)(b * 255);
-    gamePalette[i].a = 0xFF;
+    gamePalette[i].r = gammalut[gam][*pal++];
+    gamePalette[i].g = gammalut[gam][*pal++];
+    gamePalette[i].b = gammalut[gam][*pal++];
+    gamePalette[i].a = 0xff;
   }
 
   if (!UseCutscenePalette)
