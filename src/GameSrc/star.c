@@ -151,35 +151,20 @@ fix mag2_point(g3s_phandle p) {
 // and it should work, assuming the two
 // polygons are similar enough
 void star_poly(int n, g3s_phandle *vp) {
-    int i;
-    fix m;
-    g3s_phandle *p;
-    int f;
-
     if(use_opengl()) {
         // Stencil out this area where we want stars to draw
         opengl_set_stencil(0xFF);
-        f = opengl_draw_poly(0x00, n, vp, 0);
+        opengl_draw_poly(0x00, n, vp, 0);
         opengl_set_stencil(0x00);
     }
     else {
-        // draw star poly in color zero.  This part very
+        // draw star poly in color zero (note that 255 is hacked black).  This part very
         // important, if not zero, won't work.
-        f = g3_draw_poly(0xff, n, vp);
+        g3_draw_poly(0xff, n, vp);
     }
 
-    // snag points that have been fully clipped and projected
-    // out of the depths of insanity of the 3d
-    if (f != CLIP_ALL) {
-        p = &_vbuf2;
-        for (i = 0; i < _n_verts; ++i) {
-            if (p[i]->gZ < std_min_z)
-                std_min_z = p[i]->gZ;
-            m = mag2_point(p[i]);
-            if (m > std_max_rad)
-                std_max_rad = m;
-        }
-    }
+    star_empty(n, vp); //fix disappearing stars; std_min_z was not being set below its max value,
+                       //which caused star_render() to abort
 }
 
 void star_empty(int n, g3s_phandle *vp) {
