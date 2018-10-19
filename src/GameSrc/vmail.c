@@ -433,8 +433,11 @@ errtype play_vmail(byte vmail_no)
 #ifndef CONTINUOUS_VMAIL_TEST
    if (!early_exit && vmail_wait_for_input)
       while (!citadel_check_input()) {
+         uiHideMouse(NULL); //trick to prevent
+         uiShowMouse(NULL); //  mouse pointer freeze
          pump_events();
          SDLDraw();
+         tight_loop(FALSE); //keep the music playing
       }
 #endif
 
