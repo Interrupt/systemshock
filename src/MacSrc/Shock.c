@@ -299,28 +299,53 @@ SDL_Color gamePalette[256];
 bool UseCutscenePalette = FALSE; //see cutsloop.c
 void SetSDLPalette(int index, int count, uchar *pal)
 {
-	for(int i = index; i < index+count; i++) {
-		gamePalette[i].r = *pal++;
-		gamePalette[i].g = *pal++;
-		gamePalette[i].b = *pal++;
-		gamePalette[i].a = 0xFF;
-	}
-
-    if (!UseCutscenePalette)
+  static bool gammalut_init = 0;
+  static uchar gammalut[100-10+1][256];
+  if (!gammalut_init)
+  {
+    int i, j;
+    for (i = 10; i <= 100; i++)
     {
-        // Hack black!
-        gamePalette[255].r = 0x0;
-        gamePalette[255].g = 0x0;
-        gamePalette[255].b = 0x0;
-        gamePalette[255].a = 0xff;
+      double gamma = (double)i * 1.0 / 100;
+      gamma = 1 - gamma;
+      gamma *= gamma;
+      gamma = 1 - gamma;
+      gamma = 1 / gamma;
+      for (j = 0; j < 256; j++)
+        gammalut[i-10][j] = (uchar)(pow((double)j / 255, gamma) * 255);
     }
+    gammalut_init = 1;
+	INFO("Gamma LUT init\'ed");
+  }
 
-	SDL_SetPaletteColors(sdlPalette, gamePalette, 0, 256);
-	SDL_SetSurfacePalette(drawSurface, sdlPalette);
-	SDL_SetSurfacePalette(offscreenDrawSurface, sdlPalette);
+  int gam = gShockPrefs.doGamma;
+  if (gam <  10) gam = 10;
+  if (gam > 100) gam = 100;
+  gam -= 10;
 
-	if(should_opengl_swap())
-		opengl_change_palette();
+  for (int i = index; i < index+count; i++)
+  {
+    gamePalette[i].r = gammalut[gam][*pal++];
+    gamePalette[i].g = gammalut[gam][*pal++];
+    gamePalette[i].b = gammalut[gam][*pal++];
+    gamePalette[i].a = 0xff;
+  }
+
+  if (!UseCutscenePalette)
+  {
+    // Hack black!
+    gamePalette[255].r = 0x0;
+    gamePalette[255].g = 0x0;
+    gamePalette[255].b = 0x0;
+    gamePalette[255].a = 0xff;
+  }
+
+  SDL_SetPaletteColors(sdlPalette, gamePalette, 0, 256);
+  SDL_SetSurfacePalette(drawSurface, sdlPalette);
+  SDL_SetSurfacePalette(offscreenDrawSurface, sdlPalette);
+
+  if (should_opengl_swap())
+    opengl_change_palette();
 }
 
 void SDLDraw()

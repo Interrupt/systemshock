@@ -863,14 +863,7 @@ void string_replace_char(char *s, char from, char to) {
     };
 }
 
+//gamma param not used here; see SetSDLPalette() in Shock.c
 void gamma_dealfunc(ushort gamma_qvar) {
-    fix gamma;
-
-    if (gamma_qvar > 99)
-        gamma_qvar = 99;
-    gamma_qvar = (ushort)(((int)gamma_qvar * FIX_UNIT) / 100);
-    gamma = FIX_UNIT - fix_make(0, gamma_qvar);
-    gamma = fix_mul(gamma, gamma) + (FIX_UNIT / 2);
-    //	gamma=QVAR_TO_GAMMA(gamma_qvar);
-    gr_set_gamma_pal(0, 256, gamma);
+    gr_set_gamma_pal(0, 256, 0);
 }
