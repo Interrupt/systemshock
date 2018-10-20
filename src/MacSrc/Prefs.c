@@ -63,6 +63,8 @@ extern uchar curr_vol_lev;
 extern uchar curr_sfx_vol;
 extern uchar curr_alog_vol;
 
+extern uchar audiolog_setting;
+
 static const char *PREF_LANGUAGE     = "language";
 static const char *PREF_CAPTUREMOUSE = "capture-mouse";
 static const char *PREF_MUSIC_VOL    = "music-volume";
@@ -75,6 +77,8 @@ static const char *PREF_USE_OPENGL   = "use-opengl";
 static const char *PREF_LIN_SCALING  = "linear-scaling";
 static const char *PREF_ONSCR_HELP   = "onscreen-help";
 static const char *PREF_GAMMA        = "gamma";
+static const char *PREF_MSG_LENGTH   = "message-length";
+static const char *PREF_ALOG_SETTING = "alog-setting";
 
 static void SetShockGlobals(void);
 
@@ -85,7 +89,6 @@ void SetDefaultPrefs(void) {
 
     gShockPrefs.prefVer = 0;
     gShockPrefs.prefPlayIntro = 1;      // First time through, play the intro
-    gShockPrefs.goMsgLength = 0;        // Normal
     gShockPrefs.goPopupLabels = true;
     gShockPrefs.soBackMusic = true;
     gShockPrefs.soSoundFX = true;
@@ -105,11 +108,19 @@ void SetDefaultPrefs(void) {
     gShockPrefs.doLinearScaling = false;
     gShockPrefs.goOnScreenHelp = true;
     gShockPrefs.doGamma = 29;           // Default gamma (29 out of 100).
+    gShockPrefs.goMsgLength = 0;        // Normal
+    audiolog_setting = 1;
 
     SetShockGlobals();
 }
 
 static FILE *open_prefs(const char *mode) {
+    FILE *f = fopen("portable.txt", "r");
+    if (f) {
+        fclose(f);
+        return fopen(PREFS_FILENAME, mode);
+    }
+
     char fullname[512];
     char *path = SDL_GetPrefPath("Interrupt", "SystemShock");
     snprintf(fullname, sizeof(fullname), "%s%s", path, PREFS_FILENAME);
@@ -192,6 +203,14 @@ OSErr LoadPrefs(void) {
             if (gamma < 10) gamma = 10;
             if (gamma > 100) gamma = 100;
             gShockPrefs.doGamma = gamma;
+        } else if (strcasecmp(key, PREF_MSG_LENGTH) == 0) {
+            int ml = atoi(value);
+            if (ml >= 0 && ml <= 1)
+                gShockPrefs.goMsgLength = ml;
+        } else if (strcasecmp(key, PREF_ALOG_SETTING) == 0) {
+            int as = atoi(value);
+            if (as >= 0 && as <= 2)
+                audiolog_setting = as;
         }
     }
 
@@ -224,6 +243,8 @@ OSErr SavePrefs(void) {
     fprintf(f, "%s = %s\n", PREF_LIN_SCALING, gShockPrefs.doLinearScaling ? "yes" : "no");
     fprintf(f, "%s = %s\n", PREF_ONSCR_HELP, gShockPrefs.goOnScreenHelp ? "yes" : "no");
     fprintf(f, "%s = %d\n", PREF_GAMMA, gShockPrefs.doGamma);
+    fprintf(f, "%s = %d\n", PREF_MSG_LENGTH, gShockPrefs.goMsgLength);
+    fprintf(f, "%s = %d\n", PREF_ALOG_SETTING, audiolog_setting);
     fclose(f);
     return 0;
 }
@@ -543,6 +564,28 @@ int FireKeys[MAX_FIRE_KEYS+1]; //see input.c
 
 
 
+char *GetKeybindsPathFilename(void)
+{
+  static char filename[512];
+
+  FILE *f = fopen("portable.txt", "r");
+  if (f != NULL)
+  {
+    fclose(f);
+    strcpy(filename, KEYBINDS_FILENAME);
+  }
+  else
+  {
+    char *p = SDL_GetPrefPath("Interrupt", "SystemShock");
+    snprintf(filename, sizeof(filename), "%s%s", p, KEYBINDS_FILENAME);
+    free(p);
+  }
+
+  return filename;
+}
+
+
+
 //all hotkey initialization and hotkey_add()s are done in this function
 //also handles setting fire keybinds
 void LoadHotkeyKeybinds(void)
@@ -563,12 +606,7 @@ void LoadHotkeyKeybinds(void)
     i++;
   }
 
-  //get path and filename of keybinds file
-  p = SDL_GetPrefPath("Interrupt", "SystemShock");
-  snprintf(temp, sizeof(temp), "%s%s", p, KEYBINDS_FILENAME);
-  free(p);
-
-  f = fopen(temp, "r");
+  f = fopen(GetKeybindsPathFilename(), "r");
   if (f)
   {
     //scan keybinds file line by line
@@ -887,12 +925,7 @@ void LoadMoveKeybinds(void)
   //keep track of which moves are specified so we can add default ones for those that are missing
   memset(move_used, 0, NUM_MOVES);
 
-  //get path and filename of keybinds file
-  p = SDL_GetPrefPath("Interrupt", "SystemShock");
-  snprintf(temp, sizeof(temp), "%s%s", p, KEYBINDS_FILENAME);
-  free(p);
-
-  f = fopen(temp, "r");
+  f = fopen(GetKeybindsPathFilename(), "r");
   if (f)
   {
     //scan keybinds file line by line
@@ -1086,20 +1119,15 @@ static void WriteMoveName(int move, FILE *f)
 void CreateDefaultKeybindsFile(void)
 {
   FILE *f;
-  char temp[512], *p;
+  char *filename = GetKeybindsPathFilename();
   int i, ch;
 
-  //get path and filename of keybinds file
-  p = SDL_GetPrefPath("Interrupt", "SystemShock");
-  snprintf(temp, sizeof(temp), "%s%s", p, KEYBINDS_FILENAME);
-  free(p);
-
   //check if file already exists; if so, return
-  f = fopen(temp, "r");
+  f = fopen(filename, "r");
   if (f != NULL) {fclose(f); return;}
 
   //open new file for writing
-  f = fopen(temp, "w");
+  f = fopen(filename, "w");
   if (f == NULL) return;
 
   //write default hotkey keybinds
