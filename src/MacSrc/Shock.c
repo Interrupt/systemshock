@@ -303,6 +303,7 @@ void SetSDLPalette(int index, int count, uchar *pal)
   static uchar gammalut[100-10+1][256];
   if (!gammalut_init)
   {
+    double factor = (can_use_opengl() ? 1.0 : 2.2); //OpenGL uses 2.2
     int i, j;
     for (i = 10; i <= 100; i++)
     {
@@ -310,7 +311,7 @@ void SetSDLPalette(int index, int count, uchar *pal)
       gamma = 1 - gamma;
       gamma *= gamma;
       gamma = 1 - gamma;
-      gamma = 1 / gamma;
+      gamma = 1 / (gamma * factor);
       for (j = 0; j < 256; j++)
         gammalut[i-10][j] = (uchar)(pow((double)j / 255, gamma) * 255);
     }
