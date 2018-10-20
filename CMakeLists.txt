@@ -9,8 +9,8 @@ set(CMAKE_C_STANDARD 99)
 
 # hide Windows console in distributable packages
 if(DEFINED ENV{APPVEYOR}) 
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -mwindows")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -mwindows -D__STDC_LIMIT_MACROS")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -O3 -mwindows")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -O3 -mwindows -D__STDC_LIMIT_MACROS")
 endif()
 
 if(NOT DEFINED ENV{APPVEYOR}) 
@@ -28,7 +28,7 @@ if(ENABLE_DEBUG_BLIT)
 	add_definitions(-DDEBUGGING_BLIT)
 endif()
 
-add_compile_options(-fno-strict-aliasing -Werror=implicit-function-declaration)
+add_compile_options(-fsigned-char -fno-strict-aliasing -Werror=implicit-function-declaration)
 
 # Find OpenGL
 find_package(OpenGL)
