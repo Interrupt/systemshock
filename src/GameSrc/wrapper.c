@@ -1957,7 +1957,7 @@ void options_screen_init(void) {
     standard_button_rect(&r, 0, 2, 2, 2);
     r.ul.x -= 2;
     multi_init(i, keys[i], REF_STR_OptionsText + 2, REF_STR_TerseText, REF_STR_TerseFeedback,
-               sizeof(player_struct.terseness), &player_struct.terseness, 2, NULL, &r);
+               sizeof(gShockPrefs.goMsgLength), &(gShockPrefs.goMsgLength), 2, NULL, &r);
     i++;
 
     i++;
@@ -2078,12 +2078,12 @@ void wrapper_start(void (*init)(void)) {
     fv = full_visible;
     full_visible = 0;
 #endif
+    render_run(); //move here to fix ghost mouse cursor
     uiHideMouse(NULL);
     if (full_game_3d) {
 #ifdef SVGA_SUPPORT
         uchar old_over = gr2ss_override;
 #endif
-        render_run();
         gr_push_canvas(grd_screen_canvas);
 #ifdef SVGA_SUPPORT
         gr2ss_override = OVERRIDE_ALL;
