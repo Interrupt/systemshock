@@ -56,6 +56,7 @@ struct Shader {
     GLint uniView;
     GLint uniProj;
     GLint uniNightSight;
+    GLint uniMutant;
     GLint tcAttrib;
     GLint lightAttrib;
     GLint colorAttrib;
@@ -215,6 +216,7 @@ static int CreateShader(const char *vertexShaderFile, const char *fragmentShader
     outShader->uniView = glGetUniformLocation(shaderProgram, "view");
     outShader->uniProj = glGetUniformLocation(shaderProgram, "proj");
     outShader->uniNightSight = glGetUniformLocation(shaderProgram, "nightsight");
+    outShader->uniMutant = glGetUniformLocation(shaderProgram, "mutant");
     outShader->tcAttrib = glGetAttribLocation(shaderProgram, "texcoords");
     outShader->lightAttrib = glGetAttribLocation(shaderProgram, "light");
     outShader->colorAttrib = glGetAttribLocation(shaderProgram, "color");
@@ -671,6 +673,8 @@ static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttr
         light = 1.0f - (clut - grd_screen->ltab) / 4096.0f;
     }
 
+    light *= light;
+
     if (tcAttrib >= 0)
         glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
     glVertexAttrib1f(lightAttrib, light);
@@ -753,7 +757,11 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
         // recalculate it from the offset into the global lighting lookup
         // table.
         light = 1.0 - (ti->clut - grd_screen->ltab) / 4096.0f;
+
+        light *= light;
     }
+
+    glUniform1i(textureShaderProgram.uniMutant, (bm->type == BMT_TLUC8) || (bm->flags == BMF_TLUC8));
 
     glBegin(GL_TRIANGLE_STRIP);
     glVertexAttrib2f(tcAttrib, 1.0f, 0.0f);
@@ -769,6 +777,8 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     glVertexAttrib1f(lightAttrib, light);
     glVertex3f(convx(vpl[3]->x), convy(vpl[3]->y), 0.0f);
     glEnd();
+
+    glUniform1i(textureShaderProgram.uniMutant, false);
 
     return CLIP_NONE;
 }
