@@ -115,11 +115,8 @@ void SetDefaultPrefs(void) {
 }
 
 static FILE *open_prefs(const char *mode) {
-    FILE *f = fopen("portable.txt", "r");
-    if (f) {
-        fclose(f);
-        return fopen(PREFS_FILENAME, mode);
-    }
+    FILE *f = fopen(PREFS_FILENAME, mode);
+    if (f) return f;
 
     char fullname[512];
     char *path = SDL_GetPrefPath("Interrupt", "SystemShock");
@@ -568,7 +565,7 @@ char *GetKeybindsPathFilename(void)
 {
   static char filename[512];
 
-  FILE *f = fopen("portable.txt", "r");
+  FILE *f = fopen(KEYBINDS_FILENAME, "r");
   if (f != NULL)
   {
     fclose(f);
