@@ -447,6 +447,11 @@ uchar mfd_weapon_expose_projectile(MFD *m, weapon_slot *ws, ubyte control) {
     // Get the ammo data for the current weapon
     get_available_ammo_type(ws->type, ws->subtype, &num_ammo_buttons, ammo_types, &ammo_subclass);
 
+    //ammo_type and setting have same memory location in weapon_slot union
+    //setting can have values greater than num ammo buttons so check for and fix oob
+    if (ws->ammo_type >= num_ammo_buttons)
+        ws->ammo_type = (num_ammo_buttons ? ammo_types[0] : 0);
+
     if ((control & MFD_EXPOSE_FULL) || (ws->ammo == 0))
         RedrawAmmoFlag = TRUE;
     else if (MFD_Access(m->id, MFDAmmo) != ws->ammo) {
