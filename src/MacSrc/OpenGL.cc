@@ -84,7 +84,7 @@ static SDL_Palette *opaquePalette;
 static SDL_Palette *transparentPalette;
 
 // Texture cache to keep SDL surfaces and GL textures in memory
-static std::map<uint8_t *, CachedTexture> texturesByBitsPtr;
+static std::map<uint64_t, CachedTexture> texturesByBitsPtr;
 
 static float view_scale;
 static int phys_width;
@@ -521,7 +521,7 @@ static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
         bind_texture(toCache.texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, toCache.converted->pixels);
 
-        texturesByBitsPtr[bm->bits] = toCache;
+        texturesByBitsPtr[ (uint64_t)bm->bits | ((uint64_t)bm->w<<32) | ((uint64_t)bm->h<<48) ] = toCache;
         return true;
     }
 
@@ -533,7 +533,7 @@ static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
 }
 
 static CachedTexture* opengl_get_texture(grs_bitmap *bm) {
-    std::map<uint8_t *, CachedTexture>::iterator iter = texturesByBitsPtr.find(bm->bits);
+    std::map<uint64_t, CachedTexture>::iterator iter = texturesByBitsPtr.find( (uint64_t)bm->bits | ((uint64_t)bm->w<<32) | ((uint64_t)bm->h<<48) );
     if (iter != texturesByBitsPtr.end()) {
         return &iter->second;
     }
@@ -548,7 +548,7 @@ void opengl_clear_texture_cache() {
 
     SDL_GL_MakeCurrent(window, context);
 
-    std::map<uint8_t *, CachedTexture>::iterator iter;
+    std::map<uint64_t, CachedTexture>::iterator iter;
     for(iter = texturesByBitsPtr.begin(); iter != texturesByBitsPtr.end(); iter++) {
         CachedTexture ct = iter->second;
         if(!ct.locked) { // don't free locked surfaces
