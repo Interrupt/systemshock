@@ -370,7 +370,7 @@ grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p) {
         if (_g3d_enable_blend) {
 
             // only blend if no translucent or no compressed translucent bitmap
-            if ((bm->type != BMT_TLUC8) || (bm->flags != BMF_TLUC8)) {
+            if ((bm->type != BMT_TLUC8) && (bm->flags != BMF_TLUC8)) {
                 // check for bitmap width<polygon width, if so, blend
 
                 // MLA - have no idea how this code could ever work, so I'm trying my own code
