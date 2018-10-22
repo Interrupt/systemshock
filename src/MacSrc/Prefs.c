@@ -114,15 +114,24 @@ void SetDefaultPrefs(void) {
     SetShockGlobals();
 }
 
-static FILE *open_prefs(const char *mode) {
-    FILE *f = fopen(PREFS_FILENAME, mode);
-    if (f) return f;
+static char *GetPrefsPathFilename(void)
+{
+  static char filename[512];
 
-    char fullname[512];
-    char *path = SDL_GetPrefPath("Interrupt", "SystemShock");
-    snprintf(fullname, sizeof(fullname), "%s%s", path, PREFS_FILENAME);
-    free(path);
-    return fopen(fullname, mode);
+  FILE *f = fopen(PREFS_FILENAME, "r");
+  if (f != NULL)
+  {
+    fclose(f);
+    strcpy(filename, PREFS_FILENAME);
+  }
+  else
+  {
+    char *p = SDL_GetPrefPath("Interrupt", "SystemShock");
+    snprintf(filename, sizeof(filename), "%s%s", p, PREFS_FILENAME);
+    free(p);
+  }
+
+  return filename;
 }
 
 static char *trim(char *s) {
@@ -142,7 +151,7 @@ static bool is_true(const char *s) {
 //	  Locate the preferences file and load them to set our global pref settings.
 //--------------------------------------------------------------------
 OSErr LoadPrefs(void) {
-    FILE *f = open_prefs("r");
+    FILE *f = fopen(GetPrefsPathFilename(), "r");
     if (!f) {
         // file can't be open, write default preferences
         return SavePrefs();
@@ -222,7 +231,7 @@ OSErr LoadPrefs(void) {
 OSErr SavePrefs(void) {
     INFO("Saving preferences");
 
-    FILE *f = open_prefs("w");
+    FILE *f = fopen(GetPrefsPathFilename(), "w");
     if (!f) {
         printf("ERROR: Failed to open preferences file\n");
         return -1;
@@ -561,7 +570,7 @@ int FireKeys[MAX_FIRE_KEYS+1]; //see input.c
 
 
 
-char *GetKeybindsPathFilename(void)
+static char *GetKeybindsPathFilename(void)
 {
   static char filename[512];
 
