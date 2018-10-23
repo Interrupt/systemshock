@@ -314,7 +314,7 @@ errtype interpret_qvars(void) {
     recompute_digifx_level(QUESTVAR_GET(SFX_VOLUME_QVAR));
 #ifdef AUDIOLOGS
     recompute_audiolog_level(QUESTVAR_GET(ALOG_VOLUME_QVAR));
-    audiolog_setting = QUESTVAR_GET(ALOG_OPT_QVAR);
+    //audiolog_setting = QUESTVAR_GET(ALOG_OPT_QVAR); //moved to prefs file
 #endif
     fullscrn_vitals = QUESTVAR_GET(FULLSCRN_VITAL_QVAR);
     fullscrn_icons = QUESTVAR_GET(FULLSCRN_ICON_QVAR);
