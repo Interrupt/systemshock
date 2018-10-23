@@ -26,7 +26,7 @@ void main() {
         gl_FragColor = vec4(rg, rg, b, (mutant ? 0.2 * alpha : alpha));
     } else {
         float emissive = t.a > 0.5 ? (t.a - 0.5) * 2.0 : 0.0;
-        float light = max(Light, emissive);
+        float light = max(Light * Light, emissive);
         if (mutant)
             gl_FragColor = vec4(0.5 * t.r * light, 0.5 * t.r * light, 0.5 * t.r * light, 0.2 * alpha);
         else
