@@ -673,8 +673,6 @@ static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttr
         light = 1.0f - (clut - grd_screen->ltab) / 4096.0f;
     }
 
-    light *= light;
-
     if (tcAttrib >= 0)
         glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
     glVertexAttrib1f(lightAttrib, light);
@@ -757,8 +755,6 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
         // recalculate it from the offset into the global lighting lookup
         // table.
         light = 1.0 - (ti->clut - grd_screen->ltab) / 4096.0f;
-
-        light *= light;
     }
 
     glUniform1i(textureShaderProgram.uniMutant, (bm->type == BMT_TLUC8) || (bm->flags == BMF_TLUC8));
