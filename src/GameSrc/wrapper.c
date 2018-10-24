@@ -1775,6 +1775,17 @@ void input_screen_init(void) {
     opanel_redraw(TRUE);
 }
 
+//gamma param not used here; see SetSDLPalette() in Shock.c
+void gamma_slider_dealfunc(ushort gamma_qvar) {
+    gr_set_gamma_pal(0, 256, 0);
+
+    uiHideMouse(NULL);
+    render_run();
+    if (full_game_3d)
+        opanel_redraw(FALSE);
+    uiShowMouse(NULL);
+}
+
 void video_screen_init(void) {
     LGRect r;
     int i;
@@ -1821,7 +1832,7 @@ void video_screen_init(void) {
     r.ul.x = r.ul.x + 1;
     sliderbase = ((r.lr.x - r.ul.x - 1) * 29 / 100);
     slider_init(i, REF_STR_OptionsText + 3, sizeof(ushort), TRUE, &(gShockPrefs.doGamma), 100,
-                sliderbase, gamma_dealfunc, &r);
+                sliderbase, gamma_slider_dealfunc, &r);
 
 #if defined(VFX1_SUPPORT) || defined(CTM_SUPPORT)
     i++;
