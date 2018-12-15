@@ -35,7 +35,7 @@ Compiling / Running
 
 ## Building SDL
 ### Linux/Mac
-You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer. VOC support was broken until recently in SDL_mixer, so for sound effects to work you'll probably need to build it from the latest sources like that script does.
+You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer. 
 
 ### Windows
 See [the Windows readme](windows/readme_windows.md).
