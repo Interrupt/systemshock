@@ -11,9 +11,9 @@ environment:
   APPVEYOR: TRUE
 
 # Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
-# Uncache build_ext if external deps change (eg. SDL_mixer 2.0.3 gets released)
+# Uncache build_ext if external deps change
 cache:
-  - build_ext  
+#  - build_ext  
 
 # Actual build script..
 # Step 1: Git has to reside in a path without spaces because the SDL build script is weird like that.
@@ -38,7 +38,7 @@ after_build:
   - copy c:\mingw\bin\libstd*.dll .
   - copy build_ext\built_sdl\bin\SDL*.dll .
   - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
-  - copy build_ext\glew-2.1.0\lib\glew32.dll .
+  - copy build_ext\built_glew\lib\glew32.dll .
   - copy readme\readme-windows.txt readme.txt
   - 7z a systemshock-windows.zip systemshock.exe *.dll readme.txt shaders/
 
