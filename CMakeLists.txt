@@ -326,8 +326,8 @@ target_link_libraries(systemshock
 )
 
 if (WIN32)
-	include_directories(${CMAKE_SOURCE_DIR}/build_ext/glew-2.1.0/include)
-	target_link_libraries(systemshock ${CMAKE_SOURCE_DIR}/build_ext/glew-2.1.0/lib/libglew32.dll.a)
+	include_directories(${CMAKE_SOURCE_DIR}/build_ext/built_glew/include)
+	target_link_libraries(systemshock ${CMAKE_SOURCE_DIR}/build_ext/built_glew/lib/libglew32.dll.a)
 endif(WIN32)
 
 
