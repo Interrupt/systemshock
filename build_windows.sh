@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 
-SDL_version=2.0.8
-SDL2_mixer_version=2.0.2
+SDL_version=2.0.9
+SDL2_mixer_version=2.0.4
+GLEW_version=2.1.0
 CMAKE_version=3.11.3
 #CMAKE_architecture=win64-x64
 CMAKE_architecture=win32-x86
@@ -32,8 +33,6 @@ function build_sdl_mixer {
 	# the target of the link cannot be found at the time of the extraction.
 	tar xf SDL2_mixer-${SDL2_mixer_version}.tar.gz --exclude=Xcode
 	pushd SDL2_mixer-${SDL2_mixer_version}
-	curl -O https://github.com/SDL-mirror/SDL_mixer/commit/7cad09d4d479df2b21b3e489f8e155bdf8254fd4.patch
-	patch < 7cad09d4d479df2b21b3e489f8e155bdf8254fd4.patch
 
 	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" --host=i686-w64-mingw32 --disable-sdltest --with-sdl-prefix=${install_dir}/built_sdl --prefix=${install_dir}/built_sdl_mixer 
 	
@@ -45,9 +44,10 @@ function build_sdl_mixer {
 }
 
 function build_glew {
-	curl -O https://netcologne.dl.sourceforge.net/project/glew/glew/2.1.0/glew-2.1.0.tgz
-	tar xvf glew-2.1.0.tgz
-	pushd glew-2.1.0
+	curl -O https://netcologne.dl.sourceforge.net/project/glew/glew/${GLEW_version}/glew-${GLEW_version}.tgz
+	tar xvf glew-${GLEW_version}.tgz
+	mv glew-${GLEW_version}/ built_glew/
+	pushd built_glew
 	mingw32-make glew.lib
 	popd
 }
@@ -89,7 +89,7 @@ fi
 cd ..
 cp build_ext/built_sdl/bin/SDL*.dll .
 cp build_ext/built_sdl_mixer/bin/SDL*.dll .
-cp build_ext/glew-2.1.0/lib/*.dll .
+cp build_ext/built_glew/lib/*.dll .
 
 # Set up build.bat
 if [[ -z "${APPVEYOR}" ]]; then
