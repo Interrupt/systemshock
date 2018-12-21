@@ -13,7 +13,7 @@ environment:
 # Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
 # Uncache build_ext if external deps change
 cache:
-#  - build_ext  
+  - build_ext  
 
 # Actual build script..
 # Step 1: Git has to reside in a path without spaces because the SDL build script is weird like that.
