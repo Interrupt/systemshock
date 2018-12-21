@@ -37,22 +37,34 @@ if(OPENGL_FOUND)
 	add_definitions(-DUSE_OPENGL)
 ENDIF(OPENGL_FOUND)
 
-# Find SDL
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/findsdl2-cmake" ${CMAKE_MODULE_PATH})
-find_package(SDL2 REQUIRED)
-set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
-set(SDL2_LIBRARIES ${SDL2_LIBRARY})
+# set up SDL created by our build scripts
+set(SDL2_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl)
 
-# Try to find SDL_mixer, for sound
-find_package(SDL2_mixer)
+set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include/SDL2)
+set(SDL2_LIBRARIES "${SDL2_DIR}/lib/libSDL2main.a ${SDL2_DIR}/lib/libSDL2.dll.a")
+
+# and SDL mixer
+
+set(SDL2_MIXER_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl_mixer)
+
+set(SDL2_MIXER_INCLUDE_DIRS ${SDL2_MIXER_DIR}/include/SDL2)
+set(SDL2_MIXER_LIBRARIES ${SDL2_MIXER_DIR}/lib/libSDL2_mixer.dll.a)
+
+add_definitions(-DUSE_SDL_MIXER=1)
+
+
+# add MinGW library if necessary
+
+if(MINGW)
+	set(SDL2_LIBRARIES "mingw32 ${SDL2_LIBRARIES}")
+	set(SDL2_MIXER_LIBRARIES "mingw32 ${SDL2_MIXER_LIBRARIES}")
+endif(MINGW)
+
 
 include_directories(
 	${SDL2_INCLUDE_DIRS}
 	${SDL2_MIXER_INCLUDE_DIRS}
 )
-
-message(STATUS "Found SDL2 Include:${SDL2_INCLUDE_DIRS} Library:${SDL2_LIBRARIES}")
-message(STATUS "Found SDL2_Mixer Include:${SDL2_MIXER_INCLUDE_DIRS} Library:${SDL2_MIXER_LIBRARIES}")
 
 # for now I'll put a Carbon/Carbon.h into src/stubs/
 # that defines Mac-specific types and provides stubs for used functions
