@@ -340,7 +340,7 @@ static MusicDevice *createFluidSynthDevice()
 //------------------------------------------------------------------------------
 MusicDevice *CreateMusicDevice(MusicType type)
 {
-    MusicDevice *dev;
+    MusicDevice *dev = NULL;
 
     switch (type)
     {
