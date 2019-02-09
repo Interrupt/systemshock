@@ -1,11 +1,11 @@
 #include <SDL.h>
 
 #include "Xmi.h"
-#include "adlmidi.h"
+#include "MusicDevice.h"
 
 
 
-struct ADL_MIDIPlayer *adlD;
+struct MusicDevice *MusicDev;
 
 SDL_mutex *MyMutex;
 
@@ -15,12 +15,12 @@ char *MusicCallbackBuffer;
 
 void MusicCallback(void *userdata, Uint8 *stream, int len)
 {
-  struct ADL_MIDIPlayer *adl_dev = *(struct ADL_MIDIPlayer **)userdata;
+  MusicDevice *dev = *(MusicDevice **)userdata;
 
-  if (adl_dev != NULL)
+  if (dev != NULL)
   {
     SDL_LockMutex(MyMutex);
-    adl_generate(adl_dev, len / 2, (short *)MusicCallbackBuffer); //generates len/2 short ints
+    dev->generate(dev, (short *)MusicCallbackBuffer, len / (2 * sizeof(short)));
     SDL_UnlockMutex(MyMutex);
 
 	extern uchar curr_vol_lev;
@@ -134,6 +134,7 @@ int ReadXMI(const char *filename)
   unsigned short used_channels;
   MIDI_EVENT *eventlist, *curevent, *prev;
   char buf[32];
+  MusicMode mode = Music_GeneralMidi;
 
   INFO("Reading XMI %s", filename);
 
@@ -350,10 +351,10 @@ int ReadXMI(const char *filename)
   free(data);
 
 
-  //Use sound bank 45 for res/sound/sblaster, 0 for res/sound/genmidi
+  //Setup a sound bank for res/sound/sblaster, or res/sound/genmidi
   SDL_LockMutex(MyMutex);
-  if (strstr(filename, "sblaster") != NULL) adl_setBank(adlD, 45);
-  else                                      adl_setBank(adlD, 0);
+  if (strstr(filename, "sblaster") != NULL) mode = Music_SoundBlaster;
+  MusicDev->setupMode(MusicDev, mode);
   SDL_UnlockMutex(MyMutex);
 
   return 1; //success
@@ -428,7 +429,7 @@ int MyThread(void *arg)
           {
             //set volume msb
             SDL_LockMutex(MyMutex);
-            adl_rt_controllerChange(adlD, channel, p1, (int)SDL_AtomicGet(&ThreadVolume[i]) * p2 / 128);
+            MusicDev->sendControllerChange(MusicDev, channel, p1, (int)SDL_AtomicGet(&ThreadVolume[i]) * p2 / 128);
             SDL_UnlockMutex(MyMutex);
       	}
       	else
@@ -436,13 +437,13 @@ int MyThread(void *arg)
             SDL_LockMutex(MyMutex);
             switch (event[i]->status & ~15)
             {
-              case 0x80: adl_rt_noteOff(adlD, channel, p1); break;
-              case 0x90: adl_rt_noteOn(adlD, channel, p1, p2); break;
-              case 0xA0: adl_rt_noteAfterTouch(adlD, channel, p1, p2); break;
-              case 0xB0: adl_rt_controllerChange(adlD, channel, p1, p2); break;
-              case 0xC0: adl_rt_patchChange(adlD, channel, p1); break;
-              case 0xD0: adl_rt_channelAfterTouch(adlD, channel, p1); break;
-              case 0xE0: adl_rt_pitchBendML(adlD, channel, p2, p1); break;
+              case 0x80: MusicDev->sendNoteOff(MusicDev, channel, p1, p2); break;
+              case 0x90: MusicDev->sendNoteOn(MusicDev, channel, p1, p2); break;
+              case 0xA0: MusicDev->sendNoteAfterTouch(MusicDev, channel, p1, p2); break;
+              case 0xB0: MusicDev->sendControllerChange(MusicDev, channel, p1, p2); break;
+              case 0xC0: MusicDev->sendProgramChange(MusicDev, channel, p1); break;
+              case 0xD0: MusicDev->sendChannelAfterTouch(MusicDev, channel, p1); break;
+              case 0xE0: MusicDev->sendPitchBendML(MusicDev, channel, p2, p1); break;
             }
             SDL_UnlockMutex(MyMutex);
           }
@@ -582,7 +583,7 @@ void StopTheMusic(void)
   for (i=0; i<NUM_THREADS; i++) StopTrack(i);
 
   SDL_LockMutex(MyMutex);
-  adl_reset(adlD);
+  MusicDev->reset(MusicDev);
   SDL_UnlockMutex(MyMutex);
 }
 
@@ -601,12 +602,41 @@ void InitReadXMI(void)
   SDL_Thread *thread;
 
   // Start the ADL Midi device
-  adlD = adl_init(48000);
+  MusicDevice *musicdev = NULL;
+  int musicrate = 48000;
 
-  adl_switchEmulator(adlD, ADLMIDI_EMU_NUKED_174);
-  adl_setNumChips(adlD, 1);
-  adl_setVolumeRangeModel(adlD, ADLMIDI_VolumeModel_AUTO);
-  adl_setRunAtPcmRate(adlD, TRUE);
+#ifdef USE_FLUIDSYNTH
+  if (!musicdev)
+  {
+      INFO("try FluidSynth MIDI driver");
+      musicdev = CreateMusicDevice(Music_FluidSynth);
+      if (musicdev && musicdev->init(musicdev, musicrate) != 0)
+      {
+          musicdev->destroy(musicdev);
+          musicdev = NULL;
+      }
+  }
+#endif
+
+  if (!musicdev)
+  {
+      INFO("try ADLMIDI driver");
+      musicdev = CreateMusicDevice(Music_AdlMidi);
+      if (musicdev && musicdev->init(musicdev, musicrate) != 0)
+      {
+          musicdev->destroy(musicdev);
+          musicdev = NULL;
+      }
+  }
+
+  if (!musicdev)
+  {
+      INFO("use dummy MIDI driver");
+      musicdev = CreateMusicDevice(Music_None);
+      musicdev->init(musicdev, musicrate);
+  }
+
+  MusicDev = musicdev;
 
   MyMutex = SDL_CreateMutex();
 
@@ -634,8 +664,8 @@ void ShutdownReadXMI(void)
   int i;
 
   SDL_LockMutex(MyMutex);
-  adl_close(adlD);
-  adlD = NULL;
+  MusicDev->destroy(MusicDev);
+  MusicDev = NULL;
   SDL_UnlockMutex(MyMutex);
 
   for (i=0; i<NUM_THREADS; i++)

@@ -13,7 +13,7 @@ static Mix_Chunk *samples_by_channel[SND_MAX_SAMPLES];
 static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
 
 extern SDL_AudioStream *cutscene_audiostream;
-extern struct ADL_MIDIPlayer *adlD;
+extern struct MusicDevice *MusicDev;
 
 extern char *MusicCallbackBuffer;
 
@@ -45,7 +45,7 @@ int snd_start_digital(void) {
 
     MusicCallbackBuffer = (char *)malloc(2048*5); //larger than needed paranoia
 
-    Mix_HookMusic(MusicCallback, (void *)&adlD);
+    Mix_HookMusic(MusicCallback, (void *)&MusicDev);
 
 
 	InitReadXMI();
