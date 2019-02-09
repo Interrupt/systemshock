@@ -346,6 +346,9 @@ MusicDevice *CreateMusicDevice(MusicType type)
     {
     default:
         break;
+    case Music_None:
+        dev = createNullMidiDevice();
+        break;
     case Music_AdlMidi:
         dev = createAdlMidiDevice();
         break;
