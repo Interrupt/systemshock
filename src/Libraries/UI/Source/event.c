@@ -723,6 +723,8 @@ void ui_poll_keyboard(void)
 		{
 			uiPollKeyEvent ev;
 			ev.type = UI_EVENT_KBD_POLL;
+			ev.pos.x = 0;
+			ev.pos.y = 0;
 			ev.action = KBS_DOWN;
 			ev.scancode = *key;
 			ev.mods = inputModToUImod(sshockKeyStates[*key]);
@@ -743,6 +745,8 @@ void ui_poll_keyboard(void)
 		{
 			uiPollKeyEvent ev;
 			ev.type = UI_EVENT_KBD_POLL;
+			ev.pos.x = 0;
+			ev.pos.y = 0;
 			ev.action = KBS_DOWN;
 			ev.scancode = *key;
 			ev.mods = 0;
