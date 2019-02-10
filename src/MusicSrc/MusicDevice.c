@@ -25,7 +25,7 @@ static void NullMidiReset(MusicDevice *dev)
 
 static void NullMidiGenerate(MusicDevice *dev, short *samples, int numframes)
 {
-    memset(samples, 0, numframes * sizeof(short));
+    memset(samples, 0, 2 * numframes * sizeof(short));
 }
 
 static void NullMidiSendNoteOff(MusicDevice *dev, int channel, int note, int vel)
