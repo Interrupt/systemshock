@@ -15,11 +15,13 @@ char *MusicCallbackBuffer;
 
 void MusicCallback(void *userdata, Uint8 *stream, int len)
 {
-  MusicDevice *dev = *(MusicDevice **)userdata;
+  MusicDevice *dev;
+
+  SDL_LockMutex(MyMutex);
+  dev = *(MusicDevice **)userdata;
 
   if (dev != NULL)
   {
-    SDL_LockMutex(MyMutex);
     dev->generate(dev, (short *)MusicCallbackBuffer, len / (2 * sizeof(short)));
     SDL_UnlockMutex(MyMutex);
 
@@ -29,6 +31,8 @@ void MusicCallback(void *userdata, Uint8 *stream, int len)
     SDL_memset(stream, 0, len);
     SDL_MixAudioFormat(stream, MusicCallbackBuffer, AUDIO_S16SYS, len, volume);
   }
+  else
+    SDL_UnlockMutex(MyMutex);
 }
 
 
