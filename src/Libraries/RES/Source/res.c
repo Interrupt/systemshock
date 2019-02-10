@@ -80,7 +80,7 @@ void ResInit() {
     TRACE("%s: RES system initialization", __FUNCTION__);
 
     resDescMax = DEFAULT_RESMAX;
-    gResDesc = (ResDesc *)malloc((DEFAULT_RESMAX + 1) * (sizeof(ResDesc) + sizeof(ResDesc2)));
+    gResDesc = (ResDesc *)calloc(DEFAULT_RESMAX + 1, sizeof(ResDesc) + sizeof(ResDesc2));
     if (gResDesc == NULL)
         ERROR("ResInit: Can't allocate the global resource descriptor table.");
     gResDesc2 = (ResDesc2 *)(gResDesc + (DEFAULT_RESMAX + 1));
