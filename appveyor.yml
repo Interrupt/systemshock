@@ -13,7 +13,12 @@ environment:
 # Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
 # Uncache build_ext if external deps change
 cache:
+    - res/music.sf2
 #  - build_ext  
+
+# CMake refuses to generate MinGW Makefiles if sh.exe is in the Path
+install:
+    - ps: Get-Command sh.exe -All | Remove-Item
 
 # Actual build script..
 # Step 1: Git has to reside in a path without spaces because the SDL build script is weird like that.
@@ -26,7 +31,7 @@ build_script:
   - set PATH=c:\git\usr\bin;%PATH%;C:\MinGW\bin
   - copy windows\make.exe \git\usr\bin
   - set CMAKE_MAKE_PROGRAM=c:\git\usr\bin\make.exe
-  - sh build_windows.sh
+  - c:\git\bin\sh build_windows.sh
   - build.bat
 
 # For now, we don't have any automatic tests to run
