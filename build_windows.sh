@@ -64,7 +64,7 @@ function build_fluidsynth {
 	sed -i 's/DLL"\ off/DLL"\ on/' CMakeLists.txt
 	# if building fluidsynth fails, move on without it
 	set +e
-	cmake -G "${CMAKE_target}" .
+	cmake -G "MinGW Makefiles" .
 	cmake --build .
 
 	# download a soundfont that's close to the Windows default everyone knows
@@ -102,16 +102,17 @@ mkdir ./build_ext/
 cd ./build_ext/
 install_dir=`pwd -W`
 
-build_sdl
-build_sdl_mixer
-build_glew
-
 if ! [ -x "$(command -v cmake)" ]; then
 	echo "Getting CMake"
 	get_cmake
 fi
 
 build_fluidsynth
+
+build_sdl
+build_sdl_mixer
+build_glew
+
 
 # Back to the root directory, copy required DLL files for the executable
 cd ..
