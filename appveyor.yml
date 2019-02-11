@@ -25,6 +25,7 @@ build_script:
   - mklink /D c:\git "C:\Program Files\Git"
   - set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
   - set PATH=c:\git\usr\bin;%PATH%;C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\bin
+  - dir C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\
   - copy windows\make.exe \git\usr\bin
   - set CMAKE_MAKE_PROGRAM=c:\git\usr\bin\make.exe
   - sh build_windows.sh
