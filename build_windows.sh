@@ -102,16 +102,17 @@ mkdir ./build_ext/
 cd ./build_ext/
 install_dir=`pwd -W`
 
-build_sdl
-build_sdl_mixer
-build_glew
-
 if ! [ -x "$(command -v cmake)" ]; then
 	echo "Getting CMake"
 	get_cmake
 fi
 
 build_fluidsynth
+
+build_sdl
+build_sdl_mixer
+build_glew
+
 
 # Back to the root directory, copy required DLL files for the executable
 cd ..
