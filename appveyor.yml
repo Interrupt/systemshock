@@ -16,10 +16,6 @@ cache:
     - res/music.sf2
 #  - build_ext  
 
-# CMake refuses to generate MinGW Makefiles if sh.exe is in the Path
-install:
-    - ps: Get-Command sh.exe -All | Remove-Item
-
 # Actual build script..
 # Step 1: Git has to reside in a path without spaces because the SDL build script is weird like that.
 #         So we create a symlink to the real Git, remove it from PATH and add our own.
@@ -28,10 +24,10 @@ install:
 build_script:
   - mklink /D c:\git "C:\Program Files\Git"
   - set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
-  - set PATH=c:\git\usr\bin;%PATH%;C:\MinGW\bin
+  - set PATH=c:\git\usr\bin;%PATH%;C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\bin
   - copy windows\make.exe \git\usr\bin
   - set CMAKE_MAKE_PROGRAM=c:\git\usr\bin\make.exe
-  - c:\git\bin\sh build_windows.sh
+  - sh build_windows.sh
   - build.bat
 
 # For now, we don't have any automatic tests to run
