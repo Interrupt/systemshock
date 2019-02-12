@@ -214,7 +214,7 @@ void ResCloseFile(int32_t filenum) {
 
     // Make sure file is open
     if (resFile[filenum].fd == NULL) {
-        WARN("%s: filenum %d not in use", __FUNCTION__);
+        WARN("%s: filenum %d not in use", __FUNCTION__, filenum);
         return;
     }
 
