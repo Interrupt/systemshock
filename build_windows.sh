@@ -7,8 +7,7 @@ GLEW_version=2.1.0
 CMAKE_version=3.11.3
 #CMAKE_architecture=win64-x64
 CMAKE_architecture=win32-x86
-
-	CMAKE_target=Unix\ Makefiles
+CMAKE_target=Unix\ Makefiles
 
 # Removing the mwindows linker option lets us get console output
 function remove_mwindows {
@@ -60,11 +59,11 @@ function build_fluidsynth {
 	sed -i 's/DLL"\ off/DLL"\ on/' CMakeLists.txt
 	# if building fluidsynth fails, move on without it
 	set +e
-	cmake -G "${CMAKE_target}"
+	cmake -G "${CMAKE_target}" .
 	cmake --build .
 
 	# download a soundfont that's close to the Windows default everyone knows
-	# curl -o music.sf2 http://rancid.kapsi.fi/windows.sf2
+	curl -o music.sf2 http://rancid.kapsi.fi/windows.sf2
 	set -e
 	popd
 }
