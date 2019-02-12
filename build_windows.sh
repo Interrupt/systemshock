@@ -8,11 +8,7 @@ CMAKE_version=3.11.3
 #CMAKE_architecture=win64-x64
 CMAKE_architecture=win32-x86
 
-if [[ -z "${APPVEYOR}" ]]; then
-	CMAKE_target=MinGW\ Makefiles
-else
 	CMAKE_target=Unix\ Makefiles
-fi
 
 # Removing the mwindows linker option lets us get console output
 function remove_mwindows {
@@ -68,7 +64,7 @@ function build_fluidsynth {
 	cmake --build .
 
 	# download a soundfont that's close to the Windows default everyone knows
-	curl -o music.sf2 http://rancid.kapsi.fi/windows.sf2
+	# curl -o music.sf2 http://rancid.kapsi.fi/windows.sf2
 	set -e
 	popd
 }
