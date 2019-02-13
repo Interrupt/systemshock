@@ -41,7 +41,7 @@ ENDIF(OPENGL_FOUND)
 set(SDL2_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl)
 
 set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include/SDL2)
-set(SDL2_LIBRARIES "${SDL2_DIR}/lib/libSDL2main.a ${SDL2_DIR}/lib/libSDL2.dll.a")
+set(SDL2_LIBRARIES "${SDL2_DIR}/lib/libSDL2main.a; ${SDL2_DIR}/lib/libSDL2.dll.a")
 
 # and SDL mixer
 
