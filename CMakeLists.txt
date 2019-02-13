@@ -41,14 +41,18 @@ ENDIF(OPENGL_FOUND)
 set(SDL2_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl)
 
 set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include/SDL2)
-set(SDL2_LIBRARIES "${SDL2_DIR}/lib/libSDL2main.a;${SDL2_DIR}/lib/libSDL2.dll.a")
+find_library(SDL2_LIBRARY SDL2 PATHS ${SDL2_DIR}/lib)
+find_library(SDL2MAIN_LIBRARY SDL2main PATHS ${SDL2_DIR}/lib)
+set(SDL2_LIBRARIES "${SDL2_LIBRARY};${SDL2MAIN_LIBRARY}")
+
 
 # and SDL mixer
 
 set(SDL2_MIXER_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl_mixer)
 
 set(SDL2_MIXER_INCLUDE_DIRS ${SDL2_MIXER_DIR}/include/SDL2)
-set(SDL2_MIXER_LIBRARIES ${SDL2_MIXER_DIR}/lib/libSDL2_mixer.dll.a)
+find_library(SDL2_MIXER_LIBRARY SDL2_mixer PATHS ${SDL2_MIXER_DIR}/lib)
+set(SDL2_MIXER_LIBRARIES ${SDL2_MIXER_LIBRARY})
 
 add_definitions(-DUSE_SDL_MIXER=1)
 
