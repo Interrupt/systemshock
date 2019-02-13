@@ -33,7 +33,7 @@ function build_sdl_mixer {
 	tar xf SDL2_mixer-${SDL2_mixer_version}.tar.gz
 	pushd SDL2_mixer-${SDL2_mixer_version}
 	
-	export SDL2_CONFIG="/usr/local/bin/sdl2-config"
+	export SDL2_CONFIG="${install_dir}/built_sdl/bin/sdl2-config"
 	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --prefix=${install_dir}/built_sdl_mixer
 	make -j2
 	make install
