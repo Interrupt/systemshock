@@ -3330,6 +3330,11 @@ void install_motion_mouse_handler(LGRegion *r, frc *fr) {
     view3d_data *data = (view3d_data *)malloc(sizeof(view3d_data));
     data->ldown = FALSE;
     data->rdown = FALSE;
+    data->lastsect = 0;
+    data->lastleft.x = 0;
+    data->lastleft.y = 0;
+    data->lastright.x = 0;
+    data->lastright.y = 0;
     data->fr = fr;
     uiInstallRegionHandler(r, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE | UI_EVENT_USER_DEFINED,
                            (uiHandlerProc)view3d_mouse_handler, data, &cid);

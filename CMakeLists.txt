@@ -66,6 +66,12 @@ include_directories(
 	${SDL2_MIXER_INCLUDE_DIRS}
 )
 
+message(STATUS "Found SDL2 Include:${SDL2_INCLUDE_DIRS} Library:${SDL2_LIBRARIES}")
+message(STATUS "Found SDL2_Mixer Include:${SDL2_MIXER_INCLUDE_DIRS} Library:${SDL2_MIXER_LIBRARIES}")
+
+# Find FluidSynth
+find_library(FLUIDSYNTH_LIBRARY fluidsynth)
+
 # for now I'll put a Carbon/Carbon.h into src/stubs/
 # that defines Mac-specific types and provides stubs for used functions
 # like GetResource()
@@ -85,6 +91,7 @@ set(MAC_SRC
 	src/MacSrc/Modding.c
 	src/MacSrc/OpenGL.cc
 	src/MacSrc/Xmi.c
+	src/MusicSrc/MusicDevice.c
 )
 
 set(GAME_SRC
@@ -226,6 +233,7 @@ include_directories(
 	src/Libraries/adlmidi/include
 	src/GameSrc/Headers
 	src/MacSrc
+	src/MusicSrc
 )
 
 if(ENABLE_EXAMPLES)
@@ -336,6 +344,11 @@ target_link_libraries(systemshock
 	${SDL2_MIXER_LIBRARIES}
 	${OPENGL_LIBRARIES}
 )
+
+if(FLUIDSYNTH_LIBRARY)
+  add_definitions("-DUSE_FLUIDSYNTH=1")
+  target_link_libraries(systemshock "${FLUIDSYNTH_LIBRARY}")
+endif()
 
 if (WIN32)
 	include_directories(${CMAKE_SOURCE_DIR}/build_ext/built_glew/include)
