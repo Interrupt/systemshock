@@ -47,6 +47,6 @@ build_sdl_mixer
 cd ..
 
 # Clean up download artifacts if building locally
-if [[ -z "${TRAVIS}" ]]; then
+if [[ -z "$TRAVIS" ]]; then
 	rm -rf build_ext/
 fi
