@@ -4,9 +4,7 @@ notifications:
   email: false
 
 env:
-  global:
-    - TRAVIS="true"
-    - PACKAGE_NAME="shockolate-$TRAVIS_OS_NAME.tgz"
+  - PACKAGE_NAME="shockolate-$TRAVIS_OS_NAME.tgz"
 
 matrix:
   include:
@@ -32,7 +30,7 @@ addons:
       - libgl1-mesa-dev:i386
 
 script:
-  - sudo ./osx-linux/install_32bit_sdl.sh
+  - sudo TRAVIS=$TRAVIS ./osx-linux/install_32bit_sdl.sh
   - cmake -DCMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu .
   - make -j2 systemshock
 
