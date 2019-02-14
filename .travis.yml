@@ -33,8 +33,6 @@ script:
   - sudo TRAVIS=$TRAVIS TRAVIS_OS_NAME=$TRAVIS_OS_NAME ./osx-linux/install_32bit_sdl.sh
   - cmake -DCMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu .
   - make -j2 systemshock
-
-before_deploy:
   - mkdir -p shockolate
   - cp systemshock shockolate
   - cp osx-linux/install_32bit_sdl.sh shockolate
@@ -44,6 +42,8 @@ before_deploy:
   - cp -r shaders shockolate/
   - cp readme/readme-linux.txt shockolate/readme.txt
   - tar zcfv $PACKAGE_NAME shockolate
+
+before_deploy:
   - rm -r shockolate
 
 deploy:

@@ -52,7 +52,7 @@ if [[ -z "$TRAVIS" ]]; then
 else
 	mkdir ./lib/
 	cp build_ext/built_sdl/lib/libSDL2main.a lib/
-	if [[ "$TRAVIS_OS_NAME" = "linux" ]]
+	if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then
 		cp build_ext/built_sdl/lib/libSDL2.so lib/
 		cp build_ext/built_sdl_mixer/lib/libSDL2_mixer.so lib/
 	else
