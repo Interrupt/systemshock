@@ -52,10 +52,11 @@ if [[ -z "$TRAVIS" ]]; then
 else
 	mkdir ./lib/
 	cp build_ext/built_sdl/lib/libSDL2main.a lib/
-	cp build_ext/built_sdl/lib/lib*.so lib/
-	cp build_ext/built_sdl_mixer/lib/lib*.so lib/
-	cp build_ext/built_sdl/lib/lib*.dylib lib/
-	cp build_ext/built_sdl_mixer/lib/lib*.dylib lib/
+	for i in build_ext/built_sdl/lib/*.so; do [ -f "$i" ] || break; cp $i lib/; done;
+	for i in build_ext/built_sdl/lib/*.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
+
+	for i in build_ext/built_sdl_mixer/lib/*.so; do [ -f "$i" ] || break; cp $i lib/; done;
+	for i in build_ext/built_sdl_mixer/lib/*.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
 	ls -la lib/
 fi
 
