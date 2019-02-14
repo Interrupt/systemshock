@@ -50,7 +50,7 @@ build_sdl_mixer
 
 cd ..
 
-if [[ -n "$TRAVIS" ]]; then
+if [[ -z "$TRAVIS" ]]; then
 	mkdir ./lib/
 	cp build_ext/built_sdl/lib/libSDL2main.a lib/
 	for i in build_ext/built_sdl/lib/libSDL2.so; do [ -f "$i" ] || break; cp $i lib/; done;
