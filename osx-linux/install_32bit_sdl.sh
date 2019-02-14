@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
 
-# Setting up 
-
 set -euo pipefail
 
 SDL_version=2.0.9
 SDL2_mixer_version=2.0.4
+
+if [ -d ./build_ext/ ]; then
+	echo A directory named build_ext already exists.
+	echo Please remove it if you want to recompile.
+	exit
+fi
+
+mkdir ./build_ext/
+cd ./build_ext/
+
+install_dir=$(pwd)
 
 function build_sdl {
 	curl -O https://www.libsdl.org/release/SDL2-${SDL_version}.tar.gz
@@ -32,31 +41,20 @@ function build_sdl_mixer {
 	popd
 }
 
-# Actual script starts here
-
-if [ -d ./build_ext/ ]; then
-	echo A directory named build_ext already exists.
-	echo Please remove it if you want to recompile.
-	exit
-fi
-
-mkdir ./build_ext/
-cd ./build_ext/
-
-install_dir=$(pwd)
-
 build_sdl
 build_sdl_mixer
 
 cd ..
 
-# Create lib directory and clean up download artifacts 
-mkdir ./lib/
-cp build_ext/built_sdl/lib/libSDL2main.a lib/
-for i in build_ext/built_sdl/lib/libSDL2.so; do [ -f "$i" ] || break; cp $i lib/; done;
-for i in build_ext/built_sdl/lib/libSDL2.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
+# Create lib directory and clean up download artifacts if building locally
+if [[ -n "$TRAVIS" ]]; then
+	mkdir ./lib/
+	cp build_ext/built_sdl/lib/libSDL2main.a lib/
+	for i in build_ext/built_sdl/lib/libSDL2.so; do [ -f "$i" ] || break; cp $i lib/; done;
+	for i in build_ext/built_sdl/lib/libSDL2.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
 
-for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.so; do [ -f "$i" ] || break; cp $i lib/; done;
-for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
+	for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.so; do [ -f "$i" ] || break; cp $i lib/; done;
+	for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
+	rm -rf build_ext/
+fi
 
-rm -rf build_ext/
