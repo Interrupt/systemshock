@@ -46,9 +46,6 @@ build_sdl_mixer
 
 cd ..
 
-# Feel free to come up with a better way to distinguish between host OS's
-os_name = $(uname -s)
-
 # Create lib directory and clean up download artifacts if building locally
 if [[ -z "$TRAVIS" ]]; then
 	rm -rf build_ext/
