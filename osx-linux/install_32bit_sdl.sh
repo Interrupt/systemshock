@@ -46,7 +46,18 @@ build_sdl_mixer
 
 cd ..
 
-# Clean up download artifacts if building locally
+# Create lib directory and clean up download artifacts if building locally
 if [[ -z "$TRAVIS" ]]; then
 	rm -rf build_ext/
+else
+	mkdir ./lib/
+	cp build_ext/built_sdl/lib/libSDL2main.a lib/
+	if [[ "$TRAVIS_OS_NAME" = "linux" ]]
+		cp build_ext/built_sdl/lib/libSDL2.so lib/
+		cp build_ext/built_sdl_mixer/lib/libSDL2_mixer.so lib/
+	else
+		cp build_ext/built_sdl/lib/libSDL2.dylib lib/
+		cp build_ext/built_sdl_mixer/lib/libSDL2_mixer.dylib lib/
+	fi
+	ls -la lib/
 fi
