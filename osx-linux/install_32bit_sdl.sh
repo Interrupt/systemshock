@@ -46,18 +46,19 @@ build_sdl_mixer
 
 cd ..
 
+# Feel free to come up with a better way to distinguish between host OS's
+os_name = $(uname -s)
+
 # Create lib directory and clean up download artifacts if building locally
 if [[ -z "$TRAVIS" ]]; then
 	rm -rf build_ext/
 else
 	mkdir ./lib/
 	cp build_ext/built_sdl/lib/libSDL2main.a lib/
-	if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then
-		cp build_ext/built_sdl/lib/libSDL2.so lib/
-		cp build_ext/built_sdl_mixer/lib/libSDL2_mixer.so lib/
-	else
-		cp build_ext/built_sdl/lib/libSDL2.dylib lib/
-		cp build_ext/built_sdl_mixer/lib/libSDL2_mixer.dylib lib/
-	fi
+	cp build_ext/built_sdl/lib/lib*.so lib/
+	cp build_ext/built_sdl_mixer/lib/lib*.so lib/
+	cp build_ext/built_sdl/lib/lib*.dylib lib/
+	cp build_ext/built_sdl_mixer/lib/lib*.dylib lib/
 	ls -la lib/
 fi
+
