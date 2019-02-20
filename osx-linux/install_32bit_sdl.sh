@@ -35,7 +35,13 @@ function build_sdl_mixer {
 function build_fluidsynth {
 	git clone https://github.com/Doom64/fluidsynth-lite.git
 	pushd fluidsynth-lite
+
+	# force compilation of dynamic library
 	sed -i'' -e 's/DLL\"\ off/DLL\"\ on/' CMakeLists.txt
+	
+	# force 32bit compilation
+	sed -i'' -e 's/\${GNUCC_WARNING_FLAGS}/-m32 \${GNUCC_WARNING_FLAGS}/' CMakeLists.txt
+	
 	# if building fluidsynth fails, move on without it
 	set +e
 	cmake .
