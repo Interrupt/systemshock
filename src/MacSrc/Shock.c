@@ -97,6 +97,8 @@ SDL_Window* window;
 SDL_Palette* sdlPalette;
 SDL_Renderer* renderer;
 
+SDL_AudioDeviceID device;
+
 char window_title[128];
 int num_args;
 char** arg_values;

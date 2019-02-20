@@ -74,7 +74,7 @@ message(STATUS "Found SDL2 Include:${SDL2_INCLUDE_DIRS} Library:${SDL2_LIBRARIES
 message(STATUS "Found SDL2_Mixer Include:${SDL2_MIXER_INCLUDE_DIRS} Library:${SDL2_MIXER_LIBRARIES}")
 
 # Find FluidSynth
-find_library(FLUIDSYNTH_LIBRARY fluidsynth)
+find_library(FLUIDSYNTH_LIBRARY fluidsynth PATHS build_ext/fluidsynth-lite/src)
 
 # for now I'll put a Carbon/Carbon.h into src/stubs/
 # that defines Mac-specific types and provides stubs for used functions
@@ -350,8 +350,10 @@ target_link_libraries(systemshock
 )
 
 if(FLUIDSYNTH_LIBRARY)
+  message(STATUS "Fluidsynth found")
   add_definitions("-DUSE_FLUIDSYNTH=1")
   target_link_libraries(systemshock "${FLUIDSYNTH_LIBRARY}")
+  include_directories(${CMAKE_SOURCE_DIR}/build_ext/fluidsynth-lite/include)
 endif()
 
 if (WIN32)
