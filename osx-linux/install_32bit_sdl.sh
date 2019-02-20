@@ -32,6 +32,22 @@ function build_sdl_mixer {
 	popd
 }
 
+function build_fluidsynth {
+	git clone https://github.com/Doom64/fluidsynth-lite.git
+	pushd fluidsynth-lite
+	sed -i 's/DLL"\ off/DLL"\ on/' CMakeLists.txt
+	# if building fluidsynth fails, move on without it
+	set +e
+	cmake -G "${CMAKE_target}" .
+	cmake --build .
+
+	# download a soundfont that's close to the Windows default everyone knows
+	curl -o music.sf2 http://rancid.kapsi.fi/windows.sf2
+	set -e
+	popd
+}
+
+
 # Actual script starts here
 
 if [ -d ./build_ext/ ]; then
@@ -45,6 +61,7 @@ cd ./build_ext/
 
 install_dir=$(pwd)
 
+build_fluidsynth
 build_sdl
 build_sdl_mixer
 
@@ -52,11 +69,19 @@ cd ..
 
 if [[ -z "$TRAVIS" ]]; then
 	mkdir ./lib/
+	for i in build_ext/fluidsynth-lite/src/*.so; do [ -f "$i" ] || break; cp $i lib/; done;
+	for i in build_ext/fluidsynth-lite/src/*.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
+
 	cp build_ext/built_sdl/lib/libSDL2main.a lib/
 	for i in build_ext/built_sdl/lib/libSDL2.so; do [ -f "$i" ] || break; cp $i lib/; done;
 	for i in build_ext/built_sdl/lib/libSDL2.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
 
 	for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.so; do [ -f "$i" ] || break; cp $i lib/; done;
-	for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
-	rm -rf build_ext/
+	for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.dylib; do [ -f "$i" ] || break; cp $i lib/; done;	
+
+	# move the soundfont to the correct place if we successfully built fluidsynth
+	for i in build_ext/fluidsynth-lite/*.sf2; do [ -f "$i" ] || break; mv $i res/; done;	
+
+	# clean the build artifacts
+	rm -rf build_ext/	
 fi
