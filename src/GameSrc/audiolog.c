@@ -74,6 +74,7 @@ extern uchar curr_vol_lev;
 extern uchar curr_alog_vol;
 extern char which_lang;
 
+extern SDL_AudioDeviceID device;
 
 
 extern void MacTuneUpdateVolume(void);
@@ -137,7 +138,7 @@ errtype audiolog_play(int email_id)
   DEBUG("%s: Playing email", __FUNCTION__);
     
 
-  SDL_PauseAudio(1);
+  SDL_PauseAudioDevice(device, 1);
   SDL_Delay(1);
 
   cutscene_audiostream = SDL_NewAudioStream(AUDIO_U8, 1, fix_int(palog->a.sampleRate), AUDIO_S16SYS, 2, 48000);
@@ -180,7 +181,7 @@ void audiolog_stop(void)
 
   if (cutscene_audiostream != NULL)
   {
-    SDL_PauseAudio(1);
+    SDL_PauseAudioDevice(device, 1);
     SDL_Delay(1);
 
     SDL_FreeAudioStream(cutscene_audiostream);
@@ -214,7 +215,7 @@ errtype audiolog_loop_callback(void)
 {
   if (cutscene_audiostream)
   {
-    SDL_PauseAudio(0);
+    SDL_PauseAudioDevice(device, 0);
   
     if (audiolog_audiobuffer_size > 0)
     {
