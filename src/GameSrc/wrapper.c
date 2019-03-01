@@ -55,6 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "popups.h"
 #include "olhext.h"
+#include "Xmi.h"
 #include "Prefs.h"
 
 #include "OpenGL.h"
@@ -361,11 +362,19 @@ uchar fv;
 #define REF_STR_Software 0x10000001
 #define REF_STR_OpenGL   0x10000002
 
+#define REF_STR_Seqer    0x20000000
+#define REF_STR_ADLMIDI  0x20000001
+#define REF_STR_FluidSyn 0x20000002
+
 static char *_get_temp_string(int num) {
     switch (num) {
         case REF_STR_Renderer: return "Renderer";
         case REF_STR_Software: return "Software";
         case REF_STR_OpenGL:   return "OpenGL";
+
+	case REF_STR_Seqer:   return "Midi Player";
+	case REF_STR_ADLMIDI:  return "ADLMIDI";
+	case REF_STR_FluidSyn: return "FluidSynth";
         default: return get_temp_string(num);
     }
 }
@@ -1402,6 +1411,10 @@ void digichan_dealfunc(short val) {
     // snd_set_digital_channels(cur_digi_channels);
 }
 
+static void seqer_dealfunc(bool use_sequencer) {
+    ReloadDecXMI(); // Reload Midi decoder
+}
+
 #pragma enable_message(202)
 
 #define SLIDER_OFFSET_3 0
@@ -1429,6 +1442,14 @@ void soundopt_screen_init() {
     retkey = tolower(get_temp_string(REF_STR_MusicText + 3)[0]);
     multi_init(i, retkey, REF_STR_MusicText + 3, REF_STR_AudiologState, ID_NULL, sizeof(audiolog_setting),
                &audiolog_setting, 3, audiolog_dealfunc, &r);
+    i++;
+#endif
+
+#ifdef USE_FLUIDSYNTH
+    standard_button_rect(&r, i, 2, 2, 5);
+    multi_init(i, 'p', REF_STR_Seqer, REF_STR_ADLMIDI, ID_NULL,
+               sizeof(gShockPrefs.soMidiBackend), &gShockPrefs.soMidiBackend, 2, seqer_dealfunc, &r);
+
     i++;
 #endif
 
