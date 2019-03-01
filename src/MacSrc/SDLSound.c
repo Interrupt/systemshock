@@ -42,8 +42,6 @@ int snd_start_digital(void) {
              obtained.freq, obtained.size, obtained.format, obtained.channels, obtained.samples);
     }
 
-    SDL_PauseAudioDevice(device, 0);
-
 
     if (Mix_Init(MIX_INIT_MP3) < 0) {ERROR("%s: Init failed", __FUNCTION__);}
 
