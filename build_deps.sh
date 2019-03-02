@@ -50,6 +50,10 @@ function build_fluidsynth {
 	sed -i 's/DLL"\ off/DLL"\ on/' CMakeLists.txt
 	# if building fluidsynth fails, move on without it
 	set +e
+
+	export CFLAGS="-m32"
+	export CXXFLAGS="-m32"
+
 	cmake .
 	cmake --build .
 
