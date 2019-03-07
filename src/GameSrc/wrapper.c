@@ -364,7 +364,8 @@ uchar fv;
 
 #define REF_STR_Seqer    0x20000000
 #define REF_STR_ADLMIDI  0x20000001
-#define REF_STR_FluidSyn 0x20000002
+#define REF_STR_NativeMI 0x20000002
+#define REF_STR_FluidSyn 0x20000003 // this has to be last because it is optional
 
 static char *_get_temp_string(int num) {
     switch (num) {
@@ -372,9 +373,11 @@ static char *_get_temp_string(int num) {
         case REF_STR_Software: return "Software";
         case REF_STR_OpenGL:   return "OpenGL";
 
-	case REF_STR_Seqer:   return "Midi Player";
-	case REF_STR_ADLMIDI:  return "ADLMIDI";
-	case REF_STR_FluidSyn: return "FluidSynth";
+        case REF_STR_Seqer:    return "Midi Player";
+        case REF_STR_ADLMIDI:  return "ADLMIDI";
+        case REF_STR_NativeMI: return "Native MIDI";
+        case REF_STR_FluidSyn: return "FluidSynth";
+
         default: return get_temp_string(num);
     }
 }
@@ -1446,12 +1449,15 @@ void soundopt_screen_init() {
 #endif
 
 #ifdef USE_FLUIDSYNTH
+    const uchar numSynths = 3;
+#else
+    const uchar numSynths = 2;
+#endif
     standard_button_rect(&r, i, 2, 2, 5);
     multi_init(i, 'p', REF_STR_Seqer, REF_STR_ADLMIDI, ID_NULL,
-               sizeof(gShockPrefs.soMidiBackend), &gShockPrefs.soMidiBackend, 2, seqer_dealfunc, &r);
+               sizeof(gShockPrefs.soMidiBackend), &gShockPrefs.soMidiBackend, numSynths, seqer_dealfunc, &r);
 
     i++;
-#endif
 
     standard_button_rect(&r, 5, 2, 2, 5);
     retkey = tolower(get_temp_string(REF_STR_MusicText + 2)[0]);

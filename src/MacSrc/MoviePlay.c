@@ -397,7 +397,7 @@ void PlayVMail(FSSpec *movieSpec, short orgx, short orgy)
 	for (i=0; i<2; i++)
 		DisposeMovie(theMovie[i]);*/
 
-	ShowCursor();
+	SS_ShowCursor();
 }
 
 

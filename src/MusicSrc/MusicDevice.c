@@ -188,6 +188,376 @@ static MusicDevice *createAdlMidiDevice()
 }
 
 //------------------------------------------------------------------------------
+// Native OS MIDI
+//
+// Currently only supports Windows MCI MIDI
+// could support coremidi on OSX in the future?
+// this devolves into another null driver on unsupported configurations
+
+#ifdef WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#include <mmsystem.h>
+#endif
+
+typedef struct
+{
+    MusicDevice dev;
+#ifdef WIN32
+    // TODO: implementation-specific handles/data go here
+    HMIDIOUT outHandle;
+//    MIDIHDR hdr;
+//    HANDLE event;
+    WINBOOL isOpen;
+#endif
+} NativeMidiDevice;
+
+// all standard MIDI message types
+// these go in the high nibble of status byte
+// low nibble is used for channel #
+// source: http://midi.teragonaudio.com/tech/midispec.htm
+typedef enum
+{
+    MME_NOTE_OFF         = 0x8,
+    MME_NOTE_ON          = 0x9,
+    MME_AFTERTOUCH       = 0xA,
+    MME_CONTROL_CHANGE   = 0xB,
+    MME_PROGRAM_CHANGE   = 0xC,
+    MME_CHANNEL_PRESSURE = 0xD,
+    MME_PITCH_WHEEL      = 0xE
+} MidiMessageEnum;
+
+// data1 byte for MSE_CONTROL_CHANGE message
+// this is a relevant subset, because there are dozens
+// source: http://midi.teragonaudio.com/tech/midispec.htm
+typedef enum
+{
+    MCE_ALL_SOUND_OFF       = 120,
+    MCE_ALL_CONTROLLERS_OFF = 121
+} MidiControllerEnum;
+
+#define NM_CLAMP15(x)  ((UCHAR)((UCHAR)(x) & 0x0F))
+#define NM_CLAMP127(x) ((UCHAR)((UCHAR)(x) & 0x7F))
+#define NM_CLAMP255(x) ((UCHAR)((UCHAR)(x) & 0xFF))
+
+#ifdef WIN32
+// this is an internal-only function
+inline static void NativeMidiSendMessage(
+    HMIDIOUT outHandle,
+    const MidiMessageEnum message,
+    const UCHAR channel,
+    const UCHAR data1,
+    const UCHAR data2)
+{
+/*
+    DWORD data = NM_CLAMP15(message); // 0000000M
+    data <<= 4;                       // 000000M0
+    data |= NM_CLAMP15(channel);      // 000000MC
+    data <<= 8;                       // 0000MC00
+    data |= NM_CLAMP255(data1);       // 0000MCD1
+    data <<= 8;                       // 00MCD100
+    data |= NM_CLAMP255(data2);       // 00MCD1D2
+*/
+    union {
+        DWORD dwData;
+        UCHAR bData[4];
+    } u;
+    u.bData[0] = NM_CLAMP15(message) << 4 | NM_CLAMP15(channel);
+    u.bData[1] = NM_CLAMP127(data1);
+    u.bData[2] = NM_CLAMP127(data2);
+    u.bData[3] = 0;
+
+    INFO("NativeMidiSendMessage(): Sending MIDI data: 0x%08X", u.dwData);
+//    const unsigned long err = midiOutShortMsg(outHandle, data);
+    const unsigned long err = midiOutShortMsg(outHandle, u.dwData);
+    if (err)
+    {
+        static char buffer[1024];
+        midiOutGetErrorText(err, &buffer[0], 1024);
+        WARN("NativeMidiSendMessage(): midiOutShortMsg() error: %s", &buffer[0]);
+    }
+}
+#endif
+
+//static void NativeMidiReset(MusicDevice *dev);
+
+static int NativeMidiInit(MusicDevice *dev, unsigned samplerate)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return 0;
+#ifdef WIN32
+    static int openCount = 0;
+    INFO("NativeMidiInit(): attempting native midi open; openCount=%d", ++openCount);
+    if (ndev->isOpen)
+    {
+        WARN("NativeMidiInit(): native midi already open");
+        return 0;
+    }
+//    ndev->event = CreateEvent(NULL, TRUE, TRUE, NULL);
+    // just open midi mapper for now
+    // TODO: add device picker UI?
+//    MMRESULT res = midiOutOpen(&(ndev->out), MIDI_MAPPER, (DWORD_PTR)(ndev->event), 0, CALLBACK_EVENT);
+    MMRESULT res = midiOutOpen(&(ndev->outHandle), MIDI_MAPPER, 0, 0, CALLBACK_NULL);
+    if (res != MMSYSERR_NOERROR)
+    {
+        WARN("NativeMidiInit(): native midi open failed with result %d", res);
+        return 0;
+    }
+    INFO("NativeMidiInit(): native midi open succeeded");
+    ndev->isOpen = TRUE;
+//    NativeMidiReset(dev);
+#endif
+
+    // suppress compiler warnings
+    (void)samplerate;
+
+    return 0;
+}
+
+static void NativeMidiDestroy(MusicDevice *dev)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+#ifdef WIN32
+    if (ndev->isOpen)
+    {
+        INFO("NativeMidiDestroy(): closing native midi");
+        //    NativeMidiReset(dev);
+        midiOutClose(ndev->outHandle);
+//        CloseHandle(ndev->event);
+        ndev->isOpen = FALSE;
+    }
+    else
+    {
+        WARN("NativeMidiDestroy(): native midi already closed");
+    }
+#endif
+    free(ndev);
+}
+
+static void NativeMidiSetupMode(MusicDevice *dev, MusicMode mode)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+
+    // nothing to do?
+
+    // suppress compiler warnings
+    (void)mode;
+}
+
+static void NativeMidiReset(MusicDevice *dev)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+#ifdef WIN32
+    if (!ndev->isOpen)
+    {
+        WARN("NativeiMidiReset(): native midi not open");
+        return;
+    }
+    INFO("NativeMidiReset(): sending native midi resets");
+    // send All Sound Off and All Controllers Off control changes
+    // these are not channel specific and have no supplemental data
+    for (UCHAR chan = 0; chan <= 15; ++chan)
+    {
+        NativeMidiSendMessage(ndev->outHandle,
+                              MME_CONTROL_CHANGE, chan, MCE_ALL_SOUND_OFF, 0);
+        NativeMidiSendMessage(ndev->outHandle,
+                              MME_CONTROL_CHANGE, chan, MCE_ALL_CONTROLLERS_OFF, 0);
+    }
+#endif
+}
+
+static void NativeMidiGenerate(MusicDevice *dev, short *samples, int numframes)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+
+    // nothing to do, as this synth does not generate sound samples to be mixed
+    //  by the game engine
+
+#ifdef WIN32
+    // suppress compiler warnings
+    (void)samples;
+    (void)numframes;
+#endif
+}
+
+static void NativeMidiSendNoteOff(MusicDevice *dev, int channel, int note, int vel)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+#ifdef WIN32
+    if (!ndev->isOpen)
+    {
+        WARN("NativeMidiSendNoteOff(): native midi not open");
+        return;
+    }
+    INFO("NativeMidiSendNoteOff(): sending note off: channel %d, note %d, velocity %d", channel, note, vel);
+    // send note off
+    // yes, velocity is potentially relevant
+    NativeMidiSendMessage(ndev->outHandle,
+                          MME_NOTE_OFF,
+                          NM_CLAMP15(channel),
+                          NM_CLAMP127(note),
+                          NM_CLAMP127(vel));
+#else
+    // suppress compiler warnings
+    (void)channel;
+    (void)note;
+    (void)vel;
+#endif
+}
+
+static void NativeMidiSendNoteOn(MusicDevice *dev, int channel, int note, int vel)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+#ifdef WIN32
+    if (!ndev->isOpen)
+    {
+        WARN("NativeMidiSendNoteOn(): native midi not open");
+        return;
+    }
+    INFO("NativeMidiSendNoteOn(): sending note on: channel %d, note %d, velocity %d", channel, note, vel);
+    // send note on
+    NativeMidiSendMessage(ndev->outHandle,
+                          MME_NOTE_ON,
+                          NM_CLAMP15(channel),
+                          NM_CLAMP127(note),
+                          NM_CLAMP127(vel));
+#else
+    // suppress compiler warnings
+    (void)channel;
+    (void)note;
+    (void)vel;
+#endif
+}
+
+static void NativeMidiSendNoteAfterTouch(MusicDevice *dev, int channel, int note, int touch)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+#ifdef WIN32
+    if (!ndev->isOpen) return;
+    // send note aftertouch (pressure)
+    NativeMidiSendMessage(ndev->outHandle,
+                          MME_AFTERTOUCH,
+                          NM_CLAMP15(channel),
+                          NM_CLAMP127(note),
+                          NM_CLAMP127(touch));
+#else
+    // suppress compiler warnings
+    (void)channel;
+    (void)note;
+    (void)touch;
+#endif
+}
+
+static void NativeMidiSendControllerChange(MusicDevice *dev, int channel, int ctl, int val)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+#ifdef WIN32
+    if (!ndev->isOpen) return;
+    // send control change
+    NativeMidiSendMessage(ndev->outHandle,
+                          MME_CONTROL_CHANGE,
+                          NM_CLAMP15(channel),
+                          NM_CLAMP127(ctl),
+                          NM_CLAMP127(val));
+#else
+    // suppress compiler warnings
+    (void)channel;
+    (void)ctl;
+    (void)val;
+#endif
+}
+
+static void NativeMidiSendProgramChange(MusicDevice *dev, int channel, int pgm)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+#ifdef WIN32
+    if (!ndev->isOpen) return;
+    // send program change
+    // only one data byte is used
+    NativeMidiSendMessage(ndev->outHandle,
+                          MME_PROGRAM_CHANGE,
+                          NM_CLAMP15(channel),
+                          NM_CLAMP127(pgm),
+                          0);
+#else
+    // suppress compiler warnings
+    (void)channel;
+    (void)pgm;
+#endif
+}
+
+static void NativeMidiSendChannelAfterTouch(MusicDevice *dev, int channel, int touch)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+#ifdef WIN32
+    if (!ndev->isOpen) return;
+    // send channel pressure
+    // only one data byte is used
+    NativeMidiSendMessage(ndev->outHandle,
+                          MME_CHANNEL_PRESSURE,
+                          NM_CLAMP15(channel),
+                          NM_CLAMP127(touch),
+                          0);
+#else
+    // suppress compiler warnings
+    (void)channel;
+    (void)touch;
+#endif
+}
+
+static void NativeMidiSendPitchBendML(MusicDevice *dev, int channel, int msb, int lsb)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+#ifdef WIN32
+    if (!ndev->isOpen) return;
+    // send pitch wheel
+    NativeMidiSendMessage(ndev->outHandle,
+                          MME_PITCH_WHEEL,
+                          NM_CLAMP15(channel),
+                          NM_CLAMP127(lsb),
+                          NM_CLAMP127(msb));
+#else
+    // suppress compiler warnings
+    (void)channel;
+    (void)msb;
+    (void)lsb;
+#endif
+}
+
+static MusicDevice *createNativeMidiDevice()
+{
+    NativeMidiDevice *ndev = malloc(sizeof(NativeMidiDevice));
+    ndev->dev.init = &NativeMidiInit;
+    ndev->dev.destroy = &NativeMidiDestroy;
+    ndev->dev.setupMode = &NativeMidiSetupMode;
+    ndev->dev.reset = &NativeMidiReset;
+    ndev->dev.generate = &NativeMidiGenerate;
+    ndev->dev.sendNoteOff = &NativeMidiSendNoteOff;
+    ndev->dev.sendNoteOn = &NativeMidiSendNoteOn;
+    ndev->dev.sendNoteAfterTouch = &NativeMidiSendNoteAfterTouch;
+    ndev->dev.sendControllerChange = &NativeMidiSendControllerChange;
+    ndev->dev.sendProgramChange = &NativeMidiSendProgramChange;
+    ndev->dev.sendChannelAfterTouch = &NativeMidiSendChannelAfterTouch;
+    ndev->dev.sendPitchBendML = &NativeMidiSendPitchBendML;
+    ndev->isOpen = FALSE;
+    ndev->outHandle = NULL;
+    return &ndev->dev;
+}
+
+//------------------------------------------------------------------------------
 // FluidSynth soundfont synthesizer
 
 #ifdef USE_FLUIDSYNTH
@@ -344,8 +714,6 @@ MusicDevice *CreateMusicDevice(MusicType type)
 
     switch (type)
     {
-    default:
-        break;
     case Music_None:
         dev = createNullMidiDevice();
         break;
@@ -357,6 +725,9 @@ MusicDevice *CreateMusicDevice(MusicType type)
         dev = createFluidSynthDevice();
         break;
 #endif
+    case Music_Native:
+        dev = createNativeMidiDevice();
+        break;
     }
 
     return dev;

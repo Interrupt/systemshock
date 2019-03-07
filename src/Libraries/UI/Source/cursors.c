@@ -392,7 +392,7 @@ errtype ui_init_cursor_stack(uiSlab* slab, LGCursor* default_cursor)
    return OK;
 }
 
-extern void cursor_draw_callback(mouse_event* e, void* data);
+extern void cursor_draw_callback(ss_mouse_event* e, void* data);
 extern void bitmap_cursor_drawfunc(int cmd, LGRegion* r, LGCursor* c, LGPoint pos);
 
 errtype ui_init_cursors(void)

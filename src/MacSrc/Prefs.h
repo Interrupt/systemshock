@@ -46,7 +46,7 @@ typedef struct {
     short soMusicVolume;
     short soSfxVolume;
     short soAudioLogVolume;
-    Boolean soMidiBackend;
+    short soMidiBackend; // 0 => adlmidi, 1 => native, 2 => fluidsynth
 
     // Display Options
     short doVideoMode;

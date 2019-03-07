@@ -1160,7 +1160,7 @@ uchar MacHelpFunc(short keycode, ulong context, void *data) {
 
     // CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
 
-    ShowCursor();
+    SS_ShowCursor();
 
     // ShowShockHelp();
 

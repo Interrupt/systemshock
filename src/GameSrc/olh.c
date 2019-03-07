@@ -460,7 +460,7 @@ void olh_overlay(void) {
 
     while (!done) {
         ushort key;
-        mouse_event me;
+        ss_mouse_event me;
         extern void pump_events(void);
         pump_events(); // DG: apparently this can loop for a long time waiting for input w/o game_loop() being able to
                        // update events

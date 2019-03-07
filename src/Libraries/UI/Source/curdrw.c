@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma require_prototypes off
 
 //-----------------------------------------------------------
-void cursor_draw_callback(mouse_event* e, void* data)
+void cursor_draw_callback(ss_mouse_event* e, void* data)
 {
    LGPoint pos;
 #ifndef NO_DUMMIES

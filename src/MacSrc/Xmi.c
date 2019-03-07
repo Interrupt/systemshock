@@ -635,33 +635,46 @@ void InitDecXMI(void)
   MusicDevice *musicdev = NULL;
   int musicrate = 48000;
 
-#ifdef USE_FLUIDSYNTH
-  if (!musicdev)
+  switch (gShockPrefs.soMidiBackend)
   {
-      if(gShockPrefs.soMidiBackend) 
-      {
-        INFO("try FluidSynth MIDI driver");
-        musicdev = CreateMusicDevice(Music_FluidSynth);
-        if (musicdev && musicdev->init(musicdev, musicrate) != 0)
-        {
-            musicdev->destroy(musicdev);
-            musicdev = NULL;
-        }
-      }
-  }
-#endif
-
-  if (!musicdev)
-  {
+    case 0: // adlmidi
+    {
       INFO("try ADLMIDI driver");
       musicdev = CreateMusicDevice(Music_AdlMidi);
+      if (musicdev && musicdev->init(musicdev, musicrate) != 0)
+      {
+        musicdev->destroy(musicdev);
+        musicdev = NULL;
+      }
+    }
+    break;
+    case 1: // native midi
+    {
+      INFO("try native MIDI driver");
+      musicdev = CreateMusicDevice(Music_Native);
+      if (musicdev && musicdev->init(musicdev, musicrate) != 0)
+      {
+        musicdev->destroy(musicdev);
+        musicdev = NULL;
+      }
+    }
+    break;
+#ifdef USE_FLUIDSYNTH
+    case 2: // fluidsynth
+    {
+      INFO("try FluidSynth MIDI driver");
+      musicdev = CreateMusicDevice(Music_FluidSynth);
       if (musicdev && musicdev->init(musicdev, musicrate) != 0)
       {
           musicdev->destroy(musicdev);
           musicdev = NULL;
       }
+    }
+    break;
+#endif
   }
 
+  // fallback to dummy
   if (!musicdev)
   {
       INFO("use dummy MIDI driver");
