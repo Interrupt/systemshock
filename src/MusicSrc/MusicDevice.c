@@ -269,7 +269,27 @@ inline static void NativeMidiSendMessage(
 }
 #endif
 
-//static void NativeMidiReset(MusicDevice *dev);
+static void NativeMidiReset(MusicDevice *dev)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev) return;
+#ifdef WIN32
+    if (!ndev->isOpen)
+    {
+        WARN("NativeiMidiReset(): native midi not open");
+        return;
+    }
+//    INFO("NativeMidiReset(): sending native midi resets");
+    // send All Sound Off and All Controllers Off for all channels
+    for (UCHAR chan = 0; chan <= 15; ++chan)
+    {
+        NativeMidiSendMessage(ndev->outHandle,
+                              MME_CONTROL_CHANGE, chan, MCE_ALL_SOUND_OFF, 0);
+        NativeMidiSendMessage(ndev->outHandle,
+                              MME_CONTROL_CHANGE, chan, MCE_ALL_CONTROLLERS_OFF, 0);
+    }
+#endif
+}
 
 static int NativeMidiInit(MusicDevice *dev, unsigned samplerate)
 {
@@ -296,6 +316,7 @@ static int NativeMidiInit(MusicDevice *dev, unsigned samplerate)
     }
 //    INFO("NativeMidiInit(): native midi open succeeded");
     ndev->isOpen = TRUE;
+    NativeMidiReset(dev);
 #endif
     // suppress compiler warnings
     (void)samplerate;
@@ -311,6 +332,7 @@ static void NativeMidiDestroy(MusicDevice *dev)
     if (ndev->isOpen)
     {
 //        INFO("NativeMidiDestroy(): closing native midi");
+        NativeMidiReset(dev);
         midiOutClose(ndev->outHandle);
         ndev->isOpen = FALSE;
     }
@@ -331,28 +353,6 @@ static void NativeMidiSetupMode(MusicDevice *dev, MusicMode mode)
 
     // suppress compiler warnings
     (void)mode;
-}
-
-static void NativeMidiReset(MusicDevice *dev)
-{
-    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
-    if (!ndev) return;
-#ifdef WIN32
-    if (!ndev->isOpen)
-    {
-        WARN("NativeiMidiReset(): native midi not open");
-        return;
-    }
-//    INFO("NativeMidiReset(): sending native midi resets");
-    // send All Sound Off and All Controllers Off for all channels
-    for (UCHAR chan = 0; chan <= 15; ++chan)
-    {
-        NativeMidiSendMessage(ndev->outHandle,
-                              MME_CONTROL_CHANGE, chan, MCE_ALL_SOUND_OFF, 0);
-        NativeMidiSendMessage(ndev->outHandle,
-                              MME_CONTROL_CHANGE, chan, MCE_ALL_CONTROLLERS_OFF, 0);
-    }
-#endif
 }
 
 static void NativeMidiGenerate(MusicDevice *dev, short *samples, int numframes)
