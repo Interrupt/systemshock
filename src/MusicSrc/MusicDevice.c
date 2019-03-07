@@ -526,8 +526,10 @@ static MusicDevice *createNativeMidiDevice()
     ndev->dev.sendProgramChange = &NativeMidiSendProgramChange;
     ndev->dev.sendChannelAfterTouch = &NativeMidiSendChannelAfterTouch;
     ndev->dev.sendPitchBendML = &NativeMidiSendPitchBendML;
+#ifdef WIN32
     ndev->isOpen = FALSE;
     ndev->outHandle = NULL;
+#endif
     return &(ndev->dev);
 }
 
