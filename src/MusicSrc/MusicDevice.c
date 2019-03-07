@@ -208,8 +208,6 @@ typedef struct
 #ifdef WIN32
     // TODO: implementation-specific handles/data go here
     HMIDIOUT outHandle;
-//    MIDIHDR hdr;
-//    HANDLE event;
     WINBOOL isOpen;
 #endif
 } NativeMidiDevice;
@@ -251,15 +249,6 @@ inline static void NativeMidiSendMessage(
     const UCHAR data1,
     const UCHAR data2)
 {
-/*
-    DWORD data = NM_CLAMP15(message); // 0000000M
-    data <<= 4;                       // 000000M0
-    data |= NM_CLAMP15(channel);      // 000000MC
-    data <<= 8;                       // 0000MC00
-    data |= NM_CLAMP255(data1);       // 0000MCD1
-    data <<= 8;                       // 00MCD100
-    data |= NM_CLAMP255(data2);       // 00MCD1D2
-*/
     union {
         DWORD dwData;
         UCHAR bData[4];
@@ -269,8 +258,7 @@ inline static void NativeMidiSendMessage(
     u.bData[2] = NM_CLAMP127(data2);
     u.bData[3] = 0;
 
-    INFO("NativeMidiSendMessage(): Sending MIDI data: 0x%08X", u.dwData);
-//    const unsigned long err = midiOutShortMsg(outHandle, data);
+//    INFO("NativeMidiSendMessage(): Sending MIDI data: 0x%08X", u.dwData);
     const unsigned long err = midiOutShortMsg(outHandle, u.dwData);
     if (err)
     {
@@ -288,8 +276,8 @@ static int NativeMidiInit(MusicDevice *dev, unsigned samplerate)
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev) return 0;
 #ifdef WIN32
-    static int openCount = 0;
-    INFO("NativeMidiInit(): attempting native midi open; openCount=%d", ++openCount);
+//    static int openCount = 0;
+//    INFO("NativeMidiInit(): attempting native midi open; openCount=%d", ++openCount);
     if (ndev->isOpen)
     {
         WARN("NativeMidiInit(): native midi already open");
@@ -298,18 +286,17 @@ static int NativeMidiInit(MusicDevice *dev, unsigned samplerate)
 //    ndev->event = CreateEvent(NULL, TRUE, TRUE, NULL);
     // just open midi mapper for now
     // TODO: add device picker UI?
-//    MMRESULT res = midiOutOpen(&(ndev->out), MIDI_MAPPER, (DWORD_PTR)(ndev->event), 0, CALLBACK_EVENT);
     MMRESULT res = midiOutOpen(&(ndev->outHandle), MIDI_MAPPER, 0, 0, CALLBACK_NULL);
     if (res != MMSYSERR_NOERROR)
     {
-        WARN("NativeMidiInit(): native midi open failed with result %d", res);
+        static char buffer[1024];
+        midiOutGetErrorText(res, &buffer[0], 1024);
+        WARN("NativeMidiInit(): native midi open failed with error: %s", &buffer[0]);
         return 0;
     }
-    INFO("NativeMidiInit(): native midi open succeeded");
+//    INFO("NativeMidiInit(): native midi open succeeded");
     ndev->isOpen = TRUE;
-//    NativeMidiReset(dev);
 #endif
-
     // suppress compiler warnings
     (void)samplerate;
 
@@ -323,10 +310,8 @@ static void NativeMidiDestroy(MusicDevice *dev)
 #ifdef WIN32
     if (ndev->isOpen)
     {
-        INFO("NativeMidiDestroy(): closing native midi");
-        //    NativeMidiReset(dev);
+//        INFO("NativeMidiDestroy(): closing native midi");
         midiOutClose(ndev->outHandle);
-//        CloseHandle(ndev->event);
         ndev->isOpen = FALSE;
     }
     else
@@ -342,7 +327,7 @@ static void NativeMidiSetupMode(MusicDevice *dev, MusicMode mode)
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev) return;
 
-    // nothing to do?
+    // nothing to do
 
     // suppress compiler warnings
     (void)mode;
@@ -358,9 +343,8 @@ static void NativeMidiReset(MusicDevice *dev)
         WARN("NativeiMidiReset(): native midi not open");
         return;
     }
-    INFO("NativeMidiReset(): sending native midi resets");
-    // send All Sound Off and All Controllers Off control changes
-    // these are not channel specific and have no supplemental data
+//    INFO("NativeMidiReset(): sending native midi resets");
+    // send All Sound Off and All Controllers Off for all channels
     for (UCHAR chan = 0; chan <= 15; ++chan)
     {
         NativeMidiSendMessage(ndev->outHandle,
@@ -391,12 +375,7 @@ static void NativeMidiSendNoteOff(MusicDevice *dev, int channel, int note, int v
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev) return;
 #ifdef WIN32
-    if (!ndev->isOpen)
-    {
-        WARN("NativeMidiSendNoteOff(): native midi not open");
-        return;
-    }
-    INFO("NativeMidiSendNoteOff(): sending note off: channel %d, note %d, velocity %d", channel, note, vel);
+    if (!ndev->isOpen) return;
     // send note off
     // yes, velocity is potentially relevant
     NativeMidiSendMessage(ndev->outHandle,
@@ -417,12 +396,7 @@ static void NativeMidiSendNoteOn(MusicDevice *dev, int channel, int note, int ve
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev) return;
 #ifdef WIN32
-    if (!ndev->isOpen)
-    {
-        WARN("NativeMidiSendNoteOn(): native midi not open");
-        return;
-    }
-    INFO("NativeMidiSendNoteOn(): sending note on: channel %d, note %d, velocity %d", channel, note, vel);
+    if (!ndev->isOpen) return;
     // send note on
     NativeMidiSendMessage(ndev->outHandle,
                           MME_NOTE_ON,
@@ -554,7 +528,7 @@ static MusicDevice *createNativeMidiDevice()
     ndev->dev.sendPitchBendML = &NativeMidiSendPitchBendML;
     ndev->isOpen = FALSE;
     ndev->outHandle = NULL;
-    return &ndev->dev;
+    return &(ndev->dev);
 }
 
 //------------------------------------------------------------------------------
