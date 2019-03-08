@@ -37,14 +37,33 @@ if(OPENGL_FOUND)
 	add_definitions(-DUSE_OPENGL)
 ENDIF(OPENGL_FOUND)
 
-# Find SDL
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/findsdl2-cmake" ${CMAKE_MODULE_PATH})
-find_package(SDL2 REQUIRED)
-set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
-set(SDL2_LIBRARIES ${SDL2_LIBRARY})
+# set up SDL created by our build scripts
+set(SDL2_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl)
 
-# Try to find SDL_mixer, for sound
-find_package(SDL2_mixer)
+set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include/SDL2)
+find_library(SDL2_LIBRARY SDL2 PATHS ${SDL2_DIR}/lib)
+find_library(SDL2MAIN_LIBRARY SDL2main PATHS ${SDL2_DIR}/lib)
+set(SDL2_LIBRARIES "${SDL2MAIN_LIBRARY};${SDL2_LIBRARY}")
+
+
+# and SDL mixer
+
+set(SDL2_MIXER_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl_mixer)
+
+set(SDL2_MIXER_INCLUDE_DIRS ${SDL2_MIXER_DIR}/include/SDL2)
+find_library(SDL2_MIXER_LIBRARY SDL2_mixer PATHS ${SDL2_MIXER_DIR}/lib)
+set(SDL2_MIXER_LIBRARIES ${SDL2_MIXER_LIBRARY})
+
+add_definitions(-DUSE_SDL_MIXER=1)
+
+
+# add MinGW library if necessary
+
+if(MINGW)
+	set(SDL2_LIBRARIES "mingw32 ${SDL2_LIBRARIES}")
+	set(SDL2_MIXER_LIBRARIES "mingw32 ${SDL2_MIXER_LIBRARIES}")
+endif(MINGW)
+
 
 include_directories(
 	${SDL2_INCLUDE_DIRS}
@@ -55,7 +74,7 @@ message(STATUS "Found SDL2 Include:${SDL2_INCLUDE_DIRS} Library:${SDL2_LIBRARIES
 message(STATUS "Found SDL2_Mixer Include:${SDL2_MIXER_INCLUDE_DIRS} Library:${SDL2_MIXER_LIBRARIES}")
 
 # Find FluidSynth
-find_library(FLUIDSYNTH_LIBRARY fluidsynth)
+find_library(FLUIDSYNTH_LIBRARY fluidsynth PATHS build_ext/fluidsynth-lite/src)
 
 # for now I'll put a Carbon/Carbon.h into src/stubs/
 # that defines Mac-specific types and provides stubs for used functions
@@ -331,8 +350,10 @@ target_link_libraries(systemshock
 )
 
 if(FLUIDSYNTH_LIBRARY)
+  message(STATUS "Fluidsynth found")
   add_definitions("-DUSE_FLUIDSYNTH=1")
   target_link_libraries(systemshock "${FLUIDSYNTH_LIBRARY}")
+  include_directories(${CMAKE_SOURCE_DIR}/build_ext/fluidsynth-lite/include)
 endif()
 
 if (WIN32)

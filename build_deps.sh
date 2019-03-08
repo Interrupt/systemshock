@@ -10,6 +10,10 @@ if [ -d ./build_ext/ ]; then
 	exit
 fi
 
+if [ ! -d ./res/ ]; then
+	mkdir ./res/
+fi
+
 mkdir ./build_ext/
 cd ./build_ext/
 
@@ -32,7 +36,7 @@ function build_sdl_mixer {
 	tar xvf SDL2_mixer-${SDL2_mixer_version}.tar.gz
 	pushd SDL2_mixer-${SDL2_mixer_version}
 
-  export SDL2_CONFIG="${install_dir}/built_sdl/bin/sdl2-config"
+	export SDL2_CONFIG="${install_dir}/built_sdl/bin/sdl2-config"
 	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --prefix=${install_dir}/built_sdl_mixer
 	make
 	make install
@@ -40,5 +44,29 @@ function build_sdl_mixer {
 	popd
 }
 
+function build_fluidsynth {
+	git clone https://github.com/Doom64/fluidsynth-lite.git
+	pushd fluidsynth-lite
+	sed -i 's/DLL"\ off/DLL"\ on/' CMakeLists.txt
+	# if building fluidsynth fails, move on without it
+	set +e
+
+	export CFLAGS="-m32"
+	export CXXFLAGS="-m32"
+
+	cmake .
+	cmake --build .
+
+	# download a soundfont that's close to the Windows default everyone knows
+	curl -o music.sf2 http://rancid.kapsi.fi/windows.sf2
+	set -e
+	popd
+}
+
+
 build_sdl
 build_sdl_mixer
+build_fluidsynth
+
+cd ..
+mv build_ext/fluidsynth-lite/*.sf2 ./res

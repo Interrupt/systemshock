@@ -46,6 +46,7 @@ typedef struct {
     short soMusicVolume;
     short soSfxVolume;
     short soAudioLogVolume;
+    Boolean soMidiBackend;
 
     // Display Options
     short doVideoMode;

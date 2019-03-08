@@ -7,6 +7,7 @@ GLEW_version=2.1.0
 CMAKE_version=3.11.3
 #CMAKE_architecture=win64-x64
 CMAKE_architecture=win32-x86
+CMAKE_target=Unix\ Makefiles
 
 # Removing the mwindows linker option lets us get console output
 function remove_mwindows {
@@ -52,6 +53,21 @@ function build_glew {
 	popd
 }
 
+function build_fluidsynth {
+	git clone https://github.com/Doom64/fluidsynth-lite.git
+	pushd fluidsynth-lite
+	sed -i 's/DLL"\ off/DLL"\ on/' CMakeLists.txt
+	# if building fluidsynth fails, move on without it
+	set +e
+	cmake -G "${CMAKE_target}" .
+	cmake --build .
+
+	# download a soundfont that's close to the Windows default everyone knows
+	curl -o music.sf2 http://rancid.kapsi.fi/windows.sf2
+	set -e
+	popd
+}
+
 function get_cmake {
 	curl -O https://cmake.org/files/v3.11/cmake-${CMAKE_version}-${CMAKE_architecture}.zip
 	unzip cmake-${CMAKE_version}-${CMAKE_architecture}.zip
@@ -72,35 +88,47 @@ rm -rf CMakeFiles/
 rm -rf CMakeCache.txt
 
 cp windows/make.exe /usr/bin/
+
+if [ ! -d ./res/ ]; then
+mkdir ./res/
+fi
+
 mkdir ./build_ext/
 cd ./build_ext/
 install_dir=`pwd -W`
-
-build_sdl
-build_sdl_mixer
-build_glew
 
 if ! [ -x "$(command -v cmake)" ]; then
 	echo "Getting CMake"
 	get_cmake
 fi
 
-# Back to the root directory, copy SDL DLL files for the executable
+build_fluidsynth
+
+build_sdl
+build_sdl_mixer
+build_glew
+
+
+# Back to the root directory, copy required DLL files for the executable
 cd ..
 cp build_ext/built_sdl/bin/SDL*.dll .
 cp build_ext/built_sdl_mixer/bin/SDL*.dll .
 cp build_ext/built_glew/lib/*.dll .
+cp build_ext/fluidsynth-lite/src/*.dll .
+
+# move the soundfont to the correct place if we successfully built fluidsynth
+mv build_ext/fluidsynth-lite/*.sf2 ./res
 
 # Set up build.bat
 if [[ -z "${APPVEYOR}" ]]; then
 	echo "Normal build"
 	echo "@echo off
 	set PATH=%PATH%;${CMAKE_ROOT}
-	cmake -G \"MinGW Makefiles\" .
+	cmake -G \"${CMAKE_target}\" .
 	mingw32-make systemshock" >build.bat
 else
 	echo "Appveyor"
-	echo "cmake -G \"Unix Makefiles\" . 
+	echo "cmake -G \"${CMAKE_target}\" . 
 	make systemshock" >build.bat
 fi
 

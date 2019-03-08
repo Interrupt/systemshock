@@ -2,6 +2,7 @@
 
 #include "Xmi.h"
 #include "MusicDevice.h"
+#include "Prefs.h"
 
 
 
@@ -605,19 +606,47 @@ void InitReadXMI(void)
   int channel, i;
   SDL_Thread *thread;
 
-  // Start the ADL Midi device
+  InitDecXMI();
+
+  MyMutex = SDL_CreateMutex();
+
+  for (channel=0; channel<16; channel++) ChannelThread[channel] = -1;
+
+  for (i=0; i<NUM_THREADS; i++)
+  {
+    SDL_AtomicSet(&ThreadPlaying[i], 0);
+    SDL_AtomicSet(&ThreadCommand[i], THREAD_INIT);
+  }
+
+  thread = SDL_CreateThread(MyThread, "MyThread", NULL);
+  SDL_DetachThread(thread); //thread will go away on its own upon completion
+
+  i = 0;
+  while (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_INIT) SDL_Delay(1);
+
+  atexit(ShutdownReadXMI);
+}
+
+
+
+void InitDecXMI(void)
+{
+  // Start the Midi device
   MusicDevice *musicdev = NULL;
   int musicrate = 48000;
 
 #ifdef USE_FLUIDSYNTH
   if (!musicdev)
   {
-      INFO("try FluidSynth MIDI driver");
-      musicdev = CreateMusicDevice(Music_FluidSynth);
-      if (musicdev && musicdev->init(musicdev, musicrate) != 0)
+      if(gShockPrefs.soMidiBackend) 
       {
-          musicdev->destroy(musicdev);
-          musicdev = NULL;
+        INFO("try FluidSynth MIDI driver");
+        musicdev = CreateMusicDevice(Music_FluidSynth);
+        if (musicdev && musicdev->init(musicdev, musicrate) != 0)
+        {
+            musicdev->destroy(musicdev);
+            musicdev = NULL;
+        }
       }
   }
 #endif
@@ -641,24 +670,25 @@ void InitReadXMI(void)
   }
 
   MusicDev = musicdev;
+}
 
-  MyMutex = SDL_CreateMutex();
 
-  for (channel=0; channel<16; channel++) ChannelThread[channel] = -1;
+
+void ReloadDecXMI(void)
+{
+  int i;
+
+  SDL_LockMutex(MyMutex);
+  MusicDev->destroy(MusicDev);
+  MusicDev = NULL;
+  SDL_UnlockMutex(MyMutex);
 
   for (i=0; i<NUM_THREADS; i++)
   {
-    SDL_AtomicSet(&ThreadPlaying[i], 0);
-    SDL_AtomicSet(&ThreadCommand[i], THREAD_INIT);
+    StopTrack(i);
   }
 
-  thread = SDL_CreateThread(MyThread, "MyThread", NULL);
-  SDL_DetachThread(thread); //thread will go away on its own upon completion
-
-  i = 0;
-  while (SDL_AtomicGet(&ThreadCommand[i]) == THREAD_INIT) SDL_Delay(1);
-
-  atexit(ShutdownReadXMI);
+  InitDecXMI();
 }
 
 

@@ -32,8 +32,15 @@ int snd_start_digital(void) {
     spec.callback = AudioStreamCallback;
     spec.userdata = (void *)&cutscene_audiostream;
 
-    if (SDL_OpenAudio(&spec, &obtained)) {ERROR("Could not open SDL audio");}
-    else {INFO("Opened Music Stream");}
+    extern SDL_AudioDeviceID device;
+    device = SDL_OpenAudioDevice(NULL, 0, &spec, &obtained, 0);
+
+    if (device == 0) {
+        ERROR("Could not open SDL audio");
+    } else {
+        INFO("Opened Music Stream, deviceID %d, freq %d, size %d, format %d, channels %d, samples %d", device,
+             obtained.freq, obtained.size, obtained.format, obtained.channels, obtained.samples);
+    }
 
 
     if (Mix_Init(MIX_INIT_MP3) < 0) {ERROR("%s: Init failed", __FUNCTION__);}

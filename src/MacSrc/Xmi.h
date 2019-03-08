@@ -20,6 +20,8 @@ void StopTrack(int i);
 void StopTheMusic(void);
 int IsPlaying(int i);
 void InitReadXMI(void);
+void InitDecXMI(void);
+void ReloadDecXMI(void);
 void ShutdownReadXMI(void);
 
 struct midi_event_struct

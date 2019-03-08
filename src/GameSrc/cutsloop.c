@@ -69,6 +69,7 @@ extern char EngSubtitle[256];
 extern char FrnSubtitle[256];
 extern char GerSubtitle[256];
 
+extern SDL_AudioDeviceID device;
 
 
 extern void change_svga_screen_mode(void);
@@ -140,7 +141,7 @@ void cutscene_exit(void)
 
   if (cutscene_audiostream != NULL)
   {
-    SDL_PauseAudio(1);
+    SDL_PauseAudioDevice(device, 1);
     SDL_Delay(1);
 
     SDL_FreeAudioStream(cutscene_audiostream);
@@ -171,7 +172,7 @@ void cutscene_loop(void)
 
   if (cutscene_audiostream)
   {
-    SDL_PauseAudio(0);
+    SDL_PauseAudioDevice(device, 0);
   
     if (cutscene_audiobuffer_size > 0)
     {
@@ -307,7 +308,7 @@ short play_cutscene(int id, bool show_credits)
 
   if (sfx_on)
   {
-    SDL_PauseAudio(1);
+    SDL_PauseAudioDevice(device, 1);
     SDL_Delay(1);
 
     cutscene_audiostream = SDL_NewAudioStream(AUDIO_U8, 1, fix_int(amovie->a.sampleRate), AUDIO_S16SYS, 2, 48000);

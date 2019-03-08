@@ -13,6 +13,7 @@ environment:
 # Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
 # Uncache build_ext if external deps change
 cache:
+#  - res/music.sf2
 #  - build_ext  
 
 # Actual build script..
@@ -23,7 +24,7 @@ cache:
 build_script:
   - mklink /D c:\git "C:\Program Files\Git"
   - set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
-  - set PATH=c:\git\usr\bin;%PATH%;C:\MinGW\bin
+  - set PATH=c:\git\usr\bin;%PATH%;C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin\
   - copy windows\make.exe \git\usr\bin
   - set CMAKE_MAKE_PROGRAM=c:\git\usr\bin\make.exe
   - sh build_windows.sh
@@ -39,8 +40,9 @@ after_build:
   - copy build_ext\built_sdl\bin\SDL*.dll .
   - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
   - copy build_ext\built_glew\lib\glew32.dll .
+  - copy build_ext\fluidsynth-lite\src\libfluidsynth.dll .
   - copy readme\readme-windows.txt readme.txt
-  - 7z a systemshock-windows.zip systemshock.exe *.dll readme.txt shaders/
+  - 7z a systemshock-windows.zip systemshock.exe *.dll readme.txt shaders/ res/
 
 artifacts:
   - path: systemshock-windows.zip
