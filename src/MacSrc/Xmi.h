@@ -23,6 +23,8 @@ void InitReadXMI(void);
 void InitDecXMI(void);
 void ReloadDecXMI(void);
 void ShutdownReadXMI(void);
+unsigned int GetOutputCountXMI(void);
+void GetOutputNameXMI(const unsigned int outputIndex, char *buffer, const unsigned int bufferSize);
 
 struct midi_event_struct
 {

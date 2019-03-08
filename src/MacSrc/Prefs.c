@@ -80,6 +80,7 @@ static const char *PREF_GAMMA        = "gamma";
 static const char *PREF_MSG_LENGTH   = "message-length";
 static const char *PREF_ALOG_SETTING = "alog-setting";
 static const char *PREF_MIDI_BACKEND = "midi-backend";
+static const char *PREF_MIDI_OUTPUT  = "midi-output";
 
 static void SetShockGlobals(void);
 
@@ -97,6 +98,7 @@ void SetDefaultPrefs(void) {
 #else
     gShockPrefs.soMidiBackend = 0; // default to adlmidi
 #endif
+    gShockPrefs.soMidiOutput = 0;  // default to zero
     gShockPrefs.soSoundFX = true;
     gShockPrefs.doUseQD = false;
 
@@ -227,6 +229,10 @@ OSErr LoadPrefs(void) {
             int mb = atoi(value);
             if (mb >= 0 && mb <= 2)
                 gShockPrefs.soMidiBackend = (short)mb;
+        } else if (strcasecmp(key, PREF_MIDI_OUTPUT) == 0) {
+            int mo = atoi(value);
+            if (mo >= 0)
+                gShockPrefs.soMidiOutput = (short)mo;
         }
     }
 
@@ -262,6 +268,7 @@ OSErr SavePrefs(void) {
     fprintf(f, "%s = %d\n", PREF_MSG_LENGTH, gShockPrefs.goMsgLength);
     fprintf(f, "%s = %d\n", PREF_ALOG_SETTING, audiolog_setting);
     fprintf(f, "%s = %d\n", PREF_MIDI_BACKEND, gShockPrefs.soMidiBackend);
+    fprintf(f, "%s = %d\n", PREF_MIDI_OUTPUT, gShockPrefs.soMidiOutput);
     fclose(f);
     return 0;
 }
