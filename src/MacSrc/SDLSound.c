@@ -136,10 +136,6 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) {
 	Mix_SetPanning(channel, 254 - right, right);
 }
 
-void MacTuneUpdateVolume(void) {
-
-}
-
 int is_playing = 0;
 
 int MacTuneLoadTheme(char* theme_base, int themeID) {

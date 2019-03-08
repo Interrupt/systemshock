@@ -4,15 +4,9 @@
 #include "MusicDevice.h"
 #include "Prefs.h"
 
-
-
-struct MusicDevice *MusicDev;
-
-SDL_mutex *MyMutex;
-
+MusicDevice *MusicDev;
+static SDL_mutex *MyMutex;
 char *MusicCallbackBuffer;
-
-
 
 void MusicCallback(void *userdata, Uint8 *stream, int len)
 {
@@ -20,20 +14,24 @@ void MusicCallback(void *userdata, Uint8 *stream, int len)
 
   SDL_LockMutex(MyMutex);
   dev = *(MusicDevice **)userdata;
-
-  if (dev != NULL)
+  if (!dev || !dev->isOpen)
   {
-    dev->generate(dev, (short *)MusicCallbackBuffer, len / (2 * sizeof(short)));
     SDL_UnlockMutex(MyMutex);
-
-	extern uchar curr_vol_lev;
-    int volume = (int)curr_vol_lev * 128 / 100; //convert from 0-100 to 0-128
-
-    SDL_memset(stream, 0, len);
-    SDL_MixAudioFormat(stream, MusicCallbackBuffer, AUDIO_S16SYS, len, volume);
+    return;
   }
-  else
-    SDL_UnlockMutex(MyMutex);
+
+  // TODO: MusicCallbackBuffer defined as char* but cast to short* - pick one!
+  dev->generate(dev, (short *)MusicCallbackBuffer, len / (2 * sizeof(short)));
+  SDL_UnlockMutex(MyMutex);
+
+  // mix at max volume
+  // music volume is controlled via MIDI track volume controller changes
+//  extern uchar curr_vol_lev;
+//  int volume = (int)curr_vol_lev * 128 / 100; //convert from 0-100 to 0-128
+  const int volume = SDL_MIX_MAXVOLUME;
+
+  SDL_memset(stream, 0, len);
+  SDL_MixAudioFormat(stream, MusicCallbackBuffer, AUDIO_S16SYS, len, volume);
 }
 
 
@@ -528,8 +526,6 @@ int GetTrackNumChannels(unsigned int track)
 
 
 
-//note that volume parameter is ignored; track is played at max volume
-//master music volume is modified in music callback (MMVMMC)
 void StartTrack(int i, unsigned int track, int volume)
 {
   int num, channel, remap;
@@ -562,8 +558,7 @@ void StartTrack(int i, unsigned int track, int volume)
     ThreadTiming[i] = TrackTiming[track];
     memcpy(ThreadChannelRemap+16*i, channel_remap, 16);
 
-    //ignore volume passed to this function and play track at max volume
-    SDL_AtomicSet(&ThreadVolume[i], 128);
+    SDL_AtomicSet(&ThreadVolume[i], volume);
 
     SDL_AtomicSet(&ThreadCommand[i], THREAD_PLAYTRACK);
   
@@ -780,4 +775,30 @@ void GetOutputNameXMI(const unsigned int outputIndex, char *buffer, const unsign
     if (!MusicDev || !buffer || bufferSize < 1) return;
 
     MusicDev->getOutputName(MusicDev, outputIndex, buffer, bufferSize);
+}
+
+void UpdateVolumeXMI(void)
+{
+  // global volume has been changed
+  // convert volume from game range 0-100 to MIDI range 0-127
+  extern uchar curr_vol_lev;
+  const int newVolume = (int)curr_vol_lev * 127 / 100;
+  INFO("Volume change to %d (0-100) => MIDI %d (0-127)", curr_vol_lev, newVolume);
+
+  // tell the music driver
+  SDL_LockMutex(MyMutex);
+  if (!MusicDev || !MusicDev->isOpen)
+  {
+    // nothing to do
+    SDL_UnlockMutex(MyMutex);
+    return;
+  }
+
+  // send volume change controller (#7) for all channels
+  for (int i = 0; i <= 15; ++i)
+  {
+    MusicDev->sendControllerChange(MusicDev, i, 7, newVolume);
+  }
+
+  SDL_UnlockMutex(MyMutex);
 }

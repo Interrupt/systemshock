@@ -401,3 +401,8 @@ void MacTunePrimeTimer(void)
 // the above amount for PrimeTime is temporary because we're not doing overlays yet.
 //  so just queue up the next tune at queue time.
 }
+
+void MacTuneUpdateVolume(void)
+{
+  UpdateVolumeXMI();
+}
