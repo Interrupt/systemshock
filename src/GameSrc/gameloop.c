@@ -115,9 +115,9 @@ void game_loop(void) {
             redraw_paused = FALSE;
         }
         // KLC - does nothing!  loopLine(GL|0x1D,synchronous_update());
-        /*if (music_on)
+        if (music_on)
             loopLine(GL|0x1C, mlimbs_do_ai());
-        if (pal_fx_on)
+        /*if (pal_fx_on)
             loopLine(GL|0x1E, palette_advance_all_fx(* (long *) 0x16a)); // TickCount()*/
     }
 

@@ -115,7 +115,7 @@ void snd_kill_all_samples(void) {
 	}
 
     //assume we want these too
-    StopTheMusic();
+//    StopTheMusic(); // no, don't stop the music
     if (cutscene_audiostream != NULL) SDL_AudioStreamClear(cutscene_audiostream);
 }
 
