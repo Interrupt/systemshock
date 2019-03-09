@@ -35,7 +35,7 @@ struct MusicDevice
     unsigned int (*getOutputCount)(MusicDevice *dev);
     void (*getOutputName)(MusicDevice *dev, const unsigned int outputIndex, char *buffer, const unsigned int bufferSize);
     unsigned short isOpen;      // 1 if device open, 0 if closed
-    unsigned short outputIndex; // index of currently opened output
+    unsigned int outputIndex; // index of currently opened output
     MusicType deviceType;       // type of device
 };
 

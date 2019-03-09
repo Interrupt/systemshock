@@ -13,6 +13,7 @@ static int NullMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsign
     dev->outputIndex = 0;
 
     // suppress compiler warnings
+    (void)outputIndex;
     (void)samplerate;
 
     return 0;
@@ -40,7 +41,7 @@ static void NullMidiReset(MusicDevice *dev)
 
 static void NullMidiGenerate(MusicDevice *dev, short *samples, int numframes)
 {
-    memset(samples, 0, 2 * numframes * sizeof(short));
+    memset(samples, 0, 2 * (unsigned int)numframes * sizeof(short));
 
     // suppress compiler warnings
     (void)dev;
@@ -177,6 +178,9 @@ static int AdlMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsigne
 
     adev->dev.isOpen = 1;
     adev->dev.outputIndex = 0;
+
+    // suppress compiler warnings
+    (void)outputIndex;
 
     return 0;
 }
@@ -434,8 +438,11 @@ static int NativeMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsi
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || ndev->dev.isOpen) return 0;
 #ifdef WIN32
-//    MMRESULT res = midiOutOpen(&(ndev->outHandle), MIDI_MAPPER, 0, 0, CALLBACK_NULL);
-    MMRESULT res = midiOutOpen(&(ndev->outHandle), outputIndex, 0, 0, CALLBACK_NULL);
+    // if outputIndex is 0, use MIDI_MAPPER
+    // else subract 1 to get the real output number
+    const UINT realOutput = (
+        outputIndex == 0 ? MIDI_MAPPER : outputIndex - 1);
+    MMRESULT res = midiOutOpen(&(ndev->outHandle), realOutput, 0, 0, CALLBACK_NULL);
     if (res != MMSYSERR_NOERROR)
     {
         static char buffer[1024];
@@ -486,7 +493,7 @@ static void NativeMidiGenerate(MusicDevice *dev, short *samples, int numframes)
 {
     // native MIDI outputs at the OS level, to an external driver or real synth
     // generate an empty sample since we have nothing to mix at the game level
-    memset(samples, 0, 2 * numframes * sizeof(short));
+    memset(samples, 0, 2 * (unsigned int)numframes * sizeof(short));
 
     // suppress compiler warnings
     (void)dev;
@@ -631,8 +638,10 @@ static unsigned int NativeMidiGetOutputCount(MusicDevice *dev)
     // suppress compiler warnings
     (void)dev;
 #ifdef WIN32
-    return midiOutGetNumDevs();
+    // add one for MIDI_MAPPER
+    return midiOutGetNumDevs() + 1;
 #else
+    // "NULL "Unsupported" output
     return 1;
 #endif
 }
@@ -641,9 +650,18 @@ static void NativeMidiGetOutputName(MusicDevice *dev, const unsigned int outputI
 {
     if (!buffer || bufferSize < 1) return;
 #ifdef WIN32
-    MIDIOUTCAPS moc;
-    midiOutGetDevCaps(outputIndex, &moc, sizeof(MIDIOUTCAPS));
-    strncpy(buffer, moc.szPname, bufferSize - 1);
+    if (outputIndex == 0)
+    {
+        // the output #0 we advertise is MIDI_MAPPER
+        strncpy(buffer, "Windows MIDI mapper", bufferSize - 1);
+    }
+    else
+    {
+        // subtract one to get the real device number
+        MIDIOUTCAPS moc;
+        midiOutGetDevCaps(outputIndex - 1, &moc, sizeof(MIDIOUTCAPS));
+        strncpy(buffer, moc.szPname, bufferSize - 1);
+    }
 #else
     strncpy(buffer, "Unsupported", bufferSize - 1);
     // suppress compiler warnings
@@ -729,6 +747,9 @@ static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsig
 
     fdev->dev.isOpen = 1;
     fdev->dev.outputIndex = 0;
+
+    // suppress compiler warnings
+    (void)outputIndex;
 
     return 0;
 }
