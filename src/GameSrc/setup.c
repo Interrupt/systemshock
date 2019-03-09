@@ -556,8 +556,8 @@ int WaitForKey(ulong ticks)
 
       if (track >= 0 && track < NumTracks)
       {
-        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
-        StartTrack(i, track, volume);
+//        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
+        StartTrack(i, track);
 
         if (!WonGame_ShowStats) CreditsTune = (CreditsTune + 1) % 8;
       }
@@ -1491,8 +1491,8 @@ void setup_loop(void)
     int track = 0;
     if (track >= 0 && track < NumTracks)
     {
-      int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
-      StartTrack(i, track, volume);
+//      int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
+      StartTrack(i, track);
     }
   }
 

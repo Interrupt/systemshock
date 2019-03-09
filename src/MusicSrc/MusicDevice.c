@@ -214,7 +214,14 @@ static void AdlMidiGenerate(MusicDevice *dev, short *samples, int numframes)
     AdlMidiDevice *adev = (AdlMidiDevice *)dev;
     if (!adev || !adev->dev.isOpen) return;
 
-    adl_generate(adev->adl, 2 * numframes, samples);
+    const int numSamples = numframes * 2;
+    adl_generate(adev->adl, numSamples, samples);
+    // ugly hack: libadlmidi has quiet output, so double all values
+    short *sample = samples;
+    for (int i = 0; i < numSamples; ++i, ++sample)
+    {
+        *sample *= 2;
+    }
 }
 
 static void AdlMidiSendNoteOff(MusicDevice *dev, int channel, int note, int vel)
@@ -405,11 +412,17 @@ static void NativeMidiReset(MusicDevice *dev)
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
 #ifdef WIN32
-    // send All Sound Off and All Controllers Off for all channels
+    // send All Sound Off for all channels
     for (UCHAR chan = 0; chan <= 15; ++chan)
     {
         NativeMidiSendMessage(ndev->outHandle,
                               MME_CONTROL_CHANGE, chan, MCE_ALL_SOUND_OFF, 0);
+    }
+    // send All Controllers Off for all channels
+    // this is done in a separate loop to give the previous one a chance to
+    //  settle out
+    for (UCHAR chan = 0; chan <= 15; ++chan)
+    {
         NativeMidiSendMessage(ndev->outHandle,
                               MME_CONTROL_CHANGE, chan, MCE_ALL_CONTROLLERS_OFF, 0);
     }
@@ -693,6 +706,8 @@ static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsig
 
     settings = new_fluid_settings();
     fluid_settings_setnum(settings, "synth.sample-rate", samplerate);
+    // default gain is 0.2, which is too conservative and ends up being quiet
+    fluid_settings_setnum(settings, "synth.gain", 0.5);
 
     synth = new_fluid_synth(settings);
     sfid = fluid_synth_sfload(synth, "res/music.sf2", 1);

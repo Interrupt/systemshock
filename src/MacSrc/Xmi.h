@@ -15,7 +15,7 @@ int NumUsedChannels; //number of in-use device channels
 
 void FreeXMI(void);
 int ReadXMI(const char *filename);
-void StartTrack(int i, unsigned int track, int volume);
+void StartTrack(int i, unsigned int track);
 void StopTrack(int i);
 void StopTheMusic(void);
 int IsPlaying(int i);

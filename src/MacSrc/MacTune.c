@@ -274,10 +274,9 @@ void MacTuneStartCurrentTheme(void)
 	
 	  if (!IsPlaying(i))
       {
-        extern uchar curr_vol_lev;
-
-        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
-        StartTrack(i, track, volume);
+//        extern uchar curr_vol_lev;
+//        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
+        StartTrack(i, track);
       }
 	}
 }

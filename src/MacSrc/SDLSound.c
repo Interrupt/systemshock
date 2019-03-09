@@ -15,8 +15,6 @@ static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
 extern SDL_AudioStream *cutscene_audiostream;
 extern struct MusicDevice *MusicDev;
 
-extern char *MusicCallbackBuffer;
-
 extern void AudioStreamCallback(void *userdata, unsigned char *stream, int len);
 extern void MusicCallback(void *userdata, Uint8 *stream, int len);
 
@@ -50,13 +48,10 @@ int snd_start_digital(void) {
 
     Mix_AllocateChannels(SND_MAX_SAMPLES);
 
-    MusicCallbackBuffer = (char *)malloc(2048*5); //larger than needed paranoia
-
     Mix_HookMusic(MusicCallback, (void *)&MusicDev);
-
+    Mix_VolumeMusic(MIX_MAX_VOLUME); // use max volume for music stream
 
 	InitReadXMI();
-
 
     atexit(Mix_CloseAudio);
     atexit(SDL_CloseAudio);

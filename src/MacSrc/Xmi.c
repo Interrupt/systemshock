@@ -6,7 +6,6 @@
 
 MusicDevice *MusicDev;
 static SDL_mutex *MyMutex;
-char *MusicCallbackBuffer;
 
 void MusicCallback(void *userdata, Uint8 *stream, int len)
 {
@@ -20,18 +19,9 @@ void MusicCallback(void *userdata, Uint8 *stream, int len)
     return;
   }
 
-  // TODO: MusicCallbackBuffer defined as char* but cast to short* - pick one!
-  dev->generate(dev, (short *)MusicCallbackBuffer, len / (2 * sizeof(short)));
+  SDL_memset(stream, 0, (size_t)len); // in case we don't get anything
+  dev->generate(dev, (short*)((void*)stream), len / (int)(2 * sizeof(short)));
   SDL_UnlockMutex(MyMutex);
-
-  // mix at max volume
-  // music volume is controlled via MIDI track volume controller changes
-//  extern uchar curr_vol_lev;
-//  int volume = (int)curr_vol_lev * 128 / 100; //convert from 0-100 to 0-128
-  const int volume = SDL_MIX_MAXVOLUME;
-
-  SDL_memset(stream, 0, len);
-  SDL_MixAudioFormat(stream, MusicCallbackBuffer, AUDIO_S16SYS, len, volume);
 }
 
 
@@ -492,6 +482,7 @@ int MyThread(void *arg)
         {
           ChannelThread[channel] = -1;
           NumUsedChannels--;
+          SDL_AtomicSet(&DeviceChannelVolume[channel], 0);
         }
   
         SDL_AtomicSet(&ThreadPlaying[i], 0);
@@ -540,7 +531,7 @@ int GetTrackNumChannels(unsigned int track)
 
 
 
-void StartTrack(int thread, unsigned int track, int volume)
+void StartTrack(int thread, unsigned int track)
 {
   int num, trackChannel, deviceChannel;
   char channel_remap[16];
@@ -571,7 +562,8 @@ void StartTrack(int thread, unsigned int track, int volume)
         }
         channel_remap[trackChannel] = deviceChannel;
         ChannelThread[deviceChannel] = thread;
-        SDL_AtomicSet(&DeviceChannelVolume[deviceChannel], volume);
+        // default to full volume
+        SDL_AtomicSet(&DeviceChannelVolume[deviceChannel], 127);
       }
     }
 
@@ -632,7 +624,11 @@ void InitReadXMI(void)
 
   MyMutex = SDL_CreateMutex();
 
-  for (channel=0; channel<16; channel++) ChannelThread[channel] = -1;
+  for (channel=0; channel<16; channel++)
+  {
+    ChannelThread[channel] = -1;
+    SDL_AtomicSet(&DeviceChannelVolume[channel], 0);
+  }
 
   for (i=0; i<NUM_THREADS; i++)
   {
