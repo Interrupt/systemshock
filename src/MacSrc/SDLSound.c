@@ -34,12 +34,11 @@ int snd_start_digital(void) {
     device = SDL_OpenAudioDevice(NULL, 0, &spec, &obtained, 0);
 
     if (device == 0) {
-        ERROR("Could not open SDL audio");
+        ERROR("Could not open SDL audio: %s", SDL_GetError());
     } else {
         INFO("Opened Music Stream, deviceID %d, freq %d, size %d, format %d, channels %d, samples %d", device,
              obtained.freq, obtained.size, obtained.format, obtained.channels, obtained.samples);
     }
-
 
     if (Mix_Init(MIX_INIT_MP3) < 0) {ERROR("%s: Init failed", __FUNCTION__);}
 
