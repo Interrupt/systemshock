@@ -531,7 +531,15 @@ void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void *var, 
     opt_slider_state *st = (opt_slider_state *)&OButtons[butid].user;
     uint val;
 
-    val = ((r->lr.x - r->ul.x - 3) * multi_get_curval(type, var)) / maxval;
+    if (maxval)
+    {
+        val = ((r->lr.x - r->ul.x - 3) * multi_get_curval(type, var)) / maxval;
+    }
+    else
+    {
+        // just put it in the middle
+        val = (r->lr.x - r->ul.x - 3) / 2;
+    }
 
     st->color = BUTTON_COLOR;
     st->bvalcol = GREEN_YELLOW_BASE + 1;
@@ -1492,12 +1500,12 @@ void soundopt_screen_init() {
                sizeof(gShockPrefs.soMidiOutput), &gShockPrefs.soMidiOutput, numMidiOutputs, midi_output_dealfunc, &r);
     i++;
 */
-    standard_slider_rect(&r, i, 2, 5);
-    // this makes it double-wide i guess?
-    r.lr.x += (r.lr.x - r.ul.x);
     unsigned int midiOutputCount = GetOutputCountXMI();
-    if (midiOutputCount > 1)
+    if (midiOutputCount > 0)
     {
+        standard_slider_rect(&r, i, 2, 5);
+        // this makes it double-wide i guess?
+        r.lr.x += (r.lr.x - r.ul.x);
         slider_init(i, REF_STR_MidiOutX + gShockPrefs.soMidiOutput, sizeof(gShockPrefs.soMidiOutput), FALSE, &gShockPrefs.soMidiOutput, midiOutputCount - 1,
                     0, midi_output_dealfunc, &r);
         i++;
