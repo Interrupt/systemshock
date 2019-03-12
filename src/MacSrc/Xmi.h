@@ -15,7 +15,7 @@ int NumUsedChannels; //number of in-use device channels
 
 void FreeXMI(void);
 int ReadXMI(const char *filename);
-void StartTrack(int i, unsigned int track, int volume);
+void StartTrack(int i, unsigned int track);
 void StopTrack(int i);
 void StopTheMusic(void);
 int IsPlaying(int i);
@@ -23,6 +23,9 @@ void InitReadXMI(void);
 void InitDecXMI(void);
 void ReloadDecXMI(void);
 void ShutdownReadXMI(void);
+unsigned int GetOutputCountXMI(void);
+void GetOutputNameXMI(const unsigned int outputIndex, char *buffer, const unsigned int bufferSize);
+void UpdateVolumeXMI(void);
 
 struct midi_event_struct
 {
@@ -43,7 +46,7 @@ unsigned short *TrackUsedChannels;
 MIDI_EVENT *ThreadEventList[NUM_THREADS];
 int ThreadTiming[NUM_THREADS];
 char ThreadChannelRemap[16*NUM_THREADS];
-SDL_atomic_t ThreadVolume[NUM_THREADS]; //only msb: 0-127
+SDL_atomic_t DeviceChannelVolume[16]; //only msb: 0-127
 SDL_atomic_t ThreadPlaying[NUM_THREADS];
 SDL_atomic_t ThreadCommand[NUM_THREADS];
 

@@ -10,7 +10,7 @@ void StartMovie(void * m) { }
 Boolean IsMovieDone(void * x) { return true; }
 
 void HideCursor(void) { }
-void ShowCursor(void) { }
+void SS_ShowCursor(void) { }
 ushort GetOSEvent(short eventMask,EventRecord *theEvent) { return false; }
 
 void AdvanceProgress(void) { }

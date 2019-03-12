@@ -54,3 +54,7 @@ savgam*.dat
 
 # Temporary audio files
 .temp.audio
+
+# Eclipse CDT
+.project
+.cproject

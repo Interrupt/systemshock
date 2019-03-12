@@ -79,6 +79,8 @@ static const char *PREF_ONSCR_HELP   = "onscreen-help";
 static const char *PREF_GAMMA        = "gamma";
 static const char *PREF_MSG_LENGTH   = "message-length";
 static const char *PREF_ALOG_SETTING = "alog-setting";
+static const char *PREF_MIDI_BACKEND = "midi-backend";
+static const char *PREF_MIDI_OUTPUT  = "midi-output";
 
 static void SetShockGlobals(void);
 
@@ -91,7 +93,12 @@ void SetDefaultPrefs(void) {
     gShockPrefs.prefPlayIntro = 1;      // First time through, play the intro
     gShockPrefs.goPopupLabels = true;
     gShockPrefs.soBackMusic = true;
-    gShockPrefs.soMidiBackend = true; // Use fluidsynth by default.
+#ifdef USE_FLUIDSYNTH
+    gShockPrefs.soMidiBackend = 2; // default to fluidsynth when available
+#else
+    gShockPrefs.soMidiBackend = 0; // default to adlmidi
+#endif
+    gShockPrefs.soMidiOutput = 0;  // default to zero
     gShockPrefs.soSoundFX = true;
     gShockPrefs.doUseQD = false;
 
@@ -218,6 +225,14 @@ OSErr LoadPrefs(void) {
             int as = atoi(value);
             if (as >= 0 && as <= 2)
                 audiolog_setting = as;
+        } else if (strcasecmp(key, PREF_MIDI_BACKEND) == 0) {
+            int mb = atoi(value);
+            if (mb >= 0 && mb <= 2)
+                gShockPrefs.soMidiBackend = (short)mb;
+        } else if (strcasecmp(key, PREF_MIDI_OUTPUT) == 0) {
+            int mo = atoi(value);
+            if (mo >= 0)
+                gShockPrefs.soMidiOutput = (short)mo;
         }
     }
 
@@ -252,6 +267,8 @@ OSErr SavePrefs(void) {
     fprintf(f, "%s = %d\n", PREF_GAMMA, gShockPrefs.doGamma);
     fprintf(f, "%s = %d\n", PREF_MSG_LENGTH, gShockPrefs.goMsgLength);
     fprintf(f, "%s = %d\n", PREF_ALOG_SETTING, audiolog_setting);
+    fprintf(f, "%s = %d\n", PREF_MIDI_BACKEND, gShockPrefs.soMidiBackend);
+    fprintf(f, "%s = %d\n", PREF_MIDI_OUTPUT, gShockPrefs.soMidiOutput);
     fclose(f);
     return 0;
 }

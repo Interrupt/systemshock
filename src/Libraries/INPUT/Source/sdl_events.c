@@ -73,13 +73,13 @@ static void addKBevent(const kbs_event* ev)
 }
 
 // same for mouse events, also created in pump_events(), consumed by mouse_next()
-static mouse_event mouseEvents[kNumMouseEvents];
+static ss_mouse_event mouseEvents[kNumMouseEvents];
 static int nextMouseEvent = 0;
 
 // latest mouse state as input for MousePollProc() in mouse.c
-mouse_event latestMouseEvent;
+ss_mouse_event latestMouseEvent;
 
-static void addMouseEvent(const mouse_event* ev)
+static void addMouseEvent(const ss_mouse_event* ev)
 {
 	latestMouseEvent = *ev;
 
@@ -92,7 +92,7 @@ static void addMouseEvent(const mouse_event* ev)
 	{
 		//printf("WTF, the mouseEvents queue is full?!");
 		// drop the oldest event
-		memmove(&mouseEvents[0], &mouseEvents[1], sizeof(mouse_event)*(kNumMouseEvents-1));
+		memmove(&mouseEvents[0], &mouseEvents[1], sizeof(ss_mouse_event)*(kNumMouseEvents-1));
 		mouseEvents[kNumMouseEvents-1] = latestMouseEvent;
 	}
 }
@@ -541,7 +541,7 @@ void pump_events(void)
       case SDL_MOUSEBUTTONUP:
       {
         bool down = (ev.button.state == SDL_PRESSED);
-        mouse_event mouseEvent = {0};
+        ss_mouse_event mouseEvent = {0};
         mouseEvent.type = 0;
 
         // TODO: the old mac code used to emulate right mouse clicks if space, enter, or return
@@ -586,7 +586,7 @@ void pump_events(void)
         else
           SetMouseXY(ev.motion.x, ev.motion.y);
 
-        mouse_event mouseEvent = {0};
+        ss_mouse_event mouseEvent = {0};
         mouseEvent.type = MOUSE_MOTION;
         mouseEvent.x = MouseX;
         mouseEvent.y = MouseY;
@@ -611,7 +611,7 @@ void pump_events(void)
       case SDL_MOUSEWHEEL:
         if (ev.wheel.y != 0)
         {
-          mouse_event mouseEvent = {0};
+          ss_mouse_event mouseEvent = {0};
           mouseEvent.type = ev.wheel.y < 0 ? MOUSE_WHEELDN : MOUSE_WHEELUP;
           mouseEvent.x = MouseX;
           mouseEvent.y = MouseY;
@@ -822,7 +822,7 @@ uchar kb_state(uchar code)
 
 uchar btn_left = FALSE;
 uchar btn_right = FALSE;
-errtype mouse_next(mouse_event *res)
+errtype mouse_next(ss_mouse_event *res)
 {
 	if(nextMouseEvent <= 0)
 		return ERR_DUNDERFLOW;
@@ -830,7 +830,7 @@ errtype mouse_next(mouse_event *res)
 	*res = mouseEvents[0];
 
 	--nextMouseEvent;
-	memmove(&mouseEvents[0], &mouseEvents[1], sizeof(mouse_event)*(kNumMouseEvents-1));
+	memmove(&mouseEvents[0], &mouseEvents[1], sizeof(ss_mouse_event)*(kNumMouseEvents-1));
 
 	return OK;
 }

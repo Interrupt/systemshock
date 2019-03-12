@@ -15,8 +15,6 @@ static snd_digi_parms digi_parms_by_channel[SND_MAX_SAMPLES];
 extern SDL_AudioStream *cutscene_audiostream;
 extern struct MusicDevice *MusicDev;
 
-extern char *MusicCallbackBuffer;
-
 extern void AudioStreamCallback(void *userdata, unsigned char *stream, int len);
 extern void MusicCallback(void *userdata, Uint8 *stream, int len);
 
@@ -36,12 +34,11 @@ int snd_start_digital(void) {
     device = SDL_OpenAudioDevice(NULL, 0, &spec, &obtained, 0);
 
     if (device == 0) {
-        ERROR("Could not open SDL audio");
+        ERROR("Could not open SDL audio: %s", SDL_GetError());
     } else {
         INFO("Opened Music Stream, deviceID %d, freq %d, size %d, format %d, channels %d, samples %d", device,
              obtained.freq, obtained.size, obtained.format, obtained.channels, obtained.samples);
     }
-
 
     if (Mix_Init(MIX_INIT_MP3) < 0) {ERROR("%s: Init failed", __FUNCTION__);}
 
@@ -50,13 +47,10 @@ int snd_start_digital(void) {
 
     Mix_AllocateChannels(SND_MAX_SAMPLES);
 
-    MusicCallbackBuffer = (char *)malloc(2048*5); //larger than needed paranoia
-
     Mix_HookMusic(MusicCallback, (void *)&MusicDev);
-
+    Mix_VolumeMusic(MIX_MAX_VOLUME); // use max volume for music stream
 
 	InitReadXMI();
-
 
     atexit(Mix_CloseAudio);
     atexit(SDL_CloseAudio);
@@ -115,7 +109,7 @@ void snd_kill_all_samples(void) {
 	}
 
     //assume we want these too
-    StopTheMusic();
+//    StopTheMusic(); // no, don't stop the music
     if (cutscene_audiostream != NULL) SDL_AudioStreamClear(cutscene_audiostream);
 }
 
@@ -134,10 +128,6 @@ void snd_sample_reload_parms(snd_digi_parms *sdp) {
 	// sdp->pan ranges from 1 (left) to 127 (right)
 	uint8_t right = 2 * sdp->pan;
 	Mix_SetPanning(channel, 254 - right, right);
-}
-
-void MacTuneUpdateVolume(void) {
-
 }
 
 int is_playing = 0;

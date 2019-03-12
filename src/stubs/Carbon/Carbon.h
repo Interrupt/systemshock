@@ -138,7 +138,7 @@ void StartMovie(void * m);
 Boolean IsMovieDone(void * m);
 
 void HideCursor(void);
-void ShowCursor(void);
+void SS_ShowCursor(void); // renamed from ShowCursor() to avoid collision with windows.h
 
 typedef struct EventRecord EventRecord;
 unsigned short GetOSEvent(short eventMask, EventRecord *theEvent);

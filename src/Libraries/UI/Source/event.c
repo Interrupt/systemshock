@@ -547,7 +547,7 @@ errtype uiQueueEvent(uiEvent* ev)
    }
    if (ev->type == UI_EVENT_MOUSE || ev->type == UI_EVENT_MOUSE_MOVE)
    {
-      mouse_event mse;
+      ss_mouse_event mse;
       errtype err = mouse_next(&mse);
       for(;err == OK; err = mouse_next(&mse))
       {
@@ -881,7 +881,7 @@ errtype uiPoll(void)
       }
       if (!msdone)
       {
-         mouse_event mse;
+         ss_mouse_event mse;
          errtype err = mouse_next(&mse);
          /*if (poll_mouse_motion)
             while (mse.type == MOUSE_MOTION  && err == OK)
@@ -961,7 +961,7 @@ errtype uiFlush(void)
 uchar uiCheckInput(void)
 {
    kbs_event kbe;
-   mouse_event mse;
+   ss_mouse_event mse;
    kbe = kb_next();
    if (kbe.code != KBC_NONE)
    {

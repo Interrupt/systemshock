@@ -84,7 +84,7 @@ short gMouseCritical;						// in critical region?
 short mouseQueueSize = NUM_MOUSEEVENTS;
 volatile short mouseQueueIn;	     	// back of event queue
 volatile short mouseQueueOut;      		// front of event queue
-mouse_event mouseQueue[NUM_MOUSEEVENTS];	// array of events
+ss_mouse_event mouseQueue[NUM_MOUSEEVENTS];	// array of events
 
 short mouseInstantX;						// instantaneous mouse xpos (int-based)
 short mouseInstantY;						// instantaneous mouse ypos (int-based)
@@ -165,9 +165,9 @@ pascal void MousePollProc(void)
 
 	Point 		mp;
 	short		i;
-	mouse_event	e;
+	ss_mouse_event	e;
 
-	extern mouse_event latestMouseEvent;
+	extern ss_mouse_event latestMouseEvent;
 	mouseInstantButts = latestMouseEvent.buttons;
 
 	if (mouseInstantX != latestMouseEvent.x || mouseInstantY != latestMouseEvent.y)		// If different
@@ -175,7 +175,7 @@ pascal void MousePollProc(void)
 		mouseInstantX = latestMouseEvent.x;						// save the position
 		mouseInstantY = latestMouseEvent.y;
 		
-		mouse_event e = latestMouseEvent;
+		ss_mouse_event e = latestMouseEvent;
 		e.type = MOUSE_MOTION;
 
 		for (i = 0; i < mouseCalls; i++)
@@ -554,7 +554,7 @@ errtype mouse_check_btn(short button, bool* res)
 //  For Mac version: Check the normal Mac event queue for mouse events.  The events
 //  looked for depend on the 'mouseMask' setting.
 
-errtype mouse_look_next(mouse_event *res)
+errtype mouse_look_next(ss_mouse_event *res)
 {
 	printf("mouse_look_next not implemented.\n");
 

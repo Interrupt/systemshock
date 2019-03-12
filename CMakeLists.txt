@@ -357,8 +357,8 @@ if(FLUIDSYNTH_LIBRARY)
 endif()
 
 if (WIN32)
-	include_directories(${CMAKE_SOURCE_DIR}/build_ext/built_glew/include)
-	target_link_libraries(systemshock ${CMAKE_SOURCE_DIR}/build_ext/built_glew/lib/libglew32.dll.a)
+        include_directories(${CMAKE_SOURCE_DIR}/build_ext/built_glew/include)
+        target_link_libraries(systemshock ${CMAKE_SOURCE_DIR}/build_ext/built_glew/lib/libglew32.dll.a winmm)
 endif(WIN32)
 
 
@@ -366,5 +366,3 @@ endif(WIN32)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers/cmake" ${CMAKE_MODULE_PATH})
 find_package(Sanitizers)
 add_sanitizers(systemshock)
-
-

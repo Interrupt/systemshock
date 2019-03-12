@@ -73,7 +73,7 @@ typedef struct _mouse_event
    uchar buttons;
    uchar modifiers;			// Added for Mac version
    char pad[4];  			// pad to sixteen bytes
-} mouse_event;
+} ss_mouse_event;
 
 #define MOUSE_MOTION    1	// Event mask bits
 #define MOUSE_LDOWN     2
@@ -91,7 +91,7 @@ typedef struct _mouse_event
 extern ubyte mouseMask;
 
 // type of mouse interrupt callback func
-typedef void (*mouse_callfunc)(mouse_event* e,void* data);
+typedef void (*mouse_callfunc)(ss_mouse_event* e,void* data);
 
 
 #define NUM_MOUSE_BTNS 3
@@ -124,16 +124,16 @@ errtype mouse_put_xy(short x, short y);
 errtype mouse_check_btn(short button, bool* result);
 
 // look at the next mouse event.
-errtype mouse_look_next(mouse_event* result);
+errtype mouse_look_next(ss_mouse_event* result);
 
 // get & pop the next mouse event
-errtype mouse_next(mouse_event* result);
+errtype mouse_next(ss_mouse_event* result);
 
 // Flush the mouse queue
 errtype mouse_flush(void);
 
 // Add an event to the back of the mouse queue
-errtype mouse_generate(mouse_event e);
+errtype mouse_generate(ss_mouse_event e);
 
 // Set up an interrupt callback
 errtype mouse_set_callback(mouse_callfunc f, void* data, int* id);

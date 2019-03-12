@@ -364,7 +364,14 @@ uchar fv;
 
 #define REF_STR_Seqer    0x20000000
 #define REF_STR_ADLMIDI  0x20000001
-#define REF_STR_FluidSyn 0x20000002
+#define REF_STR_NativeMI 0x20000002
+#define REF_STR_FluidSyn 0x20000003 // this has to be last because it is optional
+#define REF_STR_MidiOut  0x2fffffff
+
+#define REF_STR_MidiOutX 0x30000000 // 0x30000000-0x3fffffff are MIDI outputs
+
+#define MIDI_OUT_BUFFER_SIZE 1024
+static char MIDI_OUT_BUFFER[MIDI_OUT_BUFFER_SIZE];
 
 static char *_get_temp_string(int num) {
     switch (num) {
@@ -372,11 +379,23 @@ static char *_get_temp_string(int num) {
         case REF_STR_Software: return "Software";
         case REF_STR_OpenGL:   return "OpenGL";
 
-	case REF_STR_Seqer:   return "Midi Player";
-	case REF_STR_ADLMIDI:  return "ADLMIDI";
-	case REF_STR_FluidSyn: return "FluidSynth";
-        default: return get_temp_string(num);
+        case REF_STR_Seqer:    return "Midi Player";
+        case REF_STR_ADLMIDI:  return "ADLMIDI";
+        case REF_STR_NativeMI: return "Native MIDI";
+        case REF_STR_FluidSyn: return "FluidSynth";
+
+        case REF_STR_MidiOut:  return "Midi Output";
     }
+
+    if (num >= REF_STR_MidiOutX && num <= (REF_STR_MidiOutX | 0x0fffffff))
+    {
+        const unsigned int midiOutputIndex = (unsigned int)num - REF_STR_MidiOutX;
+        MIDI_OUT_BUFFER[0] = '\0';
+        GetOutputNameXMI(midiOutputIndex, &MIDI_OUT_BUFFER[0], MIDI_OUT_BUFFER_SIZE);
+        return &MIDI_OUT_BUFFER[0];
+    }
+
+    return get_temp_string(num);
 }
 
 #define get_temp_string _get_temp_string
@@ -512,7 +531,15 @@ void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void *var, 
     opt_slider_state *st = (opt_slider_state *)&OButtons[butid].user;
     uint val;
 
-    val = ((r->lr.x - r->ul.x - 3) * multi_get_curval(type, var)) / maxval;
+    if (maxval)
+    {
+        val = ((r->lr.x - r->ul.x - 3) * multi_get_curval(type, var)) / maxval;
+    }
+    else
+    {
+        // just put it in the middle
+        val = (r->lr.x - r->ul.x - 3) / 2;
+    }
 
     st->color = BUTTON_COLOR;
     st->bvalcol = GREEN_YELLOW_BASE + 1;
@@ -1411,8 +1438,19 @@ void digichan_dealfunc(short val) {
     // snd_set_digital_channels(cur_digi_channels);
 }
 
-static void seqer_dealfunc(bool use_sequencer) {
+static void seqer_dealfunc(short val) {
+//    INFO("Selected MIDI device %d", val);
+    gShockPrefs.soMidiOutput = 0;
     ReloadDecXMI(); // Reload Midi decoder
+    soundopt_screen_init();
+    (void)val;
+}
+
+static void midi_output_dealfunc(short val) {
+//    INFO("Selected MIDI output %d", val);
+    ReloadDecXMI(); // Reload Midi decoder
+    soundopt_screen_init();
+    (void)val;
 }
 
 #pragma enable_message(202)
@@ -1446,12 +1484,32 @@ void soundopt_screen_init() {
 #endif
 
 #ifdef USE_FLUIDSYNTH
+    const uchar numSynths = 3;
+#else
+    const uchar numSynths = 2;
+#endif
     standard_button_rect(&r, i, 2, 2, 5);
     multi_init(i, 'p', REF_STR_Seqer, REF_STR_ADLMIDI, ID_NULL,
-               sizeof(gShockPrefs.soMidiBackend), &gShockPrefs.soMidiBackend, 2, seqer_dealfunc, &r);
-
+               sizeof(gShockPrefs.soMidiBackend), &gShockPrefs.soMidiBackend, numSynths, seqer_dealfunc, &r);
     i++;
-#endif
+/* standard button is too narrow, so use a slider instead
+    const unsigned int numMidiOutputs = GetOutputCountXMI();
+    INFO("numMidiOutputs=%d", numMidiOutputs);
+    standard_button_rect(&r, i, 2, 2, 5);
+    multi_init(i, 'o', REF_STR_MidiOut, REF_STR_MidiOutX, ID_NULL,
+               sizeof(gShockPrefs.soMidiOutput), &gShockPrefs.soMidiOutput, numMidiOutputs, midi_output_dealfunc, &r);
+    i++;
+*/
+    unsigned int midiOutputCount = GetOutputCountXMI();
+    if (midiOutputCount > 0)
+    {
+        standard_slider_rect(&r, i, 2, 5);
+        // this makes it double-wide i guess?
+        r.lr.x += (r.lr.x - r.ul.x);
+        slider_init(i, REF_STR_MidiOutX + gShockPrefs.soMidiOutput, sizeof(gShockPrefs.soMidiOutput), FALSE, &gShockPrefs.soMidiOutput, midiOutputCount - 1,
+                    0, midi_output_dealfunc, &r);
+        i++;
+    }
 
     standard_button_rect(&r, 5, 2, 2, 5);
     retkey = tolower(get_temp_string(REF_STR_MusicText + 2)[0]);

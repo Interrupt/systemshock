@@ -1374,7 +1374,7 @@ uchar save_hotkey_func(short keycode, ulong context, void *data) {
     if (music_on) // Setup the environment for doing Mac stuff.
         MacTuneKillCurrentTheme();
     uiHideMouse(NULL);
-    ShowCursor();
+    SS_ShowCursor();
 
     // CopyBits(&gMainWindow->portBits, &gMainOffScreen.bits->portBits, &gActiveArea, &gOffActiveArea, srcCopy, 0L);
 
