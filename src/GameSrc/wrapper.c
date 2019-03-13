@@ -486,7 +486,8 @@ void slider_deal(uchar butid, uchar deal) {
 
     deal = deal || st->smooth;
 
-    val = (st->sliderpos * st->maxval) / (BR(butid).lr.x - BR(butid).ul.x - 3);
+    val = (st->sliderpos * (st->maxval + 1)) / (BR(butid).lr.x - BR(butid).ul.x - 3);
+    if (val > st->maxval) val = st->maxval;
 
     multi_set_curval(st->type, st->curval, val, deal ? st->dealfunc : NULL);
 }

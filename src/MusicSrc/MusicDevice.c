@@ -1,6 +1,23 @@
 #include "MusicDevice.h"
 #include <stdlib.h>
 #include <string.h>
+#ifdef WIN32
+// General Windows API support
+# ifndef WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
+# endif
+# include <windows.h>
+// Windows NativeMidi backend support
+# include <mmsystem.h>
+#else
+// Linux NativeMidi backend support
+# if defined(USE_ALSA)
+#  include <alsa/asoundlib.h>
+# endif
+// Linux/Mac FluidMidi SF2 search support
+# include <sys/types.h>
+# include <dirent.h>
+#endif
 
 //------------------------------------------------------------------------------
 // Dummy MIDI player
@@ -177,10 +194,7 @@ static int AdlMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsigne
     adev->adl = adl;
 
     adev->dev.isOpen = 1;
-    adev->dev.outputIndex = 0;
-
-    // suppress compiler warnings
-    (void)outputIndex;
+    adev->dev.outputIndex = outputIndex;
 
     return 0;
 }
@@ -337,16 +351,6 @@ static MusicDevice *createAdlMidiDevice()
 // could support coremidi on OSX in the future?
 // this devolves into another null driver on unsupported configurations
 
-#ifdef WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#include <mmsystem.h>
-#elif defined(USE_ALSA)
-# include <alsa/asoundlib.h>
-#endif
-
 typedef struct
 {
     MusicDevice dev;
@@ -435,50 +439,9 @@ inline static void NativeMidiAlsaSendEvent(NativeMidiDevice *ndev, snd_seq_event
 }
 #endif
 
-static void NativeMidiSendControllerChange(MusicDevice *dev, int channel, int ctl, int val)
-{
-    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
-    if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
-    // send controller change
-    NativeMidiSendMessage(ndev->outHandle,
-                          MME_CONTROL_CHANGE,
-                          NM_CLAMP15(channel),
-                          NM_CLAMP127(ctl),
-                          NM_CLAMP127(val));
-#elif defined(USE_ALSA)
-    // send controller change
-    snd_seq_event_t ev;
-    NativeMidiAlsaInitEvent(ndev, &ev);
-    snd_seq_ev_set_controller(&ev, channel, ctl, val);
-    NativeMidiAlsaSendEvent(ndev, &ev);
-#else
-    // suppress compiler warnings
-    (void)channel;
-    (void)ctl;
-    (void)val;
-#endif
-}
-
-static void NativeMidiReset(MusicDevice *dev)
-{
-    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
-    if (!ndev || !ndev->dev.isOpen) return;
-#if defined(WIN32) || defined(USE_ALSA)
-    // send All Sound Off for all channels
-    for (unsigned char chan = 0; chan <= 15; ++chan)
-    {
-        NativeMidiSendControllerChange(dev, chan, MCE_ALL_SOUND_OFF, 0);
-    }
-    // send All Controllers Off for all channels
-    // this is done in a separate loop to give the previous one a chance to
-    //  settle out
-    for (unsigned char chan = 0; chan <= 15; ++chan)
-    {
-        NativeMidiSendControllerChange(dev, chan, MCE_ALL_CONTROLLERS_OFF, 0);
-    }
-#endif
-}
+// forward declares
+static void NativeMidiSendControllerChange(MusicDevice *dev, int channel, int ctl, int val);
+static void NativeMidiReset(MusicDevice *dev);
 
 static int NativeMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsigned samplerate)
 {
@@ -651,6 +614,26 @@ static void NativeMidiSetupMode(MusicDevice *dev, MusicMode mode)
     (void)mode;
 }
 
+static void NativeMidiReset(MusicDevice *dev)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev || !ndev->dev.isOpen) return;
+#if defined(WIN32) || defined(USE_ALSA)
+    // send All Sound Off for all channels
+    for (unsigned char chan = 0; chan <= 15; ++chan)
+    {
+        NativeMidiSendControllerChange(dev, chan, MCE_ALL_SOUND_OFF, 0);
+    }
+    // send All Controllers Off for all channels
+    // this is done in a separate loop to give the previous one a chance to
+    //  settle out
+    for (unsigned char chan = 0; chan <= 15; ++chan)
+    {
+        NativeMidiSendControllerChange(dev, chan, MCE_ALL_CONTROLLERS_OFF, 0);
+    }
+#endif
+}
+
 static void NativeMidiGenerate(MusicDevice *dev, short *samples, int numframes)
 {
     // native MIDI outputs at the OS level, to an external driver or real synth
@@ -734,6 +717,31 @@ static void NativeMidiSendNoteAfterTouch(MusicDevice *dev, int channel, int note
     (void)channel;
     (void)note;
     (void)touch;
+#endif
+}
+
+static void NativeMidiSendControllerChange(MusicDevice *dev, int channel, int ctl, int val)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev || !ndev->dev.isOpen) return;
+#ifdef WIN32
+    // send controller change
+    NativeMidiSendMessage(ndev->outHandle,
+                          MME_CONTROL_CHANGE,
+                          NM_CLAMP15(channel),
+                          NM_CLAMP127(ctl),
+                          NM_CLAMP127(val));
+#elif defined(USE_ALSA)
+    // send controller change
+    snd_seq_event_t ev;
+    NativeMidiAlsaInitEvent(ndev, &ev);
+    snd_seq_ev_set_controller(&ev, channel, ctl, val);
+    NativeMidiAlsaSendEvent(ndev, &ev);
+#else
+    // suppress compiler warnings
+    (void)channel;
+    (void)ctl;
+    (void)val;
 #endif
 }
 
@@ -1001,6 +1009,9 @@ typedef struct FluidMidiDevice
     fluid_settings_t *settings;
 } FluidMidiDevice;
 
+// forward declaration
+static void FluidMidiGetOutputName(MusicDevice *dev, const unsigned int outputIndex, char *buffer, const unsigned int bufferSize);
+
 static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsigned samplerate)
 {
     FluidMidiDevice *fdev = (FluidMidiDevice *)dev;
@@ -1009,6 +1020,14 @@ static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsig
     fluid_settings_t *settings;
     fluid_synth_t *synth;
     int sfid;
+    char fileName[1024] = "res/";
+
+    FluidMidiGetOutputName(dev, outputIndex, &fileName[4], 1020);
+    if (strlen(fileName) == 4)
+    {
+        WARN("Failed to locate SoundFont for outputIndex=%d", outputIndex);
+        return -1;
+    }
 
     settings = new_fluid_settings();
     fluid_settings_setnum(settings, "synth.sample-rate", samplerate);
@@ -1016,11 +1035,11 @@ static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsig
     fluid_settings_setnum(settings, "synth.gain", 0.5);
 
     synth = new_fluid_synth(settings);
-    sfid = fluid_synth_sfload(synth, "res/music.sf2", 1);
+    sfid = fluid_synth_sfload(synth, fileName, 1);
 
     if (sfid == FLUID_FAILED)
     {
-        WARN("cannot load res/music.sf2 for FluidSynth");
+        WARN("cannot load %s for FluidSynth", fileName);
         delete_fluid_synth(synth);
         delete_fluid_settings(settings);
         fdev->synth = NULL;
@@ -1034,10 +1053,7 @@ static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsig
     fdev->settings = settings;
 
     fdev->dev.isOpen = 1;
-    fdev->dev.outputIndex = 0;
-
-    // suppress compiler warnings
-    (void)outputIndex;
+    fdev->dev.outputIndex = outputIndex;
 
     return 0;
 }
@@ -1152,18 +1168,91 @@ static void FluidMidiSendPitchBendML(MusicDevice *dev, int channel, int msb, int
 
 static unsigned int FluidMidiGetOutputCount(MusicDevice *dev)
 {
+    unsigned int outputCount = 0;
+#ifdef WIN32
+    // count number of .sf2 files in res/ subdirectory
+    char const * const pattern = "res\\*.sf2";
+    WIN32_FIND_DATA data;
+    HANDLE hFind;
+    if ((hFind = FindFirstFile(pattern, &data)) != INVALID_HANDLE_VALUE)
+    {
+        // INFO("Counting SoundFont file: %s", data.cFileName);
+        do { ++outputCount; } while (FindNextFile(hFind, &data));
+        FindClose(hFind);
+    }
+#else
+    DIR *dirp = opendir("res");
+    struct dirent *dp = 0;
+    while (dp = readdir(dirp))
+    {
+        char *filename = dp->d_name;
+        char namelen = strlen(filename);
+        if (namelen < 4) continue; // ".sf2"
+        if (strcasecmp(".sf2", (char*)(filename + (namelen - 4)))) continue;
+        // found one
+        // INFO("Counting SoundFont file: %s", filename);
+        ++outputCount;
+    }
+    closedir(dirp);
+#endif
+
     // suppress compiler warnings
     (void)dev;
 
-    // TODO: add support for various soundfonts?
-    return 1;
+    return outputCount;
 }
 
 static void FluidMidiGetOutputName(MusicDevice *dev, const unsigned int outputIndex, char *buffer, const unsigned int bufferSize)
 {
     if (!buffer || bufferSize < 1) return;
+    // default to nothing
     // save last position for NULL character
-    strncpy(buffer, "FluidMidi", bufferSize - 1);
+    strncpy(buffer, "No SoundFonts found", bufferSize - 1);
+#if WIN32
+    unsigned int outputCount = 0; // subtract 1 to get index
+    // count .sf2 files in res/ subdirectory until we find the one that the user
+    //  probably wants
+    char const * const pattern = "res\\*.sf2";
+    WIN32_FIND_DATA data;
+    HANDLE hFind;
+    if ((hFind = FindFirstFile(pattern, &data)) != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            ++outputCount;
+            if (outputCount - 1 == outputIndex)
+            {
+                // found it
+                strncpy(buffer, data.cFileName, bufferSize - 1);
+                // INFO("Found SoundFont file for outputIndex=%d: %s", outputIndex, data.cFileName);
+                break;
+            }
+        } while (FindNextFile(hFind, &data));
+        FindClose(hFind);
+    }
+#else
+    unsigned int outputCount = 0; // subtract 1 to get index
+    // count .sf2 files in res/ subdirectory until we find the one that the user
+    //  probably wants
+    DIR *dirp = opendir("res");
+    struct dirent *dp = 0;
+    while ((outputCount <= outputIndex) &&
+           (dp = readdir(dirp)))
+    {
+        char *filename = dp->d_name;
+        char namelen = strlen(filename);
+        if (namelen < 4) continue; // ".sf2"
+        if (strcasecmp(".sf2", (char*)(filename + (namelen - 4)))) continue;
+        // found one
+        // INFO("Counting SoundFont file: %s", filename);
+        ++outputCount;
+        if (outputCount - 1 != outputIndex) continue;
+        // found it
+        strncpy(buffer, filename, bufferSize - 1);
+        // INFO("Found SoundFont file for outputIndex=%d: %s", outputIndex, filename);
+    }
+    closedir(dirp);
+#endif
     // put NULL in last position in case we filled up everything else
     *(buffer + bufferSize - 1) = '\0';
 
