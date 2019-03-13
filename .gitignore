@@ -58,3 +58,6 @@ savgam*.dat
 # Eclipse CDT
 .project
 .cproject
+
+#NixOS
+result
