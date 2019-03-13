@@ -1,6 +1,23 @@
 #include "MusicDevice.h"
 #include <stdlib.h>
 #include <string.h>
+#ifdef WIN32
+// General Windows API support
+# ifndef WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
+# endif
+# include <windows.h>
+// Windows NativeMidi backend support
+# include <mmsystem.h>
+#else
+// Linux NativeMidi backend support
+# if defined(USE_ALSA)
+#  include <alsa/asoundlib.h>
+# endif
+// Linux/Mac FluidMidi SF2 search support
+# include <sys/types.h>
+# include <dirent.h>
+#endif
 
 //------------------------------------------------------------------------------
 // Dummy MIDI player
@@ -334,16 +351,6 @@ static MusicDevice *createAdlMidiDevice()
 // could support coremidi on OSX in the future?
 // this devolves into another null driver on unsupported configurations
 
-#ifdef WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#include <mmsystem.h>
-#elif defined(USE_ALSA)
-# include <alsa/asoundlib.h>
-#endif
-
 typedef struct
 {
     MusicDevice dev;
@@ -432,50 +439,9 @@ inline static void NativeMidiAlsaSendEvent(NativeMidiDevice *ndev, snd_seq_event
 }
 #endif
 
-static void NativeMidiSendControllerChange(MusicDevice *dev, int channel, int ctl, int val)
-{
-    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
-    if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
-    // send controller change
-    NativeMidiSendMessage(ndev->outHandle,
-                          MME_CONTROL_CHANGE,
-                          NM_CLAMP15(channel),
-                          NM_CLAMP127(ctl),
-                          NM_CLAMP127(val));
-#elif defined(USE_ALSA)
-    // send controller change
-    snd_seq_event_t ev;
-    NativeMidiAlsaInitEvent(ndev, &ev);
-    snd_seq_ev_set_controller(&ev, channel, ctl, val);
-    NativeMidiAlsaSendEvent(ndev, &ev);
-#else
-    // suppress compiler warnings
-    (void)channel;
-    (void)ctl;
-    (void)val;
-#endif
-}
-
-static void NativeMidiReset(MusicDevice *dev)
-{
-    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
-    if (!ndev || !ndev->dev.isOpen) return;
-#if defined(WIN32) || defined(USE_ALSA)
-    // send All Sound Off for all channels
-    for (unsigned char chan = 0; chan <= 15; ++chan)
-    {
-        NativeMidiSendControllerChange(dev, chan, MCE_ALL_SOUND_OFF, 0);
-    }
-    // send All Controllers Off for all channels
-    // this is done in a separate loop to give the previous one a chance to
-    //  settle out
-    for (unsigned char chan = 0; chan <= 15; ++chan)
-    {
-        NativeMidiSendControllerChange(dev, chan, MCE_ALL_CONTROLLERS_OFF, 0);
-    }
-#endif
-}
+// forward declares
+static void NativeMidiSendControllerChange(MusicDevice *dev, int channel, int ctl, int val);
+static void NativeMidiReset(MusicDevice *dev);
 
 static int NativeMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsigned samplerate)
 {
@@ -648,6 +614,26 @@ static void NativeMidiSetupMode(MusicDevice *dev, MusicMode mode)
     (void)mode;
 }
 
+static void NativeMidiReset(MusicDevice *dev)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev || !ndev->dev.isOpen) return;
+#if defined(WIN32) || defined(USE_ALSA)
+    // send All Sound Off for all channels
+    for (unsigned char chan = 0; chan <= 15; ++chan)
+    {
+        NativeMidiSendControllerChange(dev, chan, MCE_ALL_SOUND_OFF, 0);
+    }
+    // send All Controllers Off for all channels
+    // this is done in a separate loop to give the previous one a chance to
+    //  settle out
+    for (unsigned char chan = 0; chan <= 15; ++chan)
+    {
+        NativeMidiSendControllerChange(dev, chan, MCE_ALL_CONTROLLERS_OFF, 0);
+    }
+#endif
+}
+
 static void NativeMidiGenerate(MusicDevice *dev, short *samples, int numframes)
 {
     // native MIDI outputs at the OS level, to an external driver or real synth
@@ -731,6 +717,31 @@ static void NativeMidiSendNoteAfterTouch(MusicDevice *dev, int channel, int note
     (void)channel;
     (void)note;
     (void)touch;
+#endif
+}
+
+static void NativeMidiSendControllerChange(MusicDevice *dev, int channel, int ctl, int val)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev || !ndev->dev.isOpen) return;
+#ifdef WIN32
+    // send controller change
+    NativeMidiSendMessage(ndev->outHandle,
+                          MME_CONTROL_CHANGE,
+                          NM_CLAMP15(channel),
+                          NM_CLAMP127(ctl),
+                          NM_CLAMP127(val));
+#elif defined(USE_ALSA)
+    // send controller change
+    snd_seq_event_t ev;
+    NativeMidiAlsaInitEvent(ndev, &ev);
+    snd_seq_ev_set_controller(&ev, channel, ctl, val);
+    NativeMidiAlsaSendEvent(ndev, &ev);
+#else
+    // suppress compiler warnings
+    (void)channel;
+    (void)ctl;
+    (void)val;
 #endif
 }
 
@@ -1165,18 +1176,29 @@ static unsigned int FluidMidiGetOutputCount(MusicDevice *dev)
     HANDLE hFind;
     if ((hFind = FindFirstFile(pattern, &data)) != INVALID_HANDLE_VALUE)
     {
-        INFO("Counting SoundFont file: %s", data.cFileName);
+        // INFO("Counting SoundFont file: %s", data.cFileName);
         do { ++outputCount; } while (FindNextFile(hFind, &data));
         FindClose(hFind);
     }
 #else
-    // TODO: implement POSIX version for Linux/Mac
+    DIR *dirp = opendir("res");
+    struct dirent *dp = 0;
+    while (dp = readdir(dirp))
+    {
+        char *filename = dp->d_name;
+        char namelen = strlen(filename);
+        if (namelen < 4) continue; // ".sf2"
+        if (strcasecmp(".sf2", (char*)(filename + (namelen - 4)))) continue;
+        // found one
+        // INFO("Counting SoundFont file: %s", filename);
+        ++outputCount;
+    }
+    closedir(dirp);
 #endif
 
     // suppress compiler warnings
     (void)dev;
 
-    // TODO: add support for various soundfonts?
     return outputCount;
 }
 
@@ -1202,13 +1224,34 @@ static void FluidMidiGetOutputName(MusicDevice *dev, const unsigned int outputIn
             {
                 // found it
                 strncpy(buffer, data.cFileName, bufferSize - 1);
-                INFO("Found SoundFont file for outputIndex=%d: %s", outputIndex, data.cFileName);
+                // INFO("Found SoundFont file for outputIndex=%d: %s", outputIndex, data.cFileName);
                 break;
             }
         } while (FindNextFile(hFind, &data));
         FindClose(hFind);
     }
 #else
+    unsigned int outputCount = 0; // subtract 1 to get index
+    // count .sf2 files in res/ subdirectory until we find the one that the user
+    //  probably wants
+    DIR *dirp = opendir("res");
+    struct dirent *dp = 0;
+    while ((outputCount <= outputIndex) &&
+           (dp = readdir(dirp)))
+    {
+        char *filename = dp->d_name;
+        char namelen = strlen(filename);
+        if (namelen < 4) continue; // ".sf2"
+        if (strcasecmp(".sf2", (char*)(filename + (namelen - 4)))) continue;
+        // found one
+        // INFO("Counting SoundFont file: %s", filename);
+        ++outputCount;
+        if (outputCount - 1 != outputIndex) continue;
+        // found it
+        strncpy(buffer, filename, bufferSize - 1);
+        // INFO("Found SoundFont file for outputIndex=%d: %s", outputIndex, filename);
+    }
+    closedir(dirp);
 #endif
     // put NULL in last position in case we filled up everything else
     *(buffer + bufferSize - 1) = '\0';
