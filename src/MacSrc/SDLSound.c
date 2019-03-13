@@ -59,7 +59,7 @@ int snd_start_digital(void) {
 }
 
 int snd_sample_play(int snd_ref, int len, uchar *smp, struct snd_digi_parms *dprm) {
-
+	(unused)snd_ref;
 	// Play one of the VOC format sounds
 
 	Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromConstMem(smp, len), 1);
@@ -135,7 +135,7 @@ int is_playing = 0;
 int MacTuneLoadTheme(char* theme_base, int themeID) {
 	char filename[40];
 	FILE *f;
-	int i;
+	//int i;
 	
 	#define NUM_SCORES                  8
 	#define SUPERCHUNKS_PER_SCORE       4
@@ -181,11 +181,12 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 	  f = fopen_caseless(filename, "rb");
 	  if (f != 0)
 	  {
-	    fread(track_table,      NUM_SCORES * SUPERCHUNKS_PER_SCORE,             1, f);
-	    fread(transition_table, NUM_TRANSITIONS,                                1, f);
-	    fread(layering_table,   NUM_LAYERS * MAX_KEYS,                          1, f);
-	    fread(key_table,        NUM_LAYERABLE_SUPERCHUNKS * KEY_BAR_RESOLUTION, 1, f);
-
+	    int tmp = 0;
+	    tmp = fread(track_table,      NUM_SCORES * SUPERCHUNKS_PER_SCORE,             1, f);
+	    tmp = fread(transition_table, NUM_TRANSITIONS,                                1, f);
+	    tmp = fread(layering_table,   NUM_LAYERS * MAX_KEYS,                          1, f);
+	    tmp = fread(key_table,        NUM_LAYERABLE_SUPERCHUNKS * KEY_BAR_RESOLUTION, 1, f);
+	    (void)tmp; // It's probably a good idea to replace this with actual error handling.
 	    fclose(f);
 	  }
 	}

@@ -365,6 +365,7 @@ int ReadXMI(const char *filename)
 
 int MyThread(void *arg)
 {
+  (unused)arg;
   int i;
 
   MIDI_EVENT *event[NUM_THREADS];
@@ -743,7 +744,7 @@ void ReloadDecXMI(void)
   if (MusicDev &&
       (!MusicDev->isOpen ||
        !deviceTypeMatch ||
-       MusicDev->outputIndex != gShockPrefs.soMidiOutput))
+       (signed)MusicDev->outputIndex != gShockPrefs.soMidiOutput))
   {
     SDL_UnlockMutex(MyMutex);
     INFO("Closing MIDI driver due to reload");

@@ -126,6 +126,7 @@ void FixPalette(void)
 //------------------------------------------------------------------------------------
 void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color)
 {
+	(unused)theMap; (unused)width; (unused)height; (unused)color;
 	/*GrafPtr 			savePort;
 	PixMapPtr		pmaptr;
 	
@@ -178,6 +179,7 @@ void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean colo
 //------------------------------------------------------------------------------------
 void FreeShockBitmap(ShockBitmap *theMap)
 {
+	(unused)theMap;
 	/*if (theMap->Color)
 	{
 		if (theMap->OrigBits != 0L)
@@ -197,6 +199,7 @@ void FreeShockBitmap(ShockBitmap *theMap)
 //------------------------------------------------------------------------------------
 Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height) 
 {
+	(unused)theCGrafPtr; (unused)width; (unused)height;
 	printf("Build8PixMap\n");
 	/*Rect        			bRect;
 	PixMapHandle		pmap;
@@ -242,6 +245,7 @@ Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height)
 //------------------------------------------------------------------------------------
 void LoadPictShockBitmap(ShockBitmap *theMap, short PictID)
 {
+	(unused)theMap; (unused)PictID;
 	/*PicHandle 	pic;
 	Rect			r;
 	GrafPtr		savePort;
@@ -398,12 +402,13 @@ void SetupTitleScreen(void)
 //------------------------------------------------------------------------------------
 int DoShockTitleButtons(Point mousePt)
 {
+	(unused)mousePt;
 	/*for (int i = 0; i < 4; i++)
 	{
 		if (PtInRect(mousePt, &pBtnRect[i]))
 			return (TrackTitleButton(i));
-	}
-	return (-1);*/
+	}*/
+	return (-1);
 }
 
 //------------------------------------------------------------------------------------
@@ -411,6 +416,7 @@ int DoShockTitleButtons(Point mousePt)
 //------------------------------------------------------------------------------------
 int TrackTitleButton(int btn)
 {
+	(unused)btn;
 	/*PicHandle	phNorm, phClick;
 	Point			currPt;
 	Boolean		oldState = TRUE;

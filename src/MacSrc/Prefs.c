@@ -576,7 +576,7 @@ HOTKEYLOOKUP HotKeyLookup[] =
   { "\"cheat_up_level\"",   DEMO_CONTEXT, toggle_up_level_func,   (void *)TRUE           , 0, CTRL('4'),     0 },
   { "\"cheat_down_level\"", DEMO_CONTEXT, toggle_down_level_func, (void *)TRUE           , 0, CTRL('5'),     0 },
 
-  { NULL, 0, 0, 0 }
+  { 0 }
 };
 
 

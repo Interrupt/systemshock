@@ -42,8 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Defines
 
-// #define STORE_CLIP(a,b,c,d) (a) = gr_get_clip_l(); \
-//   (b) = gr_get_clip_t();  (c) = gr_get_clip_r();  (d) = gr_get_clip_b()
+/* #define STORE_CLIP(a,b,c,d) (a) = gr_get_clip_l(); \
+     (b) = gr_get_clip_t();  (c) = gr_get_clip_r();  (d) = gr_get_clip_b() */
 //
 // #define RESTORE_CLIP(a,b,c,d) gr_set_cliprect((a),(b),(c),(d))
 

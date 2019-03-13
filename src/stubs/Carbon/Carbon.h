@@ -12,6 +12,7 @@
 
 #define nil NULL
 
+typedef void unused;
 typedef uint32_t ResType; // can hold four character codes ('ASDF')
 
 typedef char* Ptr;
@@ -72,17 +73,23 @@ OSErr FSMakeFSSpec(short vRefNum, long dirID, /*ConstStr255Param*/ const char* f
 
 Handle GetResource(ResType type, /*Integer*/ int id);
 
-static void ReleaseResource(Handle h) {}
-static void HLock(Handle h) {}
-static void HUnlock(Handle h) {}
+#pragma GCC diagnostic push                        // Save actual diagnostics state.
+#pragma GCC diagnostic ignored "-Wunused-function" // Disable unused-function.
+
+static void ReleaseResource(Handle h) { (unused)h; }
+static void HLock(Handle h) { (unused)h; }
+static void HUnlock(Handle h) { (unused)h; }
 
 extern Handle NewHandle(Size cnt);
 extern void DisposeHandle(Handle h);
-static void WriteResource (Handle theResource) {}
+static void WriteResource (Handle theResource) { (unused)theResource; }
 
-static void AddResource (Handle theData, ResType theType, short theID, /*ConstStr255Param*/ const char* name) {}
+static void AddResource (Handle theData, ResType theType, short theID, /*ConstStr255Param*/ const char* name)
+{
+	(unused)theData; (unused)theType; (unused)theID; (unused)name;
+}
 
-static void CloseResFile(short refNum) {}
+static void CloseResFile(short refNum) { (unused)refNum; }
 
 
 static void numtostring(int num, char *str)
@@ -128,6 +135,8 @@ static void BlockMove(const void* srcPtr, void* destPtr, Size byteCount)
 	if(byteCount > 0)
 		memmove(destPtr, srcPtr, byteCount);
 }
+
+#pragma GCC diagnostic pop                         // Restore diagnostics state.
 
 // the following functions are "implemented" in Stub.c, but don't turn up in any header
 // so I added them here to make my compiler happy

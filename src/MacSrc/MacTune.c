@@ -67,14 +67,14 @@ int				gQueueTime;									// Amount of time (in millisecs) to wait to queue nex
 //---------------------------------------------------------------
 //  The following section is the time manager task for determining the next tune to play.
 //---------------------------------------------------------------
-#pragma require_prototypes off
+//#pragma require_prototypes off
 
 //---------------------------------------------------------------
 pascal void CalcTuneProc(void)
 {
 	gReadyToQueue = TRUE;								// It's time to queue up another tune.
 }
-#pragma require_prototypes on
+//#pragma require_prototypes on
 
 
 //------------------------------------------------------------------------------
@@ -268,7 +268,7 @@ void MacTuneStartCurrentTheme(void)
 	}*/
 
 	int track = 1+current_request[0].pieceID;
-	if (track >= 0 && track < NumTracks)
+	if (track >= 0 && track < (signed)NumTracks)
 	{
 	  int i = 0;
 	
@@ -345,6 +345,7 @@ void MacTunePurgeCurrentTheme()
 //------------------------------------------------------------------------------
 void MacTunePlayTune(int tune)
 {
+	(unused)tune;
 /*if (tune == 255 || tune == -1)
 	DebugString("Eep Eep Invalid tune!");  //¥¥¥
 	
@@ -368,6 +369,7 @@ void MacTunePlayTune(int tune)
 //------------------------------------------------------------------------------
 void MacTuneQueueTune(int tune)
 {
+	(unused)tune;
 /*if (tune == 255 || tune == -1)
 	DebugString("Eep Eep Invalid tune!");  //¥¥¥
 	

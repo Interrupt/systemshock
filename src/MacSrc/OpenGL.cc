@@ -600,6 +600,7 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
 }
 
 void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm) {
+    (unused)size;
     if (idx < NUM_LOADED_TEXTURES) {
         CachedTexture* t = opengl_get_texture(bm);
         if(t == NULL) {

@@ -5,25 +5,31 @@
 
 Boolean				gTuneDone;
 
-void StopMovie(void * x) { }
-void StartMovie(void * m) { }
-Boolean IsMovieDone(void * x) { return true; }
+void StopMovie(void * x) { (unused)x; }
+void StartMovie(void * m) { (unused)m; }
+Boolean IsMovieDone(void * x) { (unused)x; return true; }
 
-void HideCursor(void) { }
-void SS_ShowCursor(void) { }
-ushort GetOSEvent(short eventMask,EventRecord *theEvent) { return false; }
+void HideCursor(unused) { }
+void SS_ShowCursor(unused) { }
+ushort GetOSEvent(short eventMask,EventRecord *theEvent) { (unused)eventMask; (unused)theEvent; return false; }
 
-void AdvanceProgress(void) { }
-void EndProgressDlg(void) { }
+void AdvanceProgress(unused) { }
+void EndProgressDlg(unused) { }
 
 //Boolean ShockAlertFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit) { return false; }
 
 
-void MoviesTask(void *m, int n) { }
+void MoviesTask(void *m, int n) { (unused)m; (unused)n; }
 
-void DisposHandle(void *h) { }
-void DisposeMovie(void *m) { }
-void DisposCTable(void *c) { }
+void DisposHandle(void *h) { (unused)h; }
+void DisposeMovie(void *m) { (unused)m; }
+void DisposCTable(void *c) { (unused)c; }
 
-void BlitLargeAlign(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus) { }
-void BlitLargeAlignSkip(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus) { }
+void BlitLargeAlign(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus)
+{
+    (unused)draw_buffer; (unused)dstRowBytes; (unused)dstPtr; (unused)w; (unused)h; (unused)modulus;
+}
+void BlitLargeAlignSkip(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus)
+{
+    (unused)draw_buffer; (unused)dstRowBytes; (unused)dstPtr; (unused)w; (unused)h; (unused)modulus;
+}

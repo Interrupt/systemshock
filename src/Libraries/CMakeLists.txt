@@ -421,3 +421,6 @@ add_library(VOX_LIB ${VOX_SRC})
 add_library(FIXPP_LIB ${FIXPP_SRC})
 add_library(EDMS_LIB ${EDMS_SRC})
 add_library(ADLMIDI_LIB ${ADLMIDI_SRC})
+
+target_compile_options(RND_LIB PUBLIC -Wall -Werror -Wextra)
+target_compile_options(VOX_LIB PUBLIC -Wall -Werror -Wextra)

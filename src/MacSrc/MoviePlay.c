@@ -73,6 +73,7 @@ void GetNextSubtitle(void);
 //------------------------------------------------------------------------------------
 void PlayCutScene(FSSpec *movieSpec, Boolean showSubs, Boolean allowHalt)
 {
+	(unused)movieSpec; (unused)showSubs; (unused)allowHalt;
 	/*RGBColor			black = {0, 0, 0};
 	RGBColor			white = {0xffff, 0xffff, 0xffff};
 	OSErr				err;
@@ -253,6 +254,7 @@ void PlayCutScene(FSSpec *movieSpec, Boolean showSubs, Boolean allowHalt)
 //------------------------------------------------------------------------
 pascal OSErr DrawDoneProc(Movie theMovie, long refCon)
 {
+	(unused)theMovie; (unused)refCon;
 	/*RGBColor	black = {0, 0, 0};
 	TimeValue	tv;
 	long			chkTime;
@@ -287,6 +289,7 @@ pascal OSErr DrawDoneProc(Movie theMovie, long refCon)
 //------------------------------------------------------------------------
 void DoSubtitle(TimeValue time)
 {
+	(unused)time;
 	/*if (gCurrSub->startingTime != -1 &&					// If it's a valid time
 		 time >= gCurrSub->startingTime)					// and it's time to show it
 	{
@@ -301,6 +304,7 @@ void DoSubtitle(TimeValue time)
 //------------------------------------------------------------------------
 void DrawSubtitle(char *title)
 {
+	(unused)title;
 	/*short		tl;
 	
 	EraseRect(&gSubRect);									// Blank out before drawing.
@@ -326,6 +330,7 @@ void GetNextSubtitle(void)
 //------------------------------------------------------------------------------------
 void PlayVMail(FSSpec *movieSpec, short orgx, short orgy)
 {
+	(unused)movieSpec; (unused)orgx; (unused)orgy;
 	/*Size					dummy;
 	RGBColor			black = {0, 0, 0};
 	RGBColor			white = {0xffff, 0xffff, 0xffff};
@@ -431,6 +436,7 @@ void PlayIntroCutScene()
 //------------------------------------------------------------------------------------
 void PlayStartupMovie(FSSpec *movieSpec, short orgx, short orgy)
 {
+	(unused)movieSpec; (unused)orgx; (unused)orgy;
 	/*RGBColor			black = {0, 0, 0};
 	RGBColor			white = {0xffff, 0xffff, 0xffff};
 	OSErr				err;

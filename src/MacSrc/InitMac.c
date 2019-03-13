@@ -164,6 +164,7 @@ void RemoveShockTimers(void)
 //------------------------------------------------------------------------------------
 Uint32 TimerTickCallback(Uint32 interval, void *param)
 {
+	(unused)param;
 	gShockTicks++;
 	return interval;
 }
@@ -173,6 +174,7 @@ Uint32 TimerTickCallback(Uint32 interval, void *param)
 //------------------------------------------------------------------------------------
 void ErrorDie(short stringnum)
 {
+	(unused)stringnum;
 	/*if (gExtraMemory)
 		DisposHandle(gExtraMemory);	// free our extra space
  
@@ -185,6 +187,7 @@ void ErrorDie(short stringnum)
 //------------------------------------------------------------------------------------
 void StringAlert(short stringnum)
 {
+	(unused)stringnum;
 	/*Str255		message, explain;
 	
 	InitCursor();
@@ -198,7 +201,7 @@ void StringAlert(short stringnum)
 		StopAlert(1000, nil);*/
 }
 
-#pragma mark -
+//#pragma mark -
 //------------------------------------------------------------------------------------
 //  Close all our resources, then quit.
 //------------------------------------------------------------------------------------

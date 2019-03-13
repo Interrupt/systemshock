@@ -79,7 +79,7 @@ void vmap_dot(fix x0, fix y0, fix dxdu, fix dydu, fix dxdv, fix dydv, fix dxdz, 
    int dcrow,dhrow;
    ubyte *crow2,*hrow2;
    long z;
-   int far_ver;
+   int far_ver; (void)far_ver;
    grs_bitmap *col;
    grs_bitmap *ht;
    int (* rect) (short x1,short y1,short x2,short y2);

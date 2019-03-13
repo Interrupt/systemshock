@@ -227,6 +227,7 @@ void DoQuit(void)
 //------------------------------------------------------------------------------------
 errtype CheckFreeSpace(short	checkRefNum)
 {
+	(unused)checkRefNum;
 	// FIXME: This should probably do something?
 	return (OK);
 }

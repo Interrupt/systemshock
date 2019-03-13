@@ -139,6 +139,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 long RndRange(RndStream *prs, long low, long high)
 {
+	(void)prs;
 	// HAX HAX HAX should use this library instead of using the std lib random
 	return (rand() % (high - low + 1)) + low;
 }
@@ -155,6 +156,7 @@ long RndRange(RndStream *prs, long low, long high)
 
 fix RndRangeFix(RndStream *prs, fix low, fix high)
 {
+	(void)prs;
 	// HAX HAX HAX should use this library instead of using the std lib random
 	float flow = fix_float(low);
 	float fhigh = fix_float(high);
