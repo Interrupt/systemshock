@@ -343,14 +343,21 @@ static MusicDevice *createAdlMidiDevice()
 #endif
 #include <windows.h>
 #include <mmsystem.h>
+#elif defined(USE_ALSA)
+# include <alsa/asoundlib.h>
 #endif
 
 typedef struct
 {
     MusicDevice dev;
 #ifdef WIN32
-    // TODO: implementation-specific handles/data go here
     HMIDIOUT outHandle;
+#elif defined(USE_ALSA)
+    snd_seq_t *outHandle;
+    int alsaMyId;
+    int alsaMyPort;
+    int alsaOutputId;
+    int alsaOutputPort;
 #endif
 } NativeMidiDevice;
 
@@ -378,12 +385,13 @@ typedef enum
     MCE_ALL_CONTROLLERS_OFF = 121
 } MidiControllerEnum;
 
-#define NM_CLAMP15(x)  ((UCHAR)((UCHAR)(x) & 0x0F))
-#define NM_CLAMP127(x) ((UCHAR)((UCHAR)(x) & 0x7F))
-#define NM_CLAMP255(x) ((UCHAR)((UCHAR)(x) & 0xFF))
+// define backend-API-specific helper macros here
+#define NM_CLAMP15(x)  ((unsigned char)((unsigned char)(x) & 0x0F))
+#define NM_CLAMP127(x) ((unsigned char)((unsigned char)(x) & 0x7F))
+#define NM_CLAMP255(x) ((unsigned char)((unsigned char)(x) & 0xFF))
 
+// define backend-API-specific helper functions here
 #ifdef WIN32
-// this is an internal-only function
 inline static void NativeMidiSendMessage(
     HMIDIOUT outHandle,
     const MidiMessageEnum message,
@@ -409,32 +417,72 @@ inline static void NativeMidiSendMessage(
         WARN("NativeMidiSendMessage(): midiOutShortMsg() error: %s", &buffer[0]);
     }
 }
+#elif defined(USE_ALSA)
+inline static void NativeMidiAlsaInitEvent(NativeMidiDevice *ndev, snd_seq_event_t* ev)
+{
+    if (!ndev || !ndev->dev.isOpen || !ev) return;
+    snd_seq_ev_clear(ev);
+    snd_seq_ev_set_direct(ev); // do it now
+    snd_seq_ev_set_source(ev, ndev->alsaMyPort);
+    snd_seq_ev_set_dest(ev, ndev->alsaOutputId, ndev->alsaOutputPort);
+}
+
+inline static void NativeMidiAlsaSendEvent(NativeMidiDevice *ndev, snd_seq_event_t* ev)
+{
+    if (!ndev || !ndev->dev.isOpen || !ev) return;
+    snd_seq_event_output(ndev->outHandle, ev); // send to queue
+    snd_seq_drain_output(ndev->outHandle); // process queue
+}
 #endif
+
+static void NativeMidiSendControllerChange(MusicDevice *dev, int channel, int ctl, int val)
+{
+    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
+    if (!ndev || !ndev->dev.isOpen) return;
+#ifdef WIN32
+    // send controller change
+    NativeMidiSendMessage(ndev->outHandle,
+                          MME_CONTROL_CHANGE,
+                          NM_CLAMP15(channel),
+                          NM_CLAMP127(ctl),
+                          NM_CLAMP127(val));
+#elif defined(USE_ALSA)
+    // send controller change
+    snd_seq_event_t ev;
+    NativeMidiAlsaInitEvent(ndev, &ev);
+    snd_seq_ev_set_controller(&ev, channel, ctl, val);
+    NativeMidiAlsaSendEvent(ndev, &ev);
+#else
+    // suppress compiler warnings
+    (void)channel;
+    (void)ctl;
+    (void)val;
+#endif
+}
 
 static void NativeMidiReset(MusicDevice *dev)
 {
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
+#if defined(WIN32) || defined(USE_ALSA)
     // send All Sound Off for all channels
-    for (UCHAR chan = 0; chan <= 15; ++chan)
+    for (unsigned char chan = 0; chan <= 15; ++chan)
     {
-        NativeMidiSendMessage(ndev->outHandle,
-                              MME_CONTROL_CHANGE, chan, MCE_ALL_SOUND_OFF, 0);
+        NativeMidiSendControllerChange(dev, chan, MCE_ALL_SOUND_OFF, 0);
     }
     // send All Controllers Off for all channels
     // this is done in a separate loop to give the previous one a chance to
     //  settle out
-    for (UCHAR chan = 0; chan <= 15; ++chan)
+    for (unsigned char chan = 0; chan <= 15; ++chan)
     {
-        NativeMidiSendMessage(ndev->outHandle,
-                              MME_CONTROL_CHANGE, chan, MCE_ALL_CONTROLLERS_OFF, 0);
+        NativeMidiSendControllerChange(dev, chan, MCE_ALL_CONTROLLERS_OFF, 0);
     }
 #endif
 }
 
 static int NativeMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsigned samplerate)
 {
+//    INFO("Native MIDI device open request for outputIndex=%d", outputIndex);
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || ndev->dev.isOpen) return 0;
 #ifdef WIN32
@@ -455,6 +503,104 @@ static int NativeMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsi
     ndev->dev.outputIndex = outputIndex;
     // send MIDI reset in case it was in a dirty state when we opened it
     NativeMidiReset(dev);
+#elif defined(USE_ALSA)
+    unsigned short foundOutput = 0;
+    unsigned int outputCount = 0; // subtract 1 to get index
+    int alsaError = 0;
+    snd_seq_client_info_t *cinfo = 0;
+    snd_seq_port_info_t *pinfo = 0;
+    int client = 0;
+
+    // open the sequencer interface
+    if ((alsaError = snd_seq_open(&(ndev->outHandle), "default", SND_SEQ_OPEN_OUTPUT, 0)) < 0)
+    {
+        WARN("Error opening ALSA sequencer: %s", snd_strerror(alsaError));
+        if (ndev->outHandle)
+        {
+            snd_seq_close(ndev->outHandle);
+            ndev->outHandle = 0;
+        }
+        return -1;
+    }
+
+    // count ports that support MIDI write until we reach the requested index,
+    //  which is probably the one we want
+    snd_seq_client_info_alloca(&cinfo);
+    snd_seq_port_info_alloca(&pinfo);
+    snd_seq_client_info_set_client(cinfo, -1);
+    while (outputCount <= outputIndex &&
+           snd_seq_query_next_client(ndev->outHandle, cinfo) >= 0)
+    {
+        client = snd_seq_client_info_get_client(cinfo);
+        snd_seq_port_info_set_client(pinfo, client);
+        snd_seq_port_info_set_port(pinfo, -1);
+        while (outputCount <= outputIndex &&
+               snd_seq_query_next_port(ndev->outHandle, pinfo) >= 0)
+        {
+            /* port must understand MIDI messages */
+            if (!(snd_seq_port_info_get_type(pinfo) & SND_SEQ_PORT_TYPE_MIDI_GENERIC))
+                continue;
+            /* we need both WRITE and SUBS_WRITE */
+            if ((snd_seq_port_info_get_capability(pinfo) & (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE)) !=
+                (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE))
+                continue;
+
+            ++outputCount;
+            if (outputCount - 1 == outputIndex)
+            {
+                // found it
+                foundOutput = 1;
+            }
+        }
+    }
+
+    if (!foundOutput)
+    {
+        WARN("Failed to locate ALSA MIDI output at outputIndex=%d", outputIndex);
+        // close the sequencer interface
+        snd_seq_close(ndev->outHandle);
+        ndev->outHandle = 0;
+        return -1;
+    }
+
+    // get client ID
+    ndev->alsaMyId = snd_seq_client_id(ndev->outHandle);
+    if ((alsaError = snd_seq_set_client_name(ndev->outHandle, "Shockolate")) < 0)
+    {
+        WARN("Error setting ALSA sequencer client name: %s", snd_strerror(alsaError));
+    }
+    // create client port
+    ndev->alsaMyPort = snd_seq_create_simple_port(
+        ndev->outHandle,
+        "Shockolate",
+        0,
+        SND_SEQ_PORT_TYPE_MIDI_GENERIC | SND_SEQ_PORT_TYPE_APPLICATION
+    );
+    if (ndev->alsaMyPort < 0)
+    {
+        WARN("Error creating ALSA sequencer client port: %s", snd_strerror(ndev->alsaMyPort));
+        snd_seq_close(ndev->outHandle);
+        ndev->outHandle = 0;
+        return -1;
+    }
+
+    // connect our client to the output
+    ndev->alsaOutputId = snd_seq_port_info_get_client(pinfo);
+    ndev->alsaOutputPort = snd_seq_port_info_get_port(pinfo);
+    if ((alsaError = snd_seq_connect_to(
+        ndev->outHandle,    ndev->alsaMyPort,
+        ndev->alsaOutputId, ndev->alsaOutputPort
+    )) < 0)
+    {
+        WARN("Failed to connect ALSA MIDI device: %s", snd_strerror(alsaError));
+        snd_seq_close(ndev->outHandle);
+        ndev->outHandle = 0;
+        return -1;
+    }
+
+    // connected
+    ndev->dev.isOpen = 1;
+    ndev->dev.outputIndex = outputIndex;
 #endif
     // suppress compiler warnings
     (void)outputIndex;
@@ -474,6 +620,22 @@ static void NativeMidiDestroy(MusicDevice *dev)
         // reset before close, so that notes aren't left hanging
         NativeMidiReset(dev);
         midiOutClose(ndev->outHandle);
+        ndev->outHandle = 0;
+        ndev->dev.isOpen = 0;
+    }
+#elif defined(USE_ALSA)
+    if (ndev->dev.isOpen)
+    {
+        if (ndev->outHandle)
+        {
+            NativeMidiReset(dev);
+            snd_seq_close(ndev->outHandle);
+            ndev->outHandle = 0;
+            ndev->alsaMyId = 0;
+            ndev->alsaMyPort = 0;
+            ndev->alsaOutputId = 0;
+            ndev->alsaOutputPort = 0;
+        }
         ndev->dev.isOpen = 0;
     }
 #endif
@@ -511,6 +673,12 @@ static void NativeMidiSendNoteOff(MusicDevice *dev, int channel, int note, int v
                           NM_CLAMP15(channel),
                           NM_CLAMP127(note),
                           NM_CLAMP127(vel));
+#elif defined(USE_ALSA)
+    // send note off
+    snd_seq_event_t ev;
+    NativeMidiAlsaInitEvent(ndev, &ev);
+    snd_seq_ev_set_noteoff(&ev, channel, note, vel);
+    NativeMidiAlsaSendEvent(ndev, &ev);
 #else
     // suppress compiler warnings
     (void)channel;
@@ -530,6 +698,12 @@ static void NativeMidiSendNoteOn(MusicDevice *dev, int channel, int note, int ve
                           NM_CLAMP15(channel),
                           NM_CLAMP127(note),
                           NM_CLAMP127(vel));
+#elif defined(USE_ALSA)
+    // send note on
+    snd_seq_event_t ev;
+    NativeMidiAlsaInitEvent(ndev, &ev);
+    snd_seq_ev_set_noteon(&ev, channel, note, vel);
+    NativeMidiAlsaSendEvent(ndev, &ev);
 #else
     // suppress compiler warnings
     (void)channel;
@@ -549,30 +723,17 @@ static void NativeMidiSendNoteAfterTouch(MusicDevice *dev, int channel, int note
                           NM_CLAMP15(channel),
                           NM_CLAMP127(note),
                           NM_CLAMP127(touch));
+#elif defined(USE_ALSA)
+    // send note aftertouch (pressure)
+    snd_seq_event_t ev;
+    NativeMidiAlsaInitEvent(ndev, &ev);
+    snd_seq_ev_set_keypress(&ev, channel, note, touch);
+    NativeMidiAlsaSendEvent(ndev, &ev);
 #else
     // suppress compiler warnings
     (void)channel;
     (void)note;
     (void)touch;
-#endif
-}
-
-static void NativeMidiSendControllerChange(MusicDevice *dev, int channel, int ctl, int val)
-{
-    NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
-    if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
-    // send control change
-    NativeMidiSendMessage(ndev->outHandle,
-                          MME_CONTROL_CHANGE,
-                          NM_CLAMP15(channel),
-                          NM_CLAMP127(ctl),
-                          NM_CLAMP127(val));
-#else
-    // suppress compiler warnings
-    (void)channel;
-    (void)ctl;
-    (void)val;
 #endif
 }
 
@@ -588,6 +749,12 @@ static void NativeMidiSendProgramChange(MusicDevice *dev, int channel, int pgm)
                           NM_CLAMP15(channel),
                           NM_CLAMP127(pgm),
                           0);
+#elif defined(USE_ALSA)
+    // send program change
+    snd_seq_event_t ev;
+    NativeMidiAlsaInitEvent(ndev, &ev);
+    snd_seq_ev_set_pgmchange(&ev, channel, pgm);
+    NativeMidiAlsaSendEvent(ndev, &ev);
 #else
     // suppress compiler warnings
     (void)channel;
@@ -600,13 +767,19 @@ static void NativeMidiSendChannelAfterTouch(MusicDevice *dev, int channel, int t
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
 #ifdef WIN32
-    // send channel pressure
+    // send channel aftertouch (pressure)
     // only one data byte is used
     NativeMidiSendMessage(ndev->outHandle,
                           MME_CHANNEL_PRESSURE,
                           NM_CLAMP15(channel),
                           NM_CLAMP127(touch),
                           0);
+#elif defined(USE_ALSA)
+    // send channel aftertouch (pressure)
+    snd_seq_event_t ev;
+    NativeMidiAlsaInitEvent(ndev, &ev);
+    snd_seq_ev_set_chanpress(&ev, channel, touch);
+    NativeMidiAlsaSendEvent(ndev, &ev);
 #else
     // suppress compiler warnings
     (void)channel;
@@ -619,12 +792,20 @@ static void NativeMidiSendPitchBendML(MusicDevice *dev, int channel, int msb, in
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
 #ifdef WIN32
-    // send pitch wheel
+    // send pitch bend
     NativeMidiSendMessage(ndev->outHandle,
                           MME_PITCH_WHEEL,
                           NM_CLAMP15(channel),
                           NM_CLAMP127(lsb),
                           NM_CLAMP127(msb));
+#elif defined(USE_ALSA)
+    // send pitch bend
+    snd_seq_event_t ev;
+    NativeMidiAlsaInitEvent(ndev, &ev);
+    // from ScummVM - seems to sound correct
+    const long theBend = ((long)lsb + (long)(msb << 7)) - 0x2000;
+    snd_seq_ev_set_pitchbend(&ev, channel, theBend);
+    NativeMidiAlsaSendEvent(ndev, &ev);
 #else
     // suppress compiler warnings
     (void)channel;
@@ -635,11 +816,54 @@ static void NativeMidiSendPitchBendML(MusicDevice *dev, int channel, int msb, in
 
 static unsigned int NativeMidiGetOutputCount(MusicDevice *dev)
 {
+//    INFO("Native MIDI output count request");
     // suppress compiler warnings
     (void)dev;
 #ifdef WIN32
     // add one for MIDI_MAPPER
     return midiOutGetNumDevs() + 1;
+#elif defined(USE_ALSA)
+    unsigned int outputCount = 0;
+    int alsaError = 0;
+    snd_seq_t *seqHandle = 0;
+    snd_seq_client_info_t *cinfo = 0;
+    snd_seq_port_info_t *pinfo = 0;
+    int client = 0;
+
+    // open the sequencer interface
+    if ((alsaError = snd_seq_open(&seqHandle, "default", SND_SEQ_OPEN_OUTPUT, 0)) < 0)
+    {
+        WARN("Error opening ALSA sequencer: %s", snd_strerror(alsaError));
+        return 0;
+    }
+
+    // count all ports that support MIDI write
+    snd_seq_client_info_alloca(&cinfo);
+    snd_seq_port_info_alloca(&pinfo);
+    snd_seq_client_info_set_client(cinfo, -1);
+    while (snd_seq_query_next_client(seqHandle, cinfo) >= 0)
+    {
+        client = snd_seq_client_info_get_client(cinfo);
+        snd_seq_port_info_set_client(pinfo, client);
+        snd_seq_port_info_set_port(pinfo, -1);
+        while (snd_seq_query_next_port(seqHandle, pinfo) >= 0)
+        {
+            /* port must understand MIDI messages */
+            if (!(snd_seq_port_info_get_type(pinfo) & SND_SEQ_PORT_TYPE_MIDI_GENERIC))
+                continue;
+            /* we need both WRITE and SUBS_WRITE */
+            if ((snd_seq_port_info_get_capability(pinfo) & (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE)) !=
+                (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE))
+                continue;
+
+            ++outputCount;
+        }
+    }
+
+    // close the sequencer interface
+    snd_seq_close(seqHandle);
+
+    return outputCount;
 #else
     // "NULL "Unsupported" output
     return 1;
@@ -649,6 +873,7 @@ static unsigned int NativeMidiGetOutputCount(MusicDevice *dev)
 static void NativeMidiGetOutputName(MusicDevice *dev, const unsigned int outputIndex, char *buffer, const unsigned int bufferSize)
 {
     if (!buffer || bufferSize < 1) return;
+//    INFO("Native MIDI output name request for outputIndex=%d", outputIndex);
 #ifdef WIN32
     if (outputIndex == 0)
     {
@@ -662,6 +887,63 @@ static void NativeMidiGetOutputName(MusicDevice *dev, const unsigned int outputI
         midiOutGetDevCaps(outputIndex - 1, &moc, sizeof(MIDIOUTCAPS));
         strncpy(buffer, moc.szPname, bufferSize - 1);
     }
+#elif defined(USE_ALSA)
+    unsigned int outputCount = 0; // subtract 1 to get index
+    int alsaError = 0;
+    snd_seq_t *seqHandle = 0;
+    snd_seq_client_info_t *cinfo = 0;
+    snd_seq_port_info_t *pinfo = 0;
+    int client = 0;
+
+    // default to nothing
+    strncpy(buffer, "Device not found", bufferSize - 1);
+
+    // open the sequencer interface
+    if ((alsaError = snd_seq_open(&seqHandle, "default", SND_SEQ_OPEN_OUTPUT, 0)) < 0)
+    {
+        WARN("Error opening ALSA sequencer: %s", snd_strerror(alsaError));
+        return;
+    }
+
+    // count ports that support MIDI write until we reach the requested index,
+    //  which is probably the one we want
+    snd_seq_client_info_alloca(&cinfo);
+    snd_seq_port_info_alloca(&pinfo);
+    snd_seq_client_info_set_client(cinfo, -1);
+    while (outputCount <= outputIndex &&
+           snd_seq_query_next_client(seqHandle, cinfo) >= 0)
+    {
+        client = snd_seq_client_info_get_client(cinfo);
+        snd_seq_port_info_set_client(pinfo, client);
+        snd_seq_port_info_set_port(pinfo, -1);
+        while (outputCount <= outputIndex &&
+               snd_seq_query_next_port(seqHandle, pinfo) >= 0)
+        {
+            /* port must understand MIDI messages */
+            if (!(snd_seq_port_info_get_type(pinfo) & SND_SEQ_PORT_TYPE_MIDI_GENERIC))
+                continue;
+            /* we need both WRITE and SUBS_WRITE */
+            if ((snd_seq_port_info_get_capability(pinfo) & (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE)) !=
+                (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE))
+                continue;
+
+            ++outputCount;
+            if (outputCount - 1 == outputIndex)
+            {
+                // found the one we're looking for
+                snprintf(buffer, bufferSize, "%d:%d %s",
+                         snd_seq_port_info_get_client(pinfo),
+                         snd_seq_port_info_get_port(pinfo),
+                         snd_seq_client_info_get_name(cinfo));
+                // don't include port name, because we need to keep it brief
+                // snd_seq_port_info_get_name(pinfo));
+//                INFO("MIDI outputIndex %d resolved to ALSA sequencer output %s", outputIndex, buffer);
+            }
+        }
+    }
+
+    // close the sequencer interface
+    snd_seq_close(seqHandle);
 #else
     strncpy(buffer, "Unsupported", bufferSize - 1);
     // suppress compiler warnings
@@ -695,7 +977,13 @@ static MusicDevice *createNativeMidiDevice()
     ndev->dev.outputIndex = 0;
     ndev->dev.deviceType = Music_Native;
 #ifdef WIN32
-    ndev->outHandle = NULL;
+    ndev->outHandle = 0;
+#elif defined(USE_ALSA)
+    ndev->outHandle = 0;
+    ndev->alsaMyId = 0;
+    ndev->alsaMyPort = 0;
+    ndev->alsaOutputId = 0;
+    ndev->alsaOutputPort = 0;
 #endif
     return &(ndev->dev);
 }
@@ -911,7 +1199,7 @@ static MusicDevice *createFluidSynthDevice()
 //------------------------------------------------------------------------------
 MusicDevice *CreateMusicDevice(MusicType type)
 {
-    MusicDevice *dev = NULL;
+    MusicDevice *dev = 0;
 
     switch (type)
     {
