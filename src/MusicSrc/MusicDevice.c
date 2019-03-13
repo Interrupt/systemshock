@@ -177,10 +177,7 @@ static int AdlMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsigne
     adev->adl = adl;
 
     adev->dev.isOpen = 1;
-    adev->dev.outputIndex = 0;
-
-    // suppress compiler warnings
-    (void)outputIndex;
+    adev->dev.outputIndex = outputIndex;
 
     return 0;
 }
@@ -1001,6 +998,9 @@ typedef struct FluidMidiDevice
     fluid_settings_t *settings;
 } FluidMidiDevice;
 
+// forward declaration
+static void FluidMidiGetOutputName(MusicDevice *dev, const unsigned int outputIndex, char *buffer, const unsigned int bufferSize);
+
 static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsigned samplerate)
 {
     FluidMidiDevice *fdev = (FluidMidiDevice *)dev;
@@ -1009,6 +1009,14 @@ static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsig
     fluid_settings_t *settings;
     fluid_synth_t *synth;
     int sfid;
+    char fileName[1024] = "res/";
+
+    FluidMidiGetOutputName(dev, outputIndex, &fileName[4], 1020);
+    if (strlen(fileName) == 4)
+    {
+        WARN("Failed to locate SoundFont for outputIndex=%d", outputIndex);
+        return -1;
+    }
 
     settings = new_fluid_settings();
     fluid_settings_setnum(settings, "synth.sample-rate", samplerate);
@@ -1016,11 +1024,11 @@ static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsig
     fluid_settings_setnum(settings, "synth.gain", 0.5);
 
     synth = new_fluid_synth(settings);
-    sfid = fluid_synth_sfload(synth, "res/music.sf2", 1);
+    sfid = fluid_synth_sfload(synth, fileName, 1);
 
     if (sfid == FLUID_FAILED)
     {
-        WARN("cannot load res/music.sf2 for FluidSynth");
+        WARN("cannot load %s for FluidSynth", fileName);
         delete_fluid_synth(synth);
         delete_fluid_settings(settings);
         fdev->synth = NULL;
@@ -1034,10 +1042,7 @@ static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsig
     fdev->settings = settings;
 
     fdev->dev.isOpen = 1;
-    fdev->dev.outputIndex = 0;
-
-    // suppress compiler warnings
-    (void)outputIndex;
+    fdev->dev.outputIndex = outputIndex;
 
     return 0;
 }
@@ -1152,18 +1157,59 @@ static void FluidMidiSendPitchBendML(MusicDevice *dev, int channel, int msb, int
 
 static unsigned int FluidMidiGetOutputCount(MusicDevice *dev)
 {
+    unsigned int outputCount = 0;
+#ifdef WIN32
+    // count number of .sf2 files in res/ subdirectory
+    char const * const pattern = "res\\*.sf2";
+    WIN32_FIND_DATA data;
+    HANDLE hFind;
+    if ((hFind = FindFirstFile(pattern, &data)) != INVALID_HANDLE_VALUE)
+    {
+        INFO("Counting SoundFont file: %s", data.cFileName);
+        do { ++outputCount; } while (FindNextFile(hFind, &data));
+        FindClose(hFind);
+    }
+#else
+    // TODO: implement POSIX version for Linux/Mac
+#endif
+
     // suppress compiler warnings
     (void)dev;
 
     // TODO: add support for various soundfonts?
-    return 1;
+    return outputCount;
 }
 
 static void FluidMidiGetOutputName(MusicDevice *dev, const unsigned int outputIndex, char *buffer, const unsigned int bufferSize)
 {
     if (!buffer || bufferSize < 1) return;
+    // default to nothing
     // save last position for NULL character
-    strncpy(buffer, "FluidMidi", bufferSize - 1);
+    strncpy(buffer, "No SoundFonts found", bufferSize - 1);
+#if WIN32
+    unsigned int outputCount = 0; // subtract 1 to get index
+    // count .sf2 files in res/ subdirectory until we find the one that the user
+    //  probably wants
+    char const * const pattern = "res\\*.sf2";
+    WIN32_FIND_DATA data;
+    HANDLE hFind;
+    if ((hFind = FindFirstFile(pattern, &data)) != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            ++outputCount;
+            if (outputCount - 1 == outputIndex)
+            {
+                // found it
+                strncpy(buffer, data.cFileName, bufferSize - 1);
+                INFO("Found SoundFont file for outputIndex=%d: %s", outputIndex, data.cFileName);
+                break;
+            }
+        } while (FindNextFile(hFind, &data));
+        FindClose(hFind);
+    }
+#else
+#endif
     // put NULL in last position in case we filled up everything else
     *(buffer + bufferSize - 1) = '\0';
 
