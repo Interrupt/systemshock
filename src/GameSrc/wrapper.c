@@ -1502,13 +1502,20 @@ void soundopt_screen_init() {
     i++;
 */
     unsigned int midiOutputCount = GetOutputCountXMI();
-    if (midiOutputCount > 0)
+    if (midiOutputCount > 1)
     {
         standard_slider_rect(&r, i, 2, 5);
         // this makes it double-wide i guess?
         r.lr.x += (r.lr.x - r.ul.x);
         slider_init(i, REF_STR_MidiOutX + gShockPrefs.soMidiOutput, sizeof(gShockPrefs.soMidiOutput), FALSE, &gShockPrefs.soMidiOutput, midiOutputCount - 1,
                     0, midi_output_dealfunc, &r);
+        i++;
+    }
+    else if (midiOutputCount == 1)
+    {
+        // just show a text label
+        standard_button_rect(&r, i, 1, 2, 10);
+        textwidget_init(i, BUTTON_COLOR, REF_STR_MidiOutX, &r);
         i++;
     }
 
