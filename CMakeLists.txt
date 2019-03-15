@@ -3,17 +3,18 @@ project(SystemShock)
 cmake_minimum_required(VERSION 3.1)
 
 set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
+set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS ON)
 
 # Required for stdbool.h
 set(CMAKE_C_STANDARD 99)
 
 # hide Windows console in distributable packages
-if(DEFINED ENV{APPVEYOR}) 
+if(DEFINED ENV{APPVEYOR})
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -O3 -mwindows")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -O3 -mwindows -D__STDC_LIMIT_MACROS")
 endif()
 
-if(NOT DEFINED ENV{APPVEYOR}) 
+if(NOT DEFINED ENV{APPVEYOR})
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -D__STDC_LIMIT_MACROS")
 endif()
@@ -75,6 +76,18 @@ message(STATUS "Found SDL2_Mixer Include:${SDL2_MIXER_INCLUDE_DIRS} Library:${SD
 
 # Find FluidSynth
 find_library(FLUIDSYNTH_LIBRARY fluidsynth PATHS build_ext/fluidsynth-lite/src)
+
+if(NOT WIN32)
+  # Find ALSA for Linux native MIDI
+  # NOTE: this seems to require having 64-bit dev pacakges installed when building
+  #  on 64-bit OS, even when building a 32-bit binary
+  find_package(ALSA)
+  if(ALSA_FOUND)
+      message(STATUS "ALSA found")
+      include_directories(${ALSA_INCLUDE_DIRS})
+      add_definitions(-DUSE_ALSA=1)
+  endif(ALSA_FOUND)
+endif(NOT WIN32)
 
 # for now I'll put a Carbon/Carbon.h into src/stubs/
 # that defines Mac-specific types and provides stubs for used functions
@@ -347,6 +360,7 @@ target_link_libraries(systemshock
 	${SDL2_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
 	${OPENGL_LIBRARIES}
+	${ALSA_LIBRARIES}
 )
 
 if(FLUIDSYNTH_LIBRARY)
@@ -360,7 +374,6 @@ if (WIN32)
         include_directories(${CMAKE_SOURCE_DIR}/build_ext/built_glew/include)
         target_link_libraries(systemshock ${CMAKE_SOURCE_DIR}/build_ext/built_glew/lib/libglew32.dll.a winmm)
 endif(WIN32)
-
 
 # Turn on address sanitizing if wanted
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers/cmake" ${CMAKE_MODULE_PATH})
