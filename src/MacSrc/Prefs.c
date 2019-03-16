@@ -113,7 +113,7 @@ void SetDefaultPrefs(void) {
     gShockPrefs.doResolution = 0;       // High-res.
     gShockPrefs.doDetail = 3;           // Max detail.
     gShockPrefs.doUseOpenGL = false;
-    gShockPrefs.textureFilter = 0;      // unfiltered
+    gShockPrefs.doTextureFilter = 0;      // unfiltered
     gShockPrefs.goOnScreenHelp = true;
     gShockPrefs.doGamma = 29;           // Default gamma (29 out of 100).
     gShockPrefs.goMsgLength = 0;        // Normal
@@ -211,7 +211,7 @@ OSErr LoadPrefs(void) {
         } else if (strcasecmp(key, PREF_TEX_FILTER) == 0) {
             int mode = atoi(value);
             if (mode >= 0 && mode <= 1)
-                gShockPrefs.textureFilter = (short)mode;
+                gShockPrefs.doTextureFilter = (short)mode;
         } else if (strcasecmp(key, PREF_ONSCR_HELP) == 0) {
             gShockPrefs.goOnScreenHelp = is_true(value);
         } else if (strcasecmp(key, PREF_GAMMA) == 0) {
@@ -264,7 +264,7 @@ OSErr SavePrefs(void) {
     fprintf(f, "%s = %s\n", PREF_HALFRES, DoubleSize ? "yes" : "no");
     fprintf(f, "%s = %d\n", PREF_DETAIL, _fr_global_detail);
     fprintf(f, "%s = %s\n", PREF_USE_OPENGL, gShockPrefs.doUseOpenGL ? "yes" : "no");
-    fprintf(f, "%s = %d\n", PREF_TEX_FILTER, gShockPrefs.textureFilter);
+    fprintf(f, "%s = %d\n", PREF_TEX_FILTER, gShockPrefs.doTextureFilter);
     fprintf(f, "%s = %s\n", PREF_ONSCR_HELP, gShockPrefs.goOnScreenHelp ? "yes" : "no");
     fprintf(f, "%s = %d\n", PREF_GAMMA, gShockPrefs.doGamma);
     fprintf(f, "%s = %d\n", PREF_MSG_LENGTH, gShockPrefs.goMsgLength);

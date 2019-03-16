@@ -1945,7 +1945,7 @@ void video_screen_init(void) {
     if(can_use_opengl() && gShockPrefs.doUseOpenGL) {
         standard_button_rect(&r, i, 2, 2, 2);
         multi_init(i, 't', REF_STR_TEXTFILT, REF_STR_TFUNFIL, ID_NULL,
-                   sizeof(gShockPrefs.textureFilter), &gShockPrefs.textureFilter, 2, renderer_dealfunc, &r);
+                   sizeof(gShockPrefs.doTextureFilter), &gShockPrefs.doTextureFilter, 2, renderer_dealfunc, &r);
         i++;
     }
 #endif
