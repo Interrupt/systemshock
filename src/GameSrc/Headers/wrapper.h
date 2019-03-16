@@ -81,4 +81,20 @@ extern char comments[NUM_SAVE_SLOTS][SAVE_COMMENT_LEN];
         save_game_name[7] = '0' + (game_num & 7);  \
     }
 
+enum TEMP_STR_ {
+        REF_STR_Renderer = 0x10000000,
+        REF_STR_Software,
+        REF_STR_OpenGL,
+
+        REF_STR_Seqer = 0x20000000,
+        REF_STR_ADLMIDI,
+        REF_STR_NativeMI,
+#ifdef USE_FLUIDSYNTH
+        REF_STR_FluidSyn,
+#endif // USE_FLUIDSYNTH
+        REF_STR_MidiOut = 0x2fffffff,
+
+        REF_STR_MidiOutX = 0x30000000 // 0x30000000-0x3fffffff are MIDI outputs
+};
+
 #endif // __WRAPPER_H

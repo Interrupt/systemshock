@@ -661,20 +661,20 @@ void InitDecXMI(void)
 
   switch (gShockPrefs.soMidiBackend)
   {
-    case 0: // adlmidi
+    case OPT_SEQ_ADLMIDI: // adlmidi
     {
       INFO("Creating ADLMIDI device");
       musicdev = CreateMusicDevice(Music_AdlMidi);
     }
     break;
-    case 1: // native midi
+    case OPT_SEQ_NativeMI: // native midi
     {
       INFO("Creating native MIDI device");
       musicdev = CreateMusicDevice(Music_Native);
     }
     break;
 #ifdef USE_FLUIDSYNTH
-    case 2: // fluidsynth
+    case OPT_SEQ_FluidSyn: // fluidsynth
     {
       INFO("Creating FluidSynth MIDI device");
       musicdev = CreateMusicDevice(Music_FluidSynth);
