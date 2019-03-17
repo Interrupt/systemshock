@@ -129,27 +129,27 @@ static const float IdentityMatrix[] = {
 
 static inline GLint get_texture_min_func() {
     // convert prefs texture filtering mode to GL min func value
-    switch (gShockPrefs.textureFilter) {
+    switch (gShockPrefs.doTextureFilter) {
         case 0: return GL_NEAREST;
         case 1: return GL_LINEAR;
 //        case 2: return GL_LINEAR_MIPMAP_LINEAR;
     }
 
-    WARN("gShockPrefs.textureFilter=%d is invalid; resetting to zero (unflitered)", gShockPrefs.textureFilter);
-    gShockPrefs.textureFilter = 0;
+    WARN("gShockPrefs.doTextureFilter=%d is invalid; resetting to zero (unflitered)", gShockPrefs.doTextureFilter);
+    gShockPrefs.doTextureFilter = 0;
     return GL_NEAREST;
 }
 
 static inline GLint get_texture_mag_func() {
     // convert prefs texture filtering mode to GL mag func value
-    switch (gShockPrefs.textureFilter) {
+    switch (gShockPrefs.doTextureFilter) {
         case 0: return GL_NEAREST;
         case 1: return GL_LINEAR;
         case 2: return GL_LINEAR;
     }
 
-    WARN("gShockPrefs.textureFilter=%d is invalid; resetting to zero (unflitered)", gShockPrefs.textureFilter);
-    gShockPrefs.textureFilter = 0;
+    WARN("gShockPrefs.doTextureFilter=%d is invalid; resetting to zero (unflitered)", gShockPrefs.doTextureFilter);
+    gShockPrefs.doTextureFilter = 0;
     return GL_NEAREST;
 }
 
@@ -502,21 +502,21 @@ void opengl_swap_and_restore() {
 
 void toggle_opengl() {
     if (gShockPrefs.doUseOpenGL) {
-        switch (gShockPrefs.textureFilter) {
+        switch (gShockPrefs.doTextureFilter) {
             case 0: {
                 message_info("Switching to OpenGL bilinear rendering");
-                gShockPrefs.textureFilter = 1;
+                gShockPrefs.doTextureFilter = 1;
             } break;
             case 1: {
                 message_info("Switching to sofware rendering");
                 gShockPrefs.doUseOpenGL = false;
-                gShockPrefs.textureFilter = 0;
+                gShockPrefs.doTextureFilter = 0;
             } break;
         }
     } else {
         message_info("Switching to OpenGL unfiltered");
         gShockPrefs.doUseOpenGL = true;
-        gShockPrefs.textureFilter = 0;
+        gShockPrefs.doTextureFilter = 0;
     }
     SavePrefs();
 }
