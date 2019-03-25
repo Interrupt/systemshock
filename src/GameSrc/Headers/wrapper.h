@@ -86,6 +86,10 @@ enum TEMP_STR_ {
         REF_STR_Software,
         REF_STR_OpenGL,
 
+        REF_STR_MousLook = 0x11000000,
+        REF_STR_MousNorm,
+        REF_STR_MousInv,
+
         REF_STR_Seqer = 0x20000000,
         REF_STR_ADLMIDI,
         REF_STR_NativeMI,

@@ -5,6 +5,8 @@
 #include "physics.h"
 #include "froslew.h"
 #include "objsim.h"
+#include "Prefs.h"
+
 #include <stdio.h>
 #include <SDL.h>
 
@@ -45,7 +47,7 @@ void mouse_look_physics() {
     } else {
         // player head controls
         mvelx *= -mlook_hsens;
-        mvely *= -mlook_vsens;
+        mvely *= (gShockPrefs.goInvertMouseY ? mlook_vsens : -mlook_vsens);
 
         if (mvely != 0) {
             // Moving the eye up angle is easy

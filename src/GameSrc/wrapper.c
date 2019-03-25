@@ -367,6 +367,10 @@ static char *_get_temp_string(int num) {
         case REF_STR_Software: return "Software";
         case REF_STR_OpenGL:   return "OpenGL";
 
+        case REF_STR_MousLook: return "Mouselook";
+        case REF_STR_MousNorm: return "Normal";
+        case REF_STR_MousInv:  return "Inverted";
+
         case REF_STR_Seqer:    return "Midi Player";
         case REF_STR_ADLMIDI:  return "ADLMIDI";
         case REF_STR_NativeMI: return "Native MIDI";
@@ -1826,9 +1830,6 @@ void input_screen_init(void) {
                mousehand_dealfunc, &r);
     i++;
 
-    standard_button_rect(&r, 5, 2, 2, 1);
-    pushbutton_init(RETURN_BUTTON, keys[3], REF_STR_OptionsText + 5, wrapper_pushbutton_func, &r);
-
     standard_slider_rect(&r, i, 2, 1);
     r.ul.x -= 1;
     sliderbase = ((r.lr.x - r.ul.x - 3) * (FIX_UNIT / 3)) / USHRT_MAX;
@@ -1840,6 +1841,15 @@ void input_screen_init(void) {
     r.ul.x -= 1;
     pushbutton_init(i, keys[2], REF_STR_Joystick, joystick_button_func, &r);
     i++;
+
+    standard_button_rect(&r, i, 2, 2, 1);
+    r.ul.x -= 1;
+    multi_init(i, keys[3], REF_STR_MousLook, REF_STR_MousNorm, ID_NULL,
+               sizeof(gShockPrefs.goInvertMouseY), &gShockPrefs.goInvertMouseY, 2, NULL, &r);
+    i++;
+
+    standard_button_rect(&r, 5, 2, 2, 1);
+    pushbutton_init(RETURN_BUTTON, keys[3], REF_STR_OptionsText + 5, wrapper_pushbutton_func, &r);
 
     // FIXME: Cannot pass a keycode with modifier flags as uchar
     keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
