@@ -358,24 +358,8 @@ uchar fv;
 // override get_temp_string() to support hard-coded custom strings without
 // providing an actual resource file
 
-#define REF_STR_Renderer 0x10000000
-#define REF_STR_Software 0x10000001
-#define REF_STR_OpenGL   0x10000002
-
-#define REF_STR_MousLook 0x11000000
-#define REF_STR_MousNorm 0x11000001
-#define REF_STR_MousInv  0x11000002
-
-#define REF_STR_Seqer    0x20000000
-#define REF_STR_ADLMIDI  0x20000001
-#define REF_STR_NativeMI 0x20000002
-#define REF_STR_FluidSyn 0x20000003 // this has to be last because it is optional
-#define REF_STR_MidiOut  0x2fffffff
-
-#define REF_STR_MidiOutX 0x30000000 // 0x30000000-0x3fffffff are MIDI outputs
-
-#define MIDI_OUT_BUFFER_SIZE 1024
-static char MIDI_OUT_BUFFER[MIDI_OUT_BUFFER_SIZE];
+#define MIDI_OUT_STR_SIZE 1024
+static char MIDI_STR_BUFFER[MIDI_OUT_STR_SIZE];
 
 static char *_get_temp_string(int num) {
     switch (num) {
@@ -390,7 +374,9 @@ static char *_get_temp_string(int num) {
         case REF_STR_Seqer:    return "Midi Player";
         case REF_STR_ADLMIDI:  return "ADLMIDI";
         case REF_STR_NativeMI: return "Native MIDI";
+#ifdef USE_FLUIDSYNTH
         case REF_STR_FluidSyn: return "FluidSynth";
+#endif
 
         case REF_STR_MidiOut:  return "Midi Output";
     }
@@ -398,9 +384,9 @@ static char *_get_temp_string(int num) {
     if (num >= REF_STR_MidiOutX && num <= (REF_STR_MidiOutX | 0x0fffffff))
     {
         const unsigned int midiOutputIndex = (unsigned int)num - REF_STR_MidiOutX;
-        MIDI_OUT_BUFFER[0] = '\0';
-        GetOutputNameXMI(midiOutputIndex, &MIDI_OUT_BUFFER[0], MIDI_OUT_BUFFER_SIZE);
-        return &MIDI_OUT_BUFFER[0];
+        MIDI_STR_BUFFER[0] = '\0';
+        GetOutputNameXMI(midiOutputIndex, &MIDI_STR_BUFFER[0], MIDI_OUT_STR_SIZE);
+        return &MIDI_STR_BUFFER[0];
     }
 
     return get_temp_string(num);
@@ -1492,14 +1478,9 @@ void soundopt_screen_init() {
     i++;
 #endif
 
-#ifdef USE_FLUIDSYNTH
-    const uchar numSynths = 3;
-#else
-    const uchar numSynths = 2;
-#endif
     standard_button_rect(&r, i, 2, 2, 5);
     multi_init(i, 'p', REF_STR_Seqer, REF_STR_ADLMIDI, ID_NULL,
-               sizeof(gShockPrefs.soMidiBackend), &gShockPrefs.soMidiBackend, numSynths, seqer_dealfunc, &r);
+               sizeof(gShockPrefs.soMidiBackend), &gShockPrefs.soMidiBackend, OPT_SEQ_Max, seqer_dealfunc, &r);
     i++;
 /* standard button is too narrow, so use a slider instead
     const unsigned int numMidiOutputs = GetOutputCountXMI();
