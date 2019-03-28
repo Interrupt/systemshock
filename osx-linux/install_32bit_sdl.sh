@@ -74,6 +74,7 @@ build_sdl_mixer
 cd ..
 
 mkdir ./lib/
+mkdir ./res/
 for i in build_ext/fluidsynth-lite/src/*.so; do [ -f "$i" ] || break; cp $i lib/; done;
 for i in build_ext/fluidsynth-lite/src/*.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
 
