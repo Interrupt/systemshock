@@ -44,6 +44,7 @@ before_deploy:
   - cp -r lib shockolate/
   - cp -r res shockolate/
   - cp readme/readme-$TRAVIS_OS_NAME.txt shockolate/readme.txt
+  - ls -la shockolate/
   - tar zcfv $PACKAGE_NAME shockolate
   - rm -r shockolate
 
