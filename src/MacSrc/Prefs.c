@@ -75,7 +75,7 @@ static const char *PREF_VIDEOMODE    = "video-mode";
 static const char *PREF_HALFRES      = "half-resolution";
 static const char *PREF_DETAIL       = "detail";
 static const char *PREF_USE_OPENGL   = "use-opengl";
-static const char *PREF_LIN_SCALING  = "linear-scaling";
+static const char *PREF_TEX_FILTER   = "texture-filter";
 static const char *PREF_ONSCR_HELP   = "onscreen-help";
 static const char *PREF_GAMMA        = "gamma";
 static const char *PREF_MSG_LENGTH   = "message-length";
@@ -115,7 +115,7 @@ void SetDefaultPrefs(void) {
     gShockPrefs.doResolution = 0;       // High-res.
     gShockPrefs.doDetail = 3;           // Max detail.
     gShockPrefs.doUseOpenGL = false;
-    gShockPrefs.doLinearScaling = false;
+    gShockPrefs.doTextureFilter = 0;      // unfiltered
     gShockPrefs.goOnScreenHelp = true;
     gShockPrefs.doGamma = 29;           // Default gamma (29 out of 100).
     gShockPrefs.goMsgLength = 0;        // Normal
@@ -212,8 +212,10 @@ OSErr LoadPrefs(void) {
                 gShockPrefs.doDetail = detail;
         } else if (strcasecmp(key, PREF_USE_OPENGL) == 0) {
             gShockPrefs.doUseOpenGL = is_true(value);
-        } else if (strcasecmp(key, PREF_LIN_SCALING) == 0) {
-            gShockPrefs.doLinearScaling = is_true(value);
+        } else if (strcasecmp(key, PREF_TEX_FILTER) == 0) {
+            int mode = atoi(value);
+            if (mode >= 0 && mode <= 1)
+                gShockPrefs.doTextureFilter = (short)mode;
         } else if (strcasecmp(key, PREF_ONSCR_HELP) == 0) {
             gShockPrefs.goOnScreenHelp = is_true(value);
         } else if (strcasecmp(key, PREF_GAMMA) == 0) {
@@ -267,7 +269,7 @@ OSErr SavePrefs(void) {
     fprintf(f, "%s = %s\n", PREF_HALFRES, DoubleSize ? "yes" : "no");
     fprintf(f, "%s = %d\n", PREF_DETAIL, _fr_global_detail);
     fprintf(f, "%s = %s\n", PREF_USE_OPENGL, gShockPrefs.doUseOpenGL ? "yes" : "no");
-    fprintf(f, "%s = %s\n", PREF_LIN_SCALING, gShockPrefs.doLinearScaling ? "yes" : "no");
+    fprintf(f, "%s = %d\n", PREF_TEX_FILTER, gShockPrefs.doTextureFilter);
     fprintf(f, "%s = %s\n", PREF_ONSCR_HELP, gShockPrefs.goOnScreenHelp ? "yes" : "no");
     fprintf(f, "%s = %d\n", PREF_GAMMA, gShockPrefs.doGamma);
     fprintf(f, "%s = %d\n", PREF_MSG_LENGTH, gShockPrefs.goMsgLength);

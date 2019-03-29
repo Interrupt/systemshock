@@ -82,23 +82,27 @@ extern char comments[NUM_SAVE_SLOTS][SAVE_COMMENT_LEN];
     }
 
 enum TEMP_STR_ {
-        REF_STR_Renderer = 0x10000000,
-        REF_STR_Software,
-        REF_STR_OpenGL,
+    REF_STR_Renderer = 0x10000000,
+    REF_STR_Software,
+    REF_STR_OpenGL,
 
-        REF_STR_MousLook = 0x11000000,
-        REF_STR_MousNorm,
-        REF_STR_MousInv,
+    REF_STR_TextFilt = 0x10000010,
+    REF_STR_TFUnfil, // unfiltered
+    REF_STR_TFBilin, // bilinear
 
-        REF_STR_Seqer = 0x20000000,
-        REF_STR_ADLMIDI,
-        REF_STR_NativeMI,
+    REF_STR_MousLook = 0x11000000,
+    REF_STR_MousNorm,
+    REF_STR_MousInv,
+
+    REF_STR_Seqer    = 0x20000000,
+    REF_STR_ADLMIDI,
+    REF_STR_NativeMI,
 #ifdef USE_FLUIDSYNTH
-        REF_STR_FluidSyn,
+    REF_STR_FluidSyn,
 #endif // USE_FLUIDSYNTH
-        REF_STR_MidiOut = 0x2fffffff,
+    REF_STR_MidiOut  = 0x2fffffff,
 
-        REF_STR_MidiOutX = 0x30000000 // 0x30000000-0x3fffffff are MIDI outputs
+    REF_STR_MidiOutX = 0x30000000 // 0x30000000-0x3fffffff are MIDI outputs
 };
 
 #endif // __WRAPPER_H

@@ -127,6 +127,32 @@ static const float IdentityMatrix[] = {
     0.0, 0.0, 0.0, 1.0
 };
 
+static inline GLint get_texture_min_func() {
+    // convert prefs texture filtering mode to GL min func value
+    switch (gShockPrefs.doTextureFilter) {
+        case 0: return GL_NEAREST;
+        case 1: return GL_LINEAR;
+//        case 2: return GL_LINEAR_MIPMAP_LINEAR;
+    }
+
+    WARN("gShockPrefs.doTextureFilter=%d is invalid; resetting to zero (unflitered)", gShockPrefs.doTextureFilter);
+    gShockPrefs.doTextureFilter = 0;
+    return GL_NEAREST;
+}
+
+static inline GLint get_texture_mag_func() {
+    // convert prefs texture filtering mode to GL mag func value
+    switch (gShockPrefs.doTextureFilter) {
+        case 0: return GL_NEAREST;
+        case 1: return GL_LINEAR;
+        case 2: return GL_LINEAR;
+    }
+
+    WARN("gShockPrefs.doTextureFilter=%d is invalid; resetting to zero (unflitered)", gShockPrefs.doTextureFilter);
+    gShockPrefs.doTextureFilter = 0;
+    return GL_NEAREST;
+}
+
 static void set_blend_mode(bool enabled) {
     // change the blend mode, if not set already
     if(blend_enabled != enabled) {
@@ -475,16 +501,22 @@ void opengl_swap_and_restore() {
 }
 
 void toggle_opengl() {
-    if (!gShockPrefs.doUseOpenGL) {
-        message_info("OpenGL rendering, no texture filter");
-        gShockPrefs.doUseOpenGL = true;
-        gShockPrefs.doLinearScaling = false;
-    } else if (!gShockPrefs.doLinearScaling) {
-        message_info("OpenGL rendering, linear texture filter");
-        gShockPrefs.doLinearScaling = true;
+    if (gShockPrefs.doUseOpenGL) {
+        switch (gShockPrefs.doTextureFilter) {
+            case 0: {
+                message_info("Switching to OpenGL bilinear rendering");
+                gShockPrefs.doTextureFilter = 1;
+            } break;
+            case 1: {
+                message_info("Switching to sofware rendering");
+                gShockPrefs.doUseOpenGL = false;
+                gShockPrefs.doTextureFilter = 0;
+            } break;
+        }
     } else {
-        message_info("Software rendering");
-        gShockPrefs.doUseOpenGL = false;
+        message_info("Switching to OpenGL unfiltered");
+        gShockPrefs.doUseOpenGL = true;
+        gShockPrefs.doTextureFilter = 0;
     }
     SavePrefs();
 }
@@ -695,8 +727,8 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     glUseProgram(textureShaderProgram.shaderProgram);
 
     set_texture(bm);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, get_texture_min_func());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, get_texture_mag_func());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -743,8 +775,8 @@ int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, IdentityMatrix);
 
     set_texture(bm);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, get_texture_min_func());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, get_texture_mag_func());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -819,8 +851,8 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
         set_color(color.r, color.g, color.b, 255);
     }
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, get_texture_min_func());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, get_texture_mag_func());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -861,8 +893,8 @@ void opengl_begin_stars() {
 
     set_blend_mode(true);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gShockPrefs.doLinearScaling ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, get_texture_mag_func());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, get_texture_mag_func());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

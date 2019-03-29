@@ -367,6 +367,10 @@ static char *_get_temp_string(int num) {
         case REF_STR_Software: return "Software";
         case REF_STR_OpenGL:   return "OpenGL";
 
+        case REF_STR_TextFilt: return "Tex Filter";
+        case REF_STR_TFUnfil:  return "Unfiltered";
+        case REF_STR_TFBilin:  return "Bilinear";
+
         case REF_STR_MousLook: return "Mouselook";
         case REF_STR_MousNorm: return "Normal";
         case REF_STR_MousInv:  return "Inverted";
@@ -1685,7 +1689,7 @@ void center_joy_pushbutton_func(uchar butid) {
     }
 }
 
-static void renderer_dealfunc(bool use_opengl) {
+static void renderer_dealfunc(bool unused) {
     uiHideMouse(NULL);
     render_run();
     if (full_game_3d) {
@@ -1694,6 +1698,10 @@ static void renderer_dealfunc(bool use_opengl) {
         opanel_redraw(FALSE);
     }
     uiShowMouse(NULL);
+    // recalculate menu in case a button needs to be added or removed
+    video_screen_init();
+    // suppress compiler warning
+    (void)unused;
 }
 
 void detail_dealfunc(uchar det) {
@@ -1881,50 +1889,60 @@ void video_screen_init(void) {
 #endif
 
     keys = get_temp_string(REF_STR_KeyEquivs3);
-
     clear_obuttons();
-
     i = 0;
 
 #ifdef USE_OPENGL
+    // renderer
     if(can_use_opengl()) {
         standard_button_rect(&r, i, 2, 2, 2);
         multi_init(i, 'g', REF_STR_Renderer, REF_STR_Software, ID_NULL,
                    sizeof(gShockPrefs.doUseOpenGL), &gShockPrefs.doUseOpenGL, 2, renderer_dealfunc, &r);
-
         i++;
     }
 #endif
 
 #ifdef SVGA_SUPPORT
+    // video mode
     standard_button_rect(&r, i, 2, 2, 2);
     pushbutton_init(SCREENMODE_BUTTON, keys[0], REF_STR_VideoText, wrapper_pushbutton_func, &r);
+    i++;
 #endif
 
-    i++;
-
+    // detail level
     standard_button_rect(&r, i, 2, 2, 2);
     r.lr.x += 2;
     multi_init(i, keys[1], REF_STR_OptionsText + 4, REF_STR_DetailLvl, REF_STR_DetailLvlFeedback,
                sizeof(_fr_global_detail), &_fr_global_detail, 4, detail_dealfunc, &r);
-
     i++;
 
+    // gamma
     standard_slider_rect(&r, i, 2, 2);
     r.ul.x = r.ul.x + 1;
     sliderbase = ((r.lr.x - r.ul.x - 1) * 29 / 100);
     slider_init(i, REF_STR_OptionsText + 3, sizeof(ushort), TRUE, &(gShockPrefs.doGamma), 100,
                 sliderbase, gamma_slider_dealfunc, &r);
+    i++;
 
 #if defined(VFX1_SUPPORT) || defined(CTM_SUPPORT)
-    i++;
     standard_button_rect(&r, i, 2, 2, 2);
     pushbutton_init(HEADSET_BUTTON, keys[2], REF_STR_HeadsetText, wrapper_pushbutton_func, &r);
     if (!inp6d_headset)
         dim_pushbutton(HEADSET_BUTTON);
+    i++;
 #endif
 
-    i++;
+#ifdef USE_OPENGL
+    // textre filter
+    if(can_use_opengl() && gShockPrefs.doUseOpenGL) {
+        standard_button_rect(&r, i, 2, 2, 2);
+        multi_init(i, 't', REF_STR_TextFilt, REF_STR_TFUnfil, ID_NULL,
+                   sizeof(gShockPrefs.doTextureFilter), &gShockPrefs.doTextureFilter, 2, renderer_dealfunc, &r);
+        i++;
+    }
+#endif
+
+    // return (fixed at position 5)
     standard_button_rect(&r, 5, 2, 2, 2);
     pushbutton_init(RETURN_BUTTON, keys[3], REF_STR_OptionsText + 5, wrapper_pushbutton_func, &r);
 
