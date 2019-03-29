@@ -358,23 +358,8 @@ uchar fv;
 // override get_temp_string() to support hard-coded custom strings without
 // providing an actual resource file
 
-#define REF_STR_Renderer 0x10000000
-#define REF_STR_Software 0x10000001
-#define REF_STR_OpenGL   0x10000002
-#define REF_STR_TEXTFILT 0x10000010
-#define REF_STR_TFUNFIL  0x10000011 // unfiltered
-#define REF_STR_TFBILIN  0x10000012 // bilinear
-
-#define REF_STR_Seqer    0x20000000
-#define REF_STR_ADLMIDI  0x20000001
-#define REF_STR_NativeMI 0x20000002
-#define REF_STR_FluidSyn 0x20000003 // this has to be last because it is optional
-#define REF_STR_MidiOut  0x2fffffff
-
-#define REF_STR_MidiOutX 0x30000000 // 0x30000000-0x3fffffff are MIDI outputs
-
-#define MIDI_OUT_BUFFER_SIZE 1024
-static char MIDI_OUT_BUFFER[MIDI_OUT_BUFFER_SIZE];
+#define MIDI_OUT_STR_SIZE 1024
+static char MIDI_STR_BUFFER[MIDI_OUT_STR_SIZE];
 
 static char *_get_temp_string(int num) {
     switch (num) {
@@ -382,14 +367,20 @@ static char *_get_temp_string(int num) {
         case REF_STR_Software: return "Software";
         case REF_STR_OpenGL:   return "OpenGL";
 
-        case REF_STR_TEXTFILT: return "Tex Filter";
-        case REF_STR_TFUNFIL:  return "Unfiltered";
-        case REF_STR_TFBILIN:  return "Bilinear";
+        case REF_STR_TextFilt: return "Tex Filter";
+        case REF_STR_TFUnfil:  return "Unfiltered";
+        case REF_STR_TFBilin:  return "Bilinear";
+
+        case REF_STR_MousLook: return "Mouselook";
+        case REF_STR_MousNorm: return "Normal";
+        case REF_STR_MousInv:  return "Inverted";
 
         case REF_STR_Seqer:    return "Midi Player";
         case REF_STR_ADLMIDI:  return "ADLMIDI";
         case REF_STR_NativeMI: return "Native MIDI";
+#ifdef USE_FLUIDSYNTH
         case REF_STR_FluidSyn: return "FluidSynth";
+#endif
 
         case REF_STR_MidiOut:  return "Midi Output";
     }
@@ -397,9 +388,9 @@ static char *_get_temp_string(int num) {
     if (num >= REF_STR_MidiOutX && num <= (REF_STR_MidiOutX | 0x0fffffff))
     {
         const unsigned int midiOutputIndex = (unsigned int)num - REF_STR_MidiOutX;
-        MIDI_OUT_BUFFER[0] = '\0';
-        GetOutputNameXMI(midiOutputIndex, &MIDI_OUT_BUFFER[0], MIDI_OUT_BUFFER_SIZE);
-        return &MIDI_OUT_BUFFER[0];
+        MIDI_STR_BUFFER[0] = '\0';
+        GetOutputNameXMI(midiOutputIndex, &MIDI_STR_BUFFER[0], MIDI_OUT_STR_SIZE);
+        return &MIDI_STR_BUFFER[0];
     }
 
     return get_temp_string(num);
@@ -1491,14 +1482,9 @@ void soundopt_screen_init() {
     i++;
 #endif
 
-#ifdef USE_FLUIDSYNTH
-    const uchar numSynths = 3;
-#else
-    const uchar numSynths = 2;
-#endif
     standard_button_rect(&r, i, 2, 2, 5);
     multi_init(i, 'p', REF_STR_Seqer, REF_STR_ADLMIDI, ID_NULL,
-               sizeof(gShockPrefs.soMidiBackend), &gShockPrefs.soMidiBackend, numSynths, seqer_dealfunc, &r);
+               sizeof(gShockPrefs.soMidiBackend), &gShockPrefs.soMidiBackend, OPT_SEQ_Max, seqer_dealfunc, &r);
     i++;
 /* standard button is too narrow, so use a slider instead
     const unsigned int numMidiOutputs = GetOutputCountXMI();
@@ -1852,9 +1838,6 @@ void input_screen_init(void) {
                mousehand_dealfunc, &r);
     i++;
 
-    standard_button_rect(&r, 5, 2, 2, 1);
-    pushbutton_init(RETURN_BUTTON, keys[3], REF_STR_OptionsText + 5, wrapper_pushbutton_func, &r);
-
     standard_slider_rect(&r, i, 2, 1);
     r.ul.x -= 1;
     sliderbase = ((r.lr.x - r.ul.x - 3) * (FIX_UNIT / 3)) / USHRT_MAX;
@@ -1866,6 +1849,15 @@ void input_screen_init(void) {
     r.ul.x -= 1;
     pushbutton_init(i, keys[2], REF_STR_Joystick, joystick_button_func, &r);
     i++;
+
+    standard_button_rect(&r, i, 2, 2, 1);
+    r.ul.x -= 1;
+    multi_init(i, keys[3], REF_STR_MousLook, REF_STR_MousNorm, ID_NULL,
+               sizeof(gShockPrefs.goInvertMouseY), &gShockPrefs.goInvertMouseY, 2, NULL, &r);
+    i++;
+
+    standard_button_rect(&r, 5, 2, 2, 1);
+    pushbutton_init(RETURN_BUTTON, keys[3], REF_STR_OptionsText + 5, wrapper_pushbutton_func, &r);
 
     // FIXME: Cannot pass a keycode with modifier flags as uchar
     keywidget_init(QUIT_BUTTON, /*KB_FLAG_ALT |*/ 'x', wrapper_pushbutton_func);
@@ -1944,7 +1936,7 @@ void video_screen_init(void) {
     // textre filter
     if(can_use_opengl() && gShockPrefs.doUseOpenGL) {
         standard_button_rect(&r, i, 2, 2, 2);
-        multi_init(i, 't', REF_STR_TEXTFILT, REF_STR_TFUNFIL, ID_NULL,
+        multi_init(i, 't', REF_STR_TextFilt, REF_STR_TFUnfil, ID_NULL,
                    sizeof(gShockPrefs.doTextureFilter), &gShockPrefs.doTextureFilter, 2, renderer_dealfunc, &r);
         i++;
     }

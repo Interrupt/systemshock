@@ -39,6 +39,7 @@ typedef struct {
     Boolean goOnScreenHelp;
     short goLanguage;           // 0 - English, 1 - French, 2 - German
     Boolean goCaptureMouse;
+    Boolean goInvertMouseY;
 
     // Sound Options
     Boolean soBackMusic;
@@ -73,3 +74,15 @@ extern ShockPrefs gShockPrefs;
 void SetDefaultPrefs(void);
 OSErr LoadPrefs(void);
 OSErr SavePrefs(void);
+
+//-------------------
+//  Enums
+//-------------------
+enum OPT_SEQ_ { // Must be in the same order as in wraper.h
+        OPT_SEQ_ADLMIDI = 0,
+        OPT_SEQ_NativeMI,
+#ifdef USE_FLUIDSYNTH
+        OPT_SEQ_FluidSyn,
+#endif // USE_FLUIDSYNTH
+        OPT_SEQ_Max
+};
