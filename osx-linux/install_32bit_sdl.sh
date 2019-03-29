@@ -73,21 +73,18 @@ build_sdl_mixer
 
 cd ..
 
-if [[ -z "$TRAVIS" ]]; then
-	mkdir ./lib/
-	for i in build_ext/fluidsynth-lite/src/*.so; do [ -f "$i" ] || break; cp $i lib/; done;
-	for i in build_ext/fluidsynth-lite/src/*.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
+mkdir -p ./lib/
+mkdir -p ./res/
+for i in build_ext/fluidsynth-lite/src/*.so; do [ -f "$i" ] || break; cp $i lib/; done;
+for i in build_ext/fluidsynth-lite/src/*.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
 
-	cp build_ext/built_sdl/lib/libSDL2main.a lib/
-	for i in build_ext/built_sdl/lib/libSDL2.so; do [ -f "$i" ] || break; cp $i lib/; done;
-	for i in build_ext/built_sdl/lib/libSDL2.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
+cp build_ext/built_sdl/lib/libSDL2main.a lib/
+for i in build_ext/built_sdl/lib/libSDL2.so; do [ -f "$i" ] || break; cp $i lib/; done;
+for i in build_ext/built_sdl/lib/libSDL2.dylib; do [ -f "$i" ] || break; cp $i lib/; done;
 
-	for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.so; do [ -f "$i" ] || break; cp $i lib/; done;
-	for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.dylib; do [ -f "$i" ] || break; cp $i lib/; done;	
+for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.so; do [ -f "$i" ] || break; cp $i lib/; done;
+for i in build_ext/built_sdl_mixer/lib/libSDL2_mixer.dylib; do [ -f "$i" ] || break; cp $i lib/; done;	
 
-	# move the soundfont to the correct place if we successfully built fluidsynth
-	for i in build_ext/fluidsynth-lite/*.sf2; do [ -f "$i" ] || break; mv $i res/; done;	
+# move the soundfont to the correct place if we successfully built fluidsynth
+for i in build_ext/fluidsynth-lite/*.sf2; do [ -f "$i" ] || break; mv $i res/; done;	
 
-	# clean the build artifacts
-	rm -rf build_ext/	
-fi
