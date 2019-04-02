@@ -266,7 +266,7 @@ void SetMouseXY(int mx, int my)
 	}
 
 	bool inside = (mx >= x && mx < x+w && my >= y && my < y+h);
-	bool focus = (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS);
+	bool focus = (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_FOCUS);
 
 	if (!inside && focus)
 	{
