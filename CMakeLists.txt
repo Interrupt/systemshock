@@ -10,13 +10,13 @@ set(CMAKE_C_STANDARD 99)
 
 # hide Windows console in distributable packages
 if(DEFINED ENV{APPVEYOR})
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -O3 -mwindows")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -O3 -mwindows -D__STDC_LIMIT_MACROS")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-O3 -D__STDC_LIMIT_MACROS")
 endif()
 
 if(NOT DEFINED ENV{APPVEYOR})
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -D__STDC_LIMIT_MACROS")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-D__STDC_LIMIT_MACROS")
 endif()
 
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
@@ -38,21 +38,13 @@ if(OPENGL_FOUND)
 	add_definitions(-DUSE_OPENGL)
 ENDIF(OPENGL_FOUND)
 
-# set up SDL created by our build scripts
-set(SDL2_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl)
+# set up SDL
 
-set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include/SDL2)
-find_library(SDL2_LIBRARY SDL2 PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
-find_library(SDL2MAIN_LIBRARY SDL2main PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
-set(SDL2_LIBRARIES "${SDL2MAIN_LIBRARY};${SDL2_LIBRARY}")
-
+find_package (SDL2 REQUIRED)
 
 # and SDL mixer
 
-set(SDL2_MIXER_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl_mixer)
-
-set(SDL2_MIXER_INCLUDE_DIRS ${SDL2_MIXER_DIR}/include/SDL2)
-find_library(SDL2_MIXER_LIBRARY SDL2_mixer PATHS ${SDL2_MIXER_DIR}/lib NO_DEFAULT_PATH)
+find_library(SDL2_MIXER_LIBRARY SDL2_mixer PATHS ${SDL2_MIXER_DIR}/lib)
 set(SDL2_MIXER_LIBRARIES ${SDL2_MIXER_LIBRARY})
 
 add_definitions(-DUSE_SDL_MIXER=1)
