@@ -74,7 +74,7 @@ void *ResDecode(void *raw, size_t size, UserDecodeData ud)
             rp += 4;
             break;
         case RFFT_RAW: // should be last entry
-            memcpy(bp, rp, layout->dsize - (rp-(uchar*)raw));
+            memcpy(bp, rp, size - (rp-(uchar*)raw));
             break;
         default:
             assert(!"Invalid resource field type");
