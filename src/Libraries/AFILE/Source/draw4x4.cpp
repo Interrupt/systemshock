@@ -514,7 +514,7 @@ static uchar* Draw4x4_InternalBeta(int* xtab, int b, uchar* bits, int d, uchar* 
                                                         // mov     ch, byte [esp+0x4]
             mask32 = *((ushort*)(ebp-0x2));             // mov     dx, word [ebp-0x2]
                                                         // test    ch, ch
-            if (esp_04 & 0xff != 0) {                   // jz      short L0026AE34
+            if (esp_04 & 0xff) {                        // jz      short L0026AE34
                                                         // mov     ebx, dword [esp+0x30]
                 for (i = 0; i < 4; ++i) {               // xor     edi, edi
 //L0026ADF0:
@@ -677,7 +677,7 @@ static uchar* Draw4x4_InternalBeta(int* xtab, int b, uchar* bits, int d, uchar* 
                                                         // test    ecx, ecx
                 if (mask32 & 0x03) {                    // jz      short L0026AF82
                                                         // mov     al, byte [esi+ecx]
-                    tbits[0] = esp_00[mask32 & 0x03];   // mov     byte [edi], al
+                    tbits[0] = esp_24[mask32 & 0x03];   // mov     byte [edi], al
                 } //    L0026AF82:
                                                         // mov     ecx, ebx
 		                                        // and     ecx, byte 0x0C
@@ -685,7 +685,7 @@ static uchar* Draw4x4_InternalBeta(int* xtab, int b, uchar* bits, int d, uchar* 
                 if (mask32 & 0x0c) {                    // jz      short L0026AF92
                                                         // shr     ecx, 0x02
                                                         // mov     al, byte [esi+ecx]
-                    tbits[1] = esp_00[(mask32 & 0x0c) >> 2]; // mov     byte [edi+0x1], al
+                    tbits[1] = esp_24[(mask32 & 0x0c) >> 2]; // mov     byte [edi+0x1], al
                 } //    L0026AF92:
                                                         // mov     ecx, ebx
                                                         // and     ecx, byte 0x30
@@ -693,7 +693,7 @@ static uchar* Draw4x4_InternalBeta(int* xtab, int b, uchar* bits, int d, uchar* 
                 if (mask32 & 0x30) {                    // jz      short L0026AFA2
                                                         // shr     ecx, 0x04
                                                         // mov     al, byte [esi+ecx]
-                    tbits[2] = esp_00[(mask32 & 0x30) >> 4]; // mov     byte [edi+0x2], al
+                    tbits[2] = esp_24[(mask32 & 0x30) >> 4]; // mov     byte [edi+0x2], al
                 } //    L0026AFA2:
                                                         // mov     ecx, ebx
                                                         // and     ecx, dword 0x000000C0
@@ -701,7 +701,7 @@ static uchar* Draw4x4_InternalBeta(int* xtab, int b, uchar* bits, int d, uchar* 
                 if (mask32 & 0xc0) {                    // jz      short L0026AFB5
                                                         // shr     ecx, 0x06
                                                         // mov     al, byte [esi+ecx]
-                    tbits[3] = esp_00[(mask32 & 0xc0) >> 6]; // mov     byte [edi+0x3], al
+                    tbits[3] = esp_24[(mask32 & 0xc0) >> 6]; // mov     byte [edi+0x3], al
                 } //    L0026AFB5:
                 tbits += d;                             // add     edi, edx
                 mask32 >>= 8;                           // shr     ebx, 0x08
@@ -896,7 +896,7 @@ static uchar* Draw4x4_InternalBeta(int* xtab, int b, uchar* bits, int d, uchar* 
                     tbits[3] = esp_2c[(mask32 & 0xf000) >> 12]; // mov     byte [edi+0x3], cl
                 } //    L0026B184:
                 tbits += d;                             // add     edi, edx
-                mask32 >>= 10;                          // shr     ebx, 0x10
+                mask32 >>= 16;                          // shr     ebx, 0x10
                                                         // dec     eax
             }                                           // jnz     short L0026B13F
             tbits = esp_14;                             // mov     edi, dword [esp+0x14]
@@ -946,7 +946,7 @@ static uchar* Draw4x4_InternalBeta(int* xtab, int b, uchar* bits, int d, uchar* 
                                                         // mov     edx, dword [esp+0x1C]
                                                         // shl     eax, 0x02
                                                         // add     edx, eax
-            bits += esp_04 * 4;                     // mov     dword [esp+0x1C], edx
+            bits += esp_04 * 4;                         // mov     dword [esp+0x1C], edx
             break;
         } //    L0026B1FF:
                                                         // mov     ebx, dword [esp+0x18]
