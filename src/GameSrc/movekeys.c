@@ -49,7 +49,7 @@ uchar parse_motion_key_cyber(ushort code, short *cnum, short *cval);
 void init_motion_polling(void);
 void setup_motion_polling(void);
 void process_motion_keys(void);
-uchar motion_keycheck_handler(uiEvent *ev, LGRegion *, void *);
+uchar motion_keycheck_handler(uiEvent *ev, LGRegion *, intptr_t);
 
 extern void physics_set_relax(int axis, uchar relax);
 
@@ -346,14 +346,13 @@ void process_motion_keys(void) {
         );
 }
 
-uchar motion_keycheck_handler(uiEvent *ev, LGRegion *r, void *data) {
+uchar motion_keycheck_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     uiPollKeyEvent *ke = (uiPollKeyEvent *)ev;
 
     // KLC - For Mac version, we'll cook our own, since we have the modifier information.
     ushort cooked = ke->scancode | ke->mods;
 
     short cnum, cval;
-
     int moveOK = TRUE;
 
     if (gKeypadOverride) // if a keypad is showing

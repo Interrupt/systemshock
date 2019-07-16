@@ -2183,7 +2183,7 @@ void wrapper_start(void (*init)(void)) {
     inventory_page = -1;
     wrapper_panel_on = TRUE;
     suspend_game_time();
-    opt_font = (grs_font *)ResLock(OPTIONS_FONT);
+    opt_font = FontLock(OPTIONS_FONT);
 #ifndef STATIC_BUTTON_STORE
     OButtons = (opt_button *)(_offscreen_mfd.bm.bits);
     fv = full_visible;
@@ -2303,7 +2303,7 @@ errtype make_options_cursor(void) {
     gr_push_canvas(&cursor_canv);
     gr_clear(0);
     s = get_temp_string(REF_STR_ClickForOptions);
-    gr_set_font((grs_font *)ResLock(OPTIONS_FONT));
+    gr_set_font(FontLock(OPTIONS_FONT));
     wrap_text(s, orig_w - 3);
     gr_string_size(s, &w, &h);
     gr_set_fcolor(0xB8);

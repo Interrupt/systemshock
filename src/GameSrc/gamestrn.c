@@ -69,8 +69,8 @@ void init_strings(void) {
 }
 
 char *get_string(int num, char *buf, int bufsize) {
-    RefTable *table = ResGet(REFID(num));
-    if (!ResInUse(REFID(num)) || !RefIndexValid((RefTable *)ResGet(REFID(num)), REFINDEX(num))) {
+    RefTable *table = RefTableGet(REFID(num));
+    if (!ResInUse(REFID(num)) || !RefIndexValid(table, REFINDEX(num))) {
         if (buf != NULL) {
             *buf = '\0';
             return buf;
@@ -78,7 +78,7 @@ char *get_string(int num, char *buf, int bufsize) {
             return "";
     }
     if (buf != NULL) {
-        char *s = (char *)RefLock(num);
+        char *s = (char *)RefLockRaw(num);
         if (s != NULL) {
             strncpy(buf, s, bufsize);
             buf[bufsize - 1] = '\0';
@@ -91,7 +91,7 @@ char *get_string(int num, char *buf, int bufsize) {
         return get_temp_string(num);
 }
 
-char *get_temp_string(int num) { return (char *)RefGet(num); }
+char *get_temp_string(int num) { return (char *)RefGetRaw(num); }
 
 char *get_object_short_name(int trip, char *buf, int bufsize) {
     return get_string(MKREF(RES_objshortnames, OPTRIP(trip)), buf, bufsize);

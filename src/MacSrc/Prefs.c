@@ -532,7 +532,7 @@ typedef struct HOTKEYLOOKUP_STRUCT
 
 HOTKEYLOOKUP HotKeyLookup[] =
 {
-//  name                    contexts      func                    state                 used  default key 1,2
+//  name                    contexts      func                    state           used  default key 1,2
 #ifdef AUDIOLOGS
   { "\"audiolog_cancel\"",  DEMO_CONTEXT, audiolog_cancel_func,   0                        , 0, CTRL('.'),     0 },
 #endif

@@ -153,7 +153,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "2d.h"
 #include "fix.h"
 
-#pragma pack(2)
+#pragma pack(push,2)
 
 // MLA defines
 #define SwapFix(x, y)   \
@@ -1013,5 +1013,7 @@ edi];
         "lea esp,[esp+ecx*4]"   \
         parm [ecx] [esi] value [eax] modify [eax ebx ecx edx esi edi];
 */
+
+#pragma pack(pop)
 
 #endif /* __3D_H */

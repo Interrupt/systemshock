@@ -518,31 +518,31 @@ palette fade
 
 void PreloadGameResources(void) {
     // Images
-    ResLock(RES_gamescrGfx);
+    ResLockRaw(RES_gamescrGfx);
 
     // Fonts
-    ResLock(RES_tinyTechFont);
-    ResLock(RES_doubleTinyTechFont);
-    ResLock(RES_citadelFont);
-    ResLock(RES_mediumLEDFont);
+    ResLockRaw(RES_tinyTechFont);
+    ResLockRaw(RES_doubleTinyTechFont);
+    ResLockRaw(RES_citadelFont);
+    ResLockRaw(RES_mediumLEDFont);
 
     // Strings
-    ResLock(RES_objlongnames);
-    ResLock(RES_traps);
-    ResLock(RES_words);
-    ResLock(RES_texnames);
-    ResLock(RES_texuse);
-    ResLock(RES_inventory);
-    ResLock(RES_objshortnames);
-    ResLock(RES_HUDstrings);
-    ResLock(RES_lognames);
-    ResLock(RES_messages);
-    ResLock(RES_plotware);
-    ResLock(RES_screenText);
-    ResLock(RES_cyberspaceText);
-    ResLock(RES_accessCards);
-    ResLock(RES_miscellaneous);
-    ResLock(RES_games);
+    ResLockRaw(RES_objlongnames);
+    ResLockRaw(RES_traps);
+    ResLockRaw(RES_words);
+    ResLockRaw(RES_texnames);
+    ResLockRaw(RES_texuse);
+    ResLockRaw(RES_inventory);
+    ResLockRaw(RES_objshortnames);
+    ResLockRaw(RES_HUDstrings);
+    ResLockRaw(RES_lognames);
+    ResLockRaw(RES_messages);
+    ResLockRaw(RES_plotware);
+    ResLockRaw(RES_screenText);
+    ResLockRaw(RES_cyberspaceText);
+    ResLockRaw(RES_accessCards);
+    ResLockRaw(RES_miscellaneous);
+    ResLockRaw(RES_games);
 }
 
 void object_data_flush(void) {

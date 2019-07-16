@@ -81,8 +81,8 @@ void gad_menu_up(TNG *ptng)
    TNG_MN(ptng)->popped_up = TRUE;
 
    // Install the general pushbutton handler
-   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE, &gadget_tng_mouse_handler, retgad, &(retgad->handler_id));
-   uiInstallRegionHandler(retgad->rep, UI_EVENT_KBD_COOKED, &gadget_tng_keyboard_handler, retgad, &(retgad->handler_id));
+   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE, &gadget_tng_mouse_handler, (intptr_t)retgad, &(retgad->handler_id));
+   uiInstallRegionHandler(retgad->rep, UI_EVENT_KBD_COOKED, &gadget_tng_keyboard_handler, (intptr_t)retgad, &(retgad->handler_id));
 
    // Grab focus!
    uiGrabFocus(retgad->rep, UI_EVENT_KBD_COOKED);

@@ -485,7 +485,7 @@ void email_draw_text(Id email_id, bool really_an_email) {
     gr2ss_override = OVERRIDE_ALL;
 #endif
     gr_push_canvas(pinv_canvas);
-    gr_set_font((grs_font *)ResLock(email_font));
+    gr_set_font((grs_font *)ResLockRaw(email_font));
     if (!full_game_3d)
         uiHideMouse(inventory_region->r);
     inventory_clear();
@@ -737,7 +737,7 @@ void mfd_emailmug_expose(MFD *mfd, ubyte control) {
         short mid = NUM_MFDS;
         int mug;
         uchar mcolor = MESSAGE_COLOR;
-        parse_email_mugs((char *)RefGet(MKREF(msg, MUGSHOT_IDX)), &mcolor, mnums, FALSE);
+        parse_email_mugs((char *)RefGetRaw(MKREF(msg, MUGSHOT_IDX)), &mcolor, mnums, FALSE);
         for (mid = 0; mid < NUM_MFDS; mid++)
             if (player_struct.mfd_current_slots[mid] == EMAILMUG_SLOT) {
                 break;
@@ -846,7 +846,7 @@ void select_email(int num, uchar scr) {
         return;
     }
 
-    mug_num = atoi((char *)RefGet(MKREF(id, MUGSHOT_IDX)));
+    mug_num = atoi((char *)RefGetRaw(MKREF(id, MUGSHOT_IDX)));
     ResUnlock(id);
 
     if (mug_num >= BASE_VMAIL)
@@ -919,7 +919,7 @@ void read_email(Id new_base, int num) {
         player_struct.hardwarez_status[HARDWARE_EMAIL] &= ~(WARE_FLASH);
         QUESTBIT_OFF(0x12c);
 
-        mug_num = atoi((char *)RefGet(MKREF(current_email_base + num, MUGSHOT_IDX)));
+        mug_num = atoi((char *)RefGetRaw(MKREF(current_email_base + num, MUGSHOT_IDX)));
         ResUnlock(current_email_base + num);
 
         if (mug_num >= BASE_VMAIL) // video email
@@ -940,7 +940,7 @@ void read_email(Id new_base, int num) {
                 int i;
                 ushort mnums[NUM_MFDS];
                 uchar grab = TRUE;
-                parse_email_mugs((char *)RefGet(MKREF(current_email_base + num, MUGSHOT_IDX)), NULL, mnums, TRUE);
+                parse_email_mugs((char *)RefGetRaw(MKREF(current_email_base + num, MUGSHOT_IDX)), NULL, mnums, TRUE);
                 for (i = 1; i < NUM_MFDS; i++) {
                     if (mnums[i] != mnums[i - 1]) {
                         save_mfd_slot(i);

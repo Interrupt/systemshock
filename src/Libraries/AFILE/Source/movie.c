@@ -22,15 +22,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 int32_t AfilePrepareRes(Id id, Afile *afile) {
 
-    uint8_t *ptr = ResLock(id);
-	int size = ResSize(id);
-	MFILE *mf;
+    // Grab the raw data and let the library deal with it.
+    uint8_t *ptr = ResLockRaw(id);
+    int size = ResSize(id);
+    MFILE *mf;
 
-	mf = (MFILE *)malloc(sizeof(MFILE));
-	mf->p = (unsigned char *)malloc(size);
-	memcpy(mf->p, ptr, size);
-	mf->size = size;
-	mf->pos = 0;
+    mf = (MFILE *)malloc(sizeof(MFILE));
+    mf->p = (unsigned char *)malloc(size);
+    memcpy(mf->p, ptr, size);
+    mf->size = size;
+    mf->pos = 0;
 
     ResUnlock(id);
 

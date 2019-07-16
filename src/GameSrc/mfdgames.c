@@ -290,7 +290,7 @@ void mfd_games_expose(MFD *m, ubyte control) {
         ss_safe_set_cliprect(0, 0, MFD_VIEW_WID, MFD_VIEW_HGT);
         mfd_clear_rects();
 
-        fon = (grs_font *)ResLock(RES_tinyTechFont);
+        fon = FontLock(RES_tinyTechFont);
         gr_set_font(fon);
 
         cur_mode = GAME_MODE;
@@ -2938,7 +2938,7 @@ static int wing_get_facing(int i) {
 static void scale_res_bm(int ref, int x, int y, int w, int h) {
     FrameDesc *f;
 
-    f = (FrameDesc *)RefLock(ref);
+    f = FrameLock(ref);
     if (!f)
         return;
 

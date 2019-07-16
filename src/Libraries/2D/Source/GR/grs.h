@@ -106,6 +106,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "fix.h"
 
+// FIXME pragma pack
+#pragma pack(push,2)
+
 /* system information structure. */
 typedef struct {
    uchar id_maj;     /* major id---type of graphics system */
@@ -176,18 +179,24 @@ typedef union {
    } i;
 } grs_clip;
 
+// Font. Should be 64-bit safe to use raw data at least on PC, but it would be
+// better to define a proper decoder for it.
 typedef struct {
-	ushort id;
-	char dummy1[34];
-	short min;
-	short max;
-	char dummy2[32];
-	long cotptr;
-	long buf;
-	short w;
-	short h;
-	short off_tab[1];
+    ushort id;
+    char dummy1[34];
+    short min;
+    short max;
+    char dummy2[32];
+    int32_t cotptr;
+    int32_t buf;
+    short w;
+    short h;
+    short off_tab[1];
 } grs_font;
+
+// Access to fonts in resources.
+#define FontLock(id) (grs_font *)ResLockRaw(id)
+#define FontGet(id) (grs_font *)ResGetRaw(id)
 
 /* structure for drawing context.  the context contains data about which
    color, font attributes, filling attributes, and an embedded clipping
@@ -235,5 +244,7 @@ typedef struct {
 typedef struct {
    fix x,y,z;    /* 3's */
 } grs_point3d;
+
+#pragma pack(pop)
 
 #endif /* !__GRS_H */

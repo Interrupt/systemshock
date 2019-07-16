@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __OBJECTS_H
 #define __OBJECTS_H
 
-#pragma pack(2)
+#pragma pack(push,2)
 
 /*
 ** $Header: r:/prj/cit/src/inc/RCS/objects.h 1.18 1994/08/30 07:15:13 xemu Exp $
@@ -310,5 +310,7 @@ void ObjPrintRefs(ObjID obj);
 uchar ObjInstInit(ObjID id, ObjSpecID specid, ObjSubClass subclass);
 
 //////////////////////////////
+
+#pragma pack(pop)
 
 #endif // __OBJECTS_H

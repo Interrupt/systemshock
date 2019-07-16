@@ -1203,12 +1203,12 @@ void init_input(void) {
 void init_input(void) {
     extern void init_motion_polling();
     int i = 0;
-    // KLC	int kbdt, joy_type;
+    // KLC      int kbdt, joy_type;
     int dvec[2];
 
     // init keyboard
-    // KLC	for (i = 0; i < 0x80; i++)
-    // KLC	kb_clear_state(i,KBA_REPEAT);
+    // KLC      for (i = 0; i < 0x80; i++)
+    // KLC      kb_clear_state(i,KBA_REPEAT);
     hotkey_init(NUM_HOTKEYS);
 
     // KLC
@@ -1223,8 +1223,8 @@ void init_input(void) {
 
     // init mouse
     // KLC   mouse_set_timestamp_register((ulong*)tmd_ticks);
-    dvec[0] = 8;  // KLC 30;		// default double click deleay;
-    dvec[1] = 45; // 175;	// default double click time
+    dvec[0] = 8;  // KLC 30;            // default double click deleay;
+    dvec[1] = 45; // 175;       // default double click time
     i = 2;
     // KLC   config_get_value(CFG_DCLICK_RATE_VAR,CONFIG_INT_TYPE,dvec,&i);
     uiDoubleClickDelay = dvec[0];
@@ -2136,10 +2136,13 @@ char *get_object_lookname(ObjID id, char use_string[], int sz) {
     } break;
     }
     // If we haven't set ref or ref is garbage, use the long name.
-    if ((ref == -1) || !(RefIndexValid((RefTable *)ResGet(REFID(ref)), REFINDEX(ref)))) {
+    char *temp = RefGetRaw(ref);
+    if (temp == NULL) {
         strcat(use_string, get_object_long_name(usetrip, NULL, 0));
-    } else
-        get_string(ref, use_string, sz);
+    } else {
+        strncpy(use_string, temp, sz);
+        use_string[sz-1] = '\0';
+    }
     return (use_string);
 }
 
@@ -2730,8 +2733,8 @@ void vfx1_chk(void) {
     if (!inp6d_player) {
         fr_camera_slewcam(NULL, EYE_X, xp / 5);
         fr_camera_slewcam(NULL, EYE_Y, yp / 5);
-        //	   fr_camera_slewcam(NULL,EYE_Z,zv/5);
-        //	   fr_camera_setone(NULL,EYE_HEADH,h);
+        //         fr_camera_slewcam(NULL,EYE_Z,zv/5);
+        //         fr_camera_setone(NULL,EYE_HEADH,h);
         fr_camera_setone(NULL, EYE_H, angs[ANG_H]);
         fr_camera_setone(NULL, EYE_P, angs[ANG_P]);
         fr_camera_setone(NULL, EYE_B, angs[ANG_B]);

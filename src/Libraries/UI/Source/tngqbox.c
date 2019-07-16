@@ -1170,7 +1170,7 @@ errtype _draw_text(TNG *ptng, char *txt, int x_coord, int y_coord)
 int _text_width(TNG *ptng, char *t)
 {
    int retval;
-   gr_set_font((grs_font *)ResLock(ptng->style->font));
+   gr_set_font(FontLock(ptng->style->font));
    retval = gr_string_width(t);   
    ResUnlock(ptng->style->font);
    return(retval);

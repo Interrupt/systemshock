@@ -180,7 +180,7 @@ void set_base_lean_bmap(uchar shield) {
             ResUnlock(lean_bmap_res);
             ResDrop(lean_bmap_res);
         }
-        ResLock(baseRes);        // Load hi and lock the new bitmap series.
+        ResLockRaw(baseRes);        // Load hi and lock the new bitmap series.
         lean_bmap_res = baseRes; // this is our base bitmap now
     }
 
@@ -199,7 +199,7 @@ void set_base_lean_bmap(uchar shield) {
                 ResUnlock(shield_bmap_res);
                 ResDrop(shield_bmap_res);
             }
-            ResLock(baseRes);          // Load hi and lock the new bitmap series.
+            ResLockRaw(baseRes);          // Load hi and lock the new bitmap series.
             shield_bmap_res = baseRes; // this is our base shield bitmap now
         }
     } else {
@@ -296,10 +296,8 @@ void lean_icon(LGPoint *pos, grs_bitmap **icon, int *inum) {
     *inum = posture * BMAPS_PER_POSTURE + ((100 - leanx) * BMAPS_PER_POSTURE / 201);
 
     // Get a pointer to the corresponding lean bitmap.
-    bp = (uchar *)ResPtr(lean_bmap_res);
-    if (bp) {
-        RefTable *prt = (RefTable *)bp;
-        FrameDesc *f = (FrameDesc *)(((uchar *)prt) + (prt->offset[*inum]));
+    FrameDesc *f = FrameGet(MKREF(lean_bmap_res,*inum));
+    if (f != NULL) {
         f->bm.bits = (uchar *)(f + 1);
         *icon = &(f->bm);
     } else
@@ -448,8 +446,8 @@ void init_posture_meters(LGRegion *root, uchar fullscreen) {
     err = region_create(root, reg, &r, 0, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
     if (err != OK)
         critical_error(BAD_REGION_CRITERR);
-    uiInstallRegionHandler(reg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, (uiHandlerProc)eye_mouse_handler, 0, &id);
-    uiInstallRegionHandler(reg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, (uiHandlerProc)lean_mouse_handler, 0, &id);
+    uiInstallRegionHandler(reg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, eye_mouse_handler, 0, &id);
+    uiInstallRegionHandler(reg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, lean_mouse_handler, 0, &id);
 }
 
 void update_lean_meter(uchar force) {
@@ -507,14 +505,11 @@ void update_lean_meter(uchar force) {
     ss_bitmap(icon, r.ul.x, r.ul.y);
 
     if (shield) {
-        uint8_t *bp;
         grs_bitmap *sbm;
 
         // Get a pointer to the corresponding lean bitmap.
-        bp = (uint8_t *)ResPtr(shield_bmap_res);
-        if (bp) {
-            RefTable *prt = (RefTable *)bp;
-            FrameDesc *f = (FrameDesc *)(((uint8_t *)prt) + (prt->offset[inum]));
+	FrameDesc *f = FrameGet(MKREF(shield_bmap_res, inum));
+	if (f != NULL) {
             f->bm.bits = (uint8_t *)(f + 1);
             sbm = &(f->bm);
         } else

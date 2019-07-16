@@ -135,7 +135,8 @@ errtype load_small_texturemaps(void) {
 
     while (ResInUse(id + i)) {
         if (CHECK_ANIM_USED(i)) {
-            ResLock(id + i);
+            // FIXME does this require decoding?
+            ResLockRaw(id + i);
             ResUnlock(id + i);
         }
         i++;

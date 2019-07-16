@@ -588,7 +588,7 @@ void PrintWinStats(void)
   short w, h;
 
   grs_font *fon = gr_get_font();
-  gr_set_font((grs_font *)ResLock(RES_coloraliasedFont));
+  gr_set_font(FontLock(RES_coloraliasedFont));
 
   gr_clear(0);
 
@@ -694,7 +694,7 @@ void PrintCredits(void)
     }
 
     grs_font *fon = gr_get_font();
-    gr_set_font((grs_font *)ResLock(RES_coloraliasedFont));
+    gr_set_font(FontLock(RES_coloraliasedFont));
     short w, h;
     gr_string_size(buf, &w, &h);
     x = (columns == 1) ? (320-w)/2 : (cur_col == 0) ? 320/2-8-w : 320/2+8;
@@ -847,7 +847,7 @@ errtype draw_sg_slot(int slot_num)
     get_string(REF_STR_UnusedSave, temp, 64);
   }
 
-  gr_set_font((grs_font *)ResLock(RES_smallTechFont));
+  gr_set_font(FontLock(RES_smallTechFont));
   gr_string_size(temp, &x, &y);
 
   while ((x > SG_SLOT_WD - SG_SLOT_OFFSET_X) && (sz > 0))
@@ -929,8 +929,8 @@ errtype journey_continue_func(uchar draw_stuff)
     RefTable *rt = ResReadRefTable(REFID(rid));
     if (RefIndexValid(rt, i))
     {
-      FrameDesc *f = (FrameDesc *)malloc(RefSize(rt, i));
-      RefExtract(rt, rid, f);
+      FrameDesc *f = (FrameDesc *)malloc(RefSizeDecoded(rt, i, &FrameDescLayout));
+      RefExtractDecoded(rt, rid, &FrameDescLayout, f);
       f->bm.bits = (void *)(f+1);
       f->bm.h = 200; //SUPER HACK: resource reports 320
       ss_bitmap(&(f->bm), 0, 0);

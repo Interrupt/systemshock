@@ -296,7 +296,7 @@ Ref ref_from_critter_data(ObjID oid, int triple, byte posture, short frame, shor
             curr_frames = CritterProps[CPTRIP(triple)].frames[posture];
         else {
             //         prt = ResReadRefTable(our_id);
-            prt = (RefTable *)ResLock(our_id);
+            prt = RefTableLock(our_id);
             curr_frames = prt->numRefs;
             //         ResFreeRefTable(prt);
             ResUnlock(our_id);
@@ -317,7 +317,8 @@ Ref ref_from_critter_data(ObjID oid, int triple, byte posture, short frame, shor
                 Id id;
                 id = critter_id_table[CPTRIP(triple)] + v + posture_bases[p];
                 if ((id != our_id) && (ResPtr(id) == NULL)) {
-                    ResLock(id);
+                    // FIXME does this need decoding?
+                    ResLockRaw(id);
                     ResUnlock(id);
                 }
             }
@@ -1400,7 +1401,7 @@ errtype ObjClassInit(ObjID id, ObjSpecID specid, int subclass) {
 // ## INSERT NEW SUBCLASS HERE
 
 errtype obj_load_properties() {
-    // Handle	res;
+    // Handle   res;
     int version, i, j;
     char *cp;
 
@@ -1560,25 +1561,25 @@ errtype obj_load_properties() {
         ap->recoil_force = *cp++;
     }
 
-    // BlockMoveData(cp, PistolAmmoProps, NUM_PISTOL_AMMO);				Dummies
+    // BlockMoveData(cp, PistolAmmoProps, NUM_PISTOL_AMMO);                             Dummies
     cp += NUM_PISTOL_AMMO;
 
-    // BlockMoveData(cp, PistolAmmoProps, NUM_NEEDLE_AMMO);				Dummies
+    // BlockMoveData(cp, PistolAmmoProps, NUM_NEEDLE_AMMO);                             Dummies
     cp += NUM_NEEDLE_AMMO;
 
-    // BlockMoveData(cp, PistolAmmoProps, NUM_MAGNUM_AMMO);			Dummies
+    // BlockMoveData(cp, PistolAmmoProps, NUM_MAGNUM_AMMO);                     Dummies
     cp += NUM_MAGNUM_AMMO;
 
-    // BlockMoveData(cp, PistolAmmoProps, NUM_RIFLE_AMMO);				Dummies
+    // BlockMoveData(cp, PistolAmmoProps, NUM_RIFLE_AMMO);                              Dummies
     cp += NUM_RIFLE_AMMO;
 
-    // BlockMoveData(cp, PistolAmmoProps, NUM_FLECHETTE_AMMO);			Dummies
+    // BlockMoveData(cp, PistolAmmoProps, NUM_FLECHETTE_AMMO);                  Dummies
     cp += NUM_FLECHETTE_AMMO;
 
-    // BlockMoveData(cp, PistolAmmoProps, NUM_AUTO_AMMO);					Dummies
+    // BlockMoveData(cp, PistolAmmoProps, NUM_AUTO_AMMO);                                       Dummies
     cp += NUM_AUTO_AMMO;
 
-    // BlockMoveData(cp, PistolAmmoProps, NUM_PROJ_AMMO);					Dummies
+    // BlockMoveData(cp, PistolAmmoProps, NUM_PROJ_AMMO);                                       Dummies
     cp += NUM_PROJ_AMMO;
 
     //-------------
@@ -1607,7 +1608,7 @@ errtype obj_load_properties() {
     memmove(SlowPhysicsProps, cp, sizeof(SlowPhysicsProps));
     cp += sizeof(SlowPhysicsProps);
 
-    // BlockMoveData(cp, CameraPhysicsProps, NUM_CAMERA_PHYSICS);			Dummies
+    // BlockMoveData(cp, CameraPhysicsProps, NUM_CAMERA_PHYSICS);                       Dummies
     cp += NUM_CAMERA_PHYSICS;
 
     //-------------
@@ -1636,7 +1637,7 @@ errtype obj_load_properties() {
         // SwapShortBytes(&gp->flags);
     }
 
-    // BlockMoveData(cp, DirectGrenadeProps, NUM_DIRECT_GRENADE);			Dummies
+    // BlockMoveData(cp, DirectGrenadeProps, NUM_DIRECT_GRENADE);                       Dummies
     cp += NUM_DIRECT_GRENADE;
 
     for (i = 0; i < NUM_TIMED_GRENADE; i++) {
@@ -1896,7 +1897,7 @@ errtype obj_set_secondary_properties() {
     fn = ResOpenFile("res/data/objart2.res");
     fn2 = ResOpenFile("res/data/objart3.res");
     if ((fn < 0) || (fn2 < 0)) {
-        //		Warning(("Problem opening object art cache!\n"));
+        //              Warning(("Problem opening object art cache!\n"));
         return (ERR_NOEFFECT);
     }
 
@@ -1908,24 +1909,24 @@ errtype obj_set_secondary_properties() {
                 Id id;
                 if (j >= FIRST_FRONT_POSTURE) {
                     id = posture_bases[j] + i;
-                    prt = ResReadRefTable(id); //	prt = (RefTable *)ResLock(id);
+                    prt = ResReadRefTable(id); //       prt = (RefTable *)ResLock(id);
                                                // KLC size += ResSize(posture_bases[j] + i);
                 } else {
                     id = critter_id_table[i] + posture_bases[j] + 6; // assumes view = front = 6
-                    prt = ResReadRefTable(id);                       //	prt = (RefTable *)ResLock(id);
+                    prt = ResReadRefTable(id);                       // prt = (RefTable *)ResLock(id);
                     // KLC size += ResSize(posture_bases[j] + critter_id_table[i] + 6);
                 }
                 if (prt == NULL)
                     ;
-                //				Warning (("Could not read RefTable for creature type %d (j = %d) (id = %d + %d
+                //                              Warning (("Could not read RefTable for creature type %d (j = %d) (id = %d + %d
                 //= %d (0x%x))!\n",i,j,
-                //				critter_id_table[i],posture_bases[j],critter_id_table[i] + posture_bases[j],
+                //                              critter_id_table[i],posture_bases[j],critter_id_table[i] + posture_bases[j],
                 //critter_id_table[i] + posture_bases[j]));
                 else {
                     CritterProps[i].frames[j] = prt->numRefs;
                     ResFreeRefTable(prt);
-                    //					ResUnlock(id);
-                    //					ResDrop(id);
+                    //                                  ResUnlock(id);
+                    //                                  ResDrop(id);
                 }
             }
         }
@@ -2054,7 +2055,7 @@ grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, uchar s
         currfont = RES_citadelFont;
         break;
     }
-    gr_set_font((grs_font *)ResLock(currfont));
+    gr_set_font(FontLock(currfont));
     gr_string_size(s, &w, &h);
     while (size_remaining > h) {
         if (scroll)

@@ -359,7 +359,7 @@ void status_bio_set(short bio_mode) {
 #endif
 
     curr_bio_ref = bio_refs[bio_mode];
-    f = (FrameDesc *)RefLock(STATUS_RESID);
+    f = FrameLock(STATUS_RESID);
     bio_background_bitmap = f->bm;
 
     // let's try to do the right thing!
