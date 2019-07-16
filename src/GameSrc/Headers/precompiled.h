@@ -1,5 +1,3 @@
-#pragma pack(2)
-
 #ifdef __cplusplus
 extern "C" {
 #endif

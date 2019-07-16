@@ -81,8 +81,8 @@ void gad_menu_up(TNG *ptng)
    TNG_MN(ptng)->popped_up = TRUE;
 
    // Install the general pushbutton handler
-   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE, &gadget_tng_mouse_handler, retgad, &(retgad->handler_id));
-   uiInstallRegionHandler(retgad->rep, UI_EVENT_KBD_COOKED, &gadget_tng_keyboard_handler, retgad, &(retgad->handler_id));
+   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE, &gadget_tng_mouse_handler, (intptr_t)retgad, &(retgad->handler_id));
+   uiInstallRegionHandler(retgad->rep, UI_EVENT_KBD_COOKED, &gadget_tng_keyboard_handler, (intptr_t)retgad, &(retgad->handler_id));
 
    // Grab focus!
    uiGrabFocus(retgad->rep, UI_EVENT_KBD_COOKED);
@@ -134,7 +134,7 @@ Gadget *gad_menu_create(Gadget *parent, LGPoint *coord, int z, TNGStyle *sty, in
    return (retgad);
 }
 
-errtype gad_menu_add_line(Gadget *menu, char *label, hotkey_callback f, short keycode, ulong context, void *user_data, char *help_text)
+errtype gad_menu_add_line(Gadget *menu, char *label, hotkey_callback f, short keycode, ulong context, intptr_t user_data, char *help_text)
 {
    return(tng_menu_add_line(menu->tng_data, label, f, keycode, context, user_data, help_text));
 }

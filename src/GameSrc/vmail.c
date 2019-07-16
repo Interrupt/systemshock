@@ -287,7 +287,8 @@ errtype play_vmail(byte vmail_no)
       uchar  cant_preload_all = FALSE;
 
       // load the intro in first! before checking for preloading
-      if (ResLock(RES_FRAMES_vintro) == NULL)
+      // FIXME does this need decoding?
+      if (ResLockRaw(RES_FRAMES_vintro) == NULL)
          use_texture_buffer = TRUE;
       else
       {
@@ -303,7 +304,8 @@ errtype play_vmail(byte vmail_no)
 
             // preload vmail frame animation first, and then play intro -> no pause between the two
             // if it fails on the lock - then say you can't preload!
-            if(ResLock(vmail_frame_anim[vmail_no]+i) == NULL)
+            // FIXME does this need decoding?
+            if(ResLockRaw(vmail_frame_anim[vmail_no]+i) == NULL)
             {
                cant_preload_all = TRUE;
                break;

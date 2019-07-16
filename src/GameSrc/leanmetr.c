@@ -148,8 +148,8 @@ void player_reset_eye(void);
 byte player_get_eye(void);
 void player_set_eye_fixang(int ang);
 int player_get_eye_fixang(void);
-uchar eye_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *);
-uchar lean_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *);
+uchar eye_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t);
+uchar lean_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t);
 void init_posture_meters(LGRegion *root, uchar fullscreen);
 void update_lean_meter(uchar force);
 void draw_eye_bitmap(grs_bitmap *eye_bmap, LGPoint pos, int lasty);
@@ -180,7 +180,7 @@ void set_base_lean_bmap(uchar shield) {
             ResUnlock(lean_bmap_res);
             ResDrop(lean_bmap_res);
         }
-        ResLock(baseRes);        // Load hi and lock the new bitmap series.
+        ResLockRaw(baseRes);        // Load hi and lock the new bitmap series.
         lean_bmap_res = baseRes; // this is our base bitmap now
     }
 
@@ -199,7 +199,7 @@ void set_base_lean_bmap(uchar shield) {
                 ResUnlock(shield_bmap_res);
                 ResDrop(shield_bmap_res);
             }
-            ResLock(baseRes);          // Load hi and lock the new bitmap series.
+            ResLockRaw(baseRes);          // Load hi and lock the new bitmap series.
             shield_bmap_res = baseRes; // this is our base shield bitmap now
         }
     } else {
@@ -296,10 +296,8 @@ void lean_icon(LGPoint *pos, grs_bitmap **icon, int *inum) {
     *inum = posture * BMAPS_PER_POSTURE + ((100 - leanx) * BMAPS_PER_POSTURE / 201);
 
     // Get a pointer to the corresponding lean bitmap.
-    bp = (uchar *)ResPtr(lean_bmap_res);
-    if (bp) {
-        RefTable *prt = (RefTable *)bp;
-        FrameDesc *f = (FrameDesc *)(((uchar *)prt) + (prt->offset[*inum]));
+    FrameDesc *f = FrameGet(MKREF(lean_bmap_res,*inum));
+    if (f != NULL) {
         f->bm.bits = (uchar *)(f + 1);
         *icon = &(f->bm);
     } else
@@ -368,9 +366,10 @@ int player_get_eye_fixang(void) {
     return theta;
 }
 
-uchar eye_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
-    short x = ev->pos.x - r->abs_x;
-    short y = ev->pos.y - r->abs_y;
+uchar eye_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
+    uiMouseEvent *me = (uiMouseEvent*)ev;
+    short x = me->pos.x - r->abs_x;
+    short y = me->pos.y - r->abs_y;
     extern uchar hack_takeover;
     if (hack_takeover || global_fullmap->cyber)
         return FALSE;
@@ -379,33 +378,34 @@ uchar eye_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
     eye_fine_mode = 2 * x > EYEMETER_W;
     if (!eye_fine_mode)
         y = discrete_eye_height[y * DISCRETE_EYE_POSITIONS / EYEMETER_H];
-    if (ev->buttons & (1 << MOUSE_LBUTTON)) {
+    if (me->buttons & (1 << MOUSE_LBUTTON)) {
         int theta;
-        if ((ev->action & MOUSE_LDOWN) == 0 && uiLastMouseRegion[MOUSE_LBUTTON] != r)
+        if ((me->action & MOUSE_LDOWN) == 0 && uiLastMouseRegion[MOUSE_LBUTTON] != r)
             return FALSE;
         if (eye_fine_mode)
             theta = -2 * MAX_EYE_ANGLE * (y) / (EYEMETER_H - 1) + MAX_EYE_ANGLE;
         else
             theta = -FIXANG_PI / 6 * (y * DISCRETE_EYE_POSITIONS / EYEMETER_H - 1);
-        //      ui_mouse_constrain_xy(ev->pos.x,r->abs_y,ev->pos.x,r->abs_y+EYEMETER_H-1);
+        //      ui_mouse_constrain_xy(me->pos.x,r->abs_y,me->pos.x,r->abs_y+EYEMETER_H-1);
         player_set_eye_fixang(theta);
         physics_set_relax(CONTROL_YZROT, FALSE);
     }
-    if (ev->buttons == 0) {
+    if (me->buttons == 0) {
         //      mouse_constrain_xy(0,0,grd_cap->w-1,grd_cap->h-1);
     }
     return TRUE;
 }
 
-uchar lean_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
-    short x = ev->pos.x - r->abs_x - LEANOMETER_XOFF;
-    short y = ev->pos.y - r->abs_y - LEANOMETER_YOFF;
+uchar lean_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
+    uiMouseEvent *me = (uiMouseEvent*)ev;
+    short x = me->pos.x - r->abs_x - LEANOMETER_XOFF;
+    short y = me->pos.y - r->abs_y - LEANOMETER_YOFF;
     if (x < 0 || x >= LEANOMETER_W || global_fullmap->cyber)
         return FALSE;
-    if (ev->buttons & (1 << MOUSE_LBUTTON)) {
+    if (me->buttons & (1 << MOUSE_LBUTTON)) {
         short posture = y * 3 / LEANOMETER_H;
         short xlean = x * 220 / (LEANOMETER_W - 1) - 110;
-        if ((ev->action & MOUSE_LDOWN) == 0 && uiLastMouseRegion[MOUSE_LBUTTON] != r)
+        if ((me->action & MOUSE_LDOWN) == 0 && uiLastMouseRegion[MOUSE_LBUTTON] != r)
             return FALSE;
         if (xlean > 10)
             xlean -= 10;
@@ -419,7 +419,7 @@ uchar lean_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
         physics_set_relax(CONTROL_XZROT, FALSE);
         //     ui_mouse_constrain_xy(LEANOMETER_X(),LEANOMETER_Y()+posture*LEANOMETER_H/3+1,LEANOMETER_X()+LEANOMETER_W-1,LEANOMETER_Y()+(posture+1)*LEANOMETER_H/3-1);
     }
-    if (ev->buttons == 0) {
+    if (me->buttons == 0) {
         extern void mouse_unconstrain(void);
         //      mouse_unconstrain();
     }
@@ -446,8 +446,8 @@ void init_posture_meters(LGRegion *root, uchar fullscreen) {
     err = region_create(root, reg, &r, 0, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
     if (err != OK)
         critical_error(BAD_REGION_CRITERR);
-    uiInstallRegionHandler(reg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, (uiHandlerProc)eye_mouse_handler, NULL, &id);
-    uiInstallRegionHandler(reg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, (uiHandlerProc)lean_mouse_handler, NULL, &id);
+    uiInstallRegionHandler(reg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, eye_mouse_handler, 0, &id);
+    uiInstallRegionHandler(reg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, lean_mouse_handler, 0, &id);
 }
 
 void update_lean_meter(uchar force) {
@@ -505,14 +505,11 @@ void update_lean_meter(uchar force) {
     ss_bitmap(icon, r.ul.x, r.ul.y);
 
     if (shield) {
-        uint8_t *bp;
         grs_bitmap *sbm;
 
         // Get a pointer to the corresponding lean bitmap.
-        bp = (uint8_t *)ResPtr(shield_bmap_res);
-        if (bp) {
-            RefTable *prt = (RefTable *)bp;
-            FrameDesc *f = (FrameDesc *)(((uint8_t *)prt) + (prt->offset[inum]));
+	FrameDesc *f = FrameGet(MKREF(shield_bmap_res, inum));
+	if (f != NULL) {
             f->bm.bits = (uint8_t *)(f + 1);
             sbm = &(f->bm);
         } else

@@ -222,7 +222,7 @@ uchar toggle_bool_func(short keycode, ulong context, bool *tgl) {
 
 extern bool DoubleSize;
 
-uchar change_mode_func(short keycode, ulong context, void *data) {
+uchar change_mode_func(ushort keycode, ulong context, intptr_t data) {
     int newm = (int)data;
 
     if ((newm == AUTOMAP_LOOP) && ((!player_struct.hardwarez[HARDWARE_AUTOMAP]) || (global_fullmap->cyber)))
@@ -304,7 +304,7 @@ void stop_music(void) {
     mlimbs_monster = NO_MONSTER;
 }
 
-uchar toggle_music_func(short keycode, ulong context, void *data) {
+uchar toggle_music_func(ushort keycode, ulong context, intptr_t data) {
     if (music_on) {
         message_info("Music off.");
         StopTheMusic(); //do this here, not in stop_music(), to prevent silence when changing levels
@@ -320,7 +320,7 @@ uchar toggle_music_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar arm_grenade_hotkey(short keycode, ulong context, void *data) {
+uchar arm_grenade_hotkey(ushort keycode, ulong context, intptr_t data) {
     extern uchar show_all_actives;
     extern void super_drop_func(int dispnum, int row);
     extern void mfd_force_update(void);
@@ -366,7 +366,7 @@ int select_object_by_class(int obclass, int num, ubyte *quantlist) {
     return newobj;
 }
 
-uchar select_grenade_hotkey(short keycode, ulong context, void *data) {
+uchar select_grenade_hotkey(ushort keycode, ulong context, intptr_t data) {
     int newobj;
 
     newobj = select_object_by_class(ACTIVE_GRENADE, NUM_GRENADES, player_struct.grenades);
@@ -374,7 +374,7 @@ uchar select_grenade_hotkey(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar select_drug_hotkey(short keycode, ulong context, void *data) {
+uchar select_drug_hotkey(ushort keycode, ulong context, intptr_t data) {
     int newobj;
 
     newobj = select_object_by_class(ACTIVE_DRUG, NUM_DRUGS, player_struct.drugs);
@@ -382,7 +382,7 @@ uchar select_drug_hotkey(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar use_drug_hotkey(short keycode, ulong context, void *data) {
+uchar use_drug_hotkey(ushort keycode, ulong context, intptr_t data) {
     extern uchar show_all_actives;
     extern void super_use_func(int dispnum, int row);
     extern void mfd_force_update(void);
@@ -404,7 +404,7 @@ uchar use_drug_hotkey(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar clear_fullscreen_func(short keycode, ulong context, void *data) {
+uchar clear_fullscreen_func(ushort keycode, ulong context, intptr_t data) {
     extern char last_message[128];
     extern MFD mfd[2];
 
@@ -995,7 +995,7 @@ uchar location_spew_func(short , ulong , void* )
 }
 */
 
-uchar toggle_physics_func(short keycode, ulong context, void *data) {
+uchar toggle_physics_func(ushort keycode, ulong context, intptr_t data) {
     physics_running = !physics_running;
 
     extern uchar pacifism_on;
@@ -1009,7 +1009,7 @@ uchar toggle_physics_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar toggle_giveall_func(short keycode, ulong context, void *data) {
+uchar toggle_giveall_func(ushort keycode, ulong context, intptr_t data) {
     message_info("Kick some ass!");
 
     for (int i = 0; i < NUM_HARDWAREZ; i++)
@@ -1084,12 +1084,12 @@ uchar toggle_giveall_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar toggle_up_level_func(short keycode, ulong context, void *data) {
+uchar toggle_up_level_func(ushort keycode, ulong context, intptr_t data) {
     message_info("Changing level!");
     go_to_different_level((player_struct.level + 1 + 15) % 15);
 }
 
-uchar toggle_down_level_func(short keycode, ulong context, void *data) {
+uchar toggle_down_level_func(ushort keycode, ulong context, intptr_t data) {
     message_info("Changing level!");
     go_to_different_level((player_struct.level - 1 + 15) % 15);
 }
@@ -1302,7 +1302,7 @@ uchar unpause_callback(uiEvent *, LGRegion *, void *) { return (TRUE); }
 
 #endif // NOT_YET
 
-uchar pause_game_func(short keycode, ulong context, void *data) {
+uchar pause_game_func(ushort keycode, ulong context, intptr_t data) {
     extern uchar game_paused, redraw_paused;
     extern LGRegion *inventory_region;
 
@@ -1359,7 +1359,7 @@ uchar unpause_game_func(short, ulong, void*)
 }
 */
 
-uchar toggle_mouse_look(short keycode, ulong context, void *data) {
+uchar toggle_mouse_look(ushort keycode, ulong context, intptr_t data) {
     mouse_look_toggle();
     return (TRUE);
 }

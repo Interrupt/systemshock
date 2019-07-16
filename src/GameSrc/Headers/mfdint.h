@@ -158,10 +158,10 @@ typedef struct _mfd_func {
 } MFD_Func;
 
 extern void init_mfd_funcs();
-extern uchar mfd_view_callback_full(uiEvent *e, LGRegion *r, void *udata);
-extern uchar mfd_view_callback(uiEvent *e, LGRegion *r, void *udata);
-extern uchar mfd_button_callback(uiEvent *e, LGRegion *r, void *udata);
-extern uchar mfd_button_callback_kb(short keycode, ulong context, void *data);
+extern uchar mfd_view_callback_full(uiEvent *e, LGRegion *r, intptr_t udata);
+extern uchar mfd_view_callback(uiEvent *e, LGRegion *r, intptr_t udata);
+extern uchar mfd_button_callback(uiEvent *e, LGRegion *r, intptr_t udata);
+extern uchar mfd_button_callback_kb(ushort keycode, ulong context, intptr_t data);
 extern uchar mfd_update_current_slot(ubyte mfd_id, ubyte status, ubyte num_steps);
 extern void mfd_init_funcs();
 extern void mfd_set_cliprect(LGRect *r);

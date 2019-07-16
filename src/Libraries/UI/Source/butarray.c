@@ -59,12 +59,12 @@ Gadget *gad_buttonarray_create(Gadget *parent, LGPoint coord, int z, int msize_x
    return (retgad);
 }
 
-errtype gad_buttonarray_addbutton_at(Gadget *g, int type, void *disp_data, int coord_x, int coord_y)
+errtype gad_buttonarray_addbutton_at(Gadget *g, int type, intptr_t disp_data, int coord_x, int coord_y)
 {
    return(tng_buttonarray_addbutton_at(g->tng_data, type, disp_data, coord_x, coord_y));
 }
 
-errtype gad_buttonarray_addbutton(Gadget *g, int type, void *disp_data)
+errtype gad_buttonarray_addbutton(Gadget *g, int type, intptr_t disp_data)
 {
    return(tng_buttonarray_addbutton(g->tng_data, type, disp_data));
 }

@@ -81,7 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------
 
 void side_icon_language_change(void);
-uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata);
+uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, intptr_t udata);
 void zoom_side_icon_to_mfd(int icon, int waretype, int wnum);
 void zoom_to_side_icon(LGPoint from, int icon);
 uchar side_icon_hotkey_func(ushort keycode, ulong context, int i);
@@ -243,7 +243,7 @@ void screen_init_side_icons(LGRegion *root) {
     r.ul = side_icons[0].r.ul;
     r.lr = side_icons[(NUM_SIDE_ICONS - 1) / 2].r.lr;
     macro_region_create_with_autodestroy(root, left_region, &r);
-    uiInstallRegionHandler(left_region, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, &side_icon_mouse_callback, (void *)0,
+    uiInstallRegionHandler(left_region, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, &side_icon_mouse_callback, 0,
                            &id);
     uiSetRegionDefaultCursor(left_region, NULL);
 
@@ -251,7 +251,7 @@ void screen_init_side_icons(LGRegion *root) {
     r.lr = side_icons[(NUM_SIDE_ICONS - 1)].r.lr;
     macro_region_create_with_autodestroy(root, right_region, &r);
     uiInstallRegionHandler(right_region, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, &side_icon_mouse_callback,
-                           (void *)((NUM_SIDE_ICONS + 1) / 2), &id);
+                           ((NUM_SIDE_ICONS + 1) / 2), &id);
     uiSetRegionDefaultCursor(right_region, NULL);
 
     return;
@@ -284,7 +284,7 @@ void zoom_side_icon_to_mfd(int icon, int waretype, int wnum) {
 extern LGCursor globcursor;
 
 int last_side_icon = -1;
-uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata) {
+uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
     extern uchar fullscrn_icons;
     uchar retval = FALSE;
     uiMouseEvent *m;

@@ -216,7 +216,7 @@ char *get_olh_string(ObjID obj, char *buf) {
 
 got_id:
     if (r != 0) {
-        char *s = (char *)RefLock(r);
+        char *s = (char *)RefLockRaw(r);
         sprintf(buf, s, get_object_long_name(ID2TRIP(obj), NULL, 0));
         RefUnlock(r);
     }
@@ -262,7 +262,7 @@ LGPoint draw_olh_string(char *s, short xl, short yl) {
     short x, y;
 
     string_replace_char(s, '\n', CHAR_SOFTSP);
-    gr_set_font((grs_font *)ResGet(RES_tinyTechFont));
+    gr_set_font(FontGet(RES_tinyTechFont));
     gr_set_fcolor(hud_colors[hud_color_bank][2]);
     wrap_text(s, OLH_WRAP_WID);
     gr_string_size(s, &w, &h);
@@ -493,7 +493,7 @@ void olh_overlay(void) {
     status_bio_start();
 }
 
-uchar toggle_olh_func(short keycode, ulong context, void *data) {
+uchar toggle_olh_func(ushort keycode, ulong context, intptr_t data) {
     if (!olh_active) {
         string_message_info(REF_STR_helpOn);
         olh_active = TRUE;
@@ -507,7 +507,7 @@ uchar toggle_olh_func(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar olh_overlay_func(short keycode, ulong context, void *data) {
+uchar olh_overlay_func(ushort keycode, ulong context, intptr_t data) {
     if (global_fullmap->cyber) {
         string_message_info(REF_STR_NotAvailCspace);
         return TRUE;

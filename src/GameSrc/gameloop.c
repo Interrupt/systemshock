@@ -73,7 +73,7 @@ void draw_pause_string(void) {
     short w, h, nw, nh;
 
     gr_set_fcolor(RED_BASE + 4);
-    gr_set_font((grs_font *)ResGet(RES_citadelFont));
+    gr_set_font((grs_font *)ResGetRaw(RES_citadelFont));
     gr_string_size(get_string(REF_STR_Pause, NULL, 0), &w, &h);
     nw = SCREEN_VIEW_X + (SCREEN_VIEW_WIDTH - w) / 2;
     nh = SCREEN_VIEW_Y + (SCREEN_VIEW_HEIGHT - h) / 2;

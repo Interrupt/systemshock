@@ -164,7 +164,7 @@ void fsmap_draw_map(void);
 void fsmap_draw_screen(uint chng);
 int s_bf(int btn_id, int todo);
 void fsmap_new_msg(curAMap *amptr);
-uchar amap_scroll_handler(uiEvent *ev, LGRegion *r, void *user_data);
+uchar amap_scroll_handler(uiEvent *ev, LGRegion *r, intptr_t user_data);
 void edit_mapnote(curAMap *amptr);
 uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte but);
 uchar zoom_deal(curAMap *amptr, int btn);
@@ -202,7 +202,7 @@ void fsmap_startup(void) {
     gr_set_canvas(FULLMAP_CANVAS);
     gr_clear(0xff);
     amap_pixratio_set(FIX_UNIT);
-    fsmap_font = (grs_font *)ResLock(RES_largeTechFont); // KLC - was RES_mfdFont
+    fsmap_font = (grs_font *)ResLockRaw(RES_largeTechFont); // KLC - was RES_mfdFont
     gr_set_font(fsmap_font);
     gr_init_sub_canvas(FULLMAP_CANVAS, &fsmap_actual, AMAP_LFT(grd_bm.w), AMAP_TOP(grd_bm.h), AMAP_WID(grd_bm.w),
                        AMAP_HGT(grd_bm.h));
@@ -380,7 +380,7 @@ void fsmap_draw_map(void) {
 
     // KLC - changed to draw the background logo double size
     //   draw_res_bm(REF_IMG_bmTriLogoBack,(grd_bm.w-w)/2,(grd_bm.h-h)/2);
-    f = (FrameDesc *)RefLock(REF_IMG_bmTriLogoBack);
+    f = FrameLock(REF_IMG_bmTriLogoBack);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
     f->bm.bits = (uchar *)(f + 1);
@@ -506,7 +506,7 @@ uchar pend_check(void) {
 #define KP_LEFT_CODE     0x56
 #define KP_RIGHT_CODE    0x58
 
-uchar amap_scroll_handler(uiEvent *ev, LGRegion *reg, void *v) {
+uchar amap_scroll_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
     int elapsed, now;
     short code;
     curAMap *amptr = oAMap(MFD_FULLSCR_MAP);
@@ -657,6 +657,7 @@ uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
         if ((x <= 0) || (y <= 0))
             return TRUE; // not really in map
         prev_note = amptr->note_obj;
+	// will be NULL if clicked outside map
         if ((deal_data = amap_deal_with_map_click(amptr, &x, &y)) != NULL) {
             if (amptr->note_obj != prev_note) {
                 trail_sp_punt();
@@ -670,7 +671,7 @@ uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
             }
             last_msg_ok = TRUE;
             chg_set_flg(AMAP_MESSAGE_EV | AMAP_MAP_EV);
-            if (deal_data != AMAP_NOTE_HACK_PTR) {
+            if (amptr->note_obj == OBJ_NULL) {
                 trail_sp_punt();
                 if ((amptr->note_obj = object_place(MAPNOTE_TRIPLE, MakePoint(x, y))) != OBJ_NULL)
                     fsmap_new_msg(amptr);

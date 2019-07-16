@@ -42,11 +42,11 @@ static ushort grd_bank = 0; // FIXME: not needed in modern video modes anymore
 static int d4x4_iota;
 static uchar* d4x4_hufftab;
 static uchar* d4x4_colorset;
-static int d4x4_gamma;
+static uint32_t d4x4_gamma;
 static void* d4x4_beta;
 
 static uchar** d4x4_eptr = &bitstream; // FIXME: should be ptr to something
-static int* d4x4_gptr = &d4x4_gamma; // FIXME: should be ptr to something
+static uint32_t* d4x4_gptr = &d4x4_gamma; // FIXME: should be ptr to something
 
 static uchar d4x4_omega[20];  // should be int*
 
@@ -191,16 +191,18 @@ L0026AA24:
 //
 // Draw4x4_InternalAlpha
 //
-
+// xtab passed in eax
+// b passed in edx
 static void Draw4x4_InternalAlpha(int* xtab, int b)
 {
-    int ebx, esi, edi, ecx, ebp;
-    int eax = (int)xtab;
-    int edx = b;
-    
-    char stack[0x08];
-    int esp = (int)stack;
-    
+    uchar *esp_00;   // local copy of kapsi.epsilon
+    int esp_04;      // local copy of kapsi.kappa
+    uint32_t gamma;  // register eax
+    uint32_t gtmp;   // extracted from gamma
+    uchar *huffptr;  // points into hufftable
+    uint32_t hcnt;   // extracted from huff, subtracted from b
+    uint32_t htmp;   // extracted from huff
+    uint32_t huffhi; // bits 20-24 of a huffword
     //pushra();
     //push(ebx);                                        // push    ebx
     //push(ecx);                                        // push    ecx
@@ -208,200 +210,205 @@ static void Draw4x4_InternalAlpha(int* xtab, int b)
     //push(edi);                                        // push    edi
     //push(ebp);                                        // push    ebp
     //esp -= 0x08;                                      // sub     esp, byte 0x08
-    ebx = eax;                                          // mov     ebx, eax
-    eax = (int)d4x4_gptr;                               // mov     eax, dword [_d4x4_gptr]
-    edi = esp;                                          // mov     edi, esp
-    esi = (int)d4x4_eptr;                               // mov     esi, dword [_d4x4_eptr]
-    eax = *((int*)(eax));                               // mov     eax, dword [eax]
-    movsd();                                            // movsd
-    movsd();                                            // movsd
+                                                        // mov     ebx, eax
+                                                        // mov     eax, dword [_d4x4_gptr]
+                                                        // mov     edi, esp
+                                                        // mov     esi, dword [_d4x4_eptr]
+    gamma = *d4x4_gptr;                                 // mov     eax, dword [eax]
+    // Note some jiggery-pokery with the movsd instructions here.
+    // d4x4_eptr actually points to bitstream, i.e. kapsi.epsilon.
+    // So we're just copying the 2 members of the kapsi struct
+    // onto the local stack.
+    esp_00 = kapsi.epsilon;                             // movsd
+    esp_04 = kapsi.kappa;                               // movsd
 L0026AABF:
                                                         // test    edx, edx
-    if (edx <= 0) goto L0026ACE6;                       // jle     near L0026ACE6
+    if (b <= 0) goto L0026ACE6;                       // jle     near L0026ACE6
                                                         // cmp     edx, byte 0x01
-    if (edx <= 0x01) goto L0026AAD5;                    // jle     short L0026AAD5
+    if (b <= 0x01) goto L0026AAD5;                    // jle     short L0026AAD5
                                                         // cmp     dword [esp+0x4], byte 0x18
-    if (*((int*)(esp+0x4)) > 0x18) goto L0026AB1B;      // jg      short L0026AB1B
+    if (esp_04 > 0x18) goto L0026AB1B;      // jg      short L0026AB1B
     goto L0026AB01;                                     // jmp     short L0026AB01
 L0026AAD5:
-    edi = *((int*)(esp+0x4));                           // mov     edi, dword [esp+0x4]
+                                                        // mov     edi, dword [esp+0x4]
                                                         // cmp     edi, byte 0x0C
-    if (edi >= 0x0C) goto L0026AB7A;                    // jge     near L0026AB7A
-    ecx = *((int*)(esp));                               // mov     ecx, dword [esp]
-    ebp = ecx+0x1;                                      // lea     ebp, [ecx+0x1]
-    *((int*)(esp)) = ebp;                               // mov     dword [esp], ebp
-    ecx = *((char*)(ecx));                              // mov     cl, byte [ecx]
-    ecx &= 0x000000FF;                                  // and     ecx, dword 0x000000FF
-    eax <<= 0x08;                                       // shl     eax, 0x08
-    eax |= ecx;                                         // or      eax, ecx
-    ecx = edi+0x8;                                      // lea     ecx, [edi+0x8]
-    *((int*)(esp+0x4)) = ecx;                           // mov     dword [esp+0x4], ecx
+    if (esp_04 >= 0x0C) goto L0026AB7A;                 // jge     near L0026AB7A
+                                                        // mov     ecx, dword [esp]
+                                                        // lea     ebp, [ecx+0x1]
+                                                        // mov     dword [esp], ebp
+                                                        // mov     cl, byte [ecx]
+                                                        // and     ecx, dword 0x000000FF
+                                                        // shl     eax, 0x08
+    gamma = (gamma << 8) | *esp_00++;                   // or      eax, ecx
+                                                        // lea     ecx, [edi+0x8]
+    esp_04 += 8;                                        // mov     dword [esp+0x4], ecx
     goto L0026AAD5;                                     // jmp     short L0026AAD5
 L0026AB01:
-    edi = esp;                                          // mov     edi, esp
-    ecx = *((int*)(edi+0x4));                           // mov     ecx, dword [edi+0x4]
-    esi = *((int*)(edi));                               // mov     esi, dword [edi]
-L0026AB08:
-    eax <<= 0x08;                                       // shl     eax, 0x08
-    eax |= *((uchar*)(esi));                            // mov     al, byte [esi]
-    esi += 1;                                           // inc     esi
-    ecx += 0x08;                                        // add     ecx, byte 0x08
+                                                        // mov     edi, esp
+                                                        // mov     ecx, dword [edi+0x4]
+                                                        // mov     esi, dword [edi]
+    do { // L0026AB08:
+                                                        // shl     eax, 0x08
+                                                        // mov     al, byte [esi]
+        gamma = (gamma << 8) | *esp_00++;               // inc     esi
+        esp_04 += 0x08;                                 // add     ecx, byte 0x08
                                                         // cmp     ecx, byte 0x19
-    if (ecx < 0x19) goto L0026AB08;                     // jl      short L0026AB08
-    *((int*)(edi+0x4)) = ecx;                           // mov     dword [edi+0x4], ecx
-    *((int*)(edi)) = esi;                               // mov     dword [edi], esi
+    } while (esp_04 < 0x19);                            // jl      short L0026AB08
+                                                        // mov     dword [edi+0x4], ecx
+                                                           // mov     dword [edi], esi
 L0026AB1B:
-    ecx = *((int*)(esp+0x4));                           // mov     ecx, dword [esp+0x4]
-    edi = eax;                                          // mov     edi, eax
-    ecx -= 0x0C;                                        // sub     ecx, byte 0x0C
-    edi = (uint)edi >> ecx;                             // shr     edi, cl
-    edi &= 0x00000FFF;                                  // and     edi, dword 0x00000FFF
-    ecx = edi*4;                                        // lea     ecx, [edi*4]
-    esi = (int)d4x4_hufftab;                            // mov     esi, dword [_d4x4_hufftab]
-    ecx -= edi;                                         // sub     ecx, edi
-    ecx += esi;                                         // add     ecx, esi
-    esi = *((int*)(ecx));                               // mov     esi, dword [ecx]
-    edi = esi;                                          // mov     edi, esi
-    edi = (uint)edi >> 0x14;                            // shr     edi, 0x14
-    edi &= 0x0F;                                        // and     edi, byte 0x0F
+                                                        // mov     ecx, dword [esp+0x4]
+                                                        // mov     edi, eax
+                                                        // sub     ecx, byte 0x0C
+                                                        // shr     edi, cl
+    gtmp = (gamma >> (esp_04-12)) & 0x00000FFF;         // and     edi, dword 0x00000FFF
+                                                        // lea     ecx, [edi*4]
+                                                        // mov     esi, dword [_d4x4_hufftab]
+                                                        // sub     ecx, edi
+    huffptr = &d4x4_hufftab[gtmp*3];                    // add     ecx, esi
+    htmp = *((uint32_t*)huffptr);                       // mov     esi, dword [ecx]
+                                                        // mov     edi, esi
+                                                        // shr     edi, 0x14
+    huffhi = (htmp >> 20) & 0x0F;                       // and     edi, byte 0x0F
                                                         // test    edi, edi
-    if (edi == 0) goto L0026AC00;                       // jz      near L0026AC00
-    ebp = *((int*)(esp+0x4));                           // mov     ebp, dword [esp+0x4]
-    ebp -= edi;                                         // sub     ebp, edi
-    edi = esi;                                          // mov     edi, esi
-    ebx += 0x04;                                        // add     ebx, byte 0x04
-    edi &= 0x00FFFFFF;                                  // and     edi, dword 0x00FFFFFF
-    edx -= 1;                                           // dec     edx
-    ecx = edi;                                          // mov     ecx, edi
-    *((int*)(esp+0x4)) = ebp;                           // mov     dword [esp+0x4], ebp
-    ecx &= 0x000E0000;                                  // and     ecx, dword 0x000E0000
-    *((int*)(ebx-0x4)) = edi;                           // mov     dword [ebx-0x4], edi
+    if (huffhi == 0) goto L0026AC00;                    // jz      near L0026AC00
+                                                        // mov     ebp, dword [esp+0x4]
+    esp_04 -= huffhi;                                   // sub     ebp, edi
+                                                        // mov     edi, esi
+    xtab++;                                             // add     ebx, byte 0x04
+    htmp &= 0x00FFFFFF;                                 // and     edi, dword 0x00FFFFFF
+    b -= 1;                                             // dec     edx
+                                                        // mov     ecx, edi
+                                                        // mov     dword [esp+0x4], ebp
+                                                        // and     ecx, dword 0x000E0000
+    xtab[-1] = htmp;                                    // mov     dword [ebx-0x4], edi
                                                         // cmp     ecx, dword 0x000A0000
-    if ((uint)(ecx) >= (uint)(0x000A0000)) goto L0026ABEA;// jnc     near L0026ABEA
+    if ((htmp & 0x000e0000) >= 0x000a0000) goto L0026ABEA; // jnc     near L0026ABEA
 L0026AB7A:
-    ecx = *((int*)(esp+0x4));                           // mov     ecx, dword [esp+0x4]
-    esi = eax;                                          // mov     esi, eax
-    ecx -= 0x0C;                                        // sub     ecx, byte 0x0C
-    esi = (uint)esi >> ecx;                             // shr     esi, cl
-    ecx = esi;                                          // mov     ecx, esi
-    ecx &= 0x00000FFF;                                  // and     ecx, dword 0x00000FFF
-    edi = ecx*4;                                        // lea     edi, [ecx*4]
-    edi -= ecx;                                         // sub     edi, ecx
-    ecx = (int)d4x4_hufftab;                            // mov     ecx, dword [_d4x4_hufftab]
-    ecx += edi;                                         // add     ecx, edi
-    edi = *((int*)(ecx));                               // mov     edi, dword [ecx]
-    esi = edi;                                          // mov     esi, edi
-    esi = (uint)esi >> 0x14;                            // shr     esi, 0x14
-    esi &= 0x0F;                                        // and     esi, byte 0x0F
+                                                        // mov     ecx, dword [esp+0x4]
+                                                        // mov     esi, eax
+                                                        // sub     ecx, byte 0x0C
+                                                        // shr     esi, cl
+                                                        // mov     ecx, esi
+    gtmp = (gamma >> (esp_04 - 12)) & 0x00000fff;       // and     ecx, dword 0x00000FFF
+                                                        // lea     edi, [ecx*4]
+                                                        // sub     edi, ecx
+                                                        // mov     ecx, dword [_d4x4_hufftab]
+    huffptr = &d4x4_hufftab[gtmp*3];                    // add     ecx, edi
+    htmp = *((uint32_t*)huffptr);                       // mov     edi, dword [ecx]
+                                                        // mov     esi, edi
+                                                        // shr     esi, 0x14
+    huffhi = (htmp >> 20) & 0x0f;                       // and     esi, byte 0x0F
                                                         // test    esi, esi
-    if (esi == 0) goto L0026AC00;                       // jz      short L0026AC00
-    ecx = *((int*)(esp+0x4));                           // mov     ecx, dword [esp+0x4]
-    edi &= 0x00FFFFFF;                                  // and     edi, dword 0x00FFFFFF
-    ecx -= esi;                                         // sub     ecx, esi
-    ebx += 0x04;                                        // add     ebx, byte 0x04
-    *((int*)(esp+0x4)) = ecx;                           // mov     dword [esp+0x4], ecx
-    ecx = edi;                                          // mov     ecx, edi
-    edx -= 1;                                           // dec     edx
-    ecx &= 0x000E0000;                                  // and     ecx, dword 0x000E0000
-    *((int*)(ebx-0x4)) = edi;                           // mov     dword [ebx-0x4], edi
+    if (huffhi == 0) goto L0026AC00;                    // jz      short L0026AC00
+                                                        // mov     ecx, dword [esp+0x4]
+    htmp &= 0x00FFFFFF;                                 // and     edi, dword 0x00FFFFFF
+                                                        // sub     ecx, esi
+    xtab++;                                             // add     ebx, byte 0x04
+    esp_04 -= huffhi;                                   // mov     dword [esp+0x4], ecx
+                                                        // mov     ecx, edi
+    b--;                                                // dec     edx
+                                                        // and     ecx, dword 0x000E0000
+    xtab[-1] = htmp;                                    // mov     dword [ebx-0x4], edi
                                                         // cmp     ecx, dword 0x000A0000
-    if ((uint)(ecx) >= (uint)(0x000A0000)) goto L0026ABEA;// jnc     short L0026ABEA
+    if ((htmp & 0x000e0000) >= 0x000a0000) goto L0026ABEA;// jnc     short L0026ABEA
                                                         // test    edx, edx
-    if (edx == 0) goto L0026ABEA;                       // jz      short L0026ABEA
+    if (b == 0) goto L0026ABEA;                         // jz      short L0026ABEA
                                                         // cmp     dword [esp+0x4], byte 0x0C
-    if (*((int*)(esp+0x4)) >= 0x0C) goto L0026AB7A;     // jge     short L0026AB7A
+    if (esp_04 >= 0x0C) goto L0026AB7A;                 // jge     short L0026AB7A
                                                         // cmp     edx, byte 0x01
-    if (edx > 0x01) goto L0026AB01;                     // jg      near L0026AB01
+    if (b > 0x01) goto L0026AB01;                       // jg      near L0026AB01
     goto L0026AAD5;                                     // jmp     near L0026AAD5
 L0026ABEA:
-    ecx = edi;                                          // mov     ecx, edi
-    ecx &= 0x000E0000;                                  // and     ecx, dword 0x000E0000
+                                                        // mov     ecx, edi
+                                                        // and     ecx, dword 0x000E0000
                                                         // cmp     ecx, dword 0x000A0000
-    if ((uint)(ecx) < (uint)(0x000A0000)) goto L0026ACE6;// jc      near L0026ACE6
+    if ((htmp & 0x000e0000) < 0x000a0000) goto L0026ACE6;// jc      near L0026ACE6
     goto L0026AC6A;                                     // jmp     short L0026AC6A
 L0026AC00:
-    esi = (int)d4x4_gptr;                               // mov     esi, dword [_d4x4_gptr]
-    edi = (int)d4x4_eptr;                               // mov     edi, dword [_d4x4_eptr]
-    *((int*)(esi)) = eax;                               // mov     dword [esi], eax
-    esi = esp;                                          // mov     esi, esp
-    eax = ecx;                                          // mov     eax, ecx
-    movsd();                                            // movsd
-    movsd();                                            // movsd
-    eax = (int)Draw4x4_InternalGamma((uchar*)eax);      // call    near Draw4x4_InternalGamma_
-    ecx = eax;                                          // mov     ecx, eax
-    eax = (int)d4x4_gptr;                               // mov     eax, dword [_d4x4_gptr]
-    edi = esp;                                          // mov     edi, esp
-    esi = (int)d4x4_eptr;                               // mov     esi, dword [_d4x4_eptr]
-    eax = *((int*)(eax));                               // mov     eax, dword [eax]
-    movsd();                                            // movsd
-    movsd();                                            // movsd
-    esi = *((int*)(ecx));                               // mov     esi, dword [ecx]
-    esi = (uint)esi >> 0x14;                            // shr     esi, 0x14
-    edi = *((int*)(esp+0x4));                           // mov     edi, dword [esp+0x4]
-    esi &= 0x0F;                                        // and     esi, byte 0x0F
-    edi -= esi;                                         // sub     edi, esi
-    *((int*)(esp+0x4)) = edi;                           // mov     dword [esp+0x4], edi
-    edi = *((int*)(ecx));                               // mov     edi, dword [ecx]
-    edi &= 0x00FFFFFF;                                  // and     edi, dword 0x00FFFFFF
-    ebx += 0x04;                                        // add     ebx, byte 0x04
-    ecx = edi;                                          // mov     ecx, edi
-    edx -= 1;                                           // dec     edx
-    ecx &= 0x000E0000;                                  // and     ecx, dword 0x000E0000
-    *((int*)(ebx-0x4)) = edi;                           // mov     dword [ebx-0x4], edi
+                                                        // mov     esi, dword [_d4x4_gptr]
+                                                        // mov     edi, dword [_d4x4_eptr]
+    *d4x4_gptr = gamma;                                 // mov     dword [esi], eax
+                                                        // mov     esi, esp
+                                                        // mov     eax, ecx
+    kapsi.epsilon = esp_00;                             // movsd
+    kapsi.kappa = esp_04;                               // movsd
+                                                        // call    near Draw4x4_InternalGamma_
+    huffptr = Draw4x4_InternalGamma(huffptr);           // mov     ecx, eax
+                                                        // mov     eax, dword [_d4x4_gptr]
+                                                        // mov     edi, esp
+                                                        // mov     esi, dword [_d4x4_eptr]
+    gamma = *d4x4_gptr;                                 // mov     eax, dword [eax]
+    esp_00 = kapsi.epsilon;                             // movsd
+    esp_04 = kapsi.kappa;                               // movsd
+                                                        // mov     esi, dword [ecx]
+                                                        // shr     esi, 0x14
+                                                        // mov     edi, dword [esp+0x4]
+    huffhi = (*((uint32_t*)huffptr) >> 20) & 0x0f;      // and     esi, byte 0x0F
+                                                        // sub     edi, esi
+    esp_04 -= huffhi;                                   // mov     dword [esp+0x4], edi
+                                                        // mov     edi, dword [ecx]
+    htmp = *((uint32_t*)huffptr) & 0x00FFFFFF;          // and     edi, dword 0x00FFFFFF
+    xtab++;                                             // add     ebx, byte 0x04
+                                                        // mov     ecx, edi
+    b--;                                                // dec     edx
+                                                        // and     ecx, dword 0x000E0000
+    xtab[-1] = htmp;                                    // mov     dword [ebx-0x4], edi
                                                         // cmp     ecx, dword 0x000A0000
-    if ((uint)(ecx) >= (uint)(0x000A0000)) goto L0026AC6A;// jnc     short L0026AC6A
+    if ((htmp & 0x000e0000) >= 0x000a0000) goto L0026AC6A;// jnc     short L0026AC6A
                                                         // test    edx, edx
-    if (edx == 0) goto L0026ACE6;                       // jz      near L0026ACE6
+    if (b == 0) goto L0026ACE6;                         // jz      near L0026ACE6
     goto L0026AABF;                                     // jmp     near L0026AABF
 L0026AC6A:
-    edi &= 0x000E0000;                                  // and     edi, dword 0x000E0000
-    ebx -= 0x04;                                        // sub     ebx, byte 0x04
+    htmp &= 0x000E0000;                                 // and     edi, dword 0x000E0000
+    xtab--;                                             // sub     ebx, byte 0x04
                                                         // cmp     edi, dword 0x000A0000
-    if (edi != 0x000A0000) goto L0026ACD8;              // jnz     short L0026ACD8
-    ebp = *((int*)(esp+0x4));                           // mov     ebp, dword [esp+0x4]
+    if (htmp == 0x000a0000) {                           // jnz     short L0026ACD8
+                                                        // mov     ebp, dword [esp+0x4]
                                                         // cmp     ebp, byte 0x05
-    if (ebp >= 0x05) goto L0026ACA1;                    // jge     short L0026ACA1
-    ecx = *((int*)(esp));                               // mov     ecx, dword [esp]
-    esi = ecx+0x1;                                      // lea     esi, [ecx+0x1]
-    *((int*)(esp)) = esi;                               // mov     dword [esp], esi
-    ecx = *((char*)(ecx));                              // mov     cl, byte [ecx]
-    ecx &= 0x000000FF;                                  // and     ecx, dword 0x000000FF
-    edi = ebp+0x8;                                      // lea     edi, [ebp+0x8]
-    eax <<= 0x08;                                       // shl     eax, 0x08
-    *((int*)(esp+0x4)) = edi;                           // mov     dword [esp+0x4], edi
-    eax |= ecx;                                         // or      eax, ecx
-L0026ACA1:
-    ecx = *((int*)(esp+0x4));                           // mov     ecx, dword [esp+0x4]
-    esi = eax;                                          // mov     esi, eax
-    ecx -= 0x05;                                        // sub     ecx, byte 0x05
-    esi = (uint)esi >>  ecx;                            // shr     esi, cl
-    ebp = *((int*)(esp+0x4));                           // mov     ebp, dword [esp+0x4]
-    ecx = esi;                                          // mov     ecx, esi
-    ebp -= 0x05;                                        // sub     ebp, byte 0x05
-    ecx &= 0x1F;                                        // and     ecx, byte 0x1F
-    *((int*)(esp+0x4)) = ebp;                           // mov     dword [esp+0x4], ebp
+        if (esp_04 < 5) {                               // jge     short L0026ACA1
+                                                        // mov     ecx, dword [esp]
+                                                        // lea     esi, [ecx+0x1]
+                                                        // mov     dword [esp], esi
+                                                        // mov     cl, byte [ecx]
+                                                        // and     ecx, dword 0x000000FF
+                                                        // lea     edi, [ebp+0x8]
+                                                        // shl     eax, 0x08
+            esp_04 += 8;                                // mov     dword [esp+0x4], edi
+            gamma = (gamma < 8) | *esp_00++;            // or      eax, ecx
+        } // L0026ACA1:
+                                                        // mov     ecx, dword [esp+0x4]
+                                                        // mov     esi, eax
+                                                        // sub     ecx, byte 0x05
+                                                        // shr     esi, cl
+                                                        // mov     ebp, dword [esp+0x4]
+                                                        // mov     ecx, esi
+                                                        // sub     ebp, byte 0x05
+        hcnt = (gamma >> (esp_04-5)) & 0x1f;            // and     ecx, byte 0x1F
+        esp_04 -= 5;                                    // mov     dword [esp+0x4], ebp
                                                         // cmp     ecx, byte 0x1F
-    if (ecx != 0x1F) goto L0026ACC3;                    // jnz     short L0026ACC3
-    ecx = edx;                                          // mov     ecx, edx
-L0026ACC3:
-    esi = ecx;                                          // mov     esi, ecx
-    ebx += 0x04;                                        // add     ebx, byte 0x04
-    esi |= 0x000A0000;                                  // or      esi, dword 0x000A0000
-    edx -= ecx;                                         // sub     edx, ecx
-    *((int*)(ebx-0x4)) = esi;                           // mov     dword [ebx-0x4], esi
-    goto L0026AABF;                                     // jmp     near L0026AABF
-L0026ACD8:
-    ebx += 0x04;                                        // add     ebx, byte 0x04
-    ecx = *((int*)(ebx-0x8));                           // mov     ecx, dword [ebx-0x8]
-    *((int*)(ebx-0x4)) = ecx;                           // mov     dword [ebx-0x4], ecx
+        if (hcnt == 0x1f) {                             // jnz     short L0026ACC3
+            hcnt = b;                                   // mov     ecx, edx
+        } // L0026ACC3:
+                                                        // mov     esi, ecx
+        xtab++;                                         // add     ebx, byte 0x04
+                                                        // or      esi, dword 0x000A0000
+        b -= hcnt;                                      // sub     edx, ecx
+        xtab[-1] = hcnt | 0x000a0000;                   // mov     dword [ebx-0x4], esi
+    }                                                   // jmp     near L0026AABF
+    else { // L0026ACD8:
+        xtab++;                                         // add     ebx, byte 0x04
+                                                        // mov     ecx, dword [ebx-0x8]
+        xtab[-1] = xtab[-2];                            // mov     dword [ebx-0x4], ecx
+    }
     goto L0026AABF;                                     // jmp     near L0026AABF
 L0026ACE6:
-    edx = (int)d4x4_gptr;                               // mov     edx, dword [_d4x4_gptr]
-    esi = esp;                                          // mov     esi, esp
-    edi = (int)d4x4_eptr;                               // mov     edi, dword [_d4x4_eptr]
-    *((int*)(edx)) = eax;                               // mov     dword [edx], eax
-    movsd();                                            // movsd
-    movsd();                                            // movsd
+                                                        // mov     edx, dword [_d4x4_gptr]
+                                                        // mov     esi, esp
+                                                        // mov     edi, dword [_d4x4_eptr]
+    *d4x4_gptr = gamma;                                 // mov     dword [edx], eax
+    kapsi.epsilon = esp_00;                             // movsd
+    kapsi.kappa = esp_04;                               // movsd
     //esp += 0x08;                                      // add     esp, byte 0x08
     //ebp = pop();                                      // pop     ebp
     //edi = pop();                                      // pop     edi
@@ -415,535 +422,548 @@ L0026ACE6:
 //
 // Draw4x4_InternalBeta
 //
-
+// Original machine code function took:
+//  xtab in eax,
+//  b in edx,
+//  bits in ebx,
+//  d in ecx,
+//  mask_stream on stack
 static uchar* Draw4x4_InternalBeta(int* xtab, int b, uchar* bits, int d, uchar* mask_stream)
 {
     char cl0, dl0, bl0;
     char al0, ah0;
-    
-    int esi, edi, ebp;
-    int eax = (int)xtab;
-    int edx = b;
-    int ebx = (int)bits;
-    int ecx = d;
-    char stack[0x38];
-    int esp = (int)stack;
-    
+
+    uchar *esp_00;
+    uint32_t esp_04;
+    uchar *esp_14;
+    int esp_20;
+    uchar *esp_24; // points into d4x4_colorset
+    uchar *cbits;    // points into d4x4_colorset
+    int esp_28; // loop variable
+    uchar *esp_2c;
+    uint32_t mask32; // temp uint32 pulled from mask_stream
+    uint32_t m32a;   // additional mask data
+    uchar *tbits;    // temp copy of bits
+    uint32_t tab32;  // uint32 derived from xtab
+    uint16_t tab16;  // uint16 derived from xtab
+    uchar *xbits;    // byte array derived from xtab
+    int i;           // generic loop index
     //pushra();
     //push(esi);                                        // push    esi
     //push(edi);                                        // push    edi
     //push(ebp);                                        // push    ebp
     //esp -= 0x38;                                      // sub     esp, byte 0x38
-    //ebp = *((int*)(esp+0x48));                        // mov     ebp, dword [esp+0x48]
-    ebp = (int)mask_stream;
-    *((int*)(esp+0x18)) = eax;                          // mov     dword [esp+0x18], eax
-    *((int*)(esp+0x1C)) = ebx;                          // mov     dword [esp+0x1C], ebx
-    *((int*)(esp+0x30)) = ecx;                          // mov     dword [esp+0x30], ecx
-    eax = ecx-0x4;                                      // lea     eax, [ecx-0x4]
-    edx <<= 0x02;                                       // shl     edx, 0x02
-    *((int*)(esp+0x20)) = eax;                          // mov     dword [esp+0x20], eax
-    eax = ebx+edx;                                      // lea     eax, [ebx+edx]
-    *((int*)(esp+0x10)) = eax;                          // mov     dword [esp+0x10], eax
+    uchar *ebp = mask_stream;                           // mov     ebp, dword [esp+0x48]
+    // esp+0x18 = spill space for xtab                  // mov     dword [esp+0x18], eax
+    // esp+0x1c = spill space for bits                  // mov     dword [esp+0x1C], ebx
+    // esp+0x30 = spill space for d                     // mov     dword [esp+0x30], ecx
+                                                        // lea     eax, [ecx-0x4]
+                                                        // shl     edx, 0x02
+    esp_20 = d - 4;                                     // mov     dword [esp+0x20], eax
+                                                        // lea     eax, [ebx+edx]
+    uchar *esp_10 = bits + 4*b;                         // mov     dword [esp+0x10], eax
                                                         // cmp     ebx, eax
-    if ((uint)(ebx) >= (uint)(eax)) goto L0026B221;     // jnc     near L0026B221
-    eax = ecx*4;                                        // lea     eax, [ecx*4]
-    eax -= ecx;                                         // sub     eax, ecx
-    *((int*)(esp+0xC)) = eax;                           // mov     dword [esp+0xC], eax
-    eax = ecx+ecx;                                      // lea     eax, [ecx+ecx]
-    *((int*)(esp+0x8)) = eax;                           // mov     dword [esp+0x8], eax
-outer_loop:
-    eax = *((int*)(esp+0x18));                          // mov     eax, dword [esp+0x18]
-    eax = *((int*)(eax));                               // mov     eax, dword [eax]
-    eax &= 0x0001FFFF;                                  // and     eax, dword 0x0001FFFF
-    *((int*)(esp+0x4)) = eax;                           // mov     dword [esp+0x4], eax
-    eax = *((int*)(esp+0x18));                          // mov     eax, dword [esp+0x18]
-    eax = *((int*)(eax));                               // mov     eax, dword [eax]
-    asm_shr(eax, 0x11);                                 // shr     eax, 0x11
-    eax &= 0x07;                                        // and     eax, byte 0x07
+                                                        // jnc     near L0026B221
+                                                        // lea     eax, [ecx*4]
+                                                        // sub     eax, ecx
+    int esp_0c = d * 3;                                 // mov     dword [esp+0xC], eax
+                                                        // lea     eax, [ecx+ecx]
+    int esp_08 = d * 2;                                 // mov     dword [esp+0x8], eax
+    while (bits < esp_10) { //    outer_loop:
+                                                        // mov     eax, dword [esp+0x18]
+                                                        // mov     eax, dword [eax]
+                                                        // and     eax, dword 0x0001FFFF
+        esp_04 = *xtab & 0x0001ffff;                    // mov     dword [esp+0x4], eax
+                                                        // mov     eax, dword [esp+0x18]
+                                                        // mov     eax, dword [eax]
+                                                        // shr     eax, 0x11
+                                                        // and     eax, byte 0x07
                                                         // cmp     eax, byte 0x05
-    if ((uint)(eax) > (uchar)(0x05)) goto L0026B1FF;    // ja      near L0026B1FF
-    edx = *((int*)(esp+0x1C));                          // mov     edx, dword [esp+0x1C]
-    edi = *((int*)(esp+0x8));                           // mov     edi, dword [esp+0x8]
-    edx += edi;                                         // add     edx, edi
-    *((int*)(esp+0x14)) = edx;                          // mov     dword [esp+0x14], edx
-    edx = ebp+0x4;                                      // lea     edx, [ebp+0x4]
-    *((int*)(esp)) = edx;                               // mov     dword [esp], edx
+                                                        // ja      near L0026B1FF
+                                                        // mov     edx, dword [esp+0x1C]
+                                                        // mov     edi, dword [esp+0x8]
+                                                        // add     edx, edi
+        esp_14 = bits + esp_08;                         // mov     dword [esp+0x14], edx
+                                                        // lea     edx, [ebp+0x4]
+        esp_00 = ebp + 4;                               // mov     dword [esp], edx
     
-    if (eax == 0)     goto L0026AD9F;
-    if (eax == 1)     goto L0026ADD1;
-    if (eax == 2)     goto L0026AE92;
-    if (eax == 3)     goto L0026AFC3;
-    if (eax == 4)     goto L0026B0BE;
-    /*if (eax == 5)*/ goto L0026B1EE;
-                                                        // jmp     dword [cs:eax*4+L0026AD04]
-L0026AD9F:
-    eax = *((int*)(esp+0x4));                           // mov     eax, dword [esp+0x4]
-    esi = *((int*)(esp+0x4));                           // mov     esi, dword [esp+0x4]
-    eax <<= 0x10;                                       // shl     eax, 0x10
-    edx = *((int*)(esp+0x1C));                          // mov     edx, dword [esp+0x1C]
-    eax |= esi;                                         // or      eax, esi
-    edi = *((int*)(esp+0x30));                          // mov     edi, dword [esp+0x30]
-    *((int*)(edx)) = eax;                               // mov     dword [edx], eax
-    edx += edi;                                         // add     edx, edi
-    *((int*)(edx)) = eax;                               // mov     dword [edx], eax
-    edx = *((int*)(esp+0x14));                          // mov     edx, dword [esp+0x14]
-    ebx = *((int*)(esp+0xC));                           // mov     ebx, dword [esp+0xC]
-    *((int*)(edx)) = eax;                               // mov     dword [edx], eax
-    edx = *((int*)(esp+0x1C));                          // mov     edx, dword [esp+0x1C]
-    edx += ebx;                                         // add     edx, ebx
-    *((int*)(edx)) = eax;                               // mov     dword [edx], eax
-    goto L0026B1FF;                                     // jmp     near L0026B1FF
-L0026ADD1:
-    eax = *((int*)(esp+0x1C));                          // mov     eax, dword [esp+0x1C]
-    esi = esp+0x4;                                      // lea     esi, [esp+0x4]
-    ebp += 0x02;                                        // add     ebp, byte 0x02
-    edx = 0;                                            // xor     edx, edx
-    //ch = *((char*)(esp+0x4));                         // mov     ch, byte [esp+0x4]
-    edx = *((ushort*)(ebp-0x2));                        // mov     dx, word [ebp-0x2]
+        switch ((((unsigned int)*xtab) >> 0x11) & 0x07) // jmp     dword [cs:eax*4+L0026AD04]
+        {
+        case 0: //   L0026AD9F:
+	                                                // mov     eax, dword [esp+0x4]
+                                                        // mov     esi, dword [esp+0x4]
+                                                        // shl     eax, 0x10
+                                                        // mov     edx, dword [esp+0x1C]
+            tab32 = (esp_04 << 0x10) | esp_04;          // or      eax, esi
+                                                        // mov     edi, dword [esp+0x30]
+            *((uint32_t*) bits) = tab32;                // mov     dword [edx], eax
+                                                        // add     edx, edi
+            *((uint32_t*)(bits+d)) = tab32;             // mov     dword [edx], eax
+                                                        // mov     edx, dword [esp+0x14]
+                                                        // mov     ebx, dword [esp+0xC]
+            *((uint32_t*)esp_14) = tab32;               // mov     dword [edx], eax
+                                                        // mov     edx, dword [esp+0x1C]
+                                                        // add     edx, ebx
+            *((uint32_t*)(bits + esp_0c)) = tab32;      // mov     dword [edx], eax
+            break;                                      // jmp     near L0026B1FF
+        case 1: //    L0026ADD1:
+            tbits = bits;                               // mov     eax, dword [esp+0x1C]
+            xbits = (uchar*)&esp_04;                    // lea     esi, [esp+0x4]
+            ebp += 0x02;                                // add     ebp, byte 0x02
+                                                        // xor     edx, edx
+                                                        // mov     ch, byte [esp+0x4]
+            mask32 = *((ushort*)(ebp-0x2));             // mov     dx, word [ebp-0x2]
                                                         // test    ch, ch
-    if (*((char*)(esp+0x4)) == 0) goto L0026AE34;       // jz      short L0026AE34
-    ebx = *((int*)(esp+0x30));                          // mov     ebx, dword [esp+0x30]
-    edi = 0;                                            // xor     edi, edi
-L0026ADF0:
-    ecx = edx;                                          // mov     ecx, edx
-    ecx &= 0x01;                                        // and     ecx, byte 0x01
-    cl0 = *((char*)(ecx+esi));                          // mov     cl, byte [ecx+esi]
-    *((char*)(eax)) = cl0;                              // mov     byte [eax], cl
-    ecx = edx;                                          // mov     ecx, edx
-    asm_shr(ecx, 0x00000001);                           // shr     ecx, 0x00000001
-    ecx &= 0x01;                                        // and     ecx, byte 0x01
-    cl0 = *((char*)(ecx+esi));                          // mov     cl, byte [ecx+esi]
-    *((char*)(eax+0x1)) = cl0;                          // mov     byte [eax+0x1], cl
-    ecx = edx;                                          // mov     ecx, edx
-    asm_shr(ecx, 0x02);                                 // shr     ecx, 0x02
-    ecx &= 0x01;                                        // and     ecx, byte 0x01
-    cl0 = *((char*)(ecx+esi));                          // mov     cl, byte [ecx+esi]
-    *((char*)(eax+0x2)) = cl0;                          // mov     byte [eax+0x2], cl
-    ecx = edx;                                          // mov     ecx, edx
-    asm_shr(ecx, 0x03);                                 // shr     ecx, 0x03
-    ecx &= 0x01;                                        // and     ecx, byte 0x01
-    edi += 1;                                           // inc     edi
-    cl0 = *((char*)(ecx+esi));                          // mov     cl, byte [ecx+esi]
-    asm_shr(edx, 0x04);                                 // shr     edx, 0x04
-    *((char*)(eax+0x3)) = cl0;                          // mov     byte [eax+0x3], cl
-    eax += ebx;                                         // add     eax, ebx
+            if (esp_04 & 0xff != 0) {                   // jz      short L0026AE34
+                                                        // mov     ebx, dword [esp+0x30]
+                for (i = 0; i < 4; ++i) {               // xor     edi, edi
+//L0026ADF0:
+                                                        // mov     ecx, edx
+                                                        // and     ecx, byte 0x01
+		                                        // mov     cl, byte [ecx+esi]
+                    *tbits = xbits[mask32&1];           // mov     byte [eax], cl
+                                                        // mov     ecx, edx
+                                                        // shr     ecx, 0x00000001
+                                                        // and     ecx, byte 0x01
+                                                        // mov     cl, byte [ecx+esi]
+                    tbits[1] = xbits[(mask32>>1) & 1];  // mov     byte [eax+0x1], cl
+                                                        // mov     ecx, edx
+                                                        // shr     ecx, 0x02
+                                                        // and     ecx, byte 0x01
+                                                        // mov     cl, byte [ecx+esi]
+                    tbits[2] = xbits[(mask32>>2) & 1];  // mov     byte [eax+0x2], cl
+                                                        // mov     ecx, edx
+                                                        // shr     ecx, 0x03
+                                                        // and     ecx, byte 0x01
+                                                        // inc     edi
+                                                        // mov     cl, byte [ecx+esi]
+                                                        // shr     edx, 0x04
+                    tbits[3] = xbits[(mask32>>3) & 1];  // mov     byte [eax+0x3], cl
+                    mask32 >>= 4;
+                    tbits += d;                         // add     eax, ebx
                                                         // cmp     edi, byte 0x04
-    if (edi >= 0x04) goto L0026B1FF;                    // jge     near L0026B1FF
-    goto L0026ADF0;                                     // jmp     short L0026ADF0
-L0026AE34:
-    ecx = 0;                                            // xor     ecx, ecx
-    ecx = *((uchar*)(esp+0x5));                         // mov     cl, byte [esp+0x5]
-    ebx = ecx;                                          // mov     ebx, ecx
-    edi = 0x00000004;                                   // mov     edi, dword 0x00000004
-    ebx <<= 0x08;                                       // shl     ebx, 0x08
-    esi = *((int*)(esp+0x30));                          // mov     esi, dword [esp+0x30]
-    ecx |= ebx;                                         // or      ecx, ebx
-L0026AE4A:
-                                                        // test    dl, byte 0x03
-    if ((edx & 0x03) == 0) goto L0026AE65;              // jz      short L0026AE65
+                }                                       // jge     near L0026B1FF
+            }                                           // jmp     short L0026ADF0
+            else { //    L0026AE34:
+                                                        // xor     ecx, ecx
+                tab16 = (esp_04 >> 8) & 0xff;           // mov     cl, byte [esp+0x5]
+                                                        // mov     ebx, ecx
+                                                        // mov     edi, dword 0x00000004
+                                                        // shl     ebx, 0x08
+                                                        // mov     esi, dword [esp+0x30]
+                tab16 |= tab16 << 8;                    // or      ecx, ebx
+                for (i = 4; i > 0; --i) { // L0026AE4A:
+		                                        // test    dl, byte 0x03
+                    if (mask32 & 0x03) {                // jz      short L0026AE65
                                                         // test    dl, byte 0x01
-    if ((edx & 0x01) == 0) goto L0026AE62;              // jz      short L0026AE62
+                        if (mask32 & 0x01) {            // jz      short L0026AE62
                                                         // test    dl, byte 0x02
-    if ((edx & 0x02) == 0) goto L0026AE5E;              // jz      short L0026AE5E
-    *((ushort*)(eax)) = (ushort)ecx;                    // mov     word [eax], cx
-    goto L0026AE65;                                     // jmp     short L0026AE65
-L0026AE5E:
-    *((uchar*)(eax)) = (uchar)ecx;                      // mov     byte [eax], cl
-    goto L0026AE65;                                     // jmp     short L0026AE65
-L0026AE62:
-    *((uchar*)(eax+0x1)) = (uchar)ecx;                  // mov     byte [eax+0x1], cl
-L0026AE65:
+	                    if (mask32 & 0x02) {        // jz      short L0026AE5E
+                                *((ushort*)tbits) = tab16; // mov     word [eax], cx
+                            }                           // jmp     short L0026AE65
+                            else { //    L0026AE5E:
+                                *tbits = tab16 & 0xff;  // mov     byte [eax], cl
+                            }
+                        }                               // jmp     short L0026AE65
+                        else { //    L0026AE62:
+                            tbits[1] = tab16 & 0xff;    // mov     byte [eax+0x1], cl
+                        }
+                    } //    L0026AE65:
                                                         // test    dl, byte 0x0C
-    if ((edx & 0x0C) == 0) goto L0026AE82;              // jz      short L0026AE82
+                    if (mask32 & 0x0C) {                // jz      short L0026AE82
                                                         // test    dl, byte 0x04
-    if ((edx & 0x04) == 0) goto L0026AE7F;              // jz      short L0026AE7F
+                        if (mask32 & 0x04) {            // jz      short L0026AE7F
                                                         // test    dl, byte 0x08
-    if ((edx & 0x08) == 0) goto L0026AE7A;              // jz      short L0026AE7A
-    *((ushort*)(eax+0x2)) = (ushort)ecx;                // mov     word [eax+0x2], cx
-    goto L0026AE82;                                     // jmp     short L0026AE82
-L0026AE7A:
-    *((uchar*)(eax+0x2)) = (uchar)ecx;                  // mov     byte [eax+0x2], cl
-    goto L0026AE82;                                     // jmp     short L0026AE82
-L0026AE7F:
-    *((uchar*)(eax+0x3)) = (uchar)ecx;                  // mov     byte [eax+0x3], cl
-L0026AE82:
-    asm_shr(edx, 0x04);                                 // shr     edx, 0x04
-    edi -= 1;                                           // dec     edi
-    eax += esi;                                         // add     eax, esi
+                            if (mask32 & 0x08) {        // jz      short L0026AE7A
+                                *((ushort*)(tbits+0x2)) = tab16; // mov     word [eax+0x2], cx
+                            }                           // jmp     short L0026AE82
+			    else { //    L0026AE7A:
+                                tbits[2] = tab16 & 0xff; // mov     byte [eax+0x2], cl
+                            }
+                        }                               // jmp     short L0026AE82
+                        else { //    L0026AE7F:
+                            tbits[3] = tab16 & 0xff;    // mov     byte [eax+0x3], cl
+                        }
+                    } //    L0026AE82:
+                    mask32 >>= 4;                       // shr     edx, 0x04
+                                                        // dec     edi
+                    tbits += d;                         // add     eax, esi
                                                         // test    edi, edi
-    if (edi <= 0) goto L0026B1FF;                       // jle     near L0026B1FF
-    goto L0026AE4A;                                     // jmp     short L0026AE4A
-L0026AE92:
-    eax = *((int*)(ebp));                               // mov     eax, dword [ebp]
-    *((int*)(esp+0x34)) = eax;                          // mov     dword [esp+0x34], eax
-    ebp = edx;                                          // mov     ebp, edx
-    edx = *((int*)(esp+0x4));                           // mov     edx, dword [esp+0x4]
-    eax = (int)d4x4_colorset;                           // mov     eax, dword [_d4x4_colorset]
-    edx += eax;                                         // add     edx, eax
-    edi = *((int*)(esp+0x1C));                          // mov     edi, dword [esp+0x1C]
-    //cl = *((char*)(edx));                             // mov     cl, byte [edx]
-    *((int*)(esp+0x24)) = edx;                          // mov     dword [esp+0x24], edx
+                                                        // jle     near L0026B1FF
+                }                                       // jmp     short L0026AE4A
+            }
+            break;
+        case 2: //    L0026AE92:
+                                                        // mov     eax, dword [ebp]
+            mask32 = *(uint32_t*)ebp;                   // mov     dword [esp+0x34], eax
+            ebp = esp_00;                               // mov     ebp, edx
+                                                        // mov     edx, dword [esp+0x4]
+                                                        // mov     eax, dword [_d4x4_colorset]
+                                                        // add     edx, eax
+            tbits = bits;                               // mov     edi, dword [esp+0x1C]
+                                                        // mov     cl, byte [edx]
+            esp_24 = d4x4_colorset + esp_04;            // mov     dword [esp+0x24], edx
                                                         // test    cl, cl
-    if (*((char*)(edx)) == 0) goto L0026AF6A;           // jz      near L0026AF6A
-    *((int*)(esp+0x28)) = 0x00000004;                   // mov     dword [esp+0x28], dword 0x00000004
-L0026AEC0:
-    esi = *((int*)(esp+0x24));                          // mov     esi, dword [esp+0x24]
-    edx = *((int*)(esp+0x34));                          // mov     edx, dword [esp+0x34]
-    ecx = edi;                                          // mov     ecx, edi
-    eax = edx;                                          // mov     eax, edx
-    eax &= 0x03;                                        // and     eax, byte 0x03
-    ebx &= 0xFFFF0000;
-    ebx |= *((uchar*)(esi+eax));                        // mov     bl, byte [esi+eax]
-    eax = edx;                                          // mov     eax, edx
-    asm_shr(eax, 0x02);                                 // shr     eax, 0x02
-    eax &= 0x03;                                        // and     eax, byte 0x03
-    ebx |= *((uchar*)(esi+eax)) << 8;                   // mov     bh, byte [esi+eax]
-    *((ushort*)(ecx)) = ebx & 0xFFFF;                   // mov     word [ecx], bx
-    eax = edx;                                          // mov     eax, edx
-    asm_shr(eax, 0x04);                                 // shr     eax, 0x04
-    eax &= 0x03;                                        // and     eax, byte 0x03
-    ebx &= 0xFFFF0000;
-    ebx |= *((uchar*)(esi+eax));                        // mov     bl, byte [esi+eax]
-    eax = edx;                                          // mov     eax, edx
-    asm_shr(eax, 0x06);                                 // shr     eax, 0x06
-    eax &= 0x03;                                        // and     eax, byte 0x03
-    ebx |= *((uchar*)(esi+eax)) << 8;                   // mov     bh, byte [esi+eax]
-    *((ushort*)(ecx+0x2)) = ebx & 0xFFFF;               // mov     word [ecx+0x2], bx
-    ecx = edx;                                          // mov     ecx, edx
-    esi = *((int*)(esp+0x30));                          // mov     esi, dword [esp+0x30]
-    asm_shr(ecx, 0x08);                                 // shr     ecx, 0x08
-    edi += esi;                                         // add     edi, esi
-    *((int*)(esp+0x34)) = ecx;                          // mov     dword [esp+0x34], ecx
-    esi = *((int*)(esp+0x24));                          // mov     esi, dword [esp+0x24]
-    edx = *((int*)(esp+0x34));                          // mov     edx, dword [esp+0x34]
-    ecx = edi;                                          // mov     ecx, edi
-    eax = edx;                                          // mov     eax, edx
-    eax &= 0x03;                                        // and     eax, byte 0x03
-    ebx &= 0xFFFF0000;
-    ebx |= *((uchar*)(esi+eax));                        // mov     bl, byte [esi+eax]
-    eax = edx;                                          // mov     eax, edx
-    asm_shr(eax, 0x02);                                 // shr     eax, 0x02
-    eax &= 0x03;                                        // and     eax, byte 0x03
-    ebx |= *((uchar*)(esi+eax)) << 8;                   // mov     bh, byte [esi+eax]
-    *((ushort*)(ecx)) = ebx & 0xFFFF;                   // mov     word [ecx], bx
-    eax = edx;                                          // mov     eax, edx
-    asm_shr(eax, 0x04);                                 // shr     eax, 0x04
-    eax &= 0x03;                                        // and     eax, byte 0x03
-    ebx &= 0xFFFF0000;
-    ebx |= *((uchar*)(esi+eax));                        // mov     bl, byte [esi+eax]
-    eax = edx;                                          // mov     eax, edx
-    asm_shr(eax, 0x06);                                 // shr     eax, 0x06
-    eax &= 0x03;                                        // and     eax, byte 0x03
-    ebx |= *((uchar*)(esi+eax)) << 8;                   // mov     bh, byte [esi+eax]
-    *((ushort*)(ecx+0x2)) = ebx & 0xFFFF;               // mov     word [ecx+0x2], bx
-    ebx = *((int*)(esp+0x28));                          // mov     ebx, dword [esp+0x28]
-    eax = edx;                                          // mov     eax, edx
-    edx = *((int*)(esp+0x30));                          // mov     edx, dword [esp+0x30]
-    asm_shr(eax, 0x08);                                 // shr     eax, 0x08
-    ebx -= 0x02;                                        // sub     ebx, byte 0x02
-    *((int*)(esp+0x34)) = eax;                          // mov     dword [esp+0x34], eax
-    *((int*)(esp+0x28)) = ebx;                          // mov     dword [esp+0x28], ebx
-    edi += edx;                                         // add     edi, edx
+            if (*esp_24) {                              // jz      near L0026AF6A
+                                                        // mov     dword [esp+0x28], dword 0x00000004
+                for (esp_28 = 4; esp_28 > 0; esp_28 -= 2) { //    L0026AEC0:
+                                                        // mov     esi, dword [esp+0x24]
+                                                        // mov     edx, dword [esp+0x34]
+                                                        // mov     ecx, edi
+                                                        // mov     eax, edx
+                                                        // and     eax, byte 0x03
+                    tbits[0] = esp_24[mask32 & 3];      // mov     bl, byte [esi+eax]
+                                                        // mov     eax, edx
+                                                        // shr     eax, 0x02
+                                                        // and     eax, byte 0x03
+                                                        // mov     bh, byte [esi+eax]
+                    tbits[1] = esp_24[(mask32>>2) & 3]; // mov     word [ecx], bx
+                                                        // mov     eax, edx
+                                                        // shr     eax, 0x04
+                                                        // and     eax, byte 0x03
+                    tbits[2] = esp_24[(mask32>>4) & 3]; // mov     bl, byte [esi+eax]
+                                                        // mov     eax, edx
+                                                        // shr     eax, 0x06
+                                                        // and     eax, byte 0x03
+                                                        // mov     bh, byte [esi+eax]
+                    tbits[3] = esp_24[(mask32>>6) & 3]; // mov     word [ecx+0x2], bx
+                                                        // mov     ecx, edx
+                                                        // mov     esi, dword [esp+0x30]
+                                                        // shr     ecx, 0x08
+                    tbits += d;                         // add     edi, esi
+                    mask32 >>= 8;                       // mov     dword [esp+0x34], ecx
+                                                        // mov     esi, dword [esp+0x24]
+                                                        // mov     edx, dword [esp+0x34]
+                                                        // mov     ecx, edi
+                                                        // mov     eax, edx
+                                                        // and     eax, byte 0x03    
+                    tbits[0] = esp_24[mask32 & 3];      // mov     bl, byte [esi+eax]
+                                                        // mov     eax, edx
+                                                        // shr     eax, 0x02
+                                                        // and     eax, byte 0x03
+                                                        // mov     bh, byte [esi+eax]
+                    tbits[1] = esp_24[(mask32>>2) & 3]; // mov     word [ecx], bx
+                                                        // mov     eax, edx
+                                                        // shr     eax, 0x04
+                                                        // and     eax, byte 0x03
+                    tbits[2] = esp_24[(mask32>>4) & 3]; // mov     bl, byte [esi+eax]
+                                                        // mov     eax, edx
+                                                        // shr     eax, 0x06
+                                                        // and     eax, byte 0x03
+                                                        // mov     bh, byte [esi+eax]
+                    tbits[3] = esp_24[(mask32>>6) & 3]; // mov     word [ecx+0x2], bx
+                                                        // mov     ebx, dword [esp+0x28]
+                                                        // mov     eax, edx
+                                                        // mov     edx, dword [esp+0x30]
+                                                        // shr     eax, 0x08
+                                                        // sub     ebx, byte 0x02
+                    mask32 >>= 8;                       // mov     dword [esp+0x34], eax
+                                                        // mov     dword [esp+0x28], ebx
+                    tbits += d;                         // add     edi, edx
                                                         // test    ebx, ebx
-    if (ebx <= 0) goto L0026B1FF;                       // jle     near L0026B1FF
-    goto L0026AEC0;                                     // jmp     near L0026AEC0
-L0026AF6A:
-    ebx = *((int*)(esp+0x34));                          // mov     ebx, dword [esp+0x34]
-    esi = edx;                                          // mov     esi, edx
-    edx = *((int*)(esp+0x30));                          // mov     edx, dword [esp+0x30]
-    ah0 = 0x04;                                         // mov     ah, byte 0x04
-simple_loop:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x03;                                        // and     ecx, byte 0x03
+                }                                   // jle     near L0026B1FF
+                break;                              // jmp     near L0026AEC0
+            } //    L0026AF6A:
+	    // Local variable esp+0x34 is only used by this case. This code
+	    // path doesn't actually spill it back to memory in the original
+	    // machine code, but it doesn't hurt to do so.
+                                                    // mov     ebx, dword [esp+0x34]
+                                                        // mov     esi, edx
+                                                        // mov     edx, dword [esp+0x30]
+            for (ah0 = 4; ah0 != 0; --ah0) {            // mov     ah, byte 0x04
+//simple_loop:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, byte 0x03
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026AF82;                       // jz      short L0026AF82
-    al0 = *((char*)(esi+ecx));                          // mov     al, byte [esi+ecx]
-    *((char*)(edi)) = al0;                              // mov     byte [edi], al
-L0026AF82:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x0C;                                        // and     ecx, byte 0x0C
+                if (mask32 & 0x03) {                    // jz      short L0026AF82
+                                                        // mov     al, byte [esi+ecx]
+                    tbits[0] = esp_00[mask32 & 0x03];   // mov     byte [edi], al
+                } //    L0026AF82:
+                                                        // mov     ecx, ebx
+		                                        // and     ecx, byte 0x0C
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026AF92;                       // jz      short L0026AF92
-    asm_shr(ecx, 0x02);                                 // shr     ecx, 0x02
-    al0 = *((char*)(esi+ecx));                          // mov     al, byte [esi+ecx]
-    *((char*)(edi+0x1)) = al0;                          // mov     byte [edi+0x1], al
-L0026AF92:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x30;                                        // and     ecx, byte 0x30
+                if (mask32 & 0x0c) {                    // jz      short L0026AF92
+                                                        // shr     ecx, 0x02
+                                                        // mov     al, byte [esi+ecx]
+                    tbits[1] = esp_00[(mask32 & 0x0c) >> 2]; // mov     byte [edi+0x1], al
+                } //    L0026AF92:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, byte 0x30
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026AFA2;                       // jz      short L0026AFA2
-    asm_shr(ecx, 0x04);                                 // shr     ecx, 0x04
-    al0 = *((char*)(esi+ecx));                          // mov     al, byte [esi+ecx]
-    *((char*)(edi+0x2)) = al0;                          // mov     byte [edi+0x2], al
-L0026AFA2:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x000000C0;                                  // and     ecx, dword 0x000000C0
+                if (mask32 & 0x30) {                    // jz      short L0026AFA2
+                                                        // shr     ecx, 0x04
+                                                        // mov     al, byte [esi+ecx]
+                    tbits[2] = esp_00[(mask32 & 0x30) >> 4]; // mov     byte [edi+0x2], al
+                } //    L0026AFA2:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, dword 0x000000C0
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026AFB5;                       // jz      short L0026AFB5
-    asm_shr(ecx, 0x06);                                 // shr     ecx, 0x06
-    al0 = *((char*)(esi+ecx));                          // mov     al, byte [esi+ecx]
-    *((char*)(edi+0x3)) = al0;                          // mov     byte [edi+0x3], al
-L0026AFB5:
-    edi += edx;                                         // add     edi, edx
-    asm_shr(ebx, 0x08);                                 // shr     ebx, 0x08
-    ah0 -= 1;                                           // dec     ah
-    if (ah0 != 0) goto simple_loop;                     // jnz     short simple_loop
-    goto L0026B1FF;                                     // jmp     near L0026B1FF
-L0026AFC3:
-    ebx = *((int*)(esp+0x4));                           // mov     ebx, dword [esp+0x4]
-    esi = (int)d4x4_colorset;                           // mov     esi, dword [_d4x4_colorset]
-    esi += ebx;                                         // add     esi, ebx
-    edx = *((int*)(esp+0x1C));                          // mov     edx, dword [esp+0x1C]
-    eax = *((int*)(ebp));                               // mov     eax, dword [ebp]
-    //bh = *((char*)(esi));                             // mov     bh, byte [esi]
-    ebp = *((int*)(esp));                               // mov     ebp, dword [esp]
+                if (mask32 & 0xc0) {                    // jz      short L0026AFB5
+                                                        // shr     ecx, 0x06
+                                                        // mov     al, byte [esi+ecx]
+                    tbits[3] = esp_00[(mask32 & 0xc0) >> 6]; // mov     byte [edi+0x3], al
+                } //    L0026AFB5:
+                tbits += d;                             // add     edi, edx
+                mask32 >>= 8;                           // shr     ebx, 0x08
+                                                        // dec     ah
+            }                                       // jnz     short simple_loop
+            break;                                  // jmp     near L0026B1FF
+        case 3: //    L0026AFC3:
+                                                        // mov     ebx, dword [esp+0x4]
+                                                        // mov     esi, dword [_d4x4_colorset]
+            cbits = d4x4_colorset + esp_04;             // add     esi, ebx
+            tbits = bits;                               // mov     edx, dword [esp+0x1C]
+            mask32 = *((uint32_t*)ebp);                 // mov     eax, dword [ebp]
+                                                        // mov     bh, byte [esi]
+            ebp = esp_00;                               // mov     ebp, dword [esp]
                                                         // test    bh, bh
-    if (*((char*)(esi)) == 0) goto L0026B03D;           // jz      short L0026B03D
-    ebx = *((int*)(esp+0x30));                          // mov     ebx, dword [esp+0x30]
-    edi = 0;                                            // xor     edi, edi
-L0026AFE5:
-    ecx = eax;                                          // mov     ecx, eax
-    ecx &= 0x07;                                        // and     ecx, byte 0x07
-    cl0 = *((char*)(ecx+esi));                          // mov     cl, byte [ecx+esi]
-    *((char*)(edx)) = cl0;                              // mov     byte [edx], cl
-    ecx = eax;                                          // mov     ecx, eax
-    asm_shr(ecx, 0x03);                                 // shr     ecx, 0x03
-    ecx &= 0x07;                                        // and     ecx, byte 0x07
-    cl0 = *((char*)(ecx+esi));                          // mov     cl, byte [ecx+esi]
-    *((char*)(edx+0x1)) = cl0;                          // mov     byte [edx+0x1], cl
-    ecx = eax;                                          // mov     ecx, eax
-    asm_shr(ecx, 0x06);                                 // shr     ecx, 0x06
-    ecx &= 0x07;                                        // and     ecx, byte 0x07
-    cl0 = *((char*)(ecx+esi));                          // mov     cl, byte [ecx+esi]
-    *((char*)(edx+0x2)) = cl0;                          // mov     byte [edx+0x2], cl
-    ecx = eax;                                          // mov     ecx, eax
-    asm_shr(ecx, 0x09);                                 // shr     ecx, 0x09
-    ecx &= 0x07;                                        // and     ecx, byte 0x07
-    cl0 = *((char*)(ecx+esi));                          // mov     cl, byte [ecx+esi]
-    asm_shr(eax, 0x0C);                                 // shr     eax, 0x0C
-    *((char*)(edx+0x3)) = cl0;                          // mov     byte [edx+0x3], cl
-    edx += ebx;                                         // add     edx, ebx
+            if (*cbits) {                               // jz      short L0026B03D
+                                                        // mov     ebx, dword [esp+0x30]
+                for (i = 0; i < 4; ++i) {               // xor     edi, edi
+//L0026AFE5:
+                                                        // mov     ecx, eax
+                                                        // and     ecx, byte 0x07
+                                                        // mov     cl, byte [ecx+esi]
+                    *tbits = cbits[mask32 & 7];         // mov     byte [edx], cl
+                                                        // mov     ecx, eax
+                                                        // shr     ecx, 0x03
+                                                        // and     ecx, byte 0x07
+                                                        // mov     cl, byte [ecx+esi]
+                    tbits[1] = cbits[(mask32>>3) & 7];  // mov     byte [edx+0x1], cl
+                                                        // mov     ecx, eax
+                                                        // shr     ecx, 0x06
+                                                        // and     ecx, byte 0x07
+                                                        // mov     cl, byte [ecx+esi]
+                    tbits[2] = cbits[(mask32>>6) & 7];  // mov     byte [edx+0x2], cl
+                                                        // mov     ecx, eax
+                                                        // shr     ecx, 0x09
+                                                        // and     ecx, byte 0x07
+                    tbits[3] = cbits[(mask32>>9) & 7];  // mov     cl, byte [ecx+esi]
+                    mask32 >>= 12;                      // shr     eax, 0x0C
+                                                        // mov     byte [edx+0x3], cl
+                    tbits += d;                         // add     edx, ebx
                                                         // cmp     edi, byte 0x01
-    if (edi != 0x01) goto L0026B031;                    // jnz     short L0026B031
-    ecx = 0;                                            // xor     ecx, ecx
-    ecx = *((ushort*)(ebp));                            // mov     cx, word [ebp]
-    ecx <<= 0x08;                                       // shl     ecx, 0x08
-    ebp += 0x02;                                        // add     ebp, byte 0x02
-    eax |= ecx;                                         // or      eax, ecx
-L0026B031:
-    edi += 1;                                           // inc     edi
+                    if (i == 1) {                       // jnz     short L0026B031
+                                                        // xor     ecx, ecx
+                        m32a = *((ushort*)ebp);         // mov     cx, word [ebp]
+                        mask32 |= m32a << 8;            // shl    ecx, 0x08
+                        ebp += 0x02;                    // add     ebp, byte 0x02
+                                                        // or      eax, ecx
+                    } //    L0026B031:
+                                                        // inc     edi
                                                         // cmp     edi, byte 0x04
-    if (edi >= 0x04) goto L0026B1FF;                    // jge     near L0026B1FF
-    goto L0026AFE5;                                     // jmp     short L0026AFE5
-L0026B03D:
-    edx = 0;                                            // xor     edx, edx
-    edi = *((int*)(esp+0x1C));                          // mov     edi, dword [esp+0x1C]
-    edx = *((ushort*)(ebp));                            // mov     dx, word [ebp]
-    ebx = eax;                                          // mov     ebx, eax
-    eax = edx;                                          // mov     eax, edx
-    edx = *((int*)(esp+0x30));                          // mov     edx, dword [esp+0x30]
-    ebp += 0x02;                                        // add     ebp, byte 0x02
-    eax <<= 0x08;                                       // shl     eax, 0x08
-    eax |= 0x80000000;                                  // or      eax, dword 0x80000000
-    eax &= 0xFFFFFF00;
-    eax |= 0x02;                                        // mov     al, byte 0x02
-L0026B05C:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x07;                                        // and     ecx, byte 0x07
+                }                                   // jge     near L0026B1FF
+                break;                              // jmp     short L0026AFE5
+            } //    L0026B03D:
+                                                        // xor     edx, edx
+            tbits = bits;                               // mov     edi, dword [esp+0x1C]
+                                                        // mov     dx, word [ebp]
+                                                        // mov     ebx, eax
+            m32a = *((ushort*)ebp);                     // mov     eax, edx
+                                                        // mov     edx, dword [esp+0x30]
+            ebp += 0x02;                                // add     ebp, byte 0x02
+                                                        // shl     eax, 0x08
+            m32a = (m32a << 8) | 0x80000000;            // or      eax, dword 0x80000000
+            al0 = 2;                                    // mov     al, byte 0x02
+            while (al0 != 0 || m32a != 0) { //    L0026B05C:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, byte 0x07
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B068;                       // jz      short L0026B068
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi)) = cl0;                              // mov     byte [edi], cl
-L0026B068:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x38;                                        // and     ecx, byte 0x38
+                if (mask32 & 7) {                       // jz      short L0026B068
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[0] = cbits[mask32 & 0x007];   // mov     byte [edi], cl
+                } //    L0026B068:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, byte 0x38
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B078;                       // jz      short L0026B078
-    asm_shr(ecx, 0x03);                                 // shr     ecx, 0x03
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi+0x1)) = cl0;                          // mov     byte [edi+0x1], cl
-L0026B078:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x000001C0;                                  // and     ecx, dword 0x000001C0
+                if (mask32 & 0x38) {                    // jz      short L0026B078
+                                                        // shr     ecx, 0x03
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[1] = cbits[(mask32 & 0x038) >> 3]; // mov     byte [edi+0x1], cl
+                } //    L0026B078:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, dword 0x000001C0
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B08B;                       // jz      short L0026B08B
-    asm_shr(ecx, 0x06);                                 // shr     ecx, 0x06
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi+0x2)) = cl0;                          // mov     byte [edi+0x2], cl
-L0026B08B:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x00000E00;                                  // and     ecx, dword 0x00000E00
+                if (mask32 & 0x1c0) {                   // jz      short L0026B08B
+                                                        // shr     ecx, 0x06
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[2] = cbits[(mask32 & 0x1c0) >> 6]; // mov     byte [edi+0x2], cl
+                } //    L0026B08B:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, dword 0x00000E00
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B09E;                       // jz      short L0026B09E
-    asm_shr(ecx, 0x09);                                 // shr     ecx, 0x09
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi+0x3)) = cl0;                          // mov     byte [edi+0x3], cl
-L0026B09E:
-    edi += edx;                                         // add     edi, edx
-    asm_shr(ebx, 0x0C);                                 // shr     ebx, 0x0C
-    eax = (eax & 0xFFFFFF00) + ((eax - 1) & 0xFF);      // dec     al
-    if ((eax & 0xFF) != 0) goto L0026B05C;              // jnz     short L0026B05C
+                if (mask32 & 0xe00) {                   // jz      short L0026B09E
+                                                        // shr     ecx, 0x09
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[3] = cbits[(mask32 & 0xe00) >> 9]; // mov     byte [edi+0x3], cl
+                } //    L0026B09E:
+                tbits += d;                             // add     edi, edx
+                mask32 >>= 12;                          // shr     ebx, 0x0C
+                al0--;                                  // dec     al
+                                                        // jnz     short L0026B05C
                                                         // test    eax, eax
-    if (eax == 0) goto L0026B0B9;                       // jz      short L0026B0B9
-    eax &= 0x00FFFF00;                                  // and     eax, dword 0x00FFFF00
-    ebx |= eax;                                         // or      ebx, eax
-    eax = 0x00000002;                                   // mov     eax, dword 0x00000002
-    goto L0026B05C;                                     // jmp     short L0026B05C
-L0026B0B9:
-    goto L0026B1FF;                                     // jmp     near L0026B1FF
-L0026B0BE:
-    ebx = *((int*)(esp+0x4));                           // mov     ebx, dword [esp+0x4]
-    edx = (int)d4x4_colorset;                           // mov     edx, dword [_d4x4_colorset]
-    ebx += edx;                                         // add     ebx, edx
-    *((int*)(esp+0x2C)) = ebx;                          // mov     dword [esp+0x2C], ebx
-    bl0 = *((char*)(ebx));                              // mov     bl, byte [ebx]
-    eax = *((int*)(esp+0x1C));                          // mov     eax, dword [esp+0x1C]
+                if (al0 == 0 && m32a != 0) {            // jz      short L0026B0B9
+                                                        // and     eax, dword 0x00FFFF00
+                    mask32 |= m32a & 0x00ffff00;        // or      ebx, eax
+                    m32a = 0;
+                    al0 = 2;                            // mov     eax, dword 0x00000002
+                }                                       // jmp     short L0026B05C
+            } //    L0026B0B9:
+            break;                                      // jmp     near L0026B1FF
+        case 4: //    L0026B0BE:
+                                                        // mov     ebx, dword [esp+0x4]
+                                                        // mov     edx, dword [_d4x4_colorset]
+                                                        // add     ebx, edx
+            esp_2c = d4x4_colorset + esp_04;            // mov     dword [esp+0x2C], ebx
+            bl0 = *esp_2c;                              // mov     bl, byte [ebx]
+            tbits = bits;                               // mov     eax, dword [esp+0x1C]
                                                         // test    bl, bl
-    if (bl0 == 0) goto L0026B12D;                       // jz      short L0026B12D
-    ebx = 0x0000000F;                                   // mov     ebx, dword 0x0000000F
-    edi = 0;                                            // xor     edi, edi
-L0026B0DF:
-    edx = 0;                                            // xor     edx, edx
-    edx = *((uchar*)(ebp));                             // mov     dl, byte [ebp]
-    ecx = edx;                                          // mov     ecx, edx
-    esi = *((int*)(esp+0x2C));                          // mov     esi, dword [esp+0x2C]
-    ecx &= ebx;                                         // and     ecx, ebx
-    ecx += esi;                                         // add     ecx, esi
-    asm_shr(edx, 0x04);                                 // shr     edx, 0x04
-    cl0 = *((char*)(ecx));                              // mov     cl, byte [ecx]
-    edx += esi;                                         // add     edx, esi
-    *((char*)(eax)) = cl0;                              // mov     byte [eax], cl
-    eax += 1;                                           // inc     eax
-    dl0 = *((char*)(edx));                              // mov     dl, byte [edx]
+            if (bl0) {                                  // jz      short L0026B12D
+                                                        // mov     ebx, dword 0x0000000F
+                                                        // xor     edi, edi
+                for (i = 0; i < 4; ++i) { //    L0026B0DF:
+                                                        // xor     edx, edx
+                                                        // mov     dl, byte [ebp]
+                                                        // mov     ecx, edx
+                                                        // mov     esi, dword [esp+0x2C]
+                                                        // and     ecx, ebx
+                                                        // add     ecx, esi
+                                                        // shr     edx, 0x04
+                    cl0 = esp_2c[*ebp & 0xf];           // mov     cl, byte [ecx]
+                                                        // add     edx, esi
+                                                        // mov     byte [eax], cl
+                    *(tbits++) = cl0;                   // inc     eax
+                    dl0 = esp_2c[*ebp >> 4];            // mov     dl, byte [edx]
     ebp += 1;                                           // inc     ebp
-    *((char*)(eax)) = dl0;                              // mov     byte [eax], dl
-    edx = 0;                                            // xor     edx, edx
-    edi += 1;                                           // inc     edi
-    edx = *((uchar*)(ebp));                             // mov     dl, byte [ebp]
-    eax += 1;                                           // inc     eax
-    ecx = edx;                                          // mov     ecx, edx
-    ebp += 1;                                           // inc     ebp
-    ecx &= ebx;                                         // and     ecx, ebx
-    eax += 1;                                           // inc     eax
-    ecx += esi;                                         // add     ecx, esi
-    asm_shr(edx, 0x04);                                 // shr     edx, 0x04
-    cl0 = *((char*)(ecx));                              // mov     cl, byte [ecx]
-    edx += esi;                                         // add     edx, esi
-    *((char*)(eax-0x1)) = cl0;                          // mov     byte [eax-0x1], cl
-    eax += 1;                                           // inc     eax
-    dl0 = *((char*)(edx));                              // mov     dl, byte [edx]
-    esi = *((int*)(esp+0x20));                          // mov     esi, dword [esp+0x20]
-    *((char*)(eax-0x1)) = dl0;                          // mov     byte [eax-0x1], dl
-    eax += esi;                                         // add     eax, esi
+                                                        // mov     byte [eax], dl
+                                                        // xor     edx, edx
+                                                        // inc     edi
+                                                        // mov     dl, byte [ebp]
+                    *(tbits++) = dl0;                   // inc     eax
+                                                        // mov     ecx, edx
+                    mask32 = *ebp++;                    // inc     ebp
+                                                        // and     ecx, ebx
+                                                        // inc     eax
+                                                        // add     ecx, esi
+                                                        // shr     edx, 0x04
+                    cl0 = esp_2c[mask32 & 0xf];         // mov     cl, byte [ecx]
+                                                        // add     edx, esi
+                    *(tbits++) = cl0;                   // mov     byte [eax-0x1], cl
+                                                        // inc     eax
+                    dl0 = esp_2c[mask32 >> 4];          // mov     dl, byte [edx]
+                                                        // mov     esi, dword [esp+0x20]
+                    *(tbits++) = dl0;                   // mov     byte [eax-0x1], dl
+                    tbits += esp_20;                    // add     eax, esi
                                                         // cmp     edi, byte 0x04
-    if (edi >= 0x04) goto L0026B1FF;                    // jge     near L0026B1FF
-    goto L0026B0DF;                                     // jmp     short L0026B0DF
-L0026B12D:
-    esi = *((int*)(esp+0x2C));                          // mov     esi, dword [esp+0x2C]
-    edx = *((int*)(esp+0x30));                          // mov     edx, dword [esp+0x30]
-    edi = eax;                                          // mov     edi, eax
-    ebx = *((int*)(ebp));                               // mov     ebx, dword [ebp]
-    eax = 0x00000002;                                   // mov     eax, dword 0x00000002
-L0026B13F:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x0F;                                        // and     ecx, byte 0x0F
+                }                                       // jge     near L0026B1FF
+                break;                                  // jmp     short L0026B0DF
+            } //    L0026B12D:
+                                                        // mov     esi, dword [esp+0x2C]
+                                                        // mov     edx, dword [esp+0x30]
+                                                        // mov     edi, eax
+            mask32 = *((uint32_t*)ebp);                 // mov     ebx, dword [ebp]
+            for (i = 2; i != 0; --i) {                  // mov     eax, dword 0x00000002
+//L0026B13F:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, byte 0x0F
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B14B;                       // jz      short L0026B14B
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi)) = cl0;                              // mov     byte [edi], cl
-L0026B14B:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x000000F0;                                  // and     ecx, dword 0x000000F0
+                if (mask32 & 0x000f) {                  // jz      short L0026B14B
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[0] = esp_2c[mask32 & 0x000f]; // mov     byte [edi], cl
+                } //    L0026B14B:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, dword 0x000000F0
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B15E;                       // jz      short L0026B15E
-    asm_shr(ecx, 0x04);                                 // shr     ecx, 0x04
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi+0x1)) = cl0;                          // mov     byte [edi+0x1], cl
-L0026B15E:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x00000F00;                                  // and     ecx, dword 0x00000F00
+                if (mask32 & 0x00f0) {                  // jz      short L0026B15E
+                                                        // shr     ecx, 0x04
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[1] = esp_2c[(mask32 & 0x00f0) >> 4]; // mov     byte [edi+0x1], cl
+                } //    L0026B15E:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, dword 0x00000F00
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B171;                       // jz      short L0026B171
-    asm_shr(ecx, 0x08);                                 // shr     ecx, 0x08
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi+0x2)) = cl0;                          // mov     byte [edi+0x2], cl
-L0026B171:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x0000F000;                                  // and     ecx, dword 0x0000F000
+                if (mask32 & 0x0f00) {                  // jz      short L0026B171
+                                                        // shr     ecx, 0x08
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[2] = esp_2c[(mask32 & 0x0f00) >> 8]; // mov     byte [edi+0x2], cl
+                } //    L0026B171:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, dword 0x0000F000
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B184;                       // jz      short L0026B184
-    asm_shr(ecx, 0x0C);                                 // shr     ecx, 0x0C
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi+0x3)) = cl0;                          // mov     byte [edi+0x3], cl
-L0026B184:
-    edi += edx;                                         // add     edi, edx
-    asm_shr(ebx, 0x10);                                 // shr     ebx, 0x10
-    eax -= 1;                                           // dec     eax
-    if (eax != 0) goto L0026B13F;                       // jnz     short L0026B13F
-    edi = *((int*)(esp+0x14));                          // mov     edi, dword [esp+0x14]
-    edx = *((int*)(esp+0x30));                          // mov     edx, dword [esp+0x30]
-    ebx = *((int*)(ebp+0x4));                           // mov     ebx, dword [ebp+0x4]
-    ebp += 0x08;                                        // add     ebp, byte 0x08
-    eax = 0x00000002;                                   // mov     eax, dword 0x00000002
-L0026B19F:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x0F;                                        // and     ecx, byte 0x0F
+                if (mask32 & 0xf000) {                  // jz      short L0026B184
+                                                        // shr     ecx, 0x0C
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[3] = esp_2c[(mask32 & 0xf000) >> 12]; // mov     byte [edi+0x3], cl
+                } //    L0026B184:
+                tbits += d;                             // add     edi, edx
+                mask32 >>= 10;                          // shr     ebx, 0x10
+                                                        // dec     eax
+            }                                           // jnz     short L0026B13F
+            tbits = esp_14;                             // mov     edi, dword [esp+0x14]
+                                                        // mov     edx, dword [esp+0x30]
+            mask32 = *((uint32_t*)(ebp+0x4));           // mov     ebx, dword [ebp+0x4]
+            ebp += 0x08;                                // add     ebp, byte 0x08
+            for (i = 2; i != 0; --i) {                  // mov     eax, dword 0x00000002
+//L0026B19F:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, byte 0x0F
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B1AB;                       // jz      short L0026B1AB
-    cl0= *((char*)(esi+ecx));                           // mov     cl, byte [esi+ecx]
-    *((char*)(edi)) = cl0;                              // mov     byte [edi], cl
-L0026B1AB:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x000000F0;                                  // and     ecx, dword 0x000000F0
+                if (mask32 & 0x000f) {                  // jz      short L0026B1AB
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[0] = esp_2c[mask32 & 0x000f]; // mov     byte [edi], cl
+                } //    L0026B1AB:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, dword 0x000000F0
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B1BE;                       // jz      short L0026B1BE
-    asm_shr(ecx, 0x04);                                 // shr     ecx, 0x04
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi+0x1)) = cl0;                          // mov     byte [edi+0x1], cl
-L0026B1BE:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x00000F00;                                  // and     ecx, dword 0x00000F00
+                if (mask32 & 0x00f0) {                  // jz      short L0026B1BE
+                                                        // shr     ecx, 0x04
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[1] = esp_2c[(mask32 & 0x00f0) >> 4]; // mov     byte [edi+0x1], cl
+                } //    L0026B1BE:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, dword 0x00000F00
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B1D1;                       // jz      short L0026B1D1
-    asm_shr(ecx, 0x08);                                 // shr     ecx, 0x08
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi+0x2)) = cl0;                          // mov     byte [edi+0x2], cl
-L0026B1D1:
-    ecx = ebx;                                          // mov     ecx, ebx
-    ecx &= 0x0000F000;                                  // and     ecx, dword 0x0000F000
+                if (mask32 & 0x0f00) {                  // jz      short L0026B1D1
+                                                        // shr     ecx, 0x08
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[2] = esp_2c[(mask32 & 0x0f00) >> 8]; // mov     byte [edi+0x2], cl
+                } //    L0026B1D1:
+                                                        // mov     ecx, ebx
+                                                        // and     ecx, dword 0x0000F000
                                                         // test    ecx, ecx
-    if (ecx == 0) goto L0026B1E4;                       // jz      short L0026B1E4
-    asm_shr(ecx, 0x0C);                                 // shr     ecx, 0x0C
-    cl0 = *((char*)(esi+ecx));                          // mov     cl, byte [esi+ecx]
-    *((char*)(edi+0x3)) = cl0;                          // mov     byte [edi+0x3], cl
-L0026B1E4:
-    edi += edx;                                         // add     edi, edx
-    asm_shr(ebx, 0x10);                                 // shr     ebx, 0x10
-    eax -= 1;                                           // dec     eax
-    if (eax != 0) goto L0026B19F;                       // jnz     short L0026B19F
-    goto L0026B1FF;                                     // jmp     short L0026B1FF
-L0026B1EE:
-    eax = *((int*)(esp+0x4));                           // mov     eax, dword [esp+0x4]
-    edx = *((int*)(esp+0x1C));                          // mov     edx, dword [esp+0x1C]
-    eax <<= 0x02;                                       // shl     eax, 0x02
-    edx += eax;                                         // add     edx, eax
-    *((int*)(esp+0x1C)) = edx;                          // mov     dword [esp+0x1C], edx
-L0026B1FF:
-    ebx = *((int*)(esp+0x18));                          // mov     ebx, dword [esp+0x18]
-    ecx = *((int*)(esp+0x1C));                          // mov     ecx, dword [esp+0x1C]
-    esi = *((int*)(esp+0x10));                          // mov     esi, dword [esp+0x10]
-    ebx += 0x04;                                        // add     ebx, byte 0x04
-    ecx += 0x04;                                        // add     ecx, byte 0x04
-    *((int*)(esp+0x18)) = ebx;                          // mov     dword [esp+0x18], ebx
-    *((int*)(esp+0x1C)) = ecx;                          // mov     dword [esp+0x1C], ecx
+                if (mask32 & 0xf000) {                  // jz      short L0026B1E4
+                                                        // shr     ecx, 0x0C
+                                                        // mov     cl, byte [esi+ecx]
+                    tbits[3] = esp_2c[(mask32 & 0xf000) >> 12]; // mov     byte [edi+0x3], cl
+                } //    L0026B1E4:
+                tbits += d;                             // add     edi, edx
+                mask32 >>= 0x10;                        // shr     ebx, 0x10
+                                                        // dec     eax
+            }                                           // jnz     short L0026B19F
+            break;                                      // jmp     short L0026B1FF
+        case 5: //    L0026B1EE:
+                                                        // mov     eax, dword [esp+0x4]
+                                                        // mov     edx, dword [esp+0x1C]
+                                                        // shl     eax, 0x02
+                                                        // add     edx, eax
+            bits += esp_04 * 4;                     // mov     dword [esp+0x1C], edx
+            break;
+        } //    L0026B1FF:
+                                                        // mov     ebx, dword [esp+0x18]
+                                                        // mov     ecx, dword [esp+0x1C]
+                                                        // mov     esi, dword [esp+0x10]
+                                                        // add     ebx, byte 0x04
+                                                        // add     ecx, byte 0x04
+        ++xtab;                                         // mov     dword [esp+0x18], ebx
+        bits += 4;                                      // mov     dword [esp+0x1C], ecx
                                                         // cmp     ecx, esi
-    if ((uint)(ecx) < (uint)(esi)) goto outer_loop;     // jc      near outer_loop
-L0026B221:
-    eax = ebp;                                          // mov     eax, ebp
+                                                        // jc      near outer_loop
+    } //L0026B221:
+                                                        // mov     eax, ebp
     //esp += 0x38;                                      // add     esp, byte 0x38
     //ebp = pop();                                      // pop     ebp
     //edi = pop();                                      // pop     edi
     //esi = pop();                                      // pop     esi
     //popra();
-    return (uchar*)eax;                                 // ret     word 0x0004
+    return ebp;                                         // ret     word 0x0004
 }

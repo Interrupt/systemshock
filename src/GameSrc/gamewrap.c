@@ -519,7 +519,7 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void *undefin
 
     // KLC - if not already on, turn on-line help on.
     if (!olh_active)
-        toggle_olh_func(0, 0, NULL);
+        toggle_olh_func(0, 0, 0);
 
     // Do entry-level triggers for starting level
     // Hmm, do we actually want to call this any time we restore

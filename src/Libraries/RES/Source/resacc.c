@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-//		ResAcc.c		Resource access
-//		Rex E. Bradford
+//              ResAcc.c                Resource access
+//              Rex E. Bradford
 /*
  * $Header: r:/prj/lib/src/res/rcs/resacc.c 1.4 1994/08/30 15:18:20 rex Exp $
  * $Log: resacc.c $
@@ -39,23 +39,64 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res.h"
 #include "res_.h"
 #include "lg.h"
+
+#include <assert.h>
 #include <stdlib.h> // free()
 #include <string.h>
 
-//	---------------------------------------------------------
-//
-//	ResLock() locks a resource and returns ptr.
-//
-//		id = resource id
-//
-//	Returns: ptr to locked resource
-//	---------------------------------------------------------
+void *ResDecode(void *raw, size_t size, UserDecodeData ud)
+{
+    // Layout.
+    const ResLayout *layout = (const ResLayout*)ud;
+    // Working pointer into the raw data.
+    uchar *rp = raw;
+    void *buff = malloc(size + (layout->msize - layout->dsize));
+    uchar *b = (uchar *)buff;
+    uchar *bp;
+    const ResField *field = layout->fields;
 
-void *ResLock(Id id) {
+    while (field->type != RFFT_END) {
+        bp = b + field->offset;
+        switch (field->type) {
+        case RFFT_PAD:
+            rp += field->offset;
+            break;
+        case RFFT_UINT8:
+            *bp = *rp++;
+            break;
+        case RFFT_UINT16:
+            *(uint16_t*)bp = (uint16_t)rp[0] | ((uint16_t)rp[1] << 8);
+            rp += 2;
+            break;
+        case RFFT_UINT32:
+            *(uint32_t*)bp = (uint32_t)rp[0] | ((uint32_t)rp[1] << 8) |
+                ((uint32_t)rp[2] << 16) | ((uint32_t)rp[3] << 24);
+            rp += 4;
+            break;
+        case RFFT_RAW: // should be last entry
+            memcpy(bp, rp, layout->dsize - (rp-(uchar*)raw));
+            break;
+        default:
+            assert(!"Invalid resource field type");
+        }
+        ++field;
+    }
+    return buff;
+}
+
+//      ---------------------------------------------------------
+//
+//      ResLock() locks a resource and returns ptr.
+//
+//              id = resource id
+//
+//      Returns: ptr to locked resource
+//      ---------------------------------------------------------
+void *ResLock(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer) {
     ResDesc *prd;
 
-    //	Check if valid id
-    //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
+    //  Check if valid id
+    //  DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
 
 
     prd = RESDESC(id);
@@ -63,11 +104,19 @@ void *ResLock(Id id) {
     // CC: If already loaded, use the existing bytes
     if (prd->ptr != NULL) {
         prd->lock++;
+        if (decoder != NULL) {
+            // Caller wants it decoded, decode if not already done.
+            if (prd->decoded == NULL) {
+                prd->decoded = decoder(prd->ptr, prd->size, data);
+                prd->free_func = freer;
+            }
+            return prd->decoded;
+        }
         return prd->ptr;
     }
 
     // If resource not loaded, load it now
-    if (ResLoadResource(id) == NULL) {
+    if (ResLoadResource(id, decoder, data, freer) == NULL) {
         ERROR("ResLock: Could not load %x", id);
         return (NULL);
     } else if (prd->lock == 0)
@@ -79,12 +128,12 @@ void *ResLock(Id id) {
     return (prd->ptr);
 }
 
-//	---------------------------------------------------------
+//      ---------------------------------------------------------
 //
-//	ResUnlock() unlocks a resource.
+//      ResUnlock() unlocks a resource.
 //
-//		id = resource id
-//	---------------------------------------------------------
+//              id = resource id
+//      ---------------------------------------------------------
 void ResUnlock(Id id) {
     ResDesc *prd;
 
@@ -110,17 +159,17 @@ void ResUnlock(Id id) {
     }
 }
 
-//	-------------------------------------------------------------
+//      -------------------------------------------------------------
 //
-//	ResGet() gets a ptr to a resource
+//      ResGet() gets a ptr to a resource
 //
-//		id = resource id
+//              id = resource id
 //
-//	Returns: ptr to resource (ptr only guaranteed until next Malloc(),
-//				Lock(), Get(), etc.
-//	---------------------------------------------------------
+//      Returns: ptr to resource (ptr only guaranteed until next Malloc(),
+//                              Lock(), Get(), etc.
+//      ---------------------------------------------------------
 
-void *ResGet(Id id) {
+void *ResGet(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer) {
     ResDesc *prd;
 
     // Check if valid id
@@ -132,7 +181,7 @@ void *ResGet(Id id) {
     // Load resource or move to tail
     prd = RESDESC(id);
     if (prd->ptr == NULL) {
-        if (ResLoadResource(id) == NULL) {
+        if (ResLoadResource(id, decoder, data, freer) == NULL) {
             return (NULL);
         }
         ResAddToTail(prd);
@@ -140,22 +189,31 @@ void *ResGet(Id id) {
         ResMoveToTail(prd);
     }
 
+    // If it wants decoded, decode if not already done and return the decoded
+    // data.
+    if (decoder != NULL) {
+        if (prd->decoded == NULL) {
+            prd->decoded = decoder(prd->ptr, prd->size, data);
+            prd->free_func = freer;
+        }
+        return prd->decoded;
+    }
     // ValidateRes(id);
 
     //  Return ptr
     return (prd->ptr);
 }
 
-//	---------------------------------------------------------
+//      ---------------------------------------------------------
 //
-//	ResExtract() extracts a resource from an open resource file.
+//      ResExtract() extracts a resource from an open resource file.
 //
-//		id   = id
-//		buff = ptr to buffer (use ResSize() to compute needed buffer
+//              id   = id
+//              buff = ptr to buffer (use ResSize() to compute needed buffer
 // size)
 //
-//	Returns: ptr to supplied buffer, or NULL if problem
-//	---------------------------------------------------------
+//      Returns: ptr to supplied buffer, or NULL if problem
+//      ---------------------------------------------------------
 //  For Mac version:  Copies information from resource handle into the buffer.
 
 void *ResExtract(Id id, void *buffer) {
@@ -169,12 +227,12 @@ void *ResExtract(Id id, void *buffer) {
     return (NULL);
 }
 
-//	----------------------------------------------------------
+//      ----------------------------------------------------------
 //
-//	ResDrop() drops a resource from memory for awhile.
+//      ResDrop() drops a resource from memory for awhile.
 //
-//		id = resource id
-//	----------------------------------------------------------
+//              id = resource id
+//      ----------------------------------------------------------
 void ResDrop(Id id) {
     ResDesc *prd;
 
@@ -189,7 +247,7 @@ void ResDrop(Id id) {
     if (prd->lock == 0)
         ResRemoveFromLRU(prd);
 
-    //	Free memory and set ptr to NULL
+    //  Free memory and set ptr to NULL
 
     if (prd->ptr == NULL) {
         TRACE("%s: Block $%x not in memory, ignoring request\n", __FUNCTION__, id);
@@ -201,18 +259,30 @@ void ResDrop(Id id) {
         prd->lock = 0;
     }
 
+    // Free decoded data, using the freer if supplied.
+    if (prd->decoded != NULL) {
+        if (prd->free_func != NULL) {
+            prd->free_func(prd->decoded);
+        }
+        else {
+            free(prd->decoded);
+        }
+        prd->decoded = NULL;
+        prd->free_func = NULL;
+    }
+    // Free the raw data.
     if (prd->ptr != NULL) {
         free(prd->ptr);
         prd->ptr = NULL;
     }
 }
 
-//	-------------------------------------------------------
+//      -------------------------------------------------------
 //
-//	ResDelete() deletes a resource forever.
+//      ResDelete() deletes a resource forever.
 //
-//		Id = id of resource
-//	-------------------------------------------------------
+//              Id = id of resource
+//      -------------------------------------------------------
 //  For Mac version:  Call ReleaseResource on the handle and set its ref to
 //  null. The next ResLoadResource on the resource will load it back in.
 
@@ -236,15 +306,15 @@ void ResDelete(Id id) {
     }
 }
 
-//	--------------------------------------------------------
-//		INTERNAL ROUTINES
-//	--------------------------------------------------------
+//      --------------------------------------------------------
+//              INTERNAL ROUTINES
+//      --------------------------------------------------------
 //
-//	ResCheckId() checks if id valid.
+//      ResCheckId() checks if id valid.
 //
-//		id = id to be checked
+//              id = id to be checked
 //
-//	Returns: TRUE if id ok, FALSE if invalid & prints warning
+//      Returns: TRUE if id ok, FALSE if invalid & prints warning
 
 bool ResCheckId(Id id) {
     if (id < ID_MIN) {

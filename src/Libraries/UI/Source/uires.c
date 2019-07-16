@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "uires.h"
+
+#include <assert.h>
 #include <string.h>
 
 // Prototypes
@@ -33,12 +35,15 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
 
 struct _uirestempbuffer uiResTempBuffer;
 
+// FIXME This is to all intents and purposes identical to the function in
+// citres.c. They should be merged.
 errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar tmp_mem, LGRect *anchor, uchar *p)
 {
    Ref rid;
    FrameDesc *f;
    uchar alloced_fdesc = FALSE;
 //   extern int memcount;
+   const size_t size = RefSizeDecoded(rt, i, &FrameDescLayout);
 
    if(!RefIndexValid(rt,i)) {
 //      Warning(("Bitmap index %i invalid!\n",i));
@@ -46,11 +51,11 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
    }
 
    rid = MKREF(id_num,i);
-   if (uiResTempBuffer.mem == NULL || RefSize(rt,i) > uiResTempBuffer.size)
+   if (uiResTempBuffer.mem == NULL || size > uiResTempBuffer.size)
    {
 
-//      Warning(("damn, we have to malloc...need %d, buffer = %d\n",RefSize(rt,i),uiResTempBuffer.size));
-      f = (FrameDesc *)malloc(RefSize(rt,i));
+//      Warning(("damn, we have to malloc...need %d, buffer = %d\n", size, uiResTempBuffer.size));
+        assert(!tmp_mem); // we're freeing it, better not return a pointer to it      f = (FrameDesc *)malloc(size);
       alloced_fdesc = TRUE;
    }
    else
@@ -63,7 +68,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
 //      Warning(("Could not load bitmap from resource #%d!\n",id_num));
       return(ERR_FREAD);
    }
-   RefExtract(rt,rid,f);
+   RefExtractDecoded(rt, rid, &FrameDescLayout, f);
    if (anchor != NULL)
       *anchor = f->anchorArea;
    if (!tmp_mem && p == NULL)

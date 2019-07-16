@@ -64,7 +64,7 @@ errtype tng_menu_init(void *ui_data, TNG *ptng, TNGStyle *sty, LGPoint coord, in
    pmntng->coord = coord;
    llist_init(&(pmntng->element_header));
 
-   f = (grs_font *)ResLock(ptng->style->font);
+   f = FontLock(ptng->style->font);
    pmntng->slot_height = f->h + TNG_MENU_SPACING;
    ResUnlock(ptng->style->font);
 
@@ -299,7 +299,7 @@ errtype tng_menu_selection(TNG *ptng)
 }
 
 errtype tng_menu_add_line(TNG *ptng, char *label, hotkey_callback f, short keycode, ulong context,
-   void *user_data, char *help_text)
+   intptr_t user_data, char *help_text)
 {
    MenuElement *newelem;
 
@@ -335,7 +335,7 @@ MenuElement *tng_menu_add_basic(TNG *ptng, char *label)
 
    newelem->submenu = NULL;
    newelem->f = NULL;
-   newelem->user_data = NULL;
+   newelem->user_data = 0;
    newelem->keycode = 0;
    newelem->context = 0;
 

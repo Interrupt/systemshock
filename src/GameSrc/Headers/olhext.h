@@ -37,7 +37,7 @@ void olh_scan_objects(void);
 void olh_init(void);
 void olh_closedown(void);
 void olh_shutdown(void);
-uchar toggle_olh_func(short, ulong, void *);
-uchar olh_overlay_func(short keycode, ulong context, void *);
+uchar toggle_olh_func(ushort, ulong, intptr_t);
+uchar olh_overlay_func(ushort keycode, ulong context, intptr_t);
 
 #endif // __OLHEXT_H

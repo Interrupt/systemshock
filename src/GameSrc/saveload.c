@@ -217,12 +217,12 @@ uchar go_to_different_level(int targlevel) {
         // KLC      start_asynch_digi_fx();
         dynmem_mask = DYNMEM_PARTIAL;
     }
-    //   else if (music_on)									// Don't play music
+    //   else if (music_on)                                                                     // Don't play music
     //   while
-    //      MacTuneShutdown();								// elevator switches levels
+    //      MacTuneShutdown();                                                          // elevator switches levels
 
     // KLC - if changing levels via the elevator, we need to make sure the elevator music
-    //			  continues playing.  We'll do this by queueing up 3 additional chunks of music.
+    //                    continues playing.  We'll do this by queueing up 3 additional chunks of music.
     else if (music_on) {
         for (int t = 0; t < 3; t++) {
             MacTuneQueueTune(mlimbs_boredom);
@@ -456,7 +456,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
     ResCloseFile(fd);
 
-    // FlushVol(nil, fSpec->vRefNum);			// Make sure everything is saved.
+    // FlushVol(nil, fSpec->vRefNum);                   // Make sure everything is saved.
 
     if (make_player)
         obj_create_player(&plr_loc);
@@ -712,7 +712,7 @@ errtype expand_old_class(char cl, short new_start)
 void load_level_data() {
     extern errtype load_small_texturemaps();
 
-    // KLC-removed from here	obj_load_art(FALSE);
+    // KLC-removed from here    obj_load_art(FALSE);
     load_small_texturemaps();
 }
 
@@ -720,7 +720,7 @@ void SwapLongBytes(void *pval4);
 void SwapShortBytes(void *pval2);
 #define MAKE4(c0, c1, c2, c3) ((((ulong)c0) << 24) | (((ulong)c1) << 16) | (((ulong)c2) << 8) | ((ulong)c3))
 
-//	---------------------------------------------------------
+//      ---------------------------------------------------------
 // Â¥ Put this in some more appropriate, global place.
 void SwapLongBytes(void *pval4) {
     long *temp = (long *)pval4;
@@ -845,7 +845,8 @@ errtype load_current_map(Id id_num) {
         }
 
         uchar *dst_ptr = global_fullmap->sched[0].queue.vec;
-        memmove(dst_ptr, ResLock(id_num + idx), queue_size);
+        // FIXME does this need decoding?
+        memmove(dst_ptr, ResLockRaw(id_num + idx), queue_size);
         ResUnlock(id_num + idx++);
         global_fullmap->sched[0].queue.fullness = (queue_size / sizeof(SchedEvent)) - 1;
     } else
@@ -923,7 +924,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, objs);
     } else {
-        uchar *op = (uchar *)ResLock(id_num + idx);
+        // FIXME This looks like a job for a custom decoder
+        uchar *op = (uchar *)ResLockRaw(id_num + idx);
         for (i = 0; i < NUM_OBJECTS; i++) {
             memmove(&objs[i].active, op, 1);
             memmove(&objs[i].obclass, op + 1, 1);
@@ -1010,7 +1012,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, objHardwares);
     } else {
-        uchar *hp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder
+        uchar *hp = (uchar *)ResLockRaw(id_num + idx);
         for (i = 0; i < NUM_OBJECTS_HARDWARE; i++) {
             memmove(&objHardwares[i], hp, 7);
             hp += 7;
@@ -1027,7 +1030,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, objSoftwares);
     } else {
-        uchar *sp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder
+        uchar *sp = (uchar *)ResLockRaw(id_num + idx);
         for (i = 0; i < NUM_OBJECTS_SOFTWARE; i++) {
             memmove(&objSoftwares[i], sp, 7);
             memmove(&objSoftwares[i].data_munge, sp + 7, 2);
@@ -1120,7 +1124,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, objContainers);
     } else {
-        uchar *sp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder
+        uchar *sp = (uchar *)ResLockRaw(id_num + idx);
         for (i = 0; i < NUM_OBJECTS_CONTAINER; i++) {
             memmove(&objContainers[i], sp, 17);
             memmove(&objContainers[i].data1, sp + 17, 4);
@@ -1204,7 +1209,8 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, default_hardware);
     } else {
         // Convert the default hardware.  Resource is array of 7-byte structs.  Ours is 8.
-        uchar *hp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *hp = (uchar *)ResLockRaw(id_num + idx);
         memmove(&default_hardware, hp, 7);
         /*SwapShortBytes(&default_hardware.id);
         SwapShortBytes(&default_hardware.next);
@@ -1218,7 +1224,8 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, default_software);
     } else {
         // Convert the default software.  Resource is array of 9-byte structs.  Ours is 10.
-        uchar *sp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *sp = (uchar *)ResLockRaw(id_num + idx);
         memmove(&default_software, sp, 7);
         memmove(&default_software.data_munge, sp + 7, 2);
         // BlockMoveData(sp, &default_software, 7);
@@ -1288,7 +1295,8 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, default_container);
     } else {
         // Convert the default container.  Resource is a 21-byte struct.  Ours is 22.
-        uchar *sp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *sp = (uchar *)ResLockRaw(id_num + idx);
         memmove(&default_container, sp, 17);
         memmove(&default_container.data1, sp + 17, 4);
         // BlockMoveData(sp, &default_container, 17);
@@ -1337,7 +1345,8 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, animtextures);
     } else {
         // Convert the anim textures.  Resource is a 7-byte struct.  Ours is 8.
-        uchar *ap = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *ap = (uchar *)ResLockRaw(id_num + idx);
         for (i = 0; i < NUM_ANIM_TEXTURE_GROUPS; i++) {
             memmove(&animtextures[i], ap, 7);
             ap += 7;
@@ -1368,7 +1377,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, level_gamedata);
     } else {
-        uchar *ldp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *ldp = (uchar *)ResLockRaw(id_num + idx);
         LG_memset(&level_gamedata, 0, sizeof(LevelData));
         memmove(&level_gamedata, ldp, 9);
         memmove(&level_gamedata.exit_time, ldp + 9, 4);
@@ -1423,7 +1433,8 @@ errtype load_current_map(Id id_num) {
     if (map_version > MAP_VERSION_NUMBER) {
         REF_READ(id_num, idx++, animlist);
     } else {
-        uchar *ap = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *ap = (uchar *)ResLockRaw(id_num + idx);
         for (i = 0; i < MAX_ANIMLIST_SIZE; i++) {
             memmove(&animlist[i].id, ap, 2);
             memmove(&animlist[i].flags, ap + 2, 1);
@@ -1473,7 +1484,7 @@ obj_out:
                 obj_screen_animate(oid);
                 break;
             default:
-                add_obj_to_animlist(oid, REPEAT_3D(ObjProps[OPNUM(oid)].bitmap_3d), FALSE, FALSE, 0, 0, NULL, 0);
+                add_obj_to_animlist(oid, REPEAT_3D(ObjProps[OPNUM(oid)].bitmap_3d), FALSE, FALSE, 0, 0, 0, 0);
                 break;
             }
         }

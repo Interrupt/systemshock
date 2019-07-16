@@ -55,7 +55,7 @@ errtype mfd_biohelp_init(MFD_Func *f);
 void mfd_biohelp_expose(MFD *mfd, ubyte control);
 uchar mfd_biohelp_button_handler(MFD *m, LGPoint bttn, uiEvent *ev, void *data);
 uchar mfd_biohelp_handler(MFD *m, uiEvent *e);
-uchar biohelp_region_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data);
+uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data);
 errtype biohelp_load_cursor();
 errtype biohelp_create_mouse_region(LGRegion *root);
 
@@ -220,12 +220,13 @@ uchar mfd_biohelp_handler(MFD *m, uiEvent *e) {
     return retval;
 }
 
-uchar biohelp_region_mouse_handler(uiMouseEvent *ev, LGRegion *reg, void *v) {
-    if (ev->action & (MOUSE_LDOWN | MOUSE_RDOWN)) {
+uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
+    uiMouseEvent *mev = (uiMouseEvent*) ev;
+    if (mev->action & (MOUSE_LDOWN | MOUSE_RDOWN)) {
         extern void mfd_zoom_rect(LGRect *, int);
         LGRect start = {{-5, -5}, {5, 5}};
         int mfd = mfd_grab_func(MFD_BIOHELP_FUNC, MFD_INFO_SLOT);
-        RECT_MOVE(&start, ev->pos);
+        RECT_MOVE(&start, mev->pos);
         mfd_zoom_rect(&start, mfd);
 
         mfd_notify_func(MFD_BIOHELP_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
@@ -264,7 +265,7 @@ errtype biohelp_create_mouse_region(LGRegion *root) {
     err = region_create(root, reg, &r, 2, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
     if (err != OK)
         return err;
-    err = uiInstallRegionHandler(reg, UI_EVENT_MOUSE, (uiHandlerProc)biohelp_region_mouse_handler, NULL, &id);
+    err = uiInstallRegionHandler(reg, UI_EVENT_MOUSE, biohelp_region_mouse_handler, 0, &id);
     if (err != OK)
         return err;
     biohelp_load_cursor();

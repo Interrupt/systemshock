@@ -486,7 +486,7 @@ errtype journey_newgame_func(void)
 
   INFO("Started new game!");
 
-  change_mode_func(0, 0, (void *)GAME_LOOP);
+  change_mode_func(0, 0, GAME_LOOP);
 
   return OK;
 }
@@ -588,7 +588,7 @@ void PrintWinStats(void)
   short w, h;
 
   grs_font *fon = gr_get_font();
-  gr_set_font((grs_font *)ResLock(RES_coloraliasedFont));
+  gr_set_font(FontLock(RES_coloraliasedFont));
 
   gr_clear(0);
 
@@ -694,7 +694,7 @@ void PrintCredits(void)
     }
 
     grs_font *fon = gr_get_font();
-    gr_set_font((grs_font *)ResLock(RES_coloraliasedFont));
+    gr_set_font(FontLock(RES_coloraliasedFont));
     short w, h;
     gr_string_size(buf, &w, &h);
     x = (columns == 1) ? (320-w)/2 : (cur_col == 0) ? 320/2-8-w : 320/2+8;
@@ -847,7 +847,7 @@ errtype draw_sg_slot(int slot_num)
     get_string(REF_STR_UnusedSave, temp, 64);
   }
 
-  gr_set_font((grs_font *)ResLock(RES_smallTechFont));
+  gr_set_font(FontLock(RES_smallTechFont));
   gr_string_size(temp, &x, &y);
 
   while ((x > SG_SLOT_WD - SG_SLOT_OFFSET_X) && (sz > 0))
@@ -897,7 +897,7 @@ errtype load_that_thar_game(int which_slot)
     player_create_initial();
     player_struct.level = 0xFF; // make sure we load textures
     Poke_SaveName(which_slot);
-    change_mode_func(0, 0, (void *)GAME_LOOP);
+    change_mode_func(0, 0, GAME_LOOP);
     retval = load_game(save_game_name);
     if (retval != OK)
     {
@@ -929,8 +929,8 @@ errtype journey_continue_func(uchar draw_stuff)
     RefTable *rt = ResReadRefTable(REFID(rid));
     if (RefIndexValid(rt, i))
     {
-      FrameDesc *f = (FrameDesc *)malloc(RefSize(rt, i));
-      RefExtract(rt, rid, f);
+      FrameDesc *f = (FrameDesc *)malloc(RefSizeDecoded(rt, i, &FrameDescLayout));
+      RefExtractDecoded(rt, rid, &FrameDescLayout, f);
       f->bm.bits = (void *)(f+1);
       f->bm.h = 200; //SUPER HACK: resource reports 320
       ss_bitmap(&(f->bm), 0, 0);
@@ -1132,7 +1132,7 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
 
 
 
-uchar intro_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
+uchar intro_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
   uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
   int code = kev->code & ~(KB_FLAG_DOWN | KB_FLAG_2ND);

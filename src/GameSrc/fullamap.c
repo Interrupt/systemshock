@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lvldata.h"
 
 extern uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte but);
-extern uchar amap_scroll_handler(uiEvent *ev, LGRegion *r, void *user_data);
+extern uchar amap_scroll_handler(uiEvent *ev, LGRegion *r, intptr_t user_data);
 
 extern grs_screen *svga_screen;
 extern grs_screen *cit_screen;
@@ -42,7 +42,7 @@ extern grs_screen *cit_screen;
 //  INTERNAL PROTOTYPES
 // -------------------
 uchar amap_mouse_handler(uiEvent *ev, LGRegion *, void *);
-uchar amap_key_handler(uiEvent *ev, LGRegion *r, void *user_data);
+uchar amap_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data);
 errtype amap_init(void);
 void amap_start(void);
 void amap_exit(void);
@@ -56,7 +56,7 @@ uchar amap_mouse_handler(uiEvent *ev, LGRegion *reg, void *v) {
 
 uchar amap_kb_callback(curAMap *amptr, int code);
 
-uchar amap_key_handler(uiEvent *ev, LGRegion *r, void *user_data) {
+uchar amap_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
     uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
 
     if (amap_kb_callback(oAMap(MFD_FULLSCR_MAP), kev->code))
@@ -76,7 +76,7 @@ errtype amap_init(void) {
     LGRect mac_rect = {{0, 0}, {640, 480}};
 
     generic_reg_init(TRUE, &amap_root_region, &mac_rect, &amap_slab, amap_key_handler, amap_mouse_handler);
-    uiInstallRegionHandler(&amap_root_region, UI_EVENT_KBD_POLL | UI_EVENT_MOUSE, amap_scroll_handler, NULL, &id);
+    uiInstallRegionHandler(&amap_root_region, UI_EVENT_KBD_POLL | UI_EVENT_MOUSE, amap_scroll_handler, 0, &id);
     return (OK);
 }
 

@@ -65,7 +65,7 @@ typedef struct {
    struct _llist *pprev;		// ptr to prev node or NULL if at head
    char *label;
    hotkey_callback f;
-   void *user_data;
+   intptr_t user_data;
    short keycode;
    ulong context;
    TNG *submenu;
@@ -116,7 +116,7 @@ uchar tng_menu_mousebutt(TNG *ptng, uchar type, LGPoint loc);
 uchar tng_menu_signal(TNG *ptng, ushort signal);
 
 errtype tng_menu_add_line(TNG *ptng, char *label, hotkey_callback f, short keycode, ulong context,
-   void *user_data, char *help_text);
+   intptr_t user_data, char *help_text);
 
 errtype tng_menu_add_submenu(TNG *ptng, char *label, TNG *submenu);
 

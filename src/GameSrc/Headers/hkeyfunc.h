@@ -135,7 +135,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Prototypes
 uchar quit_key_func(short keycode, ulong context, void *data);
 uchar really_quit_key_func(short keycode, ulong context, void *data);
-uchar change_mode_func(short keycode, ulong context, void *data);
+uchar change_mode_func(ushort keycode, ulong context, intptr_t data);
 uchar toggle_time_func(short keycode, ulong context, void *data);
 uchar do_popup_textmenu(short keycode, ulong context, void *g);
 uchar mono_config_func(short keycode, ulong context, void *data);
@@ -163,26 +163,26 @@ uchar zoom_3d_func(short keycode, ulong context, void *data);
 uchar menu_close_func(short keycode, ulong context, void *data);
 void start_music(void);
 void stop_music(void);
-uchar toggle_music_func(short, ulong, void *);
+uchar toggle_music_func(ushort, ulong, intptr_t);
 uchar mono_clear_func(short keycode, ulong context, void *data);
 uchar edit_flags_func(short keycode, ulong context, void *data);
 uchar mono_toggle_func(short keycode, ulong context, void *data);
 uchar new_level_func(short keycode, ulong context, void *data);
-uchar toggle_physics_func(short keycode, ulong context, void *data);
-uchar toggle_giveall_func(short keycode, ulong context, void *data);
-uchar toggle_up_level_func(short keycode, ulong context, void *data);
-uchar toggle_down_level_func(short keycode, ulong context, void *data);
+uchar toggle_physics_func(ushort keycode, ulong context, intptr_t data);
+uchar toggle_giveall_func(ushort keycode, ulong context, intptr_t data);
+uchar toggle_up_level_func(ushort keycode, ulong context, intptr_t data);
+uchar toggle_down_level_func(ushort keycode, ulong context, intptr_t data);
 uchar toggle_sfx_func(short keycode, ulong context, void *data);
 
 uchar save_hotkey_func(short, ulong, void *);
-uchar pause_game_func(short, ulong, void *);
-uchar clear_fullscreen_func(short keycode, ulong context, void *data);
-uchar arm_grenade_hotkey(short keycode, ulong context, void *data);
-uchar select_grenade_hotkey(short keycode, ulong context, void *data);
-uchar select_drug_hotkey(short keycode, ulong context, void *data);
-uchar use_drug_hotkey(short keycode, ulong context, void *data);
+uchar pause_game_func(ushort, ulong, intptr_t );
+uchar clear_fullscreen_func(ushort keycode, ulong context, intptr_t data);
+uchar arm_grenade_hotkey(ushort keycode, ulong context, intptr_t data);
+uchar select_grenade_hotkey(ushort keycode, ulong context, intptr_t data);
+uchar select_drug_hotkey(ushort keycode, ulong context, intptr_t data);
+uchar use_drug_hotkey(ushort keycode, ulong context, intptr_t data);
 
-uchar toggle_mouse_look(short keycode, ulong context, void *data);
+uchar toggle_mouse_look(ushort keycode, ulong context, intptr_t data);
 
 // uchar (short keycode, ulong context, void* data);
 

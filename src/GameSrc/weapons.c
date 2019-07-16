@@ -101,7 +101,7 @@ uchar fire_player_software(LGPoint *pos, LGRegion *r, uchar pull);
 void unload_current_weapon(void);
 void check_temperature(weapon_slot *ws, uchar clear);
 uchar reload_current_weapon(void);
-uchar reload_weapon_hotkey(short keycode, ulong context, void *data);
+uchar reload_weapon_hotkey(ushort keycode, ulong context, intptr_t data);
 uchar ready_to_draw_handart(void);
 
 // -------------------------------------------------
@@ -1452,7 +1452,7 @@ uchar reload_current_weapon(void) {
     return FALSE;
 }
 
-uchar reload_weapon_hotkey(short key, ulong context, void *data) {
+uchar reload_weapon_hotkey(ushort key, ulong context, intptr_t data) {
     int differ = (int)data;
     weapon_slot *ws = &player_struct.weapons[player_struct.actives[ACTIVE_WEAPON]];
     int ammosc;

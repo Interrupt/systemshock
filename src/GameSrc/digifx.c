@@ -309,17 +309,17 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
     s_dprm.pan = secret_global_pan;
 #ifdef AUDIOLOGS
     if (sfx_code != real_code) {
-        s_dprm.data = NULL;
+        s_dprm.data = 0;
         s_dprm.vol = volumes[sfx_code] * curr_sfx_vol / 100;
     } else
 #endif
     {
         if (id != OBJ_NULL)
-            s_dprm.data = (void *)(unsigned int)id;
+            s_dprm.data = id;
         else if (x != 0)
-            s_dprm.data = (void *)(0x80000000 | (x << 16) | y);
+            s_dprm.data = (0x80000000 | (x << 16) | y);
         else
-            s_dprm.data = NULL;
+            s_dprm.data = 0;
         s_dprm.snd_ref = vocRes; // okay, I'm cheating a little here
         set_sample_pan_gain(&s_dprm);
     }
@@ -327,7 +327,7 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
     // have to hash x,y no id to a secret ID code, eh?
     s_dprm.flags = 0;
     len = ResSize(vocRes);
-    addr = (uchar *)ResLock(vocRes);
+    addr = (uchar *)ResLockRaw(vocRes);
     if (addr != NULL) {
         retval = snd_sample_play(vocRes, len, addr, &s_dprm);
     } else

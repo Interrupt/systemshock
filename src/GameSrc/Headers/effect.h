@@ -160,13 +160,13 @@ extern ubyte effect_matrix[CRIT_HIT_NUM][AMMO_TYPES][SEVERITIES];
 #define SET_CRITTER_LAMP(id, lval) (CRITLIT(id) = ((CRITLIT(id) & (~CRITTER_LAMP_MASK)) | (lval << CRITTER_LAMP_SHIFT)))
 #define CLEAR_CRITTER_LAMP(id) (CRITLIT(id) &= (~CRITTER_LAMP_MASK))
 
-typedef void (*AnimlistCB)(ObjID id, void *user_data);
+typedef void (*AnimlistCB)(ObjID id, intptr_t user_data);
 
 // do_special_effect
 ObjID do_special_effect(ObjID owner, ubyte effect, ubyte start, ObjID obj, short location);
 ObjID do_special_effect_location(ObjID owner, ubyte effect, ubyte start, ObjLoc *loc, short location);
 void advance_animations(void);
-errtype add_obj_to_animlist(ObjID id, uchar repeat, uchar reverse, uchar cycle, short speed, int cb_id, void *user_data,
+errtype add_obj_to_animlist(ObjID id, uchar repeat, uchar reverse, uchar cycle, short speed, int cb_id, intptr_t user_data,
                             short cbtype);
 errtype remove_obj_from_animlist(ObjID id);
 errtype animlist_clear();
@@ -186,7 +186,7 @@ typedef struct {
     uchar flags;
     short cbtype;
     int callback;
-    void *user_data;
+    intptr_t user_data;
     short speed;
 } AnimListing;
 

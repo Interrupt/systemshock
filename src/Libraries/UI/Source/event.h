@@ -153,14 +153,14 @@ typedef struct _ui_user_defined_event
    one at a time until an event handler chooses to accept it.   */
 
 
-typedef uchar (*uiHandlerProc)(uiEvent* e, LGRegion* r, void* state);
+typedef uchar (*uiHandlerProc)(uiEvent* e, LGRegion* r, intptr_t state);
 
 // If an event-handler's proc returns true, it has accepted the event, and no
 // other event handler will see the event.  An event handler will only be
 // offered those events specified by its typemask; it automatically rejects
 // any other events. 
 
-errtype uiInstallRegionHandler(LGRegion* v, ulong evmask, uiHandlerProc proc, void* state, int* id);
+errtype uiInstallRegionHandler(LGRegion* v, ulong evmask, uiHandlerProc proc, intptr_t state, int* id);
 // installs an event handler at the front of r's handler chain.  The event handler
 // will call "proc" with the event, the region "v", and the value of "state" 
 // whenever "v" receives any event whose type bit is set in evmask.  

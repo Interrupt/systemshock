@@ -143,7 +143,7 @@ extern bool DoubleSize;
 // --------------
 //  PROTOTYPES
 // --------------
-uchar hud_color_bank_cycle(short keycode, ulong context, void *data);
+uchar hud_color_bank_cycle(ushort keycode, ulong context, intptr_t data);
 void hud_free_line(int i);
 void hud_delete_line(int i);
 void compute_hud_var(HudLine *hl);
@@ -153,7 +153,7 @@ void hud_shutdown_lines(void);
 // --------------
 //  FUNCTIONS
 // --------------
-uchar hud_color_bank_cycle(short keycode, ulong context, void *data) {
+uchar hud_color_bank_cycle(ushort keycode, ulong context, intptr_t data) {
     hud_color_bank = (hud_color_bank + 1) % HUD_COLOR_BANKS;
     return TRUE;
 }
@@ -512,7 +512,7 @@ void hud_do_objs(short xtop, short ytop, short unused1, short unused2, uchar rev
         targ_frame = NUM_TARG_FRAMES;
 
     // KLC   safe_set_cliprect(0,0,xwid,ywid);
-    gr_set_font((grs_font *)ResLock(RES_tinyTechFont));
+    gr_set_font((grs_font *)ResLockRaw(RES_tinyTechFont));
     for (i = 0; i < current_num_hudobjs; i++) {
         struct _hudobj_data *dat = &hudobj_vec[i];
         if (dat->id == OBJ_NULL)
@@ -554,7 +554,7 @@ errtype hud_update(uchar redraw_whole, frc *context) {
     short a, b, c, d;
     STORE_CLIP(a, b, c, d);
     safe_set_cliprect(0, 0, fc->xwid, fc->ywid);
-    gr_set_font((grs_font *)ResLock(RES_tinyTechFont));
+    gr_set_font((grs_font *)ResLockRaw(RES_tinyTechFont));
 
     /* TEMP		This is where we display the frame counter, if it is on.
     extern Boolean	gShowFrameCounter;

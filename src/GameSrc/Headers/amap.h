@@ -55,8 +55,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define AMAP_HAVE_NOTE 1
 #define AMAP_NO_NOTE   2
 
-#define AMAP_NOTE_HACK_PTR ((void *)0xffffffff)
-
 // really should live in the player structure....
 typedef struct {
     uchar init;
@@ -77,7 +75,7 @@ void amap_draw(curAMap *amptr, int expose);
 void amap_version_set(int id, int new_ver);
 void automap_init(int version, int id);
 void amap_invalidate(int id);
-void *amap_loc_note_check(curAMap *amptr, int *x, int *y, int *to_do); // note the void is really a MapElem
+ushort amap_loc_note_check(curAMap *amptr, void *curmp, int *x, int *y, int *to_do); // ushort is an ObjID
 uchar amap_flags(curAMap *amptr, int flags, int set);                  // set -1 to toggle
 uchar amap_zoom(curAMap *amptr, uchar set, int zoom_delta);
 void amap_pan(curAMap *amptr, int dir, int *dist);
@@ -86,7 +84,8 @@ void amap_settings_copy(curAMap *from, curAMap *to);
 
 // this is a mess
 // it modifies x and y to be map location of click
-// returns null if off map, (void*)objid if found, (void*)mapelemptr if empty
+// returns null if off map, (void*)mapelemptr if within map
+// sets amptr->note_obj to the note if found, else OBJ_NULL
 void *amap_deal_with_map_click(curAMap *amptr, int *x, int *y);
 
 // strings

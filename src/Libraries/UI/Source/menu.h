@@ -66,7 +66,7 @@ typedef struct {
 // Prototypes
 Gadget *gad_menu_create(Gadget *parent, LGPoint *coord, int z, TNGStyle *sty, int width, char *name);
 
-errtype gad_menu_add_line(Gadget *menu, char *label, hotkey_callback f, short keycode, ulong context, void *user_data, char *help_text);
+errtype gad_menu_add_line(Gadget *menu, char *label, hotkey_callback f, short keycode, ulong context, intptr_t user_data, char *help_text);
 errtype gad_menu_add_submenu(Gadget *menu, char *label, Gadget *sub_menu);
 errtype gad_menu_popup(Gadget *menu);
 errtype gad_menu_popup_at_mouse(Gadget *menu);

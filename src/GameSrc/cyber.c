@@ -183,7 +183,7 @@ errtype enter_cyberspace_stuff(char dest_lev) {
         full_visible |= FULL_R_MFD_MASK | FULL_INVENT_MASK;
     hardware_closedown(TRUE);
     drug_closedown(TRUE);
-    change_mode_func(0, 0, (void *)FULLSCREEN_LOOP);
+    change_mode_func(0, 0, FULLSCREEN_LOOP);
 
     // Hud stuff
     if (dest_lev >= FIRST_CSPACE_LEVEL)
@@ -234,7 +234,7 @@ errtype exit_cyberspace_stuff() {
     drug_startup(TRUE);
     hardware_startup(TRUE);
     if (old_loop != FULLSCREEN_LOOP)
-        change_mode_func(0, 0, (void *)old_loop);
+        change_mode_func(0, 0, old_loop);
     inventory_draw_new_page(0);
 
     /*   if (gCyberHdl != NULL)
