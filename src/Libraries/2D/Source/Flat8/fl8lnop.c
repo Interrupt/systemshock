@@ -44,11 +44,11 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli);
 {
 int Handle_LinClut_Loop_PPC(fix u, fix v, fix du, fix dv, fix dx,
                                                                                                                 grs_tmap_loop_info
-*tli, uchar *start_pdest, uchar *t_bits, long gr_row, uchar *t_clut, uchar	t_wlog, ulong t_mask);
+*tli, uchar *start_pdest, uchar *t_bits, int32_t gr_row, uchar *t_clut, uchar	t_wlog, uint32_t t_mask);
 }*/
 
 int Handle_LinClut_Loop_C(fix u, fix v, fix du, fix dv, fix dx, grs_tmap_loop_info *tli, uchar *start_pdest,
-                          uchar *t_bits, long gr_row, uchar *t_clut, uchar t_wlog, ulong t_mask) {
+                          uchar *t_bits, int32_t gr_row, uchar *t_clut, uchar t_wlog, uint32_t t_mask) {
     register int x, k;
     uchar *p_dest;
     register fix rx, lx;
@@ -105,14 +105,14 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
     register int x, k;
     uchar *p_dest;
     uchar temp_pix;
-    long *t_vtab;
+    int32_t *t_vtab;
     uchar *t_bits;
     uchar *t_clut;
     uchar t_wlog;
-    ulong t_mask;
-    long gr_row;
+    uint32_t t_mask;
+    int32_t gr_row;
     uchar *start_pdest;
-    long inv;
+    int32_t inv;
 
     u = tli->left.u;
     du = tli->right.u - u;

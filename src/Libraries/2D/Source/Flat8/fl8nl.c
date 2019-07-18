@@ -46,10 +46,10 @@ int gri_tluc8_lin_umap_loop(grs_tmap_loop_info *tli)
 {
   fix u = tli->left.u, du = tli->right.u - u;
   fix v = tli->left.v, dv = tli->right.v - v;
-  long *t_vtab = tli->vtab;
+  int32_t *t_vtab = tli->vtab;
   uchar *t_bits = tli->bm.bits;
   uchar *t_clut = tli->clut;
-  ulong t_mask = tli->mask;
+  uint32_t t_mask = tli->mask;
   uchar t_wlog = tli->bm.wlog;
   uchar temp_pix;
 

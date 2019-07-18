@@ -50,14 +50,14 @@ int gri_wall_umap_loop(grs_tmap_loop_info *tli) {
     // locals used to store copies of tli-> stuff, so its in registers on the PPC
     int k, y;
     uchar t_wlog;
-    ulong t_mask;
-    long *t_vtab;
+    uint32_t t_mask;
+    int32_t *t_vtab;
     uchar *t_bits;
     uchar *p_dest;
     fix inv_dy;
     uchar temp_pix;
     uchar *t_clut;
-    long gr_row;
+    int32_t gr_row;
 
 #if InvDiv
     inv_dy = fix_div(fix_make(1, 0), tli->w);
@@ -281,12 +281,12 @@ void gri_opaque_clut_wall_umap_init(grs_tmap_loop_info *tli) {
 {
 extern int HandleWallLoop1D_PPC(grs_tmap_loop_info *tli,
                                                                                                                                 fix u, fix v, fix dv, fix dy,
-                                                                                                                                uchar *t_clut, long *t_vtab, uchar *o_bits,
-                                                                                                                                long gr_row, ulong t_mask, ulong t_wlog);
+                                                                                                                                uchar *t_clut, int32_t *t_vtab, uchar *o_bits,
+                                                                                                                                int32_t gr_row, uint32_t t_mask, uint32_t t_wlog);
 }*/
 
-int HandleWallLoop1D_C(grs_tmap_loop_info *tli, fix u, fix v, fix dv, fix dy, uchar *t_clut, long *t_vtab,
-                       uchar *o_bits, long gr_row, ulong t_mask, ulong t_wlog) {
+int HandleWallLoop1D_C(grs_tmap_loop_info *tli, fix u, fix v, fix dv, fix dy, uchar *t_clut, int32_t *t_vtab,
+                       uchar *o_bits, int32_t gr_row, uint32_t t_mask, uint32_t t_wlog) {
     register int k, y;
     register fix inv_dy;
     register uchar *grd_bits, *p_dest, *t_bits;
@@ -356,14 +356,14 @@ int gri_wall_umap_loop_1D(grs_tmap_loop_info *tli) {
     // locals used to store copies of tli-> stuff, so its in registers on the PPC
     int k, y;
     uchar t_wlog;
-    ulong t_mask;
-    long *t_vtab;
+    uint32_t t_mask;
+    int32_t *t_vtab;
     uchar *t_bits, *o_bits;
     uchar *p_dest;
     fix inv_dy;
     uchar temp_pix;
     uchar *t_clut;
-    long gr_row;
+    int32_t gr_row;
 
 #if InvDiv
     inv_dy = fix_div(fix_make(1, 0), tli->w);

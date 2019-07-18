@@ -125,7 +125,7 @@ typedef struct {
 } grs_mode_info;
 
 /* amazing rgb type. */
-typedef ulong grs_rgb;
+typedef uint32_t grs_rgb;
 
 /* structure for bitmaps to be drawn from and to.  if a bitmap is contained
    within a larger bitmap, the row field tells how wide the containing bitmap
@@ -152,7 +152,7 @@ typedef struct _sten {
 /* stencil header for non-rectangular clipping. */
 typedef struct {
    grs_sten_elem *elem;    /* pointer to first stencil element */
-   long flags;             /* specific stencil data. */
+   int32_t flags;             /* specific stencil data. */
 } grs_stencil;
 
 /* structure for clipping regions.  a clipping region can either be a simple
@@ -202,12 +202,12 @@ typedef struct {
    color, font attributes, filling attributes, and an embedded clipping
    region structure. */
 typedef struct {
-   long fcolor;      /* current drawing color */
-   long bcolor;      /* background color */
+   int32_t fcolor;      /* current drawing color */
+   int32_t bcolor;      /* background color */
    grs_font *font;   /* font id */
-   long text_attr;   /* attributes for text */
-   long fill_type;   /* how to fill primitives */
-   long fill_parm;   /* parameter for fill */
+   int32_t text_attr;   /* attributes for text */
+   int32_t fill_type;   /* how to fill primitives */
+    intptr_t fill_parm;   /* parameter for fill */
    grs_clip clip;    /* clipping region */
 } grs_context;
 

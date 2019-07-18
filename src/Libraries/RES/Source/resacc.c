@@ -50,36 +50,54 @@ void *ResDecode(void *raw, size_t size, UserDecodeData ud)
     const ResLayout *layout = (const ResLayout*)ud;
     // Working pointer into the raw data.
     uchar *rp = raw;
-    void *buff = malloc(size + (layout->msize - layout->dsize));
-    uchar *b = (uchar *)buff;
-    uchar *bp;
-    const ResField *field = layout->fields;
+    // Number of entries, if it's an array.
+    int nentries = (layout->flags & LAYOUT_FLAG_ARRAY) ? size / layout->dsize : 1;
+    // Total size of the decoded data.
+    size_t bufsize = layout->msize * nentries;
+    if (layout->flags & LAYOUT_FLAG_RAW_DATA_FOLLOWS) {
+        // Additional raw data follows; add its size to the buffer.
+        assert(nentries == 1);
+        bufsize += size - layout->dsize;
+    }
+    void *buff = malloc(bufsize);
+    int i;
+    for (i = 0; i < nentries; ++i) {
+        uchar *b = ((uchar *)buff) + i * layout->msize;
+        uchar *bp;
+        const ResField *field = layout->fields;
 
-    while (field->type != RFFT_END) {
-        bp = b + field->offset;
-        switch (field->type) {
-        case RFFT_PAD:
-            rp += field->offset;
-            break;
-        case RFFT_UINT8:
-            *bp = *rp++;
-            break;
-        case RFFT_UINT16:
-            *(uint16_t*)bp = (uint16_t)rp[0] | ((uint16_t)rp[1] << 8);
-            rp += 2;
-            break;
-        case RFFT_UINT32:
-            *(uint32_t*)bp = (uint32_t)rp[0] | ((uint32_t)rp[1] << 8) |
-                ((uint32_t)rp[2] << 16) | ((uint32_t)rp[3] << 24);
-            rp += 4;
-            break;
-        case RFFT_RAW: // should be last entry
-            memcpy(bp, rp, size - (rp-(uchar*)raw));
-            break;
-        default:
-            assert(!"Invalid resource field type");
+        while (field->type != RFFT_END) {
+            bp = b + field->offset;
+            switch (field->type) {
+            case RFFT_PAD:
+                rp += field->offset;
+                break;
+            case RFFT_UINT8:
+                *bp = *rp++;
+                break;
+            case RFFT_UINT16:
+                *(uint16_t*)bp = (uint16_t)rp[0] | ((uint16_t)rp[1] << 8);
+                rp += 2;
+                break;
+            case RFFT_UINT32:
+                *(uint32_t*)bp = (uint32_t)rp[0] | ((uint32_t)rp[1] << 8) |
+                    ((uint32_t)rp[2] << 16) | ((uint32_t)rp[3] << 24);
+                rp += 4;
+                break;
+            case RFFT_INTPTR:
+                // These occupy 32 bits in file but expand to pointer size in memory.
+                *(uintptr_t*)bp = (uint32_t)rp[0] | ((uint32_t)rp[1] << 8) |
+                    ((uint32_t)rp[2] << 16) | ((uint32_t)rp[3] << 24);
+                rp += 4;
+                break;
+            case RFFT_RAW: // should be last entry
+                memcpy(bp, rp, size - (rp-(uchar*)raw));
+                break;
+            default:
+                assert(!"Invalid resource field type");
+            }
+            ++field;
         }
-        ++field;
     }
     return buff;
 }
@@ -125,7 +143,7 @@ void *ResLock(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc fre
     prd->lock++;
 
     // Return ptr
-    return (prd->ptr);
+    return decoder ? prd->decoded : prd->ptr;
 }
 
 //      ---------------------------------------------------------

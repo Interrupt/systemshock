@@ -177,7 +177,7 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
     // locals used to store copies of tli-> stuff, so its in registers on the PPC
     register int x, k;
     int t_xl, t_xr, inv;
-    long *t_vtab;
+    int32_t *t_vtab;
     uchar *t_bits;
     uchar *p_dest;
     uchar temp_pix;

@@ -62,7 +62,7 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
     ulong t_mask = tli->mask;
     uchar t_wlog = tli->bm.wlog;
     uchar *g_ltab = grd_screen->ltab;
-    long *t_vtab = tli->vtab;
+    int32_t *t_vtab = tli->vtab;
     uchar *t_bits = tli->bm.bits;
 
     do {

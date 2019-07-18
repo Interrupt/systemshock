@@ -106,6 +106,7 @@ typedef enum {
     RFFT_UINT8,    // 8-bit integer
     RFFT_UINT16,   // 16-bit integer
     RFFT_UINT32,   // 32-bit integer
+    RFFT_INTPTR,   // 32 bits on disc, 32 or 64 bits in memory.
     RFFT_RAW,      // raw data, copy 'offset' bytes or rest of resource if 0
     RFFT_END       // mark end of table
 } ResFileFieldType;
@@ -117,10 +118,19 @@ typedef struct {
 } ResField;
 
 typedef struct {
-    size_t dsize;                // size of resource on disc
-    size_t msize;                // size of resource in memory
+    size_t dsize;        // size of resource on disc
+    size_t msize;        // size of resource in memory
+    uint32_t flags;      // misc. info.
     ResField fields[];
 } ResLayout;
+
+// Indicates that multiple records exist within a resource, each of 'dsize'
+// bytes, up to the resource size.
+#define LAYOUT_FLAG_ARRAY            0x01
+// Indicates that raw data (e.g. bitmap data) follows a header in the resource.
+// The header is decoded according to the layout and the raw data is copied to
+// immediately following it.
+#define LAYOUT_FLAG_RAW_DATA_FOLLOWS 0x02
 
 // User data for a resource decoding function.
 typedef intptr_t UserDecodeData;
