@@ -21,7 +21,7 @@ extern byte player_get_eye();
 
 extern uchar game_paused;
 extern short mouseInstantX, mouseInstantY;
-extern long eye_mods[3];
+extern int32_t eye_mods[3];
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;

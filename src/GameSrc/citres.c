@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 const ResLayout FrameDescLayout = {
   28, // on-disc size
   sizeof(FrameDesc), // in-memory size
+  LAYOUT_FLAG_RAW_DATA_FOLLOWS, // flags
   {
     { RFFT_PAD, 4 }, // skip placeholder bits pointer
     { RFFT_UINT8,  offsetof(FrameDesc,bm.type) },

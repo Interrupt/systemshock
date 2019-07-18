@@ -64,13 +64,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tilename.h"
 #include "mapflags.h"
 
-long eye_mods[3] = {0, 0, 0};
+int32_t eye_mods[3] = {0, 0, 0};
 
 // prototype
-long *fr_objslew_obj_to_list(long *flist, Obj *cobj, int count);
-Obj *fr_objslew_list_to_obj(long *flist, Obj *cobj, int count);
+int32_t *fr_objslew_obj_to_list(int32_t *flist, Obj *cobj, int count);
+Obj *fr_objslew_list_to_obj(int32_t *flist, Obj *cobj, int count);
 
-long *fr_objslew_obj_to_list(long *flist, Obj *cobj, int count) {
+int32_t *fr_objslew_obj_to_list(int32_t *flist, Obj *cobj, int count) {
     switch (count - 1) {
     case 5:
         flist[5] = (cobj->loc.b << 8);
@@ -90,7 +90,7 @@ long *fr_objslew_obj_to_list(long *flist, Obj *cobj, int count) {
     return flist;
 }
 
-Obj *fr_objslew_list_to_obj(long *flist, Obj *cobj, int count) {
+Obj *fr_objslew_list_to_obj(int32_t *flist, Obj *cobj, int count) {
     switch (count - 1) {
     case 5:
         cobj->loc.b = (flist[5] >> 8);
@@ -111,8 +111,8 @@ Obj *fr_objslew_list_to_obj(long *flist, Obj *cobj, int count) {
 }
 
 // returns whether the camera moved or not
-uchar fr_objslew_go_real_height(Obj *cobj, long *eye) {
-    long leye[3];
+uchar fr_objslew_go_real_height(Obj *cobj, int32_t *eye) {
+    int32_t leye[3];
     int x, y, z;
     MapElem *o_t;
 
@@ -152,7 +152,7 @@ uchar fr_objslew_go_real_height(Obj *cobj, long *eye) {
     return TRUE;
 }
 
-uchar fr_objslew_allowed(Obj *cobj, long *eye) {
+uchar fr_objslew_allowed(Obj *cobj, int32_t *eye) {
     int x, y; // z
     MapElem *o_t;
 
@@ -173,7 +173,7 @@ uchar fr_objslew_allowed(Obj *cobj, long *eye) {
 // to physics teleport or not
 // should teach it not to slam all velocities!
 uchar fr_objslew_moveone(Obj *cobj, ObjID objnum, int which, int how, uchar conform) {
-    long eye[4];
+    int32_t eye[4];
     uchar valid_pos = TRUE;
 
     if (cobj == NULL)

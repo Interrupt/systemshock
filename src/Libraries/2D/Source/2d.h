@@ -20,15 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __2D_H 
 #define __2D_H
 
+#include "GR/grs.h"
+#include "plytyp.h"
+#include "tmaps.h"
+
 #pragma pack(push,2)
 
-#include "GR/grs.h"
-
-typedef struct {
-   fix x, y;                  
-   fix u, v, w;               
-   fix i;                     
-} grs_vertex;
 typedef struct {
    grs_point3d normal;
    grs_point3d u_grad;
@@ -379,15 +376,7 @@ do {                                 \
 #define gr_cget_fclip_r(c) ((c)->gc.clip.f.right)
 #define gr_cget_fclip_b(c) ((c)->gc.clip.f.bot)
 extern int gr_detect (grs_sys_info *info);
-typedef struct {
-   short tmap_type;
-   short flags;
-   uchar *clut;
-} grs_tmap_info;
-#define TMF_PER 1
-#define TMF_CLUT 2
-#define TMF_FLOOR 4
-#define TMF_WALL 4
+
 enum {
    GRM_320x200x8,
    GRM_320x200x8X,

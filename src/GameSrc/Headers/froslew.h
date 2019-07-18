@@ -46,16 +46,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //¥¥#include <rtestobj.h>
 #endif
 
-long *fr_objslew_obj_to_fix(long *flist, Obj *cobj, int count);
-Obj *fr_objslew_fix_to_obj(long *flist, Obj *cobj, int count);
+int32_t *fr_objslew_obj_to_fix(int32_t *flist, Obj *cobj, int count);
+Obj *fr_objslew_fix_to_obj(int32_t *flist, Obj *cobj, int count);
 uchar fr_objslew_tele_to(Obj *cobj, int x, int y);
-uchar fr_objslew_allowed(Obj *cobj, long *eye);
+uchar fr_objslew_allowed(Obj *cobj, int32_t *eye);
 uchar fr_objslew_moveone(Obj *objp, ObjID objnum, int which, int how, uchar conform);
-uchar fr_objslew_go_real_height(Obj *cobj, long *eye);
+uchar fr_objslew_go_real_height(Obj *cobj, int32_t *eye);
 uchar fr_objslew_setone(int which, int l_new);
 
 #ifndef __FROSLEW_SRC
-extern long eye_mods[3];
+extern int32_t eye_mods[3];
 extern uchar slew_conform_to_terrain, slew_full_3d;
 #endif
 

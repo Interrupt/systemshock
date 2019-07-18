@@ -136,7 +136,7 @@ void *RefGet(Ref ref, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc fr
 
     // Get hold of ref
     prd = RESDESC(id);
-    if (prd->ptr == NULL) {
+    if (prd->decoded == NULL) {
         if (ResLoadResource(REFID(ref), ResDecodeRefTable, 0, ResFreeRefTable) == NULL) {
             ERROR("%s: RefID %x == NULL!", __FUNCTION__, ref);
             return (NULL);

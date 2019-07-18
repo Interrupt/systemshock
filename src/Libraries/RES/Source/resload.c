@@ -74,19 +74,23 @@ void *ResLoadResource(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFree
         return NULL;
     }
 
-    // Should not be called if resource is already loaded.
-    assert(prd->ptr == NULL);
-    // Allocate memory, setting magic id so pager can tell who it is if need be.
-    prd->ptr = malloc(prd->size);
-    if (prd->ptr == NULL)
-        return (NULL);
-
-    // Load from disk
-    ResRetrieve(id, prd->ptr);
+    // Should not be called if resource is already loaded, unless it's been
+    // preloaded and we now need to decode it.
+    if (prd->ptr == NULL) {
+	// Allocate memory, setting magic id so pager can tell who it is if need be.
+	prd->ptr = malloc(prd->size);
+	if (prd->ptr == NULL)
+	    return (NULL);
+	// Load from disk
+	ResRetrieve(id, prd->ptr);
+    } else {
+	assert(decoder != NULL);
+    }
     // Set free func if supplied.
     prd->free_func = freer;
     // Decode if a decoder was supplied.
     if (decoder != NULL) {
+	assert(prd->decoded == NULL);
 	prd->decoded = decoder(prd->ptr, prd->size, data);
 	return prd->decoded;
     }

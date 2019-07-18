@@ -120,6 +120,22 @@ extern ObjID hack_cam_surrogates[NUM_HACK_CAMERAS];
 extern height_semaphor h_sems[NUM_HEIGHT_SEMAPHORS];
 extern uchar trigger_check;
 
+// Describe the layout of the anims table in a resfile.
+const ResLayout AnimLayoutPC = {
+    15,                  // size on disc
+    sizeof(AnimListing), // size in memory
+    LAYOUT_FLAG_ARRAY,   // flags
+    {
+	{ RFFT_UINT16, offsetof(AnimListing, id)        },
+	{ RFFT_UINT8,  offsetof(AnimListing, flags)     },
+	{ RFFT_UINT16, offsetof(AnimListing, cbtype)    },
+	{ RFFT_UINT32, offsetof(AnimListing, callback)  },
+	{ RFFT_INTPTR, offsetof(AnimListing, user_data) },
+	{ RFFT_UINT16, offsetof(AnimListing, speed)     },
+	{ RFFT_END,    0 }
+    }
+};
+
 //-------------------------------------------------------
 void store_objects(char **buf, ObjID *obj_array, char obj_count) {
     char *s = (char *)malloc(obj_count * sizeof(Obj) * 3);
@@ -1433,18 +1449,8 @@ errtype load_current_map(Id id_num) {
     if (map_version > MAP_VERSION_NUMBER) {
         REF_READ(id_num, idx++, animlist);
     } else {
-	// FIXME do this with a decoder.
-        uchar *ap = (uchar *)ResLockRaw(id_num + idx);
-        for (i = 0; i < MAX_ANIMLIST_SIZE; i++) {
-            memmove(&animlist[i].id, ap, 2);
-            memmove(&animlist[i].flags, ap + 2, 1);
-            memmove(&animlist[i].cbtype, ap + 3, 12);
-            ap += 15;
-            /*SwapShortBytes(&animlist[i].id);
-            SwapShortBytes(&animlist[i].cbtype);
-            SwapLongBytes(&animlist[i].callback);
-            SwapShortBytes(&animlist[i].speed);*/
-        }
+	void *ap = ResLock(id_num + idx, ResDecode, (UserDecodeData)&AnimLayoutPC, NULL);
+	memcpy(animlist, ap, MAX_ANIMLIST_SIZE * sizeof(AnimListing));
         ResUnlock(id_num + idx);
         idx++;
     }

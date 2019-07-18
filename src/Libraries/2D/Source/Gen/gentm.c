@@ -51,7 +51,7 @@ void h_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti)
 {
    grs_vertex **p_left;          /* current left & right vertices */
    grs_vertex **p_right;
-   ulong y_min, y_max;           /* min & max vertex y coords */
+   uint32_t y_min, y_max;           /* min & max vertex y coords */
    fix w_min,w_max;
    int y,y_limit;                /* current screen coordinates */
    void (*tm_init)(grs_tmap_loop_info *, grs_vertex **);
@@ -118,7 +118,7 @@ do {
          for (i=0;i<n;i++) old_w[i]=vpl[i]->w;
       }
       /* fix w's so w=w_min+dw*(y-y0) for all vertices. */
-      info.dw=dw=(w_max-w_min)/((long )(y_max-y_min));
+      info.dw=dw=(w_max-w_min)/((int32_t )(y_max-y_min));
       info.w=w_min+fix_mul(dw,fix_ceil(y0)-y0);
       for (; pvp<vpl+n; ++pvp)
          (*pvp)->w=w_min+fix_mul((*pvp)->y - y0,dw);
@@ -187,7 +187,7 @@ void v_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti)
 {
    grs_vertex **p_top;              /* current top & bot vertices */
    grs_vertex **p_bot;
-   ulong x_min, x_max;              /* min & max vertex x coords */
+   uint32_t x_min, x_max;              /* min & max vertex x coords */
    int x,x_limit;                   /* current screen coordinates */
    fix w_min,w_max;
    fix *old_w = NULL;               /* list of old w values from vpl */
@@ -228,7 +228,7 @@ void v_umap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti)
          for (i=0;i<n;i++) old_w[i]=vpl[i]->w;
       }
       /* fix w's so w=w0+dw*(x-x0) for all vertices. */
-      info.dw=dw=(w_max-w_min)/((long )(x_max-x_min));
+      info.dw=dw=(w_max-w_min)/((int32_t )(x_max-x_min));
       info.w=w_min+fix_mul(dw,fix_ceil(x0)-x0);
       for (; pvp<vpl+n; ++pvp)
          (*pvp)->w=w_min+fix_mul((*pvp)->x - x0,dw);

@@ -43,12 +43,12 @@ int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli) {
     uchar solid_color;
     int t_xl, t_xr;
     uchar *p_dest;
-    long *t_vtab;
+    int32_t *t_vtab;
     uchar *t_bits;
     uchar *t_clut;
     uchar t_wlog;
-    ulong t_mask;
-    long gr_row;
+    uint32_t t_mask;
+    int32_t gr_row;
     uchar *start_pdest;
 
     solid_color = tli->solid;
@@ -134,12 +134,12 @@ int gri_trans_solid_floor_umap_loop(grs_tmap_loop_info *tli) {
     int x;
     // locals used to store copies of tli-> stuff, so its in registers on the PPC
     int t_xl, t_xr, t_y, gr_row;
-    long *t_vtab;
+    int32_t *t_vtab;
     uchar *t_bits;
     uchar *p_dest;
     uchar temp_pix;
     uchar t_wlog;
-    ulong t_mask;
+    uint32_t t_mask;
 
     solid_color = tli->solid;
     u = fix_div(tli->left.u, tli->w);
@@ -223,13 +223,13 @@ int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli) {
 
     // locals used to store copies of tli-> stuff, so its in registers on the PPC
     int t_yl, t_yr;
-    long *t_vtab;
+    int32_t *t_vtab;
     uchar *t_bits;
     uchar *p_dest;
     uchar *t_clut;
     uchar t_wlog;
-    ulong t_mask;
-    long gr_row;
+    uint32_t t_mask;
+    int32_t gr_row;
     int y;
 
     solid_color = tli->solid;
