@@ -79,26 +79,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // enumeration of classes
 // ## INSERT NEW CLASS HERE
-
-typedef enum ObjClass {
-    CLASS_GUN,
-    CLASS_AMMO,
-    CLASS_PHYSICS,
-    CLASS_GRENADE,
-    CLASS_DRUG,
-    CLASS_HARDWARE,
-    CLASS_SOFTWARE,
-    CLASS_BIGSTUFF,
-    CLASS_SMALLSTUFF,
-    CLASS_FIXTURE,
-    CLASS_DOOR,
-    CLASS_ANIMATING,
-    CLASS_TRAP,
-    CLASS_CONTAINER,
-    CLASS_CRITTER,
-    NUM_CLASSES,
-    CLASS_FIRST = CLASS_GUN
-} ObjClass;
+// Note these have a fixed size and fixed values in the game files. They are
+// as defined constants than an enum, and gcc does not like to make enums
+// 8-bit values.
+typedef uint8_t ObjClass;
+#define CLASS_GUN        0
+#define CLASS_AMMO       1
+#define CLASS_PHYSICS    2
+#define CLASS_GRENADE    3
+#define CLASS_DRUG       4
+#define CLASS_HARDWARE   5
+#define CLASS_SOFTWARE   6
+#define CLASS_BIGSTUFF   7
+#define CLASS_SMALLSTUFF 8
+#define CLASS_FIXTURE    9
+#define CLASS_DOOR      10
+#define CLASS_ANIMATING 11
+#define CLASS_TRAP      12
+#define CLASS_CONTAINER 13
+#define CLASS_CRITTER   14
+#define NUM_CLASSES     15
+#define CLASS_FIRST CLASS_GUN
 
 // The total number of objects in the game, and of each type
 // ## INSERT NEW CLASS HERE

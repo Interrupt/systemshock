@@ -136,6 +136,36 @@ const ResLayout AnimLayoutPC = {
     }
 };
 
+// Describe the layout of the objects table in a resfile. (27-byte PC record).
+const ResLayout ObjLayoutPC = {
+    27,                // size on disc
+    sizeof(Obj),       // size in memory
+    LAYOUT_FLAG_ARRAY, // flags
+    {
+	{ RFFT_UINT8,  offsetof(Obj, active)              },
+	{ RFFT_UINT8,  offsetof(Obj, obclass)             },
+	{ RFFT_UINT8,  offsetof(Obj, subclass)            },
+	{ RFFT_UINT16, offsetof(Obj, specID)              },
+	{ RFFT_UINT16, offsetof(Obj, ref)                 },
+	{ RFFT_UINT16, offsetof(Obj, next)                },
+	{ RFFT_UINT16, offsetof(Obj, prev)                },
+	{ RFFT_UINT16, offsetof(Obj, loc.x)               },
+	{ RFFT_UINT16, offsetof(Obj, loc.y)               },
+	{ RFFT_UINT8,  offsetof(Obj, loc.z)               },
+	{ RFFT_UINT8,  offsetof(Obj, loc.p)               },
+	{ RFFT_UINT8,  offsetof(Obj, loc.h)               },
+	{ RFFT_UINT8,  offsetof(Obj, loc.b)               },
+	{ RFFT_UINT8,  offsetof(Obj, info.ph)             },
+	{ RFFT_UINT8,  offsetof(Obj, info.type)           },
+	{ RFFT_UINT16, offsetof(Obj, info.current_hp)     },
+	{ RFFT_UINT8,  offsetof(Obj, info.make_info)      },
+	{ RFFT_UINT8,  offsetof(Obj, info.current_frame)  },
+	{ RFFT_UINT8,  offsetof(Obj, info.time_remainder) },
+	{ RFFT_UINT8,  offsetof(Obj, info.inst_flags)     },
+	{ RFFT_END,    0 }
+    }
+};
+
 //-------------------------------------------------------
 void store_objects(char **buf, ObjID *obj_array, char obj_count) {
     char *s = (char *)malloc(obj_count * sizeof(Obj) * 3);
@@ -940,16 +970,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, objs);
     } else {
-        // FIXME This looks like a job for a custom decoder
-        uchar *op = (uchar *)ResLockRaw(id_num + idx);
-        for (i = 0; i < NUM_OBJECTS; i++) {
-            memmove(&objs[i].active, op, 1);
-            memmove(&objs[i].obclass, op + 1, 1);
-            memmove(&objs[i].subclass, op + 2, 1);
-            memmove(&objs[i].specID, op + 3, 24);
-
-            op += 27;
-        }
+	void *op = ResLock(id_num + idx, ResDecode, (UserDecodeData)&ObjLayoutPC, NULL);
+	memcpy(objs, op, NUM_OBJECTS * sizeof *objs);
         ResUnlock(id_num + idx);
         idx++;
     }
