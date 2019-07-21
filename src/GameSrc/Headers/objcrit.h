@@ -48,7 +48,7 @@ typedef struct {
     fix des_heading, des_speed, urgency;
     short wait_frames;
     ushort flags;
-    ulong attack_count; // can attack when game time reaches this
+    uint32_t attack_count; // can attack when game time reaches this
     ubyte ai_mode;
     ubyte mood;
     ubyte orders;
@@ -81,7 +81,7 @@ typedef struct {
     fix des_heading, des_speed, urgency;
     short wait_frames;
     short base_time_interval;
-    ulong attack_count; // can attack when game time reaches this
+    uint32_t attack_count; // can attack when game time reaches this
     ubyte ai_mode;
     ubyte mood;
     ubyte orders;
