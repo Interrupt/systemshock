@@ -2136,7 +2136,7 @@ char *get_object_lookname(ObjID id, char use_string[], int sz) {
     } break;
     }
     // If we haven't set ref or ref is garbage, use the long name.
-    char *temp = RefGetRaw(ref);
+    char *temp = (ref == -1) ? NULL : RefGetRaw(ref);
     if (temp == NULL) {
         strcat(use_string, get_object_long_name(usetrip, NULL, 0));
     } else {
