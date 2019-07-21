@@ -63,7 +63,7 @@ typedef struct {
 
 //	Point macros
 
-#define PointsEqual(p1,p2) (*(long*)(&(p1)) == *(long*)(&(p2)))
+#define PointsEqual(p1,p2) (*(int32_t*)(&(p1)) == *(int32_t*)(&(p2)))
 #define PointSetNull(p) do {(p).x = -1; (p).y = -1;} while (0);
 #define PointCheckNull(p) ((p).x == -1 && (p).y == -1)
 
