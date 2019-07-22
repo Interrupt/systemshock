@@ -55,15 +55,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Prefs.h"
 
-#undef RECT_FILL
-#define RECT_FILL(pr, x1, y1, x2, y2) \
-    {                                 \
-        (pr)->ul.x = (x1);            \
-        (pr)->ul.y = (y1);            \
-        (pr)->lr.x = (x2);            \
-        (pr)->lr.y = (y2);            \
-    }
-
 // ----------
 // GLOBALS
 // ----------
@@ -80,9 +71,7 @@ long pal_frame = 0;
 void draw_pause_string(void) {
     LGRect r;
     short w, h, nw, nh;
-    extern void ss_scale_string(char *s, short x, short y);
 
-    uchar old_over = gr2ss_override;
     gr_set_fcolor(RED_BASE + 4);
     gr_set_font((grs_font *)ResGet(RES_citadelFont));
     gr_string_size(get_string(REF_STR_Pause, NULL, 0), &w, &h);
@@ -93,7 +82,6 @@ void draw_pause_string(void) {
     uiHideMouse(&r);
     ss_string(get_string(REF_STR_Pause, NULL, 0), nw, nh);
     uiShowMouse(&r);
-    old_over = gr2ss_override;
 }
 
 //------------------------------------------------------------------

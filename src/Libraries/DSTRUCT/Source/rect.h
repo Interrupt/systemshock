@@ -116,10 +116,10 @@ typedef struct {
 	(proff)->lr.y = (pr1)->lr.y + (pt).y; \
 	}
 
-#define RECT_FILL(pr,x,y,x2,y2) \
+#define RECT_FILL(pr,x1,y1,x2,y2) \
    { \
-      (pr)->ul.x = (x);  \
-      (pr)->ul.y = (y);  \
+      (pr)->ul.x = (x1); \
+      (pr)->ul.y = (y1); \
       (pr)->lr.x = (x2); \
       (pr)->lr.y = (y2); \
    }
