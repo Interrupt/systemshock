@@ -112,7 +112,7 @@ void loopmode_exit(short loopmode) {
 
 void loopmode_enter(short loopmode) { (*enter_modes[loopmode])(); }
 
-extern pascal void MousePollProc(void);
+extern void MousePollProc(void);
 void mainloop(int argc, char *argv[]) {
     extern void SDLDraw(void);
     extern long gShockTicks;

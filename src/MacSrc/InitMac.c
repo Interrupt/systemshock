@@ -75,7 +75,7 @@ Boolean			gMenusHid;
 //---------------------------
 void status_bio_update(void);
 extern uchar gBioInited;
-pascal void MousePollProc(void);
+void MousePollProc(void);
 
 
 //---------------------------

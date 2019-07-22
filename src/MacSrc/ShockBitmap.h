@@ -85,4 +85,4 @@ void CleanupPalette(void);
 void LoadPictShockBitmap(ShockBitmap *theMap, short PictID);
 
 void SetupTitleScreen(void);
-int DoShockTitleButtons(Point mousePt);
+//int DoShockTitleButtons(Point mousePt);

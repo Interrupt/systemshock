@@ -6,18 +6,7 @@
 #include <stdio.h>
 #include <string.h> // memmove()
 
-// pascal is used for some functions from Carbon/MacOS that use Pascal linkage or sth
-// whatever, this define makes the compiler shut up for now :-P
-#define pascal
-
-#define nil NULL
-
 typedef unsigned char Boolean;
-
-typedef struct Point {
-	short v;
-	short h;
-} Point;
 
 typedef struct Rect {
   short               top;

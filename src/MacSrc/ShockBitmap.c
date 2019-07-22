@@ -397,15 +397,17 @@ void SetupTitleScreen(void)
 //  Handle clicking in title screen buttons.  Returns:
 //  	0 - New Game,   1 - Open Game,   2 - Play Intro,  3 - Quit,   -1 - No button
 //------------------------------------------------------------------------------------
+/*
 int DoShockTitleButtons(Point mousePt)
 {
-	/*for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (PtInRect(mousePt, &pBtnRect[i]))
 			return (TrackTitleButton(i));
 	}
-	return (-1);*/
+	return (-1);
 }
+*/
 
 //------------------------------------------------------------------------------------
 //  Handle mouse tracking for the button.  Returns button if clicked, -1 if not.

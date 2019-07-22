@@ -70,7 +70,7 @@ int				gQueueTime;									// Amount of time (in millisecs) to wait to queue nex
 #pragma require_prototypes off
 
 //---------------------------------------------------------------
-pascal void CalcTuneProc(void)
+void CalcTuneProc(void)
 {
 	gReadyToQueue = TRUE;								// It's time to queue up another tune.
 }

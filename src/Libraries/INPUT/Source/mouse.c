@@ -156,14 +156,13 @@ static void ReadMouseState(mouse_state *pMouseState);
 //#ifdef __powerc
 //pascal void MousePollProc(TMTaskPtr tmTaskPtr)
 //#else
-pascal void MousePollProc(void)
+void MousePollProc(void)
 //#endif
 {
 	// TODO: is this even still needed? if so, can it be replaced by setting mouseInstant* in pump_events() ?
 	//       if the callbacks from mouseCall[] are still needed, could they also be called in pump_events() ?
 	//       if not, could they be the only thing called here, while mouseInstant* is still set in pump_events() ?
 
-	Point 		mp;
 	short		i;
 	ss_mouse_event	e;
 
