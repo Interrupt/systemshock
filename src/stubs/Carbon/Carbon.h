@@ -111,8 +111,6 @@ void SS_ShowCursor(void); // renamed from ShowCursor() to avoid collision with w
 typedef struct EventRecord EventRecord;
 unsigned short GetOSEvent(short eventMask, EventRecord *theEvent);
 
-void AdvanceProgress(void);
-
 void DisposHandle(void *h);
 
 void BlitLargeAlign(unsigned char *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);

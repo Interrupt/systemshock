@@ -575,7 +575,6 @@ errtype object_data_load(void) {
     // Initialize DOS (Doofy Object System)
     DEBUG("ObjsInit");
     ObjsInit();
-    AdvanceProgress();
 
     obj_init();
 
@@ -584,7 +583,6 @@ errtype object_data_load(void) {
     if (clear_player_data)
         init_player(&player_struct);
     clear_player_data = TRUE;
-    AdvanceProgress();
 
     // Start up some subsystems
     DEBUG("init mfd");
@@ -602,12 +600,10 @@ errtype object_data_load(void) {
 
     DEBUG("process tilemap");
     rendedit_process_tilemap(global_fullmap, &bounds, TRUE);
-    AdvanceProgress();
 
     // Make the objmode camera....
     DEBUG("create camera");
     fr_camera_create(&objmode_cam, CAMTYPE_OBJ, (fix *)(unsigned int)player_struct.rep, NULL);
-    AdvanceProgress();
 
     DEBUG("load_dynamic_memory");
     objdata_loaded = TRUE;

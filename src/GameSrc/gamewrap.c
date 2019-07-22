@@ -208,7 +208,6 @@ errtype save_game(char *fname, char *comment) {
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
-    AdvanceProgress();
 
     // Save player struct (resource #4001)
     player_struct.version_num = PLAYER_VERSION_NUMBER;
@@ -222,7 +221,6 @@ errtype save_game(char *fname, char *comment) {
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
-    AdvanceProgress();
 
     // HAX HAX HAX Skip the schedule for now!
     // Save game schedule (resource #590)
@@ -234,7 +232,6 @@ errtype save_game(char *fname, char *comment) {
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
-    AdvanceProgress();
 
     // Save game schedule vec info (resource #591)
     // LZW later		ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE,
@@ -244,10 +241,8 @@ errtype save_game(char *fname, char *comment) {
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
-    AdvanceProgress();
 
     ResCloseFile(filenum);
-    AdvanceProgress();
 
     // Save current level
     retval = write_level_to_disk(ResIdFromLevel(player_struct.level), TRUE);

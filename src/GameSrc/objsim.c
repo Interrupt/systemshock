@@ -204,7 +204,6 @@ errtype obj_init() {
 
     // Load object properties from disk
     obj_load_properties();
-    AdvanceProgress();
 
     // Create base array
     count = 0;
@@ -1936,7 +1935,6 @@ errtype obj_set_secondary_properties() {
                     //					ResUnlock(id);
                     //					ResDrop(id);
                 }
-                AdvanceProgress();
             }
         }
     }
