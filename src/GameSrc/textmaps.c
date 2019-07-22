@@ -357,13 +357,13 @@ errtype load_master_texture_properties(void) {
     fclose(f);
 
     {
-        BlockMoveData(cp, &version, sizeof(version));
+        memmove(&version, cp, sizeof(version));
         cp += sizeof(version);
 
         if (version == TEXTPROP_VERSION_NUMBER) {
             // 363 seems magic. GAME_TEXTURES instead?
             for (i = 0; i < 363; i++) {
-                BlockMoveData(cp, &texture_properties[i], 11);
+                memmove(&texture_properties[i], cp, 11);
                 cp += 11;
             }
         } else {
