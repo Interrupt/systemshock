@@ -8,13 +8,6 @@
 
 typedef unsigned char Boolean;
 
-typedef struct Rect {
-  short               top;
-  short               left;
-  short               bottom;
-  short               right;
-} Rect;
-
 // http://unix.superglobalmegacorp.com/xnu/newsrc/bsd/hfs/hfs_macos_defs.h.html
 // https://developer.apple.com/documentation/coreservices/timerupp?language=objc
 typedef struct TMTask TMTask;

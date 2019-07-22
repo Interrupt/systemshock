@@ -339,7 +339,7 @@ void CleanupPalette(void)
 }
 
 
-Rect	pBtnRect[4];
+//Rect	pBtnRect[4];
 
 //------------------------------------------------------------------------------------
 //  Copy the picture buttons to the title screen (which is already in the offscreen buffer).
