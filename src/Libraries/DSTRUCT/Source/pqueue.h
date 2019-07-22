@@ -54,9 +54,9 @@ typedef int (*QueueCompare)(void* elem1, void* elem2);
 #pragma pack(push,2)
 typedef struct _pqueue
 {
-   int size;
-   int fullness;
-   int elemsize;
+   int32_t size;
+   int32_t fullness;
+   int32_t elemsize;
    uchar grow;
    char* vec;
    QueueCompare comp;
