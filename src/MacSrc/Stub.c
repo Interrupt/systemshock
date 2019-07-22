@@ -5,8 +5,6 @@
 
 Boolean				gTuneDone;
 
-void HideCursor(void) { }
-void SS_ShowCursor(void) { }
 ushort GetOSEvent(short eventMask,EventRecord *theEvent) { return false; }
 
 void BlitLargeAlign(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus) { }

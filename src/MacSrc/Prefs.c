@@ -572,7 +572,7 @@ HOTKEYLOOKUP HotKeyLookup[] =
   { "\"keypad 7\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('7'),     0 },
   { "\"keypad 8\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('8'),     0 },
   { "\"keypad 9\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('9'),     0 },
-  { "\"mac_help\"",         DEMO_CONTEXT, MacHelpFunc,            NULL                   , 0, CTRL('/'),     0 },
+//  { "\"mac_help\"",         DEMO_CONTEXT, MacHelpFunc,            NULL                   , 0, CTRL('/'),     0 },
   { "\"toggle_options\"",   DEMO_CONTEXT, wrapper_options_func,   (void *)TRUE           , 0, DOWN(KEY_ESC), 0 },
   { "\"cheat_give_all\"",   DEMO_CONTEXT, toggle_giveall_func,    (void *)TRUE           , 0, CTRL('2'),     0 },
   { "\"cheat_physics\"",    DEMO_CONTEXT, toggle_physics_func,    (void *)TRUE           , 0, CTRL('3'),     0 },

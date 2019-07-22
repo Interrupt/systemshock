@@ -1364,6 +1364,7 @@ uchar toggle_mouse_look(short keycode, ulong context, void *data) {
 //--------------------------------------------------------------------
 //  For Mac version.  Save the current game.
 //--------------------------------------------------------------------
+/*
 uchar save_hotkey_func(short keycode, ulong context, void *data) {
     if (global_fullmap->cyber) // Can't save in cyberspace.
     {
@@ -1393,6 +1394,7 @@ uchar save_hotkey_func(short keycode, ulong context, void *data) {
 
     return TRUE;
 }
+*/
 
 #ifdef NOT_YET //
 

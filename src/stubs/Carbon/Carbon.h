@@ -98,9 +98,6 @@ static void BlockMove(const void* srcPtr, void* destPtr, Size byteCount)
 // the following functions are "implemented" in Stub.c, but don't turn up in any header
 // so I added them here to make my compiler happy
 
-void HideCursor(void);
-void SS_ShowCursor(void); // renamed from ShowCursor() to avoid collision with windows.h
-
 typedef struct EventRecord EventRecord;
 unsigned short GetOSEvent(short eventMask, EventRecord *theEvent);
 

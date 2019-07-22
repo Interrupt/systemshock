@@ -1152,6 +1152,7 @@ uchar temp_FrameCounter_func(short keycode, ulong context, void* data)
 // end temp functions
 */
 
+/*
 uchar MacHelpFunc(short keycode, ulong context, void *data) {
     if (music_on) // Setup the environment for doing Mac stuff.
         MacTuneKillCurrentTheme();
@@ -1179,6 +1180,7 @@ uchar MacHelpFunc(short keycode, ulong context, void *data) {
 
     return TRUE;
 }
+*/
 
 uchar toggle_opengl_func(short keycode, ulong context, void *data) {
     toggle_opengl();
