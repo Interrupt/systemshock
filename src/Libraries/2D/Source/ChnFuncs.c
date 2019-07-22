@@ -54,10 +54,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // globals
 grs_func_chain 	*gr_current_chain;
 short						funcnum;
-Ptr							firstfunc;
-
-Ptr							chain_stack[256];
-Ptr							chain_stack_ptr;
+//Ptr							firstfunc;
+//Ptr							chain_stack[256];
+//Ptr							chain_stack_ptr;
 
 void 						(**chn_primitives[GRD_CANVAS_FUNCS])();
 int 						gr_current_primitive = GRD_CANVAS_FUNCS;

@@ -53,7 +53,7 @@ short				gMainVRef;
 short				gOriginalDepth = -1;
 short				gLastAlertDepth = -1;
 short				gStartupDepth;
-Ptr				gScreenAddress;
+char				*gScreenAddress;
 long				gScreenRowbytes;
 short				gScreenWide, gScreenHigh;
 short				gActiveWide, gActiveHigh;

@@ -68,7 +68,7 @@ extern ulong	mlimbs_counter;
 extern long		mlimbs_error;
 extern uchar	mlimbs_semaphore;
 
-extern Handle			gHeaderHdl, gTuneHdl, gOfsHdl;		// Holds the tune-related data for the current theme file.
+// extern Handle			gHeaderHdl, gTuneHdl, gOfsHdl;		// Holds the tune-related data for the current theme file.
 extern long				*gOffsets;									// Array of offsets for the beginning of each tune.
 //extern TunePlayer	gPlayer;									// The Tune Player.
 extern Boolean		gTuneDone;									// True when a sequence has finished playing (set by CB proc).

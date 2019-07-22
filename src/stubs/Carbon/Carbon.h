@@ -12,28 +12,7 @@
 
 #define nil NULL
 
-typedef uint32_t ResType; // can hold four character codes ('ASDF')
-
-typedef char* Ptr;
-typedef Ptr* Handle;
-typedef void* CGrafPtr; // whatever this is?
-
-typedef Handle PixMapHandle; // whatever this is..
-typedef Handle CTabHandle;   // ...
-
 typedef unsigned char Boolean;
-
-enum { noErr = 0 };
-
-typedef int32_t Size; // long in MacOS, I guess that was a 32bit int?
-
-typedef int32_t Fixed;
-
-typedef int16_t OSErr;
-
-typedef int32_t TimeValue;
-
-typedef unsigned char Str255[256];
 
 typedef struct Point {
 	short v;
@@ -63,11 +42,6 @@ struct TMTask {
 	long 							tmReserved;
 };
 
-static void HUnlock(Handle h) {}
-
-extern Handle NewHandle(Size cnt);
-extern void DisposeHandle(Handle h);
-
 static void numtostring(int num, char *str)
 {
 	sprintf(str, "%d", num);
@@ -78,7 +52,7 @@ static void numtostring(int num, char *str)
 int32_t TickCount(void);
 
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/Carbon/Reference/Memory_Manager/memory_mgr_ref/function_group_14.html#//apple_ref/c/func/BlockMoveData
-static void BlockMoveData(const void* srcPtr, void* destPtr, Size byteCount)
+static void BlockMoveData(const void* srcPtr, void* destPtr, int32_t byteCount)
 {
 	// docs say "If the value of byteCount is 0, BlockMove does nothing"
 	// memmove() might assume (=> make the compilers optimizer believe)
@@ -87,15 +61,10 @@ static void BlockMoveData(const void* srcPtr, void* destPtr, Size byteCount)
 		memmove(destPtr, srcPtr, byteCount);
 }
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/mac/Memory/Memory-42.html
-static void BlockMove(const void* srcPtr, void* destPtr, Size byteCount)
+static void BlockMove(const void* srcPtr, void* destPtr, int32_t byteCount)
 {
 	if(byteCount > 0)
 		memmove(destPtr, srcPtr, byteCount);
 }
-
-// the following functions are "implemented" in Stub.c, but don't turn up in any header
-// so I added them here to make my compiler happy
-
-typedef struct EventRecord EventRecord;
 
 #endif // STUB_CARBON_H

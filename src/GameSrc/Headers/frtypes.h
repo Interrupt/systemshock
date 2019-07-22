@@ -47,7 +47,7 @@ typedef struct {
     void (*horizon_call)(void *dest_bm, int flags);
     void (*render_call)(void *dest_bm, int flags);
     cams *camptr, *xtracam;
-    Ptr realCanvasPtr;
+    char *realCanvasPtr;
 } fauxrend_context;
 
 #endif // __FRTYPES_H

@@ -153,12 +153,12 @@ extern long					gGameSavedTime;
 //extern ColorSpec*		gOriginalColors;
 extern unsigned long	gRandSeed;
 extern short				gMainVRef;
-extern Handle				gWatchCurs;
+// extern Handle				gWatchCurs;
 
 extern short				gOriginalDepth;
 extern short				gStartupDepth;
 extern short				gLastAlertDepth;
-extern Ptr					gScreenAddress;
+extern char					*gScreenAddress;
 extern long					gScreenRowbytes;
 extern short				gScreenWide, gScreenHigh;
 extern short				gActiveWide, gActiveHigh;

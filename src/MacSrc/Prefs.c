@@ -160,7 +160,7 @@ static bool is_true(const char *s) {
 //--------------------------------------------------------------------
 //	  Locate the preferences file and load them to set our global pref settings.
 //--------------------------------------------------------------------
-OSErr LoadPrefs(void) {
+int16_t LoadPrefs(void) {
     FILE *f = fopen(GetPrefsPathFilename(), "r");
     if (!f) {
         // file can't be open, write default preferences
@@ -250,7 +250,7 @@ OSErr LoadPrefs(void) {
 //--------------------------------------------------------------------
 //	  Save global settings in the preferences file.
 //--------------------------------------------------------------------
-OSErr SavePrefs(void) {
+int16_t SavePrefs(void) {
     INFO("Saving preferences");
 
     FILE *f = fopen(GetPrefsPathFilename(), "w");

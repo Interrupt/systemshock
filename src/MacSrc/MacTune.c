@@ -44,7 +44,7 @@ mlimbs_request_info current_request[MLIMBS_MAX_SEQUENCES - 1]; // Request inform
 long		mlimbs_error;
 //uchar		mlimbs_semaphore = FALSE;
 
-Handle			gHeaderHdl, gTuneHdl, gOfsHdl;			// Holds the tune-related data for the current theme file.
+// Handle			gHeaderHdl, gTuneHdl, gOfsHdl;			// Holds the tune-related data for the current theme file.
 long			*gOffsets;										// Array of offsets for the beginning of each tune.
 //TunePlayer	gPlayer;										// The Tune Player.
 Boolean			gTuneDone;										// True when a sequence has finished playing (set by CB proc).

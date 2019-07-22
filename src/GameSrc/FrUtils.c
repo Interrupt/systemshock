@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ------------------
 //  GLOBALS
 // ------------------
-Handle gDoubleSizeOffHdl = NULL;
+//Handle gDoubleSizeOffHdl = NULL;
 grs_canvas gDoubleSizeOffCanvas;
 
 //---------------------------------------------------------------------

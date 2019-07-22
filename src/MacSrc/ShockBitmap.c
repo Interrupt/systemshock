@@ -195,10 +195,11 @@ void FreeShockBitmap(ShockBitmap *theMap)
 // 	Code to build an offscreen pixmap (8bit) of a given size, using the current pStd clut
 //		store pixmap in ColorBack cGrafPort.
 //------------------------------------------------------------------------------------
-Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height) 
+/*
+Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height)
 {
 	printf("Build8PixMap\n");
-	/*Rect        			bRect;
+	Rect        			bRect;
 	PixMapHandle		pmap;
 	PixMapPtr			pmaptr;
 	long         			bytes;
@@ -232,11 +233,11 @@ Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height)
 	//SetRectRgn(theCGrafPtr->visRgn,bRect.left,bRect.top,bRect.right,bRect.bottom);
 	//SetRectRgn(theCGrafPtr->clipRgn,bRect.left,bRect.top,bRect.right,bRect.bottom);
 	
-	PenNormal();*/
+	PenNormal();
 	
 	return (NULL);
 }
-
+*/
 //------------------------------------------------------------------------------------
 //		Draw a pict into a ShockBitmap structure
 //------------------------------------------------------------------------------------

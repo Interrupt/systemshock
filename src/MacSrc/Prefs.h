@@ -72,8 +72,8 @@ extern ShockPrefs gShockPrefs;
 //  Prototypes
 //--------------------
 void SetDefaultPrefs(void);
-OSErr LoadPrefs(void);
-OSErr SavePrefs(void);
+int16_t LoadPrefs(void);
+int16_t SavePrefs(void);
 
 //-------------------
 //  Enums

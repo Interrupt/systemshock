@@ -75,7 +75,7 @@ void (**mac_device_table[])() = {
 // Mac specific device routines
 //========================================================================
 
-extern Ptr  gScreenAddress;
+extern char *gScreenAddress;
 //extern void opengl_resize(int width, int height);
 //extern bool can_use_opengl(void);
 
@@ -100,7 +100,7 @@ void mac_set_mode(void)
     extern SDL_Renderer* renderer;
     extern SDL_Window* window;
 
-    extern Ptr gScreenAddress;
+    extern char *gScreenAddress;
     extern long gScreenRowbytes;
 
     INFO("ChangeScreenSize");
