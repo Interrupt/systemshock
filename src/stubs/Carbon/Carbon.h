@@ -97,9 +97,5 @@ static void BlockMove(const void* srcPtr, void* destPtr, Size byteCount)
 // so I added them here to make my compiler happy
 
 typedef struct EventRecord EventRecord;
-unsigned short GetOSEvent(short eventMask, EventRecord *theEvent);
-
-void BlitLargeAlign(unsigned char *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
-void BlitLargeAlignSkip(unsigned char *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
 
 #endif // STUB_CARBON_H

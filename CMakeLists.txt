@@ -97,7 +97,6 @@ include_directories(src/stubs/)
 add_subdirectory(src/Libraries/)
 
 set(MAC_SRC
-	src/MacSrc/Stub.c
 	src/MacSrc/ShockBitmap.c
 	src/MacSrc/InitMac.c
 	src/MacSrc/Shock.c

@@ -260,10 +260,10 @@ void mlimbs_do_ai() {
 
         // If a tune has finished playing, then another has just started, so prime the
         // timer to do the next tune calc.
-        if (gTuneDone) {
-            MacTunePrimeTimer();
-            gTuneDone = FALSE;
-        }
+        // if (gTuneDone) {
+        //    MacTunePrimeTimer();
+        //    gTuneDone = FALSE;
+        // }
     }
 }
 
