@@ -5,14 +5,6 @@
 
 #include "lg.h"
 
-OSErr FSMakeFSSpec(short vRefNum, long dirID, /*ConstStr255Param*/ const char* fileName, FSSpec * spec)
-{
-	printf("STUB: FSMakeFSSpec(vRefNum = %hd, dirID = %ld, fileName = \"%s\", spec) - what does this do? is it needed?\n",
-			vRefNum, dirID, fileName);
-
-	return -37; // 	Bad filename or volume name - randomly chosen error code
-}
-
 Handle GetResource(ResType type, /*Integer*/ int id)
 {
 	uint8_t tStr[5];
@@ -25,28 +17,6 @@ Handle GetResource(ResType type, /*Integer*/ int id)
 
 	printf("STUB: GetResource('%s', %d) - what is this about? is it needed?\n", tStr, id);
 	return NULL;
-}
-
-//http://mirror.informatimago.com/next/developer.apple.com/documentation/Carbon/Reference/Memory_Manager/memory_mgr_ref/function_group_1.html
-Ptr NewPtr(Size byteCount)
-{
-	STUB_ONCE("probably just replace all calls to this with malloc()");
-	Ptr ret = malloc(byteCount);
-	return ret;
-}
-
-Ptr NewPtrClear(Size byteCount)
-{
-	STUB_ONCE("probably just replace all calls to this with calloc()");
-	Ptr ret = calloc(1, byteCount);
-	return ret;
-}
-
-// like free()
-void DisposePtr(Ptr p)
-{
-	STUB_ONCE("probably just replace all calls to DisposePtr() with free()");
-	free(p);
 }
 
 // yet another wrapper around malloc() and free() ?

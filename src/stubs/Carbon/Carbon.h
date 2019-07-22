@@ -68,44 +68,17 @@ struct TMTask {
 	long 							tmReserved;
 };
 
-OSErr FSMakeFSSpec(short vRefNum, long dirID, /*ConstStr255Param*/ const char* fileName, FSSpec * spec);
-
 Handle GetResource(ResType type, /*Integer*/ int id);
 
-static void ReleaseResource(Handle h) {}
-static void HLock(Handle h) {}
 static void HUnlock(Handle h) {}
 
 extern Handle NewHandle(Size cnt);
 extern void DisposeHandle(Handle h);
-static void WriteResource (Handle theResource) {}
-
-static void AddResource (Handle theData, ResType theType, short theID, /*ConstStr255Param*/ const char* name) {}
-
-static void CloseResFile(short refNum) {}
-
 
 static void numtostring(int num, char *str)
 {
 	sprintf(str, "%d", num);
 }
-
-static const char* c2pstr(const char* s)
-{
-	return s; // I hope no code (outside real Carbon) really relies on pascal strings..
-}
-
-// http://mirror.informatimago.com/next/developer.apple.com/documentation/Carbon/Reference/Memory_Manager/memory_mgr_ref/function_group_1.html
-extern Ptr NewPtr(Size byteCount);
-extern Ptr NewPtrClear(Size byteCount);
-extern void DisposePtr(Ptr p);
-
-static OSErr MemError(void)
-{
-	// TODO: just eliminate all calls to this?
-	return noErr;
-}
-
 
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/mac/Toolbox/Toolbox-80.html
 // number of ticks since system start (1 Tick is about 1/60 second)
@@ -131,11 +104,6 @@ static void BlockMove(const void* srcPtr, void* destPtr, Size byteCount)
 
 // the following functions are "implemented" in Stub.c, but don't turn up in any header
 // so I added them here to make my compiler happy
-// at least the Movie stuff is from QuickTime, so I assume the rest is Mac specific as well
-
-void StopMovie(void * m);
-void StartMovie(void * m);
-Boolean IsMovieDone(void * m);
 
 void HideCursor(void);
 void SS_ShowCursor(void); // renamed from ShowCursor() to avoid collision with windows.h
@@ -144,16 +112,8 @@ typedef struct EventRecord EventRecord;
 unsigned short GetOSEvent(short eventMask, EventRecord *theEvent);
 
 void AdvanceProgress(void);
-void EndProgressDlg(void);
-
-//Boolean ShockAlertFilterProc(DialogPtr dlog, EventRecord *evt, short *itemHit) { return false; }
-
-
-void MoviesTask(void *m, int n);
 
 void DisposHandle(void *h);
-void DisposeMovie(void *m);
-void DisposCTable(void *c);
 
 void BlitLargeAlign(unsigned char *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
 void BlitLargeAlignSkip(unsigned char *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
