@@ -48,7 +48,7 @@ extern ShockTask	pShockTicksTask;
 //--------------------
 void InitMac(void);
 void FailNIL(void *);
-Handle GetResourceFail(long id, short num);
+// Handle GetResourceFail(long id, short num);
 void CheckConfig(void);
 void ErrorDie(short stringnum);
 void CleanupAndExit(void);

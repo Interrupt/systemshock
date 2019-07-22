@@ -63,8 +63,6 @@ struct TMTask {
 	long 							tmReserved;
 };
 
-Handle GetResource(ResType type, /*Integer*/ int id);
-
 static void HUnlock(Handle h) {}
 
 extern Handle NewHandle(Size cnt);

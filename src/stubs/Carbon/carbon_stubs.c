@@ -5,20 +5,6 @@
 
 #include "lg.h"
 
-Handle GetResource(ResType type, /*Integer*/ int id)
-{
-	uint8_t tStr[5];
-	// TODO: could escape non-printable chars, but I guess that's not needed?
-	tStr[0] = (uint8_t)(( type >> 24 ) & 255);
-	tStr[1] = (uint8_t)(( type >> 16 ) & 255);
-	tStr[2] = (uint8_t)(( type >> 8 ) & 255);
-	tStr[3] = (uint8_t)(type & 255);
-	tStr[4] = 0;
-
-	printf("STUB: GetResource('%s', %d) - what is this about? is it needed?\n", tStr, id);
-	return NULL;
-}
-
 // yet another wrapper around malloc() and free() ?
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/Carbon/Reference/Memory_Manager/memory_mgr_ref/function_group_2.html#//apple_ref/c/func/NewHandle
 

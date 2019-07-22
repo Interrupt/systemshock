@@ -108,7 +108,7 @@ void InitMac(void)
 //------------------------------------------------------------------------------------
 //		Get a resource and fail correctly if it can't be loaded.
 //------------------------------------------------------------------------------------
-Handle GetResourceFail(long id, short num)
+/*Handle GetResourceFail(long id, short num)
 {
 	Handle 	h;
 	
@@ -133,7 +133,7 @@ Handle GetResourceFail(long id, short num)
 		ErrorDie(3);		// resource not there, somethings bad
 #endif
 	return (nil);
-}
+}*/
 
 
 //------------------------------------------------------------------------------------
