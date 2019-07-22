@@ -213,11 +213,11 @@ typedef struct {
 #endif
 
 typedef struct {
-    int x_size, y_size;
-    int x_shft, y_shft, z_shft;
+    int32_t x_size, y_size;
+    int32_t x_shft, y_shft, z_shft;
     MapElem *map;
     uchar cyber;
-    int x_scale, y_scale, z_scale;
+    int32_t x_scale, y_scale, z_scale;
     Schedule sched[NUM_MAP_SCHEDULES];
 } FullMap;
 

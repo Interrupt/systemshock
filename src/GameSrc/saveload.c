@@ -120,6 +120,34 @@ extern ObjID hack_cam_surrogates[NUM_HACK_CAMERAS];
 extern height_semaphor h_sems[NUM_HEIGHT_SEMAPHORS];
 extern uchar trigger_check;
 
+// Describe the layout of the map info structure (FullMap). While technically
+// this ends in an array, in practice it only ever has a single entry so just
+// treat it as a flat structure.
+const ResLayout FullMapLayout = {
+    58,              // size on disc
+    sizeof(FullMap), // size in memory
+    0,               // flags
+    {
+	{ RFFT_UINT32, offsetof(FullMap, x_size)                  },
+	{ RFFT_UINT32, offsetof(FullMap, y_size)                  },
+	{ RFFT_UINT32, offsetof(FullMap, x_shft)                  },
+	{ RFFT_UINT32, offsetof(FullMap, y_shft)                  },
+	{ RFFT_UINT32, offsetof(FullMap, z_shft)                  },
+	{ RFFT_PAD,    4 /* map elems pointer */                  },
+	{ RFFT_UINT8,  offsetof(FullMap, cyber)                   },
+	{ RFFT_UINT32, offsetof(FullMap, x_scale)                 },
+	{ RFFT_UINT32, offsetof(FullMap, y_scale)                 },
+	{ RFFT_UINT32, offsetof(FullMap, z_scale)                 },
+	{ RFFT_UINT32, offsetof(FullMap, sched[0].queue.size)     },
+	{ RFFT_UINT32, offsetof(FullMap, sched[0].queue.fullness) },
+	{ RFFT_UINT32, offsetof(FullMap, sched[0].queue.elemsize) },
+	{ RFFT_UINT8,  offsetof(FullMap, sched[0].queue.grow)     },
+	{ RFFT_PAD,    12 /* 3 pointers at end */                 },
+	{ RFFT_END,    0 }
+    }
+};
+
+
 // Describe the layout of the anims table in a resfile.
 const ResLayout AnimLayoutPC = {
     15,                  // size on disc
@@ -865,7 +893,11 @@ errtype load_current_map(Id id_num) {
     // convert_from is the version we are coming from.
     // for now, this is only defined for coming from version 9
     {
-        REF_READ(id_num, idx++, *global_fullmap);
+	int fullmap_idx = idx++;
+	void *fullmap_buf = ResLock(id_num + fullmap_idx, ResDecode, (UserDecodeData)&FullMapLayout, NULL);
+	memcpy(global_fullmap, fullmap_buf, sizeof(FullMap));
+	ResUnlock(id_num + fullmap_idx);
+	//        REF_READ(id_num, idx++, *global_fullmap);
 
         MAP_MAP = (MapElem *)static_map;
         ResExtract(id_num + idx++, MAP_MAP);
