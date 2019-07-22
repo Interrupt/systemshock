@@ -77,8 +77,6 @@ static void numtostring(int num, char *str)
 // number of ticks since system start (1 Tick is about 1/60 second)
 int32_t TickCount(void);
 
-void SetPort(/*GrafPtr*/ void* port);
-
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/Carbon/Reference/Memory_Manager/memory_mgr_ref/function_group_14.html#//apple_ref/c/func/BlockMoveData
 static void BlockMoveData(const void* srcPtr, void* destPtr, Size byteCount)
 {

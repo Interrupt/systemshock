@@ -25,8 +25,3 @@ int32_t TickCount(void)
 {
 	return (int32_t)((SDL_GetTicks() * 100) / 357);	// 280 per second;
 }
-
-void SetPort(/*GrafPtr*/ void* port)
-{
-	STUB_ONCE("I think this isn't needed anymore once all old drawing code is replaced with SDL");
-}
