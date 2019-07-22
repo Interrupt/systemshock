@@ -58,7 +58,7 @@ long				gScreenRowbytes;
 short				gScreenWide, gScreenHigh;
 short				gActiveWide, gActiveHigh;
 short				gActiveLeft, gActiveTop;
-Rect				gActiveArea, gOffActiveArea;
+//Rect				gActiveArea, gOffActiveArea;
 Boolean			gIsPowerPC = false;
 long				gDataDirID;
 short				gDataVref;
@@ -154,7 +154,7 @@ void RemoveShockTimers(void)
 	STUB("if the timer is still used, remove it here..")
 #else
 	RmvTime((QElemPtr)&pShockTicksTask);					// Stop the Shock ticks task
-	DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP
+//	DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP
 #endif
 }
 

@@ -36,7 +36,7 @@ typedef struct
 	TMTask			task;							// The actual TimeManager task structure
 	long				*ticksPtr;					// Pointer to the ticks
 }
-ShockTask, *ShockTaskPtr;
+ShockTask;
 extern ShockTask	pShockTicksTask;
 
 #define	kShockTicksFreq		-14286		//-3571

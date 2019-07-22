@@ -163,7 +163,7 @@ extern long					gScreenRowbytes;
 extern short				gScreenWide, gScreenHigh;
 extern short				gActiveWide, gActiveHigh;
 extern short				gActiveLeft, gActiveTop;
-extern Rect				gActiveArea, gOffActiveArea;
+//extern Rect				gActiveArea, gOffActiveArea;
 
 extern Boolean			gIsPowerPC;
 
