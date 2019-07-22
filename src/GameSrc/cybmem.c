@@ -100,7 +100,6 @@ errtype free_dynamic_memory(int mask) {
 }
 
 errtype load_dynamic_memory(int mask) {
-    FSSpec fSpec;
     extern short _new_mode;
 
     if (_new_mode != -1) {

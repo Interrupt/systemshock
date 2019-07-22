@@ -736,7 +736,7 @@ void SwapShortBytes(void *pval2) {
 //  Loads in the map for a level, and all the other related resources (2+ MB worth).
 //---------------------------------------------------------------------------------
 // errtype load_current_map(char* fn, Id id_num, Datapath* dpath)
-errtype load_current_map(Id id_num, FSSpec *spec) {
+errtype load_current_map(Id id_num) {
     void rendedit_process_tilemap(FullMap * fmap, LGRect * r, bool newMap);
     extern errtype set_door_data(ObjID id);
     extern int physics_handle_max;

@@ -35,11 +35,6 @@ typedef int32_t TimeValue;
 
 typedef unsigned char Str255[256];
 
-typedef struct FSSpec
-{
-	// TODO: what's in it? what's it good for?
-} FSSpec;
-
 typedef struct Point {
 	short v;
 	short h;
@@ -110,8 +105,6 @@ void SS_ShowCursor(void); // renamed from ShowCursor() to avoid collision with w
 
 typedef struct EventRecord EventRecord;
 unsigned short GetOSEvent(short eventMask, EventRecord *theEvent);
-
-void DisposHandle(void *h);
 
 void BlitLargeAlign(unsigned char *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
 void BlitLargeAlignSkip(unsigned char *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);

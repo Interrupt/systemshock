@@ -32,7 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "InitMac.h"
 #include "ShockDialogs.h"
 #include "ShockBitmap.h"
-#include "MoviePlay.h"
 
 #include "criterr.h"
 #include "cybmem.h"

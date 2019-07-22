@@ -180,7 +180,6 @@ void check_save_game_wackiness(void) {
 extern int flush_resource_cache();
 
 errtype save_game(char *fname, char *comment) {
-    FSSpec currSpec;
     int filenum;
     State player_state;
     errtype retval;
@@ -332,7 +331,6 @@ errtype load_game(char *fname) {
     ObjID old_plr;
     uchar bad_save = FALSE;
     char orig_lvl;
-    FSSpec currSpec;
     extern errtype change_detail_level(byte new_level);
     extern void player_set_eye_fixang(int ang);
     extern uint dynmem_mask;
@@ -416,7 +414,7 @@ errtype load_level_from_file(int level_num) {
 
     INFO("Loading save %i", level_num);
 
-    retval = load_current_map(ResIdFromLevel(level_num), NULL);
+    retval = load_current_map(ResIdFromLevel(level_num));
 
     if (retval == OK) {
         player_struct.level = level_num;

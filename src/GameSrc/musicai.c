@@ -490,7 +490,6 @@ errtype blank_theme_data()
 void load_score_guts(char score_playing) {
     int rv;
     char base[20], temp[30];
-    FSSpec themeSpec;
 
     strcpy(base, "thm"); // Get the theme file name.
     numtostring(score_playing, temp);

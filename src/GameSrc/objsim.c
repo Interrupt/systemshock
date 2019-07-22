@@ -1896,7 +1896,6 @@ errtype obj_load_properties() {
 }
 
 errtype obj_set_secondary_properties() {
-    FSSpec fSpec;
     char i, j;
     RefTable *prt;
     int fn, fn2;

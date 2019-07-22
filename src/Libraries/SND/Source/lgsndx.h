@@ -130,7 +130,7 @@ void  snd_kill_all_sequences(void);
 
 //char *snd_load_raw(char *fname, int *ldat);
 // Mac only routines.
-OSErr snd_load_theme(FSSpec *specPtr, TunePlayer thePlayer);
+//OSErr snd_load_theme(FSSpec *specPtr, TunePlayer thePlayer);
 void snd_release_current_theme(void);
 
 //--------------------------

@@ -46,7 +46,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MWERKS__
 //QDGlobals	qd;
 #endif
-Handle			gExtraMemory = nil;
 //ColorSpec 		*gOriginalColors;
 unsigned long	gRandSeed;
 short				gMainVRef;

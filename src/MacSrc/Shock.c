@@ -87,7 +87,6 @@ bool				gDone = false;
 bool				gInForeground = true;
 Boolean				gPlayingGame;		//¥¥¥ Temp
 bool				gIsNewGame;
-FSSpec				gSavedGameFile;
 long					gGameSavedTime;
 Boolean				gDeadPlayerQuit;
 Boolean				gGameCompletedQuit;

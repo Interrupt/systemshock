@@ -128,7 +128,6 @@ void DoCommand(unsigned long mResult);
 Boolean DoSaveGame(void);
 Boolean DoSaveGameAs(void);
 void DoQuit(void);
-void HandleAEOpenGame(FSSpec *openSpec);
 void ScrollCredits(void);
 
 void InitSDL();
