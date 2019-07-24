@@ -39,13 +39,13 @@ if(OPENGL_FOUND)
 ENDIF(OPENGL_FOUND)
 
 # set up SDL created by our build scripts
-set(SDL2_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl)
+#set(SDL2_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl)
 
-set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include/SDL2)
-find_library(SDL2_LIBRARY SDL2 PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
-find_library(SDL2MAIN_LIBRARY SDL2main PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
-set(SDL2_LIBRARIES "${SDL2MAIN_LIBRARY};${SDL2_LIBRARY}")
-
+#set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include/SDL2)
+#find_library(SDL2_LIBRARY SDL2 PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
+#find_library(SDL2MAIN_LIBRARY SDL2main PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
+#set(SDL2_LIBRARIES "${SDL2MAIN_LIBRARY};${SDL2_LIBRARY}")
+find_package(SDL2)
 
 # and SDL mixer
 

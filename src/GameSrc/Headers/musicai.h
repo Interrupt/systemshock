@@ -126,7 +126,7 @@ errtype mai_player_death();
 errtype fade_into_location(int x, int y);
 errtype load_score_for_location(int x, int y);
 errtype load_score_from_cfg(char *filename);
-void load_score_guts(char score_playing);
+void load_score_guts(uint8_t score_playing);
 errtype music_init();
 errtype digifx_init();
 errtype stop_digi_fx();
