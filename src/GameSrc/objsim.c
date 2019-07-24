@@ -338,7 +338,7 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
     extern char camera_map[NUM_HACK_CAMERAS];
     extern char num_customs;
     short style;
-    int use_index;
+    int32_t use_index;
     Id useme;
     grs_bitmap *result;
 
@@ -399,7 +399,7 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
 
             seed = *tmd_ticks >> 7;
             use_index = ((seed * 9277 + 7) % 14983) % 10;
-            numtostring((long)use_index, use_buf);
+            sprintf(use_buf, "%d", use_index);
             return get_text_bitmap_from_string(style, 1, use_buf, FALSE, 0);
             // return(get_text_bitmap_from_string(style, 1, itoa(use_index, use_buf, 10), FALSE, 0));
         } else {

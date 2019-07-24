@@ -24,11 +24,6 @@ struct TMTask {
 	long 							tmReserved;
 };
 
-static void numtostring(int num, char *str)
-{
-	sprintf(str, "%d", num);
-}
-
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/mac/Toolbox/Toolbox-80.html
 // number of ticks since system start (1 Tick is about 1/60 second)
 int32_t TickCount(void);
