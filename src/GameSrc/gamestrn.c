@@ -55,6 +55,13 @@ int string_res_file; // string res filenum
 uchar *language_files[] = {"res/data/cybstrng.res", "res/data/frnstrng.res", "res/data/gerstrng.res"};
 char which_lang;
 
+// Wrapper around RefGet suitable for use by lg_sprintf to get string resources
+// for the custom '%S' format specifier.
+char *lg_sprintf_string_get(uint32_t ref)
+{
+    return RefGetRaw(ref);
+}
+
 void init_strings(void) {
     // Open the string resource file.
     if (which_lang < 0 || which_lang >= sizeof(language_files) / sizeof(*language_files))
@@ -65,7 +72,7 @@ void init_strings(void) {
     if (string_res_file < 0)
         critical_error(CRITERR_RES | 0);
 
-    // lg_sprintf_install_stringfunc((char *(*)(ulong))RefGet);
+    //lg_sprintf_install_stringfunc(lg_sprintf_string_get);
 }
 
 char *get_string(int num, char *buf, int bufsize) {
