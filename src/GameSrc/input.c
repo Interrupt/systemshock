@@ -1060,12 +1060,12 @@ void alloc_cursor_bitmaps(void)
 }
 
 #include "frtypes.h"
-extern Boolean gPlayingGame;
+extern bool gPlayingGame;
 extern bool DoubleSize;
 extern bool SkipLines;
 extern void change_svga_screen_mode(void);
-Boolean gShowFrameCounter = FALSE;
-Boolean gShowMusicGlobals = FALSE;
+bool gShowFrameCounter = false;
+bool gShowMusicGlobals = false;
 
 uchar MacQuitFunc(short keycode, ulong context, void *data) {
     gPlayingGame = FALSE;

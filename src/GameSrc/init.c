@@ -128,7 +128,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TITLE_DISPLAY_TIME (60 * 3)
 #define MIN_WAIT_TIME (60)
 
-void DrawSplashScreen(short id, Boolean fadeIn);
+//void DrawSplashScreen(short id, Boolean fadeIn);
 void PreloadGameResources(void);
 errtype init_gamesys();
 errtype free_gamesys(void);
@@ -467,6 +467,7 @@ void init_all(void) {
     init_done = TRUE;
 }
 
+/*
 //-----------------------------------------------------------
 //  Draw a splash screen in its associated color table.
 //-----------------------------------------------------------
@@ -482,7 +483,7 @@ void DrawSplashScreen(short id, Boolean fadeIn) {
 
     // First, clear the screen and load in the color table for this picture.
     // gr_clear(0xFF);
-    /*ctab = GetCTable(id);														// Get the pict's
+    ctab = GetCTable(id);														// Get the pict's
 CLUT if (ctab)
     {
             BlockMove((**(ctab)).ctTable, (**(gMainColorHand)).ctTable, 256 * sizeof(ColorSpec));
@@ -511,8 +512,9 @@ palette fade
             if (fadeIn)
                     finish_pal_effect(pal_id);
 #endif
-    }*/
+    }
 }
+*/
 
 void PreloadGameResources(void) {
     // Images

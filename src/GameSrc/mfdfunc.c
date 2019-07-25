@@ -2465,7 +2465,7 @@ void mfd_elevator_expose(MFD *mfd, ubyte control) {
 #define KEYPAD_STATUS_FONT RES_mediumLEDFont
 #define KEYPAD_STATUS_COLOR (GOOD_RED)
 
-Boolean gKeypadOverride = FALSE; // When this is true, don't move the player.
+bool gKeypadOverride = false; // When this is true, don't move the player.
 
 typedef struct _keypad_data {
     uchar curr_digit;

@@ -68,6 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "2d.h"
 #include "splash.h"
 #include "splshpal.h"
+#include "tickcount.h"
 #include "Shock.h"
 #include "Xmi.h"
 
