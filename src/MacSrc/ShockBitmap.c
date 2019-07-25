@@ -121,12 +121,13 @@ void FixPalette(void)
 	}*/
 }
 
+/*
 //------------------------------------------------------------------------------------
 // 	Setup a new ShockBitmap structure.
 //------------------------------------------------------------------------------------
 void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color)
 {
-	/*GrafPtr 			savePort;
+	GrafPtr 			savePort;
 	PixMapPtr		pmaptr;
 	
 	GetPort(&savePort);
@@ -170,8 +171,9 @@ void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean colo
 		theMap->bits = (GrafPtr) &theMap->BWPort;
 	}
 
-	SetPort(savePort);*/
+	SetPort(savePort);
 }
+*/
 
 //------------------------------------------------------------------------------------
 //  Deallocate a Shock bitmap.

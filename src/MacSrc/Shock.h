@@ -125,8 +125,8 @@ int main(int argc, char** argv);
 void HandleEvents(void);
 void UpdateWindow(WindowPtr wind);
 void DoCommand(unsigned long mResult);
-Boolean DoSaveGame(void);
-Boolean DoSaveGameAs(void);
+bool DoSaveGame(void);
+bool DoSaveGameAs(void);
 void DoQuit(void);
 void ScrollCredits(void);
 
@@ -165,7 +165,7 @@ extern short				gActiveWide, gActiveHigh;
 extern short				gActiveLeft, gActiveTop;
 //extern Rect				gActiveArea, gOffActiveArea;
 
-extern Boolean			gIsPowerPC;
+//extern Boolean			gIsPowerPC;
 
 extern long					gDataDirID;
 extern short				gDataVref;

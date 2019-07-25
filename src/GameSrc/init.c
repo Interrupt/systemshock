@@ -60,6 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "splash.h" // for splash screen...
 #include "statics.h"
 #include "textmaps.h"
+#include "tickcount.h"
 #include "tools.h"
 #include "gamerend.h"
 #include "mainloop.h"

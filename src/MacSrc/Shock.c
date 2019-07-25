@@ -85,11 +85,11 @@ MenuHandle		gMainMenus[kNumMenus];
 short				gCursorSet;
 bool				gDone = false;
 bool				gInForeground = true;
-Boolean				gPlayingGame;		//¥¥¥ Temp
+bool				gPlayingGame;		//¥¥¥ Temp
 bool				gIsNewGame;
 long					gGameSavedTime;
-Boolean				gDeadPlayerQuit;
-Boolean				gGameCompletedQuit;
+bool				gDeadPlayerQuit;
+bool				gGameCompletedQuit;
 
 grs_screen  *cit_screen;
 SDL_Window* window;

@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include "MacTune.h"
 #include <SDL.h>
 
-#include <Carbon/Carbon.h>
+#include "tickcount.h"
 
 //--------------------
 //  Globals
@@ -59,7 +59,7 @@ short				gScreenWide, gScreenHigh;
 short				gActiveWide, gActiveHigh;
 short				gActiveLeft, gActiveTop;
 //Rect				gActiveArea, gOffActiveArea;
-Boolean			gIsPowerPC = false;
+//Boolean			gIsPowerPC = false;
 long				gDataDirID;
 short				gDataVref;
 long				gCDDataDirID;
@@ -68,7 +68,7 @@ long				gAlogDirID;
 short				gAlogVref;
 long				gBarkDirID;
 short				gBarkVref;
-Boolean			gMenusHid;
+//Boolean			gMenusHid;
 
 //---------------------------
 //  Externs

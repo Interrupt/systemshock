@@ -76,7 +76,7 @@ void SetupOffscreenBitmaps(int width, int height);
 void ResetCTSeed(void);
 void RememberSeed(void);
 void FixPalette(void);
-void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color);
+//void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color);
 void FreeShockBitmap(ShockBitmap *theMap);
 //Handle Build8PixMap(CGrafPtr theCGrafPtr,short width, short height);
 short CurScreenDepth(void);

@@ -40,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mapflags.h"
 #include "player.h"
 #include "sfxlist.h"
+#include "tickcount.h"
 #include "tools.h"
 
 #include "adlmidi.h"

@@ -211,6 +211,7 @@ set(GAME_SRC
 	src/GameSrc/status.c
 	src/GameSrc/target.c
 	src/GameSrc/textmaps.c
+	src/GameSrc/tickcount.c
 	src/GameSrc/tfdirect.c
 	src/GameSrc/tfutil.c
 	src/GameSrc/tools.c

@@ -35,15 +35,15 @@ typedef struct {
 
     // Game Options
     short goMsgLength;          // 0 - normal, 1 - brief
-    Boolean goPopupLabels;
-    Boolean goOnScreenHelp;
+    bool goPopupLabels;
+    bool goOnScreenHelp;
     short goLanguage;           // 0 - English, 1 - French, 2 - German
-    Boolean goCaptureMouse;
-    Boolean goInvertMouseY;
+    bool goCaptureMouse;
+    bool goInvertMouseY;
 
     // Sound Options
-    Boolean soBackMusic;
-    Boolean soSoundFX;
+    bool soBackMusic;
+    bool soSoundFX;
     short soMusicVolume;
     short soSfxVolume;
     short soAudioLogVolume;
@@ -55,8 +55,8 @@ typedef struct {
     short doResolution;         // 0 - High, 1 - Low
     short doDetail;             // 0 - Min, 1-Low, 2-High, 3-Max
     short doGamma;
-    Boolean doUseQD;
-    Boolean doUseOpenGL;
+    bool doUseQD;
+    bool doUseOpenGL;
     // 0 => unfiltered
     // 1 => bilinear
     // TODO: add trilinear, anisotropic?

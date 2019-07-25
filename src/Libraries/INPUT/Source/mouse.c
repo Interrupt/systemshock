@@ -49,6 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "error.h"
 #include "mouse.h"
 #include "mousevel.h"
+#include "tickcount.h"
 #include "kb.h"
 
 #include <Carbon/Carbon.h>
@@ -136,7 +137,7 @@ extern ulong mouseHandlerSize;
 //TimerUPP		pMousePollPtr;
 //MouseTask		pMousePollTask;
 extern short	gActiveLeft, gActiveTop;
-Boolean			gRBtnWasDown = TRUE;
+bool			gRBtnWasDown = true;
 extern uchar	pKbdGetKeys[16];
 
 //----------------
