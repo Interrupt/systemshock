@@ -82,7 +82,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 //#include <String.h>
 //#include <_stdarg.h>
-#include <Carbon/Carbon.h> // BlockMove()
 #include <stdarg.h>
 
 // prototypes;

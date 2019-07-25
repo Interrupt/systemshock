@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * This file is part of the input library.
  */
-#include <Carbon/Carbon.h> // Handle
 #include "lg.h"
 #include "kbcook.h"
 #include "keydefs.h"

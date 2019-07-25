@@ -88,11 +88,6 @@ if(NOT WIN32)
   endif(ALSA_FOUND)
 endif(NOT WIN32)
 
-# for now I'll put a Carbon/Carbon.h into src/stubs/
-# that defines Mac-specific types and provides stubs for used functions
-# like GetResource()
-include_directories(src/stubs/)
-
 add_subdirectory(src/Libraries/)
 
 set(MAC_SRC

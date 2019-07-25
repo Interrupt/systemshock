@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // that is, local to the main game window.
 
 #include <stdlib.h>
-//#include <Timer.h>
+#include <SDL.h>
 
 #include "lg.h"
 #include "error.h"
@@ -51,10 +51,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mousevel.h"
 #include "tickcount.h"
 #include "kb.h"
-
-#include <Carbon/Carbon.h>
-
-#include <SDL.h>
 
 typedef struct _mouse_state
 {

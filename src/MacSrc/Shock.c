@@ -30,8 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //#include <Balloons.h>
 
-#include <Carbon/Carbon.h>
-
 #include "Shock.h"
 #include "InitMac.h"
 #include "OpenGL.h"

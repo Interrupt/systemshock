@@ -28,7 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __LGSNDX_H
 #define __LGSNDX_H
 
-#include <Carbon/Carbon.h>
 #include <SDL_mixer.h>
 
 //#include <QuickTimeComponents.h>
