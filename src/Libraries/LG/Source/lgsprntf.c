@@ -81,7 +81,7 @@ static int uint_to_str(char *buf, uint val, int base, char alph);
 static char *boolstring[] = {"FALSE","TRUE"};
 static int pten[MAX_FIX_PRECIS+1]={ 1, 10, 100, 1000, 10000 };
 
-static char *(*sprintf_str_func)(ulong strnum)=NULL;
+static char *(*sprintf_str_func)(uint32_t strnum)=NULL;
 
 // For small positive integers, just indirect into the big
 // magic array and copy the two bytes you find there.  This
@@ -300,7 +300,7 @@ int lg_vsprintf(char *buf, const char *format, va_list arglist)
                break;
             case 'S': // string number
                if(sprintf_str_func) {
-                  arg_str=sprintf_str_func(va_arg(arglist,ulong));
+                  arg_str=sprintf_str_func(va_arg(arglist,uint32_t));
                   goto string_copy;
                }
                else {
@@ -413,11 +413,10 @@ string_copy:
 }
 
 // Install a string system function for use with the %S conversion
-// specifier.  The function in question must take a ulong and return
-// a char* (like the resource system's RefGet(), by some coincidence)
-// and you are responsible for any necessary memory management for the
+// specifier.  The function in question must take a uint32_t and return
+// a char*, and you are responsible for any necessary memory management for the
 // string it returns.
-void lg_sprintf_install_stringfunc(char *(*func)(ulong strnum))
+void lg_sprintf_install_stringfunc(char *(*func)(uint32_t strnum))
 {
    sprintf_str_func=func;
 }
