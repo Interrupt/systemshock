@@ -28,20 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Carbon/Carbon.h>
 //#include <Timer.h>
 
-//---------------------
-//  Time Manager defines
-//---------------------
-typedef struct
-{
-	TMTask			task;							// The actual TimeManager task structure
-	long				*ticksPtr;					// Pointer to the ticks
-}
-ShockTask;
-extern ShockTask	pShockTicksTask;
-
 #define	kShockTicksFreq		-14286		//-3571
-
-
 
 //--------------------
 //  Prototypes

@@ -61,12 +61,14 @@ typedef struct _mouse_state
 	short butts;
 } mouse_state;
 
+/*
 typedef struct
 {
 	TMTask			task;					// The actual TimeManager task structure
 	long				appA5;				// We need this silly thing for 68K programs
 }
 MouseTask, *MouseTaskPtr;
+*/
 
 /*
 #define DEFAULT_XRATE 16  			// Default mouse sensitivity parameters
@@ -131,8 +133,8 @@ int mouseVelYmin = 0x80000000;
 extern void MouseHandler(void);
 extern ulong mouseHandlerSize;
 */
-TimerUPP		pMousePollPtr;
-MouseTask		pMousePollTask;
+//TimerUPP		pMousePollPtr;
+//MouseTask		pMousePollTask;
 extern short	gActiveLeft, gActiveTop;
 Boolean			gRBtnWasDown = TRUE;
 extern uchar	pKbdGetKeys[16];

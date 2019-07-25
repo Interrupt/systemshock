@@ -86,8 +86,6 @@ void Cleanup(void);
 //---------------------------
 //  Time Manager routines and globals
 //---------------------------
-TimerUPP		pShockTicksPtr;				// Globals for the Shock "tickcount" TM task.
-ShockTask		pShockTicksTask;			// It increments gShockTicks 280 times per second.
 long				gShockTicks;
 long 				*tmd_ticks;
 

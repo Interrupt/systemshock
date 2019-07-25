@@ -8,22 +8,6 @@
 
 typedef unsigned char Boolean;
 
-// http://unix.superglobalmegacorp.com/xnu/newsrc/bsd/hfs/hfs_macos_defs.h.html
-// https://developer.apple.com/documentation/coreservices/timerupp?language=objc
-typedef struct TMTask TMTask;
-typedef TMTask *TMTaskPtr;
-typedef void (*TimerProcPtr)(TMTaskPtr tmTaskPtr);
-typedef TimerProcPtr TimerUPP;
-struct TMTask {
-	//QElemPtr 						qLink;
-	void*							qLink; // FIXME: ??
-	short 							qType;
-	TimerUPP 						tmAddr;
-	long 							tmCount;
-	long 							tmWakeUp;
-	long 							tmReserved;
-};
-
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/mac/Toolbox/Toolbox-80.html
 // number of ticks since system start (1 Tick is about 1/60 second)
 int32_t TickCount(void);
