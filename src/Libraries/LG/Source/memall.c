@@ -73,7 +73,7 @@ typedef struct {
 
 #define MAX_ALLOCATORS 4
 static MemAllocSet memAllocStack[MAX_ALLOCATORS] = {
-	malloc, free, realloc,
+	malloc, realloc, free,
 };
 static int memIndexAllocStack = 0;
 
@@ -395,5 +395,3 @@ void *ReallocChecked(void *p, size_t size)
 
 	return(pnew);
 }
-
-
