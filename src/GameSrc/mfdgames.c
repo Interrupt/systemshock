@@ -2232,7 +2232,7 @@ void tictactoe_drawwin(ttt_state *st) {
     }
     if (p1.x > 0) {
         ss_int_line(p1.x, p1.y, p2.x, p2.y);
-        sprintf(buf, "%S%S", realwin == st->whoplayer ? REF_STR_YouHave : REF_STR_ComputerHas, REF_STR_Won);
+        lg_sprintf(buf, "%S%S", realwin == st->whoplayer ? REF_STR_YouHave : REF_STR_ComputerHas, REF_STR_Won);
         draw_shadowed_text(buf, MFD_VIEW_WID - gr_string_width(buf) - 1, 1);
     }
 }
