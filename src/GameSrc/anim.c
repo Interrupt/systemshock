@@ -91,7 +91,7 @@ bool AnimPreloadFrames(ActAnim *paa, Ref animRef) {
 }
 
 ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, LGPoint loc, char unknown,
-   void (*composeFunc)(Rect *area, ubyte flags)) {
+   void (*composeFunc)(LGRect *area, ubyte flags)) {
 	// start playing
 	DEBUG("Playing animation: %x", animRef);
 
