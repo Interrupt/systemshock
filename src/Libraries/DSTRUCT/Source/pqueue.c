@@ -199,7 +199,7 @@ errtype pqueue_least(PQueue* q, void* elem)
    return OK;
 }
 
-errtype pqueue_write(PQueue* q, FILE * fd, void (*writefunc)(int fd, void* elem))
+errtype pqueue_write(PQueue* q, FILE *fd, void (*writefunc)(FILE *fd, void* elem))
 {
    int i;
    fwrite((char*)q,1,sizeof(PQueue), fd);
@@ -212,7 +212,7 @@ errtype pqueue_write(PQueue* q, FILE * fd, void (*writefunc)(int fd, void* elem)
    return OK;
 }
 
-errtype pqueue_read(PQueue* q, FILE * fd, void (*readfunc)(int fd, void* elem))
+errtype pqueue_read(PQueue* q, FILE *fd, void (*readfunc)(FILE *fd, void* elem))
 {
    int i;
    fread((char*)q,1,sizeof(PQueue), fd);
