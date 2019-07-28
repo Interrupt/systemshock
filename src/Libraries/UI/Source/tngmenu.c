@@ -337,7 +337,7 @@ MenuElement *tng_menu_add_basic(TNG *ptng, char *label)
    newelem->f = NULL;
    newelem->user_data = NULL;
    newelem->keycode = 0;
-   newelem->context = NULL;
+   newelem->context = 0;
 
    TNG_MN(ptng)->size.y += TNG_MN(ptng)->slot_height;
    TNG_MN(ptng)->num_lines++;

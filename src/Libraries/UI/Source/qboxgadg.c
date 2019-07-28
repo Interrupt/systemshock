@@ -124,7 +124,7 @@ Gadget *gad_qbox_start_full(Gadget *parent, LGPoint coord, int z, TNGStyle *sty,
 Gadget *gad_qbox_start(Gadget *parent, LGPoint coord, int z, TNGStyle *sty, ushort options, char *name, LGPoint ss)
 {
    return(gad_qbox_start_full(parent, coord, z, sty, options, name, ss, QboxDefaultSpacing, QboxDefaultBorder,
-      NULL, NULL));
+      0, 0));
 }
 
 // Add a line to a quickbox.  slot_type describes the type of slot, var is a pointer to the variable to be
@@ -137,7 +137,7 @@ errtype gad_qbox_add(char *label, int slot_type, void *var, ulong slot_options)
 
 // Just like gad_qbox_add but allows two parameters to be set for the slot.  Certain slot options require
 // this form of accessing.
-errtype gad_qbox_add_parm(char *label, int slot_type, void *var, ulong slot_options, void *parm1, void *parm2)
+errtype gad_qbox_add_parm(char *label, int slot_type, void *var, ulong slot_options, intptr_t parm1, intptr_t parm2)
 {
    return(tng_quickbox_add_parm(label, slot_type, var, slot_options, parm1, parm2));
 }
@@ -163,7 +163,7 @@ errtype gad_qbox_end_full(Gadget **ptr)
 {
    LGPoint sz;
    if ((TNG_QB(current_box->tng_data)->options & QB_ADDCLOSE) &&  (ptr != NULL))
-         gad_qbox_add_parm("Close", QB_PUSHBUTTON_SLOT, gad_qbox_close_func, QB_NO_OPTION, (void *)(ptr), NULL);
+         gad_qbox_add_parm("Close", QB_PUSHBUTTON_SLOT, gad_qbox_close_func, QB_NO_OPTION, (intptr_t)(ptr), 0);
 
    tng_quickbox_size(current_box->tng_data, &sz);
    box_dim.lr.x = box_dim.ul.x + sz.x;

@@ -124,7 +124,7 @@ errtype gad_qbox_add(char *label, int slot_type, void *var, ulong slot_options);
 
 // Just like gad_qbox_add but allows two parameters to be set for the slot.  Certain slot options require
 // this form of accessing.
-errtype gad_qbox_add_parm(char *label, int slot_type, void *var, ulong slot_options, void *parm1, void *parm2);
+errtype gad_qbox_add_parm(char *label, int slot_type, void *var, ulong slot_options, intptr_t parm1, intptr_t parm2);
 
 // This represents that the quickbox is done being created and is ready for display, input, etc.
 // if end_full is used, then the passed pointer is used as the application's pointer to the quickbox

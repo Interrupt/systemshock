@@ -294,7 +294,7 @@ Gadget *gadget_init(int display_type, LGPoint extent)
    gd->g = retgad;
    gd->name  = (char *)malloc(8 * sizeof(char));  
 //   lg_sprintf(gd->name, "root%d\0", display_type);
-   sprintf(gd->name, "root%d\0", display_type);
+   sprintf(gd->name, "root%d", display_type);
 
    // Set the right kind o' callback
    switch (display_type)
@@ -477,7 +477,7 @@ errtype gadget_resize(Gadget* g, int xsize, int ysize)
 }
 
 
-errtype gad_callback_install(Gadget *g, ushort event_type, ushort condition, TNGCallback tngcb, void *user_data, int *id)
+errtype gad_callback_install(Gadget *g, ushort event_type, ushort condition, TNGCallback tngcb, intptr_t user_data, int *id)
 {
    return(tng_install_callback(g->tng_data, event_type, condition, tngcb, user_data, id));
 }
@@ -604,7 +604,7 @@ errtype gadget_create_setup(Gadget **pg, Gadget *parent, GadgetClass cl, LGRect 
    if ((RectWidth(dim) < 1) || (RectHeight(dim) < 1))
    {
       // Spew(DSRC_UI_Bounds, ("Nonpositive dimension of created gadget!\n"));
-      return(NULL);
+      return 0;
    }
 
    // Do those yummy mallocs

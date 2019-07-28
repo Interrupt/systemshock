@@ -135,11 +135,11 @@ typedef struct {
 #define TNG_BEVELMASK	0x6000	// bottom 2 bits for bevel drawing
 #define TNG_BEVELSHIFT	13			// shift down to put in low bits
 
-typedef uchar (*TNGCallback)(void *ui_data, void *user_data);
+typedef uchar (*TNGCallback)(void *ui_data, intptr_t user_data);
 
 typedef struct _TNG_CB {
    struct _TNG_CB *next_cb;
-   void *user_data;
+   intptr_t user_data;
    ushort event_type;
    ushort condition;
    int id;
@@ -149,7 +149,7 @@ typedef struct _TNG_CB {
 typedef struct _TNG {
    void *type_data;
    void *ui_data;
-   void *cb_data;
+   intptr_t cb_data;
    TNGStyle *style;
    TNG_CB *pcb;
    ushort flags;
@@ -198,7 +198,7 @@ void TNGDrawBitmapRef(Ref ref, LGPoint pt);
 void TNGDrawTileMapRef(Ref ref, LGPoint pt);
 errtype TNGDrawText(Id id, char *text, int x, int y);
 
-errtype tng_install_callback(TNG *ptng, ushort event_type, ushort cond, TNGCallback cbfn, void *user_data, int *pid);
+errtype tng_install_callback(TNG *ptng, ushort event_type, ushort cond, TNGCallback cbfn, intptr_t user_data, int *pid);
 errtype tng_uninstall_callback(TNG *ptng, int id);
 uchar tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc);
 uchar tng_cb_keycooked(TNG *ptng, ushort key);
