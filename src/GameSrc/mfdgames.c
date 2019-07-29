@@ -500,20 +500,22 @@ int generic_ball_and_paddle(void *game_state);
 
 int get_new_x_dir(int paddle_loc, int ball_loc) {
     int x_dir = ((ball_loc - paddle_loc) / 2);
-    if (x_dir < 0)
+    if (x_dir < 0) {
         if (x_dir >= -PONG_SWEET_SPOT)
             x_dir = 0;
         else if (x_dir < -PONG_X_DIR_MAX)
             x_dir = -PONG_X_DIR_MAX;
         else
             x_dir++;
-    else if (x_dir > 0)
+    }
+    else if (x_dir > 0) {
         if (x_dir <= PONG_SWEET_SPOT)
             x_dir = 0;
         else if (x_dir > PONG_X_DIR_MAX)
             x_dir = PONG_X_DIR_MAX;
         else
             x_dir--;
+    }
     return x_dir;
 }
 
@@ -817,11 +819,12 @@ void games_run_road(road_state *s) {
         return;
     }
     for (i = 0; i < cur_rs->lane_cnt; i++) // new cars
-        if ((rand() % 0x3f) < cur_rs->diff)
+        if ((rand() % 0x3f) < cur_rs->diff) {
             if ((rand() % 0x3f) == 5)
                 cur_rs->lanes[i] |= SMART_CAR;
             else
                 cur_rs->lanes[i] |= BAD_CAR;
+        }
     cur_rs->player_lane += cur_rs->player_move;
     cur_rs->player_move = 0;
     if (cur_rs->player_lane < 0)

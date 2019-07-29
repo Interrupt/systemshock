@@ -346,11 +346,12 @@ int fr_mod_cams(frc *fr, void *v_cam, int mod_fac) {
         _fr->viewer_zoom = 1;
     if ((unsigned long)_fr->viewer_zoom > 0x7fffffff)
         _fr->viewer_zoom = 0x7fffffff;
-    if ((long)cam != -1)
+    if ((long)cam != -1) {
         if (cam == NULL)
             _fr->camptr = fr_camera_getdef();
         else
             _fr->camptr = cam;
+    }
     _fr_ret;
 }
 // we put

@@ -973,11 +973,12 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
         }
         break;
     case CLASS_CRITTER: {
-        if (cursor_obj == OBJ_NULL)
+        if (cursor_obj == OBJ_NULL) {
             if (id != player_struct.curr_target)
                 select_current_target(id, TRUE);
             else
                 select_current_target(OBJ_NULL, TRUE);
+        }
     }
         retval = TRUE;
         break;

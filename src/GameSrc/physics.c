@@ -522,11 +522,12 @@ errtype physics_run(void) {
                 plr_y = -MAX_SPRINT;
             }
             plr_side >>= 2;
-            if (abs(plr_alpha) > SKATE_ALPHA_CUTOFF)
+            if (abs(plr_alpha) > SKATE_ALPHA_CUTOFF) {
                 if (plr_alpha > 0)
                     plr_alpha = SKATE_ALPHA_CUTOFF + (plr_alpha - SKATE_ALPHA_CUTOFF) / 2;
                 else
                     plr_alpha = -(SKATE_ALPHA_CUTOFF + (-plr_alpha - SKATE_ALPHA_CUTOFF) / 2);
+            }
 
             break;
         }
