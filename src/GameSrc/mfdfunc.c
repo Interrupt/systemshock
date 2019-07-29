@@ -519,7 +519,7 @@ void mfd_weapon_draw_ammo_buttons(int num_ammo_buttons, int ammo_subclass, ubyte
         char buf[4], buf2[50];
         triple = MAKETRIP(CLASS_AMMO, ammo_subclass, curr_ammo_type);
 
-        numtostring(ammo_count, buf); // KLC  itoa(ammo_count,buf,10);
+        sprintf(buf, "%d", ammo_count);
         gr_set_font((grs_font *)ResGet(RES_mediumLEDFont));
         mfd_string_shadow = MFD_SHADOW_NEVER;
         mfd_draw_font_string(buf, MFD_VIEW_WID - gr_string_width(buf) - 2, AMMO_BUTTON_Y + 2, GOOD_RED,
@@ -1903,10 +1903,11 @@ void mfd_grenade_expose(MFD *mfd, ubyte control) {
         if (!GRENADE_MOUSE_CONSTRAINED)
             draw_raw_resource_bm(REF_IMG_BeamSetting, r->ul.x + x - 3, r->ul.y - 1);
 
-        get_string(REF_STR_TimeSetting, buf, TIME_TEXT_LEN);
-        numtostring(setting / 10, buf + strlen(buf)); // itoa(setting/10,buf+strlen(buf),10);
-        strcat(buf, ".");
-        numtostring(setting % 10, buf + strlen(buf)); // itoa(setting%10,buf+strlen(buf),10);
+
+        sprintf(buf, "%s %d.%d", get_string(REF_STR_TimeSetting, NULL, TIME_TEXT_LEN), setting / 10, setting % 10);
+        //numtostring(setting / 10, buf + strlen(buf)); // itoa(setting/10,buf+strlen(buf),10);
+        //strcat(buf, ".");
+        //numtostring(setting % 10, buf + strlen(buf)); // itoa(setting%10,buf+strlen(buf),10);
         {
             LGRect r = {{GRENADE_SLIDER_X, TIME_TEXT_Y}, {MFD_VIEW_WID, GRENADE_SLIDER_Y - 1}};
             mfd_partial_clear(&r);
@@ -2011,7 +2012,7 @@ void mfd_bioware_expose(MFD *m, ubyte control) {
             hp = (100 * player_struct.hit_points + (MAX_HP / 2)) / MAX_HP;
             if (hp == 0 && player_struct.hit_points > 0)
                 hp = 1;
-            numtostring(hp, buf2); // itoa(hp,buf2,10);
+            sprintf(buf2, "%d", hp);
 
             // hack to save space in display.  Use "I" for "1", knowing
             // that "I" is narrower.
@@ -2043,7 +2044,7 @@ void mfd_bioware_expose(MFD *m, ubyte control) {
                 mfd_draw_string(buf2, x, y, GREEN_YELLOW_BASE, TRUE);
                 x += gr_string_width(buf2);
             } else {
-                numtostring(f, buf2); // itoa(f,buf2,10);
+                sprintf(buf2, "%d", f); // itoa(f,buf2,10);
 
                 // hack to save space in display.  Use "I" for "1", knowing
                 // that "I" is narrower.
@@ -2464,7 +2465,7 @@ void mfd_elevator_expose(MFD *mfd, ubyte control) {
 #define KEYPAD_STATUS_FONT RES_mediumLEDFont
 #define KEYPAD_STATUS_COLOR (GOOD_RED)
 
-Boolean gKeypadOverride = FALSE; // When this is true, don't move the player.
+bool gKeypadOverride = false; // When this is true, don't move the player.
 
 typedef struct _keypad_data {
     uchar curr_digit;
@@ -2544,7 +2545,7 @@ char *keypad_name(int b, char *buf) {
         strcpy(buf, "C");
         break;
     default:
-        numtostring(b, buf); // itoa(b, buf, 10);
+        sprintf(buf, "%d", b);
         break;
     }
     return (buf);

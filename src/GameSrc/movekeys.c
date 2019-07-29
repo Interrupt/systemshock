@@ -46,7 +46,7 @@ MOVE_KEYBIND MoveCyberKeybinds[MAX_MOVE_KEYBINDS+1];
 static uchar motion_key_scancodes[256+1];
 static byte poll_controls[6];
 
-extern Boolean gKeypadOverride;
+extern bool gKeypadOverride;
 
 
 

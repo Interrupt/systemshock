@@ -125,10 +125,9 @@ int main(int argc, char** argv);
 void HandleEvents(void);
 void UpdateWindow(WindowPtr wind);
 void DoCommand(unsigned long mResult);
-Boolean DoSaveGame(void);
-Boolean DoSaveGameAs(void);
+bool DoSaveGame(void);
+bool DoSaveGameAs(void);
 void DoQuit(void);
-void HandleAEOpenGame(FSSpec *openSpec);
 void ScrollCredits(void);
 
 void InitSDL();
@@ -154,19 +153,19 @@ extern long					gGameSavedTime;
 //extern ColorSpec*		gOriginalColors;
 extern unsigned long	gRandSeed;
 extern short				gMainVRef;
-extern Handle				gWatchCurs;
+// extern Handle				gWatchCurs;
 
 extern short				gOriginalDepth;
 extern short				gStartupDepth;
 extern short				gLastAlertDepth;
-extern Ptr					gScreenAddress;
+extern char					*gScreenAddress;
 extern long					gScreenRowbytes;
 extern short				gScreenWide, gScreenHigh;
 extern short				gActiveWide, gActiveHigh;
 extern short				gActiveLeft, gActiveTop;
-extern Rect				gActiveArea, gOffActiveArea;
+//extern Rect				gActiveArea, gOffActiveArea;
 
-extern Boolean			gIsPowerPC;
+//extern Boolean			gIsPowerPC;
 
 extern long					gDataDirID;
 extern short				gDataVref;

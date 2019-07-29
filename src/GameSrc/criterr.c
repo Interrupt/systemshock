@@ -24,8 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "InitMac.h"
 #include "criterr.h"
 
-extern Handle gExtraMemory;
-
 /*
  * $Source: r:/prj/cit/src/RCS/criterr.c $
  * $Revision: 1.22 $
@@ -174,9 +172,6 @@ void critical_error(short code) {
 
     if (code == NO_CRITICAL_ERROR)
         return;
-
-    if (gExtraMemory)
-        DisposHandle(gExtraMemory); // free our extra space
 
 #if 1
     STUB_ONCE("Maybe use SDL_ShowSimpleMessageBox() ?");

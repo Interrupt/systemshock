@@ -451,7 +451,7 @@ frc *fr_place_view(frc *view, void *v_cam, void *cnvs, int pflags, char axis, in
                 free(fr);
                 return NULL;
             }
-            fr->realCanvasPtr = (Ptr)p;
+            fr->realCanvasPtr = (char*)p;
             gr_init_canvas(&fr->main_canvas, (uchar *)((ulong)(p + 31) & 0xFFFFFFE0), BMT_FLAT8, wid, hgt);
             fr->main_canvas.bm.row = rowbytes;
         } else {

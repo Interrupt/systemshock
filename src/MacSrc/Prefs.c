@@ -160,7 +160,7 @@ static bool is_true(const char *s) {
 //--------------------------------------------------------------------
 //	  Locate the preferences file and load them to set our global pref settings.
 //--------------------------------------------------------------------
-OSErr LoadPrefs(void) {
+int16_t LoadPrefs(void) {
     FILE *f = fopen(GetPrefsPathFilename(), "r");
     if (!f) {
         // file can't be open, write default preferences
@@ -250,7 +250,7 @@ OSErr LoadPrefs(void) {
 //--------------------------------------------------------------------
 //	  Save global settings in the preferences file.
 //--------------------------------------------------------------------
-OSErr SavePrefs(void) {
+int16_t SavePrefs(void) {
     INFO("Saving preferences");
 
     FILE *f = fopen(GetPrefsPathFilename(), "w");
@@ -572,7 +572,7 @@ HOTKEYLOOKUP HotKeyLookup[] =
   { "\"keypad 7\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('7'),     0 },
   { "\"keypad 8\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('8'),     0 },
   { "\"keypad 9\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('9'),     0 },
-  { "\"mac_help\"",         DEMO_CONTEXT, MacHelpFunc,            NULL                   , 0, CTRL('/'),     0 },
+//  { "\"mac_help\"",         DEMO_CONTEXT, MacHelpFunc,            NULL                   , 0, CTRL('/'),     0 },
   { "\"toggle_options\"",   DEMO_CONTEXT, wrapper_options_func,   (void *)TRUE           , 0, DOWN(KEY_ESC), 0 },
   { "\"cheat_give_all\"",   DEMO_CONTEXT, toggle_giveall_func,    (void *)TRUE           , 0, CTRL('2'),     0 },
   { "\"cheat_physics\"",    DEMO_CONTEXT, toggle_physics_func,    (void *)TRUE           , 0, CTRL('3'),     0 },

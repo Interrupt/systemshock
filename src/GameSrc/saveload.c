@@ -98,17 +98,13 @@ void restore_objects(char *buf, ObjID *obj_array, char obj_count);
 errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags);
 
 #define REF_WRITE(id_num, index, x)                  \
-    write_id(id_num, index, &(x), sizeof(x), fd, 0); \
-    AdvanceProgress()
+    write_id(id_num, index, &(x), sizeof(x), fd, 0)
 #define REF_WRITE_LZW(id_num, index, x)                    \
-    write_id(id_num, index, &(x), sizeof(x), fd, RDF_LZW); \
-    AdvanceProgress()
+    write_id(id_num, index, &(x), sizeof(x), fd, RDF_LZW)
 #define REF_WRITE_RAW(id_num, index, ptr, sz)      \
-    write_id(id_num, index, ptr, sz, fd, RDF_LZW); \
-    AdvanceProgress()
+    write_id(id_num, index, ptr, sz, fd, RDF_LZW)
 #define REF_READ(id_num, index, x)    \
-    ResExtract(id_num + index, &(x)); \
-    AdvanceProgress()
+    ResExtract(id_num + index, &(x))
 
 #define FIRST_CSPACE_LEVEL 14
 
@@ -359,7 +355,6 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     // Read appropriate state modifiers
     //   if (flush_mem)
     //      free_dynamic_memory(DYNMEM_PARTIAL);
-    AdvanceProgress();
 
     // Open the file we're going to save into.
     fd = ResEditFile(CURRENT_GAME_FNAME, TRUE);
@@ -368,7 +363,6 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
         end_wait();
         return ERR_FOPEN;
     }
-    AdvanceProgress();
 
     REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
 
@@ -719,9 +713,7 @@ void load_level_data() {
     extern errtype load_small_texturemaps();
 
     // KLC-removed from here	obj_load_art(FALSE);
-    AdvanceProgress();
     load_small_texturemaps();
-    AdvanceProgress();
 }
 
 void SwapLongBytes(void *pval4);
@@ -744,7 +736,7 @@ void SwapShortBytes(void *pval2) {
 //  Loads in the map for a level, and all the other related resources (2+ MB worth).
 //---------------------------------------------------------------------------------
 // errtype load_current_map(char* fn, Id id_num, Datapath* dpath)
-errtype load_current_map(Id id_num, FSSpec *spec) {
+errtype load_current_map(Id id_num) {
     void rendedit_process_tilemap(FullMap * fmap, LGRect * r, bool newMap);
     extern errtype set_door_data(ObjID id);
     extern int physics_handle_max;
@@ -778,8 +770,6 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
         obj_destroy(PLAYER_OBJ);
         make_player = TRUE;
     }
-    AdvanceProgress();
-
     if (input_cursor_mode == INPUT_OBJECT_CURSOR) {
         pop_cursor_object();
     }
@@ -798,15 +788,12 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
         return ERR_FOPEN;
     }
 
-    AdvanceProgress();
-
     if (ResInUse(SAVELOAD_VERIFICATION_ID)) {
         int verify_cookie;
         ResExtract(SAVELOAD_VERIFICATION_ID, &verify_cookie);
         if ((verify_cookie != VERIFY_COOKIE_VALID) && (verify_cookie != OLD_VERIFY_COOKIE_VALID))
             critical_error(CRITERR_FILE | 5);
     }
-    AdvanceProgress();
 
     // idx++;
     REF_READ(id_num, idx++, version);
@@ -836,7 +823,6 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
 
         MAP_MAP = (MapElem *)static_map;
         ResExtract(id_num + idx++, MAP_MAP);
-        AdvanceProgress();
     }
 
     // Load schedules, performing some voodoo.
@@ -1403,7 +1389,6 @@ errtype load_current_map(Id id_num, FSSpec *spec) {
         REF_READ(id_num, idx++, amap_magic_num);
         //    SwapLongBytes(&amap_magic_num);
         amap_str_startup(amap_magic_num);
-        AdvanceProgress();
     }
 #endif
 
@@ -1504,7 +1489,6 @@ obj_out:
             edms_delete_go();
         }
     }
-    AdvanceProgress();
 
     // DO NOT call this from here.  We haven't necessarily yet set
     // player_struct.level, which means the wrong shodometer quest

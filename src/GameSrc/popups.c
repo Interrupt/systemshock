@@ -157,11 +157,7 @@ void make_email_cursor(LGCursor *c, grs_bitmap *bm, uchar page, bool init) {
 #endif
     if (init)
         gr_init_bm(bm, NULL, BMT_FLAT8, BMF_TRANS, w, h);
-    get_string(REF_STR_WordPage, s, BUF_SIZ);
-    len = strlen(s);
-    s[len] = ' ';
-    //   itoa(page,s+len+1,10);
-    numtostring(page, s + len + 1);
+    sprintf(s, "%s %d", get_string(REF_STR_WordPage, NULL, BUF_SIZ), page);
     MouseLock++;
     if (sizeof(cursor_buf) < w * h)
         critical_error(CRITERR_MEM | 7);

@@ -30,8 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //#include <Balloons.h>
 
-#include <Carbon/Carbon.h>
-
 #include "Shock.h"
 #include "InitMac.h"
 #include "OpenGL.h"
@@ -85,12 +83,11 @@ MenuHandle		gMainMenus[kNumMenus];
 short				gCursorSet;
 bool				gDone = false;
 bool				gInForeground = true;
-Boolean				gPlayingGame;		//¥¥¥ Temp
+bool				gPlayingGame;		//¥¥¥ Temp
 bool				gIsNewGame;
-FSSpec				gSavedGameFile;
 long					gGameSavedTime;
-Boolean				gDeadPlayerQuit;
-Boolean				gGameCompletedQuit;
+bool				gDeadPlayerQuit;
+bool				gGameCompletedQuit;
 
 grs_screen  *cit_screen;
 SDL_Window* window;

@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //==============================================================================
 
+#include <stdbool.h>
 
 #include "MacTune.h"
 #include "musicai.h"
@@ -44,11 +45,11 @@ mlimbs_request_info current_request[MLIMBS_MAX_SEQUENCES - 1]; // Request inform
 long		mlimbs_error;
 //uchar		mlimbs_semaphore = FALSE;
 
-Handle			gHeaderHdl, gTuneHdl, gOfsHdl;			// Holds the tune-related data for the current theme file.
+// Handle			gHeaderHdl, gTuneHdl, gOfsHdl;			// Holds the tune-related data for the current theme file.
 long			*gOffsets;										// Array of offsets for the beginning of each tune.
 //TunePlayer	gPlayer;										// The Tune Player.
-Boolean			gTuneDone;										// True when a sequence has finished playing (set by CB proc).
-Boolean			gReadyToQueue;								// True when it's time to queue up a new sequence.
+bool			gTuneDone;										// True when a sequence has finished playing (set by CB proc).
+bool			gReadyToQueue;								// True when it's time to queue up a new sequence.
 int				gOverlayTime;								// Amount of time (in millisecs) to wait for overlays.
 int				gQueueTime;									// Amount of time (in millisecs) to wait to queue next tune.
 
@@ -70,7 +71,7 @@ int				gQueueTime;									// Amount of time (in millisecs) to wait to queue nex
 #pragma require_prototypes off
 
 //---------------------------------------------------------------
-pascal void CalcTuneProc(void)
+void CalcTuneProc(void)
 {
 	gReadyToQueue = TRUE;								// It's time to queue up another tune.
 }

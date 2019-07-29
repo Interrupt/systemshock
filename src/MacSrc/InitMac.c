@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include "MacTune.h"
 #include <SDL.h>
 
-#include <Carbon/Carbon.h>
+#include "tickcount.h"
 
 //--------------------
 //  Globals
@@ -46,7 +46,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MWERKS__
 //QDGlobals	qd;
 #endif
-Handle			gExtraMemory = nil;
 //ColorSpec 		*gOriginalColors;
 unsigned long	gRandSeed;
 short				gMainVRef;
@@ -54,13 +53,13 @@ short				gMainVRef;
 short				gOriginalDepth = -1;
 short				gLastAlertDepth = -1;
 short				gStartupDepth;
-Ptr				gScreenAddress;
+char				*gScreenAddress;
 long				gScreenRowbytes;
 short				gScreenWide, gScreenHigh;
 short				gActiveWide, gActiveHigh;
 short				gActiveLeft, gActiveTop;
-Rect				gActiveArea, gOffActiveArea;
-Boolean			gIsPowerPC = false;
+//Rect				gActiveArea, gOffActiveArea;
+//Boolean			gIsPowerPC = false;
 long				gDataDirID;
 short				gDataVref;
 long				gCDDataDirID;
@@ -69,14 +68,14 @@ long				gAlogDirID;
 short				gAlogVref;
 long				gBarkDirID;
 short				gBarkVref;
-Boolean			gMenusHid;
+//Boolean			gMenusHid;
 
 //---------------------------
 //  Externs
 //---------------------------
 void status_bio_update(void);
 extern uchar gBioInited;
-pascal void MousePollProc(void);
+void MousePollProc(void);
 
 
 //---------------------------
@@ -87,8 +86,6 @@ void Cleanup(void);
 //---------------------------
 //  Time Manager routines and globals
 //---------------------------
-TimerUPP		pShockTicksPtr;				// Globals for the Shock "tickcount" TM task.
-ShockTask		pShockTicksTask;			// It increments gShockTicks 280 times per second.
 long				gShockTicks;
 long 				*tmd_ticks;
 
@@ -109,7 +106,7 @@ void InitMac(void)
 //------------------------------------------------------------------------------------
 //		Get a resource and fail correctly if it can't be loaded.
 //------------------------------------------------------------------------------------
-Handle GetResourceFail(long id, short num)
+/*Handle GetResourceFail(long id, short num)
 {
 	Handle 	h;
 	
@@ -134,7 +131,7 @@ Handle GetResourceFail(long id, short num)
 		ErrorDie(3);		// resource not there, somethings bad
 #endif
 	return (nil);
-}
+}*/
 
 
 //------------------------------------------------------------------------------------
@@ -155,7 +152,7 @@ void RemoveShockTimers(void)
 	STUB("if the timer is still used, remove it here..")
 #else
 	RmvTime((QElemPtr)&pShockTicksTask);					// Stop the Shock ticks task
-	DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP
+//	DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP
 #endif
 }
 

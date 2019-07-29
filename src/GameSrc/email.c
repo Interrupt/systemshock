@@ -253,7 +253,7 @@ void apply_email_macros(char *text, char *newval) {
             // number of kills
             case 'K':
             case 'k':
-                numtostring(player_struct.num_victories, buf);
+                sprintf(buf, "%d", player_struct.num_victories);
                 strcpy(newval + cnew, buf);
                 cnew += strlen(buf);
                 break;
@@ -267,7 +267,7 @@ void apply_email_macros(char *text, char *newval) {
             // number of revivals
             case 'D':
             case 'd':
-                numtostring(player_struct.num_deaths, buf);
+                sprintf(buf, "%d", player_struct.num_deaths);
                 strcpy(newval + cnew, buf);
                 cnew += strlen(buf);
                 break;
@@ -277,7 +277,7 @@ void apply_email_macros(char *text, char *newval) {
                 stupid = 0;
                 for (i = 0; i < 4; i++)
                     stupid += (player_struct.difficulty[i] * player_struct.difficulty[i]);
-                numtostring(stupid, buf);
+                sprintf(buf, "%d", stupid);
                 strcpy(newval + cnew, buf);
                 cnew += strlen(buf);
                 break;
@@ -295,7 +295,7 @@ void apply_email_macros(char *text, char *newval) {
                 score = score * (stupid + 1) / 37; // 9 * 4 + 1 is best difficulty factor
                 if (stupid == 36)
                     score += 2222222; // secret kevin bonus
-                numtostring(score, buf);
+                sprintf(buf, "%d", score);
                 strcpy(newval + cnew, buf);
                 cnew += strlen(buf);
                 break;
@@ -435,17 +435,15 @@ void draw_more_string(int x, int y, uchar footermask) {
 
     if (footermask & FOOTER_MORE_MASK)
         res_draw_string(email_font, REF_STR_More, x + MESSAGE_X, y + MESSAGE_Y);
+
+    // This part of code is never used (no FOOTER_PAGE_MASK invocation)
     if (footermask & FOOTER_PAGE_MASK) {
         // print page number
         // in the future, this string will be in messages.txt
         // and everyone will drive electric cars.
         char pagen[PAGE_STR_BUFSIZE];
-        short w, h, len;
-
-        get_email_string(REF_STR_WordPage, pagen, PAGE_STR_BUFSIZE);
-        len = strlen(pagen);
-        pagen[len++] = ' ';
-        numtostring(email_curr_page, pagen + len);
+        short w, h;
+        sprintf(pagen, "%s %d", get_email_string(REF_STR_WordPage, NULL, PAGE_STR_BUFSIZE), email_curr_page);
         gr_string_size(pagen, &w, &h);
         draw_shadowed_string(pagen, INVENTORY_PANEL_WIDTH - w - 2, y + MESSAGE_Y, full_game_3d);
     }

@@ -245,7 +245,7 @@ set(LG_SRC
 	LG/Source/memall.c
 	LG/Source/stack.c
 	LG/Source/tmpalloc.c
-	../stubs/Carbon/carbon_stubs.c # a bit hacky to add it here, but this way the tests can use the stubs
+	# a bit hacky to add it here, but this way the tests can use the stubs
 )
 
 set(PALETTE_SRC
@@ -378,6 +378,7 @@ set(VOX_SRC
 )
 
 include_directories(
+	${CMAKE_SOURCE_DIR}/src/GameSrc/Headers
 	${CMAKE_SOURCE_DIR}/src/MacSrc
 	${CMAKE_SOURCE_DIR}/src/Libraries/adlmidi/include
 	${CMAKE_SOURCE_DIR}/src/Libraries/2D/Source/GR

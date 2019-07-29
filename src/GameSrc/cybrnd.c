@@ -49,6 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __CYBRND_SRC
 
 #include "cybrnd.h"
+#include "tickcount.h"
 
 RNDSTREAM_STD(start_rnd);
 

@@ -118,7 +118,6 @@ errtype load_small_texturemaps(void) {
         }
         osid = objBigstuffs[osid].next;
     }
-    AdvanceProgress();
 
     osid = objSmallstuffs[0].id;
     while (osid != OBJ_SPEC_NULL) {
@@ -133,7 +132,6 @@ errtype load_small_texturemaps(void) {
         }
         osid = objSmallstuffs[osid].next;
     }
-    AdvanceProgress();
 
     while (ResInUse(id + i)) {
         if (CHECK_ANIM_USED(i)) {
@@ -142,7 +140,6 @@ errtype load_small_texturemaps(void) {
         }
         i++;
     }
-    AdvanceProgress();
     return (OK);
 }
 
@@ -255,23 +252,19 @@ void load_textures(void) {
                 if(can_use_opengl())
                     opengl_cache_wall_texture(c, n, cur_bm);
             }
-            AdvanceProgress();
         }
     }
     // Load in texture properties for all textures
     load_master_texture_properties();
-    AdvanceProgress();
 
     // Copy the appropriate things into textprops
     for (i = 0; i < NUM_LOADED_TEXTURES; i++)
         textprops[i] = texture_properties[loved_textures[i]];
-    AdvanceProgress();
 
     // Get rid of the big set
     unload_master_texture_properties();
     textures_loaded = TRUE;
     game_fr_reparam(all_textures, -1, -1);
-    AdvanceProgress();
 }
 
 void free_textures(void) {
@@ -364,13 +357,13 @@ errtype load_master_texture_properties(void) {
     fclose(f);
 
     {
-        BlockMoveData(cp, &version, sizeof(version));
+        memmove(&version, cp, sizeof(version));
         cp += sizeof(version);
 
         if (version == TEXTPROP_VERSION_NUMBER) {
             // 363 seems magic. GAME_TEXTURES instead?
             for (i = 0; i < 363; i++) {
-                BlockMoveData(cp, &texture_properties[i], 11);
+                memmove(&texture_properties[i], cp, 11);
                 cp += 11;
             }
         } else {

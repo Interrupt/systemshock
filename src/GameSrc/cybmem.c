@@ -100,7 +100,6 @@ errtype free_dynamic_memory(int mask) {
 }
 
 errtype load_dynamic_memory(int mask) {
-    FSSpec fSpec;
     extern short _new_mode;
 
     if (_new_mode != -1) {
@@ -114,14 +113,12 @@ errtype load_dynamic_memory(int mask) {
         if ((~loadcount) & mask & DYNMEM_SIDEICONS) {
             side_icon_load_bitmaps();
         }
-        AdvanceProgress();
 
         if ((~loadcount) & mask & DYNMEM_FHANDLE_1) {
             hand_fnum = ResOpenFile("res/data/handart.res");
             if (hand_fnum < 0)
                 critical_error(CRITERR_RES | 3);
         }
-        AdvanceProgress();
 
         // digifx used to be FHANDLE_2
         if ((~loadcount) & mask & DYNMEM_FHANDLE_3) {
@@ -129,14 +126,12 @@ errtype load_dynamic_memory(int mask) {
             if (critter_fnum < 0)
                 critical_error(CRITERR_RES | 8);
         }
-        AdvanceProgress();
 
         if ((~loadcount) & mask & DYNMEM_FHANDLE_4) {
             critter_fnum2 = ResOpenFile("res/data/objart3.res");
             if (critter_fnum2 < 0)
                 critical_error(CRITERR_RES | 8);
         }
-        AdvanceProgress();
 
         loadcount |= mask;
     }

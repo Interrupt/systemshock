@@ -46,6 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Includes
+#include "rect.h"
 
 // C Library Includes
 
@@ -60,7 +61,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Defines
 typedef struct _AutoText {
     char *letters;
-    Point coordinate;
+    LGPoint coordinate;
     int color;
     struct _AutoText *next_entry;
 } AutoText;
@@ -87,10 +88,10 @@ errtype automap_infotype(ulong map_info);
 
 // Draw the automap, scaled to specified size, in the area with upper left corner
 // as specified.
-errtype automap_draw(int map_size, Point ul_coord);
+errtype automap_draw(int map_size, LGPoint ul_coord);
 
 // Get a handle to a new text entry field on the automap, at specified coords
-errtype automap_new_entry(Point coord, AutoText *new_text);
+errtype automap_new_entry(LGPoint coord, AutoText *new_text);
 
 // Delete a given text entry
 errtype automap_delete_entry(AutoText *victim);

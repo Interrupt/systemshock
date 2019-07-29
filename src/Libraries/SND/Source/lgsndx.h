@@ -28,7 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __LGSNDX_H
 #define __LGSNDX_H
 
-#include <Carbon/Carbon.h>
 #include <SDL_mixer.h>
 
 //#include <QuickTimeComponents.h>
@@ -51,7 +50,7 @@ typedef struct snd_digi_parms
    uchar			flags;
    int			snd_ref;
    int			loops;
-   Handle			sample;		// Handle to Mac 'snd ' resource.
+   //Handle			sample;		// Handle to Mac 'snd ' resource.
    void			*data;
    int			len;
 } snd_digi_parms;
@@ -130,7 +129,7 @@ void  snd_kill_all_sequences(void);
 
 //char *snd_load_raw(char *fname, int *ldat);
 // Mac only routines.
-OSErr snd_load_theme(FSSpec *specPtr, TunePlayer thePlayer);
+//OSErr snd_load_theme(FSSpec *specPtr, TunePlayer thePlayer);
 void snd_release_current_theme(void);
 
 //--------------------------

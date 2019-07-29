@@ -1,5 +1,4 @@
 
-#include <Carbon/Carbon.h>
 #include "musicai.h"
 #include "adlmidi.h"
 #include "mlimbs.h"

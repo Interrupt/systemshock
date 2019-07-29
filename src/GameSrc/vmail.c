@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "Shock.h"
-#include "MoviePlay.h"
 
 // KLC #include <screen.h>
 #include "game_screen.h"

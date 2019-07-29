@@ -48,36 +48,6 @@ typedef unsigned int uint;
 typedef unsigned long ulong;
 typedef unsigned char ubyte;
 
-// from MacTypes.h
-typedef char* Ptr;
-
-// from Quickdraw.h
-/*struct RGBColor {
-  unsigned short      red;
-  unsigned short      green;
-  unsigned short      blue;
-};
-
-typedef struct RGBColor                 RGBColor;
-struct ColorSpec {
-  short               value;
-  RGBColor            rgb;
-};
-
-typedef struct ColorSpec                ColorSpec;
-typedef ColorSpec *                     ColorSpecPtr;
-typedef ColorSpec                       CSpecArray[1];
-struct ColorTable {
-  int              ctSeed;
-  short               ctFlags;
-  short               ctSize;
-  CSpecArray          ctTable;
-};
-
-typedef struct ColorTable               ColorTable;
-typedef ColorTable *                    CTabPtr;
-typedef CTabPtr *                       CTabHandle;*/
-
 //typedef unsigned char bool;
 
 #ifndef NULL

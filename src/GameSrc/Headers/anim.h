@@ -39,7 +39,7 @@ typedef struct ActAnim_ {
         LGPoint                         loc;
         grs_canvas                      cnv;
         void                            (*notifyFunc) (struct ActAnim_ *paa, AnimCode ancode, AnimCodeData *animData); // owner evt handler
-        void                            (*composeFunc) (Rect *area, ubyte flags); // owner compose handler
+        void                            (*composeFunc) (LGRect *area, ubyte flags); // owner compose handler
         Ref                             currFrameRef;   // current frame ref
         int                             curSeq;
         int                             frameNum;
@@ -55,8 +55,9 @@ void AnimRecur();                                                       // updat
 
 //      Play and control anims: anim.c
 
-ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, LGPoint loc, char unknown, // play anim into canvas
-   void (*composeFunc)(Rect *area, ubyte flags));
+// play anim into canvas
+ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, LGPoint loc, char unknown,
+    void (*composeFunc)(LGRect *area, ubyte flags));
 
 void AnimKill(ActAnim *paa);                                            // kill one or all anims
 void AnimSetNotify(ActAnim *paa, void *powner, AnimCode mask,

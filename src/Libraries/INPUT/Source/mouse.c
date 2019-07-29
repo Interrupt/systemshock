@@ -43,17 +43,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // that is, local to the main game window.
 
 #include <stdlib.h>
-//#include <Timer.h>
+#include <SDL.h>
 
 #include "lg.h"
 #include "error.h"
 #include "mouse.h"
 #include "mousevel.h"
+#include "tickcount.h"
 #include "kb.h"
-
-#include <Carbon/Carbon.h>
-
-#include <SDL.h>
 
 typedef struct _mouse_state
 {
@@ -61,12 +58,14 @@ typedef struct _mouse_state
 	short butts;
 } mouse_state;
 
+/*
 typedef struct
 {
 	TMTask			task;					// The actual TimeManager task structure
 	long				appA5;				// We need this silly thing for 68K programs
 }
 MouseTask, *MouseTaskPtr;
+*/
 
 /*
 #define DEFAULT_XRATE 16  			// Default mouse sensitivity parameters
@@ -131,10 +130,10 @@ int mouseVelYmin = 0x80000000;
 extern void MouseHandler(void);
 extern ulong mouseHandlerSize;
 */
-TimerUPP		pMousePollPtr;
-MouseTask		pMousePollTask;
+//TimerUPP		pMousePollPtr;
+//MouseTask		pMousePollTask;
 extern short	gActiveLeft, gActiveTop;
-Boolean			gRBtnWasDown = TRUE;
+bool			gRBtnWasDown = true;
 extern uchar	pKbdGetKeys[16];
 
 //----------------
@@ -156,14 +155,13 @@ static void ReadMouseState(mouse_state *pMouseState);
 //#ifdef __powerc
 //pascal void MousePollProc(TMTaskPtr tmTaskPtr)
 //#else
-pascal void MousePollProc(void)
+void MousePollProc(void)
 //#endif
 {
 	// TODO: is this even still needed? if so, can it be replaced by setting mouseInstant* in pump_events() ?
 	//       if the callbacks from mouseCall[] are still needed, could they also be called in pump_events() ?
 	//       if not, could they be the only thing called here, while mouseInstant* is still set in pump_events() ?
 
-	Point 		mp;
 	short		i;
 	ss_mouse_event	e;
 
