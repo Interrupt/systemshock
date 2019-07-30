@@ -41,10 +41,10 @@ int num_slots;
 // Protoytpes
 errtype tng_increm_slot(TNG *ptng, int quan);
 errtype tng_decrem_slot(TNG *ptng, int quan);
-uchar tng_quickbox_scroll_changed(void *ui_data, void *user_data);
+uchar tng_quickbox_scroll_changed(void *ui_data, intptr_t user_data);
 uchar quickbox_fix_text_changed(QuickboxSlot *qbs);
 uchar quickbox_uint_text_changed(QuickboxSlot *qbs);
-uchar tng_quickbox_text_changed(void *ui_data, void *user_data);
+uchar tng_quickbox_text_changed(void *ui_data, intptr_t user_data);
 errtype tng_draw_qb_int_slot(TNG *ptng, QuickboxSlot *curp, LGRect r);
 errtype tng_draw_qb_text_slot(TNG *ptng, QuickboxSlot *curp, LGRect r);
 errtype tng_draw_qb_bool_slot(TNG *ptng, QuickboxSlot *curp, LGRect r);
@@ -192,7 +192,7 @@ errtype tng_decrem_slot(TNG *ptng, int quan)
    return(OK);
 }
 
-uchar tng_quickbox_scroll_changed(void *ui_data, void *user_data)
+uchar tng_quickbox_scroll_changed(void *ui_data, intptr_t user_data)
 {
    QuickboxSlot *qbs;
    TNG *ptng;
@@ -286,7 +286,7 @@ uchar quickbox_uint_text_changed(QuickboxSlot *qbs)
    return TRUE;
 }
 
-uchar tng_quickbox_text_changed(void *ui_data, void *user_data)
+uchar tng_quickbox_text_changed(void *ui_data, intptr_t user_data)
 {
    QuickboxSlot *qbs;
    TNG *ptng;
@@ -465,11 +465,11 @@ errtype tng_draw_qb_int_slot(TNG *ptng, QuickboxSlot *curp, LGRect r)
    if (curp->options & QB_ARROWS)
    {
       // Goofy arrows
-      if (TNG_QB(ptng)->left_id != NULL)
+      if (TNG_QB(ptng)->left_id != 0)
          argrect.ul.x += resource_bm_width(TNG_QB(ptng)->left_id);
       else
          argrect.ul.x += ptng->style->frobsize.x;
-      if (TNG_QB(ptng)->right_id != NULL)
+      if (TNG_QB(ptng)->right_id != 0)
          argrect.lr.x -= resource_bm_width(TNG_QB(ptng)->right_id);
       else
          argrect.lr.x -= ptng->style->frobsize.x;
@@ -545,7 +545,7 @@ errtype tng_draw_qb_int_slot(TNG *ptng, QuickboxSlot *curp, LGRect r)
    // Draw in goofy arrows, if they are necessary
    if (curp->options & QB_ARROWS)
    {
-      if (TNG_QB(ptng)->left_id != NULL)
+      if (TNG_QB(ptng)->left_id != 0)
       {
          if (TNG_QB(ptng)->options & QB_ALIGNMENT)
             draw_resource_bm(TNG_QB(ptng)->left_id, r.ul.x + TNG_QB(ptng)->internal_margin + TNG_QB(ptng)->spacing.x, r.ul.y);
@@ -579,7 +579,7 @@ errtype tng_draw_qb_int_slot(TNG *ptng, QuickboxSlot *curp, LGRect r)
          gr_int_line(p2.x, p2.y, p4.x, p4.y);
          gr_int_line(p3.x, p3.y, p4.x, p4.y);
       }
-      if (TNG_QB(ptng)->right_id != NULL)
+      if (TNG_QB(ptng)->right_id != 0)
          draw_resource_bm(TNG_QB(ptng)->right_id, r.lr.x - resource_bm_width(TNG_QB(ptng)->right_id), r.ul.y);
       else
       {
@@ -664,11 +664,11 @@ errtype tng_draw_qb_bool_slot(TNG *ptng, QuickboxSlot *curp, LGRect r)
    if (curp->options & QB_ARROWS)
    {
       // Goofy arrows
-      if (TNG_QB(ptng)->left_id != NULL)
+      if (TNG_QB(ptng)->left_id != 0)
          argrect.ul.x += resource_bm_width(TNG_QB(ptng)->left_id);
       else
          argrect.ul.x += ptng->style->frobsize.x;
-      if (TNG_QB(ptng)->right_id != NULL)
+      if (TNG_QB(ptng)->right_id != 0)
          argrect.lr.x -= resource_bm_width(TNG_QB(ptng)->right_id);
       else
          argrect.lr.x -= ptng->style->frobsize.x;
@@ -688,7 +688,7 @@ errtype tng_draw_qb_bool_slot(TNG *ptng, QuickboxSlot *curp, LGRect r)
    // Draw in goofy arrows, if they are necessary
    if (curp->options & QB_ARROWS)
    {
-      if (TNG_QB(ptng)->left_id != NULL)
+      if (TNG_QB(ptng)->left_id != 0)
       {
          if (TNG_QB(ptng)->options & QB_ALIGNMENT)
             draw_resource_bm(TNG_QB(ptng)->left_id, r.ul.x + TNG_QB(ptng)->internal_margin + TNG_QB(ptng)->spacing.x, r.ul.y);
@@ -722,7 +722,7 @@ errtype tng_draw_qb_bool_slot(TNG *ptng, QuickboxSlot *curp, LGRect r)
          gr_int_line(p2.x, p2.y, p4.x, p4.y);
          gr_int_line(p3.x, p3.y, p4.x, p4.y);
       }
-      if (TNG_QB(ptng)->right_id != NULL)
+      if (TNG_QB(ptng)->right_id != 0)
          draw_resource_bm(TNG_QB(ptng)->right_id, r.lr.x - resource_bm_width(TNG_QB(ptng)->right_id), r.ul.y);
       else
       {
@@ -751,7 +751,7 @@ errtype tng_draw_qb_pb_slot(TNG *ptng, QuickboxSlot *curp, LGRect r)
    r.ul.x += TNG_QB(ptng)->border.x;
    r.ul.y += TNG_QB(ptng)->spacing.y;
    // Draw that label, if necessary
-   if (curp->p2 != NULL)
+   if (curp->p2 != 0)
    {
       gr_set_fcolor(ptng->style->textColor);
       _draw_text(ptng, curp->label, r.ul.x, r.ul.y+1);
@@ -919,7 +919,7 @@ uchar tng_quickbox_mousebutt(TNG *ptng, uchar type, LGPoint loc)
                   tw = TNG_QB(ptng)->internal_margin;
                else
                   tw = _text_width(ptng, curp->label);
-               if ((pqbtng->left_id != NULL) &&
+               if ((pqbtng->left_id != 0) &&
                   (loc.x < resource_bm_width(pqbtng->left_id) + tw + pqbtng->border.x + (2 * pqbtng->spacing.x)))
                {
                   if (type == TNG_MOUSE_LDOWN)
@@ -934,7 +934,7 @@ uchar tng_quickbox_mousebutt(TNG *ptng, uchar type, LGPoint loc)
                   else
                      tng_decrem_slot(ptng, 10);
                }
-               if ((pqbtng->right_id != NULL) &&   
+               if ((pqbtng->right_id != 0) &&
                   (loc.x > pqbtng->size.x - pqbtng->border.x - resource_bm_width(pqbtng->right_id) - 2 ))
                {
                   if (type == TNG_MOUSE_LDOWN)
@@ -978,12 +978,12 @@ uchar tng_quickbox_signal(TNG *ptng, ushort signal)
 // combinations of options and types might not be implemented.
 errtype tng_quickbox_add(char *label, int slot_type, void *var, ulong slot_options)
 {
-   return(tng_quickbox_add_parm(label,slot_type,var,slot_options,NULL,NULL));
+   return(tng_quickbox_add_parm(label,slot_type,var,slot_options,0,0));
 }
 
 // Just like gad_qbox_add but allows two parameters to be set for the slot.  Certain slot options require
 // this form of accessing.
-errtype tng_quickbox_add_parm(char *label, int slot_type, void *var, ulong slot_options, void *parm1, void *parm2)
+errtype tng_quickbox_add_parm(char *label, int slot_type, void *var, ulong slot_options, intptr_t parm1, intptr_t parm2)
 {
    QuickboxSlot *newslot, *curp;
    
@@ -1066,7 +1066,7 @@ errtype tng_quickbox_end()
       if (curp->options & QB_STRINGSET)
       {
          curp->options |= QB_ARROWS;
-         curp->p2 = (void *)((int)(curp->p2) -1);
+         curp->p2--;
       }
       if ((curp->options & QB_SLIDER) ||
           (curp->vartype == QB_PUSHBUTTON_SLOT) ||
@@ -1084,7 +1084,7 @@ errtype tng_quickbox_end()
             sdim->ul.x = pqbtng->size.x - pqbtng->aux_size - pqbtng->border.x;
          else if (curp->vartype == QB_PUSHBUTTON_SLOT)
          {
-            if (curp->p2 == NULL)
+            if (curp->p2 == 0)
                sdim->ul.x = pqbtng->border.x;
             else
                sdim->ul.x = pqbtng->size.x - resource_bm_width(*((Ref *)curp->p2));
@@ -1113,11 +1113,11 @@ errtype tng_quickbox_end()
             TNG_CREATE_SLIDER(current_tng->ui_data, sdim->ul, &(curp->aux_tng), current_tng->style, TNG_SL_HORIZONTAL,
                min, max, *((int *)(curp->var)), 1, aux_size);
 //            TNG_DRAW(curp->aux_tng);
-            tng_install_callback(curp->aux_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_CHANGED, &tng_quickbox_scroll_changed, curp, &cid);   
+            tng_install_callback(curp->aux_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_CHANGED, &tng_quickbox_scroll_changed, (intptr_t)curp, &cid);
          }
          if (curp->vartype == QB_PUSHBUTTON_SLOT)
          {
-            if (curp->p2 == NULL)
+            if (curp->p2 == 0)
                TNG_CREATE_PUSHBUTTON(current_tng->ui_data, sdim->ul,&(curp->aux_tng), current_tng->style, TEXT_TYPE, (void *)curp->label, aux_size);
             else
                TNG_CREATE_PUSHBUTTON(current_tng->ui_data, sdim->ul, &(curp->aux_tng), current_tng->style, RESOURCE_TYPE, (void *)curp->p2, aux_size);
@@ -1143,7 +1143,7 @@ errtype tng_quickbox_end()
                sprintf (temp, "%f", fix_float(*((fix *)(curp->var))));
             TNG_TX_ADDSTRING(curp->aux_tng, "");
 #endif
-            tng_install_callback(curp->aux_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_SELECT, tng_quickbox_text_changed, curp, &cid);
+            tng_install_callback(curp->aux_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_SELECT, tng_quickbox_text_changed, (intptr_t)curp, &cid);
          }
          if ((curp->vartype == QB_TEXT_SLOT) && (!(curp->options & QB_RD_ONLY)))
          {
@@ -1151,7 +1151,7 @@ errtype tng_quickbox_end()
             //Spew(DSRC_UI_Quickbox, ("About to make textgadg, slotcount = %d, sdim = (%d,%d)(%d,%d)\n",slotcount,RECT_EXPAND_ARGS(sdim)));
             TNG_CREATE_TEXT(current_tng->ui_data, sdim->ul, &(curp->aux_tng), current_tng->style, text_options, aux_size);
             TNG_TX_ADDSTRING(curp->aux_tng, (char *)curp->var);
-            tng_install_callback(curp->aux_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_SELECT, tng_quickbox_text_changed, curp, &cid);
+            tng_install_callback(curp->aux_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_SELECT, tng_quickbox_text_changed, (intptr_t)curp, &cid);
          }
       }
       curp = curp->next;
@@ -1259,7 +1259,7 @@ int _label_extent(TNG *ptng)
    qbs = QB_SLOTS(ptng);
    while (qbs != NULL)
    {
-      if (((qbs->vartype == QB_PUSHBUTTON_SLOT) && (qbs->p2 == NULL)) ||
+      if (((qbs->vartype == QB_PUSHBUTTON_SLOT) && (qbs->p2 == 0)) ||
          ((qbs->vartype == QB_TEXT_SLOT) && (qbs->options & QB_RD_ONLY)))
          v = 0;
       else
@@ -1316,11 +1316,11 @@ int _total_extent(TNG *ptng)
             }
             if (qbs->options & QB_ARROWS)
             {
-               if (TNG_QB(ptng)->left_id == NULL)
+               if (TNG_QB(ptng)->left_id == 0)
                   v += ptng->style->frobsize.x;
                else
                   v += resource_bm_width(TNG_QB(ptng)->left_id);
-               if (TNG_QB(ptng)->right_id == NULL)
+               if (TNG_QB(ptng)->right_id == 0)
                   v += ptng->style->frobsize.x;
                else
                   v += resource_bm_width(TNG_QB(ptng)->right_id);
@@ -1343,11 +1343,11 @@ int _total_extent(TNG *ptng)
             }
             if (qbs->options & QB_ARROWS)
             {
-               if (TNG_QB(ptng)->left_id == NULL)
+               if (TNG_QB(ptng)->left_id == 0)
                   v += ptng->style->frobsize.x;
                else
                   v += resource_bm_width(TNG_QB(ptng)->left_id);
-               if (TNG_QB(ptng)->right_id == NULL)
+               if (TNG_QB(ptng)->right_id == 0)
                   v += ptng->style->frobsize.x;
                else
                   v += resource_bm_width(TNG_QB(ptng)->right_id);
@@ -1358,7 +1358,7 @@ int _total_extent(TNG *ptng)
                v += TNG_QB(ptng)->aux_size;
             break;
          case QB_PUSHBUTTON_SLOT:
-            if (qbs->p2 != NULL)
+            if (qbs->p2 != 0)
                v += resource_bm_width(*((Ref *)(qbs->p2)));
             break;
       }

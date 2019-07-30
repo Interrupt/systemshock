@@ -182,7 +182,7 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
         case GRL_TRANS | GRL_SOLID:
             for (x = xl, u = ul; x < xr; x++) {
                 if (k = p_src[fix_fint(u)])
-                    *p_dest = (uchar)(tli->clut); // gr_fill_upixel((uchar )(tli->clut),x,tli->y);
+                    *p_dest = tli->solid; // gr_fill_upixel((uchar )(tli->clut),x,tli->y);
                 u += du;
                 p_dest++;
             }

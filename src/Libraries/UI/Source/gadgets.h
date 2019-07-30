@@ -101,7 +101,7 @@ errtype gadget_resize(Gadget* g, int xsize, int ysize);
 // Installs a callback onto a Gadget, triggered by a particular kind of pushbutton input.
 // The callback will be called with the gadget and the user_data as arguments, assuming the input
 // is allowed by the input_mask.
-errtype gad_callback_install(Gadget *g, ushort event_type, ushort condition, TNGCallback tngcb, void *user_data, int *id);
+errtype gad_callback_install(Gadget *g, ushort event_type, ushort condition, TNGCallback tngcb, intptr_t user_data, int *id);
 
 // Removes the callback installed on gadgets g identified by identifier id
 errtype gad_callback_uninstall(Gadget *g, int id);

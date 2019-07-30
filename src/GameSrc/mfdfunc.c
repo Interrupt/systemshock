@@ -1473,7 +1473,7 @@ void mfd_lanternware_expose(MFD *mfd, ubyte control) {
     if (full)
         draw_mfd_item_spew(REF_STR_wareSpew0 + STRINGS_PER_WARE * n, v);
     if (full || LAMP_SETTING(s) != LANTERN_LAST_SETTING(mfd->id) || LANTERN_LAST_VERSION(mfd->id) != v ||
-        LANTERN_LAST_STATE(mfd->id) != s & WARE_ON) {
+        LANTERN_LAST_STATE(mfd->id) != (s & WARE_ON)) {
         int xjump = LANTERN_BARRAY_WD - res_bm_width(REF_IMG_LitLamp0);
         int i;
         for (i = 0; i < v; i++) {

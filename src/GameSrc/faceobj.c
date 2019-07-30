@@ -165,21 +165,24 @@ uchar _face_parm_cube(fix *cntr, int x, int y, int z) {
     uchar rv = FALSE;
     //   mprintf("FDPC: o %x %x %x ph %x %x %x, at %x %x %x, size %x %x %x, rad %x\n",
     //      _n_fr_p.x,_n_fr_p.y,_n_fr_p.z,tf_raw_pt[0],tf_raw_pt[1],tf_raw_pt[2],cntr[0],cntr[1],cntr[2],x,y,z,tf_rad);
-    if ((y > MIN_SIZE) && (z > MIN_SIZE))
+    if ((y > MIN_SIZE) && (z > MIN_SIZE)) {
         if ((cntr[0] > x) && (cntr[0] < x + tf_rad))
             rv |= setup_cube_face(cntr[0] - x, cntr[1], cntr[2], y, z, 1);
         else if ((cntr[0] < -x) && (cntr[0] > -x - tf_rad))
             rv |= setup_cube_face(-cntr[0] - x, -cntr[1], cntr[2], y, z, -1);
-    if ((x > MIN_SIZE) && (z > MIN_SIZE))
+    }
+    if ((x > MIN_SIZE) && (z > MIN_SIZE)) {
         if ((cntr[1] > y) && (cntr[1] < y + tf_rad))
             rv |= setup_cube_face(cntr[1] - y, -cntr[0], cntr[2], x, z, 2);
         else if ((cntr[1] < -y) && (cntr[1] > -y - tf_rad))
             rv |= setup_cube_face(-cntr[1] - y, cntr[0], cntr[2], x, z, -2);
-    if ((x > MIN_SIZE) && (y > MIN_SIZE))
+    }
+    if ((x > MIN_SIZE) && (y > MIN_SIZE)) {
         if ((cntr[2] > z) && (cntr[2] < z + tf_rad))
             rv |= setup_cube_face(cntr[2] - z, cntr[0], cntr[1], x, y, 3);
         else if ((cntr[2] < -z) && (cntr[2] > -z - tf_rad))
             rv |= setup_cube_face(-cntr[2] - z, cntr[0], -cntr[1], x, y, -3);
+    }
     return rv;
 }
 

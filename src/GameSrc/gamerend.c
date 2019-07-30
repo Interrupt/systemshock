@@ -527,13 +527,14 @@ void draw_line_static(grs_bitmap *stat_dest, int dens1, int color1) {
             if (rx < 0)
                 rx = 0;
             rx = cwid - rx;
-            if (rx < lx)
+            if (rx < lx) {
                 if (cwid - lx > rx)
                     lx = 0;
                 else {
                     lx = rx;
                     rx = cwid;
                 } // gnosis move
+            }
             draw_single_static_line(line_base, lx, rx, color1);
             if (last == 0)
                 last = LAST_INITIAL;

@@ -172,11 +172,12 @@ grs_bitmap *get_texture_map(int idx, int sz) {
     if (sz == 2)
         sz = 1;
 #endif
-    if (sz == 0)
+    if (sz == 0) {
         if (all_textures)
             bt = get_tmap_128x128(idx);
         else
             sz = 1;
+    }
     if (sz != 0) {
         bt = get_tmap_64x64(idx) + sz_add[sz - 1];
     }

@@ -445,11 +445,12 @@ uchar _tt_add_char(long *line_num, long *cur_pos, char c)
    char *s=_tt->lines[*line_num];
    uchar add_at_end=TRUE; 
 
-   if (new_stl>*cur_pos)                         // insert
+   if (new_stl>*cur_pos) {                       // insert
       if ((_tt->es.mode&TTS_OVER)==0)            // actually have to insert
          LG_memmove(&s[*(cur_pos)+1],&s[*cur_pos],new_stl-*cur_pos);
       else
          add_at_end=FALSE;                       // just a punch in
+   }
    if (add_at_end&&(_tt->es.max_w>0)&&(new_stl>=_tt->es.max_w))
       new_stl--;                                 // punt final character, we are out of space
    if (add_at_end)

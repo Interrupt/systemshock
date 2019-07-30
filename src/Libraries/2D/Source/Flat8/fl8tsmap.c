@@ -52,7 +52,7 @@ int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli) {
     long gr_row;
     uchar *start_pdest;
 
-    solid_color = (uchar)tli->clut;
+    solid_color = tli->solid;
     u = tli->left.u;
     du = tli->right.u - u;
     v = tli->left.v;
@@ -142,7 +142,7 @@ int gri_trans_solid_floor_umap_loop(grs_tmap_loop_info *tli) {
     uchar t_wlog;
     ulong t_mask;
 
-    solid_color = (uchar)tli->clut;
+    solid_color = tli->solid;
     u = fix_div(tli->left.u, tli->w);
     du = fix_div(tli->right.u, tli->w) - u;
     v = fix_div(tli->left.v, tli->w);
@@ -233,7 +233,7 @@ int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli) {
     long gr_row;
     int y;
 
-    solid_color = (uchar)tli->clut;
+    solid_color = tli->solid;
     u = fix_div(tli->left.u, tli->w);
     du = fix_div(tli->right.u, tli->w) - u;
     v = fix_div(tli->left.v, tli->w);
@@ -324,7 +324,7 @@ void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
     int gr_row, temp_y;
     uchar *bm_bits;
 
-    solid_color = (uchar)pi->clut;
+    solid_color = pi->fill_parm;
     gr_row = grd_bm.row;
     bm_bits = bm->bits;
     l_dyr = pi->dyr;
@@ -443,7 +443,7 @@ void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
     uchar *bm_bits;
     uchar *p;
 
-    solid_color = (uchar)pi->clut;
+    solid_color = pi->fill_parm;
     gr_row = grd_bm.row;
     bm_bits = bm->bits;
     l_dxr = pi->dxr;

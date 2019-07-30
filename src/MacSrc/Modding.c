@@ -101,7 +101,7 @@ int ProcessModDirectory(char* dirname) {
 
 			strcat(buf, ep->d_name);
 
-			ProcessModFile(&buf, FALSE);
+			ProcessModFile(buf, FALSE);
 		}
 		
 		closedir(dp);

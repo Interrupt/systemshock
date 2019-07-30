@@ -381,7 +381,7 @@ errtype get_region_stack(LGRegion*r, cursor_stack** cs)
 // --------------------
 
 
-static uiCursorCallbackId;
+static int uiCursorCallbackId;
 
 errtype ui_init_cursor_stack(uiSlab* slab, LGCursor* default_cursor)
 {

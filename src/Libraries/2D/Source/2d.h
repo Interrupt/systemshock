@@ -919,13 +919,6 @@ extern int gen_fill_pixel(long color, short x, short y);
    grd_canvas_table[FLAT8_PER_MAP])
 #ifndef _FL8PS_C
 extern grs_per_context *grd_per_context;
-extern struct {
-   fix scale,x_off,y_off;
-} grd_pc_trans;
-extern struct {
-   grs_point3d p0;
-   fix u0,v0;
-} grd_pc_point;
 #endif
    
 #define gr_clut_ubitmap(bm,x,y,cl) \

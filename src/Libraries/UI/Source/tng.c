@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 LGPoint tngZeroPt = {0,0};		// everybody needs a zero point sometime
 
 TNGStyle stdTNGStyle = {
-   0x25C, NULL, {6,6}, 0xff,
+   0x25C, 0, {6,6}, 0xff,
    0x01, 0x1d, 0,
    0x20,0x28,0x28,0x20};
 
@@ -198,7 +198,7 @@ errtype TNGDrawText(Id id, char *text, int x, int y)
 // Callback Functions
 // --------------------------------------------
 
-errtype tng_install_callback(TNG *ptng, ushort event_type, ushort cond, TNGCallback cbfn, void *user_data, int *pid)
+errtype tng_install_callback(TNG *ptng, ushort event_type, ushort cond, TNGCallback cbfn, intptr_t user_data, int *pid)
 {
    TNG_CB *tngcb, *curp, *oldp;
    int oldid = 0;
@@ -281,7 +281,7 @@ uchar tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc)
          newret = FALSE;
          if (type & tngcb->condition)
          {
-            ptng->cb_data = &loc;
+	     ptng->cb_data = (intptr_t)&loc;
             newret = tngcb->cb(ptng->ui_data, tngcb->user_data);
          }
          if (newret)
@@ -306,7 +306,7 @@ uchar tng_cb_keycooked(TNG *ptng, ushort key)
          newret = FALSE;
          if (key == tngcb->condition)
          {
-            ptng->cb_data = (void *)key;
+            ptng->cb_data = key;
             newret = tngcb->cb(ptng->ui_data, tngcb->user_data);
          }
          if (newret)
@@ -331,7 +331,7 @@ uchar tng_cb_signal(TNG *ptng, ushort signal)
          newret = FALSE;
          if (signal & tngcb->condition)
          {
-            ptng->cb_data = (void *)signal;
+            ptng->cb_data = signal;
             newret = tngcb->cb(ptng->ui_data, tngcb->user_data);
          }
          if (newret)
@@ -356,7 +356,7 @@ uchar tng_cb_keyscan(TNG *ptng, ushort scan)
          newret = FALSE;
          if (scan == tngcb->condition)
          {
-            ptng->cb_data = (void *)scan;
+            ptng->cb_data = scan;
             newret = tngcb->cb(ptng->ui_data, tngcb->user_data);
          }
          if (newret)
@@ -380,7 +380,7 @@ uchar tng_cb_mousemove(TNG *ptng, LGPoint loc)
    {
       if (tngcb->event_type == TNG_EVENT_MOUSE_MOVE)
       {
-         ptng->cb_data = &loc;
+	  ptng->cb_data = (intptr_t)&loc;
          newret = tngcb->cb(ptng->ui_data, tngcb->user_data);
          if (newret)
             retval = newret;

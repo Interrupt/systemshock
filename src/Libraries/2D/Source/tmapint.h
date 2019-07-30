@@ -127,7 +127,10 @@ typedef struct {
    fix dw;
    ulong u_mask;
    union {ulong v_mask,mask;};
-   uchar *clut;               /* color lookup table */
+   union {
+     uchar *clut;               /* color lookup table */
+     uchar solid;
+   };
    long *vtab;                /* for non power of 2 widths */
    void (*scanline_func)();   /* function for individual scanline */
    void (*loop_func)();       /* actually, chunk function */

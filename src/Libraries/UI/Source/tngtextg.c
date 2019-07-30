@@ -39,7 +39,7 @@ void tng_textgadget_ui_display(void *ptng, LGRect * rect)
       //Spew(DSRC_UI_Textgadget, ("Problem was a null ptng in ui_display...\n"));
 }
 
-uchar tng_textgadget_hscroll_changed(void *ui_data, void *user_data)
+uchar tng_textgadget_hscroll_changed(void *ui_data, intptr_t user_data)
 {
    TNG *ptng;
    void *dummy;
@@ -50,7 +50,7 @@ uchar tng_textgadget_hscroll_changed(void *ui_data, void *user_data)
    return(FALSE);
 }
 
-uchar tng_textgadget_vscroll_changed(void *ui_data, void *user_data)
+uchar tng_textgadget_vscroll_changed(void *ui_data, intptr_t user_data)
 {
    TNG *ptng;
    void *dummy;
@@ -148,7 +148,7 @@ errtype tng_textgadget_init2(TNG *ptng)
       ssize.x = ptxtng->size.x - sloc.x - TNG_TG_BORDER_WIDTH;
       ssize.y = TNG_TG_SCROLL_Y;
       TNG_CREATE_SLIDER(ptng->ui_data, sloc, &(ptxtng->hscroll_tng), ptng->style, TNG_SL_HORIZONTAL, 0, 100, 0, 5, ssize);
-      tng_install_callback(ptxtng->hscroll_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_CHANGED, &tng_textgadget_hscroll_changed, ptng, &id);
+      tng_install_callback(ptxtng->hscroll_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_CHANGED, &tng_textgadget_hscroll_changed, (intptr_t)ptng, &id);
    }
    else
    {
@@ -161,7 +161,7 @@ errtype tng_textgadget_init2(TNG *ptng)
       ssize.x = TNG_TG_SCROLL_X;
       ssize.y = ptxtng->size.y - sloc.y - TNG_TG_BORDER_WIDTH;
       TNG_CREATE_SLIDER(ptng->ui_data, sloc, &(ptxtng->vscroll_tng), ptng->style, TNG_SL_VERTICAL, 0, 100, 0, 5, ssize);
-      tng_install_callback(ptxtng->vscroll_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_CHANGED, &tng_textgadget_vscroll_changed, ptng, &id);
+      tng_install_callback(ptxtng->vscroll_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_CHANGED, &tng_textgadget_vscroll_changed, (intptr_t)ptng, &id);
    }
    else
    {
