@@ -81,7 +81,7 @@ void re_heapify(PQueue *q)
          minchild = lchild;
       if (lchild >= q->fullness)
          minchild = rchild;
-      if (minchild == NULL_CHILD)
+      if (minchild == NULL_CHILD) {
          if (LESS(q,lchild,rchild))
          {
             minchild = lchild;
@@ -90,6 +90,7 @@ void re_heapify(PQueue *q)
          {
             minchild = rchild;
          }
+      }
       if (minchild < q->fullness && LESS(q,minchild,head))
       {
          swapelems(q,head,minchild);
@@ -110,7 +111,7 @@ void double_re_heapify(PQueue *q, int head)
       minchild = lchild;
    if (lchild >= q->fullness)
       minchild = rchild;
-   if (minchild == NULL_CHILD)
+   if (minchild == NULL_CHILD) {
       if (LESS(q,lchild,rchild))
       {
          minchild = lchild;
@@ -121,6 +122,7 @@ void double_re_heapify(PQueue *q, int head)
          minchild = rchild;
          maxchild = lchild;
       }
+   }
    if (minchild < q->fullness && LESS(q,minchild,head))
    {
       swapelems(q,head,minchild);
@@ -199,7 +201,7 @@ errtype pqueue_least(PQueue* q, void* elem)
    return OK;
 }
 
-errtype pqueue_write(PQueue* q, FILE * fd, void (*writefunc)(int fd, void* elem))
+errtype pqueue_write(PQueue* q, FILE *fd, void (*writefunc)(FILE *fd, void* elem))
 {
    int i;
    fwrite((char*)q,1,sizeof(PQueue), fd);
@@ -212,7 +214,7 @@ errtype pqueue_write(PQueue* q, FILE * fd, void (*writefunc)(int fd, void* elem)
    return OK;
 }
 
-errtype pqueue_read(PQueue* q, FILE * fd, void (*readfunc)(int fd, void* elem))
+errtype pqueue_read(PQueue* q, FILE *fd, void (*readfunc)(FILE *fd, void* elem))
 {
    int i;
    fread((char*)q,1,sizeof(PQueue), fd);

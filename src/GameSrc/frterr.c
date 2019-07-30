@@ -1562,11 +1562,12 @@ void fr_terr_cspace_pick(uchar do_wall) {
 
     if (do_wall) {
         wall_do = to_do = FRT_CSPACE + 1; // FRT_FLAT
-        if (do_wall >= 2)
+        if (do_wall >= 2) {
             if (_fr_curflags & FR_PICKUPM_MASK)
                 wall_do = FRT_NULL;
             else
                 wall_do--;
+	}
     } else {
         if (_fr_curflags & FR_PICKUPM_MASK)
             wall_do = to_do = FRT_NULL;

@@ -78,11 +78,11 @@ errtype pqueue_least(PQueue* q, void* elem);
 // Copies the least element into *elem, but does not 
 // remove it.  (constant time)
 
-errtype pqueue_write(PQueue* q,FILE * fd,void (*writefunc)(int fd,void* elem));
+errtype pqueue_write(PQueue* q,FILE *fd,void (*writefunc)(FILE *fd,void* elem));
 // Writes out a queue to file number fd, calling writefunc to write out each element.
 // If writefunc is NULL, simply writes the literal data in each element.  
 
-errtype pqueue_read(PQueue* q, FILE * fd, void (*readfunc)(int fd, void* elem));
+errtype pqueue_read(PQueue* q, FILE *fd, void (*readfunc)(FILE *fd, void* elem));
 // Reads in a queue from file number fd, calling readfunc to read each element.
 // If readfunc is NULL, reads each element literally.  
 

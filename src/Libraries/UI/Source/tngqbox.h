@@ -81,7 +81,7 @@ typedef struct _QuickboxSlot {
    ulong options;              // Options mask
    int   vartype;              // Type of the slot
    void *var;                  // Pointer to actual variable
-   void *p1, *p2;              // parameters
+   intptr_t p1, p2;            // parameters
    struct _QuickboxSlot *next; // next slot in the box
    TNG *aux_tng;               // An auxilliary gadget, if relevant
    LGPoint aux_size;
@@ -194,7 +194,7 @@ errtype tng_quickbox_add(char *label, int slot_type, void *var, ulong slot_optio
 
 // Just like gad_qbox_add but allows two parameters to be set for the slot.  Certain slot options require
 // this form of accessing.
-errtype tng_quickbox_add_parm(char *label, int slot_type, void *var, ulong slot_options, void *parm1, void *parm2);
+errtype tng_quickbox_add_parm(char *label, int slot_type, void *var, ulong slot_options, intptr_t parm1, intptr_t parm2);
 
 // Deallocate all memory used by the TNG 
 errtype tng_quickbox_destroy(TNG *ptng);

@@ -143,7 +143,7 @@ extern errtype (*state_generators[])(ObjID id, int x, int y, ObjLocState *ret);
 long old_ticks;
 
 // Collision callback testing....
-void cit_collision_callback(physics_handle C, physics_handle V, int bad, long DATA1, long DATA2, fix location[3]);
+void cit_collision_callback(physics_handle C, physics_handle V, int32_t bad, int32_t DATA1, int32_t DATA2, fix location[3]);
 void cit_awol_callback(physics_handle caller);
 void cit_sleeper_callback(physics_handle caller);
 void cit_autodestruct_callback(physics_handle caller);
@@ -522,11 +522,12 @@ errtype physics_run(void) {
                 plr_y = -MAX_SPRINT;
             }
             plr_side >>= 2;
-            if (abs(plr_alpha) > SKATE_ALPHA_CUTOFF)
+            if (abs(plr_alpha) > SKATE_ALPHA_CUTOFF) {
                 if (plr_alpha > 0)
                     plr_alpha = SKATE_ALPHA_CUTOFF + (plr_alpha - SKATE_ALPHA_CUTOFF) / 2;
                 else
                     plr_alpha = -(SKATE_ALPHA_CUTOFF + (-plr_alpha - SKATE_ALPHA_CUTOFF) / 2);
+            }
 
             break;
         }
@@ -1564,7 +1565,7 @@ void terrain_object_collide(physics_handle src, ObjID target) {
     collide_objects(target, hit_obj, 0);
 }
 
-void cit_collision_callback(physics_handle C, physics_handle V, int bad, long DATA1, long DATA2, fix location[3]) {
+void cit_collision_callback(physics_handle C, physics_handle V, int32_t bad, int32_t DATA1, int32_t DATA2, fix location[3]) {
     ObjID collision;
     ObjID victim;
 

@@ -149,7 +149,7 @@ void dumb_hack_for_now(int x, int y) {
     _fr_sdbg(NEW_PTS, mprintf("rose %d %d %d %d...", *_cur_rowv, *(_cur_rowv + 1), *_nxt_rowv, *(_nxt_rowv + 1)));
 
     // now *_fr_ptbase is at (x,y)
-    if (*(_cur_rowv + 1) != y)
+    if (*(_cur_rowv + 1) != y) {
         if (*(_cur_rowv + 1) != 0xffff) {
             g3_replace_add_delta_x(*_fr_curb, *(_fr_curb + 1), fix_make(1, 0));
             _fr_sdbg(NEW_PTS, mprintf("x+1 replace"));
@@ -157,8 +157,9 @@ void dumb_hack_for_now(int x, int y) {
             *(_fr_curb + 1) = g3_copy_add_delta_x(*_fr_curb, fix_make(1, 0));
             _fr_sdbg(NEW_PTS, mprintf("x+1 copy"));
         }
+    }
 
-    if (*(_nxt_rowv) != y + 1)
+    if (*(_nxt_rowv) != y + 1) {
         if (*(_nxt_rowv) != 0xffff) {
             g3_replace_add_delta_z(*_fr_curb, *_fr_curn, fix_make(1, 0));
             _fr_sdbg(NEW_PTS, mprintf("y replace"));
@@ -166,8 +167,9 @@ void dumb_hack_for_now(int x, int y) {
             *_fr_curn = g3_copy_add_delta_z(*_fr_curb, fix_make(1, 0));
             _fr_sdbg(NEW_PTS, mprintf("y copy"));
         }
+    }
 
-    if (*(_nxt_rowv + 1) != y + 1)
+    if (*(_nxt_rowv + 1) != y + 1) {
         if (*(_nxt_rowv + 1) != 0xffff) {
             g3_replace_add_delta_x(*_fr_curn, *(_fr_curn + 1), fix_make(1, 0));
             _fr_sdbg(NEW_PTS, mprintf("y+1 replace"));
@@ -175,6 +177,7 @@ void dumb_hack_for_now(int x, int y) {
             *(_fr_curn + 1) = g3_copy_add_delta_x(*_fr_curn, fix_make(1, 0));
             _fr_sdbg(NEW_PTS, mprintf("y+1 copy"));
         }
+    }
 
     *_cur_rowv = y;
     *(_cur_rowv + 1) = y;

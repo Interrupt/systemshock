@@ -29,7 +29,7 @@ Gadget *gad_slider_create(Gadget *parent, LGRect *dim, int z, int alignment, int
    int min, int max, TNGStyle *sty, char *name)
 {
    return(gad_slider_create_full(parent, dim, z, alignment, increment, min, max, sty, name,
-      NULL, NULL, NULL, NULL, NULL));
+      0, 0, 0, 0, 0));
 }
 
 Gadget *gad_slider_create_full(Gadget *parent, LGRect *dim, int z, int alignment, int increment,

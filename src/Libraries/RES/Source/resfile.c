@@ -101,7 +101,7 @@ void ResAddPath(char *path)
 //		-3 = invalid resource file
 //		-4 = memory allocation failure
 
-int32_t ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo) {
+int32_t ResOpenResFile(const char *fname, ResOpenMode mode, bool auxinfo) {
     int32_t filenum;
     FILE *fd;
     ResFile *prf;

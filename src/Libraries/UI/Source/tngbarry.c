@@ -30,12 +30,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // PROTOTYPES
 //-------------------------
 errtype tng_buttonarray_move(TNG *ptng, short code);
-uchar tng_buttonarray_hscroll_changed(void *ui_data, void *user_data);
-uchar tng_buttonarray_vscroll_changed(void *ui_data, void *user_data);
+uchar tng_buttonarray_hscroll_changed(void *ui_data, intptr_t user_data);
+uchar tng_buttonarray_vscroll_changed(void *ui_data, intptr_t user_data);
 
 
 // Callbacks....
-uchar tng_buttonarray_hscroll_changed(void *ui_data, void *user_data)
+uchar tng_buttonarray_hscroll_changed(void *ui_data, intptr_t user_data)
 {
    TNG *ptng, *scroll_tng;
    void *dummy;
@@ -49,7 +49,7 @@ uchar tng_buttonarray_hscroll_changed(void *ui_data, void *user_data)
    return(FALSE);
 }
 
-uchar tng_buttonarray_vscroll_changed(void *ui_data, void *user_data)
+uchar tng_buttonarray_vscroll_changed(void *ui_data, intptr_t user_data)
 {
    TNG *ptng, *scroll_tng;
    void *dummy;
@@ -159,7 +159,7 @@ errtype tng_buttonarray_init2(TNG *ptng)
          pbatng->msize.x - pbatng->wsize.x, 0, 1, ssize);
       TNG_SL(pbatng->hscroll_tng)->value = pbatng->offset.x;
       pbatng->hscroll_tng->signal(pbatng->hscroll_tng, TNG_SIGNAL_CHANGED);
-      tng_install_callback(pbatng->hscroll_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_CHANGED, &tng_buttonarray_hscroll_changed, ptng, &id);
+      tng_install_callback(pbatng->hscroll_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_CHANGED, &tng_buttonarray_hscroll_changed, (intptr_t)ptng, &id);
    }
    else
    {
@@ -175,7 +175,7 @@ errtype tng_buttonarray_init2(TNG *ptng)
          pbatng->msize.y - pbatng->wsize.y, 0, 1, ssize);
       TNG_SL(pbatng->vscroll_tng)->value = pbatng->msize.y - pbatng->wsize.y - pbatng->offset.y;
       pbatng->vscroll_tng->signal(pbatng->vscroll_tng, TNG_SIGNAL_CHANGED);
-      tng_install_callback(pbatng->vscroll_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_CHANGED, &tng_buttonarray_vscroll_changed, ptng, &id);
+      tng_install_callback(pbatng->vscroll_tng, TNG_EVENT_SIGNAL, TNG_SIGNAL_CHANGED, &tng_buttonarray_vscroll_changed, (intptr_t)ptng, &id);
    }
    else
    {

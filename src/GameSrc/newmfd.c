@@ -558,11 +558,12 @@ void mfd_set_slot(ubyte mfd_id, ubyte newSlot, uchar OnOff) {
         player_struct.mfd_slot_status[new_slot] = MFD_ACTIVE;
 
         // We have to tell other panel about this button change!
-        if (global_fullmap->cyber)
+        if (global_fullmap->cyber) {
             if (mfd_id == MFD_LEFT)
                 mfd_draw_button(MFD_RIGHT, newSlot);
             else
                 mfd_draw_button(MFD_LEFT, newSlot);
+        }
     }
 
     if (OnOff) {

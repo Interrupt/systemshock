@@ -840,8 +840,8 @@ errtype load_current_map(Id id_num) {
     {
         // Might have to allocate more memory for the queue
         if (queue_size > schedsize) {
-            schedule_free(&global_fullmap->sched);
-            schedule_init(&global_fullmap->sched, queue_size, FALSE);
+            schedule_free(&global_fullmap->sched[0]);
+            schedule_init(&global_fullmap->sched[0], queue_size, FALSE);
         }
 
         uchar *dst_ptr = global_fullmap->sched[0].queue.vec;

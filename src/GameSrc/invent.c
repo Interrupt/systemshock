@@ -2341,7 +2341,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
         int i = cnum;
         short x = FIRST_BTTN_X + i * BUTTON_X_STEP;
         if (pos.x >= x && pos.x < x + INVENT_BTTN_WD && page_button_state[i] != BttnDummy) {
-            if (full_game_3d)
+            if (full_game_3d) {
                 if (i == inventory_page && full_visible & FULL_INVENT_MASK) {
                     full_visible &= ~FULL_INVENT_MASK;
                 } else {
@@ -2358,6 +2358,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
                     full_raise_region(inventory_region_full);
                     chg_set_sta(FULLSCREEN_UPDATE);
                 }
+            }
             play_digi_fx(SFX_INVENT_BUTTON, 1);
             inventory_page = i;
             INVENT_CHANGED;

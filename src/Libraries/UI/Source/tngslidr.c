@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 errtype tng_slider_init(void *ui_data, TNG *ptng, TNGStyle *sty, int alignment, int min, int max, int value, int increm, LGPoint size)
 {
    return(tng_slider_full_init(ui_data, ptng, sty, alignment, min, max, value, increm, size,
-      NULL, NULL, NULL, NULL, NULL));
+      0, 0, 0, 0, 0));
 }
 
 // Initializes the TNG slider
@@ -101,7 +101,7 @@ errtype tng_slider_2d_draw(TNG *ptng, ushort partmask, LGPoint loc)
       incid = psltng->down_id;  // Okay, this *seems* backwards but to make the drawing
       decid = psltng->up_id;    // easier it is best to maintain this fiction.
    }
-   if (decid == NULL)
+   if (decid == 0)
    {
       decsize.x = ptng->style->frobsize.x;
       decsize.y = ptng->style->frobsize.y;
@@ -111,7 +111,7 @@ errtype tng_slider_2d_draw(TNG *ptng, ushort partmask, LGPoint loc)
       decsize.x = resource_bm_width(decid);
       decsize.y = resource_bm_height(decid);
    }
-   if (incid == NULL)
+   if (incid == 0)
    {
       incsize.x = ptng->style->frobsize.x;
       incsize.y = ptng->style->frobsize.y;
@@ -121,7 +121,7 @@ errtype tng_slider_2d_draw(TNG *ptng, ushort partmask, LGPoint loc)
       incsize.x = resource_bm_width(incid);
       incsize.y = resource_bm_height(incid);
    }
-   if (psltng->slider_id == NULL)
+   if (psltng->slider_id == 0)
    {
       slidsize.x = ptng->style->frobsize.x;
       slidsize.y = ptng->style->frobsize.y;
@@ -145,7 +145,7 @@ errtype tng_slider_2d_draw(TNG *ptng, ushort partmask, LGPoint loc)
          xc = loc.x;
          yc = loc.y + size.y - incsize.y - 2;
       }
-      if (incid != NULL)
+      if (incid != 0)
          draw_resource_bm(incid, xc,yc);
       else
       {
@@ -170,7 +170,7 @@ errtype tng_slider_2d_draw(TNG *ptng, ushort partmask, LGPoint loc)
 
    if (partmask && TNG_SL_DECREMENTER)
    {
-      if (decid != NULL)
+      if (decid != 0)
       {
          draw_resource_bm(decid, loc.x, loc.y);
       }
@@ -210,7 +210,7 @@ errtype tng_slider_2d_draw(TNG *ptng, ushort partmask, LGPoint loc)
          temp = (1 - TNG_SL_VALFRAC(psltng)) * (float)(size.y - incsize.y - 2 - decsize.y - slidsize.y);
          yc = loc.y + decsize.y + temp;
       }
-      if (psltng->slider_id != NULL)
+      if (psltng->slider_id != 0)
          draw_resource_bm(psltng->slider_id, xc, yc);
       else
       {
@@ -283,11 +283,11 @@ uchar tng_slider_apply_click(TNG *ptng, LGPoint loc)
    }
    if (psltng->alignment == TNG_SL_HORIZONTAL)
    {
-      if (psltng->right_id != NULL)
+      if (psltng->right_id != 0)
          right_edge = psltng->size.x - resource_bm_width(psltng->right_id) - 2;
       else
          right_edge = psltng->size.x - ptng->style->frobsize.x - 2;
-      if (psltng->left_id != NULL)
+      if (psltng->left_id != 0)
          left_edge = resource_bm_width(psltng->left_id) + 2;
       else
          left_edge = ptng->style->frobsize.x + 2;
@@ -298,11 +298,11 @@ uchar tng_slider_apply_click(TNG *ptng, LGPoint loc)
    }
    else
    {
-      if (psltng->up_id != NULL)
+      if (psltng->up_id != 0)
          top_edge = resource_bm_height(psltng->up_id) + 2;
       else
          top_edge = ptng->style->frobsize.y + 2;
-      if (psltng->down_id != NULL)
+      if (psltng->down_id != 0)
          bottom_edge = psltng->size.y - resource_bm_height(psltng->down_id) - 2;
       else
          bottom_edge = psltng->size.y - ptng->style->frobsize.y - 2;
