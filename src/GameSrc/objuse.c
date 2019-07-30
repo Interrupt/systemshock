@@ -566,7 +566,7 @@ uchar try_use_epick(ObjID panel, ObjID cursor_obj) {
 
 #define PLASTIQUE_TIME 10
 extern void remove_general_item(ObjID obj);
-extern Boolean gKeypadOverride;
+extern bool gKeypadOverride;
 
 bool ObjectUseShifted = FALSE; //set if shift key was held when using object
 

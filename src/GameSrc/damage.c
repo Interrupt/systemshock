@@ -23,10 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/10/27 04:56:12 $
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "Shock.h"
-#include "MoviePlay.h"
 
 #include "effect.h"
 #include "newmfd.h"
@@ -401,8 +401,8 @@ int shield_absorb_damage(int damage, ubyte ub, byte shield_absorb, ubyte shield_
 }
 
 uchar alternate_death = FALSE;
-extern Boolean gPlayingGame;
-extern Boolean gDeadPlayerQuit;
+extern bool gPlayingGame;
+extern bool gDeadPlayerQuit;
 
 // kill_player()
 // kills the player, checks for traps and stuff, so on

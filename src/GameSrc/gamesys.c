@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "ai.h"
@@ -739,8 +740,8 @@ extern ObjID shodan_avatar_id;
 #define REALSPACE_HUDS \
     (HUD_RADPOISON | HUD_BIOPOISON | HUD_FATIGUE | HUD_BIOHAZARD | HUD_RADIATION | HUD_ZEROGRAV | HUD_ENVIROUSE)
 
-extern Boolean gPlayingGame;
-extern Boolean gDeadPlayerQuit;
+extern bool gPlayingGame;
+extern bool gDeadPlayerQuit;
 
 void do_stuff_every_second() {
     long running_dt = player_struct.game_time - player_struct.last_second_update;

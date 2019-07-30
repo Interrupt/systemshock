@@ -204,7 +204,6 @@ errtype obj_init() {
 
     // Load object properties from disk
     obj_load_properties();
-    AdvanceProgress();
 
     // Create base array
     count = 0;
@@ -339,7 +338,7 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
     extern char camera_map[NUM_HACK_CAMERAS];
     extern char num_customs;
     short style;
-    int use_index;
+    int32_t use_index;
     Id useme;
     grs_bitmap *result;
 
@@ -400,7 +399,7 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
 
             seed = *tmd_ticks >> 7;
             use_index = ((seed * 9277 + 7) % 14983) % 10;
-            numtostring((long)use_index, use_buf);
+            sprintf(use_buf, "%d", use_index);
             return get_text_bitmap_from_string(style, 1, use_buf, FALSE, 0);
             // return(get_text_bitmap_from_string(style, 1, itoa(use_index, use_buf, 10), FALSE, 0));
         } else {
@@ -1439,7 +1438,7 @@ errtype obj_load_properties() {
     //-------------
     // GUNS
     //-------------
-    BlockMoveData(cp, GunProps, sizeof(GunProps));
+    memmove(GunProps, cp, sizeof(GunProps));
     cp += sizeof(GunProps);
 
     // BlockMoveData(cp, PistolGunProps, NUM_PISTOL_GUN);     Dummies
@@ -1592,11 +1591,11 @@ errtype obj_load_properties() {
     for (i = 0; i < NUM_TRACER_PHYSICS; i++) {
         TracerPhysicsProp *tpp = &TracerPhysicsProps[i];
 
-        BlockMoveData(cp, tpp->xcoords, 4 * 2);
+        memmove(tpp->xcoords, cp, 4 * 2);
         cp += 4 * 2;
-        BlockMoveData(cp, tpp->ycoords, 4 * 2);
+        memmove(tpp->ycoords, cp, 4 * 2);
         cp += 4 * 2;
-        BlockMoveData(cp, tpp->zcoords, 4);
+        memmove(tpp->zcoords, cp, 4);
         cp += 4;
 
         for (j = 0; j < 4; j++) {
@@ -1605,7 +1604,7 @@ errtype obj_load_properties() {
         }
     }
 
-    BlockMoveData(cp, SlowPhysicsProps, sizeof(SlowPhysicsProps));
+    memmove(SlowPhysicsProps, cp, sizeof(SlowPhysicsProps));
     cp += sizeof(SlowPhysicsProps);
 
     // BlockMoveData(cp, CameraPhysicsProps, NUM_CAMERA_PHYSICS);			Dummies
@@ -1717,7 +1716,7 @@ errtype obj_load_properties() {
     cp += NUM_GEAR_SMALLSTUFF;
     cp += NUM_CARDS_SMALLSTUFF;
 
-    BlockMoveData(cp, CyberSmallstuffProps, sizeof(CyberSmallstuffProps));
+    memmove(CyberSmallstuffProps, cp, sizeof(CyberSmallstuffProps));
     cp += sizeof(CyberSmallstuffProps);
 
     cp += NUM_ONTHEWALL_SMALLSTUFF;
@@ -1760,7 +1759,7 @@ errtype obj_load_properties() {
     //  ANIMATING OBJECTS
     //----------------
 
-    BlockMoveData(cp, AnimatingProps, sizeof(AnimatingProps));
+    memmove(AnimatingProps, cp, sizeof(AnimatingProps));
     cp += sizeof(AnimatingProps);
 
     cp += NUM_OBJECT_ANIMATING;
@@ -1853,10 +1852,10 @@ errtype obj_load_properties() {
 
     cp += NUM_MUTANT_CRITTER;
 
-    BlockMoveData(cp, RobotCritterProps, sizeof(RobotCritterProps));
+    memmove(RobotCritterProps, cp, sizeof(RobotCritterProps));
     cp += sizeof(RobotCritterProps);
 
-    BlockMoveData(cp, CyborgCritterProps, sizeof(CyborgCritterProps));
+    memmove(CyborgCritterProps, cp, sizeof(CyborgCritterProps));
     cp += sizeof(CyborgCritterProps);
     for (i = 0; i < NUM_CYBORG_CRITTER; i++)
         // SwapShortBytes(&CyborgCritterProps[i].shield_energy);
@@ -1879,15 +1878,8 @@ errtype obj_load_properties() {
     for (i = 0; i < NUM_OBJECT; i++) {
         ObjProp *op = &ObjProps[i];
 
-        BlockMoveData(cp, op, 27);
+        memmove(op, cp, 27);
         cp += 27;
-
-        // SwapLongBytes(&op->mass);
-        // SwapShortBytes(&op->hit_points);
-        // SwapLongBytes(&op->resistances);
-        // SwapShortBytes(&op->flags);
-        // SwapShortBytes(&op->mfd_id);
-        // SwapShortBytes(&op->bitmap_3d);
     }
 
     // HUnlock(res);
@@ -1897,7 +1889,6 @@ errtype obj_load_properties() {
 }
 
 errtype obj_set_secondary_properties() {
-    FSSpec fSpec;
     char i, j;
     RefTable *prt;
     int fn, fn2;
@@ -1936,7 +1927,6 @@ errtype obj_set_secondary_properties() {
                     //					ResUnlock(id);
                     //					ResDrop(id);
                 }
-                AdvanceProgress();
             }
         }
     }

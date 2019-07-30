@@ -24,31 +24,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
-
-#include <Carbon/Carbon.h>
-//#include <Timer.h>
-
-//---------------------
-//  Time Manager defines
-//---------------------
-typedef struct
-{
-	TMTask			task;							// The actual TimeManager task structure
-	long				*ticksPtr;					// Pointer to the ticks
-}
-ShockTask, *ShockTaskPtr;
-extern ShockTask	pShockTicksTask;
-
 #define	kShockTicksFreq		-14286		//-3571
-
-
 
 //--------------------
 //  Prototypes
 //--------------------
 void InitMac(void);
 void FailNIL(void *);
-Handle GetResourceFail(long id, short num);
+// Handle GetResourceFail(long id, short num);
 void CheckConfig(void);
 void ErrorDie(short stringnum);
 void CleanupAndExit(void);

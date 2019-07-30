@@ -50,6 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <input.h>
 #include <setup.h>
 #include <status.h>
+#include "tickcount.h"
 #include "cutsloop.h"
 
 /*
@@ -112,11 +113,11 @@ void loopmode_exit(short loopmode) {
 
 void loopmode_enter(short loopmode) { (*enter_modes[loopmode])(); }
 
-extern pascal void MousePollProc(void);
+extern void MousePollProc(void);
 void mainloop(int argc, char *argv[]) {
     extern void SDLDraw(void);
     extern long gShockTicks;
-    extern Boolean gPlayingGame;
+    extern bool gPlayingGame;
     extern void pump_events(void);
 
     while (_current_loop >= 0 && gPlayingGame) {

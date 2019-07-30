@@ -46,7 +46,6 @@ find_library(SDL2_LIBRARY SDL2 PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
 find_library(SDL2MAIN_LIBRARY SDL2main PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
 set(SDL2_LIBRARIES "${SDL2MAIN_LIBRARY};${SDL2_LIBRARY}")
 
-
 # and SDL mixer
 
 set(SDL2_MIXER_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl_mixer)
@@ -89,17 +88,10 @@ if(NOT WIN32)
   endif(ALSA_FOUND)
 endif(NOT WIN32)
 
-# for now I'll put a Carbon/Carbon.h into src/stubs/
-# that defines Mac-specific types and provides stubs for used functions
-# like GetResource()
-include_directories(src/stubs/)
-
 add_subdirectory(src/Libraries/)
 
 set(MAC_SRC
-	src/MacSrc/Stub.c
 	src/MacSrc/ShockBitmap.c
-	src/MacSrc/MoviePlay.c
 	src/MacSrc/InitMac.c
 	src/MacSrc/Shock.c
 	src/MacSrc/Prefs.c
@@ -214,6 +206,7 @@ set(GAME_SRC
 	src/GameSrc/status.c
 	src/GameSrc/target.c
 	src/GameSrc/textmaps.c
+	src/GameSrc/tickcount.c
 	src/GameSrc/tfdirect.c
 	src/GameSrc/tfutil.c
 	src/GameSrc/tools.c

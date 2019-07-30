@@ -33,12 +33,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ------------------
 //  GLOBALS
 // ------------------
-Handle gDoubleSizeOffHdl = NULL;
+//Handle gDoubleSizeOffHdl = NULL;
 grs_canvas gDoubleSizeOffCanvas;
 
 //---------------------------------------------------------------------
 //  Allocate the intermediate offscreen buffer for low-res mode in Shock.
 //---------------------------------------------------------------------
+/*
 int AllocDoubleBuffer(int w, int h) {
 #if 1
     STUB_ONCE("");
@@ -63,9 +64,10 @@ int AllocDoubleBuffer(int w, int h) {
         return 0;
 #endif
 }
-
+*/
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
+/*
 void FreeDoubleBuffer(void) {
     if (gDoubleSizeOffHdl) // If there's a buffer,
     {
@@ -74,7 +76,7 @@ void FreeDoubleBuffer(void) {
         gDoubleSizeOffHdl = NULL;
     }
 }
-
+*/
 // hard coded to copy from 56,57 to 56+536,57+259 to the screen
 #define kFastSlotWide 536
 #define kFastSlotHigh 259
@@ -106,10 +108,11 @@ extern bool SkipLines;
 // copy the slot view from offscreen to on, doubling it
 // extern "C"
 //{
-extern void BlitLargeAlign(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
-extern void BlitLargeAlignSkip(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
+//extern void BlitLargeAlign(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
+//extern void BlitLargeAlignSkip(uchar *draw_buffer, int dstRowBytes, void *dstPtr, long w, long h, long modulus);
 //}
 
+/*
 void Fast_Slot_Double(grs_bitmap *bm, long w, long h) {
     if (!SkipLines)
         BlitLargeAlign(bm->bits, gScreenRowbytes, gScreenAddress + (kFastSlotTop * gScreenRowbytes) + kFastSlotLeft, w,
@@ -118,28 +121,33 @@ void Fast_Slot_Double(grs_bitmap *bm, long w, long h) {
         BlitLargeAlignSkip(bm->bits, gScreenRowbytes, gScreenAddress + (kFastSlotTop * gScreenRowbytes) + kFastSlotLeft,
                            w, h, bm->row);
 }
+*/
 
 void FastSlotDouble2Canvas(grs_bitmap *bm, grs_canvas *destCanvas, long w, long h) {
     if (SkipLines) {
         gr_clear(0xFF);
-        BlitLargeAlignSkip(bm->bits, destCanvas->bm.row, destCanvas->bm.bits, w, h + 1, bm->row);
-    } else
-        BlitLargeAlign(bm->bits, destCanvas->bm.row, destCanvas->bm.bits, w, h + 1, bm->row);
+        // BlitLargeAlignSkip(bm->bits, destCanvas->bm.row, destCanvas->bm.bits, w, h + 1, bm->row);
+    } else {
+        // BlitLargeAlign(bm->bits, destCanvas->bm.row, destCanvas->bm.bits, w, h + 1, bm->row);
+    }
 }
 
 // copy the full screen view from offscreen to on
 // hard coded to copy from 0,0 to 640,480 to the screen
+/*
 void Fast_FullScreen_Double(grs_bitmap *bm, long w, long h) {
     if (!SkipLines)
         BlitLargeAlign(bm->bits, gScreenRowbytes, gScreenAddress, w, h, bm->row);
     else
         BlitLargeAlignSkip(bm->bits, gScreenRowbytes, gScreenAddress, w, h, bm->row);
 }
+*/
 
 void FastFullscreenDouble2Canvas(grs_bitmap *bm, grs_canvas *destCanvas, long w, long h) {
     if (SkipLines) {
         gr_clear(0xFF);
-        BlitLargeAlignSkip(bm->bits, destCanvas->bm.row, destCanvas->bm.bits, w, h + 1, bm->row);
-    } else
-        BlitLargeAlign(bm->bits, destCanvas->bm.row, destCanvas->bm.bits, w, h + 1, bm->row);
+        // BlitLargeAlignSkip(bm->bits, destCanvas->bm.row, destCanvas->bm.bits, w, h + 1, bm->row);
+    } else {
+        // BlitLargeAlign(bm->bits, destCanvas->bm.row, destCanvas->bm.bits, w, h + 1, bm->row);
+    }
 }

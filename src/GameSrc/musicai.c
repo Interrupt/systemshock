@@ -40,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mapflags.h"
 #include "player.h"
 #include "sfxlist.h"
+#include "tickcount.h"
 #include "tools.h"
 
 #include "adlmidi.h"
@@ -260,10 +261,10 @@ void mlimbs_do_ai() {
 
         // If a tune has finished playing, then another has just started, so prime the
         // timer to do the next tune calc.
-        if (gTuneDone) {
-            MacTunePrimeTimer();
-            gTuneDone = FALSE;
-        }
+        // if (gTuneDone) {
+        //    MacTunePrimeTimer();
+        //    gTuneDone = FALSE;
+        // }
     }
 }
 
@@ -487,23 +488,23 @@ errtype blank_theme_data()
 
 // don't need?     uchar voices_4op = FALSE;
 // don't need?     uchar digi_gain = FALSE;
-void load_score_guts(char score_playing) {
+void load_score_guts(uint8_t score_play) {
     int rv;
-    char base[20], temp[30];
-    FSSpec themeSpec;
+    char base[20];
 
-    strcpy(base, "thm"); // Get the theme file name.
-    numtostring(score_playing, temp);
-    strcat(base, temp);
-
+    // Get the theme file name.
+    sprintf(base, "thm%d", score_play);
     musicai_shutdown();
 
     // rv = MacTuneLoadTheme(&themeSpec, score_playing);
+    rv = MacTuneLoadTheme(base, score_play);
 
-    rv = MacTuneLoadTheme(base, score_playing);
-
-    if (rv == 0) musicai_reset(FALSE);
-    else DebugString("Load theme failed!"); // handle this a better way.
+    if (rv == 0) {
+        musicai_reset(false);
+    }
+    else {
+        DEBUG("%s: load theme failed!", __FUNCTION__); // handle this a better way.
+    }
 }
 
 errtype load_score_for_location(int x, int y) {

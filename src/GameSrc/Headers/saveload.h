@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Prototypes
 errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack);
-errtype load_current_map(Id id_num, FSSpec *dpath);
+errtype load_current_map(Id id_num);
 uchar go_to_different_level(int targlevel);
 
 // Globals

@@ -121,12 +121,13 @@ void FixPalette(void)
 	}*/
 }
 
+/*
 //------------------------------------------------------------------------------------
 // 	Setup a new ShockBitmap structure.
 //------------------------------------------------------------------------------------
 void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color)
 {
-	/*GrafPtr 			savePort;
+	GrafPtr 			savePort;
 	PixMapPtr		pmaptr;
 	
 	GetPort(&savePort);
@@ -170,8 +171,9 @@ void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean colo
 		theMap->bits = (GrafPtr) &theMap->BWPort;
 	}
 
-	SetPort(savePort);*/
+	SetPort(savePort);
 }
+*/
 
 //------------------------------------------------------------------------------------
 //  Deallocate a Shock bitmap.
@@ -195,10 +197,11 @@ void FreeShockBitmap(ShockBitmap *theMap)
 // 	Code to build an offscreen pixmap (8bit) of a given size, using the current pStd clut
 //		store pixmap in ColorBack cGrafPort.
 //------------------------------------------------------------------------------------
-Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height) 
+/*
+Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height)
 {
 	printf("Build8PixMap\n");
-	/*Rect        			bRect;
+	Rect        			bRect;
 	PixMapHandle		pmap;
 	PixMapPtr			pmaptr;
 	long         			bytes;
@@ -232,11 +235,11 @@ Handle Build8PixMap(CGrafPtr theCGrafPtr, short width, short height)
 	//SetRectRgn(theCGrafPtr->visRgn,bRect.left,bRect.top,bRect.right,bRect.bottom);
 	//SetRectRgn(theCGrafPtr->clipRgn,bRect.left,bRect.top,bRect.right,bRect.bottom);
 	
-	PenNormal();*/
+	PenNormal();
 	
 	return (NULL);
 }
-
+*/
 //------------------------------------------------------------------------------------
 //		Draw a pict into a ShockBitmap structure
 //------------------------------------------------------------------------------------
@@ -338,7 +341,7 @@ void CleanupPalette(void)
 }
 
 
-Rect	pBtnRect[4];
+//Rect	pBtnRect[4];
 
 //------------------------------------------------------------------------------------
 //  Copy the picture buttons to the title screen (which is already in the offscreen buffer).
@@ -396,15 +399,17 @@ void SetupTitleScreen(void)
 //  Handle clicking in title screen buttons.  Returns:
 //  	0 - New Game,   1 - Open Game,   2 - Play Intro,  3 - Quit,   -1 - No button
 //------------------------------------------------------------------------------------
+/*
 int DoShockTitleButtons(Point mousePt)
 {
-	/*for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (PtInRect(mousePt, &pBtnRect[i]))
 			return (TrackTitleButton(i));
 	}
-	return (-1);*/
+	return (-1);
 }
+*/
 
 //------------------------------------------------------------------------------------
 //  Handle mouse tracking for the button.  Returns button if clicked, -1 if not.

@@ -111,7 +111,7 @@ void free_model_vtexts(char model_num);
 void rend_mouse_hide(void) {
     extern bool DoubleSize;
     extern grs_canvas gDoubleSizeOffCanvas;
-    extern Boolean view360_is_rendering;
+    extern bool view360_is_rendering;
 
     MouseLock++;
     if (MouseLock == 1 && CurrentCursor != NULL) {

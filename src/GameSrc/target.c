@@ -72,12 +72,12 @@ uchar mfd_targetware_handler(MFD *m, uiEvent *e);
 //               TARGET MFD CODE
 // ==============================================
 
-#define LEFT_MARGIN   0
-#define RNG_FIELD     30
-#define TOP_MARGIN    2
+#define LEFT_MARGIN 0
+#define RNG_FIELD 30
+#define TOP_MARGIN 2
 #define STATUS_TEXT_Y 35
-#define MOOD_Y        27
-#define Y_STEP        5
+#define MOOD_Y 27
+#define Y_STEP 5
 
 #define HP_BAR_MARGIN 0
 
@@ -98,7 +98,7 @@ extern int mfd_bmap_id(int triple);
 #define TEXT_RIGHT_X 42
 
 #define LAST_TARGET(mfd) (player_struct.mfd_func_data[MFD_TARGET_FUNC][mfd])
-#define LAST_MOOD(mfd)   (player_struct.mfd_func_data[MFD_TARGET_FUNC][mfd + 2])
+#define LAST_MOOD(mfd) (player_struct.mfd_func_data[MFD_TARGET_FUNC][mfd + 2])
 #define LAST_STATUS(mfd) (player_struct.mfd_func_data[MFD_TARGET_FUNC][mfd + 4])
 
 void right_justify_num(char *num, int dlen) {
@@ -163,11 +163,10 @@ void mfd_target_expose(MFD *m, ubyte control) {
             unwrap_text(buf);
             if (version > 0) {
 #ifdef REF_STR_NumKills
-                get_string(REF_STR_NumKills, buf, sizeof(buf));
+                sprintf(buf, "%s %d", get_string(REF_STR_NumKills, NULL, sizeof(buf)), player_struct.num_victories);
 #else
-                strcpy(buf, "Kills: ");
+                sprintf(buf, "Kills: %d", player_struct.num_victories);
 #endif
-                numtostring(player_struct.num_victories, buf + strlen(buf));
                 mfd_string_wrap = FALSE;
                 gr_string_size(buf, &w, &h);
                 mfd_full_draw_string(buf, (MFD_VIEW_WID - w) / 2, MFD_VIEW_HGT / 2, TEXT_COLOR, TARGET_FONT, TRUE,
@@ -224,7 +223,7 @@ void mfd_target_expose(MFD *m, ubyte control) {
 
                 // it's edward - do him as cyborg 1
                 if (sc == CRITTER_SUBCLASS_ROBOBABE) {
-                    numtostring(objs[player_struct.curr_target].info.type, small_buf);
+                    sprintf(small_buf, "%d", objs[player_struct.curr_target].info.type);
                     right_justify_num(small_buf, 5);
                     strcpy(buf + len + 1, small_buf);
                 } else {
@@ -234,7 +233,7 @@ void mfd_target_expose(MFD *m, ubyte control) {
                     // add the subclass
                     *(buf + len + 3) = sc + '0';
                     // and lastly, add the SpecID
-                    numtostring(target + 1, small_buf);
+                    sprintf(small_buf, "%d", target + 1);
                     right_justify_num(small_buf, 2);
                     strcpy(buf + len + 4, small_buf);
                 }
@@ -345,9 +344,9 @@ void mfd_target_expose(MFD *m, ubyte control) {
     return;
 }
 
-    // ==============================================
-    //               TARGET HARDWARE CODE
-    // ==============================================
+// ==============================================
+//               TARGET HARDWARE CODE
+// ==============================================
 
 #define NUM_TARG_FRAMES 5
 extern ubyte targ_frame;

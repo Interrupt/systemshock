@@ -68,6 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "2d.h"
 #include "splash.h"
 #include "splshpal.h"
+#include "tickcount.h"
 #include "Shock.h"
 #include "Xmi.h"
 
@@ -616,23 +617,19 @@ void PrintWinStats(void)
 
   y += 4;
 
-  second_format(player_struct.game_time / CIT_CYCLE, buf_temp);
-  sprintf(buf, "TIME: %s", buf_temp);
+  sprintf(buf, "TIME: %lu", player_struct.game_time);
   gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
-  numtostring(player_struct.num_victories, buf_temp);
-  sprintf(buf, "KILLS: %s", buf_temp);
+  sprintf(buf, "KILLS: %d", player_struct.num_victories);
   gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
-  numtostring(player_struct.num_deaths, buf_temp);
-  sprintf(buf, "REGENERATIONS: %s", buf_temp);
+  sprintf(buf, "REGENERATIONS: %d", player_struct.num_deaths);
   gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
-  char stupid = 0, i;
-  for (i = 0; i < 4; i++)
+  uint8_t stupid = 0;
+  for (uint8_t i = 0; i < 4; i++)
     stupid += (player_struct.difficulty[i] * player_struct.difficulty[i]);
-  numtostring(stupid, buf_temp);
-  sprintf(buf, "DIFFICULTY INDEX: %s", buf_temp);
+  sprintf(buf, "DIFFICULTY INDEX: %d", stupid);
   gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
   int score;
@@ -642,9 +639,10 @@ void PrintWinStats(void)
   score = score * 10000;
   score = score - lg_min(score * 2 / 3, ((player_struct.game_time / (CIT_CYCLE * 36)) * 100));
   score = score * (stupid + 1) / 37; // 9 * 4 + 1 is best difficulty factor
-  if (stupid == 36) score += 2222222; // secret kevin bonus
-  numtostring(score, buf_temp);
-  sprintf(buf, "SCORE: %s", buf_temp);
+  if (stupid == 36) {
+      score += 2222222; // secret kevin bonus
+  }
+  sprintf(buf, "SCORE: %d", score);
   gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y);
 
   ResUnlock(RES_coloraliasedFont);

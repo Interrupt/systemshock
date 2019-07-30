@@ -32,7 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "InitMac.h"
 #include "ShockDialogs.h"
 #include "ShockBitmap.h"
-#include "MoviePlay.h"
 
 #include "criterr.h"
 #include "cybmem.h"
@@ -61,6 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "splash.h" // for splash screen...
 #include "statics.h"
 #include "textmaps.h"
+#include "tickcount.h"
 #include "tools.h"
 #include "gamerend.h"
 #include "mainloop.h"
@@ -128,7 +128,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TITLE_DISPLAY_TIME (60 * 3)
 #define MIN_WAIT_TIME (60)
 
-void DrawSplashScreen(short id, Boolean fadeIn);
+//void DrawSplashScreen(short id, Boolean fadeIn);
 void PreloadGameResources(void);
 errtype init_gamesys();
 errtype free_gamesys(void);
@@ -467,6 +467,7 @@ void init_all(void) {
     init_done = TRUE;
 }
 
+/*
 //-----------------------------------------------------------
 //  Draw a splash screen in its associated color table.
 //-----------------------------------------------------------
@@ -482,7 +483,7 @@ void DrawSplashScreen(short id, Boolean fadeIn) {
 
     // First, clear the screen and load in the color table for this picture.
     // gr_clear(0xFF);
-    /*ctab = GetCTable(id);														// Get the pict's
+    ctab = GetCTable(id);														// Get the pict's
 CLUT if (ctab)
     {
             BlockMove((**(ctab)).ctTable, (**(gMainColorHand)).ctTable, 256 * sizeof(ColorSpec));
@@ -511,8 +512,9 @@ palette fade
             if (fadeIn)
                     finish_pal_effect(pal_id);
 #endif
-    }*/
+    }
 }
+*/
 
 void PreloadGameResources(void) {
     // Images
@@ -575,7 +577,6 @@ errtype object_data_load(void) {
     // Initialize DOS (Doofy Object System)
     DEBUG("ObjsInit");
     ObjsInit();
-    AdvanceProgress();
 
     obj_init();
 
@@ -584,7 +585,6 @@ errtype object_data_load(void) {
     if (clear_player_data)
         init_player(&player_struct);
     clear_player_data = TRUE;
-    AdvanceProgress();
 
     // Start up some subsystems
     DEBUG("init mfd");
@@ -602,12 +602,10 @@ errtype object_data_load(void) {
 
     DEBUG("process tilemap");
     rendedit_process_tilemap(global_fullmap, &bounds, TRUE);
-    AdvanceProgress();
 
     // Make the objmode camera....
     DEBUG("create camera");
     fr_camera_create(&objmode_cam, CAMTYPE_OBJ, (fix *)(unsigned int)player_struct.rep, NULL);
-    AdvanceProgress();
 
     DEBUG("load_dynamic_memory");
     objdata_loaded = TRUE;

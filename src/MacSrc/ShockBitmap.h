@@ -25,8 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //====================================================================================
 
 
-#include <Carbon/Carbon.h>
-
 #include <SDL.h>
 
 #if 1
@@ -76,13 +74,13 @@ void SetupOffscreenBitmaps(int width, int height);
 void ResetCTSeed(void);
 void RememberSeed(void);
 void FixPalette(void);
-void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color);
+//void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color);
 void FreeShockBitmap(ShockBitmap *theMap);
-Handle Build8PixMap(CGrafPtr theCGrafPtr,short width, short height);
+//Handle Build8PixMap(CGrafPtr theCGrafPtr,short width, short height);
 short CurScreenDepth(void);
 void CheckBitDepth(void);
 void CleanupPalette(void);
 void LoadPictShockBitmap(ShockBitmap *theMap, short PictID);
 
 void SetupTitleScreen(void);
-int DoShockTitleButtons(Point mousePt);
+//int DoShockTitleButtons(Point mousePt);

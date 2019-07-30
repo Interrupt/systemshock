@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <stdbool.h>
 #include <string.h>
 
 #include "mfdint.h"
@@ -81,7 +82,7 @@ typedef struct _plot_display {
 //  PROTOTYPES
 // ----------
 void fill_time(short val, char *vbuf);
-uchar do_plotware_hack(int hack_num, char *vbuf);
+bool do_plotware_hack(int hack_num, char *vbuf);
 void mfd_plotware_expose(MFD *mfd, ubyte control);
 void plotware_showpage(uchar page);
 uchar plotware_button_handler(MFD *m, LGPoint bttn, uiEvent *ev, void *data);
@@ -119,21 +120,14 @@ plot_display PlotDisplays[] = {
 };
 
 void fill_time(short val, char *vbuf) {
-    if (val == 0) {
+    if (val != 0) {
+        int16_t hours = val / 3600;
+        int16_t minutes = (val - (3600 * hours)) / 60;
+        int16_t seconds = (val - (3600 * hours) - minutes * 60);
+        sprintf(vbuf, "%d:%02d:%02d", hours, minutes, seconds);
+    } else {
         strcpy(vbuf, "-:--:--");
-        return;
     }
-    numtostring(val / 3600, vbuf);
-    val %= 3600;
-    vbuf += strlen(vbuf);
-    *(vbuf++) = ':';
-    *(vbuf++) = val / 600 + '0';
-    *(vbuf++) = (val / 60) % 10 + '0';
-    *(vbuf++) = ':';
-    val %= 60;
-    *(vbuf++) = val / 10 + '0';
-    *(vbuf++) = val % 10 + '0';
-    *vbuf = '\0';
 }
 
 #define DOWNLOAD_TIME 100
@@ -150,58 +144,48 @@ void fill_time(short val, char *vbuf) {
 #define NODES_QDATA 0x1001
 #define TOTAL_NODES 27
 
-uchar do_plotware_hack(int hack_num, char *vbuf) {
+bool do_plotware_hack(int hack_num, char *vbuf) {
     switch (hack_num) {
     case 0:
         if (qdata_get(MAIN_PROGRAM_QDATA) != DOWNLOAD_PROGNUM)
-            return FALSE;
-        numtostring(player_struct.time2comp * 100 / DOWNLOAD_TIME, vbuf);
-        strcat(vbuf, "%");
-        return TRUE;
-        break;
+            return false;
+        sprintf(vbuf, "%d%%", player_struct.time2comp * 100 / DOWNLOAD_TIME);
+        return true;
     case 1:
         if (qdata_get(REACTOR_QDATA) != REACTOR_DESTRUCT)
-            return FALSE;
+            return false;
         fill_time(player_struct.time2comp, vbuf);
-        return TRUE;
-        break;
+        return true;
     case 2:
         if (player_struct.level >= SHODOMETER_LEVELS)
-            return FALSE;
+            return false;
         else {
-            short val =
-                QUESTVAR_GET(0x10 + player_struct.level) * 100 / player_struct.initial_shodan_vals[player_struct.level];
-            numtostring(val, vbuf);
-            strcat(vbuf, "%");
-            return TRUE;
+            sprintf(vbuf, "%d%%",
+                QUESTVAR_GET(0x10 + player_struct.level) * 100 / player_struct.initial_shodan_vals[player_struct.level]);
+            return true;
         }
-        break;
     // There is nooooooooooooooooooo case 3.
     // Mostly because we haven't necessarily loaded the other levels to figure
     // out what their shodometer levels were.
     case 4:
         if (qdata_get(MAIN_PROGRAM_QDATA) != BRIDGE_PROGNUM)
-            return FALSE;
+            return false;
         fill_time(player_struct.time2comp, vbuf);
-        return TRUE;
-        break;
+        return true;
     case 5:
         if (qdata_get(MAIN_PROGRAM_QDATA) != VIRUS_PROGNUM)
-            return FALSE;
+            return false;
         fill_time(player_struct.time2comp, vbuf);
-        return TRUE;
-        break;
+        return true;
     case 6:
-        numtostring(TOTAL_NODES - qdata_get(NODES_QDATA), vbuf);
-        return TRUE;
-        break;
+        sprintf(vbuf, "%d", TOTAL_NODES - qdata_get(NODES_QDATA));
+        return true;
     case 7:
         if (QUESTBIT_GET(0x0B))
             get_string(REF_STR_pwAlpha0 + 1, vbuf, 9);
         else
             get_string(REF_STR_pwAlpha0, vbuf, 9);
-        return TRUE;
-        break;
+        return true;
     case 8:
         if (QUESTBIT_GET(0x0F))
             get_string(REF_STR_pwBeta0 + 2, vbuf, 9);
@@ -209,26 +193,23 @@ uchar do_plotware_hack(int hack_num, char *vbuf) {
             get_string(REF_STR_pwBeta0 + 1, vbuf, 9);
         else
             get_string(REF_STR_pwBeta0, vbuf, 9);
-        return TRUE;
-        break;
+        return true;
     case 9:
         if (QUESTBIT_GET(0x0A))
             get_string(REF_STR_pwDelta0 + 1, vbuf, 9);
         else
             get_string(REF_STR_pwDelta0, vbuf, 9);
-        return TRUE;
-        break;
+        return true;
 
     default:
         *vbuf = '\0';
-        return FALSE;
-        break;
+        return false;
     }
 }
 
-    // ---------------
-    // EXPOSE FUNCTION
-    // ---------------
+// ---------------
+// EXPOSE FUNCTION
+// ---------------
 
 #define PLOTWARE_MFD_FUNC 16
 
@@ -258,8 +239,8 @@ void mfd_plotware_expose(MFD *mfd, ubyte control) {
         gr_push_canvas(pmfd_canvas);
         ss_safe_set_cliprect(0, 0, MFD_VIEW_WID, MFD_VIEW_HGT);
 
-        mfd_item_micro_expose(TRUE, STATUS_HARD_TRIPLE);
-        // mfd_item_micro_hires_expose(TRUE,STATUS_HARD_TRIPLE);
+        mfd_item_micro_expose(true, STATUS_HARD_TRIPLE);
+        // mfd_item_micro_hires_expose(true,STATUS_HARD_TRIPLE);
         if (!full)
             mfd_clear_rects();
 
@@ -275,7 +256,7 @@ void mfd_plotware_expose(MFD *mfd, ubyte control) {
             switch (dp->baseval) {
             case INT_TYPE:
                 val = qdata_get(dp->questvar);
-                numtostring(val, vbuf);
+                sprintf(vbuf, "%d", val);
                 break;
             case COUNTDOWN_TYPE:
                 val = *(short *)(((char *)&player_struct) + dp->questvar);
@@ -294,9 +275,9 @@ void mfd_plotware_expose(MFD *mfd, ubyte control) {
                 break;
             }
             get_string(dp->name, buf, sizeof(buf));
-            mfd_full_draw_string(buf, LEFT_X, y, dp->color, MFD_FONT, TRUE, TRUE);
+            mfd_full_draw_string(buf, LEFT_X, y, dp->color, MFD_FONT, true, true);
             gr_string_size(vbuf, &w, &h);
-            mfd_full_draw_string(vbuf, RIGHT_X - w, y, dp->color, MFD_FONT, TRUE, TRUE);
+            mfd_full_draw_string(vbuf, RIGHT_X - w, y, dp->color, MFD_FONT, true, true);
             y += h + 1;
         }
         if (full) {
@@ -306,7 +287,7 @@ void mfd_plotware_expose(MFD *mfd, ubyte control) {
             get_string(REF_STR_pwPage0 + PLOTWARE_PAGENUM, buf, sizeof(buf));
             gr_string_size(buf, &w, &h);
             mfd_draw_string(buf, (MFD_VIEW_WID - w) / 2, BUTTON_Y + (res_bm_height(REF_IMG_NextPage) - h) / 2,
-                            ITEM_COLOR, TRUE);
+                            ITEM_COLOR, true);
             // Draw the page buttons
             draw_raw_resource_bm(REF_IMG_PrevPage, LEFT_X, BUTTON_Y);
             draw_raw_resource_bm(REF_IMG_NextPage, RIGHT_X - res_bm_width(REF_IMG_NextPage), BUTTON_Y);
@@ -330,7 +311,7 @@ void plotware_showpage(uchar page) {
     if (PLOTWARE_VERSION == 0 || page >= NUM_PAGES)
         return;
     PLOTWARE_PAGENUM = page;
-    plotware_turnon(TRUE, TRUE);
+    plotware_turnon(true, true);
 }
 
 // --------------
@@ -338,13 +319,13 @@ void plotware_showpage(uchar page) {
 // --------------
 uchar plotware_button_handler(MFD *n, LGPoint bttn, uiEvent *ev, void *data) {
     if (!(ev->subtype & MOUSE_LDOWN))
-        return TRUE;
+        return true;
     if (bttn.x == 0)
         PLOTWARE_PAGENUM = (PLOTWARE_PAGENUM == 0) ? NUM_PAGES - 1 : PLOTWARE_PAGENUM - 1;
     if (bttn.x == 1)
         PLOTWARE_PAGENUM = (PLOTWARE_PAGENUM >= NUM_PAGES - 1) ? 0 : PLOTWARE_PAGENUM + 1;
-    mfd_notify_func(MFD_PLOTWARE_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, TRUE);
-    return TRUE;
+    mfd_notify_func(MFD_PLOTWARE_FUNC, MFD_ITEM_SLOT, false, MFD_ACTIVE, true);
+    return true;
 }
 
 // --------------
@@ -373,7 +354,7 @@ errtype mfd_plotware_init(MFD_Func *f) {
 
 void plotware_turnon(uchar visible, uchar realstart) {
     if (visible) {
-        set_inventory_mfd(MFD_INV_HARDWARE, CPTRIP(STATUS_HARD_TRIPLE), TRUE);
+        set_inventory_mfd(MFD_INV_HARDWARE, CPTRIP(STATUS_HARD_TRIPLE), true);
         mfd_change_slot(mfd_grab_func(MFD_PLOTWARE_FUNC, MFD_ITEM_SLOT), MFD_ITEM_SLOT);
     }
     player_struct.hardwarez_status[CPTRIP(STATUS_HARD_TRIPLE)] &= ~(WARE_ON);
