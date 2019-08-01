@@ -65,7 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CPTRIP(triple) (ClassBaseArray[TRIP2CL(triple)][TRIP2SC(triple)] + TRIP2TY(triple))
 #define SCTRIP(triple) TRIP2TY(triple)
 
-#define OPNUM(id) (ObjBaseArray[(objs[id].obclass << 4) + (objs[id].subclass)] + objs[id].info.type)
+#define OPNUM(id) (ObjBaseArray[(objs[id].obclass << 4u) + (objs[id].subclass)] + objs[id].info.type)
 #define CPNUM(id) (ClassBaseArray[objs[id].obclass][objs[id].subclass] + objs[id].info.type)
 #define SCNUM(id) (objs[id].info.type)
 

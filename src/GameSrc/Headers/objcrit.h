@@ -256,9 +256,9 @@ extern ObjCritter objCritters[NUM_OBJECTS_CRITTER];
 extern ObjCritter default_critter;
 #endif
 
-#define get_crit_posture(osid) (objCritters[osid].current_posture & 0xF)
+#define get_crit_posture(osid) (objCritters[osid].current_posture & 0xFu)
 #define set_crit_posture(osid, newpos) \
-    objCritters[osid].current_posture = (objCritters[osid].current_posture & 0xF0) + newpos
+    objCritters[osid].current_posture = (objCritters[osid].current_posture & 0xF0u) + newpos
 
 #define get_crit_view(oisd) (objCritters[osid].current_posture >> 8)
 #define set_crit_view(osid, newview) \

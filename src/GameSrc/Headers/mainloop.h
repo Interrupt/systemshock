@@ -42,10 +42,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define FL 0x2100
 #define AL 0x2200
 
-#define ML_CHG_MASK 0xF000 /* mask for main loop bits in change_flag */
-#define ML_CHG_BASE 0x1000 /* mask for single main loop bit of change_flag */
-#define LL_CHG_MASK 0x0FFF /* mask for local loop bits of change_flag */
-#define LL_CHG_BASE 0x0001 /* mask for single local loop bit out of change_flag */
+#define ML_CHG_MASK 0xF000u /* mask for main loop bits in change_flag */
+#define ML_CHG_BASE 0x1000u /* mask for single main loop bit of change_flag */
+#define LL_CHG_MASK 0x0FFFu /* mask for local loop bits of change_flag */
+#define LL_CHG_BASE 0x0001u /* mask for single local loop bit out of change_flag */
 
 #define chg_set_flg(x)   (_change_flag |= x)
 #define chg_get_flg(x)   (_change_flag & x)

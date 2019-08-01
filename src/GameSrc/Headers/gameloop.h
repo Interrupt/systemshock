@@ -69,12 +69,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Game Object Includes
 
 // Defines
-#define VITALS_UPDATE     LL_CHG_BASE << 0
-#define MFD_UPDATE        LL_CHG_BASE << 1
-#define ANIM_UPDATE       LL_CHG_BASE << 2
-#define DEMOVIEW_UPDATE   LL_CHG_BASE << 3
-#define INVENTORY_UPDATE  LL_CHG_BASE << 4
-#define FULLSCREEN_UPDATE LL_CHG_BASE << 5
+#define VITALS_UPDATE     LL_CHG_BASE << 0u
+#define MFD_UPDATE        LL_CHG_BASE << 1u
+#define ANIM_UPDATE       LL_CHG_BASE << 2u
+#define DEMOVIEW_UPDATE   LL_CHG_BASE << 3u
+#define INVENTORY_UPDATE  LL_CHG_BASE << 4u
+#define FULLSCREEN_UPDATE LL_CHG_BASE << 5u
 
 // Prototypes
 void game_loop(void);

@@ -42,33 +42,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Game Object Includes
 
 // Defines
-#define HUD_RADIATION   0x00000001 // Are we in radiation
-#define HUD_BIOHAZARD   0x00000002 // Are we in a bio area
-#define HUD_RANGE       0x00000004 // Range to target
-#define HUD_FATIGUE     0x00000008 // High fatigue levels
-#define HUD_TARGRECT    0x00000010 // Rectangle around target
-#define HUD_GRENADE     0x00000020 // Time to detonate grenade
-#define HUD_INFRARED    0x00000040 // Infrared active
-#define HUD_SHIELD      0x00000080 // Show shield absorption
-#define HUD_SHODOMETER  0x00000100 // Changes in shodometer
-#define HUD_DETECT_EXP  0x00000200 // Explosion detection
-#define HUD_COMPASS     0x00000400 // Compass
-#define HUD_ZEROGRAV    0x00000800 // abnormal gravity conditions
-#define HUD_FAKEID      0x00001000 // fakeid software in use
-#define HUD_DECOY       0x00002000 // decoy software in use
-#define HUD_TURBO       0x00004000 // turbo software in use
-#define HUD_CYBERTIME   0x00008000 // time remaining until SHODAN sends his avatar against you
-#define HUD_CYBERDANGER 0x00010000 // imminent peril of being ejected from cspace
-#define HUD_RADPOISON   0x00100000 // taking radiation damage
-#define HUD_BIOPOISON   0x00200000 // taking bio damage
-#define HUD_BEAMHOT     0x00400000 // weapon about to overheat
-#define HUD_MSGLINE     0x00800000 // message line.
-#define HUD_GAMETIME    0x01000000 // time remaining in game
-#define HUD_ENERGYUSE   0x02000000 // energy usage notification
-#define HUD_ENVIROUSE   0x04000000 // enviro suit drain/absorb
-#define HUD_MESSAGE     0x80000000 // general hud bit for hud_message (NIY)
+#define HUD_RADIATION   0x00000001u // Are we in radiation
+#define HUD_BIOHAZARD   0x00000002u // Are we in a bio area
+#define HUD_RANGE       0x00000004u // Range to target
+#define HUD_FATIGUE     0x00000008u // High fatigue levels
+#define HUD_TARGRECT    0x00000010u // Rectangle around target
+#define HUD_GRENADE     0x00000020u // Time to detonate grenade
+#define HUD_INFRARED    0x00000040u // Infrared active
+#define HUD_SHIELD      0x00000080u // Show shield absorption
+#define HUD_SHODOMETER  0x00000100u // Changes in shodometer
+#define HUD_DETECT_EXP  0x00000200u // Explosion detection
+#define HUD_COMPASS     0x00000400u // Compass
+#define HUD_ZEROGRAV    0x00000800u // abnormal gravity conditions
+#define HUD_FAKEID      0x00001000u // fakeid software in use
+#define HUD_DECOY       0x00002000u // decoy software in use
+#define HUD_TURBO       0x00004000u // turbo software in use
+#define HUD_CYBERTIME   0x00008000u // time remaining until SHODAN sends his avatar against you
+#define HUD_CYBERDANGER 0x00010000u // imminent peril of being ejected from cspace
+#define HUD_RADPOISON   0x00100000u // taking radiation damage
+#define HUD_BIOPOISON   0x00200000u // taking bio damage
+#define HUD_BEAMHOT     0x00400000u // weapon about to overheat
+#define HUD_MSGLINE     0x00800000u // message line.
+#define HUD_GAMETIME    0x01000000u // time remaining in game
+#define HUD_ENERGYUSE   0x02000000u // energy usage notification
+#define HUD_ENVIROUSE   0x04000000u // enviro suit drain/absorb
+#define HUD_MESSAGE     0x80000000u // general hud bit for hud_message (NIY)
 
-#define HUD_ALL         0xFFFFFFFF
+#define HUD_ALL         0xFFFFFFFFu
 
 #define HUD_COLOR_BANKS 3
 #define HUD_COLORS_PER_BANK 5

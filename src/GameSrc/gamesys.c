@@ -83,8 +83,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // -------
 #define SECOND_UPDATE_FREQ APPROX_CIT_CYCLE_HZ
 #define HEALTH_RESTORE_PRECISION (APPROX_CIT_CYCLE_SHFT)
-#define HEALTH_RESTORE_SHF (6)
-#define HEALTH_RESTORE_UNIT (1 << HEALTH_RESTORE_SHF) // unit time for hp/energy regen
+#define HEALTH_RESTORE_SHF (6u)
+#define HEALTH_RESTORE_UNIT (1u << HEALTH_RESTORE_SHF) // unit time for hp/energy regen
 #define HEALTH_RESTORE_MASK (HEALTH_RESTORE_UNIT - 1)
 #define sqr(x) ((x) * (x))
 #define MAX_FATIGUE 10000
@@ -124,7 +124,7 @@ void expose_player(byte damage, ubyte type, ushort tsecs);
 void game_sched_init(void) { schedule_init(&game_seconds_schedule, GAME_SCHEDULE_SIZE, FALSE); }
 
 void game_sched_free(void) {
-    extern errtype schedule_free(Schedule * s);
+    //extern errtype schedule_free(Schedule * s);
     schedule_free(&game_seconds_schedule);
 }
 
@@ -265,7 +265,7 @@ void check_nearby_objects() {
                                 play_digi_fx_obj(SFX_SPARKING_CABLE, 1, id);
                             break;
                         case HORZ_KLAXON_TRIPLE: {
-                            uchar digi_fx_playing(int fx_id, int *handle_ptr);
+                            // uchar digi_fx_playing(int fx_id, int *handle_ptr);
                             if (!digi_fx_playing(SFX_KLAXON, NULL))
                                 play_digi_fx_obj(SFX_KLAXON, 1, id);
                         } break;
@@ -294,6 +294,8 @@ void check_nearby_objects() {
                                 }
                             }
                             break;
+                        default:
+                            ;
                         }
                     }
                     oref = objRefs[oref].next;
@@ -352,10 +354,10 @@ void fatigue_player(void) {
     if (gamesys_fatigue && !jumpjets_active && !EDMS_pelvis_is_climbing) {
         deltat = player_struct.deltat;
         deltaf = run_fatigue_rate * (fatigue_val(c[CONTROL_YVEL]) + fatigue_val(2 * c[CONTROL_ZVEL]) +
-                                     //              fatigue_val(c[CONTROL_XVEL])/64 +
-                                     //              fatigue_val(c[CONTROL_XYROT])/256 +
-                                     //              fatigue_val(c[CONTROL_XZROT])/256 +
-                                     //              fatigue_val(c[CONTROL_YZROT])/256 +
+                                     // fatigue_val(c[CONTROL_XVEL])/64 +
+                                     // fatigue_val(c[CONTROL_XYROT])/256 +
+                                     // fatigue_val(c[CONTROL_XZROT])/256 +
+                                     // fatigue_val(c[CONTROL_YZROT])/256 +
                                      0);
         if (player_struct.posture != POSTURE_STAND)
             deltaf /= sqr(player_struct.posture + 1);
@@ -451,17 +453,14 @@ short shodan_region_full_height[] = {FULL_VIEW_HEIGHT / 8, FULL_VIEW_HEIGHT, FUL
 errtype gamesys_run(void) {
     ObjSpecID osi;
     uchar dummy;
-    extern void destroy_destroyed_objects(void);
-    extern uchar trap_activate(ObjID id, uchar * use_message);
+    // extern void destroy_destroyed_objects(void);
+    // extern uchar trap_activate(ObjID id, uchar * use_message);
     extern void set_global_lighting(short new_val);
     extern uchar *shodan_bitmask;
     extern ulong page_amount;
-#ifdef AUTOCORRECT_DIFF_TRASH
-    int i;
-#endif
 
 #ifdef AUTOCORRECT_DIFF_TRASH
-    for (i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) {
         extern char diff_qvars[4];
         if (player_struct.difficulty[i] != QUESTVAR_GET(diff_qvars[i]))
             QUESTVAR_SET(diff_qvars[i], player_struct.difficulty[i]);
@@ -503,7 +502,7 @@ errtype gamesys_run(void) {
     }
 
     if (shodan_bitmask != NULL) {
-        extern ulong time_until_shodan_avatar;
+        extern uint32_t time_until_shodan_avatar;
         if (player_struct.game_time > time_until_shodan_avatar) {
             char i;
             if (thresh_fail) {
@@ -523,7 +522,7 @@ errtype gamesys_run(void) {
                 }
             }
             if (thresh_fail) {
-                extern errtype mai_player_death();
+                // extern errtype mai_player_death();
                 mai_player_death();
                 time_until_shodan_avatar = player_struct.game_time + (CIT_CYCLE * 8);
             } else
@@ -649,8 +648,8 @@ uchar panel_ref_sanity(ObjID obj) {
 // in an mfd, and closes the mfd.
 
 void check_panel_ref(uchar puntme) {
-    static short old_x, old_y;
-    extern void restore_mfd_slot(int mfd_id);
+    // static short old_x, old_y;
+    // extern void restore_mfd_slot(int mfd_id);
     extern uchar check_object_dist(ObjID obj1, ObjID obj2, fix crit);
 
     ObjID id = player_struct.panel_ref;
@@ -665,7 +664,7 @@ void check_panel_ref(uchar puntme) {
         }
         if (punt) {
             uchar punt_mfd[NUM_MFDS], punting = 0;
-            int mfd_id;
+            uint8_t mfd_id;
 
             for (mfd_id = 0; mfd_id < NUM_MFDS; mfd_id++) {
                 punt_mfd[mfd_id] = mfd_distance_remove(mfd_get_func(mfd_id, MFD_INFO_SLOT));
@@ -682,8 +681,8 @@ void check_panel_ref(uchar puntme) {
             player_struct.panel_ref = OBJ_NULL;
         }
     }
-    old_x = PLAYER_BIN_X;
-    old_y = PLAYER_BIN_Y;
+    // old_x = PLAYER_BIN_X;
+    // old_y = PLAYER_BIN_Y;
 }
 
 // =================================================
@@ -728,13 +727,13 @@ int apply_rate(int var, int rate, int t0, int t1, int vmin, int vmax) {
 
 #define ENERGY_VAR_RATE 50
 
-ulong time_until_shodan_avatar = 0;
+uint32_t time_until_shodan_avatar = 0;
 extern ObjID shodan_avatar_id;
 
 #define MY_FORALLOBJSPECS(pmo, objspec) \
     for (pmo = (objspec[OBJ_SPEC_NULL]).id; pmo != OBJ_SPEC_NULL; pmo = objspec[pmo].next)
 
-#define REACTOR_BOOM_QB 0x14 // stolen from triggger.c
+#define REACTOR_BOOM_QB 0x14 // stolen from trigger.c
 #define BRIDGE_SEPARATED_QB 0x98
 
 #define REALSPACE_HUDS \
@@ -871,10 +870,8 @@ void do_stuff_every_second() {
                 secret_render_fx = 0;
                 play_cutscene(ENDGAME_CUTSCENE,TRUE);
 
-                // gDeadPlayerQuit = TRUE;											// Pretend the player
-                // is dead.
-                // gPlayingGame = FALSE;											// Hop out of the game
-                // loop.
+                // gDeadPlayerQuit = TRUE; // Pretend the player is dead.
+                // gPlayingGame = FALSE; // Hop out of the game loop.
             }
         }
 
@@ -894,7 +891,6 @@ void do_stuff_every_second() {
         check_hazard_regions(MAP_GET_XY(PLAYER_BIN_X, PLAYER_BIN_Y));
         check_panel_ref(FALSE);
     }
-    return;
 }
 
     // ---------------------------------------------
@@ -939,8 +935,6 @@ void expose_player(byte damage, ubyte type, ushort tsecs) { expose_player_real(d
 // enviro_suit_absorb()
 //
 // returns damage to player after enviro-suit
-
-extern int long_sqrt(int num);
 
 #define ENVIRO_ABSORB_DENOM 5
 #define ENVIRO_DRAIN_DENOM 1
@@ -995,7 +989,7 @@ int enviro_suit_absorb(int damage, int exposure, ubyte dtype) {
     }
     if (enviro_absorb_rate > 0) {
         if (old_edrain_rate == 0) {
-            ulong time = 5 << APPROX_CIT_CYCLE_SHFT;
+            uint32_t time = 5u << APPROX_CIT_CYCLE_SHFT;
             hud_set_time(HUD_ENVIROUSE, time);
             hud_set_time(HUD_ENERGYUSE, time);
         }
