@@ -76,9 +76,9 @@ typedef enum {
 
 // Some questbitty stuff
 #define NUM_QUESTBITS 512
-#define QUESTBIT_GET(qnum) (player_struct.questbits[((qnum) / 8)] & (1 << ((qnum) % 8)))
-#define QUESTBIT_ON(qnum)  (player_struct.questbits[((qnum) / 8)] |= (1 << ((qnum) % 8)))
-#define QUESTBIT_OFF(qnum) (player_struct.questbits[((qnum) / 8)] &= ~(1 << ((qnum) % 8)))
+#define QUESTBIT_GET(qnum) (player_struct.questbits[((qnum) / 8u)] & (1u << ((qnum) % 8u)))
+#define QUESTBIT_ON(qnum)  (player_struct.questbits[((qnum) / 8u)] |= (1u << ((qnum) % 8u)))
+#define QUESTBIT_OFF(qnum) (player_struct.questbits[((qnum) / 8u)] &= ~(1u << ((qnum) % 8u)))
 
 #define NUM_QUESTVARS 64
 #define QUESTVAR_GET(qnum) (player_struct.questvars[(qnum)])
