@@ -96,11 +96,11 @@ extern fauxrend_parameters _frp;
 #define get_frp() (_frp)
 #endif
 
-#define LIGHT_BITS_MASK 0xf
-#define LIGHT_BITS_ANY 0x8
-#define LIGHT_BITS_TERR 0x4
-#define LIGHT_BITS_CAM 0x2
-#define LIGHT_BITS_NORM 0x1
+#define LIGHT_BITS_MASK 0xfu
+#define LIGHT_BITS_ANY 0x8u
+#define LIGHT_BITS_TERR 0x4u
+#define LIGHT_BITS_CAM 0x2u
+#define LIGHT_BITS_NORM 0x1u
 #define LIGHT_BITS_HOW (LIGHT_BITS_NORM | LIGHT_BITS_CAM | LIGHT_BITS_TERR)
 
 #define _frp_light_bits_any() (_frp.lighting.flags & LIGHT_BITS_ANY)

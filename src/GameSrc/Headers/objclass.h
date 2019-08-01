@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objects.h"
 
 // Some macros...
-#define MAKETRIP(obclass, subclass, type) ((obclass << 16) + (subclass << 8) + type)
+#define MAKETRIP(obclass, subclass, type) ((obclass << 16u) + (subclass << 8u) + type)
 #define ID2TRIP(id) MAKETRIP(objs[id].obclass, objs[id].subclass, objs[id].info.type)
 
 #define TRIP2CL(trip) ((ObjClass)(trip >> 16))

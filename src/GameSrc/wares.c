@@ -61,12 +61,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Internal Prototypes
 //----------------
 uchar is_passive_hardware(int n);
-uchar is_oneshot_misc_software(int n);
+bool is_oneshot_misc_software(int n);
 int energy_cost(int warenum);
 void hardware_closedown(uchar visible);
 void hardware_startup(uchar visible);
 void hardware_power_outage(void);
-uchar check_game(void);
+bool check_game(void);
 
 // ------
 // Globals
@@ -123,7 +123,7 @@ uchar is_passive_hardware(int n) {
     return (cflags & PASSIVE_WARE_FLAG);
 }
 
-uchar is_oneshot_misc_software(int n) { return ((n < NUM_ONESHOT_SOFTWARE)); }
+bool is_oneshot_misc_software(int n) { return ((n < NUM_ONESHOT_SOFTWARE)); }
 
 // INTERNALS
 // =========
@@ -162,8 +162,7 @@ void use_ware(int waretype, int num) {
         return;
     get_ware_pointers(waretype, &player_wares, &player_status, &wares, &n);
     if ((player_wares[num] == 0) && (!(WareActive(player_status[num])))) {
-        return; // don't turn on a ware we don't have, only turn off one we're
-                // discarding
+        return; // don't turn on a ware we don't have, only turn off one we're discarding
     }
 
     // Hey, can we even use this kind of ware right now?
@@ -216,16 +215,11 @@ void use_ware(int waretype, int num) {
             ecost = energy_cost(num);
 
         if ((waretype == WARE_HARD) && (num >= FIRST_GOGGLE_WARE) && (num <= LAST_GOGGLE_WARE)) {
-
             // Play the goggle sound effect
             ware_sfx = SFX_GOGGLE;
         } else {
-            switch (num) {
-            case HARDWARE_SHIELD:
-                break;
-            default:
+            if (num != HARDWARE_SHIELD) {
                 ware_sfx = SFX_HUDFROB;
-                break;
             }
         }
 
@@ -253,14 +247,12 @@ void use_ware(int waretype, int num) {
     if (_current_loop <= FULLSCREEN_LOOP)
         chg_set_flg(INVENTORY_UPDATE);
     mfd_notify_func(NOTIFY_ANY_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, TRUE);
-    return;
 }
 
 // Hey, we're closing down a game. return to normalcy.
 void hardware_closedown(uchar visible) {
-    int i;
-    for (i = 0; i < NUM_HARDWAREZ; i++) {
-        //      if (i != HARDWARE_FULLSCREEN)
+    for (uint16_t i = 0; i < NUM_HARDWAREZ; i++) {
+        // if (i != HARDWARE_FULLSCREEN)
         if (WareActive(player_struct.hardwarez_status[i]))
             if (HardWare[i].turnoff != NULL)
                 HardWare[i].turnoff(visible, FALSE);
@@ -268,9 +260,8 @@ void hardware_closedown(uchar visible) {
 }
 
 void hardware_startup(uchar visible) {
-    int i;
-    for (i = 0; i < NUM_HARDWAREZ; i++) {
-        //      if (i != HARDWARE_FULLSCREEN)
+    for (uint16_t i = 0; i < NUM_HARDWAREZ; i++) {
+        // if (i != HARDWARE_FULLSCREEN)
         if (WareActive(player_struct.hardwarez_status[i]))
             if (HardWare[i].turnon != NULL)
                 HardWare[i].turnon(visible, FALSE);
@@ -278,8 +269,7 @@ void hardware_startup(uchar visible) {
 }
 
 void hardware_power_outage(void) {
-    int i;
-    for (i = 0; i < NUM_HARDWAREZ; i++) {
+    for (uint16_t i = 0; i < NUM_HARDWAREZ; i++) {
         if (energy_cost(i) > 0 && WareActive(player_struct.hardwarez_status[i]))
             use_ware(WARE_HARD, i);
     }
@@ -318,7 +308,6 @@ void get_ware_pointers(int type, ubyte **player_wares, ubyte **player_status, WA
         *wares = Misc_SoftWare;
     }
 
-    return;
 }
 
 // --------------------------------------------------
@@ -383,15 +372,14 @@ void wares_update() {
             side_icon_expose(HardWare[j].sideicon);
         }
 
-    return;
-}
+    }
 
 // ---------------------------------------------------------------------------
 // wares_init()
 //
 // Sets the static values for all wares.
 
-void wares_init() { return; }
+void wares_init() { }
 
 // CALLBACKS
 // =========
@@ -420,14 +408,12 @@ void bioware_effect(void);
 // the appropriate info MFD
 
 void bioware_turnon(uchar visible, uchar real_s) {
-    int i;
     if (visible) {
         mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, TRUE, MFD_FLASH, TRUE);
-        i = mfd_grab_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT);
+        int32_t i = mfd_grab_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT);
         mfd_change_slot(i, MFD_INFO_SLOT);
     }
 
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -439,8 +425,6 @@ void bioware_turnon(uchar visible, uchar real_s) {
 void bioware_turnoff(uchar visible, uchar real_stop) {
     if (real_stop && player_struct.mfd_all_slots[MFD_INFO_SLOT] == MFD_BIOWARE_FUNC)
         mfd_notify_func(MFD_EMPTY_FUNC, MFD_INFO_SLOT, TRUE, MFD_EMPTY, TRUE);
-
-    return;
 }
 
 // ---------------------------------------------------
@@ -468,7 +452,6 @@ void infrared_turnon(uchar visible, uchar real_s) {
         chg_set_flg(_current_3d_flag);
         hud_set(HUD_INFRARED);
     }
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -484,7 +467,6 @@ void infrared_turnoff(uchar visible, uchar real_s) {
 
         hud_unset(HUD_INFRARED);
     }
-    return;
 }
 
 // --------------------
@@ -507,7 +489,6 @@ void targeting_turnon(uchar visible, uchar real_start) {
             select_closest_target();
         mfd_change_slot(mfd_grab_func(MFD_TARGET_FUNC, MFD_TARGET_SLOT), MFD_TARGET_SLOT);
     }
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -515,7 +496,7 @@ void targeting_turnon(uchar visible, uchar real_start) {
 //
 // Turn off the targeting ware
 
-void targeting_turnoff(uchar visible, uchar real_s) { return; }
+void targeting_turnoff(uchar visible, uchar real_s) { }
 
 // -------------------------------------------------------
 //  LANTERN WARE
@@ -607,7 +588,7 @@ void lamp_turnoff(uchar visible, uchar real_stop) {
 uchar lantern_change_setting_hkey(short key, ulong context, void *data) {
     int n = CPTRIP(LANTERN_HARD_TRIPLE);
     int v = player_struct.hardwarez[n];
-    int s = player_struct.hardwarez_status[n];
+    uint32_t s = player_struct.hardwarez_status[n];
     uchar on = s & WARE_ON;
     void mfd_lantern_setting(int setting);
 
@@ -671,7 +652,7 @@ void shield_toggle(uchar visible, uchar real) {
 uchar shield_change_setting_hkey(short key, ulong context, void *data) {
     int n = CPTRIP(SHIELD_HARD_TRIPLE);
     int v = player_struct.hardwarez[n];
-    int s = player_struct.hardwarez_status[n];
+    uint32_t s = player_struct.hardwarez_status[n];
     uchar on = s & WARE_ON;
     void mfd_shield_setting(int setting);
 
@@ -734,17 +715,14 @@ void motionware_update(uchar visible, uchar real, uchar on) {
         Pelvis elvis;
         mfd_notify_func(MFD_MOTION_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, TRUE);
         EDMS_get_pelvis_parameters(PLAYER_PHYSICS, &elvis);
-        switch (motionware_mode) {
-        case MOTION_SKATES:
+        if (motionware_mode == MOTION_SKATES) {
             if (!global_fullmap->cyber) {
                 elvis.cyber_space = PELVIS_MODE_SKATES;
             }
-            break;
-        default:
+        } else {
             if (!global_fullmap->cyber) {
                 elvis.cyber_space = PELVIS_MODE_NORMAL;
             }
-            break;
         }
         EDMS_set_pelvis_parameters(PLAYER_PHYSICS, &elvis);
     }
@@ -865,10 +843,8 @@ void decoy_turnon(uchar visible, uchar real_start) {
         if (cspace_decoy_obj != OBJ_NULL) {
             obj_move_to(cspace_decoy_obj, &objs[PLAYER_OBJ].loc, FALSE);
             cspace_effect_times[CS_DECOY_EFF] = player_struct.game_time + cspace_effect_durations[CS_DECOY_EFF];
-            if (real_start) {
-                player_struct.softs.misc[SOFTWARE_DECOY]--;
-                play_digi_fx(SFX_DECOY, 1);
-            }
+            player_struct.softs.misc[SOFTWARE_DECOY]--;
+            play_digi_fx(SFX_DECOY, 1);
             hud_set(HUD_DECOY);
             chg_set_flg(INVENTORY_UPDATE);
         }
@@ -900,7 +876,7 @@ void recall_turnon(uchar visible, uchar real_start) {
 // THE STATIC ARRAYS
 
 extern void view360_turnon(uchar visible, uchar real_start), view360_turnoff(uchar visible, uchar real_start);
-extern uchar view360_check();
+extern bool view360_check();
 extern void email_turnon(uchar visible, uchar real_start);
 extern void email_turnoff(uchar visible, uchar real_start);
 extern void plotware_turnon(uchar visible, uchar real_start);
@@ -976,7 +952,7 @@ short energy_cost_vec[NUM_HARDWAREZ][MAX_VERSIONS] = {
     {0},
 };
 
-uchar check_game(void) { return (!global_fullmap->cyber); }
+bool check_game(void) { return (!global_fullmap->cyber); }
 extern void mfd_games_turnon(uchar, uchar real_s), mfd_games_turnoff(uchar, uchar real_s);
 
 WARE Combat_SoftWare[NUM_COMBAT_SOFTS];

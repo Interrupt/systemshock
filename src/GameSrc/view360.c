@@ -86,12 +86,12 @@ void view360_render(void);
 void mfd_view360_expose(MFD *mfd, ubyte control);
 void view360_turnon(uchar visible, uchar real_start);
 void view360_turnoff(uchar visible, uchar real_stop);
-uchar view360_check(void);
+bool view360_check(void);
 
 // Set up/turn on all contexts & cameras for the specified mode.
 void view360_setup_mode(uchar mode) {
     ubyte version = player_struct.hardwarez[CPTRIP(SENS_HARD_TRIPLE)];
-    if (version > 2 && mode == MODE_360 || mode == MODE_270) {
+    if ((version > 2 && mode == MODE_360) || mode == MODE_270) {
         VIEW[LEFT_CONTEXT] = CAMANG_LEFT;
         ACTIVE[LEFT_CONTEXT] = TRUE;
         VIEW[RIGHT_CONTEXT] = CAMANG_RIGHT;
@@ -227,7 +227,7 @@ char update_string[30] = "";
 void view360_render(void) {
     opengl_begin_sensaround(player_struct.hardwarez[CPTRIP(SENS_HARD_TRIPLE)]);
     uchar on = FALSE;
-    int i;
+
     if (inventory_page != INV_3DVIEW_PAGE && ACTIVE[MID_CONTEXT]) {
         view360_restore_inventory();
     }
@@ -258,10 +258,7 @@ void view360_render(void) {
             gr_set_fcolor(WHITE);
             gr_set_font((grs_font *)ResLock(RES_tinyTechFont));
             gr_string_size(update_string, &w, &h);
-            r.ul.x = basex + w + 2;
-            r.ul.y = basey - h - 2;
-            r.lr.x = r.ul.x + gr_string_width(buf);
-            r.lr.y = r.ul.y + h;
+            RECT_FILL(&r, basex + w + 2, basey - h - 2, basex + w + 2 + gr_string_width(buf), basey - h - 2 + h);
             if (!full_game_3d)
                 uiHideMouse(&r);
             res_draw_text(RES_tinyTechFont, buf, r.ul.x, r.ul.y);
@@ -284,7 +281,7 @@ void view360_render(void) {
 
     // Render the 360 view scenes.
     view360_is_rendering = TRUE;
-    for (i = 0; i < NUM_360_CONTEXTS; i++)
+    for (uint8_t i = 0; i < NUM_360_CONTEXTS; i++)
         if (ACTIVE[i]) {
             fr_rend(CONTEXT[i]);
             if (full_game_3d) {
@@ -312,17 +309,17 @@ void view360_render(void) {
 
 void mfd_view360_expose(MFD *mfd, ubyte control) { ACTIVE[mfd->id] = control; }
 
-    // --------------------------
-    // WARE STARTUP/SHUTDOWN CODE
-    // --------------------------
+// --------------------------
+// WARE STARTUP/SHUTDOWN CODE
+// --------------------------
 
-#define MODE_MASK 0xC0
-#define MODE_SHF 6
+#define MODE_MASK 0xC0u
+#define MODE_SHF 6u
 #define VIEW_MODE(s) (((s)&MODE_MASK) >> MODE_SHF)
 #define VIEW_MODE_SET(s, v) ((s) = ((s) & ~MODE_MASK) | ((v) << MODE_SHF))
 
 void view360_turnon(uchar visible, uchar real_stop) {
-    int s = player_struct.hardwarez_status[HARDWARE_360];
+    uint8_t s = player_struct.hardwarez_status[HARDWARE_360];
 
     if (visible) {
         view360_setup_mode(VIEW_MODE(s));
@@ -332,7 +329,6 @@ void view360_turnon(uchar visible, uchar real_stop) {
 }
 
 void view360_turnoff(uchar visible, uchar real_stop) {
-    int i;
     // restore inventory
     if (visible) {
         if (real_stop && ACTIVE[MID_CONTEXT]) {
@@ -348,11 +344,11 @@ void view360_turnoff(uchar visible, uchar real_stop) {
             }
         }
         // empty the mfd slot
-        if (ACTIVE[LEFT_CONTEXT] || ACTIVE[RIGHT_CONTEXT] && real_stop)
+        if ((ACTIVE[LEFT_CONTEXT] || ACTIVE[RIGHT_CONTEXT]) && real_stop)
             mfd_notify_func(MFD_EMPTY_FUNC, MFD_INFO_SLOT, TRUE, MFD_EMPTY, FALSE);
         // turn off all views
-        for (i = 0; i < NUM_360_CONTEXTS; i++) {
-            ACTIVE[i] = FALSE;
+        for (uint8_t i = 0; i < NUM_360_CONTEXTS; i++) {
+            ACTIVE[i] = false;
         }
         if (real_stop)
             play_digi_fx(SFX_VIDEO_DOWN, 1);
@@ -360,9 +356,9 @@ void view360_turnoff(uchar visible, uchar real_stop) {
     view360_render_on = view360_message_obscured = FALSE;
 }
 
-uchar view360_check() {
+bool view360_check() {
     extern uchar hack_takeover;
     if (hack_takeover)
-        return (FALSE);
-    return (TRUE);
+        return false;
+    return true;
 }

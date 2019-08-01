@@ -82,16 +82,16 @@ extern fix fr_camera_last[CAM_COOR_CNT];
 //
 //
 
-#define CAMOBJ_S 0
-#define CAMOBJ_Z 1
+#define CAMOBJ_S 0u
+#define CAMOBJ_Z 1u
 #define CAMOFF_S (CAMOBJ_S + CAMOBJ_Z)
-#define CAMOFF_Z 2
+#define CAMOFF_Z 2u
 #define CAMANG_S (CAMOFF_S + CAMOFF_Z)
-#define CAMANG_Z 2
+#define CAMANG_Z 2u
 #define CAMFLT_S (CAMANG_S + CAMANG_Z)
-#define CAMFLT_Z 1
+#define CAMFLT_Z 1u
 #define CAMMOD_S (CAMFLT_S + CAMFLT_Z)
-#define CAMMOD_Z 1
+#define CAMMOD_Z 1u
 
 //#define MakeCambit(x)   CAMBIT_##x## (((1<<CAM##x##_Z)-1)<<CAM##x##_S)
 //#define MakeCambit(OBJ)
@@ -104,10 +104,10 @@ extern fix fr_camera_last[CAM_COOR_CNT];
 #define CAMBIT_FLT (((1 << CAMFLT_Z) - 1) << CAMFLT_S)
 #define CAMBIT_MOD (((1 << CAMMOD_Z) - 1) << CAMMOD_S)
 
-#define CAMANG_STRAIGHT (0 << CAMANG_S)
-#define CAMANG_LEFT     (1 << CAMANG_S)
-#define CAMANG_BACK     (2 << CAMANG_S)
-#define CAMANG_RIGHT    (3 << CAMANG_S)
+#define CAMANG_STRAIGHT (0u << CAMANG_S)
+#define CAMANG_LEFT     (1u << CAMANG_S)
+#define CAMANG_BACK     (2u << CAMANG_S)
+#define CAMANG_RIGHT    (3u << CAMANG_S)
 
 #define CAMOFF_NORM     (0 << CAMOFF_S)
 #define CAMOFF_ORBIT    (1 << CAMOFF_S)

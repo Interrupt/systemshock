@@ -31,55 +31,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // OBJECT PROPERTIES FLAGS
 
-#define INVENTORY_GENERAL 0x0001
-#define INVENTORY_GENERAL_SHF 0
-#define EDMS_PRESERVE 0x0002
-#define EDMS_PRESERVE_SHF 1
-#define INVENT_USEMODE 0x000C
-#define INVENT_USEMODE_SHF 2
-#define OBJECT_USE_NOCURSOR 0x0010
-#define OBJECT_USE_NOCURSOR_SHIFT 4
+#define INVENTORY_GENERAL 0x0001u
+#define INVENTORY_GENERAL_SHF 0u
+#define EDMS_PRESERVE 0x0002u
+#define EDMS_PRESERVE_SHF 1u
+#define INVENT_USEMODE 0x000Cu
+#define INVENT_USEMODE_SHF 2u
+#define OBJECT_USE_NOCURSOR 0x0010u
+#define OBJECT_USE_NOCURSOR_SHIFT 4u
 
 // RENDER_BLOCK is true if the thing can block the renderer
 // currently only used for doors, where instance bit need be checked
 // as well.
-#define RENDER_BLOCK 0x0020
-#define RENDER_BLOCK_SHF 5
+#define RENDER_BLOCK 0x0020u
+#define RENDER_BLOCK_SHF 5u
 
 // LIGHT_TYPE is for how it should be lit.
 // 0 -- normal, simple lighting applies
 // 1 -- use complicated lighting
 // 2 -- never apply lighting
 // 3 -- consult instance bit to determine whether to light
-#define LIGHT_TYPE 0x00C0
-#define LIGHT_TYPE_SHF 6
+#define LIGHT_TYPE 0x00C0u
+#define LIGHT_TYPE_SHF 6u
 
 // TERRAIN_OBJECT
 // 0 - ignore for terrain
 // 1 - wall-like terrain
 // 2 - complex terrain
 // 3 - unused
-#define TERRAIN_OBJECT 0x0300
-#define TERRAIN_OBJECT_SHF 8
+#define TERRAIN_OBJECT 0x0300u
+#define TERRAIN_OBJECT_SHF 8u
 
 // MY_IM_LARGE
 // Doubles the size of the bitmap when it renders, relative to the source art
-#define MY_IM_LARGE 0x0400
-#define MY_IM_LARGE_SHF 10
+#define MY_IM_LARGE 0x0400u
+#define MY_IM_LARGE_SHF 10u
 
 // terrain will special case terrain damage if this bit is set
-#define SPCL_TERR_DMG 0x0800
-#define SPCL_TERR_DMG_SHT 11
+#define SPCL_TERR_DMG 0x0800u
+#define SPCL_TERR_DMG_SHT 11u
 
 // Class-specific flags go here.
-#define CLASS_FLAGS 0x7000
-#define CLASS_FLAGS_SHF 12
+#define CLASS_FLAGS 0x7000u
+#define CLASS_FLAGS_SHF 12u
 
 // If this bit is set, that class of object is considered "useless", and unless
 // it is specially preserved via USEFUL_FLAG (instance flag) it can be destroyed
 // to make room for others.
-#define USELESS_FLAG 0x8000
-#define USELESS_FLAG_SHF 15
+#define USELESS_FLAG 0x8000u
+#define USELESS_FLAG_SHF 15u
 
 // INSTANCE DATA FLAGS
 #define HUDOBJ_INST_FLAG  0x01 // This is defined redundantly in hudobj.h

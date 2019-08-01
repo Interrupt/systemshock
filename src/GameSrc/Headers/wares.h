@@ -82,8 +82,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define HARDWARE_STATUS         14
 
 // Wacky ware-specific defines
-#define LAMP_MASK 0xC0
-#define LAMP_SHF 6
+#define LAMP_MASK 0xC0u
+#define LAMP_SHF 6u
 #define LAMP_SETTING(status) (((status)&LAMP_MASK) >> LAMP_SHF)
 #define LAMP_SETTING_SET(status, val) ((status) = (((status) & ~LAMP_MASK) | ((val) << LAMP_SHF)))
 #define LAMP_VERSIONS 3
@@ -101,7 +101,7 @@ typedef struct {
     void (*turnon)(uchar visible, uchar real_start); // Function slots for turn on, etc.
     void (*effect)();
     void (*turnoff)(uchar visible, uchar real_stop);
-    uchar (*check)();
+    bool (*check)();
 } WARE;
 
 typedef struct {

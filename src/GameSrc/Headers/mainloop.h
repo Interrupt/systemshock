@@ -55,10 +55,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define chg_get_sta(x)   (_static_change & x)
 #define chg_unset_sta(x) (_static_change &= ~(x))
 
-#define GL_CHG_1    (ML_CHG_BASE << 0)
-#define GL_CHG_2    (ML_CHG_BASE << 1)
-#define GL_CHG_3    (ML_CHG_BASE << 2)
-#define GL_CHG_LOOP (ML_CHG_BASE << 3)
+#define GL_CHG_1    (ML_CHG_BASE << 0u)
+#define GL_CHG_2    (ML_CHG_BASE << 1u)
+#define GL_CHG_3    (ML_CHG_BASE << 2u)
+#define GL_CHG_LOOP (ML_CHG_BASE << 3u)
 
 void mainloop(int argc, char *argv[]);
 void loopmode_switch(short *cmode);
