@@ -46,6 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cit2d.h"
 #include "diffq.h"
 #include "mfdgames.h"
+#include "softdef.h"
 
 #include "sfxlist.h"
 #include "musicai.h"
@@ -243,7 +244,7 @@ errtype mfd_games_init(MFD_Func *m) {
     GamesMenu.ul.y = 1;
     GamesMenu.lr.x = 6;
     GamesMenu.lr.y = 6;
-    player_struct.mfd_func_status[MFD_GAMES_FUNC] |= 1 << 4;
+    player_struct.mfd_func_status[MFD_GAMES_FUNC] |= 1u << 4u;
 
     return OK;
 }
@@ -330,14 +331,11 @@ void mfd_games_expose(MFD *m, ubyte control) {
         mfd_update_rects(m);
     }
 
-    return;
 }
 
 #define MENU_GAMELIST_X 5
 #define MENU_GAMELIST_Y 15
 #define MENU_GAMELIST_DY 7
-
-#define MISC_SOFTWARE_GAMES (TRIP2TY(GAMES_TRIPLE) + NUM_ONESHOT_SOFTWARE)
 
 #define TIME_TIL_SCREEN_SAVE (60 * 30) // 30 fps, 60 frames
 
@@ -367,8 +365,8 @@ static void init_screen_save(menu_state *ms) {
 
 void games_expose_menu(MFD *m, ubyte control) {
     char buf[80];
-    int i;
-    ubyte cur_games = player_struct.softs.misc[MISC_SOFTWARE_GAMES];
+    uint32_t i;
+    ubyte cur_games = player_struct.softs.misc[SOFTWARE_GAMES];
     menu_state *ms = ((menu_state *)GAME_DATA);
     if (!full_game_3d)
         draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
@@ -385,11 +383,10 @@ void games_expose_menu(MFD *m, ubyte control) {
 
         gr_set_fcolor(GREEN_8_BASE + 3);
         for (i = 0; i < NUM_GAMES; i++)
-            if (cur_games & (1 << i))
+            if (cur_games & (1u << i))
                 draw_shadowed_text(STRING(GameName0 + i), MENU_GAMELIST_X + ((i % 2) * ((MFD_VIEW_WID - 10) / 2)),
-                                   MENU_GAMELIST_Y + ((i >> 1) * MENU_GAMELIST_DY));
+                                   MENU_GAMELIST_Y + ((i >> 1u) * MENU_GAMELIST_DY));
     } else {
-        int i;
         if (ms->save_time == TIME_TIL_SCREEN_SAVE) {
             init_screen_save(ms);
             ++ms->save_time;
@@ -436,8 +433,8 @@ void games_expose_menu(MFD *m, ubyte control) {
 
 uchar games_handle_menu(MFD *m, uiEvent *ev) {
     uiMouseEvent *mouse;
-    int game;
-    int cur_games = player_struct.softs.misc[MISC_SOFTWARE_GAMES];
+    uint32_t game;
+    uint32_t cur_games = player_struct.softs.misc[SOFTWARE_GAMES];
 
     if (GAME_MODE == GAME_MODE_MENU)
         ((menu_state *)GAME_DATA)->save_time = 0;
@@ -452,7 +449,7 @@ uchar games_handle_menu(MFD *m, uiEvent *ev) {
     if ((ev->pos.x) - (m->rect.ul.x) > MENU_GAMELIST_X + (MFD_VIEW_WID - 10) / 2)
         game++;
 
-    if (game > NUM_GAMES || ((1 << game) & cur_games) == 0)
+    if (game > NUM_GAMES || ((1u << game) & cur_games) == 0)
         return FALSE;
 
     COOKIE = GAME_COOK(game);
@@ -466,7 +463,7 @@ uchar games_handle_menu(MFD *m, uiEvent *ev) {
     return TRUE;
 }
 
-void games_init_null(void *data) { return; }
+void games_init_null(void *game_state) { }
 
 void games_expose_null(MFD *m, ubyte control) {
     int cur_games = 0xff;
@@ -540,20 +537,23 @@ int generic_ball_and_paddle(void *game_state) {
     if (work_ps->ball_dir_y >= 0)
     // lets see whats up with the player
     {
-        if (work_ps->ball_pos_y - PONG_BALL_YRAD > MFD_VIEW_HGT - PONG_BORDER) { // out the bottom
+        if (work_ps->ball_pos_y - PONG_BALL_YRAD > MFD_VIEW_HGT - PONG_BORDER) {
+            // out the bottom
             return 1;
-        } else if (work_ps->ball_pos_y > MFD_VIEW_HGT - PONG_BORDER - CMP_PADDLE_YRAD * 2 -
-                                             PONG_BALL_YRAD) { // was the player there to deflect it
+        } else if (work_ps->ball_pos_y > MFD_VIEW_HGT - PONG_BORDER - CMP_PADDLE_YRAD * 2 - PONG_BALL_YRAD) {
+            // was the player there to deflect it
             if ((work_ps->ball_pos_x + PONG_BALL_XRAD >= work_ps->p_pos - PLY_PADDLE_XRAD) &&
-                (work_ps->ball_pos_x - PONG_BALL_XRAD <= work_ps->p_pos + PLY_PADDLE_XRAD)) { // we got it, larry
+                (work_ps->ball_pos_x - PONG_BALL_XRAD <= work_ps->p_pos + PLY_PADDLE_XRAD)) {
+                // we got it, larry
                 int nxdir = get_new_x_dir(work_ps->p_pos, work_ps->ball_pos_x);
-                work_ps->ball_dir_y = -work_ps->ball_dir_y; // hmm, does dirx work yet
-                work_ps->ball_dir_x =
-                    (nxdir - work_ps->ball_dir_x) >> 1; // average of reflection and new angle??? is this good?
-                                                        // minus looks good if it hits the edge of the paddle
-                                                        // plus looks good if it hits the middle of the paddle
-                                                        //   hmm... so need average of reflection and new, but
-                                                        //   reflection has different meanings depending where it hit
+                // hmm, does dirx work yet
+                work_ps->ball_dir_y = -work_ps->ball_dir_y;
+                // average of reflection and new angle??? is this good?
+                // minus looks good if it hits the edge of the paddle
+                // plus looks good if it hits the middle of the paddle
+                // hmm... so need average of reflection and new, but
+                // reflection has different meanings depending where it hit
+                work_ps->ball_dir_x = (nxdir - work_ps->ball_dir_x) >> 1u;
                 play_digi_fx(SFX_MFD_SUCCESS, 1);
             }
         }
@@ -591,9 +591,9 @@ void games_run_pong(pong_state *work_ps) {
     if (work_ps->ball_dir_y < 0) // moving towards computer
     {
         if (work_ps->c_pos < work_ps->ball_pos_x - CMP_PADDLE_XRAD) // we are too far left
-            c_des_spd = (((work_ps->ball_pos_x - work_ps->c_pos) >> 4) + 1);
+            c_des_spd = (((work_ps->ball_pos_x - work_ps->c_pos) >> 4u) + 1);
         else if (work_ps->c_pos > work_ps->ball_pos_x + CMP_PADDLE_XRAD)
-            c_des_spd = -(((work_ps->c_pos - work_ps->ball_pos_x) >> 4) + 1);
+            c_des_spd = -(((work_ps->c_pos - work_ps->ball_pos_x) >> 4u) + 1);
     }
     if (work_ps->c_spd > c_des_spd)
         work_ps->c_spd--;
@@ -629,7 +629,7 @@ void games_run_pong(pong_state *work_ps) {
                 int nxdir = get_new_x_dir(work_ps->c_pos, work_ps->ball_pos_x);
                 work_ps->ball_dir_y = -work_ps->ball_dir_y; // hmm, does dirx work yet
                 work_ps->ball_dir_x =
-                    (nxdir - work_ps->ball_dir_x) >> 1; // average of reflection and new angle??? is this good?
+                    (nxdir - work_ps->ball_dir_x) >> 1u; // average of reflection and new angle??? is this good?
                 work_ps->ball_dir_x += rand() % 3 - 1;
                 play_digi_fx(SFX_MFD_SUCCESS, 1);
             }
@@ -638,11 +638,11 @@ void games_run_pong(pong_state *work_ps) {
 }
 
 #define PONG_CYCLE (CIT_CYCLE / 30)
-void games_expose_pong(MFD *m, ubyte tac) {
+void games_expose_pong(MFD *m, ubyte control) {
     pong_state *cur_ps = (pong_state *)GAME_DATA;
     int game_use = NORMAL_DISPLAY;
 
-    if (tac == 0 && score_time > 0)
+    if (control == 0 && score_time > 0)
         score_time = 0;
     // is not true
     if (cur_ps->game_won) {
@@ -658,7 +658,6 @@ void games_expose_pong(MFD *m, ubyte tac) {
         game_use = SCORE_DISPLAY;
         games_time_diff = 0;
     } else {
-        extern uchar games_handle_pong(MFD *, uiEvent *);
         uiEvent fake_event;
 
         for (; games_time_diff >= PONG_CYCLE; games_time_diff -= PONG_CYCLE) {
@@ -673,16 +672,16 @@ void games_expose_pong(MFD *m, ubyte tac) {
         draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
 
     gr_set_fcolor(ORANGE_YELLOW_BASE);
-    ss_rect(cur_ps->c_pos - CMP_PADDLE_XRAD, PONG_BORDER, cur_ps->c_pos + CMP_PADDLE_XRAD,
-            PONG_BORDER + CMP_PADDLE_YRAD * 2);
+    ss_rect(cur_ps->c_pos - CMP_PADDLE_XRAD, PONG_BORDER,
+        cur_ps->c_pos + CMP_PADDLE_XRAD, PONG_BORDER + CMP_PADDLE_YRAD * 2);
 
     gr_set_fcolor(ORANGE_YELLOW_BASE);
     ss_rect(cur_ps->p_pos - PLY_PADDLE_XRAD, MFD_VIEW_HGT - PONG_BORDER - PLY_PADDLE_YRAD * 2,
-            cur_ps->p_pos + PLY_PADDLE_XRAD, MFD_VIEW_HGT - PONG_BORDER);
+        cur_ps->p_pos + PLY_PADDLE_XRAD, MFD_VIEW_HGT - PONG_BORDER);
 
     gr_set_fcolor(GRAY_8_BASE);
     ss_rect(cur_ps->ball_pos_x - PONG_BALL_XRAD, cur_ps->ball_pos_y - PONG_BALL_YRAD,
-            cur_ps->ball_pos_x + PONG_BALL_XRAD, cur_ps->ball_pos_y + PONG_BALL_YRAD);
+        cur_ps->ball_pos_x + PONG_BALL_XRAD, cur_ps->ball_pos_y + PONG_BALL_YRAD);
 
     if (game_use != NORMAL_DISPLAY) {
         char tmp[2] = "V";
@@ -706,11 +705,7 @@ void games_expose_pong(MFD *m, ubyte tac) {
     // autoreexpose
     mfd_notify_func(MFD_GAMES_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
 
-    return;
 }
-
-#define RECTWID(r) ((r).lr.x - (r).ul.x)
-#define RECTHGT(r) ((r).lr.y - (r).ul.y)
 
 #define PONG_FUDGE 10
 
@@ -718,8 +713,8 @@ uchar games_handle_pong(MFD *m, uiEvent *e) {
     pong_state *cur_ps = (pong_state *)GAME_DATA;
     LGPoint pos = MakePoint(e->pos.x - m->rect.ul.x, e->pos.y - m->rect.ul.y);
     ubyte spd = lg_min(3, abs(pos.x - cur_ps->p_pos) / PLY_PADDLE_XRAD + 1);
-    if (pos.x + PONG_FUDGE < 0 || pos.y + PONG_FUDGE < 0 || pos.x >= RECTWID(m->rect) + PONG_FUDGE ||
-        pos.y >= RECTHGT(m->rect) + PONG_FUDGE) {
+    if (pos.x + PONG_FUDGE < 0 || pos.y + PONG_FUDGE < 0 || pos.x >= RectWidth(&m->rect) + PONG_FUDGE ||
+        pos.y >= RectHeight(&m->rect) + PONG_FUDGE) {
         cur_ps->p_spd = 0;
         return TRUE;
     }
@@ -735,16 +730,16 @@ uchar games_handle_pong(MFD *m, uiEvent *e) {
     //----------------------------
     // mfd road game....
 
-#define NO_CAR    0
-#define BAD_CAR   1
-#define SMART_CAR 2
-#define CAR_MASK  3
+#define NO_CAR    0u
+#define BAD_CAR   1u
+#define SMART_CAR 2u
+#define CAR_MASK  3u
 
 #define NORMAL_DISPLAY 0
 #define SCORE_DISPLAY  1
 #define WIN_DISPLAY    2
 
-#define CAR_ROW 6
+#define CAR_ROW 6u
 #define car_hit() (cur_rs->lanes[cur_rs->player_lane] & (CAR_MASK << (CAR_ROW * 2)))
 
 #define HIT_BAD   (BAD_CAR << (CAR_ROW * 2))
@@ -761,12 +756,12 @@ uchar games_handle_pong(MFD *m, uiEvent *e) {
 #define GAME_WON  2
 #define GAME_LOST 4
 
-#define LANE_WID    8
-#define LANE_HEIGHT 6
-#define LANE_ROWS   8
-#define ROAD_TOP    3
-#define CAR_TOP     1
-#define CAR_BOT     4
+#define LANE_WID    8u
+#define LANE_HEIGHT 6u
+#define LANE_ROWS   8u
+#define ROAD_TOP    3u
+#define CAR_TOP     1u
+#define CAR_BOT     4u
 #define ROAD_BOTTOM ROAD_TOP + (LANE_HEIGHT * LANE_ROWS)
 
 #define row_top(y) (ROAD_TOP + (LANE_HEIGHT * y))
@@ -786,7 +781,7 @@ static uchar c_cols[][2] = {
     {BRIGHT_CAR, DIM_CAR}
 };
 
-void games_init_road(void *data) {
+void games_init_road(void *game_state) {
     road_state *cur_rs = (road_state *)GAME_DATA;
     games_time_diff = 0;
     cur_rs->lane_cnt = 3;
@@ -881,16 +876,16 @@ void games_expose_road(MFD *m, ubyte tac) {
 
     { // draw the game here, eh?
         int ledge, i, j;
-        ledge = (MFD_VIEW_WID >> 1) - ((LANE_WID >> 1) * cur_rs->lane_cnt);
+        ledge = (MFD_VIEW_WID >> 1u) - ((LANE_WID >> 1u) * cur_rs->lane_cnt);
         for (i = 0; i < cur_rs->lane_cnt; i++, ledge += LANE_WID) {
             int msk = cur_rs->lanes[i];
             road_vline(ledge, ROAD_TOP, ROAD_BOTTOM, c_cols[0][0], c_cols[0][1]);
-            for (j = 0; j < LANE_ROWS; j++, msk >>= 2)
-                if (msk & 0x3)
-                    road_vline(ledge + (LANE_WID >> 1), row_top(j) + CAR_TOP, row_top(j) + CAR_BOT,
-                               c_cols[(msk & 0x3) - 1][0], c_cols[(msk & 0x3) - 1][1]);
+            for (j = 0; j < LANE_ROWS; j++, msk >>= 2u)
+                if (msk & 0x3u)
+                    road_vline(ledge + (LANE_WID >> 1u), row_top(j) + CAR_TOP, row_top(j) + CAR_BOT,
+                               c_cols[(msk & 0x3u) - 1][0], c_cols[(msk & 0x3u) - 1][1]);
             if (i == cur_rs->player_lane)
-                road_vline(ledge + (LANE_WID >> 1), row_top(CAR_ROW) + CAR_TOP, row_top(CAR_ROW) + CAR_BOT,
+                road_vline(ledge + (LANE_WID >> 1u), row_top(CAR_ROW) + CAR_TOP, row_top(CAR_ROW) + CAR_BOT,
                            c_cols[CAR_IDX][0], c_cols[CAR_IDX][1]);
         }
         road_vline(ledge, ROAD_TOP, ROAD_BOTTOM, c_cols[0][0], c_cols[0][1]);
@@ -937,9 +932,9 @@ uchar games_handle_road(MFD *m, uiEvent *e) {
     //
     // cross between breakout and space invaders
 
-#define BOTS_NUM_ROWS    3
-#define BOTS_NUM_COLUMNS 8
-#define BOTS_MASK ((1 << BOTS_NUM_COLUMNS) - 1)
+#define BOTS_NUM_ROWS    3u
+#define BOTS_NUM_COLUMNS 8u
+#define BOTS_MASK ((1u << BOTS_NUM_COLUMNS) - 1)
 
 #define BOT_WIDTH  8
 #define BOT_HEIGHT 7
@@ -957,8 +952,7 @@ static void bots_reset_ball(bots_state *bs) {
 }
 
 static void bots_reset_level(bots_state *bs) {
-    int i;
-    for (i = 0; i < BOTS_NUM_ROWS; ++i)
+    for (uint8_t i = 0; i < BOTS_NUM_ROWS; ++i)
         bs->rows[i] = BOTS_MASK;
     bs->hpos = 0;
     bs->hspd = 1;
@@ -997,7 +991,8 @@ static int test_bot(bots_state *bs, int x, int y) {
 #define HPOS_HACK 3
 
 void games_run_bots(bots_state *bs) {
-    int rev, guys, i;
+    int rev, guys;
+    uint8_t i;
 
     bs->hpos += bs->hspd;
     // test if we've scrolled a bot off the left
@@ -1030,7 +1025,7 @@ void games_run_bots(bots_state *bs) {
 #else
     if (bs->hpos < 0) {
         for (i = 0; i < BOTS_NUM_COLUMNS; ++i)
-            if (guys & (1 << i))
+            if (guys & (1u << i))
                 break;
         if (i * BOT_WIDTH + HPOS - HPOS_HACK < 0) {
             bs->hpos += 2 * (bs->hspd = -bs->hspd);
@@ -1057,7 +1052,7 @@ void games_run_bots(bots_state *bs) {
 #else
         // so loop through and see whether any bots are offscreen
         for (i = BOTS_NUM_COLUMNS - 1; i >= 0; --i)
-            if (guys & (1 << i))
+            if (guys & (1u << i))
                 break;
         // i is the rightmost bot
         if (HPOS + i * BOT_WIDTH + 3 > MFD_VIEW_WID) {
@@ -1115,7 +1110,6 @@ void games_run_bots(bots_state *bs) {
 void games_expose_bots(MFD *m, uchar control) {
     bots_state *bs = (bots_state *)GAME_DATA;
     uiEvent fake_event;
-    int i, j;
 #ifdef SVGA_SUPPORT
     extern char convert_use_mode;
 #endif
@@ -1129,10 +1123,10 @@ void games_expose_bots(MFD *m, uchar control) {
     if (!full_game_3d)
         draw_res_bm(REF_IMG_bmBlankMFD, 0, 0);
 
-    for (j = 0; j < BOTS_NUM_ROWS; ++j) {
+    for (uint8_t j = 0; j < BOTS_NUM_ROWS; ++j) {
         gr_set_fcolor(WHITE);
-        for (i = 0; i < BOTS_NUM_COLUMNS; ++i) {
-            if (bs->rows[j] & (1 << i)) {
+        for (uint8_t i = 0; i < BOTS_NUM_COLUMNS; ++i) {
+            if (bs->rows[j] & (1u << i)) {
 #ifdef SVGA_SUPPORT
                 draw_res_bm_core(invader[j] + INVADER_TYPES * convert_use_mode, HPOS + BOT_WIDTH * i,
                                  BOT_HEIGHT * j + BOT_TOP - (j == 1), FALSE);
@@ -1155,7 +1149,6 @@ void games_expose_bots(MFD *m, uchar control) {
     // autoreexpose
     mfd_notify_func(MFD_GAMES_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
 
-    return;
 }
 #undef HPOS
 
@@ -1331,7 +1324,7 @@ static void make_random_attacker(void) {
 #endif
 
 static void advance_mcom_state(void) {
-    int i, j;
+    uint32_t i, j;
     uchar silo = FALSE;
     mcom_state *ms = (mcom_state *)GAME_DATA;
     uchar old_quarter = ms->quarter;
@@ -1354,10 +1347,10 @@ static void advance_mcom_state(void) {
     }
 
     // bob the swimmers
-    ms->quarter = (player_struct.game_time / (CIT_CYCLE / 4)) & 3;
+    ms->quarter = (player_struct.game_time / (CIT_CYCLE / 4)) & 3u;
     if (ms->quarter != old_quarter) {
         // bob swimmers down
-        ms->bob |= rand() & ((1 << 6) - 1);
+        ms->bob |= rand() & ((1u << 6u) - 1);
         // bob old swimmers up
         ms->bob &= ~old_bob;
     }
@@ -1382,7 +1375,7 @@ static void advance_mcom_state(void) {
     // of an explosion, kaboom!  otherwise, if it's down at ground level,
     // kaboom, and blow something up too!
     // otherwise just advance it
-    for (i = 0; i < num_attackers; i) {
+    for (i = 0; i < num_attackers;) {
         // check if we've gotten blown up by an explosion
         for (j = 0; j < num_explosions; ++j)
             if (SQRD((int)explode[j].x - (int)attack[i].x / 256) + SQRD((int)explode[j].y - (int)attack[i].y / 256) <=
@@ -1408,11 +1401,11 @@ static void advance_mcom_state(void) {
                     ms->rmissiles = 0;
                     silo = TRUE;
                 }
-                if (ms->guys & (1 << j))
+                if (ms->guys & (1u << j))
                     play_digi_fx(silo ? BOAT_DEATH_NOISE : SWIMMER_DEATH_NOISE, 1);
                 else
                     play_digi_fx(SFX_SPARKING_CABLE, 1);
-                ms->guys &= ~(1 << j);
+                ms->guys &= ~(1u << j);
                 goto blowup;
             } else
                 ++i;
@@ -1420,9 +1413,9 @@ static void advance_mcom_state(void) {
     }
 }
 
-#define ALL_guys 0xff  // binary 11111111
-#define LGUN_FLAG 0x04 // binary 00000100
-#define RGUN_FLAG 0x20 // binary 00100000
+#define ALL_guys 0xffu  // binary 11111111
+#define LGUN_FLAG 0x04u // binary 00000100
+#define RGUN_FLAG 0x20u // binary 00100000
 #define JUST_guys (ALL_guys - LGUN_FLAG - RGUN_FLAG)
 
 static void games_init_mcom(void *game_state) {
@@ -1486,7 +1479,6 @@ static signed char ox[10] = {-3, -1, 1, 3, -2, 0, 2, -1, 1, 0};
 static signed char oy[10] = {1, 1, 1, 1, 3, 3, 3, 5, 5, 7};
 
 static void draw_silo(int x, int num) {
-    int i;
     // bottom row of silo must have room for 4 missiles, so 9 pixels wide
 
     draw_res_bm(REF_IMG_Destroyer, x - 4, GROUND_TOP - 2);
@@ -1499,7 +1491,7 @@ static void draw_silo(int x, int num) {
     num = num % 10;
     if (num == 0)
         num = 10;
-    for (i = 0; i < num; ++i)
+    for (uint32_t i = 0; i < num; ++i)
         ss_rect(x + ox[i], GROUND_TOP + oy[i], x + ox[i] + 1, GROUND_TOP + oy[i] + 1);
 }
 
@@ -1518,7 +1510,8 @@ static void draw_silo(int x, int num) {
 
 static int hack[] = {0, SCORE_PER_GUY_ALIVE, SCORE_PER_GUY_ALIVE, SCORE_PER_GUY_ALIVE * 2};
 static void games_expose_mcom(MFD *m, ubyte control) {
-    int i, k;
+    uint32_t i;
+    int32_t k;
     mcom_state *ms = (mcom_state *)GAME_DATA;
 
     if (!ms->state) {
@@ -1549,10 +1542,10 @@ static void games_expose_mcom(MFD *m, ubyte control) {
 
     // floating guys
     for (i = 0; i < 6; ++i)
-        if ((1 << "\000\001\003\004\006\007"[i]) & ms->guys) {
+        if ((1u << "\000\001\003\004\006\007"[i]) & ms->guys) {
             k = guy_loc(i);
             // now k is the center location of the guy, so now draw the guy
-            draw_res_bm(REF_IMG_LittleGuy, k - 2, GROUND_TOP - 1 + (((1 << i) & ms->bob) != 0));
+            draw_res_bm(REF_IMG_LittleGuy, k - 2, GROUND_TOP - 1 + (((1u << i) & ms->bob) != 0));
         }
 
     // we've drawn all the background, now draw the foreground stuff
@@ -1563,7 +1556,7 @@ static void games_expose_mcom(MFD *m, ubyte control) {
 
     gr_set_fcolor(AQUA_8_BASE + 3);
     if (ms->state == MCOM_WAIT_NEW_GAME) {
-        for (int i = 0; i < 8; ++i) {
+        for (i = 0; i < 8; ++i) {
             char buffer[16];
             if (HISCORE > DIEGO_SCORE) {
                 strncpy(buffer, player_struct.name, 8);
@@ -1606,24 +1599,20 @@ static void games_expose_mcom(MFD *m, ubyte control) {
                 z = guy_WAIT;
             ss_string(STRING(GuyBonus), 12, MFD_VIEW_HGT / 2 + 8);
             sprintf(buffer, "%d",
-                    (hack[ms->guys & 3] + hack[(ms->guys >> 3) & 3] + hack[(ms->guys >> 6) & 3]) * z / guy_WAIT);
+                    (hack[ms->guys & 3u] + hack[(ms->guys >> 3u) & 3u] + hack[(ms->guys >> 6u) & 3u]) * z / guy_WAIT);
             ss_string(buffer, MFD_VIEW_MID - 10, MFD_VIEW_HGT / 2 + 13);
         }
     }
 
-        // draw the incoming missiles
-
-        // ugly hack so the following code is readable
-#define A attack[i]
-
+    // draw the incoming missiles
     for (i = 0; i < num_attackers; ++i) {
         gr_set_fcolor(GREEN_8_BASE + 3);
         if (attack[i].y > (MFD_VIEW_HGT - TRAIL_LENGTH << 8))
-            ss_fix_line(A.x << 8, A.y << 8, A.sx << 16, A.sy << 16);
+            ss_fix_line(attack[i].x << 8u, attack[i].y << 8u, attack[i].sx << 16u, attack[i].sy << 16u);
         else
-            ss_fix_line(A.x << 8, A.y << 8, (A.x + (A.x - (A.sx << 8)) * TRAIL_LENGTH * 256 / (A.y - (A.sy << 8))) << 8,
-                        (A.y + (TRAIL_LENGTH << 8)) << 8);
-#undef A
+            ss_fix_line(attack[i].x << 8u, attack[i].y << 8u,
+                (attack[i].x + (attack[i].x - (attack[i].sx << 8u)) * TRAIL_LENGTH * 256 / (attack[i].y - (attack[i].sy << 8u))) << 8u,
+                (attack[i].y + (TRAIL_LENGTH << 8u)) << 8u);
 
         gr_set_fcolor(GRAY_8_BASE);
         // an incredibly stupid way to plot a pixel!  fix me
@@ -1641,7 +1630,7 @@ static void games_expose_mcom(MFD *m, ubyte control) {
 
     for (i = 0; i < num_explosions; ++i) {
         gr_set_fcolor(GRAY_8_BASE + 8 - radius[explode[i].frame]);
-        ss_int_disk(explode[i].x, explode[i].y, radius[explode[i].frame] << 1);
+        ss_int_disk(explode[i].x, explode[i].y, radius[explode[i].frame] << 1u);
     }
 
     // advance the state of all the objects
@@ -1663,7 +1652,7 @@ static void games_expose_mcom(MFD *m, ubyte control) {
     if (ms->state == MCOM_PLAY_GAME && !ms->enemies && !num_explosions && !num_attackers && !num_missiles) {
         // bonuses
         ms->score += (ms->lmissiles + ms->rmissiles) * SCORE_PER_LEFTOVER_SHOT;
-        ms->score += hack[ms->guys & 3] + hack[(ms->guys >> 3) & 3] + hack[(ms->guys >> 6) & 3];
+        ms->score += hack[ms->guys & 3u] + hack[(ms->guys >> 3u) & 3u] + hack[(ms->guys >> 6u) & 3u];
         ++ms->state;
     }
 
@@ -1893,7 +1882,7 @@ void games_expose_15(MFD *m, ubyte control) {
         if (st->anim_source < MFD_PUZZLE_SQ) {
             if (st->current_frame == PUZZ15_TILE_SIZE) {
                 st->current_frame = 0;
-                dt = (st->anim_dir & 1) ? 1 : -MFD_PUZZLE_SIZE;
+                dt = (st->anim_dir & 1u) ? 1 : -MFD_PUZZLE_SIZE;
                 if (st->anim_dir > 1)
                     dt = -dt;
                 st->movedto = st->anim_source + dt;
@@ -2235,13 +2224,14 @@ void tictactoe_drawwin(ttt_state *st) {
     }
     if (p1.x > 0) {
         ss_int_line(p1.x, p1.y, p2.x, p2.y);
-        lg_sprintf(buf, "%S%S", realwin == st->whoplayer ? REF_STR_YouHave : REF_STR_ComputerHas, REF_STR_Won);
+        sprintf(buf, "%s%s",
+            realwin == st->whoplayer ? (char *)RefGet(REF_STR_YouHave) : (char *)RefGet(REF_STR_ComputerHas),
+            (char *)RefGet(REF_STR_Won));
         draw_shadowed_text(buf, MFD_VIEW_WID - gr_string_width(buf) - 1, 1);
     }
 }
 
 uchar tictactoe_generator(void *pos, int index, bool minimizer_moves) {
-    int i;
     tictactoe *t = (tictactoe *)pos;
     uchar empty = TRUE;
     uchar mover = minimizer_moves ? O : X;
@@ -2253,7 +2243,7 @@ uchar tictactoe_generator(void *pos, int index, bool minimizer_moves) {
 
 #define NO_SYMMETRIES
 #ifdef NO_SYMMETRIES
-    for (i = 0; empty && i < 9; i++) {
+    for (uint8_t i = 0; empty && i < 9; i++) {
         if (t->owner[i] != NOBODY)
             empty = FALSE;
     }
@@ -2276,7 +2266,7 @@ uchar tictactoe_generator(void *pos, int index, bool minimizer_moves) {
     }
 #endif
 
-    for (i = 0; i < 9; i++) {
+    for (uint8_t i = 0; i < 9; i++) {
         if (t->owner[i] == NOBODY) {
             if (index == 0) {
                 t->owner[i] = mover;
@@ -2476,108 +2466,6 @@ static int wing_damage_amount[] = {20, 1,
 #define WING_PHASES 4
 
 #define WING_NUM_MISSIONS 13
-
-#if 0
-
-//
-// Wing text stuff.
-// We'll put 'em into cybstring when the whole thing is approved.
-//
-static char *wing_briefing[WING_NUM_MISSIONS+1] = {
-// 1234567890123456789 1234567890123456789 1234567890123456789 12345678901234567890
-  "A routine patrol for you, Captain Boopoototoka. Take Gypsy as wing.",
-  "An X Industries base in this sector is under attack. You and Kludge help out.",
-  "We're jumping outsector. Go with Kalimus and clear the jump point.",
-  "You've got a solo patrol today. We don't expect anyone's around.",
-  "You and Ghandi can go look for those supposed Tri-Lackys.",
-  "Random's the only one who'll fly with you.  Do some reconnaissance.",
-  "We're hitting the anvil factory. Clear out their guards with Newt.",
-  "Without anvils, the TriLacky are in retreat.  Take Lucifer and clean up.",
-  "You and St. Theresa should help kick the Cabal while they're down.",
-  "I want Eyesnack, Miles, and Boopoototoka to take 'em out.",
-  "We're in Tiger Sector. You and Harpo see what's up.",
-  "We're pressing to the sector's heart.  Let's send everyone at once.",
-  "Why don't you just finish off their navy by yourself, Bjorn?",
-  "wiped out the TriLacky Cabal and won the war. Now we're all out of jobs."
-};
-static char *wing_debriefing[WING_NUM_MISSIONS] = {
-  "Well done, Bjorn. I wonder what those pirates were doin' here.",
-  "Well, we've stopped the pirates from sabotaging X. Good work.",
-  "We've succeeded in jumping to Scary sector. Nothing to worry about here.",
-  "No way are the Tri-Lacky here. Next time use your flight recorder!",
-  "Ghandi didn't see anything. You forgot to take off your lens cap.", 
-  "Tri-Lacky here! Who'd've believed it? With an anvil factory to boot.",
-  "Excellent work. We're jumping to help up mop up Spilt Milk Sector.",
-  "Good job, Bjorn. The TriLackys are running to their mothers.",
-  "We've learned there's a TriLacky strike force hiding out here.",
-  "I'm sure the Cabal is crying over Spilt Milk. Now we join the front line.", 
-  "Well, I doubt they deciphered your coded transmissions, at least.",
-  "Good show. Now we're approaching the Cabal's homeworld.",
-  "Congratulations, Bjorn, err, Admiral Boopoototoka. You've single-handedly",
-};
-static char *wing_sighted[WING_NUM_MISSIONS] = {
-  "They're attacking us, sir.",
-  "I have enemies on my scanner.",
-  "Easy pickings.",
-  "",
-  "Must we resort to violence?",
-  "We got some Try-Unlucky here.",
-  "Cabal sighted.",
-  "Lost souls ahead.",
-  "Visitors! And my place is a mess.",
-  "We've got company.",
-  "<Honk><honk><honk>!",
-  "There sure is a lot of 'em.'",
-  ""
-};
-static char *wing_dies[WING_NUM_MISSIONS] = {
-  "Ahhhhhhhhhhhhhhh!",
-  "System integrity failure.",
-  "Nice knowing you.",
-  "",
-  "You're the traitor!", 
-  "You good-for-nothing...",
-  "Into the volcano!",
-  "I am consigned to the flames.",
-  "Mewmewmewmew...",
-  "Where's the eject button?",
-  "<Honk..>",
-  "Ahhhhhhhhhhhhhhh!",
-  ""
-};
-static char *wing_attack[WING_NUM_MISSIONS] = {
-  "Engaging enemy, sir.",
-  "Enemy destruction commencing.",
-  "What a way to meet people.",
-  "",
-  "That's against my principles.",
-  "You don't have to tell me twice.",
-  "Eat my flames!",
-  "Sinful.",
-  "Sure, I'll be aggressive.",
-  "Leave it to us.",
-  "<Honk><honk>",
-  "Into the hairball!",
-  ""
-};
-static char *wing_form[WING_NUM_MISSIONS] = {
-  "Forming on your wing.",
-  "Undertaking requested maneuver.",
-  "As you wish.",
-  "",
-  "Whatever.",
-  "If you insist.",
-  "There is no Cabal.",
-  "By your command.",
-  "Bless you.",
-  "We're with you.",
-  "<Honk>",
-  "Be your'n, Bjorn.",
-  ""
-};
-
-#endif
-
 #define GHANDI_LEVEL(x) ((x) >= 4 * WING_PHASES && (x) < 5 * WING_PHASES)
 
 // Wing commander "levels"
@@ -2704,7 +2592,7 @@ static wing_obj *wing_find_nearest(wing_obj *w, int mask) {
     d = 0x7fffffff;
 
     for (i = 0; i < num_wing_objects; ++i) {
-        if ((1 << wing[i].type) & mask) {
+        if ((1u << wing[i].type) & mask) {
             if (wing[i].type == WING_WINGMAN && GHANDI_LEVEL(wing_level))
                 continue;
             e = man_guy(w, &wing[i]) + (rand() % fix_make(4, 0));
@@ -3299,7 +3187,7 @@ static void wing_start_minor_level(void) {
                 wing[j].dz = (rand() % 512 - 256) * 256;
             }
         }
-        n >>= 3;
+        n >>= 3u;
         ++t;
     }
 
@@ -3460,7 +3348,7 @@ uchar games_handle_wing(MFD *m, uiEvent *e) {
     return TRUE;
 }
 
-void games_init_wing(void *data) {
+void games_init_wing(void *game_state) {
     int i;
     wing_level = QUESTVAR_GET(WING_QUEST_VAR);
     wing_game_mode = WING_BRIEFING;
