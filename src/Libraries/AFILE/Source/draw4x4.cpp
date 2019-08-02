@@ -107,7 +107,7 @@ void Draw4x4(uchar* p, int width, int height)
     uchar* bits = grd_canvas->bm.bits;
 
     int row4 = row * 4;                                 // mov     dword [esp+0x29C], eax
-    uint aligned_height = height & ~4;                  // mov     dword [esp+0x2A8], eax
+    uint aligned_height = height & ~3;                  // mov     dword [esp+0x2A8], eax
     int esp_2B0 = esp_2AC * 4;                          // mov     dword [esp+0x2B0], eax
     uint y = 0;                                         // mov     dword [esp+0x2A0], ecx
     if (aligned_height)
