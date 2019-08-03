@@ -7,6 +7,9 @@ set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS ON)
 
 # Required for stdbool.h
 set(CMAKE_C_STANDARD 99)
+# For nullptr in C++
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # hide Windows console in distributable packages
 if(DEFINED ENV{APPVEYOR})
