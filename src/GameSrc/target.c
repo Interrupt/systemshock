@@ -279,7 +279,7 @@ void mfd_target_expose(MFD *m, ubyte control) {
                                            TRUE, TRUE);
                 //            else
                 //               gr_string_size(get_temp_string(REF_STR_TargRange),&siz.x,&siz.y);
-                lg_sprintf(rstr, "%2.2fm", dist);
+                sprintf(rstr, "%2.2fm", fix_float(dist));
                 // lx used as dummy variable here, before we really need it.
                 gr_string_size(rstr, &x, &lx);
                 x = LEFT_MARGIN + siz.x + RNG_FIELD - x;

@@ -681,7 +681,7 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
         if (ID2TRIP(id) == MAPNOTE_TRIPLE) {
             char buf[80];
 
-            lg_sprintf(buf, "\"%s\"", amap_note_string(id));
+            sprintf(buf, "\"%s\"", amap_note_string(id));
             message_info(buf);
             retval = TRUE;
         }

@@ -181,7 +181,7 @@ void compute_hud_var(HudLine *hl) {
 
     switch (hl->hudvar_id) {
     case 1:
-        lg_sprintf(text, get_temp_string(REF_STR_ShodanHud),
+        sprintf(text, get_temp_string(REF_STR_ShodanHud),
                    QUESTVAR_GET(0x10 + player_struct.level) * 100 /
                        player_struct.initial_shodan_vals[player_struct.level]);
         break;
@@ -229,14 +229,14 @@ void compute_hud_var(HudLine *hl) {
     case 8: // enviro suit absorption
     {
         extern short enviro_edrain_rate, enviro_absorb_rate;
-        lg_sprintf(s, get_temp_string(REF_STR_EnviroAbsorb), enviro_absorb_rate);
+        sprintf(s, get_temp_string(REF_STR_EnviroAbsorb), enviro_absorb_rate);
         len += strlen(s);
         break;
     }
     case 9: // enviro suit energy drain
     {
         extern short enviro_edrain_rate, enviro_absorb_rate;
-        lg_sprintf(s, get_temp_string(REF_STR_EnviroDrain), enviro_edrain_rate);
+        sprintf(s, get_temp_string(REF_STR_EnviroDrain), enviro_edrain_rate);
         len += strlen(s);
         break;
     }

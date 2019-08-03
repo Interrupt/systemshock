@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <keydefs.h>
 #include <musicai.h>       // for stop_digi_fx()
 */
-int loadcount = 0;
+uint32_t loadcount = 0;
 
 extern Id critter_id_table[NUM_CRITTER][NUM_CRITTER_POSTURES];
 extern Id posture_bases[];
