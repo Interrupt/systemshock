@@ -1,6 +1,6 @@
 #ifdef USE_OPENGL
 
-#include <stdio.h>
+#include <cstdio>
 #include "OpenGL.h"
 
 #ifdef _WIN32
@@ -37,7 +37,6 @@ extern "C" {
 
     extern SDL_Renderer *renderer;
     extern SDL_Palette *sdlPalette;
-    extern uint _fr_curflags;
 }
 
 #include <map>
@@ -176,14 +175,14 @@ static void bind_texture(GLuint tex) {
 
 static GLuint compileShader(GLenum type, const char *source) {
     GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &source, NULL);
+    glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
 
     GLint status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
         char buffer[512];
-        glGetShaderInfoLog(shader, 512, NULL, buffer);
+        glGetShaderInfoLog(shader, 512, nullptr, buffer);
         ERROR("Error compiling shader: %s", buffer);
         return 0;
     }
@@ -199,7 +198,7 @@ static GLuint loadShader(GLenum type, const char *filename) {
     sprintf(fb, "shaders/%s", filename);
 
     FILE* file = fopen(fb, "r");
-    if(file == NULL) {
+    if(file == nullptr) {
         ERROR("Could not open shader file %s!", fb);
         return 0;
     }
@@ -228,7 +227,7 @@ static int CreateShader(const char *vertexShaderFile, const char *fragmentShader
 
     if(vertShader == 0 || fragShader == 0) {
         ERROR("Could not create shader %s : %s", vertexShaderFile, fragmentShaderFile);
-        context = NULL;
+        context = nullptr;
         return 1; // Error!
     }
 
@@ -254,7 +253,7 @@ static int CreateShader(const char *vertexShaderFile, const char *fragmentShader
 }
 
 static FrameBuffer CreateFrameBuffer(int width, int height) {
-    FrameBuffer newBuffer;
+    FrameBuffer newBuffer{};
     newBuffer.width = width;
     newBuffer.height = height;
 
@@ -269,13 +268,13 @@ static FrameBuffer CreateFrameBuffer(int width, int height) {
 
     glGenTextures(1, &newBuffer.texture);
     glBindTexture(GL_TEXTURE_2D, newBuffer.texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newBuffer.texture, 0);
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if(status != GL_FRAMEBUFFER_COMPLETE) {
         ERROR("Could not make FrameBuffer!: %x \n", status);
-        context = NULL;
+        context = nullptr;
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -285,7 +284,7 @@ static FrameBuffer CreateFrameBuffer(int width, int height) {
 }
 
 static void BindFrameBuffer(FrameBuffer *buffer) {
-    if(buffer == NULL) {
+    if(buffer == nullptr) {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
     }
@@ -300,14 +299,14 @@ int init_opengl() {
     DEBUG("Initializing OpenGL");
 
     // Are we running in OpenGL mode?
-    if(SDL_GL_GetCurrentContext() == NULL) {
+    if(SDL_GL_GetCurrentContext() == nullptr) {
         ERROR("No OpenGL context! Falling back to Software mode.");
         return 1;
     }
 
     // Can we create the world rendering context?
     context = SDL_GL_CreateContext(window);
-    if(context == NULL) {
+    if(context == nullptr) {
         ERROR("Could not create an OpenGL context! Falling back to Software mode.");
         return 1;
     }
@@ -331,7 +330,7 @@ int init_opengl() {
     glGenTextures(1, &dynTexture);
 
     // Did the setup go okay?
-    if(context == NULL) {
+    if(context == nullptr) {
         ERROR("OpenGL could not be initialized, falling back to Software mode.");
         return 1;
     }
@@ -380,16 +379,16 @@ void opengl_resize(int width, int height) {
     extern uchar wrapper_screenmode_hack;
     if(wrapper_screenmode_hack) {
         render_run();
-        wrapper_screenmode_hack = FALSE;
+        wrapper_screenmode_hack = false;
     }
 }
 
 void opengl_change_palette() {
-    palette_dirty = TRUE;
+    palette_dirty = true;
 }
 
 bool can_use_opengl() {
-    return context != NULL;
+    return context != nullptr;
 }
 
 bool use_opengl() {
@@ -408,8 +407,8 @@ void opengl_end_frame() {
     SDL_GL_MakeCurrent(window, context);
 
     // Done rendering to the frame buffer, reset back to normal
-    BindFrameBuffer(NULL);
-    palette_dirty = FALSE;
+    BindFrameBuffer(nullptr);
+    palette_dirty = false;
 }
 
 static void updatePalette(SDL_Palette *palette, bool transparent) {
@@ -555,7 +554,7 @@ static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
         bind_texture(toCache.texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, toCache.converted->pixels);
 
-        texturesByBitsPtr[ (uint64_t)bm->bits | ((uint64_t)bm->w<<32) | ((uint64_t)bm->h<<48) ] = toCache;
+        texturesByBitsPtr[ (uint64_t)bm->bits | ((uint64_t)bm->w<<32u) | ((uint64_t)bm->h<<48u) ] = toCache;
         return true;
     }
 
@@ -567,31 +566,31 @@ static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
 }
 
 static CachedTexture* opengl_get_texture(grs_bitmap *bm) {
-    std::map<uint64_t, CachedTexture>::iterator iter = texturesByBitsPtr.find( (uint64_t)bm->bits | ((uint64_t)bm->w<<32) | ((uint64_t)bm->h<<48) );
+    auto iter = texturesByBitsPtr.find( (uint64_t)bm->bits | ((uint64_t)bm->w << 32u) | ((uint64_t)bm->h << 48u) );
     if (iter != texturesByBitsPtr.end()) {
         return &iter->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 void opengl_clear_texture_cache() {
-    if(texturesByBitsPtr.size() == 0)
+    if(texturesByBitsPtr.empty())
         return;
 
     DEBUG("Clearing OpenGL texture cache.");
 
     SDL_GL_MakeCurrent(window, context);
 
-    std::map<uint64_t, CachedTexture>::iterator iter;
-    for(iter = texturesByBitsPtr.begin(); iter != texturesByBitsPtr.end(); iter++) {
-        CachedTexture ct = iter->second;
-        if(!ct.locked) { // don't free locked surfaces
-            SDL_FreeSurface(ct.bitmap);
-            SDL_FreeSurface(ct.converted);
+    for(auto iter = texturesByBitsPtr.begin(); iter != texturesByBitsPtr.end();) {
+        // don't free locked surfaces
+        if (!iter->second.locked) {
+            SDL_FreeSurface(iter->second.bitmap);
+            SDL_FreeSurface(iter->second.converted);
+            glDeleteTextures(1, &iter->second.texture);
 
-            glDeleteTextures(1, &ct.texture);
-
-            texturesByBitsPtr.erase(iter);
+            iter = texturesByBitsPtr.erase(iter);
+        } else {
+            iter++;
         }
     }
 }
@@ -617,14 +616,14 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
     SDL_Surface *rgba = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
 
     // Cache this new surface.
-    CachedTexture ct;
+    CachedTexture ct{};
     ct.bitmap = surface;
     ct.converted = rgba;
     ct.lastDrawTime = *tmd_ticks;
     ct.locked = locked;
 
     bool cached = opengl_cache_texture(ct, bm);
-    if(!cached) {
+    if (!cached) {
         DEBUG("Not enough room to cache texture!");
         SDL_FreeSurface(surface);
         SDL_FreeSurface(rgba);
@@ -634,7 +633,7 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
 void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm) {
     if (idx < NUM_LOADED_TEXTURES) {
         CachedTexture* t = opengl_get_texture(bm);
-        if(t == NULL) {
+        if(t == nullptr) {
             convert_texture(bm, true);
         }
         else {
@@ -647,7 +646,7 @@ void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm) {
 
 static void set_texture(grs_bitmap *bm) {
     CachedTexture* t = opengl_get_texture(bm);
-    if(t == NULL) {
+    if (t == nullptr) {
         // Not cached, have to make it
         convert_texture(bm, false);
         return;
@@ -655,11 +654,11 @@ static void set_texture(grs_bitmap *bm) {
 
     bool isDirty = false;
 
-    if(t->locked) {
+    if (t->locked) {
         // Locked surfaces only need to update once
         if(palette_dirty && t->lastDrawTime != *tmd_ticks) {
             SDL_SetSurfacePalette(t->bitmap, transparentPalette); // Walls should show stars
-            SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+            SDL_BlitSurface(t->bitmap, nullptr, t->converted, nullptr);
 
             isDirty = true;
         }
@@ -675,7 +674,7 @@ static void set_texture(grs_bitmap *bm) {
         }
 
         setPaletteForBitmap(bm, t->bitmap);
-        SDL_BlitSurface(t->bitmap, NULL, t->converted, NULL);
+        SDL_BlitSurface(t->bitmap, nullptr, t->converted, nullptr);
 
         isDirty = true;
     }
@@ -701,7 +700,7 @@ static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttr
         // Ugly hack: We don't get the original light value, so we have to
         // recalculate it from the offset into the global lighting lookup
         // table.
-        uchar* clut = (uchar*)gr_get_fill_parm();
+        auto* clut = (uint8_t *)gr_get_fill_parm();
         light = 1.0f - (clut - grd_screen->ltab) / 4096.0f;
     }
 
@@ -875,7 +874,7 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
 void opengl_set_stencil(int v) {
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-    glStencilFunc(GL_ALWAYS, v, ~0);
+    glStencilFunc(GL_ALWAYS, v, ~0u);
 }
 
 void opengl_begin_stars() {
@@ -889,7 +888,7 @@ void opengl_begin_stars() {
 
     // Only draw stars where the stencil value is 0xFF (Sky!)
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-    glStencilFunc(GL_EQUAL, 0xFF, ~0);
+    glStencilFunc(GL_EQUAL, 0xFF, ~0u);
 
     set_blend_mode(true);
 
@@ -940,14 +939,14 @@ int opengl_draw_star(fix star_x, fix star_y, int c, bool anti_alias) {
 }
 
 void opengl_begin_sensaround(uchar version) {
-    if(version == 1) {
+    if (version == 1) {
         // Version 1 of the sensaround is old tech, and should render in software mode :D
-        opengl_enabled = FALSE;
+        opengl_enabled = false;
     }
 }
 
 void opengl_end_sensaround() {
-    opengl_enabled = TRUE;
+    opengl_enabled = true;
 }
 
 #endif // USE_OPENGL
