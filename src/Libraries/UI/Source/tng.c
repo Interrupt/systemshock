@@ -380,11 +380,7 @@ uchar tng_cb_mousemove(TNG *ptng, LGPoint loc)
    {
       if (tngcb->event_type == TNG_EVENT_MOUSE_MOVE)
       {
-<<<<<<< fa6df005a37aba54d59864da1a3749ec6234a5ce
-	  ptng->cb_data = (intptr_t)&loc;
-=======
-	ptng->cb_data = (intptr_t)&loc;
->>>>>>> Compiles in 64-bit configuration. Runs the intro movie (somewhat corrupted). Crashes on starting a game.
+          ptng->cb_data = (intptr_t)&loc;
          newret = tngcb->cb(ptng->ui_data, tngcb->user_data);
          if (newret)
             retval = newret;

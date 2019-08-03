@@ -617,7 +617,7 @@ void PrintWinStats(void)
 
   y += 4;
 
-  sprintf(buf, "TIME: %lu", player_struct.game_time);
+  sprintf(buf, "TIME: %u", player_struct.game_time);
   gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
   sprintf(buf, "KILLS: %d", player_struct.num_victories);
