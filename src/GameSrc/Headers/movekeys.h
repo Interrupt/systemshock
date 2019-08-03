@@ -18,6 +18,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #define MAX_MOVE_KEYBINDS  256
 
+#define CODE_Q         0x0C
+#define CODE_W         0x0D
+#define CODE_E         0x0E
+#define CODE_A         0x00
+#define CODE_S         0x01
+#define CODE_D         0x02
+#define CODE_Z         0x06
+#define CODE_X         0x07
+#define CODE_C         0x08
+#define CODE_R         0x0F
+#define CODE_V         0x09
+#define CODE_ENTER     0x24
+#define CODE_J         0x26
+#define CODE_SPACE     0x31
+#define CODE_UP        0x7E
+#define CODE_LEFT      0x7B
+#define CODE_RIGHT     0x7C
+#define CODE_DOWN      0x7D
+#define CODE_KP_ENTER  0x4C
+#define CODE_KP_HOME   0x59
+#define CODE_KP_UP     0x5B
+#define CODE_KP_PGUP   0x5C
+#define CODE_KP_LEFT   0x56
+#define CODE_KP_5      0x57
+#define CODE_KP_RIGHT  0x58
+#define CODE_KP_END    0x53
+#define CODE_KP_DOWN   0x54
+#define CODE_KP_PGDN   0x55
+
 typedef struct MOVE_KEYBIND_STRUCT {int code, move;} MOVE_KEYBIND;
 
 enum

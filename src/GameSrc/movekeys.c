@@ -163,6 +163,9 @@ uchar parse_motion_key(ushort code, short *cnum, short *cval) {
         *cnum = CONTROL_XYROT;
         *cval = CONTROL_MAX_VAL / 2;
         break;
+    default:
+        // Unhandled movement. What I gonna do?
+        ;
     }
 
     return *cnum != -1;
@@ -255,6 +258,9 @@ uchar parse_motion_key_cyber(ushort code, short *cnum, short *cval) {
         *cnum = CONTROL_XYROT;
         *cval = -CONTROL_MAX_VAL;
         break;
+    default:
+        // Unhandled movement. What I gonna do?
+        ;
     }
 
     return *cnum != -1;
@@ -262,23 +268,23 @@ uchar parse_motion_key_cyber(ushort code, short *cnum, short *cval) {
 
 // always poll these codes; see init_motion_polling() below
 static int always_motion_poll[] = {
-    0x7E, // up arrow
-    0x7D, // down arrow
-    0x7B, // left arrow
-    0x7C, // right arrow
-    0x59, // keypad home
-    0x5B, // keypad up
-    0x5C, // keypad pgup
-    0x56, // keypad left
-    0x57, // keypad 5
-    0x58, // keypad right
-    0x53, // keypad end
-    0x54, // keypad down
-    0x55, // keypad pgdn
-    0x4C, // keypad enter
-    0x24, // enter
+    CODE_UP,       // up arrow
+    CODE_DOWN,     // down arrow
+    CODE_LEFT,     // left arrow
+    CODE_RIGHT,    // right arrow
+    CODE_KP_HOME,  // keypad home
+    CODE_KP_UP,    // keypad up
+    CODE_KP_PGUP,  // keypad pgup
+    CODE_KP_LEFT,  // keypad left
+    CODE_KP_5,     // keypad 5
+    CODE_KP_RIGHT, // keypad right
+    CODE_KP_END,   // keypad end
+    CODE_KP_DOWN,  // keypad down
+    CODE_KP_PGDN,  // keypad pgdn
+    CODE_KP_ENTER, // keypad enter
+    CODE_ENTER,    // enter
 
-    255 // signal end of list
+    255            // signal end of list
 };
 
 void init_motion_polling(void) {
@@ -329,8 +335,15 @@ void init_motion_polling(void) {
 void setup_motion_polling(void) { LG_memset(poll_controls, 0, sizeof(poll_controls)); }
 
 void process_motion_keys(void) {
-    physics_set_player_controls(KEYBD_CONTROL_BANK, poll_controls[0], poll_controls[1], poll_controls[2],
-                                poll_controls[3], poll_controls[4], poll_controls[5]);
+    physics_set_player_controls(
+        KEYBD_CONTROL_BANK,
+        poll_controls[CONTROL_XVEL],
+        poll_controls[CONTROL_YVEL],
+        poll_controls[CONTROL_ZVEL],
+        poll_controls[CONTROL_XYROT],
+        poll_controls[CONTROL_YZROT],
+        poll_controls[CONTROL_XZROT]
+        );
 }
 
 uchar motion_keycheck_handler(uiEvent *ev, LGRegion *r, void *data) {
@@ -350,7 +363,7 @@ uchar motion_keycheck_handler(uiEvent *ev, LGRegion *r, void *data) {
     }
 
     if (moveOK) {
-        if (global_fullmap->cyber && parse_motion_key_cyber(cooked, &cnum, &cval) ||
+        if ((global_fullmap->cyber && parse_motion_key_cyber(cooked, &cnum, &cval)) ||
             parse_motion_key(cooked, &cnum, &cval)) {
             if (abs(poll_controls[cnum]) < abs(cval))
                 poll_controls[cnum] = cval;
