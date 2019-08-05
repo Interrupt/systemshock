@@ -350,13 +350,13 @@ uchar map_set_default(FullMap *fmap);
 void map_init(void);
 void map_free(void);
 
-#define DEFAULT_XSHF 6
-#define DEFAULT_YSHF 6
-#define DEFAULT_ZSHF 3
+#define DEFAULT_XSHF 6u
+#define DEFAULT_YSHF 6u
+#define DEFAULT_ZSHF 3u
 
 #ifndef MAP_RESIZING
-#define fm_x_sz(fm_ptr)   (1 << DEFAULT_XSHF)
-#define fm_y_sz(fm_ptr)   (1 << DEFAULT_YSHF)
+#define fm_x_sz(fm_ptr)   (1u << DEFAULT_XSHF)
+#define fm_y_sz(fm_ptr)   (1u << DEFAULT_YSHF)
 #define fm_x_shft(fm_ptr) (DEFAULT_XSHF)
 #define fm_y_shft(fm_ptr) (DEFAULT_YSHF)
 #else
@@ -389,7 +389,7 @@ void map_free(void);
 #define MAP_ROWS 64
 #define MAP_COLS 64
 
-#define SLOPE_TOTAL 5
+#define SLOPE_TOTAL 5u
 #define SLOPE_SHIFT MAP_ZSHF
 #define SLOPE_SHIFT_U SLOPE_SHIFT
 #define SLOPE_SHIFT_D (SLOPE_TOTAL - SLOPE_SHIFT_U)
@@ -414,7 +414,7 @@ void map_free(void);
 #define obj_angle_from_fix(fixval)    (fix_int(fix_div((fixval), fix_2pi) * 255))
 #define obj_angle_from_fixang(fixval) (fix_div((fixval), FIXANG_PI) >> 9)
 #define fix_from_obj_coord(sval)      ((fix)sval << 8)
-#define fix_from_obj_height(oid)      ((fix)objs[(oid)].loc.z << (8 + SLOPE_SHIFT_D))
+#define fix_from_obj_height(oid)      ((fix)objs[(oid)].loc.z << (8u + SLOPE_SHIFT_D))
 #define fix_from_obj_height_val(hval) (hval << (8 + SLOPE_SHIFT_D))
 #define fix_from_obj_angle(byteval)   ((255 - fix_make(byteval, 0)) / 64)
 #endif

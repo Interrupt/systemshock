@@ -34,19 +34,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // RELEVANT DIMENSIONS FOR MFD REGIONS
 // Geography of the MFD view windows
-#define MFD_VIEW_LFTX   8
-#define MFD_VIEW_RGTX 237
-#define MFD_VIEW_WID   74
-#define MFD_VIEW_Y    139
-#define MFD_VIEW_HGT   58
+#define MFD_VIEW_LFTX   8u
+#define MFD_VIEW_RGTX 237u
+#define MFD_VIEW_WID   74u
+#define MFD_VIEW_Y    139u
+#define MFD_VIEW_HGT   58u
 
 // Geography of the MFD button panels
-#define MFD_BTTN_LFTX   0
-#define MFD_BTTN_RGTX 314
-#define MFD_BTTN_WID    6
-#define MFD_BTTN_Y    138
-#define MFD_BTTN_HGT   51 // 62
-#define MFD_BTTN_SZ     9
-#define MFD_BTTN_BLNK   2
+#define MFD_BTTN_LFTX   0u
+#define MFD_BTTN_RGTX 314u
+#define MFD_BTTN_WID    6u
+#define MFD_BTTN_Y    138u
+#define MFD_BTTN_HGT   51u // 62
+#define MFD_BTTN_SZ     9u
+#define MFD_BTTN_BLNK   2u
 
 #endif // __MFDDIMS_H

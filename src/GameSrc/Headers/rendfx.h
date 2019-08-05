@@ -24,13 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SHODAN_CONQUER_REF REF_IMG_bmSHODANEndgame
 #define SHODAN_FULLSCRN_CONQUER_REF REF_IMG_bmSHODANEndgameFull
 #define SHODAN_BITMASK_SIZE (320 * 200)
-#define SHODAN_INTERVAL CIT_CYCLE >> 4
+#define SHODAN_INTERVAL (CIT_CYCLE >> 4u)
 
 #define LOWER_SHODAN_X (full_game_3d) ? 15 : 5
 #define UPPER_SHODAN_X (full_game_3d) ? 305 : 263
 #define LOWER_SHODAN_Y (full_game_3d) ? 15 : 5
 #define UPPER_SHODAN_Y (full_game_3d) ? 185 : 108
 
-#define SHODAN_CONQUER_GET(arr, i) (arr[i >> 3] & (1 << (i & 0x7)))
-#define SHODAN_CONQUER_SET(arr, i) (arr[i >> 3] |= (1 << (i & 0x7)))
-#define SHODAN_CONQUER_UNSET(arr, i) (arr[i >> 3] &= ~(1 << (i & 0x7)))
+#define SHODAN_CONQUER_GET(arr, i) (arr[i >> 3u] & (1u << (i & 0x7u)))
+#define SHODAN_CONQUER_SET(arr, i) (arr[i >> 3u] |= (1u << (i & 0x7u)))
+#define SHODAN_CONQUER_UNSET(arr, i) (arr[i >> 3u] &= ~(1u << (i & 0x7u)))

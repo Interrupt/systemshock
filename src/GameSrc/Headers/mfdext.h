@@ -61,8 +61,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MFD_NOSAVEREST     0x08 // don't save/restore me.
 
 // Flags for Expose Control
-#define MFD_EXPOSE      0x01
-#define MFD_EXPOSE_FULL 0x02
+#define MFD_EXPOSE      0x01u
+#define MFD_EXPOSE_FULL 0x02u
 
 // Type of each MFD slot
 #define MFD_WEAPON_SLOT  0

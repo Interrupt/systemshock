@@ -32,9 +32,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SOFTWARE_FAKEID 1
 #define SOFTWARE_DECOY  2
 #define SOFTWARE_RECALL 3
+#define SOFTWARE_GAMES  4
 
 #define SOFTWARE_FILTER   4
 #define SOFTWARE_MONITOR  5
 #define SOFTWARE_IDENTIFY 6
 #define SOFTWARE_TRACE    7
 #define SOFTWARE_TOGGLE   8
+
+// ORing combination
+#define GAME_PING       0b00000001u
+#define GAME_EEL_ZAPPER 0b00000010u
+#define GAME_ROAD       0b00000100u
+#define GAME_BOTBOUNCE  0b00001000u
+#define GAME_15         0b00010000u
+#define GAME_TRIPTOE    0b00100000u
+#define GAME_GAME6      0b01000000u
+#define GAME_WING0      0b10000000u

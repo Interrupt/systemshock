@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Hey, let's expose the rep of the fullscreen visible bits.
 // (see fullscrn.h)
-#define VISIBLE_BIT(c) (1 << (c))
+#define VISIBLE_BIT(c) (1u << (c))
 
 #define MODE_360  0 // All 3 views
 #define MODE_270  1 // Just side views

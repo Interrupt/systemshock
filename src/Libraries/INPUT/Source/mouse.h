@@ -75,13 +75,13 @@ typedef struct _mouse_event
    char pad[4];  			// pad to sixteen bytes
 } ss_mouse_event;
 
-#define MOUSE_MOTION    1	// Event mask bits
-#define MOUSE_LDOWN     2
-#define MOUSE_LUP       4
-#define MOUSE_RDOWN     8
-#define MOUSE_RUP      16
-#define MOUSE_CDOWN    32
-#define MOUSE_CUP      64
+#define MOUSE_MOTION    1u	// Event mask bits
+#define MOUSE_LDOWN     2u
+#define MOUSE_LUP       4u
+#define MOUSE_RDOWN     8u
+#define MOUSE_RUP      16u
+#define MOUSE_CDOWN    32u
+#define MOUSE_CUP      64u
 // bits 7..9 are used for double click events, see UI/Source/event.h
 #define MOUSE_WHEELUP (1 << 10)
 #define MOUSE_WHEELDN (1 << 11)

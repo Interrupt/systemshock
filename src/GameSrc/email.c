@@ -98,8 +98,10 @@ uchar shodan_sfx_go = FALSE;
 
 #define EMAIL_INACTIVE 0xFF
 
-#define FOOTER_MORE_MASK 0x1
-#define FOOTER_PAGE_MASK 0x2
+#define FOOTER_MORE_MASK 0x1u
+#define FOOTER_PAGE_MASK 0x2u
+
+#define BUFSZ 50
 
 // -------
 // GLOBALS
@@ -138,8 +140,8 @@ Id current_email_base = EMAIL_BASE_ID;
 static uchar intercept_hack_num;
 static uchar email_flags;
 
-#define EMAIL_FLAG_BEEN_READ 0x1
-#define EMAIL_FLAG_TRANSITORY 0x2
+#define EMAIL_FLAG_BEEN_READ 0x1u
+#define EMAIL_FLAG_TRANSITORY 0x2u
 
 Id email_font = RES_tinyTechFont;
 
@@ -169,7 +171,7 @@ uchar mfd_email_button_handler(MFD *m, LGPoint bttn, uiEvent *ev, void *data);
 errtype mfd_emailware_init(MFD_Func *f);
 void email_turnon(uchar visible, uchar real_start);
 void email_turnoff(uchar visible, uchar real_stop);
-void update_email_ware(void);
+void update_email_ware();
 char *email_name_func(void *dp, int num, char *buf);
 uchar email_color_func(void *dp, int num);
 void email_slam_hack(short which);
@@ -203,7 +205,7 @@ int get_sender_emailnum(int num) {
 
 void set_email_flags(int n) {
     int sender_num = get_sender_emailnum(n);
-    int cnt;
+    uint32_t cnt;
 
     if (((player_struct.email[n] & EMAIL_SEQ) >> EMAIL_SEQ_SHF) > 0 || sender_num == NULL_SENDER)
         return;
@@ -219,7 +221,7 @@ char *get_email_title_string(int n, char *text, int siz) {
     get_string(title, text, siz);
     if (cnt > 0) // if in fact the email has a sequence number, tack it on the end.
     {
-        lg_sprintf(text, get_temp_string(title), cnt);
+        sprintf(text, get_temp_string(title), cnt);
     }
     return text;
 }
@@ -230,7 +232,6 @@ void apply_email_macros(char *text, char *newval) {
     char buf[256];
     char i, stupid;
     int score;
-    extern void second_format(int sec_remain, char *s);
 
     len = strlen(text);
 
@@ -312,27 +313,22 @@ void apply_email_macros(char *text, char *newval) {
         }
     }
     newval[cnew] = '\0';
-    return;
 }
 
 void email_intercept(void) {
-    switch (intercept_hack_num) {
-    default:
-        inventory_clear();
-        next_text_line = EMAIL_DONE;
-        pop_inventory_cursors();
-        email_cursor_currently = FALSE;
-        //         Free(email_cursor_bitmap.bits);
-        read_email(0, intercept_hack_num);
-        shodan_sfx_go = TRUE;
+    inventory_clear();
+    next_text_line = EMAIL_DONE;
+    pop_inventory_cursors();
+    email_cursor_currently = FALSE;
+    // Free(email_cursor_bitmap.bits);
+    read_email(0, intercept_hack_num);
+    shodan_sfx_go = TRUE;
 #ifdef AUDIOLOGS
-        if (!audiolog_setting)
+    if (!audiolog_setting)
 #endif
-        {
-            if (!digi_fx_playing(SFX_SHODAN_STRONG, NULL))
-                play_digi_fx(SFX_SHODAN_STRONG, -1);
-        }
-        break;
+    {
+        if (!digi_fx_playing(SFX_SHODAN_STRONG, NULL))
+            play_digi_fx(SFX_SHODAN_STRONG, -1);
     }
 }
 
@@ -602,7 +598,7 @@ void email_page_exit(void) {
     }
 }
 
-uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *region, void *v) {
+uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *r, void *data) {
     if (input_cursor_mode == INPUT_OBJECT_CURSOR)
         return FALSE;
     if (inventory_page != INV_EMAILTEXT_PAGE) {
@@ -629,9 +625,9 @@ uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *region, void *v) {
     return TRUE;
 }
 
-    // ============================================
-    //            THE SELECTED EMAIL MFD
-    // ============================================
+// ============================================
+//            THE SELECTED EMAIL MFD
+// ============================================
 
 #define EMAILMUG_SLOT MFD_INFO_SLOT
 
@@ -647,7 +643,7 @@ uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *region, void *v) {
 void parse_email_mugs(char *mug, uchar *mcolor, ushort mugnums[NUM_MFDS], uchar setup) {
     short i, fwid;
     char *s;
-    //char *sfront;
+    // char *sfront;
     short lastmug = -1;
     uchar esc_param, different;
     extern void cap_mfds_with_func(uchar func, uchar max);
@@ -655,7 +651,7 @@ void parse_email_mugs(char *mug, uchar *mcolor, ushort mugnums[NUM_MFDS], uchar 
     char buf[64];
 
     s = buf;
-    //sfront = s;
+    // sfront = s;
     strcpy(s, mug);
 
     if (mug && *mug) {
@@ -687,8 +683,7 @@ void parse_email_mugs(char *mug, uchar *mcolor, ushort mugnums[NUM_MFDS], uchar 
                 if (!(email_flags & EMAIL_FLAG_BEEN_READ))
                     intercept_hack_num = esc_param;
                 break;
-            default:
-                ;
+            default:;
             }
             s += fwid + 1;
             while (!isalpha(*s) && !isdigit(*s) && *s != '\0')
@@ -1002,11 +997,9 @@ static ubyte email_pages[] = {50, 7, 8};
 #define STRINGS_PER_WARE (REF_STR_wareSpew1 - REF_STR_wareSpew0)
 
 void mfd_emailware_expose(MFD *mfd, ubyte control) {
-    extern void mfd_item_micro_hires_expose(uchar full, int triple);
     extern void draw_mfd_item_spew(Ref id, int n);
     extern void mfd_item_micro_expose(uchar full, int triple);
 
-    int i;
     uchar full = control & MFD_EXPOSE_FULL;
     uchar on = (control & (MFD_EXPOSE | MFD_EXPOSE_FULL)) != 0;
     ubyte s = player_struct.hardwarez_status[HARDWARE_EMAIL];
@@ -1044,7 +1037,7 @@ void mfd_emailware_expose(MFD *mfd, ubyte control) {
     if (!full)
         mfd_clear_rects();
 
-    for (i = 0; i < NUM_EMAIL_BUTTONS; i++) {
+    for (uint8_t i = 0; i < NUM_EMAIL_BUTTONS; i++) {
         uchar lit = inventory_page == email_pages[i];
         if (full || BUTTON_LIT_STATE(mfd->id, i) != lit) {
             int id = (lit) ? REF_IMG_LitEmailButt0 + i : REF_IMG_EmailButt0 + i;
@@ -1059,7 +1052,7 @@ void mfd_emailware_expose(MFD *mfd, ubyte control) {
     mfd_update_rects(mfd);
 }
 
-uchar mfd_email_button_handler(MFD *mfd, LGPoint bttn, uiEvent *evt, void *v) {
+uchar mfd_email_button_handler(MFD *m, LGPoint bttn, uiEvent *ev, void *data) {
     current_email_base = EMAIL_BASE_ID;
     old_invent_page = bttn.x;
     inventory_draw_new_page(email_pages[bttn.x]);
@@ -1077,10 +1070,7 @@ errtype mfd_emailware_init(MFD_Func *f) {
     bsize.y = res_bm_height(REF_IMG_EmailButt0);
     bdims.x = NUM_EMAIL_BUTTONS;
     bdims.y = 1;
-    r.ul.x = EMAIL_BARRAY_X;
-    r.ul.y = EMAIL_BARRAY_Y;
-    r.lr.x = r.ul.x + EMAIL_BARRAY_WD;
-    r.lr.y = r.ul.y + bsize.y;
+    RECT_FILL(&r, EMAIL_BARRAY_X, EMAIL_BARRAY_Y, EMAIL_BARRAY_X + EMAIL_BARRAY_WD, EMAIL_BARRAY_Y + bsize.y)
     err = MFDBttnArrayInit(&f->handlers[cnt++], &r, bdims, bsize, mfd_email_button_handler, NULL);
     if (err != OK)
         return err;
@@ -1092,7 +1082,7 @@ errtype mfd_emailware_init(MFD_Func *f) {
 //=====================================================
 short last_email_taken = 0;
 
-void email_turnon(uchar c, uchar real_start) {
+void email_turnon(uchar visible, uchar real_start) {
     uchar flash = player_struct.hardwarez_status[HARDWARE_EMAIL] & WARE_FLASH;
     current_email_base = EMAIL_BASE_ID;
     player_struct.hardwarez_status[HARDWARE_EMAIL] &= ~(WARE_FLASH);
@@ -1104,7 +1094,7 @@ void email_turnon(uchar c, uchar real_start) {
     }
 }
 
-void email_turnoff(uchar uc, uchar real_stop) {
+void email_turnoff(uchar visible, uchar real_stop) {
     if (real_stop) {
         int mfd_id = NUM_MFDS;
         while (mfd_yield_func(MFD_EMAILWARE_FUNC, &mfd_id)) {
@@ -1113,35 +1103,31 @@ void email_turnoff(uchar uc, uchar real_stop) {
     }
 }
 
-    // every 30 nerd seconds, check to see if we have unread email and flash the email ware
-    // if we do.
+// every 30 nerd seconds, check to see if we have unread email and flash the email ware
+// if we do.
 
 #define FLASH_TIME_INTERVAL 30
 
-void update_email_ware(void) {
-    int i;
+void update_email_ware() {
     if ((player_struct.game_time >> APPROX_CIT_CYCLE_SHFT) % FLASH_TIME_INTERVAL != 0)
         return;
 
-    for (i = 0; i < NUM_EMAIL_PROPER; i++) {
-        uchar s = player_struct.email[i];
-        if ((s & EMAIL_GOT) != 0 && (s & EMAIL_READ) == 0)
-            goto found;
+    for (uint8_t i = 0; i < NUM_EMAIL_PROPER; i++) {
+        uint8_t s = player_struct.email[i];
+        if ((s & EMAIL_GOT) != 0 && (s & EMAIL_READ) == 0) {
+            player_struct.hardwarez_status[HARDWARE_EMAIL] |= WARE_FLASH;
+            return;
+        }
     }
-    return;
-found:
-    player_struct.hardwarez_status[HARDWARE_EMAIL] |= WARE_FLASH;
 }
 
-    //=====================================================
-    //               THE EMAIL INVENTORY PAGE
-    //=====================================================
+//=====================================================
+//               THE EMAIL INVENTORY PAGE
+//=====================================================
 
-#define BUFSZ 50
+char *email_name_func(void *dp, int num, char *buf) { return get_email_title_string(num, buf, BUFSZ); }
 
-char *email_name_func(void *v, int num, char *buf) { return get_email_title_string(num, buf, BUFSZ); }
-
-uchar email_color_func(void *v, int num) { return (player_struct.email[num] & EMAIL_READ ? 0x5C : 0x59); }
+uchar email_color_func(void *dp, int num) { return (player_struct.email[num] & EMAIL_READ ? 0x5C : 0x59); }
 
 // SHODAN wacky earth destroying hacking
 void email_slam_hack(short which) {

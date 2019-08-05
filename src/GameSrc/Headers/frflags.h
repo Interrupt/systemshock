@@ -17,50 +17,50 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 // flags
-#define FR_HACKCAM_SHFT 31
-#define FR_HACKCAM_MASK (0x1 << FR_HACKCAM_SHFT)
-#define FR_PALETTE_SHFT 28 // which palette to output through
-#define FR_PALETTE_MASK (0x7 << FR_PALETTE_SHFT)
-#define FR_WINDOWD_SHFT 24 // what window dressing to use
-#define FR_WINDOWD_MASK (0xf << FR_WINDOWD_SHFT)
-#define FR_CURFREE_SHFT 20
-#define FR_CURFREE_MASK (0xf << FR_CURFREE_SHFT)
-#define FR_NOTRANS_SHFT 19 //
-#define FR_NOTRANS_MASK (0x1 << FR_NOTRANS_SHFT)
-#define FR_OVERLAY_SHFT 16 // what is being overlayed/ie. hand art or pings
-#define FR_OVERLAY_MASK (0x7 << FR_OVERLAY_SHFT)
-#define FR_SOLIDFR_SHFT 13 // are we just a solid this frame
-#define FR_SOLIDFR_MASK (0x7 << FR_SOLIDFR_SHFT)
-#define FR_DOHFLIP_SHFT 12
-#define FR_DOHFLIP_MASK (0x1 << FR_DOHFLIP_SHFT)
-#define FR_OWNBITS_SHFT 11 // your canvas and all came from you
-#define FR_OWNBITS_MASK (0x1 << FR_OWNBITS_SHFT)
-#define FR_TITLEBR_SHFT 9 // should we be showing a title
-#define FR_TITLEBR_MASK (0x3 << FR_TITLEBR_SHFT)
-#define FR_SHOWALL_SHFT 8
-#define FR_SHOWALL_MASK (0x1 << FR_SHOWALL_SHFT)
-#define FR_DOUBLEB_SHFT 7 // are we double buffering
-#define FR_DOUBLEB_MASK (0x1 << FR_DOUBLEB_SHFT)
-#define FR_CURVIEW_SHFT 5
-#define FR_CURVIEW_MASK (0x3 << FR_CURVIEW_SHFT)
-#define FR_PICKUPM_SHFT 4
-#define FR_PICKUPM_MASK (0x1 << FR_PICKUPM_SHFT)
-#define FR_NORENDR_SHFT 3
-#define FR_NORENDR_MASK (0x1 << FR_NORENDR_SHFT)
-#define FR_SFX_SHFT     0
-#define FR_SFX_MASK     (0x7 << FR_SFX_SHFT)
+#define FR_HACKCAM_SHFT 31u
+#define FR_HACKCAM_MASK (0x1u << FR_HACKCAM_SHFT)
+#define FR_PALETTE_SHFT 28u // which palette to output through
+#define FR_PALETTE_MASK (0x7u << FR_PALETTE_SHFT)
+#define FR_WINDOWD_SHFT 24u // what window dressing to use
+#define FR_WINDOWD_MASK (0xfu << FR_WINDOWD_SHFT)
+#define FR_CURFREE_SHFT 20u
+#define FR_CURFREE_MASK (0xfu << FR_CURFREE_SHFT)
+#define FR_NOTRANS_SHFT 19u //
+#define FR_NOTRANS_MASK (0x1u << FR_NOTRANS_SHFT)
+#define FR_OVERLAY_SHFT 16u // what is being overlayed/ie. hand art or pings
+#define FR_OVERLAY_MASK (0x7u << FR_OVERLAY_SHFT)
+#define FR_SOLIDFR_SHFT 13u // are we just a solid this frame
+#define FR_SOLIDFR_MASK (0x7u << FR_SOLIDFR_SHFT)
+#define FR_DOHFLIP_SHFT 12u
+#define FR_DOHFLIP_MASK (0x1u << FR_DOHFLIP_SHFT)
+#define FR_OWNBITS_SHFT 11u // your canvas and all came from you
+#define FR_OWNBITS_MASK (0x1u << FR_OWNBITS_SHFT)
+#define FR_TITLEBR_SHFT 9u // should we be showing a title
+#define FR_TITLEBR_MASK (0x3u << FR_TITLEBR_SHFT)
+#define FR_SHOWALL_SHFT 8u
+#define FR_SHOWALL_MASK (0x1u << FR_SHOWALL_SHFT)
+#define FR_DOUBLEB_SHFT 7u // are we double buffering
+#define FR_DOUBLEB_MASK (0x1u << FR_DOUBLEB_SHFT)
+#define FR_CURVIEW_SHFT 5u
+#define FR_CURVIEW_MASK (0x3u << FR_CURVIEW_SHFT)
+#define FR_PICKUPM_SHFT 4u
+#define FR_PICKUPM_MASK (0x1u << FR_PICKUPM_SHFT)
+#define FR_NORENDR_SHFT 3u
+#define FR_NORENDR_MASK (0x1u << FR_NORENDR_SHFT)
+#define FR_SFX_SHFT     0u
+#define FR_SFX_MASK     (0x7u << FR_SFX_SHFT)
 
 // yet another way to have multiple views
-#define FR_CURVIEW_STRT (0 << FR_CURVIEW_SHFT)
-#define FR_CURVIEW_LEFT (1 << FR_CURVIEW_SHFT)
-#define FR_CURVIEW_BACK (2 << FR_CURVIEW_SHFT)
-#define FR_CURVIEW_RGHT (3 << FR_CURVIEW_SHFT)
+#define FR_CURVIEW_STRT (0u << FR_CURVIEW_SHFT)
+#define FR_CURVIEW_LEFT (1u << FR_CURVIEW_SHFT)
+#define FR_CURVIEW_BACK (2u << FR_CURVIEW_SHFT)
+#define FR_CURVIEW_RGHT (3u << FR_CURVIEW_SHFT)
 
 // Hey, some solid stuff
-#define FR_SOLIDFR_NORMAL  (0 << FR_SOLIDFR_SHFT)
-#define FR_SOLIDFR_STATIC  (1 << FR_SOLIDFR_SHFT)
-#define FR_SOLIDFR_SLDCLR  (2 << FR_SOLIDFR_SHFT)
-#define FR_SOLIDFR_SLDKEEP (3 << FR_SOLIDFR_SHFT)
+#define FR_SOLIDFR_NORMAL  (0u << FR_SOLIDFR_SHFT)
+#define FR_SOLIDFR_STATIC  (1u << FR_SOLIDFR_SHFT)
+#define FR_SOLIDFR_SLDCLR  (2u << FR_SOLIDFR_SHFT)
+#define FR_SOLIDFR_SLDKEEP (3u << FR_SOLIDFR_SHFT)
 
 #ifndef __GAMEREND_SRC
 extern uchar fr_solidfr_color;
@@ -69,28 +69,28 @@ uchar fr_solidfr_color;
 #endif
 
 // Cool warping effects on the screen, and other draw hacks
-#define FR_SFX_NONE     (0 << FR_SFX_SHFT)
-#define FR_SFX_VHOLD    (1 << FR_SFX_SHFT)
-#define FR_SFX_HHOLD    (2 << FR_SFX_SHFT)
-#define FR_SFX_STATIC   (3 << FR_SFX_SHFT)
-#define FR_SFX_SHAKE    (4 << FR_SFX_SHFT)
-#define FR_SFX_SHIELD   (5 << FR_SFX_SHFT)
-#define FR_SFX_TELEPORT (6 << FR_SFX_SHFT)
+#define FR_SFX_NONE     (0u << FR_SFX_SHFT)
+#define FR_SFX_VHOLD    (1u << FR_SFX_SHFT)
+#define FR_SFX_HHOLD    (2u << FR_SFX_SHFT)
+#define FR_SFX_STATIC   (3u << FR_SFX_SHFT)
+#define FR_SFX_SHAKE    (4u << FR_SFX_SHFT)
+#define FR_SFX_SHIELD   (5u << FR_SFX_SHFT)
+#define FR_SFX_TELEPORT (6u << FR_SFX_SHFT)
 
 // Overlays -- currently this is only SHODAN
-#define FR_OVERLAY_NONE   (0 << FR_OVERLAY_SHFT)
-#define FR_OVERLAY_SHODAN (1 << FR_OVERLAY_SHFT)
+#define FR_OVERLAY_NONE   (0u << FR_OVERLAY_SHFT)
+#define FR_OVERLAY_SHODAN (1u << FR_OVERLAY_SHFT)
 
 // Palette setup
-#define FR_PALETTE_BW     (1 << FR_PALETTE_SHFT)
-#define FR_PALETTE_GREEN  (2 << FR_PALETTE_SHFT)
-#define FR_PALETTE_ORANGE (3 << FR_PALETTE_SHFT)
+#define FR_PALETTE_BW     (1u << FR_PALETTE_SHFT)
+#define FR_PALETTE_GREEN  (2u << FR_PALETTE_SHFT)
+#define FR_PALETTE_ORANGE (3u << FR_PALETTE_SHFT)
 
 #define FR_PALETTE_IR      (FR_PALETTE_BW | FR_MONOCHR_MASK)
 #define FR_PALETTE_LOWTECH (FR_PALETTE_GREEN | FR_MONOCHR_MASK)
 
 // Hack cameras
-#define FR_HACKCAM_FLAG (1 << FR_HACKCAM_SHFT)
+#define FR_HACKCAM_FLAG (1u << FR_HACKCAM_SHFT)
 
 #define _fr_get_pal_idx(f) ((f & FR_PALETTE_MASK) >> FR_PALETTE_SHFT)
 

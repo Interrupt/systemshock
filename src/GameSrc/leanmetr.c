@@ -98,7 +98,17 @@ ubyte hires_eye_height[DISCRETE_EYE_POSITIONS] = {
     26,
     45,
 };
-LGPoint shield_offsets[9] = {{4, 3}, {4, 3}, {2, 3}, {4, 2}, {4, 2}, {2, 2}, {8, 1}, {4, 2}, {0, 1}};
+LGPoint shield_offsets[9] = {
+    {2, 1}, // stand right
+    {2, 1}, // stand
+    {2, 1}, // stand left
+    {2, 1}, // crouch right
+    {2, 1}, // crouch
+    {2, 0}, // crouch left
+    {2, 1}, // prone right
+    {2, 1}, // prone
+    {0, 1}  // prone left
+};
 
 void EDMS_lean_o_meter(physics_handle ph, fix *lean, fix *crouch);
 
@@ -182,20 +192,20 @@ void set_base_lean_bmap(uchar shield) {
             v = SHIELD_VERSIONS - 1;
         baseRes = RES_leanShield1 + v;
 
-        if (baseRes != shield_bmap_res) // If the base shield bitmap has changed:
-        {
-            if (shield_bmap_res != 0) // free the old bitmap
-            {
+        if (baseRes != shield_bmap_res) {
+            // If the base shield bitmap has changed:
+            if (shield_bmap_res != 0) {
+                // free the old bitmap
                 ResUnlock(shield_bmap_res);
                 ResDrop(shield_bmap_res);
             }
             ResLock(baseRes);          // Load hi and lock the new bitmap series.
             shield_bmap_res = baseRes; // this is our base shield bitmap now
         }
-    } else // If shields are now off:
-    {
-        if (shield_bmap_res != 0) // If shields were previously on,
-        {                         // free up the shield bitmaps.
+    } else {
+        // If shields are now off:
+        if (shield_bmap_res != 0) {
+            // If shields were previously on, free up the shield bitmaps.
             ResUnlock(shield_bmap_res);
             ResDrop(shield_bmap_res);
             shield_bmap_res = 0;
@@ -452,8 +462,7 @@ void update_lean_meter(uchar force) {
     grs_bitmap *icon;
     int inum;
     bool shield = WareActive(player_struct.hardwarez_status[CPTRIP(SHIELD_HARD_TRIPLE)]) != 0;
-    //	int				shieldstr =
-    //SHIELD_SETTING(player_struct.hardwarez_status[CPTRIP(SHIELD_HARD_TRIPLE)]);
+    // int shieldstr = SHIELD_SETTING(player_struct.hardwarez_status[CPTRIP(SHIELD_HARD_TRIPLE)]);
     int shieldstr;
     char saveMode;
     bool saveBio;
@@ -470,10 +479,10 @@ void update_lean_meter(uchar force) {
     else
         shieldstr = 0;
 
-    if (!force && PointsEqual(pos, last_lean_pos)       // If this is not a force update, and we're drawing
-        && MKREF(lean_bmap_res, inum) == last_lean_icon // the same lean icon in the same position as last
-        && shield == last_shield                        // time, then do nothing.
-        && shieldstr == last_shieldstr)
+    // If this is not a force update, and we're drawing the same lean icon in the same position as last
+    // time, then do nothing.
+    if (!force && PointsEqual(pos, last_lean_pos) && MKREF(lean_bmap_res, inum) == last_lean_icon
+        && shield == last_shield && shieldstr == last_shieldstr)
         return;
 
     STORE_CLIP(a, b, c, d);
@@ -483,14 +492,10 @@ void update_lean_meter(uchar force) {
     gBioInited = FALSE;
 
     if (force || last_lean_icon != -1) {
-        r.ul = MakePoint(LEANOMETER_X(), LEANOMETER_Y());
-        r.lr = MakePoint(r.ul.x + 46, r.ul.y + 53);
+        RECT_FILL(&r, LEANOMETER_X(), LEANOMETER_Y(), LEANOMETER_X() + 46, LEANOMETER_Y() + 53);
         undraw_meter_area(&r);
     }
-    r.ul.x = pos.x;
-    r.ul.y = pos.y;
-    r.lr.x = r.ul.x + icon->w;
-    r.lr.y = r.ul.y + icon->h;
+    RECT_FILL(&r, pos.x, pos.y, pos.x + icon->w, pos.y + icon->h);
 
     // saveMode = convert_use_mode;
     // convert_use_mode = 0;
@@ -500,22 +505,21 @@ void update_lean_meter(uchar force) {
     ss_bitmap(icon, r.ul.x, r.ul.y);
 
     if (shield) {
-        uchar *bp;
+        uint8_t *bp;
         grs_bitmap *sbm;
-        LGPoint offset;
 
         // Get a pointer to the corresponding lean bitmap.
-        bp = (uchar *)ResPtr(shield_bmap_res);
+        bp = (uint8_t *)ResPtr(shield_bmap_res);
         if (bp) {
             RefTable *prt = (RefTable *)bp;
-            FrameDesc *f = (FrameDesc *)(((uchar *)prt) + (prt->offset[inum]));
-            f->bm.bits = (uchar *)(f + 1);
+            FrameDesc *f = (FrameDesc *)(((uint8_t *)prt) + (prt->offset[inum]));
+            f->bm.bits = (uint8_t *)(f + 1);
             sbm = &(f->bm);
         } else
-            DebugString("No shield resource bitmap!");
+            DEBUG("%s: No shield resource bitmap!", __FUNCTION__);
 
-        offset = shield_offsets[inum];
-        ss_bitmap(sbm, r.ul.x - offset.x, r.ul.y - offset.y);
+        // Place shield image with offset
+        ss_bitmap(sbm, r.ul.x - shield_offsets[inum].x, r.ul.y - shield_offsets[inum].y);
     }
 
     gBioInited = saveBio;

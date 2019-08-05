@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern uchar *shodan_bitmask;
 
 ObjID shodan_avatar_id = OBJ_NULL;
-extern ulong time_until_shodan_avatar;
+extern uint32_t time_until_shodan_avatar;
 
 ObjID cspace_decoy_obj = OBJ_NULL;
 ObjLoc recall_objloc;
