@@ -77,8 +77,14 @@ static Amethods *methods[] = {
 };
 
 //	Allocate enough room in case RSD goes overboard
-
-#define BM_PLENTY_SIZE(szuncomp)  (szuncomp*3)
+// It doesn't look as if this is an issue any more.
+#define BM_PLENTY_SIZE(szuncomp)  (szuncomp+16)
+// But just in case it is, keep a known value at the end of the buffer and check
+// it for overruns. This is just a random uuid, it has no other significance.
+static const uint8_t BM_CANARY[] = {
+    0xe3, 0x58, 0x0a, 0x9c, 0xad, 0xa8, 0x4d, 0x15,
+    0xb9, 0x96, 0x2a, 0x07, 0xa4, 0x7a, 0xdb, 0xdc
+};
 
 //	-------------------------------------------------------
 //		GENERAL ACCESS ROUTINES - READING
@@ -143,7 +149,9 @@ int32_t AfileOpen(Afile *paf, MFILE *mf, AfileType aftype) {
     // Set up work buffer, compose buffer, and prev buffer
     TRACE("%s: initing work buffer of size: %d", __FUNCTION__, BM_PLENTY_SIZE(paf->frameLen));
 
-    gr_init_bitmap(&paf->bmWork, (uint8_t *)malloc(BM_PLENTY_SIZE(paf->frameLen)), bmtype, 0, paf->v.width,
+    uint8_t *bits = malloc(BM_PLENTY_SIZE(paf->frameLen));
+    memcpy(bits + paf->frameLen, BM_CANARY, 16);
+    gr_init_bitmap(&paf->bmWork, bits, bmtype, 0, paf->v.width,
                    paf->v.height);
 
     TRACE("%s: initing compose buffer and prev buffer", __FUNCTION__);
@@ -187,6 +195,13 @@ int32_t AfileReadFullFrame(Afile *paf, grs_bitmap *pbm, fix *ptime) {
         return (len);
     }
     TRACE("%s: read frame, len: %d", __FUNCTION__, len);
+
+    // Check for overruns
+    if (memcmp(paf->bmWork.bits + paf->frameLen, BM_CANARY, 16) != 0) {
+        ERROR("%s: buffer overrun reading frame: %d", __FUNCTION__,
+              paf->currFrame);
+        return -1;
+    }
 
     // Add to compose buffer
     TRACE("%s: adding to compose buffer", __FUNCTION__);
@@ -241,6 +256,13 @@ int32_t AfileReadDiffFrame(Afile *paf, grs_bitmap *pbm, fix *ptime) {
         return (len);
     }
     TRACE("%s: read frame, len: %d", __FUNCTION__, len);
+
+    // Check for overruns
+    if (memcmp(paf->bmWork.bits + paf->frameLen, BM_CANARY, 16) != 0) {
+        ERROR("%s: buffer overrun reading frame: %d", __FUNCTION__,
+              paf->currFrame);
+        return -1;
+    }
 
     // Move compose buffer to previous
     if (paf->currFrame > 0)

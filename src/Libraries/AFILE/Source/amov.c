@@ -220,7 +220,10 @@ NEXT_CHUNK:
             p = (uint8_t *)malloc(len);
             mfread(p, len, paf->mf);
             pbm->type = BMT_FLAT8;
-            pbm->flags = BMF_TRANS;
+            // Hi-res movie frames should not be transparent: the 4x4 codec
+            // makes its own arrangements for transparency, and at least 1
+            // iframe in the intro movie is transparent when it should not be.
+            pbm->flags = 0;
             gr_make_canvas(pbm, &cv);
             gr_push_canvas(&cv);
             Draw4x4(p, paf->v.width, paf->v.height);
@@ -269,6 +272,15 @@ NEXT_CHUNK:
             mfseek(paf->mf, pmi->pcurrChunk->offset);
             mfread(pmi->pal, 768, paf->mf);
             pmi->newPal = TRUE;
+        }
+        else if (pmi->pcurrChunk->flags & MOVIE_FPAL_CLEAR) {
+            // Clear the bitmap data prior to decoding an iframe. Setting to 0
+            // isn't ideal here since it's the transparency colour, but we don't
+            // have a better candidate without searching the palette (which is
+            // probably in the NEXT chunk); we don't treat hi-res movie frames
+            // as transparent (for precisely this reason); and palette entry 0
+            // is set to black in practice.
+            memset(pbm->bits, 0, paf->frameLen);
         }
 
         *EngSubtitle = 0;
