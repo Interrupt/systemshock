@@ -59,7 +59,7 @@ int gri_init(void)
 		return err;
    gr_push_video_state (1);
    grd_active = 1;
-   init_inverse_table();
+   //init_inverse_table();
 
    return 0;
 }
