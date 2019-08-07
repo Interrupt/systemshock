@@ -13,16 +13,8 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# hide Windows console in distributable packages
-if(DEFINED ENV{APPVEYOR})
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -O3 -mwindows")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -O3 -mwindows -D__STDC_LIMIT_MACROS")
-endif()
-
-if(NOT DEFINED ENV{APPVEYOR})
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -D__STDC_LIMIT_MACROS")
-endif()
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -D__STDC_LIMIT_MACROS")
 
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
 add_feature_info(ENABLE_EXAMPLES ENABLE_EXAMPLES "Enable example application (can be broken!)")
@@ -101,12 +93,6 @@ if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 	set(FLUIDSYNTH_LIBRARIES ${FLUIDSYNTH_LIBRARY})
 	add_definitions("-DUSE_FLUIDSYNTH=1")
 endif(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
-
-# add MinGW library if necessary
-if(MINGW)
-	list(APPEND SDL2_LIBRARIES "mingw32")
-	list(APPEND SDL2_MIXER_LIBRARIES "mingw32")
-endif(MINGW)
 
 include_directories(
 	${SDL2_INCLUDE_DIRS}
@@ -376,7 +362,13 @@ add_executable(systemshock
 
 add_library(GAME_LIB ${GAME_SRC})
 
+# MINGW additional linker options
+if(MINGW)
+	set(WINDOWS_LIBRARIES "mingw32 -mwindows")
+endif(MINGW)
+
 target_link_libraries(systemshock
+	${WINDOWS_LIBRARIES} # Set it before any linker options! Beware WinMain@16 error!!
 	GAME_LIB
 	UI_LIB
 	2D_LIB
