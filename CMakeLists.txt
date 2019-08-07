@@ -112,13 +112,8 @@ include_directories(
 	${SDL2_INCLUDE_DIRS}
 	${SDL2_MIXER_INCLUDE_DIRS}
 	${FLUIDSYNTH_INCLUDE_DIRS}
+	${OPENGL_INCLUDE_DIRS}
 )
-
-# FIXME is OpenGL related?
-if (WIN32)
-        include_directories(${CMAKE_SOURCE_DIR}/build_ext/built_glew/include)
-        target_link_libraries(systemshock ${CMAKE_SOURCE_DIR}/build_ext/built_glew/lib/libglew32.dll.a winmm)
-endif(WIN32)
 
 if(NOT WIN32)
   # Find ALSA for Linux native MIDI
