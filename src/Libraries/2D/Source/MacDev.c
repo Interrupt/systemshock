@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "grnull.h"
 #include "grd.h"
 #include "MacDev.h"
-#include "valloc.h"
 #include "cnvdrv.h"
 #include "cnvtab.h"
 #include "bitmap.h"

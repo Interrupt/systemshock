@@ -28,10 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include "cnvdat.h"
-#include "flat8.h"
 #include "gente.h"
 #include "grnull.h"
-#include "grpix.h"
 #include "poly.h"
 #include "tmapint.h"
 

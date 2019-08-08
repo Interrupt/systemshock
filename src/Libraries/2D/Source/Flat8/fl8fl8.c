@@ -51,7 +51,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "bitmap.h"
 #include "cnvdat.h"
-#include "flat8.h"
 #include "lg.h"
 #include <string.h>
 

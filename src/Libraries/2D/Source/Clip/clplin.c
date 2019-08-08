@@ -56,7 +56,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "grs.h"
 #include "clpcon.h"
 #include "cnvdat.h"
-#include "clpfcn.h"
 
 /* Returns clip code for fixed-point coordinates for the Cohen-Sutherland
    line clipper. */

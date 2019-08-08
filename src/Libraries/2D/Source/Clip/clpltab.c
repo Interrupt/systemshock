@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "clpltab.h"
 #include "grnull.h"
 #include "line.h"
-#include "plytyp.h"
 
 grt_line_clip_fill grd_line_clip_fill_table [GRD_LINE_TYPES] = 
 {

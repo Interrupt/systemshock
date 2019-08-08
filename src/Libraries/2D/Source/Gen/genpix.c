@@ -31,7 +31,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "clpcon.h"
 #include "cnvdat.h"
 #include "grpix.h"
-#include "general.h"
 
 void *grd_fill_upixel_func();
 

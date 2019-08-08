@@ -42,11 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grs.h"
 #include "buffer.h"
-#include "clpcon.h"
-#include "clpfcn.h"
 #include "cnvdat.h"
 #include "plytyp.h"
-#include "poly.h"
 
 /* clips a polygon's screen coordinates and vertex parameters to the
    current clipping rectangle.  the polygon has n vertices, each with

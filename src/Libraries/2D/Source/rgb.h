@@ -45,6 +45,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __RGB_H
 #define __RGB_H
 
+#include "grs.h"
+
 #define RGB_OK (0)
 #define RGB_OUT_OF_MEMORY (-1)
 #define RGB_CANT_DEALLOCATE (-2)

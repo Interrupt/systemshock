@@ -57,7 +57,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ctxmac.h"
 #include "fill.h"
 #include "lg.h"
-#include "linfcn.h"
 #include <string.h>
 
 /* draw an unclipped horizontal line with integral coordinates. */

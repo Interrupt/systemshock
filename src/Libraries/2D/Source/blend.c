@@ -29,7 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grs.h"
 #include "blncon.h"
-#include "grmalloc.h"
 #include "rgb.h"
 #include "scrdat.h"
 

@@ -29,7 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "cnvdat.h"
 #include "fl8tmapdv.h"
-#include "grpix.h"
 #include "pertyp.h"
 #include "plytyp.h"
 #include "scrdat.h"

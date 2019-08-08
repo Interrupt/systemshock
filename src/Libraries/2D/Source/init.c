@@ -30,13 +30,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grd.h"
 #include "detect.h"
-#include "grdev.h"
-#include "init_2D.h"
 #include "state.h"
 #include "invtab.h"
 #include "memall.h"
 #include "tmpalloc.h"
-#include "initint.h"
 
 /* flag for whether 2d system has been fired up. */
 int grd_active = 0;

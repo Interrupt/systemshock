@@ -56,14 +56,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision
  */
 
-#include <stdlib.h>
 #include "ctxmac.h"
 #include "plytyp.h"
 #include "clpcon.h"
 #include "clpltab.h"
 #include "grlin.h"
 #include "rgb.h"
-#include "general.h"
 
 /* clip and call unclipped drawer -- returns a clip value */
 

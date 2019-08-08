@@ -55,7 +55,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fix.h"
 #include "plytyp.h"
 #include "pixfill.h"
-#include "linfcn.h"
 
 /* Draw a gouraud-shaded line, specified by indices into the palette.
    be warned, weird precision bugs abound (check out test programs

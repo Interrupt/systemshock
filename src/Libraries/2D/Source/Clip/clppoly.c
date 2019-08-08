@@ -53,9 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grs.h"
 #include "buffer.h"
-#include "clpcon.h"
 #include "cnvdat.h"
-#include "clpfcn.h"
 
 int gr_clip_fix_poly (int n, fix *vlist, fix *clist)
 {

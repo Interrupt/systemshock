@@ -34,7 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gente.h"
 #include "plytyp.h"
 #include "poly.h"
-#include "scrdat.h"
 #include "tlucdat.h"
 #include "tmapint.h"
 #include "vtab.h"

@@ -41,8 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tmaps.h"
 #include "general.h"
 
-#include "grs.h"
-
 enum {
    POLY, SPOLY, CPOLY, TPOLY, STPOLY
 };

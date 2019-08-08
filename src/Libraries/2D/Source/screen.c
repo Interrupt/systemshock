@@ -45,13 +45,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grs.h"
 #include "grd.h"
-#include "grmalloc.h"
 #include "bitmap.h"
 #include "canvas.h"
-#include "rgb.h"
 #include "valloc.h"
-#include "scrdat.h"
-#include "screen.h"
 
 /* allocate enoguh video memory for a screen of the specified size.  then set
    up the screen structure describing this screen and the 2 system canvases

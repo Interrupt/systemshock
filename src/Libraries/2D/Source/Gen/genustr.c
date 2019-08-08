@@ -51,10 +51,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "bitmap.h"
-#include "ctxmac.h"
 #include "grdbm.h"
 #include "chr.h"
-#include "general.h"
 
 
 /* draw a string s in the specified font at (x0,y0).  does not perform

@@ -42,7 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grs.h"
 #include "clpcon.h"
-#include "clpfcn.h"
 #include "cnvdat.h"
 
 int gr_clip_mono_bitmap (grs_bitmap *bm, short *x, short *y)

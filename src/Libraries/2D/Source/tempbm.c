@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tabdat.h"
 #include "ifcn.h"
 #include "grs.h"
-#include "general.h"
 
 
 void temp_flat8_ubitmap (grs_bitmap *bm, int x, int y)

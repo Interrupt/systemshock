@@ -26,8 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include "blndat.h"
-#include "cnvdat.h"
-#include "flat8.h"
 #include "grs.h"
 #include <stdbool.h>
 #include <stdlib.h>
