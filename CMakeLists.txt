@@ -1,6 +1,6 @@
-project(SystemShock)
-
 cmake_minimum_required(VERSION 3.1)
+
+project(shockolate VERSION 0.7.8)
 
 include(FeatureSummary)
 
