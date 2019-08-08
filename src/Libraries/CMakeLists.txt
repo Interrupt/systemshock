@@ -216,8 +216,8 @@ set(AFILE_SRC
 set(DSTRUCT_SRC
 	DSTRUCT/Source/array.c
 	DSTRUCT/Source/hash.c
-	DSTRUCT/Source/llist.c
-	DSTRUCT/Source/lllist.c
+#	DSTRUCT/Source/llist.c
+#	DSTRUCT/Source/lllist.c
 	DSTRUCT/Source/pqueue.c
 	DSTRUCT/Source/rect.c
 )
@@ -279,34 +279,34 @@ set(SND_SRC
 )
 
 set(UI_SRC
-	UI/Source/butarray.c
+#	UI/Source/butarray.c
 	UI/Source/curdrw.c
 	UI/Source/cursors.c
 	UI/Source/event.c
-	UI/Source/gadgets.c
+#	UI/Source/gadgets.c
 	UI/Source/hotkey.c
-	UI/Source/menu.c
-	UI/Source/monofont.c
-	UI/Source/plain.c
-	UI/Source/pushbutt.c
-	UI/Source/qboxgadg.c
-	UI/Source/realfont.c
+#	UI/Source/menu.c
+#	UI/Source/monofont.c
+#	UI/Source/plain.c
+#	UI/Source/pushbutt.c
+#	UI/Source/qboxgadg.c
+#	UI/Source/realfont.c
 	UI/Source/region.c
 	UI/Source/slab.c
-	UI/Source/slider.c
-	UI/Source/textgadg.c
-	UI/Source/texttool.c
-	UI/Source/tngbarry.c
-	UI/Source/tng.c
-	UI/Source/tngfont.c
-	UI/Source/tngmenu.c
-	UI/Source/tngplain.c
-	UI/Source/tngpushb.c
-	UI/Source/tngqbox.c
-	UI/Source/tngslidr.c
-	UI/Source/tngtemp.c
-	UI/Source/tngtextg.c
-	UI/Source/uires.c
+#	UI/Source/slider.c
+#	UI/Source/textgadg.c
+#	UI/Source/texttool.c
+#	UI/Source/tngbarry.c
+#	UI/Source/tng.c
+#	UI/Source/tngfont.c
+#	UI/Source/tngmenu.c
+#	UI/Source/tngplain.c
+#	UI/Source/tngpushb.c
+#	UI/Source/tngqbox.c
+#	UI/Source/tngslidr.c
+#	UI/Source/tngtemp.c
+#	UI/Source/tngtextg.c
+#	UI/Source/uires.c
 	UI/Source/vmouse.c
 )
 
