@@ -119,6 +119,9 @@ feature_summary(WHAT DISABLED_FEATURES DESCRIPTION "Disabled features:")
 
 # Sources configuration
 
+# Generate version based on project version
+configure_file("${CMAKE_SOURCE_DIR}/src/GameSrc/Headers/version.h.in" "${CMAKE_BINARY_DIR}/src/GameSrc/Headers/version.h" )
+
 add_subdirectory(src/Libraries/)
 
 set(MAC_SRC
@@ -275,6 +278,7 @@ include_directories(
 	src/GameSrc/Headers
 	src/MacSrc
 	src/MusicSrc
+	${CMAKE_BINARY_DIR}/src/GameSrc/Headers
 )
 
 if(ENABLE_EXAMPLES)
