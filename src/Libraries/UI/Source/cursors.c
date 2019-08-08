@@ -108,10 +108,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "2d.h"
 #include "cursors.h" 
 #include "curtyp.h"
-#include "slab.h"
 //#include <libdbg.h>
 #include "vmouse.h"
-#include <stdlib.h>
 #include <stdio.h> // printf()
 
 #define SPEW_ANAL Spew

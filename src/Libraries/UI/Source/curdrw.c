@@ -45,9 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "2d.h"
 #include "cursors.h" 
 #include "curdat.h"
-#include "slab.h"
 #include "string.h"
-//#include <libdbg.h>
 
 #define BMT_SAVEUNDER BMT_FLAT8
 
