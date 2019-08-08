@@ -11,27 +11,31 @@ matrix:
     - os: linux
       dist: trusty
       sudo: required
+      env:
+        - SDL2_LIB=BUNDLED
+        - SDL2_MIXER_LIB=BUNDLED
+        - FLUIDSYNTH_LIB=BUNDLED
+      addons:
+        apt:
+          packages:
+            - cmake-data cmake libx32gcc-4.8-dev libc6-dev-i386 gcc-multilib g++-multilib libglu1-mesa-dev:i386 libgl1-mesa-dev:i386
       compiler: gcc
     - os: osx
       compiler: clang
+      env:
+        - SDL2_LIB=BUNDLED
+        - SDL2_MIXER_LIB=BUNDLED
+        - FLUIDSYNTH_LIB=OFF # Bundled lib failed to compile
     - os: osx
       compiler: gcc
-
-addons:
-  apt:
-    packages:
-      - cmake-data
-      - cmake
-      - libx32gcc-4.8-dev
-      - libc6-dev-i386
-      - gcc-multilib
-      - g++-multilib
-      - libglu1-mesa-dev:i386
-      - libgl1-mesa-dev:i386
+      env:
+        - SDL2_LIB=BUNDLED
+        - SDL2_MIXER_LIB=BUNDLED
+        - FLUIDSYNTH_LIB=OFF # Bundled lib failed to compile
 
 script:
   - sudo TRAVIS=$TRAVIS ./osx-linux/install_32bit_sdl.sh
-  - cmake -DCMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu .
+  - cmake -DCMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu -DENABLE_SDL2=${SDL2_LIB} -DENABLE_SOUND=${SDL2_MIXER_LIB} -DENABLE_FLUIDSYNTH=${FLUIDSYNTH_LIB} .
   - make -j2 systemshock
 
 before_deploy:

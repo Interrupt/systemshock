@@ -35,7 +35,13 @@ Compiling / Running
 
 ## Building SDL
 ### Linux/Mac
-You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer. 
+You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer or use system ones.
+Here brief options list:
+
+* `ENABLE_SDL2` - use system or bundled SDL2 (ON/BUNDLED, default BUNDLED)
+* `ENABLE_SOUND` - enable sound support (requires SDL2_mixer, ON/BUNDLED/OFF, default is BUNDLED)
+* `ENABLE_FLUIDSYNTH` - enable FluidSynth MIDI support (ON/BUNDLED/OFF, default is BUNDLED)
+* `ENABLE_OPENGL` - enable OpenGL support (ON/OFF, default ON)
 
 ### Windows
 See [the Windows readme](windows/readme_windows.md).
