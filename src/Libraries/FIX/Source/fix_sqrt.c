@@ -31,7 +31,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fix.h"
 #include "lg.h"
 #include <math.h>
-#include <stdio.h>
 
 //-----------------------------------------------------------------
 //  Calculate the square root of a fixed-point number.
