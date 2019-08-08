@@ -26,7 +26,6 @@
 #include <string.h>
 #include "lg.h"
 #include "2d.h"
-#include "draw4x4.h"
 
 static struct
 {
