@@ -1,6 +1,5 @@
 
 #include "Modding.h"
-#include "citres.h"
 #include "lg.h"
 
 #include <stdio.h>
