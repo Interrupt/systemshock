@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	Mechanical model for frame...
 //	=============================
 
-#include <iostream>
 #include "edms_int.h"
 #include "edms_mod.h" //State and such...
 
