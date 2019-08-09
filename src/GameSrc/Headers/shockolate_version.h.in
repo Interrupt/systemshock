@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015-2018 Night Dive Studios, LLC.
+Copyright (C) 2019 Shockolate Project
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,17 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // This is autgenerated CMake file, don't edit it manually!
 
-#define SS_VERSION_NUM "1.6"
-#define SS_GREEK_LETTER "F" // CD is in Final!
-
-// C is for cookie, it's good enough for me.
-
-#ifdef SVGA_SUPPORT
-#define SS_FLAG_LETTER "C" // for CD ship
-#else
-#define SS_FLAG_LETTER "S" // for ship
-#endif                     // SVGA_SUPPORT
-
-#define SYSTEM_SHOCK_VERSION "v" SS_GREEK_LETTER SS_VERSION_NUM SS_FLAG_LETTER
+#ifndef SHOCKOLATE_SRC_GAMESRC_HEADERS_SHOCOLATE_VERSION_H_
+#define SHOCKOLATE_SRC_GAMESRC_HEADERS_SHOCOLATE_VERSION_H_
 
 #define SHOCKOLATE_VERSION "Shockolate @PROJECT_VERSION@@PROJECT_REVERSION_STRING@"
+
+#endif // SHOCKOLATE_SRC_GAMESRC_HEADERS_SHOCOLATE_VERSION_H_

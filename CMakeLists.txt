@@ -130,7 +130,8 @@ if(GIT_FOUND)
 endif(GIT_FOUND)
 
 message(STATUS "Version is ${PROJECT_VERSION}${PROJECT_REVERSION_STRING}")
-configure_file("${CMAKE_SOURCE_DIR}/src/GameSrc/Headers/version.h.in" "${CMAKE_BINARY_DIR}/src/GameSrc/Headers/version.h" )
+configure_file("${CMAKE_SOURCE_DIR}/src/GameSrc/Headers/shockolate_version.h.in"
+	"${CMAKE_BINARY_DIR}/src/GameSrc/Headers/shockolate_version.h" )
 
 # Configuration done. Print features
 feature_summary(WHAT ENABLED_FEATURES DESCRIPTION "Enabled features:")

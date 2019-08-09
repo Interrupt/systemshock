@@ -73,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "dynmem.h"
 #include "citres.h"
 
-#include "version.h" // for system shock version number
+#include "shockolate_version.h" // for system shock version number
 
 #include "Modding.h"
 #include <SDL.h>
