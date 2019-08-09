@@ -33,7 +33,7 @@ add_feature_info(ENABLE_SOUND ENABLE_SOUND "Enable sound support (requires SDL2_
 
 set(ENABLE_FLUIDSYNTH "BUNDLED" CACHE STRING "Enable FluidSynth MIDI support (ON/BUNDLED/OFF, default BUNDLED)")
 set_property(CACHE ENABLE_FLUIDSYNTH PROPERTY STRINGS "ON" "BUNDLED" "OFF")
-add_feature_info(ENABLE_FLUIDSYNTH ENABLE_FLUIDSYNTH "Enable sound support")
+add_feature_info(ENABLE_FLUIDSYNTH ENABLE_FLUIDSYNTH "Enable FluidSynth MIDI support")
 
 # HAAAAX!!
 add_definitions(-DSVGA_SUPPORT)
@@ -117,7 +117,6 @@ endif(NOT WIN32)
 set(PROJECT_REVERSION_STRING "")
 find_package(Git)
 if(GIT_FOUND)
-	message(STATUS "git found: ${GIT_EXECUTABLE}")
 	execute_process(COMMAND ${GIT_EXECUTABLE} describe --dirty
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		OUTPUT_VARIABLE git_describe_out
