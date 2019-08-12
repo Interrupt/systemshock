@@ -51,7 +51,7 @@ typedef struct snd_digi_parms
    int			snd_ref;
    int			loops;
    //Handle			sample;		// Handle to Mac 'snd ' resource.
-   void			*data;
+   uintptr_t            data;
    int			len;
 } snd_digi_parms;
 
