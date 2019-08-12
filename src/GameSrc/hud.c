@@ -143,7 +143,7 @@ extern bool DoubleSize;
 // --------------
 //  PROTOTYPES
 // --------------
-uchar hud_color_bank_cycle(short keycode, ulong context, void *data);
+uchar hud_color_bank_cycle(ushort keycode, uint32_t context, intptr_t data);
 void hud_free_line(int i);
 void hud_delete_line(int i);
 void compute_hud_var(HudLine *hl);
@@ -153,7 +153,7 @@ void hud_shutdown_lines(void);
 // --------------
 //  FUNCTIONS
 // --------------
-uchar hud_color_bank_cycle(short keycode, ulong context, void *data) {
+uchar hud_color_bank_cycle(ushort keycode, uint32_t context, intptr_t data) {
     hud_color_bank = (hud_color_bank + 1) % HUD_COLOR_BANKS;
     return TRUE;
 }

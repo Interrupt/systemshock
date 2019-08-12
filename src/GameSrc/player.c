@@ -209,7 +209,7 @@ errtype init_player(Player *pplr) {
 
        mouse_unconstrain();
 
-       change_mode_func(0,0,(void *)SETUP_LOOP);
+       change_mode_func(0,0,SETUP_LOOP);
 
     //   palfx_fade_up(FALSE);
     }

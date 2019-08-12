@@ -482,34 +482,34 @@ static void LowerCaseInPlace(char *p)
 
 
 #ifdef AUDIOLOGS
-extern uchar audiolog_cancel_func(short keycode, ulong context, void *data);
+extern uchar audiolog_cancel_func(ushort keycode, uint32_t context, intptr_t data);
 #endif
-extern uchar posture_hotkey_func(short keycode, ulong context, void *data);
-extern uchar toggle_mouse_look(short keycode, ulong context, void *data);
-extern uchar change_mode_func(short keycode, ulong context, void *data);
-extern uchar clear_fullscreen_func(short keycode, ulong context, void *data);
-extern uchar saveload_hotkey_func(short keycode, ulong context, void *data);
-extern uchar pause_game_func(short keycode, ulong context, void *data);
-extern uchar reload_weapon_hotkey(short keycode, ulong context, void *data);
-extern uchar select_grenade_hotkey(short keycode, ulong context, void *data);
-extern uchar toggle_olh_func(short keycode, ulong context, void *data);
-extern uchar select_drug_hotkey(short keycode, ulong context, void *data);
-extern uchar toggle_music_func(short keycode, ulong context, void *data);
-extern uchar demo_quit_func(short keycode, ulong context, void *data);
-extern uchar cycle_weapons_func(short keycode, ulong context, void *data);
-extern uchar MacDetailFunc(short keycode, ulong context, void *data);
-extern uchar toggle_opengl_func(short keycode, ulong context, void *data);
-extern uchar arm_grenade_hotkey(short keycode, ulong context, void *data);
-extern uchar use_drug_hotkey(short keycode, ulong context, void *data);
-extern uchar hud_color_bank_cycle(short keycode, ulong context, void *data);
-extern uchar olh_overlay_func(short keycode, ulong context, void *data);
-extern uchar keypad_hotkey_func(short keycode, ulong context, void *data);
-extern uchar MacHelpFunc(short keycode, ulong context, void *data);
-extern uchar wrapper_options_func(short keycode, ulong context, void *data);
-extern uchar toggle_giveall_func(short keycode, ulong context, void *data);
-extern uchar toggle_physics_func(short keycode, ulong context, void *data);
-extern uchar toggle_up_level_func(short keycode, ulong context, void *data);
-extern uchar toggle_down_level_func(short keycode, ulong context, void *data);
+extern uchar posture_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar toggle_mouse_look(ushort keycode, uint32_t context, intptr_t data);
+extern uchar change_mode_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar clear_fullscreen_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar saveload_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar pause_game_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar reload_weapon_hotkey(ushort keycode, uint32_t context, intptr_t data);
+extern uchar select_grenade_hotkey(ushort keycode, uint32_t context, intptr_t data);
+extern uchar toggle_olh_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar select_drug_hotkey(ushort keycode, uint32_t context, intptr_t data);
+extern uchar toggle_music_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar demo_quit_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar cycle_weapons_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar MacDetailFunc(ushort keycode, uint32_t context, intptr_t data);
+extern uchar toggle_opengl_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar arm_grenade_hotkey(ushort keycode, uint32_t context, intptr_t data);
+extern uchar use_drug_hotkey(ushort keycode, uint32_t context, intptr_t data);
+extern uchar hud_color_bank_cycle(ushort keycode, uint32_t context, intptr_t data);
+extern uchar olh_overlay_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar keypad_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar MacHelpFunc(ushort keycode, uint32_t context, intptr_t data);
+extern uchar wrapper_options_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar toggle_giveall_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar toggle_physics_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar toggle_up_level_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar toggle_down_level_func(ushort keycode, uint32_t context, intptr_t data);
 
 
 
@@ -525,7 +525,7 @@ extern uchar toggle_down_level_func(short keycode, ulong context, void *data);
 
 typedef struct HOTKEYLOOKUP_STRUCT
 {
-  const char *s; ulong contexts; hotkey_callback func; void *state; bool used; int def1, def2;
+  const char *s; intptr_t contexts; hotkey_callback func; intptr_t state; bool used; int def1, def2;
 } HOTKEYLOOKUP;
 
 
@@ -534,50 +534,50 @@ HOTKEYLOOKUP HotKeyLookup[] =
 {
 //  name                    contexts      func                    state                 used  default key 1,2
 #ifdef AUDIOLOGS
-  { "\"audiolog_cancel\"",  DEMO_CONTEXT, audiolog_cancel_func,   NULL                   , 0, CTRL('.'),     0 },
+  { "\"audiolog_cancel\"",  DEMO_CONTEXT, audiolog_cancel_func,   0                        , 0, CTRL('.'),     0 },
 #endif
-  { "\"stand\"",            DEMO_CONTEXT, posture_hotkey_func,    (void *)0              , 0, DOWN('t'), SHIFT('t') },
-  { "\"crouch\"",           DEMO_CONTEXT, posture_hotkey_func,    (void *)1              , 0, DOWN('g'), SHIFT('g') },
-  { "\"prone\"",            DEMO_CONTEXT, posture_hotkey_func,    (void *)2              , 0, DOWN('b'), SHIFT('b') },
-  { "\"toggle_freelook\"",  DEMO_CONTEXT, toggle_mouse_look,      (void *)TRUE           , 0, DOWN('f'),     0 },
-  { "\"full_view\"",        DEMO_CONTEXT, change_mode_func,       (void *)FULLSCREEN_LOOP, 0, CTRL('f'),     0 },
-  { "\"normal_view\"",      DEMO_CONTEXT, change_mode_func,       (void *)GAME_LOOP      , 0, CTRL('d'),     0 },
-  { "\"map_view\"",         DEMO_CONTEXT, change_mode_func,       (void *)AUTOMAP_LOOP   , 0, CTRL('a'),     0 },
-  { "\"clear_fullscreen\"", DEMO_CONTEXT, clear_fullscreen_func,  NULL                   , 0, DOWN(KEY_BS),  0 },
-  { "\"save_game\"",        DEMO_CONTEXT, saveload_hotkey_func,   (void *)FALSE          , 0, CTRL('s'),     0 },
-  { "\"load_game\"",        DEMO_CONTEXT, saveload_hotkey_func,   (void *)TRUE           , 0, CTRL('l'),     0 },
-  { "\"pause\"",            DEMO_CONTEXT, pause_game_func,        (void *)TRUE           , 0, DOWN('p'),     0 },
-  { "\"reload_weapon 1\"",  DEMO_CONTEXT, reload_weapon_hotkey,   (void *)1              , 0, CTRL(KEY_BS),  0 },
-  { "\"reload_weapon 0\"",  DEMO_CONTEXT, reload_weapon_hotkey,   (void *)0              , 0, ALT(KEY_BS),   0 },
-  { "\"select_grenade\"",   DEMO_CONTEXT, select_grenade_hotkey,  (void *)0              , 0, CTRL('\''),    0 },
-  { "\"toggle_olh\"",       DEMO_CONTEXT, toggle_olh_func,        NULL                   , 0, CTRL('h'),     0 },
-  { "\"select_drug\"",      DEMO_CONTEXT, select_drug_hotkey,     (void *)0              , 0, CTRL(';'),     0 },
-  { "\"toggle_music\"",     DEMO_CONTEXT, toggle_music_func,      NULL                   , 0, CTRL('m'),     0 },
-  { "\"quit\"",             DEMO_CONTEXT, demo_quit_func,         NULL                   , 0, CTRL('q'),     0 },
-  { "\"cycle_weapons 1\"",  DEMO_CONTEXT, cycle_weapons_func,     (void *)1              , 0, TAB_KEY,       0 },
-  { "\"cycle_weapons -1\"", DEMO_CONTEXT, cycle_weapons_func,     (void *)-1             , 0, S_TAB_KEY,     0 },
-  { "\"cycle_detail\"",     DEMO_CONTEXT, MacDetailFunc,          NULL                   , 0, CTRL('1'),     0 },
-  { "\"toggle_opengl\"",   EVERY_CONTEXT, toggle_opengl_func,     NULL                   , 0, CTRL('g'),     0 },
-  { "\"arm_grenade\"",      DEMO_CONTEXT, arm_grenade_hotkey,     (void *)0              , 0, ALT('\''),     0 },
-  { "\"use_drug\"",         DEMO_CONTEXT, use_drug_hotkey,        (void *)0              , 0, ALT(';'),      0 },
-  { "\"hud_color\"",        DEMO_CONTEXT, hud_color_bank_cycle,   NULL                   , 0, ALT('h'),      0 },
-  { "\"showhelp\"",         DEMO_CONTEXT, olh_overlay_func,       &olh_overlay_on        , 0, ALT('o'),      0 },
-  { "\"keypad 0\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('0'),     0 },
-  { "\"keypad 1\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('1'),     0 },
-  { "\"keypad 2\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('2'),     0 },
-  { "\"keypad 3\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('3'),     0 },
-  { "\"keypad 4\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('4'),     0 },
-  { "\"keypad 5\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('5'),     0 },
-  { "\"keypad 6\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('6'),     0 },
-  { "\"keypad 7\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('7'),     0 },
-  { "\"keypad 8\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('8'),     0 },
-  { "\"keypad 9\"",         DEMO_CONTEXT, keypad_hotkey_func,     NULL                   , 0, DOWN('9'),     0 },
-//  { "\"mac_help\"",         DEMO_CONTEXT, MacHelpFunc,            NULL                   , 0, CTRL('/'),     0 },
-  { "\"toggle_options\"",   DEMO_CONTEXT, wrapper_options_func,   (void *)TRUE           , 0, DOWN(KEY_ESC), 0 },
-  { "\"cheat_give_all\"",   DEMO_CONTEXT, toggle_giveall_func,    (void *)TRUE           , 0, CTRL('2'),     0 },
-  { "\"cheat_physics\"",    DEMO_CONTEXT, toggle_physics_func,    (void *)TRUE           , 0, CTRL('3'),     0 },
-  { "\"cheat_up_level\"",   DEMO_CONTEXT, toggle_up_level_func,   (void *)TRUE           , 0, CTRL('4'),     0 },
-  { "\"cheat_down_level\"", DEMO_CONTEXT, toggle_down_level_func, (void *)TRUE           , 0, CTRL('5'),     0 },
+  { "\"stand\"",            DEMO_CONTEXT, posture_hotkey_func,    0                        , 0, DOWN('t'), SHIFT('t') },
+  { "\"crouch\"",           DEMO_CONTEXT, posture_hotkey_func,    1                        , 0, DOWN('g'), SHIFT('g') },
+  { "\"prone\"",            DEMO_CONTEXT, posture_hotkey_func,    2                        , 0, DOWN('b'), SHIFT('b') },
+  { "\"toggle_freelook\"",  DEMO_CONTEXT, toggle_mouse_look,      TRUE                     , 0, DOWN('f'),     0 },
+  { "\"full_view\"",        DEMO_CONTEXT, change_mode_func,       FULLSCREEN_LOOP          , 0, CTRL('f'),     0 },
+  { "\"normal_view\"",      DEMO_CONTEXT, change_mode_func,       GAME_LOOP                , 0, CTRL('d'),     0 },
+  { "\"map_view\"",         DEMO_CONTEXT, change_mode_func,       AUTOMAP_LOOP             , 0, CTRL('a'),     0 },
+  { "\"clear_fullscreen\"", DEMO_CONTEXT, clear_fullscreen_func,  0                        , 0, DOWN(KEY_BS),  0 },
+  { "\"save_game\"",        DEMO_CONTEXT, saveload_hotkey_func,   FALSE                    , 0, CTRL('s'),     0 },
+  { "\"load_game\"",        DEMO_CONTEXT, saveload_hotkey_func,   TRUE                     , 0, CTRL('l'),     0 },
+  { "\"pause\"",            DEMO_CONTEXT, pause_game_func,        TRUE                     , 0, DOWN('p'),     0 },
+  { "\"reload_weapon 1\"",  DEMO_CONTEXT, reload_weapon_hotkey,   1                        , 0, CTRL(KEY_BS),  0 },
+  { "\"reload_weapon 0\"",  DEMO_CONTEXT, reload_weapon_hotkey,   0                        , 0, ALT(KEY_BS),   0 },
+  { "\"select_grenade\"",   DEMO_CONTEXT, select_grenade_hotkey,  0                        , 0, CTRL('\''),    0 },
+  { "\"toggle_olh\"",       DEMO_CONTEXT, toggle_olh_func,        0                        , 0, CTRL('h'),     0 },
+  { "\"select_drug\"",      DEMO_CONTEXT, select_drug_hotkey,     0                        , 0, CTRL(';'),     0 },
+  { "\"toggle_music\"",     DEMO_CONTEXT, toggle_music_func,      0                        , 0, CTRL('m'),     0 },
+  { "\"quit\"",             DEMO_CONTEXT, demo_quit_func,         0                        , 0, CTRL('q'),     0 },
+  { "\"cycle_weapons 1\"",  DEMO_CONTEXT, cycle_weapons_func,     1                        , 0, TAB_KEY,       0 },
+  { "\"cycle_weapons -1\"", DEMO_CONTEXT, cycle_weapons_func,     -1                       , 0, S_TAB_KEY,     0 },
+  { "\"cycle_detail\"",     DEMO_CONTEXT, MacDetailFunc,          0                        , 0, CTRL('1'),     0 },
+  { "\"toggle_opengl\"",   EVERY_CONTEXT, toggle_opengl_func,     0                        , 0, CTRL('g'),     0 },
+  { "\"arm_grenade\"",      DEMO_CONTEXT, arm_grenade_hotkey,     0                        , 0, ALT('\''),     0 },
+  { "\"use_drug\"",         DEMO_CONTEXT, use_drug_hotkey,        0                        , 0, ALT(';'),      0 },
+  { "\"hud_color\"",        DEMO_CONTEXT, hud_color_bank_cycle,   0                        , 0, ALT('h'),      0 },
+  { "\"showhelp\"",         DEMO_CONTEXT, olh_overlay_func,       (intptr_t)&olh_overlay_on, 0, ALT('o'),      0 },
+  { "\"keypad 0\"",         DEMO_CONTEXT, keypad_hotkey_func,     0                        , 0, DOWN('0'),     0 },
+  { "\"keypad 1\"",         DEMO_CONTEXT, keypad_hotkey_func,     0                        , 0, DOWN('1'),     0 },
+  { "\"keypad 2\"",         DEMO_CONTEXT, keypad_hotkey_func,     0                        , 0, DOWN('2'),     0 },
+  { "\"keypad 3\"",         DEMO_CONTEXT, keypad_hotkey_func,     0                        , 0, DOWN('3'),     0 },
+  { "\"keypad 4\"",         DEMO_CONTEXT, keypad_hotkey_func,     0                        , 0, DOWN('4'),     0 },
+  { "\"keypad 5\"",         DEMO_CONTEXT, keypad_hotkey_func,     0                        , 0, DOWN('5'),     0 },
+  { "\"keypad 6\"",         DEMO_CONTEXT, keypad_hotkey_func,     0                        , 0, DOWN('6'),     0 },
+  { "\"keypad 7\"",         DEMO_CONTEXT, keypad_hotkey_func,     0                        , 0, DOWN('7'),     0 },
+  { "\"keypad 8\"",         DEMO_CONTEXT, keypad_hotkey_func,     0                        , 0, DOWN('8'),     0 },
+  { "\"keypad 9\"",         DEMO_CONTEXT, keypad_hotkey_func,     0                        , 0, DOWN('9'),     0 },
+//  { "\"mac_help\"",         DEMO_CONTEXT, MacHelpFunc,            0                        , 0, CTRL('/'),     0 },
+  { "\"toggle_options\"",   DEMO_CONTEXT, wrapper_options_func,   TRUE                     , 0, DOWN(KEY_ESC), 0 },
+  { "\"cheat_give_all\"",   DEMO_CONTEXT, toggle_giveall_func,    TRUE                     , 0, CTRL('2'),     0 },
+  { "\"cheat_physics\"",    DEMO_CONTEXT, toggle_physics_func,    TRUE                     , 0, CTRL('3'),     0 },
+  { "\"cheat_up_level\"",   DEMO_CONTEXT, toggle_up_level_func,   TRUE                     , 0, CTRL('4'),     0 },
+  { "\"cheat_down_level\"", DEMO_CONTEXT, toggle_down_level_func, TRUE                     , 0, CTRL('5'),     0 },
 
   { NULL, 0, 0, 0 }
 };

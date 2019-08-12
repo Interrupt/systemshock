@@ -506,7 +506,7 @@ void lamp_set_vals_with_offset(byte offset);
 void lamp_turnon(uchar visible, uchar real_start);
 void lamp_change_setting(byte offset);
 void lamp_turnoff(uchar visible, uchar real_stop);
-uchar lantern_change_setting_hkey(short keycode, ulong context, void *data);
+uchar lantern_change_setting_hkey(ushort keycode, uint32_t context, intptr_t data);
 
 struct _lampspec {
     int rad1;
@@ -585,7 +585,7 @@ void lamp_turnoff(uchar visible, uchar real_stop) {
     }
 }
 
-uchar lantern_change_setting_hkey(short key, ulong context, void *data) {
+uchar lantern_change_setting_hkey(ushort key, uint32_t context, intptr_t data) {
     int n = CPTRIP(LANTERN_HARD_TRIPLE);
     int v = player_struct.hardwarez[n];
     uint32_t s = player_struct.hardwarez_status[n];
@@ -614,7 +614,7 @@ uchar lantern_change_setting_hkey(short key, ulong context, void *data) {
 //--------------------------
 void shield_set_absorb(void);
 void shield_toggle(uchar visible, uchar real);
-uchar shield_change_setting_hkey(short keycode, ulong context, void *data);
+uchar shield_change_setting_hkey(ushort keycode, uint32_t context, intptr_t data);
 
 #define SHIELD_IDX (CPTRIP(SHIELD_HARD_TRIPLE))
 
@@ -649,7 +649,7 @@ void shield_toggle(uchar visible, uchar real) {
     shield_set_absorb();
 }
 
-uchar shield_change_setting_hkey(short key, ulong context, void *data) {
+uchar shield_change_setting_hkey(ushort key, uint32_t context, intptr_t data) {
     int n = CPTRIP(SHIELD_HARD_TRIPLE);
     int v = player_struct.hardwarez[n];
     uint32_t s = player_struct.hardwarez_status[n];

@@ -133,58 +133,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RUBBERBAND_MODE 2
 
 // Prototypes
-uchar quit_key_func(short keycode, ulong context, void *data);
-uchar really_quit_key_func(short keycode, ulong context, void *data);
-uchar change_mode_func(short keycode, ulong context, void *data);
-uchar toggle_time_func(short keycode, ulong context, void *data);
-uchar do_popup_textmenu(short keycode, ulong context, void *g);
-uchar mono_config_func(short keycode, ulong context, void *data);
-uchar zoom_func(short keycode, ulong context, void *data);
-uchar load_level_func(short keycode, ulong context, void *data);
-uchar save_level_func(short keycode, ulong context, void *data);
-uchar run_intro_func(short keycode, ulong context, void *data);
-uchar toggle_3d_func(short keycode, ulong context, void *data);
-uchar texture_selection_func(short keycode, ulong context, void *data);
-uchar tilemap_mode_func(short keycode, ulong context, void *data);
-uchar draw_mode_func(short keycode, ulong context, void *data);
-uchar clear_highlight_func(short keycode, ulong context, void *data);
-uchar lighting_func(short keycode, ulong context, void *data);
-uchar inp6d_panel_func(short keycode, ulong context, void *data);
-uchar render_panel_func(short keycode, ulong context, void *data);
-uchar bkpt_me(short keycode, ulong context, void *data);
-uchar popup_tilemap_func(short keycode, ulong context, void *data);
-uchar editor_options_func(short keycode, ulong context, void *data);
-uchar editor_modes_func(short keycode, ulong context, void *data);
-uchar misc_menu_func(short keycode, ulong context, void *data);
-uchar control_panel_func(short keycode, ulong context, void *data);
-uchar do_find_func(short keycode, ulong context, void *data);
-uchar stupid_slew_func(short keycode, ulong context, void *data);
-uchar zoom_3d_func(short keycode, ulong context, void *data);
-uchar menu_close_func(short keycode, ulong context, void *data);
+uchar quit_key_func(ushort keycode, uint32_t context, intptr_t data);
+uchar really_quit_key_func(ushort keycode, uint32_t context, intptr_t data);
+uchar change_mode_func(ushort keycode, uint32_t context, intptr_t data);
+uchar toggle_time_func(ushort keycode, uint32_t context, intptr_t data);
+uchar do_popup_textmenu(ushort keycode, uint32_t context, intptr_t g);
+uchar mono_config_func(ushort keycode, uint32_t context, intptr_t data);
+uchar zoom_func(ushort keycode, uint32_t context, intptr_t data);
+uchar load_level_func(ushort keycode, uint32_t context, intptr_t data);
+uchar save_level_func(ushort keycode, uint32_t context, intptr_t data);
+uchar run_intro_func(ushort keycode, uint32_t context, intptr_t data);
+uchar toggle_3d_func(ushort keycode, uint32_t context, intptr_t data);
+uchar texture_selection_func(ushort keycode, uint32_t context, intptr_t data);
+uchar tilemap_mode_func(ushort keycode, uint32_t context, intptr_t data);
+uchar draw_mode_func(ushort keycode, uint32_t context, intptr_t data);
+uchar clear_highlight_func(ushort keycode, uint32_t context, intptr_t data);
+uchar lighting_func(ushort keycode, uint32_t context, intptr_t data);
+uchar inp6d_panel_func(ushort keycode, uint32_t context, intptr_t data);
+uchar render_panel_func(ushort keycode, uint32_t context, intptr_t data);
+uchar bkpt_me(ushort keycode, uint32_t context, intptr_t data);
+uchar popup_tilemap_func(ushort keycode, uint32_t context, intptr_t data);
+uchar editor_options_func(ushort keycode, uint32_t context, intptr_t data);
+uchar editor_modes_func(ushort keycode, uint32_t context, intptr_t data);
+uchar misc_menu_func(ushort keycode, uint32_t context, intptr_t data);
+uchar control_panel_func(ushort keycode, uint32_t context, intptr_t data);
+uchar do_find_func(ushort keycode, uint32_t context, intptr_t data);
+uchar stupid_slew_func(ushort keycode, uint32_t context, intptr_t data);
+uchar zoom_3d_func(ushort keycode, uint32_t context, intptr_t data);
+uchar menu_close_func(ushort keycode, uint32_t context, intptr_t data);
 void start_music(void);
 void stop_music(void);
-uchar toggle_music_func(short, ulong, void *);
-uchar mono_clear_func(short keycode, ulong context, void *data);
-uchar edit_flags_func(short keycode, ulong context, void *data);
-uchar mono_toggle_func(short keycode, ulong context, void *data);
-uchar new_level_func(short keycode, ulong context, void *data);
-uchar toggle_physics_func(short keycode, ulong context, void *data);
-uchar toggle_giveall_func(short keycode, ulong context, void *data);
-uchar toggle_up_level_func(short keycode, ulong context, void *data);
-uchar toggle_down_level_func(short keycode, ulong context, void *data);
-uchar toggle_sfx_func(short keycode, ulong context, void *data);
+uchar toggle_music_func(ushort, uint32_t, intptr_t);
+uchar mono_clear_func(ushort keycode, uint32_t context, intptr_t data);
+uchar edit_flags_func(ushort keycode, uint32_t context, intptr_t data);
+uchar mono_toggle_func(ushort keycode, uint32_t context, intptr_t data);
+uchar new_level_func(ushort keycode, uint32_t context, intptr_t data);
+uchar toggle_physics_func(ushort keycode, uint32_t context, intptr_t data);
+uchar toggle_giveall_func(ushort keycode, uint32_t context, intptr_t data);
+uchar toggle_up_level_func(ushort keycode, uint32_t context, intptr_t data);
+uchar toggle_down_level_func(ushort keycode, uint32_t context, intptr_t data);
+uchar toggle_sfx_func(ushort keycode, uint32_t context, intptr_t data);
 
-uchar save_hotkey_func(short, ulong, void *);
-uchar pause_game_func(short, ulong, void *);
-uchar clear_fullscreen_func(short keycode, ulong context, void *data);
-uchar arm_grenade_hotkey(short keycode, ulong context, void *data);
-uchar select_grenade_hotkey(short keycode, ulong context, void *data);
-uchar select_drug_hotkey(short keycode, ulong context, void *data);
-uchar use_drug_hotkey(short keycode, ulong context, void *data);
+uchar save_hotkey_func(ushort, uint32_t, intptr_t);
+uchar pause_game_func(ushort, uint32_t, intptr_t);
+uchar clear_fullscreen_func(ushort keycode, uint32_t context, intptr_t data);
+uchar arm_grenade_hotkey(ushort keycode, uint32_t context, intptr_t data);
+uchar select_grenade_hotkey(ushort keycode, uint32_t context, intptr_t data);
+uchar select_drug_hotkey(ushort keycode, uint32_t context, intptr_t data);
+uchar use_drug_hotkey(ushort keycode, uint32_t context, intptr_t data);
 
-uchar toggle_mouse_look(short keycode, ulong context, void *data);
+uchar toggle_mouse_look(ushort keycode, uint32_t context, intptr_t data);
 
-// uchar (short keycode, ulong context, void* data);
+// uchar (ushort keycode, uint32_t context, intptr_t data);
 
 // Globals
 #ifdef __HKEYFUNC_SRC

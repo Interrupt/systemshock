@@ -578,7 +578,7 @@ errtype texture_crunch_go(void) {
 #define NUM_DEMO_TEXTURES 32
 #pragma disable_message(202)
 uchar salvation_list[GAME_TEXTURES];
-uchar texture_annihilate_func(short keycode, ulong context, void *data) {
+uchar texture_annihilate_func(ushort keycode, uint32_t context, intptr_t data) {
     int fn;
     int i, c;
     extern int texture_fnum;

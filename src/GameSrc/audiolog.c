@@ -262,7 +262,7 @@ errtype audiolog_bark_play(int bark_id)
 //-------------------------------------------------------------
 //  Stop playing audiolog (in response to a hotkey).
 //-------------------------------------------------------------
-uchar audiolog_cancel_func(short s, ulong l, void *v)
+uchar audiolog_cancel_func(ushort s, uint32_t l, intptr_t v)
 {
   audiolog_stop();
   return TRUE;

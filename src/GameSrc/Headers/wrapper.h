@@ -65,7 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // which is 2 by width text buttons for the user to click on.  When clicked,
 // the passed callback is called with the number of the button clicked
 // as an argument.
-uchar wrapper_options_func(short keycode, ulong context, void *data);
+uchar wrapper_options_func(ushort keycode, uint32_t context, intptr_t data);
 
 #define NUM_SAVE_SLOTS 8
 #define SAVE_COMMENT_LEN 32

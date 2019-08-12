@@ -170,8 +170,8 @@ void draw_button(uchar butid);
 errtype (*verify_callback)(int num_clicked) = NULL;
 char savegame_verify;
 char comments[NUM_SAVE_SLOTS + 1][SAVE_COMMENT_LEN];
-uchar pause_game_func(short keycode, ulong context, void *data);
-uchar really_quit_key_func(short keycode, ulong context, void *data);
+uchar pause_game_func(ushort keycode, uint32_t context, intptr_t data);
+uchar really_quit_key_func(ushort keycode, uint32_t context, intptr_t data);
 
 // separate mouse region for regular-screen and fullscreen.
 #define NUM_MOUSEREGION_SCREENS 2
@@ -1267,7 +1267,7 @@ void wrapper_pushbutton_func(uchar butid) {
         break;
     case HEAD_RECENTER_BUTTON: // Input
     {
-        // extern uchar recenter_headset(short keycode, ulong context, void* data);
+        // extern uchar recenter_headset(ushort keycode, uint32_t context, intptr_t data);
         // recenter_headset(0,0,0);
     } break;
     case HEADSET_BUTTON:
@@ -1607,7 +1607,7 @@ void screenmode_change(uchar new_mode) {
     extern short mode_id;
     mode_id = new_mode;
     QUESTVAR_SET(SCREENMODE_QVAR, new_mode);
-    change_mode_func(0, 0, (void *)(unsigned int)_current_loop);
+    change_mode_func(0, 0, _current_loop);
     wrapper_screenmode_hack = TRUE;
 
     INFO("Changed screen mode to %i\n", mode_id);
@@ -1667,7 +1667,7 @@ void joysens_dealfunc(ushort joysens_qvar) {
 
 #pragma disable_message(202)
 void center_joy_go(uchar butid) {
-    extern uchar recenter_joystick(short keycode, ulong context, void *data);
+    extern uchar recenter_joystick(ushort keycode, uint32_t context, intptr_t data);
 
     // recenter_joystick(0,0,0);
     joystick_screen_init();
@@ -1753,7 +1753,7 @@ void headset_fov_dealfunc(int hackval) {
 
 #pragma disable_message(202)
 void olh_dealfunc(uchar olh) {
-    extern uchar toggle_olh_func(short keycode, ulong context, void *data);
+    extern uchar toggle_olh_func(ushort keycode, uint32_t context, intptr_t data);
 
     toggle_olh_func(0, 0, 0);
 }
@@ -2096,7 +2096,7 @@ void options_screen_init(void) {
 }
 
 #pragma disable_message(202)
-uchar wrapper_options_func(short keycode, ulong context, void *data) {
+uchar wrapper_options_func(ushort keycode, uint32_t context, intptr_t data) {
     wrapper_start(wrapper_init);
     return (OK);
 }
@@ -2277,7 +2277,7 @@ uchar wrapper_region_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
     uiSetRegionDefaultCursor(r, &option_cursor);
 
     if (ev->action & MOUSE_DOWN) {
-        wrapper_options_func(0, 0, (void *)TRUE);
+        wrapper_options_func(0, 0, TRUE);
         return TRUE;
     }
     return FALSE;
@@ -2351,7 +2351,7 @@ errtype wrapper_create_mouse_region(LGRegion *root) {
 
 //#ifdef NOT_YET //
 #pragma disable_message(202)
-uchar saveload_hotkey_func(short keycode, ulong context, void *data) {
+uchar saveload_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
 #ifdef DEMO
     return (TRUE);
 #else
@@ -2363,7 +2363,7 @@ uchar saveload_hotkey_func(short keycode, ulong context, void *data) {
 #endif
 }
 
-uchar demo_quit_func(short keycode, ulong context, void *data) {
+uchar demo_quit_func(ushort keycode, uint32_t context, intptr_t data) {
     wrapper_start(quit_verify_init);
     string_message_info(REF_STR_QuitConfirm);
     return (TRUE);

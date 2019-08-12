@@ -493,7 +493,7 @@ void olh_overlay(void) {
     status_bio_start();
 }
 
-uchar toggle_olh_func(short keycode, ulong context, void *data) {
+uchar toggle_olh_func(ushort keycode, uint32_t context, intptr_t data) {
     if (!olh_active) {
         string_message_info(REF_STR_helpOn);
         olh_active = TRUE;
@@ -507,7 +507,7 @@ uchar toggle_olh_func(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar olh_overlay_func(short keycode, ulong context, void *data) {
+uchar olh_overlay_func(ushort keycode, uint32_t context, intptr_t data) {
     if (global_fullmap->cyber) {
         string_message_info(REF_STR_NotAvailCspace);
         return TRUE;

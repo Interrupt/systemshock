@@ -420,8 +420,8 @@ uchar inventory_handle_leftbutton(uiEvent *ev, inv_display *dp, int row);
 uchar inventory_handle_rightbutton(uiEvent *ev, LGRegion *reg, inv_display *dp, int row);
 uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, void *);
 uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *);
-uchar invent_hotkey_func(ushort, ulong, int data);
-uchar cycle_weapons_func(ushort, ulong, int data);
+uchar invent_hotkey_func(ushort, uint32_t, intptr_t data);
+uchar cycle_weapons_func(ushort, uint32_t, intptr_t data);
 void init_invent_hotkeys(void);
 void invent_language_change(void);
 errtype inventory_update_screen_mode();
@@ -430,7 +430,7 @@ void inv_update_fullscreen(uchar full);
 void super_drop_func(int dispnum, int row);
 void super_use_func(int dispnum, int row);
 void gen_log_displays(int pgnum);
-void absorb_object_on_cursor(short, ulong, void *);
+void absorb_object_on_cursor(ushort, uint32_t, intptr_t);
 uchar gen_inv_page(int pgnum, int *i, inv_display **dp);
 uchar gen_inv_displays(int *i, inv_display **dp);
 
@@ -2370,7 +2370,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
 #define MAX_HOTKEY_PAGES 6
 #define EMPTY_PAGE(i) (page_button_state[i] == BttnDummy)
 
-uchar invent_hotkey_func(ushort keycode, ulong context, int data) {
+uchar invent_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
     if (inventory_page < 0)
         inventory_page = MAX_HOTKEY_PAGES;
     if (inventory_page >= MAX_HOTKEY_PAGES)
@@ -2404,7 +2404,7 @@ uchar invent_hotkey_func(ushort keycode, ulong context, int data) {
     return TRUE;
 }
 
-uchar cycle_weapons_func(ushort keycode, ulong context, int data) {
+uchar cycle_weapons_func(ushort keycode, uint32_t context, intptr_t data) {
     if (global_fullmap->cyber) {
         int ac = player_struct.actives[ACTIVE_COMBAT_SOFT];
         int bound1 = (data > 0) ? NUM_COMBAT_SOFTS : -1;
@@ -2439,15 +2439,15 @@ uchar cycle_weapons_func(ushort keycode, ulong context, int data) {
 
 void init_invent_hotkeys(void) {
     /*  later
-    //   hotkey_add(PAGEUP_KEY,DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)0);
-       hotkey_add(PAGEUP_KEY|KB_FLAG_2ND,DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)0);
-       hotkey_add(KB_FLAG_DOWN|KB_FLAG_ALT|'[',DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)0);
-    //   hotkey_add(PAGEDN_KEY,DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)1);
-       hotkey_add(PAGEDN_KEY|KB_FLAG_2ND,DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)1);
-       hotkey_add(KB_FLAG_DOWN|KB_FLAG_ALT|']',DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)1);
+    //   hotkey_add(PAGEUP_KEY,DEMO_CONTEXT,invent_hotkey_func,0);
+       hotkey_add(PAGEUP_KEY|KB_FLAG_2ND,DEMO_CONTEXT,invent_hotkey_func,0);
+       hotkey_add(KB_FLAG_DOWN|KB_FLAG_ALT|'[',DEMO_CONTEXT,invent_hotkey_func,0);
+    //   hotkey_add(PAGEDN_KEY,DEMO_CONTEXT,invent_hotkey_func,1);
+       hotkey_add(PAGEDN_KEY|KB_FLAG_2ND,DEMO_CONTEXT,invent_hotkey_func,1);
+       hotkey_add(KB_FLAG_DOWN|KB_FLAG_ALT|']',DEMO_CONTEXT,invent_hotkey_func,1);
     */
-    hotkey_add(KEY_TAB | KB_FLAG_DOWN, DEMO_CONTEXT, (hotkey_callback)cycle_weapons_func, (void *)1);
-    hotkey_add(KEY_TAB | KB_FLAG_DOWN | KB_FLAG_SHIFT, DEMO_CONTEXT, (hotkey_callback)cycle_weapons_func, (void *)-1);
+    hotkey_add(KEY_TAB | KB_FLAG_DOWN, DEMO_CONTEXT, cycle_weapons_func, 1);
+    hotkey_add(KEY_TAB | KB_FLAG_DOWN | KB_FLAG_SHIFT, DEMO_CONTEXT, cycle_weapons_func, -1);
 }
 
 void invent_language_change(void) {
@@ -3451,7 +3451,7 @@ uchar gen_inv_displays(int *i, inv_display **dp) {
     return FALSE;
 }
 
-void absorb_object_on_cursor(short keycode, ulong context, void *data) {
+void absorb_object_on_cursor(ushort keycode, uint32_t context, intptr_t data) {
     if (object_on_cursor == 0)
         return;
 

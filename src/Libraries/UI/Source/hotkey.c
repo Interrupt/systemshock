@@ -50,13 +50,13 @@ errtype hotkey_init(int tblsize)
    return hash_init(&hotkey_table,sizeof(hotkey_entry),tblsize,hotkey_hash_func,hotkey_equ_func);
 }
 
-errtype hotkey_add(short keycode, ulong contexts, hotkey_callback func, void* state)
+errtype hotkey_add(ushort keycode, uint32_t contexts, hotkey_callback func, intptr_t state)
 {
 #ifdef HOTKEY_HELP
    return(hotkey_add_help(keycode,contexts,func,state,NULL));
 }
 
-errtype hotkey_add_help(short keycode, ulong contexts, hotkey_callback func, void* state, char * help_text)
+errtype hotkey_add_help(ushort keycode, uint32_t contexts, hotkey_callback func, intptr_t state, char * help_text)
 {
 #endif
    hotkey_entry e,*ch;

@@ -486,7 +486,7 @@ errtype journey_newgame_func(void)
 
   INFO("Started new game!");
 
-  change_mode_func(0, 0, (void *)GAME_LOOP);
+  change_mode_func(0, 0, GAME_LOOP);
 
   return OK;
 }
@@ -897,7 +897,7 @@ errtype load_that_thar_game(int which_slot)
     player_create_initial();
     player_struct.level = 0xFF; // make sure we load textures
     Poke_SaveName(which_slot);
-    change_mode_func(0, 0, (void *)GAME_LOOP);
+    change_mode_func(0, 0, GAME_LOOP);
     retval = load_game(save_game_name);
     if (retval != OK)
     {

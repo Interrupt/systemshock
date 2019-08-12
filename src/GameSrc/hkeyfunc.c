@@ -86,14 +86,14 @@ extern uchar properties_changed;
 
 #ifdef PLAYTEST
 #pragma disable_message(202)
-uchar maim_player(short keycode, ulong context, void *data) {
+uchar maim_player(ushort keycode, uint32_t context, intptr_t data) {
     player_struct.hit_points = 5;
     return TRUE;
 }
 #pragma enable_message(202)
 
 #pragma disable_message(202)
-uchar salt_the_player(short keycode, ulong context, void *data) {
+uchar salt_the_player(ushort keycode, uint32_t context, intptr_t data) {
     if (config_get_raw(CFG_HKEY_GO, NULL, 0)) {
         player_struct.hit_points = 255;
         player_struct.cspace_hp = 255;
@@ -109,7 +109,7 @@ uchar salt_the_player(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar automap_seen(short keycode, ulong context, void *data) {
+uchar automap_seen(ushort keycode, uint32_t context, intptr_t data) {
     ushort x, y;
     MapElem *pme;
 
@@ -125,7 +125,7 @@ uchar automap_seen(short keycode, ulong context, void *data) {
 
 extern errtype give_player_loot(Player *pplr);
 
-uchar give_player_hotkey(short keycode, ulong context, void *data) {
+uchar give_player_hotkey(ushort keycode, uint32_t context, intptr_t data) {
     if (config_get_raw(CFG_HKEY_GO, NULL, 0)) {
         give_player_loot(&player_struct);
         chg_set_flg(INVENTORY_UPDATE);
@@ -141,7 +141,7 @@ uchar give_player_hotkey(short keycode, ulong context, void *data) {
 uchar new_cone_clip = TRUE;
 
 #pragma disable_message(202)
-uchar change_clipper(short keycode, ulong context, void *data) {
+uchar change_clipper(ushort keycode, uint32_t context, intptr_t data) {
     extern errtype render_run(void);
     new_cone_clip = !new_cone_clip;
     if (new_cone_clip)
@@ -155,7 +155,7 @@ uchar change_clipper(short keycode, ulong context, void *data) {
 #endif
 
 #pragma disable_message(202)
-uchar quit_key_func(short keycode, ulong context, void *data) {
+uchar quit_key_func(ushort keycode, uint32_t context, intptr_t data) {
 #ifndef GAMEONLY
     extern uchar possible_change;
 #endif
@@ -172,7 +172,7 @@ uchar quit_key_func(short keycode, ulong context, void *data) {
 
 extern void loopmode_exit(short), loopmode_enter(short);
 
-uchar keyhelp_hotkey_func(short keycode, ulong context, void *data) {
+uchar keyhelp_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
     void *keyhelp_txtscrn;
     int fake_inp = 0;
     extern errtype update_state(uchar time_passes);
@@ -209,20 +209,21 @@ uchar keyhelp_hotkey_func(short keycode, ulong context, void *data) {
 }
 #endif // NOT_YET
 
-uchar really_quit_key_func(short keycode, ulong context, void *data) {
+uchar really_quit_key_func(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar gPlayingGame;
     gPlayingGame = FALSE;
     return TRUE;
 }
 
-uchar toggle_bool_func(short keycode, ulong context, bool *tgl) {
+uchar toggle_bool_func(ushort keycode, uint32_t context, intptr_t data) {
+    bool *tgl = (bool *)data;
     *tgl = !*tgl;
     return TRUE;
 }
 
 extern bool DoubleSize;
 
-uchar change_mode_func(short keycode, ulong context, void *data) {
+uchar change_mode_func(ushort keycode, uint32_t context, intptr_t data) {
     int newm = (int)data;
 
     if ((newm == AUTOMAP_LOOP) && ((!player_struct.hardwarez[HARDWARE_AUTOMAP]) || (global_fullmap->cyber)))
@@ -239,7 +240,7 @@ uchar change_mode_func(short keycode, ulong context, void *data) {
 short hdx = 0, hdy = 0;
 ubyte hcount = 0;
 
-uchar move_handart(short keycode, ulong context, void *data) {
+uchar move_handart(ushort keycode, uint32_t context, intptr_t data) {
     short amt = 1;
     ubyte foo = (ubyte)data;
     short *dir;
@@ -262,16 +263,16 @@ uchar move_handart(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar adv_handart(short keycode, ulong context, void *data) {
+uchar adv_handart(ushort keycode, uint32_t context, intptr_t data) {
     hcount = (hcount + 1) % 5;
     return TRUE;
 }
 
 #endif // HANDART_ADJUST
 
-uchar toggle_view_func(short keycode, ulong context, void *data) {
+uchar toggle_view_func(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar full_game_3d;
-    return (change_mode_func(keycode, context, (full_game_3d) ? (void *)GAME_LOOP : (void *)FULLSCREEN_LOOP));
+    return (change_mode_func(keycode, context, (full_game_3d) ? GAME_LOOP : FULLSCREEN_LOOP));
 }
 
 #endif // NOT_YET
@@ -304,7 +305,7 @@ void stop_music(void) {
     mlimbs_monster = NO_MONSTER;
 }
 
-uchar toggle_music_func(short keycode, ulong context, void *data) {
+uchar toggle_music_func(ushort keycode, uint32_t context, intptr_t data) {
     if (music_on) {
         message_info("Music off.");
         StopTheMusic(); //do this here, not in stop_music(), to prevent silence when changing levels
@@ -320,7 +321,7 @@ uchar toggle_music_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar arm_grenade_hotkey(short keycode, ulong context, void *data) {
+uchar arm_grenade_hotkey(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar show_all_actives;
     extern void super_drop_func(int dispnum, int row);
     extern void mfd_force_update(void);
@@ -366,7 +367,7 @@ int select_object_by_class(int obclass, int num, ubyte *quantlist) {
     return newobj;
 }
 
-uchar select_grenade_hotkey(short keycode, ulong context, void *data) {
+uchar select_grenade_hotkey(ushort keycode, uint32_t context, intptr_t data) {
     int newobj;
 
     newobj = select_object_by_class(ACTIVE_GRENADE, NUM_GRENADES, player_struct.grenades);
@@ -374,7 +375,7 @@ uchar select_grenade_hotkey(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar select_drug_hotkey(short keycode, ulong context, void *data) {
+uchar select_drug_hotkey(ushort keycode, uint32_t context, intptr_t data) {
     int newobj;
 
     newobj = select_object_by_class(ACTIVE_DRUG, NUM_DRUGS, player_struct.drugs);
@@ -382,7 +383,7 @@ uchar select_drug_hotkey(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar use_drug_hotkey(short keycode, ulong context, void *data) {
+uchar use_drug_hotkey(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar show_all_actives;
     extern void super_use_func(int dispnum, int row);
     extern void mfd_force_update(void);
@@ -404,7 +405,7 @@ uchar use_drug_hotkey(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar clear_fullscreen_func(short keycode, ulong context, void *data) {
+uchar clear_fullscreen_func(ushort keycode, uint32_t context, intptr_t data) {
     extern char last_message[128];
     extern MFD mfd[2];
 
@@ -420,11 +421,11 @@ uchar clear_fullscreen_func(short keycode, ulong context, void *data) {
 #ifdef NOT_YET // KLC
 
 #ifndef GAMEONLY
-uchar zoom_func(short keycode, ulong context, void *data) {
+uchar zoom_func(ushort keycode, uint32_t context, intptr_t data) {
     ushort zoom;
 
     TileMapGetZoom(NULL, &zoom);
-    if ((int)data == ZOOM_IN) {
+    if (data == ZOOM_IN) {
         zoom++;
     } else
         zoom = (zoom == 1) ? 1 : zoom - 1;
@@ -432,7 +433,7 @@ uchar zoom_func(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar do_popup_textmenu(short keycode, ulong context, void *g) {
+uchar do_popup_textmenu(ushort keycode, uint32_t context, intptr_t g) {
     extern errtype textmenu_popup(Gadget * parent);
 
     textmenu_popup((Gadget *)g);
@@ -503,7 +504,7 @@ void edit_load_func(char *fn, uchar source, short level_num) {
 #endif
 
 #ifdef GADGET
-uchar load_level_func(short keycode, ulong context, void *data) {
+uchar load_level_func(ushort keycode, uint32_t context, intptr_t data) {
     char fn[256];
 #ifndef GAMEONLY
     extern uchar possible_change;
@@ -559,7 +560,7 @@ void edit_save_func(char *fn, uchar source, short level_num) {
 #endif
 
 #ifdef GADGET
-uchar save_level_func(short keycode, ulong context, void *data) {
+uchar save_level_func(ushort keycode, uint32_t context, intptr_t data) {
     if (!saves_allowed) {
         message_box("Saves not allowed -- use control panel to change");
         return (FALSE);
@@ -573,7 +574,7 @@ uchar save_level_func(short keycode, ulong context, void *data) {
 #endif
 
 #ifndef GAMEONLY
-uchar toggle_3d_func(short keycode, ulong context, void *data) {
+uchar toggle_3d_func(ushort keycode, uint32_t context, intptr_t data) {
     TileEditor *te = (TileEditor *)data;
     //   uchar yes3d = !chg_get_sta(EDITVIEW_UPDATE);
     Point newsize;
@@ -603,7 +604,7 @@ uchar toggle_3d_func(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar tilemap_mode_func(short keycode, ulong context, void *data) {
+uchar tilemap_mode_func(ushort keycode, uint32_t context, intptr_t data) {
     int mode;
     extern errtype terrain_palette_popup(void);
     extern void bitsmode_palette_popup(void);
@@ -639,12 +640,12 @@ uchar tilemap_mode_func(short keycode, ulong context, void *data) {
     return (TRUE);
 }
 
-uchar draw_mode_func(short keycode, ulong context, void *data) {
+uchar draw_mode_func(ushort keycode, uint32_t context, intptr_t data) {
     TileEditorSetMode(NULL, (int)data);
     return (TRUE);
 }
 
-uchar clear_highlight_func(short keycode, ulong context, void *data) {
+uchar clear_highlight_func(ushort keycode, uint32_t context, intptr_t data) {
     TileMapClearHighlights(NULL);
     TileMapRedrawPixels(NULL, NULL);
     return TRUE;
@@ -652,7 +653,7 @@ uchar clear_highlight_func(short keycode, ulong context, void *data) {
 #endif
 
 #ifndef GAMEONLY
-uchar texture_selection_func(short keycode, ulong context, void *data) {
+uchar texture_selection_func(ushort keycode, uint32_t context, intptr_t data) {
 #ifdef TEXTURE_SELECTION
     textpal_create_selector();
 #endif
@@ -661,46 +662,46 @@ uchar texture_selection_func(short keycode, ulong context, void *data) {
 #endif
 
 #ifdef GADGET
-uchar lighting_func(short keycode, ulong context, void *data) {
+uchar lighting_func(ushort keycode, uint32_t context, intptr_t data) {
     panel_create_lighting();
     return (TRUE);
 }
 
-uchar inp6d_panel_func(short keycode, ulong context, void *data) {
+uchar inp6d_panel_func(ushort keycode, uint32_t context, intptr_t data) {
     extern void panel_create_inp6d(void);
     panel_create_inp6d();
     return (TRUE);
 }
 
-uchar render_panel_func(short keycode, ulong context, void *data) {
+uchar render_panel_func(ushort keycode, uint32_t context, intptr_t data) {
     panel_create_renderer();
     return (TRUE);
 }
 
-uchar popup_tilemap_func(short keycode, ulong context, void *data) { return (TRUE); }
+uchar popup_tilemap_func(ushort keycode, uint32_t context, intptr_t data) { return (TRUE); }
 
 #endif
 
 #ifdef PLAYTEST
-uchar bkpt_me(short keycode, ulong context, void *data) { // put a break point here, goof
+uchar bkpt_me(ushort keycode, uint32_t context, intptr_t data) { // put a break point here, goof
     return TRUE;
 }
 #endif
 
 #ifdef GADGET
-uchar editor_options_func(short keycode, ulong context, void *data) {
+uchar editor_options_func(ushort keycode, uint32_t context, intptr_t data) {
     editor_options->parent = _current_root;
     gad_menu_popup_at_mouse(editor_options);
     return (TRUE);
 }
 
-uchar editor_modes_func(short keycode, ulong context, void *data) {
+uchar editor_modes_func(ushort keycode, uint32_t context, intptr_t data) {
     editor_modes->parent = _current_root;
     gad_menu_popup_at_mouse(editor_modes);
     return (TRUE);
 }
 
-uchar misc_menu_func(short keycode, ulong context, void *data) {
+uchar misc_menu_func(ushort keycode, uint32_t context, intptr_t data) {
     main_misc_menu->parent = _current_root;
     main_misc_menu->parent = _current_root;
     renderer_misc_menu->parent = _current_root;
@@ -712,14 +713,14 @@ uchar misc_menu_func(short keycode, ulong context, void *data) {
     return (TRUE);
 }
 
-uchar control_panel_func(short keycode, ulong context, void *data) {
+uchar control_panel_func(ushort keycode, uint32_t context, intptr_t data) {
     panel_create_control();
     return (TRUE);
 }
 #endif
 
 #ifndef GAMEONLY
-uchar do_find_func(short keycode, ulong context, void *data) {
+uchar do_find_func(ushort keycode, int32_t context, intptr_t data) {
     int hilite_num;
     extern errtype generic_tile_eyedropper(TileEditor * te);
     extern errtype TerrainPalUpdate(struct _terrainpal * tp);
@@ -756,7 +757,7 @@ uchar inp6d_kbd = TRUE;
 uchar inp6d_kbd = FALSE;
 #endif
 
-uchar stupid_slew_func(short keycode, ulong context, void *data) {
+uchar stupid_slew_func(ushort keycode, uint32_t context, intptr_t data) {
     int dir = (int)data;
     int v1, v2;
     static int slew_scale = 16;
@@ -839,7 +840,7 @@ uchar stupid_slew_func(short keycode, ulong context, void *data) {
     return (TRUE);
 }
 
-uchar zoom_3d_func(short keycode, ulong context, void *data) {
+uchar zoom_3d_func(ushort keycode, uint32_t  context, intptr_t data) {
     uchar zoomin = (bool)data;
 
     // cant this be current based?
@@ -852,16 +853,16 @@ uchar zoom_3d_func(short keycode, ulong context, void *data) {
 #endif
 
 #ifdef GADGET
-uchar menu_close_func(short keycode, ulong context, void *data) { return (menu_all_popdown()); }
+uchar menu_close_func(ushort keycode, uint32_t context, intptr_t data) { return (menu_all_popdown()); }
 #endif
 
 #ifdef PLAYTEST
-uchar mono_clear_func(short keycode, ulong context, void *data) {
+uchar mono_clear_func(ushort keycode, uint32_t context, intptr_t data) {
     mono_clear();
     return (FALSE);
 }
 
-uchar mono_toggle_func(short keycode, ulong context, void *data) {
+uchar mono_toggle_func(ushort keycode, uint32_t context, intptr_t data) {
     mono_setmode(MONO_TOG);
     message_info("Monochrome Toggled.");
     return (FALSE);
@@ -899,7 +900,7 @@ uchar edit_flags_close(void *vg, void *ud) {
     return (FALSE);
 }
 
-uchar edit_flags_func(short keycode, ulong context, void *data) {
+uchar edit_flags_func(ushort keycode, uint32_t context, intptr_t data) {
     Point pt, ss;
 
     pt.x = 20;
@@ -921,13 +922,13 @@ uchar edit_flags_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar music_ai_params_func(short keycode, ulong context, void *data) {
+uchar music_ai_params_func(ushort keycode, uint32_t context, intptr_t data) {
     panel_ai_param_create();
     return (FALSE);
 }
 #endif
 
-uchar version_spew_func(short keycode, ulong context, void *data) {
+uchar version_spew_func(ushort keycode, uint32_t context, intptr_t data) {
     char tmpstr[] = SIGNATURE; /* for tracking versions */
     char temp[40];
     strcpy(temp, ".... ");
@@ -947,7 +948,7 @@ uchar version_spew_func(short keycode, ulong context, void *data) {
 #endif // NOT_YET
 
 char conv_hex(char val);
-uchar location_spew_func(short, ulong, void *);
+uchar location_spew_func(ushort, uint32_t, intptr_t);
 
 char conv_hex(char val) {
     char retval = '?';
@@ -970,7 +971,7 @@ int str_to_hex(char val)
    return(retval);
 }
 
-uchar location_spew_func(short , ulong , void* )
+uchar location_spew_func(ushort , uint32_t , intptr_t )
 {
    char goofy_string[32];
 
@@ -995,7 +996,7 @@ uchar location_spew_func(short , ulong , void* )
 }
 */
 
-uchar toggle_physics_func(short keycode, ulong context, void *data) {
+uchar toggle_physics_func(ushort keycode, uint32_t context, intptr_t data) {
     physics_running = !physics_running;
 
     extern uchar pacifism_on;
@@ -1009,7 +1010,7 @@ uchar toggle_physics_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar toggle_giveall_func(short keycode, ulong context, void *data) {
+uchar toggle_giveall_func(ushort keycode, uint32_t context, intptr_t data) {
     message_info("Kick some ass!");
 
     for (int i = 0; i < NUM_HARDWAREZ; i++)
@@ -1084,12 +1085,12 @@ uchar toggle_giveall_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar toggle_up_level_func(short keycode, ulong context, void *data) {
+uchar toggle_up_level_func(ushort keycode, uint32_t context, intptr_t data) {
     message_info("Changing level!");
     go_to_different_level((player_struct.level + 1 + 15) % 15);
 }
 
-uchar toggle_down_level_func(short keycode, ulong context, void *data) {
+uchar toggle_down_level_func(ushort keycode, uint32_t context, intptr_t data) {
     message_info("Changing level!");
     go_to_different_level((player_struct.level - 1 + 15) % 15);
 }
@@ -1099,7 +1100,7 @@ uchar toggle_down_level_func(short keycode, ulong context, void *data) {
 #ifdef PLAYTEST
 
 #define camera_info message_info
-uchar reset_camera_func(short keycode, ulong context, void *data) {
+uchar reset_camera_func(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar cam_mode;
     extern cams objmode_cam, *motion_cam, player_cam;
 
@@ -1124,7 +1125,7 @@ uchar reset_camera_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar current_camera_func(short keycode, ulong context, void *data) {
+uchar current_camera_func(ushort keycode, uint32_t context, intptr_t data) {
     extern cams objmode_cam, *motion_cam;
     extern uchar cam_mode;
     fix cam_locs[6], *cam_ptr_hack;
@@ -1161,7 +1162,7 @@ uchar current_camera_func(short keycode, ulong context, void *data) {
 
 uchar mono_log_on = FALSE;
 
-uchar log_mono_func(short keycode, ulong context, void *data) {
+uchar log_mono_func(ushort keycode, uint32_t context, intptr_t data) {
     if (mono_log_on) {
         mono_logoff();
         message_info("Mono logging off.");
@@ -1174,7 +1175,7 @@ uchar log_mono_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar clear_transient_lighting_func(short keycode, ulong context, void *data) {
+uchar clear_transient_lighting_func(ushort keycode, uint32_t context, intptr_t data) {
     int x, y;
     MapElem *pme;
     for (x = 0; x < MAP_XSIZE; x++) {
@@ -1188,14 +1189,14 @@ uchar clear_transient_lighting_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar level_entry_trigger_func(short keycode, ulong context, void *data) {
+uchar level_entry_trigger_func(ushort keycode, uint32_t context, intptr_t data) {
     extern errtype do_level_entry_triggers();
     do_level_entry_triggers();
     message_info("Level entry triggered.");
     return (FALSE);
 }
 
-uchar convert_one_level_func(short keycode, ulong context, void *data) {
+uchar convert_one_level_func(ushort keycode, uint32_t context, intptr_t data) {
     extern errtype obj_level_munge();
 #ifdef TEXTURE_CRUNCH_HACK
     extern errtype texture_crunch_init();
@@ -1211,7 +1212,7 @@ uchar convert_one_level_func(short keycode, ulong context, void *data) {
 
 #define NUM_CONVERT_LEVELS 16
 
-uchar convert_all_levels_func(short keycode, ulong context, void *data) {
+uchar convert_all_levels_func(ushort keycode, uint32_t context, intptr_t data) {
     int i;
     char atoi_buf[10], fn[10], curr_fname[40], new_fname[40];
     errtype retval;
@@ -1269,7 +1270,7 @@ uchar convert_all_levels_func(short keycode, ulong context, void *data) {
 
 #endif
 
-uchar invulnerable_func(short keycode, ulong context, void *data) {
+uchar invulnerable_func(ushort keycode, uint32_t context, intptr_t data) {
     if (config_get_raw(CFG_HKEY_GO, NULL, 0)) {
         player_invulnerable = !player_invulnerable;
         if (player_invulnerable)
@@ -1283,7 +1284,7 @@ uchar invulnerable_func(short keycode, ulong context, void *data) {
     return (FALSE);
 }
 
-uchar pacifist_func(short keycode, ulong context, void *data) {
+uchar pacifist_func(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar pacifism_on;
     pacifism_on = !pacifism_on;
     if (pacifism_on)
@@ -1302,7 +1303,7 @@ uchar unpause_callback(uiEvent *, LGRegion *, void *) { return (TRUE); }
 
 #endif // NOT_YET
 
-uchar pause_game_func(short keycode, ulong context, void *data) {
+uchar pause_game_func(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar game_paused, redraw_paused;
     extern LGRegion *inventory_region;
 
@@ -1343,7 +1344,7 @@ uchar pause_game_func(short keycode, ulong context, void *data) {
 }
 
 /*KLC - not needed for Mac version
-uchar unpause_game_func(short, ulong, void*)
+uchar unpause_game_func(ushort, uint32_t, intptr_t)
 {
         extern uchar game_paused;
         extern LGRegion *inventory_region;
@@ -1359,7 +1360,7 @@ uchar unpause_game_func(short, ulong, void*)
 }
 */
 
-uchar toggle_mouse_look(short keycode, ulong context, void *data) {
+uchar toggle_mouse_look(ushort keycode, uint32_t context, intptr_t data) {
     mouse_look_toggle();
     return (TRUE);
 }
@@ -1368,7 +1369,7 @@ uchar toggle_mouse_look(short keycode, ulong context, void *data) {
 //  For Mac version.  Save the current game.
 //--------------------------------------------------------------------
 /*
-uchar save_hotkey_func(short keycode, ulong context, void *data) {
+uchar save_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
     if (global_fullmap->cyber) // Can't save in cyberspace.
     {
         message_info("Can't save game in cyberspace.");
@@ -1403,7 +1404,7 @@ uchar save_hotkey_func(short keycode, ulong context, void *data) {
 
 //#define CHECK_STATE_N_HOTKEY
 #ifdef PLAYTEST
-uchar check_state_func(short keycode, ulong context, void *data) {
+uchar check_state_func(ushort keycode, uint32_t context, intptr_t data) {
     int avail_memory(int debug_src);
     avail_memory(DSRC_TESTING_Test3);
 #ifdef CHECK_STATE_N_HOTKEY
@@ -1421,7 +1422,7 @@ uchar check_state_func(short keycode, ulong context, void *data) {
     return (TRUE);
 }
 
-uchar diffdump_game_func(short keycode, ulong context, void *data) {
+uchar diffdump_game_func(ushort keycode, uint32_t context, intptr_t data) {
     char goof[45];
     sprintf(goof, "diff=%d,%d,%d,%d\n", player_struct.difficulty[0], player_struct.difficulty[1],
             player_struct.difficulty[2], player_struct.difficulty[3]);
@@ -1429,7 +1430,7 @@ uchar diffdump_game_func(short keycode, ulong context, void *data) {
     return (TRUE);
 }
 
-uchar toggle_difficulty_func(short keycode, ulong context, void *data) {
+uchar toggle_difficulty_func(ushort keycode, uint32_t context, intptr_t data) {
     ubyte which = (ubyte)data - 1;
 
     player_struct.difficulty[which]++;
@@ -1437,7 +1438,7 @@ uchar toggle_difficulty_func(short keycode, ulong context, void *data) {
     return (TRUE);
 }
 
-uchar toggle_ai_func(short keycode, ulong context, void *data) {
+uchar toggle_ai_func(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar ai_on;
     ai_on = !ai_on;
     if (ai_on)
@@ -1447,7 +1448,7 @@ uchar toggle_ai_func(short keycode, ulong context, void *data) {
     return (TRUE);
 }
 
-uchar toggle_safety_net_func(short keycode, ulong context, void *data) {
+uchar toggle_safety_net_func(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar safety_net_on;
     safety_net_on = !safety_net_on;
     if (safety_net_on)
@@ -1459,7 +1460,7 @@ uchar toggle_safety_net_func(short keycode, ulong context, void *data) {
 #endif
 
 #ifdef NEW_RES_LIB_INSTALLED
-uchar res_cache_usage_func(short keycode, ulong context, void *data) {
+uchar res_cache_usage_func(ushort keycode, uint32_t context, intptr_t data) {
     extern long ResViewCache(uchar only_locks);
     ResViewCache((bool)data);
     return (TRUE);

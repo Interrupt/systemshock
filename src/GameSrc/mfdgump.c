@@ -219,7 +219,7 @@ uchar gump_get_useful(bool shifted) {
                 uchar result = gump_pickup(row);
                 if (result && shifted)
                 {
-                    extern void absorb_object_on_cursor(short keycode, ulong context, void *data); //see invent.c
+                    extern void absorb_object_on_cursor(ushort keycode, uint32_t context, intptr_t data); //see invent.c
                     absorb_object_on_cursor(0, 0, 0); //parameters unused
                 }
                 return result;
@@ -275,7 +275,7 @@ uchar mfd_gump_handler(MFD *m, uiEvent *uie) {
                     //try to pickup and absorb object
                     uchar result = gump_pickup(row);
                     if (result) {
-                        extern void absorb_object_on_cursor(short keycode, ulong context, void *data); //see invent.c
+                        extern void absorb_object_on_cursor(ushort keycode, uint32_t context, intptr_t data); //see invent.c
                         absorb_object_on_cursor(0, 0, 0); //parameters unused
                     }
                     return result;
