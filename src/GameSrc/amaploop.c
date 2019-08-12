@@ -657,6 +657,7 @@ uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
         if ((x <= 0) || (y <= 0))
             return TRUE; // not really in map
         prev_note = amptr->note_obj;
+	// will be NULL if clicked outside map
         if ((deal_data = amap_deal_with_map_click(amptr, &x, &y)) != NULL) {
             if (amptr->note_obj != prev_note) {
                 trail_sp_punt();
@@ -670,7 +671,7 @@ uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
             }
             last_msg_ok = TRUE;
             chg_set_flg(AMAP_MESSAGE_EV | AMAP_MAP_EV);
-            if (deal_data != AMAP_NOTE_HACK_PTR) {
+            if (amptr->note_obj == OBJ_NULL) {
                 trail_sp_punt();
                 if ((amptr->note_obj = object_place(MAPNOTE_TRIPLE, MakePoint(x, y))) != OBJ_NULL)
                     fsmap_new_msg(amptr);

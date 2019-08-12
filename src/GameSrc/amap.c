@@ -155,7 +155,8 @@ void draw_radius_obj(curAMap *amptr, short OtoF, int col, int zeroscrx, int zero
 void draw_full_obj(curAMap *amptr, short OtoF, int col, int zeroscrx, int zeroscry);
 void amap_pixratio_set(fix ratio);
 void *amap_loc_to_sq(curAMap *amptr, int *x, int *y);
-void *amap_loc_get_note(void *map_sq);
+ObjID amap_loc_get_note(void *map_sq);
+ObjID amap_loc_note_check(curAMap *amptr, void *curmp, int *x, int *y, int *to_do);
 void amap_fixup_existing(int tolera, int delta);
 grs_bitmap *screen_automap_bitmap(char which_amap);
 
@@ -848,6 +849,8 @@ void amap_draw(curAMap *amptr, int expose) {
 // returns NULL for not in map, else a mapelem *
 // this can be checked for mapnotes, or one can be added
 // functions to do these things exist as well
+// Note side effects: can set amptr->xf and amptr->yf
+// x and y set to map square coordinates on exit.
 void *amap_loc_to_sq(curAMap *amptr, int *x, int *y) {
     int offsx, offsy;
     MapElem *curmp = MAP_MAP;
@@ -872,8 +875,8 @@ void *amap_loc_to_sq(curAMap *amptr, int *x, int *y) {
         return (void *)(curmp + offsx + (offsy << MAP_XSHF));
 }
 
-// this void star is really an Obj
-void *amap_loc_get_note(void *map_sq) {
+// Returns ObjID of note or OBJ_NULL if none is there
+ObjID amap_loc_get_note(void *map_sq) {
     ObjID cobjid;
     ObjRefID curORef;
     MapElem *curmp = (MapElem *)map_sq;
@@ -883,27 +886,25 @@ void *amap_loc_get_note(void *map_sq) {
         cobjid = objRefs[curORef].obj;
         if (CitrefCheckHomeSq(curORef))
             if (ID2TRIP(cobjid) == MAPNOTE_TRIPLE)
-                return (void *)(unsigned int)cobjid;
+                return cobjid;
         curORef = objRefs[curORef].next;
     } // end of ORef loop
-    return NULL;
+    return OBJ_NULL;
 }
 
 #define MAP_LOOK_AROUND
 // sets to_do to AMAP_OFF_MAP, AMAP_HAVE_NOTE, AMAP_NO_NOTE
-// returns MapElem of the square if NO_NOTE
-// returns NULL if OFF_MAP, note this line was shorter than the others
+// returns OBJ_NULL if NO_NOTE or OFF_MAP
 // returns Obj of the map_note if HAVE_NOTE
-void *amap_loc_note_check(curAMap *amptr, int *x, int *y, int *to_do) {
-    void *map_note;
-    MapElem *curmp = (MapElem *)amap_loc_to_sq(amptr, x, y);
+ObjID amap_loc_note_check(curAMap *amptr, void *curmp, int *x, int *y, int *to_do) {
+    ObjID map_note;
     if (curmp == NULL) {
         *to_do = AMAP_OFF_MAP;
-        return NULL;
+        return OBJ_NULL;
     }
 #ifdef MAP_LOOK_AROUND
     map_note = amap_loc_get_note(curmp);
-    if (map_note == NULL) { // check around, in the traditional way - big zoom = small map
+    if (map_note == OBJ_NULL) { // check around, in the traditional way - big zoom = small map
         int extloop, inloop, clen, dvec[2] = {0, 1}, rad = 2 * (3 - amptr->zoom), mx = *x, my = *y;
         //      mprintf("Looking around %d from %x %x dv %d %d\n",rad,mx,my,dvec[0],dvec[1]);
         for (clen = 1; clen < rad; clen++)            // for each radius
@@ -914,7 +915,7 @@ void *amap_loc_note_check(curAMap *amptr, int *x, int *y, int *to_do) {
                     my += dvec[1];
                     if (((mx >= 0) && (mx < MAP_XSIZE)) && ((my >= 0) && (my < MAP_YSIZE))) {
                         map_note = amap_loc_get_note(MAP_GET_XY(mx, my));
-                        if (map_note != NULL) {
+                        if (map_note != OBJ_NULL) {
                             *x = mx;
                             *y = my;
                             goto hack_breakout;
@@ -934,12 +935,12 @@ hack_breakout:
 #else
     map_note = amap_loc_get_note(curmp);
 #endif
-    if (map_note != NULL) { // a note is there...
+    if (map_note != OBJ_NULL) { // a note is there...
         *to_do = AMAP_HAVE_NOTE;
         return map_note;
     } else {
         *to_do = AMAP_NO_NOTE;
-        return (void *)curmp;
+        return OBJ_NULL;
     }
 }
 
@@ -1003,16 +1004,16 @@ void amap_pan(curAMap *amptr, int dir, int *dist) {
 
 void *amap_deal_with_map_click(curAMap *amptr, int *x, int *y) {
     int todo;
-    void *datum;
     // actually clicked on the map, we should deal...
-    datum = amap_loc_note_check(amptr, x, y, &todo);
+    MapElem *curmp = (MapElem *)amap_loc_to_sq(amptr, x, y);
+    ObjID note = amap_loc_note_check(amptr, curmp, x, y, &todo);
     switch (todo) {
     case AMAP_NO_NOTE:
-        amptr->note_obj = 0;
-        return datum;
+        amptr->note_obj = OBJ_NULL;
+        return curmp;
     case AMAP_HAVE_NOTE:
-        amptr->note_obj = (int)datum;
-        return AMAP_NOTE_HACK_PTR;
+        amptr->note_obj = note;
+        return curmp;
     }
     //   case AMAP_OFF_MAP:   return NULL;
     return NULL;
