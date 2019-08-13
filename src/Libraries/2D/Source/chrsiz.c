@@ -44,7 +44,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "grs.h"
-#include "ctxmac.h"
 
 /* returns the width in pixels of c in the specified font */
 

@@ -38,7 +38,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "bitmap.h"
 #include "cnvdat.h"
 #include "fl8tf.h"
-#include <string.h>
 
 void gri_flat8_fill_clut_ubitmap(grs_bitmap *bm, short x, short y) {
     gri_flat8_clut_ubitmap(bm, x, y, (uchar *)(grd_gc.fill_parm));

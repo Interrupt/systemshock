@@ -39,10 +39,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "grcply.h"
-#include "grrend.h"
 #include "plytyp.h"
 #include "scrdat.h"
-#include "general.h"
 
 void gen_vox_cpoly(fix x[4],fix y[4],fix dz[3],int near_ver,grs_bitmap *col,grs_bitmap *ht)
 {

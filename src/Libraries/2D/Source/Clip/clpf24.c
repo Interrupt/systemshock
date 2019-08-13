@@ -38,7 +38,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "grs.h"
-#include "clpcon.h"
 #include "cnvdat.h"
 #include "clip.h"
 

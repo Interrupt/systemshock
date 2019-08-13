@@ -50,7 +50,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "grgbm.h"
 #include "grpix.h"
 #include "grstate.h"
-#include "general.h"
 
 /* unclipped flat8 bitmap capture.  reads data from the current canvas at
    (x,y) into the bitmap described by bm.  the destination bitmap is always

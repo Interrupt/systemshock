@@ -23,12 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ЅЅЅ For now, turn debugging on, so we can run the test programs.
 //#define FIXDEBUG 1
 
-#include <cmath>
+#ifdef FIXDEBUG
 
 #include "fixpp.h"
 #include <iostream>
-
-#ifdef FIXDEBUG
 
 // =========================================================
 // touch() is a function that does nothing except cause the

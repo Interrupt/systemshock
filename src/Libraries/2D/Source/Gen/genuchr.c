@@ -47,9 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "bitmap.h"
-#include "ctxmac.h"
 #include "grdbm.h"
-#include "general.h"
 
 /* draw an unclipped character c from the current font at (x,y). */
 

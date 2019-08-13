@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "pixfill.h"
-#include "linfcn.h"
 
 /* draw an unclipped horizontal line with integral coordinates.
    the correct fill is obtained via grd_pixel_fill,

@@ -45,7 +45,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grs.h"
 #include "grd.h"
-#include "valloc.h"
 
 // MLA- took the v_table out, it doesn't appear to be referenced anymore
 #if 0

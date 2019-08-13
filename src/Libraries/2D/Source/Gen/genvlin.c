@@ -48,12 +48,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision
  */
 
-#include "grd.h"
 #include "ctxmac.h"
 #include "clpcon.h"
-#include "clpltab.h"
 #include "grlin.h"
-#include "general.h"
 
 /* clipped vertical line with integral coordinates.  returns clip
    code. */

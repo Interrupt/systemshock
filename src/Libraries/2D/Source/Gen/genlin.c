@@ -69,12 +69,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision
  */
 
-#include <stdlib.h>
 #include "ctxmac.h"
 #include "clpcon.h"
 #include "clpltab.h"
 #include "grlin.h"
-#include "general.h"
 
 /* draw a clipped fractional-precision line, call the fixed-point line
    drawer with the preferred (v0, v1, fill) interface 

@@ -40,10 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Initial revision
 // 
 
-#include "grd.h"
 #include "idevice.h"
 #include "tabdat.h"
-#include "state.h"
 
 // globals
 long	grd_state_stack[512];

@@ -40,9 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision
  */
 
-#include "grs.h"
 #include "clpcon.h"
-#include "clpfcn.h"
 #include "cnvdat.h"
 
 /* clips the top, left, right, and bottom edges of a rectangle to the current

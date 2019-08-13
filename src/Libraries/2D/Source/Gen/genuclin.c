@@ -27,12 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    genclin.c. */
 
 #include <stdlib.h>
-#include "grd.h"
 #include "plytyp.h"
-#include "rgb.h"
 #include "scrdat.h"
 #include "pixfill.h"
-#include "linfcn.h"
 
 /* draw unclipped rgb shaded line using grd_pixel_fill for fill
  information -- note that the solid fill mode cannot use this routine

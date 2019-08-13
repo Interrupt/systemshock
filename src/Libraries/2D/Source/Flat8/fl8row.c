@@ -32,6 +32,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#include "flat8.h"
-
 short flat8_calc_row(short w) { return w; }

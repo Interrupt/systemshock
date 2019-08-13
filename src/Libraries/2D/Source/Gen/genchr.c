@@ -49,9 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "bitmap.h"
 #include "clpcon.h"
-#include "ctxmac.h"
 #include "grdbm.h"
-#include "general.h"
 
 
 /* draw a clipped character c from the specified font at (x,y). */

@@ -27,8 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdbool.h>
 
 #include "MacTune.h"
-#include "musicai.h"
-#include "player.h"
 #include "miscqvar.h"
 #include "Xmi.h"
 

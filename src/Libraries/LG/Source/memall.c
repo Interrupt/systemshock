@@ -58,7 +58,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "memall.h"
 #include "dbg.h"
 #include <stdlib.h>
-#include <stdbool.h>
 //#include "_lg.h"
 
 //	Allocator set structure

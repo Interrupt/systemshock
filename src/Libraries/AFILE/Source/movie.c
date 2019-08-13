@@ -17,10 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-#include <stdio.h>
-
 #include "afile.h"
-#include "movie.h"
 #include "res.h"
 
 int32_t AfilePrepareRes(Id id, Afile *afile) {

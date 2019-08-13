@@ -39,7 +39,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "grdbm.h"
 #include "grpix.h"
 #include "tlucdat.h"
-#include "general.h"
 
 /* bozo tluc8 bitmap drawer. */
 void gen_tluc8_ubitmap (grs_bitmap *bm, short x, short y)

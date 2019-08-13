@@ -35,9 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "clpcon.h"
 #include "cnvdat.h"
 #include "grcbm.h"
-#include "grdbm.h"
 #include "grpix.h"
-#include "general.h"
 
 /* bozo flat8 bitmap drawer. */
 void gen_flat8_clut_ubitmap (grs_bitmap *bm, short x, short y, uchar *cl)

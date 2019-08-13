@@ -47,7 +47,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "bit.h"
 #include "bitmap.h"
 #include "cnvdat.h"
-#include "flat8.h"
 
 void flat8_mono_ubitmap(grs_bitmap *bm, short x, short y) {
     short w, h;   /* working width and height */

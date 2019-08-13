@@ -42,15 +42,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ¥¥¥Note:  The mouse position will always be returned in *local* coordinates,
 // that is, local to the main game window.
 
-#include <stdlib.h>
 #include <SDL.h>
 
 #include "lg.h"
 #include "error.h"
 #include "mouse.h"
-#include "mousevel.h"
 #include "tickcount.h"
-#include "kb.h"
 
 typedef struct _mouse_state
 {

@@ -42,32 +42,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "amaploop.h"
 #include "hkeyfunc.h"
-#include "input.h"
 #include "mainloop.h"
 #include "setup.h"
-#include "setploop.h"
-#include "game_screen.h"
 #include "fullscrn.h"
 #include "status.h"
-#include "gamewrap.h"
-#include "faketime.h"
 #include "map.h"
-#include "frtypes.h"
-#include "frprotox.h"
 #include "gr2ss.h"
 #include "frflags.h"
-#include "player.h"
-#include "physics.h"
-#include "wrapper.h"
 #include "version.h"
 #include "shockolate_version.h"
 
 #include "Modding.h"
 
-#include "cutsloop.h"
-
 #include <math.h>
-#include <stdint.h>
 #include <SDL.h>
 
 extern uchar game_paused;		// I've learned such bad lessons from LG.

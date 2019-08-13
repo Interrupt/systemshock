@@ -28,7 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdlib.h>
-#include "grmalloc.h"
 
 /* dynamic memory allocation/deallocation is done through the indirected
    functions gr_malloc() and gr_free(). they default to malloc() and

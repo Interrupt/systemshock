@@ -28,22 +28,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * This file is part of the 2d library.
  */
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-// MLA #include <datapath.h"
 #include "grs.h"
-#include "detect.h"
 #include "bitmap.h"
 #include "cnvtab.h"
-#include "devtab.h"
 #include "idevice.h"
 #include "mode.h"
-#include "cnvtab.h"
 #include "tabdat.h"
-// MLA #include "vesa.h"
 
 // extern 
 extern void (**grd_device_table_list[])();

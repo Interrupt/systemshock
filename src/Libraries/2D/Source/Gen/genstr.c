@@ -56,7 +56,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ctxmac.h"
 #include "grdbm.h"
 #include "chr.h"
-#include "general.h"
 
 
 int gen_font_string (grs_font *f, char *s, short x0, short y0)

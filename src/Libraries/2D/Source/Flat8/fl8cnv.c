@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "flat8.h"
 #include "general.h"
 #include "grnull.h"
-#include "grs.h"
 #include "icanvas.h"
 
 typedef void (*ptr_type)();

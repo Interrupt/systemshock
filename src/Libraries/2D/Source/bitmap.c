@@ -75,7 +75,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GR/grs.h"
 #include "bitmap.h"
 #include "grbm.h"
-#include "grmalloc.h"
 
 extern long		gScreenRowbytes;
 
