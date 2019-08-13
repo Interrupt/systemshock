@@ -2689,7 +2689,7 @@ void inv_update_fullscreen(uchar full) {
     // THE DISPLAY LIST ARRAY
     // ----------------------
 
-#define FIELD_OFFSET(fld) (int)&(((Player *)0)->fld)
+#define FIELD_OFFSET(fld) (offsetof(Player, fld))
 
 inv_display inv_display_list[] = {
     // Page 0, weapons, grenades, drugs
