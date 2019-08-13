@@ -1260,7 +1260,7 @@ errtype obj_create_player(ObjLoc *plr_loc) {
         return (ERR_NOEFFECT);
     }
     player_dos_obj = &(objs[PLAYER_OBJ]);
-    fr_camera_create(&player_cam, CAMTYPE_OBJ | CAMMOD_USEMOD, (fix *)(unsigned int)player_struct.rep, 0);
+    fr_camera_create(&player_cam, CAMTYPE_OBJ | CAMMOD_USEMOD, player_struct.rep, NULL, NULL);
     if (cam_mode == OBJ_PLAYER_CAMERA)
         fr_camera_setdef(&player_cam);
 

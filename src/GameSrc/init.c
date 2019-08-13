@@ -605,7 +605,7 @@ errtype object_data_load(void) {
 
     // Make the objmode camera....
     DEBUG("create camera");
-    fr_camera_create(&objmode_cam, CAMTYPE_OBJ, (fix *)(unsigned int)player_struct.rep, NULL);
+    fr_camera_create(&objmode_cam, CAMTYPE_OBJ, player_struct.rep, NULL, NULL);
 
     DEBUG("load_dynamic_memory");
     objdata_loaded = TRUE;

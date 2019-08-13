@@ -61,9 +61,9 @@ typedef struct {
     fix args[CAM_ARGS_CNT]; // args interpreted based on type
 } cams;
 
-uchar fr_camera_create(cams *cam, int camtype, void *arg1, void *arg2);
+uchar fr_camera_create(cams *cam, int camtype, ushort oid, fix *coor, fix *args);
 uchar fr_camera_modtype(cams *cam, uchar type_on, uchar type_off);
-int fr_camera_update(cams *cam, void *arg1, int whicharg, void *arg2);
+int fr_camera_update(cams *cam, uintptr_t arg1, int whicharg, uintptr_t arg2);
 void fr_camera_slewone(cams *cam, int which, int how);
 void fr_camera_setone(cams *cam, int which, int newCam);
 fix *fr_camera_getpos(cams *cam);
