@@ -965,8 +965,8 @@ void generic_drop_func(inv_display *dp, int row) {
 
 static char *generic_quant_func(inv_display *dp, int n, int q, char *buf) {
 #ifndef NO_DUMMIES
-    int dummy;
-    dummy = n + (int)dp;
+    char *dummy;
+    dummy = n + (char*)dp;
 #endif // NO_DUMMIES
     //  itoa(q,buf,10);
     sprintf(buf, "%d", q);
@@ -975,8 +975,8 @@ static char *generic_quant_func(inv_display *dp, int n, int q, char *buf) {
 
 char *null_name_func(inv_display *dp, int n, char *buf) {
 #ifndef NO_DUMMIES
-    int goof;
-    goof = (int)dp + n;
+    char *goof;
+    goof = (char*)dp + n;
 #endif // NO_DUMMIES
     *buf = '\0';
     return buf;
