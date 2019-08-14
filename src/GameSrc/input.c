@@ -1897,7 +1897,7 @@ void use_object_in_3d(ObjID obj, bool shifted) {
                 break;
             }
             if (usemode != ID_NULL) {
-                lg_sprintf(buf, get_temp_string(REF_STR_CyberspaceUse), get_temp_string(usemode));
+                sprintf(buf, get_temp_string(REF_STR_CyberspaceUse), get_temp_string(usemode));
                 message_info(buf);
             }
             return;
@@ -1994,7 +1994,7 @@ void use_object_in_3d(ObjID obj, bool shifted) {
     cantuse:
     default: {
         char use_str[80], buf2[50];
-        lg_sprintf(use_str, get_temp_string(REF_STR_CantUse), get_object_lookname(obj, buf2, 50));
+        sprintf(use_str, get_temp_string(REF_STR_CantUse), get_object_lookname(obj, buf2, 50));
         message_info(use_str);
     } break;
     }
@@ -2130,7 +2130,7 @@ char *get_object_lookname(ObjID id, char use_string[], int sz) {
             mod_refid = REF_STR_Stunned;
         if (mod_refid != -1) {
             get_string(mod_refid, temp, 128);
-            lg_sprintf(use_string, temp, get_object_long_name(usetrip, NULL, 0));
+            sprintf(use_string, temp, get_object_long_name(usetrip, NULL, 0));
             return (use_string);
         }
     } break;

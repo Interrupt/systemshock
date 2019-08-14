@@ -65,7 +65,7 @@ void init_strings(void) {
     if (string_res_file < 0)
         critical_error(CRITERR_RES | 0);
 
-    lg_sprintf_install_stringfunc((char *(*)(ulong))RefGet);
+    // lg_sprintf_install_stringfunc((char *(*)(ulong))RefGet);
 }
 
 char *get_string(int num, char *buf, int bufsize) {

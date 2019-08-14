@@ -483,7 +483,7 @@ void edit_load_func(char *fn, uchar source, short level_num) {
     restore_objects(buf2, player_struct.inventory, NUM_GENERAL_SLOTS);
     switch (retval) {
     case ERR_FOPEN:
-        lg_sprintf(buf, "Error opening %s", fn);
+        sprintf(buf, "Error opening %s", fn);
         message_box(buf);
         break;
     case ERR_NOEFFECT:
@@ -544,7 +544,7 @@ void edit_save_func(char *fn, uchar source, short level_num) {
     reset_schedules();
     switch (save_current_map(buf, LEVEL_ID_NUM, TRUE, TRUE)) {
     case ERR_FOPEN:
-        lg_sprintf(buf, "Error opening %s", fn);
+        sprintf(buf, "Error opening %s", fn);
         message_box(buf);
         break;
     case OK:

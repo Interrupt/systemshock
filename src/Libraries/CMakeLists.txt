@@ -241,11 +241,10 @@ set(INPUT_SRC
 set(LG_SRC
 	LG/Source/LOG/src/log.c
 	LG/Source/dbg.c
-	LG/Source/lgsprntf.c
+#	LG/Source/lgsprntf.c
 	LG/Source/memall.c
 	LG/Source/stack.c
 	LG/Source/tmpalloc.c
-	# a bit hacky to add it here, but this way the tests can use the stubs
 )
 
 set(PALETTE_SRC
