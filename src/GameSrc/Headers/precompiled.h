@@ -32,7 +32,7 @@ extern "C" {
 #include "../../Libraries/H/error.h"
 #include "keydefs.h"
 #include "lg_types.h"
-#include "lgsprntf.h"
+//#include "lgsprntf.h"
 
 //#include "kb.h"
 //#include "kbcook.h"
