@@ -53,7 +53,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cnvdat.h"
 #include "ctxmac.h"
 #include "fill.h"
-#include "linfcn.h"
 
 /* unclipped vertical line with integral coordinates. */
 

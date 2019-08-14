@@ -46,7 +46,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "cnvdat.h"
-#include "linfcn.h"
 #include "plytyp.h"
 #include <stdlib.h>
 

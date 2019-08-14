@@ -31,7 +31,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cnvdat.h"
 #include "ctxmac.h"
 #include "fill.h"
-#include "linfcn.h"
 #include "plytyp.h"
 
 #define gr_get_ipal_index(r, g, b) (long)((((r) >> 19) & 0x1f) | (((g) >> 14) & 0x3e0) | (((b) >> 9) & 0x7c00))

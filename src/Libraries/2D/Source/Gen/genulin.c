@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fix.h"
 #include "plytyp.h"
 #include "pixfill.h"
-#include "linfcn.h"
 
 /* This file is a slight modification of the routine gen_fix_uline
    which was originally in the file genlin.c.  It lives in 

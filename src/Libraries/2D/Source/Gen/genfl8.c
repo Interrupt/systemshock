@@ -66,7 +66,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cnvdat.h"
 #include "grdbm.h"
 #include "grpix.h"
-#include "general.h"
 
 #include <stdio.h> // printf()
 

@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "grd.h"
 #include "genel.h"
-#include "general.h"
 
 /* This is rather lame, uses aspect ratio to determine parameters to
  * the elipse drawer.  That would be fine, except that it makes the

@@ -53,7 +53,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cnvdat.h"
 #include "grdbm.h"
 #include "grpix.h"
-#include "general.h"
 
 /* draw a monochrome bitmap with calls to gr_set_pixel for maximum device
    independence and slowness. draws 1's in the source bitmap as currently

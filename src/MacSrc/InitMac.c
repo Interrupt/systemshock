@@ -38,6 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include "MacTune.h"
 #include <SDL.h>
 
+#include "shockolate_version.h"
 #include "tickcount.h"
 
 //--------------------
@@ -94,7 +95,7 @@ long 				*tmd_ticks;
 //------------------------------------------------------------------------------------
 void InitMac(void)
 {
-	INFO("Starting Shockolate");
+	INFO("Starting %s", SHOCKOLATE_VERSION);
 
 	// Get a random seed
 	gRandSeed = TickCount();

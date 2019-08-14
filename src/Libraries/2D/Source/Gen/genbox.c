@@ -25,8 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Generic box (unfilled rectangle) routines.
  */
 
-#include "grs.h"
-#include "grd.h"
 #include "clpcon.h"
 #include "grrect.h"
 #include "general.h"

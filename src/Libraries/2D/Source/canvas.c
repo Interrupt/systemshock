@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */ 
 
 #include "grs.h"
-#include "grd.h"
 #include "bitmap.h"
 #include "chain.h"
 #include "cnvdat.h"
@@ -35,12 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "context.h"
 #include "ctxmac.h"
 #include "fcntab.h"
-#include "fill.h"
-#include "grmalloc.h"
 #include "lintab.h"
 #include "tabdat.h"
 #include "valloc.h"
-#include "canvas.h"
 
 #include <stdio.h> // printf()
 

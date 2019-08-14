@@ -35,7 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "poly.h"
 #include "tlucdat.h"
 #include "tmapint.h"
-#include "vtab.h"
 
 // prototypes
 int gri_tluc8_scale_umap_loop(grs_tmap_loop_info *tli);

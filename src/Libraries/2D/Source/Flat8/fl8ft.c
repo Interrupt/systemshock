@@ -34,7 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gentf.h"
 #include "grnull.h"
 #include "ifcn.h"
-#include "tmapint.h"
 
 typedef void (*ptr_type)();
 

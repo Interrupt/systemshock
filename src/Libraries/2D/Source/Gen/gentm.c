@@ -37,13 +37,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "grnull.h"
 #include "ifcn.h"
 #include "polyint.h"
-#include "poly.h"
 #include "scrmac.h"
 #include <string.h>
 #include "tmapint.h"
 #include "tmaps.h"
 #include "tmaptab.h"
-#include "tmapfcn.h"
 #include "lg.h"
 
 typedef void (*tm_init_type)(grs_tmap_loop_info *, grs_vertex **);

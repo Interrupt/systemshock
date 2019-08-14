@@ -53,12 +53,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <string.h>
-#include "grs.h"
 #include "rgb.h"
 #include "grdev.h"
 #include "scrdat.h"
 #include "fix.h"
-#include "pal.h"
 #include "lg.h"
 
 //gamma param not used here; see SetSDLPalette() in Shock.c

@@ -36,13 +36,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "grs.h"
-#include "grd.h"
 #include "bitmap.h"
 #include "clpcon.h"
 #include "clpfcn.h"
 #include "grdbm.h"
 #include "grp24.h"
-#include "general.h"
 
 #if 0
 // MLA - this doesn't appear to be used anywhere

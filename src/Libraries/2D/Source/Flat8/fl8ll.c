@@ -32,7 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fl8tf.h"
 #include "fl8tmapdv.h"
 #include "gente.h"
-#include "grpix.h"
 #include "poly.h"
 #include "scrdat.h"
 #include "tmapint.h"

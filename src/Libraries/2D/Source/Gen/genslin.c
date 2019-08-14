@@ -53,13 +53,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision
  */
 
-#include <stdlib.h>
 #include "ctxmac.h"
 #include "plytyp.h"
 #include "clpcon.h"
 #include "clpltab.h"
 #include "grlin.h"
-#include "general.h"
 
 /* Draw a gouraud-shaded line, specified by indices into the palette.
    be warned, weird precision bugs abound (check out test programs

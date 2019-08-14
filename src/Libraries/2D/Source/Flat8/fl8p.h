@@ -68,7 +68,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __FL8P_H
 #define __FL8P_H
 
-// FIXME Move it to FIX
 #define ACENT (grd_bm.w >> 1)
 #define BCENT (grd_bm.h >> 1)
 #define SCALE 0x200

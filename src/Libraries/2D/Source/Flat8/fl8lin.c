@@ -70,7 +70,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fill.h"
 #include "fix.h"
 #include "lg.h"
-#include "linfcn.h"
 #include "plytyp.h"
 #include "scrdat.h"
 #include <string.h>

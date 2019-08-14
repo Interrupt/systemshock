@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cnvdat.h"
 #include "fl8tf.h"
 #include "gente.h"
-#include "grpix.h"
 #include "poly.h"
 #include "tmapint.h"
 #include "vtab.h"

@@ -1,7 +1,5 @@
 
-#include "musicai.h"
 #include "adlmidi.h"
-#include "mlimbs.h"
 #include "Xmi.h"
 
 #ifdef USE_SDL_MIXER

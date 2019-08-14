@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 #define SS_VERSION_NUM "1.6"
 #define SS_GREEK_LETTER "F" // CD is in Final!
 
@@ -28,5 +29,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif                     // SVGA_SUPPORT
 
 #define SYSTEM_SHOCK_VERSION "v" SS_GREEK_LETTER SS_VERSION_NUM SS_FLAG_LETTER
-
-#define SHOCKOLATE_VERSION "Shockolate 0.6"

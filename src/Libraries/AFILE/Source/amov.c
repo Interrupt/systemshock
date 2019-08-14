@@ -44,18 +44,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "lg.h"
-//#include <rsd.h>
 #include "afile.h"
-#include "compose.h"
 #include "movie.h"
 #include "rect.h"
 #include "draw4x4.h"
 #include "huff.h"
-
-#include "movie.h"
 
 //	Type-specific information
 

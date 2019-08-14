@@ -1,6 +1,6 @@
-project(SystemShock)
-
 cmake_minimum_required(VERSION 3.1)
+
+project(shockolate VERSION 0.7.8)
 
 include(FeatureSummary)
 
@@ -35,7 +35,7 @@ add_feature_info(ENABLE_SOUND ENABLE_SOUND "Enable sound support (requires SDL2_
 
 set(ENABLE_FLUIDSYNTH "BUNDLED" CACHE STRING "Enable FluidSynth MIDI support (ON/BUNDLED/OFF, default BUNDLED)")
 set_property(CACHE ENABLE_FLUIDSYNTH PROPERTY STRINGS "ON" "BUNDLED" "OFF")
-add_feature_info(ENABLE_FLUIDSYNTH ENABLE_FLUIDSYNTH "Enable sound support")
+add_feature_info(ENABLE_FLUIDSYNTH ENABLE_FLUIDSYNTH "Enable FluidSynth MIDI support")
 
 # HAAAAX!!
 add_definitions(-DSVGA_SUPPORT)
@@ -115,12 +115,31 @@ if(NOT WIN32)
   endif(ALSA_FOUND)
 endif(NOT WIN32)
 
+# Generate version based on project version
+set(PROJECT_REVERSION_STRING "")
+find_package(Git)
+if(GIT_FOUND)
+	execute_process(COMMAND ${GIT_EXECUTABLE} describe --dirty
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		OUTPUT_VARIABLE git_describe_out
+		ERROR_VARIABLE git_describe_error
+		RESULT_VARIABLE git_describe_result
+		)
+	string(REGEX MATCH "[a-z|0-9|.]*-[0-9]*-g([a-z|0-9]*)([-|a-z]*)" git_commit "${git_describe_out}")
+	set(git_commit ${CMAKE_MATCH_1})
+	set(git_dirty ${CMAKE_MATCH_2})
+	set(PROJECT_REVERSION_STRING "-g${git_commit}${git_dirty}")
+endif(GIT_FOUND)
+
+message(STATUS "Version is ${PROJECT_VERSION}${PROJECT_REVERSION_STRING}")
+configure_file("${CMAKE_SOURCE_DIR}/src/GameSrc/Headers/shockolate_version.h.in"
+	"${CMAKE_BINARY_DIR}/src/GameSrc/Headers/shockolate_version.h" )
+
 # Configuration done. Print features
 feature_summary(WHAT ENABLED_FEATURES DESCRIPTION "Enabled features:")
 feature_summary(WHAT DISABLED_FEATURES DESCRIPTION "Disabled features:")
 
 # Sources configuration
-
 add_subdirectory(src/Libraries/)
 
 set(MAC_SRC
@@ -277,6 +296,7 @@ include_directories(
 	src/GameSrc/Headers
 	src/MacSrc
 	src/MusicSrc
+	${CMAKE_BINARY_DIR}/src/GameSrc/Headers
 )
 
 if(ENABLE_EXAMPLES)

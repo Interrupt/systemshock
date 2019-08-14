@@ -24,13 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "fix.h"
-#include "clpcon.h"
 #include "plytyp.h"
 #include "lintyp.h"
-#include "clpltyp.h"
-#include "ctxmac.h"
 #include "grlin.h"
-#include "linfcn.h"
 
 /* This just converts to fix-point, then calls the current uline
    drawer, so this OK for all canvases, fill modes, etc.  In general,

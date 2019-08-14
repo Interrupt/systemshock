@@ -41,7 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <lg.h>
 #include "lzw.h"
 #include "res.h"
-#include "res_.h"
 //#include <memall.h>
 //#include <_res.h>
 

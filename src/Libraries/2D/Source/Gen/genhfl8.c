@@ -41,7 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cnvdat.h"
 #include "grpix.h"
 #include "grhbm.h"
-#include "general.h"
 
 /* draw an unclipped, horizontally flipped flat 8 bitmap to a
    canvas. */

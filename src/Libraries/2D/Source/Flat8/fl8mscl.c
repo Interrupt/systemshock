@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "bitmap.h"
 #include "clpcon.h"
 #include "cnvdat.h"
-#include "flat8.h"
 
 void flat8_mono_scale_ubitmap(grs_bitmap *bm, short x, short y, short w, short h) {
     fix x_scale;    /* x scale factor */

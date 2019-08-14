@@ -5,10 +5,10 @@ set(2D_SRC
 	2D/Source/bit.c
 	2D/Source/bitmap.c
 	2D/Source/blend.c
-	2D/Source/buffer.c
+#	2D/Source/buffer.c
 	2D/Source/canvas.c
-	2D/Source/chain.c
-	2D/Source/ChnFuncs.c
+#	2D/Source/chain.c
+#	2D/Source/ChnFuncs.c
 	2D/Source/chrsiz.c
 	2D/Source/chrwid.c
 	2D/Source/close.c
@@ -18,19 +18,19 @@ set(2D_SRC
 	2D/Source/devtab.c
 	2D/Source/fcntab.c
 	2D/Source/init.c
-	2D/Source/invtab.c
+#	2D/Source/invtab.c
 	2D/Source/lintab.c
 	2D/Source/mode.c
 	2D/Source/pal.c
 	2D/Source/permap.c
 	2D/Source/persetup.c
 	2D/Source/pertol.c
-	2D/Source/pixfill.c
+#	2D/Source/pixfill.c
 	2D/Source/rgb.c
 	2D/Source/screen.c
 	2D/Source/sscrn.c
 	2D/Source/StateStk.c
-	2D/Source/strnsiz.c
+#	2D/Source/strnsiz.c
 	2D/Source/strscl.c
 	2D/Source/strsiz.c
 	2D/Source/struscl.c
@@ -43,7 +43,7 @@ set(2D_SRC
 	2D/Source/tluctab.c
 	2D/Source/valloc.c
 	2D/Source/vtab.c
-	2D/Source/wirpoly.c
+#	2D/Source/wirpoly.c
 	2D/Source/MacDev.c
 	2D/Source/GR/grilin.c
 	2D/Source/GR/grmalloc.c
@@ -216,8 +216,8 @@ set(AFILE_SRC
 set(DSTRUCT_SRC
 	DSTRUCT/Source/array.c
 	DSTRUCT/Source/hash.c
-	DSTRUCT/Source/llist.c
-	DSTRUCT/Source/lllist.c
+#	DSTRUCT/Source/llist.c
+#	DSTRUCT/Source/lllist.c
 	DSTRUCT/Source/pqueue.c
 	DSTRUCT/Source/rect.c
 )
@@ -279,34 +279,34 @@ set(SND_SRC
 )
 
 set(UI_SRC
-	UI/Source/butarray.c
+#	UI/Source/butarray.c
 	UI/Source/curdrw.c
 	UI/Source/cursors.c
 	UI/Source/event.c
-	UI/Source/gadgets.c
+#	UI/Source/gadgets.c
 	UI/Source/hotkey.c
-	UI/Source/menu.c
-	UI/Source/monofont.c
-	UI/Source/plain.c
-	UI/Source/pushbutt.c
-	UI/Source/qboxgadg.c
-	UI/Source/realfont.c
+#	UI/Source/menu.c
+#	UI/Source/monofont.c
+#	UI/Source/plain.c
+#	UI/Source/pushbutt.c
+#	UI/Source/qboxgadg.c
+#	UI/Source/realfont.c
 	UI/Source/region.c
 	UI/Source/slab.c
-	UI/Source/slider.c
-	UI/Source/textgadg.c
-	UI/Source/texttool.c
-	UI/Source/tngbarry.c
-	UI/Source/tng.c
-	UI/Source/tngfont.c
-	UI/Source/tngmenu.c
-	UI/Source/tngplain.c
-	UI/Source/tngpushb.c
-	UI/Source/tngqbox.c
-	UI/Source/tngslidr.c
-	UI/Source/tngtemp.c
-	UI/Source/tngtextg.c
-	UI/Source/uires.c
+#	UI/Source/slider.c
+#	UI/Source/textgadg.c
+#	UI/Source/texttool.c
+#	UI/Source/tngbarry.c
+#	UI/Source/tng.c
+#	UI/Source/tngfont.c
+#	UI/Source/tngmenu.c
+#	UI/Source/tngplain.c
+#	UI/Source/tngpushb.c
+#	UI/Source/tngqbox.c
+#	UI/Source/tngslidr.c
+#	UI/Source/tngtemp.c
+#	UI/Source/tngtextg.c
+#	UI/Source/uires.c
 	UI/Source/vmouse.c
 )
 

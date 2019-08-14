@@ -38,7 +38,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "cnvdat.h"
-#include "flat8.h"
 
 /* returns value of the unclipped pixel at (x, y). */
 long flat8_get_upixel(short x, short y) {

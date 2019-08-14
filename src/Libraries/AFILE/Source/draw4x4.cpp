@@ -25,7 +25,6 @@
 // Includes
 #include "lg.h"
 #include "2d.h"
-#include "draw4x4.h"
 
 // Holds bitstream information between invocations.
 class BitstreamInfo

@@ -28,12 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "bitmap.h"
-#include "ctxmac.h"
 #include "grdbm.h"
 #include "grrend.h"
 #include "str.h"
 #include "chr.h"
-#include "general.h"
 
 void gen_font_scale_ustring (grs_font *f, char *s, short x0, short y0, short w, short h)
 {

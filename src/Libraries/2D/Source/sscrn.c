@@ -36,7 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "canvas.h"
 #include "cnvdat.h"
 #include "scrdat.h"
-#include "screen.h"
 
 /* set current screen to s.  also default canvas to full screen. */
 void gr_set_screen(grs_screen *s)

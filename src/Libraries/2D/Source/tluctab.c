@@ -80,7 +80,6 @@ it will look brown, which is probably what you want.
 #include "scrdat.h"
 #include "rgb.h"
 #include "tlucdat.h"
-#include "tluctab.h"
 #include "lg.h"
 
 // convert red in a glomped rgb to a fixed point 

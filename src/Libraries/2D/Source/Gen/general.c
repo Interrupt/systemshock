@@ -76,10 +76,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision.
  */
 
-#include "grs.h"
-#include "grnull.h"
-#include "general.h"
-
 void gen_fix_ucircle (void)
 { 
 }

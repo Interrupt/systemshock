@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "pixfill.h"
-#include "linfcn.h"
 
 /* unclipped vertical line with integral coordinates.
    fill type information is obtained from grd_pixel_fill,

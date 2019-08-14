@@ -42,7 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "clpcon.h"
 #include "grdbm.h"
 #include "grcbm.h"
-#include "general.h"
 #include "rsdunpck.h"
 
 void unpack_rsd8_ubitmap(grs_bitmap *bm, short x, short y)
