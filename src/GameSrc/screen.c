@@ -105,16 +105,16 @@ LGRegion *root_region = &root_region_data;
 // prototypes
 errtype load_misc_cursors(void);
 
-void generic_reg_init(uchar create_it, LGRegion *reg, LGRect *rct, uiSlab *slb, void *key_h, void *maus_h) {
+void generic_reg_init(uchar create_it, LGRegion *reg, LGRect *rct, uiSlab *slb, uiHandlerProc key_h, uiHandlerProc maus_h) {
     int callid;
     if (rct == NULL)
         rct = &fscrn_rect;
     if (create_it)
         region_create(NULL, reg, rct, 0, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
     if (key_h != NULL)
-        uiInstallRegionHandler(reg, UI_EVENT_KBD_COOKED, (uiHandlerProc)key_h, NULL, &callid);
+        uiInstallRegionHandler(reg, UI_EVENT_KBD_COOKED, key_h, 0, &callid);
     if (maus_h != NULL)
-        uiInstallRegionHandler(reg, UI_EVENT_MOUSE, (uiHandlerProc)maus_h, NULL, &callid);
+        uiInstallRegionHandler(reg, UI_EVENT_MOUSE, maus_h, 0, &callid);
     if (slb != NULL) {
         uiMakeSlab(slb, reg, &globcursor);
         uiGrabSlabFocus(slb, reg, ALL_EVENTS);
@@ -206,7 +206,7 @@ errtype screen_init(void) {
     wrapper_create_mouse_region(root_region);
 
     // Install basic input handlers
-    uiInstallRegionHandler(root_region, UI_EVENT_KBD_COOKED, &main_kb_callback, NULL, &callid);
+    uiInstallRegionHandler(root_region, UI_EVENT_KBD_COOKED, &main_kb_callback, 0, &callid);
 
     install_motion_keyboard_handler(root_region);
 

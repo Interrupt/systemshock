@@ -62,7 +62,7 @@ typedef struct _ui_event_handler
    ulong typemask;  // Which event types does this handle?    
      /* handler proc: called when a specific event is received */
    uiHandlerProc proc; 
-   void *state;  // handler-specific state data 
+   intptr_t state;  // handler-specific state data 
    int next;     // used for chaining handlers.  
 } uiEventHandler;
 
@@ -86,7 +86,7 @@ ulong last_mouse_draw_time = 0;
 // HANDLER CHAIN IMPLEMENTATION
 // ----------------------------
 
-errtype uiInstallRegionHandler(LGRegion* r, ulong evmask, uiHandlerProc callback, void* state, int* id)
+errtype uiInstallRegionHandler(LGRegion* r, uint32_t evmask, uiHandlerProc callback, intptr_t state, int* id)
 {
    handler_chain *ch;
    uiEventHandler* eh;

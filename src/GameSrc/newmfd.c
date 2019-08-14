@@ -246,15 +246,15 @@ void screen_init_mfd(uchar fullscrn) {
         macro_region_create(root_region, &(mfdL.bttn.reg), &(mfdL.bttn.rect));
         macro_region_create(root_region, &(mfdR.bttn.reg), &(mfdR.bttn.rect));
 
-        uiInstallRegionHandler(&(mfdL.reg), (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), mfd_view_callback, (void *)MFD_LEFT,
+        uiInstallRegionHandler(&(mfdL.reg), (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), mfd_view_callback, MFD_LEFT,
                                &id);
         uiInstallRegionHandler(&(mfdR.reg), (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), mfd_view_callback,
-                               (void *)MFD_RIGHT, &id);
+                               MFD_RIGHT, &id);
 
         uiInstallRegionHandler(&(mfdL.bttn.reg), (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), mfd_button_callback,
-                               (void *)MFD_LEFT, &id);
+                               MFD_LEFT, &id);
         uiInstallRegionHandler(&(mfdR.bttn.reg), (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), mfd_button_callback,
-                               (void *)MFD_RIGHT, &id);
+                               MFD_RIGHT, &id);
     } else {
         uiCursorStack *cs;
         macro_region_create(fullview_region, &(mfdL.reg2), &(mfdL.rect));
@@ -273,14 +273,14 @@ void screen_init_mfd(uchar fullscrn) {
         uiSetRegionCursorStack(&(mfdR.bttn.reg2), cs);
 
         uiInstallRegionHandler(&(mfdL.reg2), (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), mfd_view_callback_full,
-                               (void *)MFD_LEFT, &id);
+                               MFD_LEFT, &id);
         uiInstallRegionHandler(&(mfdR.reg2), (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), mfd_view_callback_full,
-                               (void *)MFD_RIGHT, &id);
+                               MFD_RIGHT, &id);
 
         uiInstallRegionHandler(&(mfdL.bttn.reg2), (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), mfd_button_callback,
-                               (void *)MFD_LEFT, &id);
+                               MFD_LEFT, &id);
         uiInstallRegionHandler(&(mfdR.bttn.reg2), (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), mfd_button_callback,
-                               (void *)MFD_RIGHT, &id);
+                               MFD_RIGHT, &id);
     }
 
     if (!done_init) {
@@ -837,23 +837,23 @@ uchar mfd_scan_opacity(int mfd_id, LGPoint epos) {
     return retval;
 }
 
-uchar mfd_view_callback_full(uiEvent *e, LGRegion *r, void *udata) {
+uchar mfd_view_callback_full(uiEvent *e, LGRegion *r, intptr_t udata) {
     uchar retval = FALSE;
     uchar mask;
-    if ((int)udata == MFD_RIGHT)
+    if (udata == MFD_RIGHT)
         mask = FULL_R_MFD_MASK;
     else
         mask = FULL_L_MFD_MASK;
     if (full_visible & mask) {
         retval = mfd_view_callback(e, r, udata);
         if (!retval) {
-            retval = mfd_scan_opacity((int)udata, e->pos);
+            retval = mfd_scan_opacity(udata, e->pos);
         }
     }
     return retval;
 }
 
-uchar mfd_view_callback(uiEvent *e, LGRegion *r, void *udata) {
+uchar mfd_view_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
     int i;
     int which_mfd;
     MFD *m;
@@ -917,7 +917,7 @@ uchar mfd_view_callback(uiEvent *e, LGRegion *r, void *udata) {
 // The callback for the MFD button panels.  Triggered by mouseclicks inside
 // the button panels.
 int last_mfd_cnum[NUM_MFDS] = {-1, -1};
-uchar mfd_button_callback(uiEvent *e, LGRegion *r, void *udata) {
+uchar mfd_button_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
     uiMouseEvent *m;
     int cnum, which_panel, which_button;
     div_t result;
@@ -973,7 +973,7 @@ uchar mfd_button_callback(uiEvent *e, LGRegion *r, void *udata) {
 //
 // The callback for the MFD button panels, as triggered by function keys
 
-uchar mfd_button_callback_kb(short keycode, ulong context, void *data) {
+uchar mfd_button_callback_kb(ushort keycode, uint32_t context, intptr_t data) {
     int which_panel, which_button;
     int fkeynum;
 

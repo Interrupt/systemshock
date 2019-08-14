@@ -1035,7 +1035,7 @@ void go_and_start_the_game_already(void)
 
 
 
-uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
+uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
   uiMouseEvent *mev = (uiMouseEvent *)ev;
   int which_one = -1;
@@ -1044,9 +1044,8 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
   uchar diff_changed;
 
 #ifndef NO_DUMMIES
-  void *dummy;
-  dummy = user_data;
-  dummy = r;
+  intptr_t dummy = user_data;
+  LGRegion *dummy2 = r;
 #endif
 
   if (mev->action & MOUSE_LDOWN)
@@ -1132,7 +1131,7 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
 
 
 
-uchar intro_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
+uchar intro_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
   uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
   int code = kev->code & ~(KB_FLAG_DOWN | KB_FLAG_2ND);

@@ -418,8 +418,8 @@ uchar do_selection(inv_display *dp, int row);
 void add_object_on_cursor(inv_display *dp, int row);
 uchar inventory_handle_leftbutton(uiEvent *ev, inv_display *dp, int row);
 uchar inventory_handle_rightbutton(uiEvent *ev, LGRegion *reg, inv_display *dp, int row);
-uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, void *);
-uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *);
+uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t);
+uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t);
 uchar invent_hotkey_func(ushort, uint32_t, intptr_t data);
 uchar cycle_weapons_func(ushort, uint32_t, intptr_t data);
 void init_invent_hotkeys(void);
@@ -2177,7 +2177,7 @@ uchar inventory_handle_rightbutton(uiEvent *ev, LGRegion *reg, inv_display *dp, 
 
 #define SEARCH_MARGIN 2
 
-uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, void *data) {
+uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     uchar retval = FALSE;
     uiMouseEvent *mev = (uiMouseEvent *)ev;
     int relx;
@@ -2291,11 +2291,12 @@ uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, void *data) {
 }
 
 int last_invent_cnum = -1; // last cursor num set for region
-uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
-    LGPoint pos = ev->pos;
+uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
+    uiMouseEvent *me = (uiMouseEvent*)ev;
+    LGPoint pos = me->pos;
     int cnum;
 
-    if (full_game_3d && (ev->buttons & (1 << MOUSE_LBUTTON)) != 0 && (ev->action & MOUSE_LDOWN) == 0 &&
+    if (full_game_3d && (me->buttons & (1 << MOUSE_LBUTTON)) != 0 && (me->action & MOUSE_LDOWN) == 0 &&
         uiLastMouseRegion[MOUSE_LBUTTON] != NULL && uiLastMouseRegion[MOUSE_LBUTTON] != r) {
         uiSetRegionDefaultCursor(r, NULL);
         return FALSE;
@@ -2327,7 +2328,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
         uiSetRegionDefaultCursor(r, c);
     }
 
-    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (ev->action & (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE))) {
+    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (me->action & (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE))) {
         AddResult pop = (AddResult)add_to_some_page(object_on_cursor, FALSE);
         if (IS_POP_RESULT(pop))
             pop_cursor_object();
@@ -2337,7 +2338,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
     if (page_button_state[cnum] == BttnDummy)
         return FALSE;
 
-    if (ev->action & MOUSE_LDOWN) {
+    if (me->action & MOUSE_LDOWN) {
         int i = cnum;
         short x = FIRST_BTTN_X + i * BUTTON_X_STEP;
         if (pos.x >= x && pos.x < x + INVENT_BTTN_WD && page_button_state[i] != BttnDummy) {
@@ -2481,7 +2482,7 @@ LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **p
     invrect.lr.x = invrect.ul.x + INVENTORY_PANEL_WIDTH;
     invrect.lr.y = invrect.ul.y + INVENTORY_PANEL_HEIGHT;
     region_create(root, invreg, &invrect, 0, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
-    uiInstallRegionHandler(invreg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, inventory_mouse_handler, NULL, &id);
+    uiInstallRegionHandler(invreg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, inventory_mouse_handler, 0, &id);
     uiSetRegionDefaultCursor(invreg, NULL);
     add_email_handler(invreg);
     if (pinvent != NULL)
@@ -2492,7 +2493,7 @@ LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **p
     invrect.lr.y = RectHeight(root->r);
     region_create(root, pagereg, &invrect, 0, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
     uiInstallRegionHandler(pagereg, (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), (uiHandlerProc)pagebutton_mouse_handler,
-                           NULL, &id);
+                           0, &id);
     uiSetRegionDefaultCursor(pagereg, &globcursor);
 
     if (pbuttons != NULL)

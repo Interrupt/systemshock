@@ -231,7 +231,7 @@ uchar inp6d_bdouble = FALSE;
 // and joysticks, heck, why be efficient
 uchar joystick_mouse_emul = FALSE;
 uchar joystick_count = 0;
-uchar recenter_joystick(ushort keycode, uint32_t context, uint32_t data);
+uchar recenter_joystick(ushort keycode, uint32_t context, intptr_t data);
 
 uchar change_gamma(ushort keycode, uint32_t context, intptr_t data);
 
@@ -249,9 +249,9 @@ void alloc_cursor_bitmaps(void);
 int view3d_mouse_input(LGPoint pos, LGRegion *reg, uchar move, int *lastsect);
 void view3d_dclick(LGPoint pos, frc *fr, bool shifted);
 void look_at_object(ObjID id);
-uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data);
+uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data);
 void view3d_rightbutton_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data);
-uchar view3d_key_handler(uiCookedKeyEvent *ev, LGRegion *r, void *data);
+uchar view3d_key_handler(uiEvent *ev, LGRegion *r, intptr_t data);
 void use_object_in_3d(ObjID obj, bool shifted);
 
 uchar MacResFunc(ushort keycode, uint32_t context, intptr_t data);
@@ -905,10 +905,10 @@ void sball_chk(void) {
 
 #endif // NOT_YET
 
-uchar main_kb_callback(uiEvent *h, LGRegion *r, void *udata) {
+uchar main_kb_callback(uiEvent *h, LGRegion *r, intptr_t udata) {
 
     LGRegion *dummy2;
-    void *dummy3;
+    intptr_t dummy3;
     dummy2 = r;
     dummy3 = udata;
 
@@ -2202,35 +2202,37 @@ void view3d_dclick(LGPoint pos, frc *fr, bool shifted) {
 
 // -------------------------------------------------------------------------------
 // view3d_mouse_handler is the actual installed mouse handler, dispatching to the above functions
-uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
+uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
     static uchar got_focus = FALSE;
+    uiMouseEvent *me = (uiMouseEvent*)ev;
+    view3d_data *data = (view3d_data*)v;
     uchar retval = TRUE;
     LGPoint pt;
-    LGPoint evp = ev->pos;
+    LGPoint evp = me->pos;
     extern int _fr_glob_flags;
 
     pt = evp;
 
 #ifdef STEREO_SUPPORT
     if (convert_use_mode == 5) {
-        extern uchar inventory_mouse_handler(uiEvent * ev, LGRegion * r, void *data);
-        extern uchar mfd_view_callback(uiEvent * e, LGRegion * r, void *udata);
+        extern uchar inventory_mouse_handler(uiEvent * ev, LGRegion * r, intptr_t data);
+        extern uchar mfd_view_callback(uiEvent * e, LGRegion * r, intptr_t udata);
         switch (i6d_device) {
         case I6D_CTM:
             if (full_visible & FULL_INVENT_MASK)
-                return (inventory_mouse_handler((uiEvent *)ev, r, data));
+                return (inventory_mouse_handler(ev, r, v));
             if ((full_visible & FULL_L_MFD_MASK) && (evp.x < ((MFD_VIEW_LFTX + MFD_VIEW_WID) << 1)))
-                return (mfd_view_callback((uiEvent *)ev, r, (void *)0));
+                return (mfd_view_callback(ev, r, 0));
             if ((full_visible & FULL_R_MFD_MASK) && (evp.x > ((MFD_VIEW_RGTX + MFD_VIEW_WID) >> 1)))
-                return (mfd_view_callback((uiEvent *)ev, r, (void *)1));
+                return (mfd_view_callback(ev, r, 1));
             break;
         case I6D_VFX1:
             if (full_visible & FULL_INVENT_MASK)
-                return (inventory_mouse_handler((uiEvent *)ev, r, data));
+                return (inventory_mouse_handler(ev, r, v));
             if ((full_visible & FULL_L_MFD_MASK) && (evp.x < ((MFD_VIEW_LFTX + MFD_VIEW_WID) << 1)))
-                return (mfd_view_callback((uiEvent *)ev, r, (void *)0));
+                return (mfd_view_callback(ev, r, 0));
             if ((full_visible & FULL_R_MFD_MASK) && (evp.x > ((MFD_VIEW_RGTX + MFD_VIEW_WID) >> 1)))
-                return (mfd_view_callback((uiEvent *)ev, r, (void *)1));
+                return (mfd_view_callback(ev, r, 1));
             break;
         }
     }
@@ -2254,7 +2256,7 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
                                     CONTROL_NO_CHANGE);
         return (FALSE);
     }
-    if (ev->action & MOUSE_LDOWN) {
+    if (me->action & MOUSE_LDOWN) {
         data->ldown = TRUE;
         data->lastleft = evp;
         if (full_game_3d && !got_focus) {
@@ -2264,7 +2266,7 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
         chg_set_flg(_current_3d_flag);
         //      view3d_constrain_mouse(r,LBUTTON_CONSTRAIN_BIT);
     }
-    if (ev->action & MOUSE_LUP || !(ev->buttons & (1 << MOUSE_LBUTTON))) {
+    if (me->action & MOUSE_LUP || !(me->buttons & (1 << MOUSE_LBUTTON))) {
         data->ldown = FALSE;
         if (full_game_3d && got_focus) {
             if (uiReleaseFocus(r, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE) == OK)
@@ -2272,10 +2274,10 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
         }
         //      view3d_unconstrain_mouse(LBUTTON_CONSTRAIN_BIT);
     }
-    if (ev->action & MOUSE_LUP && abs(evp.y - data->lastleft.y) < uiDoubleClickTolerance &&
+    if (me->action & MOUSE_LUP && abs(evp.y - data->lastleft.y) < uiDoubleClickTolerance &&
         abs(evp.x - data->lastleft.x) < uiDoubleClickTolerance) {
         //make shift+leftclick act as double-leftclick with alternate effects
-        if (ev->modifiers & 1) { //shifted click; see sdl_events.c
+        if (me->modifiers & 1) { //shifted click; see sdl_events.c
             view3d_dclick(evp, data->fr, TRUE); //TRUE indicates shifted
             data->lastleft = MakePoint(-100, -100);
         }
@@ -2310,8 +2312,8 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
             data->lastleft.x = -255;
         }
     }
-    if ((ev->action & (MOUSE_RDOWN | MOUSE_RUP)) || (ev->buttons & (1 << MOUSE_RBUTTON)))
-        view3d_rightbutton_handler(ev, r, data);
+    if ((me->action & (MOUSE_RDOWN | MOUSE_RUP)) || (me->buttons & (1 << MOUSE_RBUTTON)))
+        view3d_rightbutton_handler(me, r, data);
 
     /* KLC - done in another place now.
        else
@@ -2328,18 +2330,18 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
        }
 
     */
-    if ((ev->buttons & (1 << MOUSE_RBUTTON)) == 0 ||
-        ((ev->buttons & (1 << MOUSE_RBUTTON)) == 0 && global_fullmap->cyber))
+    if ((me->buttons & (1 << MOUSE_RBUTTON)) == 0 ||
+        ((me->buttons & (1 << MOUSE_RBUTTON)) == 0 && global_fullmap->cyber))
         physics_set_one_control(MOUSE_CONTROL_BANK, CONTROL_ZVEL, 0);
 
-    if (ev->action & UI_MOUSE_LDOUBLE) {
+    if (me->action & UI_MOUSE_LDOUBLE) {
         // Spew(DSRC_USER_I_Motion,("use this, bay-bee!\n"));
         view3d_dclick(evp, data->fr, FALSE);
         data->lastleft = MakePoint(-100, -100);
     }
 
-    if (ev->action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
-        cycle_weapons_func(0, 0, ev->action & MOUSE_WHEELUP ? -1 : 1);
+    if (me->action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
+        cycle_weapons_func(0, 0, me->action & MOUSE_WHEELUP ? -1 : 1);
     }
 
     // data->ldown = TRUE;
@@ -2357,15 +2359,16 @@ typedef struct _view3d_kdata {
 
 extern int FireKeys[]; //see MacSrc/Prefs.c
 
-uchar view3d_key_handler(uiCookedKeyEvent *ev, LGRegion *r, void *data)
+uchar view3d_key_handler(uiEvent *ev, LGRegion *r, intptr_t data)
 {
+    uiCookedKeyEvent *ke = (uiCookedKeyEvent*)ev;
   int i, detect = 0, fire_pressed = 0;
 
   i = 0;
   while (FireKeys[i] != 0)
   {
-    if (ev->code == FireKeys[i]) detect = 1;
-    if (ev->code == (FireKeys[i] | KB_FLAG_DOWN)) {detect = 1; fire_pressed = 1; break;}
+    if (ke->code == FireKeys[i]) detect = 1;
+    if (ke->code == (FireKeys[i] | KB_FLAG_DOWN)) {detect = 1; fire_pressed = 1; break;}
     i++;
   }
   if (!detect) return FALSE;
@@ -2374,7 +2377,7 @@ uchar view3d_key_handler(uiCookedKeyEvent *ev, LGRegion *r, void *data)
   {
     if (weapon_button_up) // if we haven't fired already
     {
-      LGPoint evp = ev->pos;
+      LGPoint evp = ke->pos;
       ss_point_convert(&(evp.x), &(evp.y), FALSE);
       fire_player_weapon(&evp, r, !fire_slam);
       fire_slam = TRUE;
@@ -3336,18 +3339,18 @@ void install_motion_mouse_handler(LGRegion *r, frc *fr) {
     data->lastright.y = 0;
     data->fr = fr;
     uiInstallRegionHandler(r, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE | UI_EVENT_USER_DEFINED,
-                           (uiHandlerProc)view3d_mouse_handler, data, &cid);
+                           view3d_mouse_handler, (intptr_t)data, &cid);
 
     // Yeah, yeah, I know, it's not a mouse handler...
-    uiInstallRegionHandler(r, UI_EVENT_KBD_COOKED, (uiHandlerProc)view3d_key_handler, NULL, &cid);
+    uiInstallRegionHandler(r, UI_EVENT_KBD_COOKED, view3d_key_handler, 0, &cid);
     uiSetRegionDefaultCursor(r, NULL);
 }
 
-extern void motion_keycheck_handler(uiEvent *, LGRegion *, void *);
+extern uchar motion_keycheck_handler(uiEvent *, LGRegion *, intptr_t);
 
 void install_motion_keyboard_handler(LGRegion *r) {
     int cid;
-    uiInstallRegionHandler(r, UI_EVENT_KBD_POLL, (uiHandlerProc)motion_keycheck_handler, NULL, &cid);
+    uiInstallRegionHandler(r, UI_EVENT_KBD_POLL, motion_keycheck_handler, 0, &cid);
 }
 
 void pop_cursor_object(void) {

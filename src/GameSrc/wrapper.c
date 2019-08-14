@@ -1046,7 +1046,7 @@ void textlist_init(uchar butid, char *text, uchar numblocks, uchar blocksiz, uch
 // event to see if they want to deal with it.
 //
 #pragma disable_message(202)
-uchar opanel_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data) {
+uchar opanel_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
     uiMouseEvent mev;
     int b;
 
@@ -1072,7 +1072,7 @@ uchar opanel_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data) {
 // One, true keyboard handler for all options mode events.
 // checks all options panel widgets to see if they want to deal.
 //
-uchar opanel_kb_handler(uiEvent *ev, LGRegion *r, void *user_data) {
+uchar opanel_kb_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
     uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
     int b;
 
@@ -2207,9 +2207,9 @@ void wrapper_start(void (*init)(void)) {
     } else
         inventory_clear();
     uiShowMouse(NULL);
-    uiInstallRegionHandler(inventory_region, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, opanel_mouse_handler, NULL,
+    uiInstallRegionHandler(inventory_region, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, opanel_mouse_handler, 0,
                            &wrap_id);
-    uiInstallRegionHandler(inventory_region, UI_EVENT_KBD_COOKED, opanel_kb_handler, NULL, &wrap_key_id);
+    uiInstallRegionHandler(inventory_region, UI_EVENT_KBD_COOKED, opanel_kb_handler, 0, &wrap_key_id);
     uiGrabFocus(inventory_region, UI_EVENT_KBD_COOKED | UI_EVENT_MOUSE);
     region_set_invisible(inventory_region, FALSE);
     reset_input_system();
@@ -2266,7 +2266,8 @@ errtype do_savegame_guts(uchar slot) {
     //#endif // NOT_YET
 
 #pragma disable_message(202)
-uchar wrapper_region_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
+uchar wrapper_region_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
+    uiMouseEvent *me = (uiMouseEvent*)ev;
     /*if (global_fullmap->cyber)
     {
        uiSetRegionDefaultCursor(r,NULL);
@@ -2276,7 +2277,7 @@ uchar wrapper_region_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
 
     uiSetRegionDefaultCursor(r, &option_cursor);
 
-    if (ev->action & MOUSE_DOWN) {
+    if (me->action & MOUSE_DOWN) {
         wrapper_options_func(0, 0, TRUE);
         return TRUE;
     }
@@ -2336,8 +2337,8 @@ errtype wrapper_create_mouse_region(LGRegion *root) {
     err = region_create(root, reg, &r, 2, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
     if (err != OK)
         return err;
-    err = uiInstallRegionHandler(reg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, (uiHandlerProc)wrapper_region_mouse_handler,
-                                 NULL, &id);
+    err = uiInstallRegionHandler(reg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, wrapper_region_mouse_handler,
+                                 0, &id);
     if (err != OK)
         return err;
     if (!cursor_loaded) {
