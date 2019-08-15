@@ -109,7 +109,7 @@ Schedule game_seconds_schedule;
 // prototypes
 void game_sched_init(void);
 void game_sched_free(void);
-void unshodanizing_callback(ObjID id, void *user_data);
+void unshodanizing_callback(ObjID id, intptr_t user_data);
 void check_nearby_objects(void);
 void fatigue_player(void);
 uchar shodan_phase_in(uchar *bitmask, short x, short y, short w, short h, short num, uchar dir);
@@ -136,14 +136,14 @@ ulong obj_check_time = 0;
 #define MACHINE_LAYER_BASE 25
 #define OBJ_CHECK_RADIUS 7
 
-void unshodanizing_callback(ObjID id, void *user_data) {
+void unshodanizing_callback(ObjID id, intptr_t user_data) {
     bool ud = (bool)user_data;
     if (ud) {
         objBigstuffs[objs[id].specID].data2 = SHODAN_STATIC_MAGIC_COOKIE | (TPOLY_TYPE_CUSTOM_MAT << TPOLY_INDEX_BITS);
         objBigstuffs[objs[id].specID].cosmetic_value = 0;
         objs[id].info.current_frame = 0;
     } else
-        add_obj_to_animlist(id, FALSE, TRUE, FALSE, 0, 3, (void *)TRUE, ANIMCB_REMOVE);
+        add_obj_to_animlist(id, FALSE, TRUE, FALSE, 0, 3, TRUE, ANIMCB_REMOVE);
 }
 
 #define STOCHASTIC_SHODAN_MASK 0xF
@@ -290,7 +290,7 @@ void check_nearby_objects() {
                                     objBigstuffs[objs[id].specID].cosmetic_value = NUM_SHODAN_FRAMES;
                                     objs[id].info.current_frame = 0;
                                     // animate me:  cycle, but don't repeat
-                                    add_obj_to_animlist(id, FALSE, FALSE, FALSE, 0, 3, (void *)0, ANIMCB_REMOVE);
+                                    add_obj_to_animlist(id, FALSE, FALSE, FALSE, 0, 3, 0, ANIMCB_REMOVE);
                                 }
                             }
                             break;

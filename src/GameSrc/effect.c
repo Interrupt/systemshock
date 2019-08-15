@@ -684,7 +684,7 @@ uchar anim_data_from_id(ObjID id, bool *reverse, bool *cycle) {
 }
 
 #define CHECK_ANIM_SPEED
-errtype add_obj_to_animlist(ObjID id, uchar repeat, uchar reverse, uchar cycle, short speed, int cb_id, void *user_data,
+errtype add_obj_to_animlist(ObjID id, uchar repeat, uchar reverse, uchar cycle, short speed, int cb_id, intptr_t user_data,
                             short cbtype) {
     int i = 0;
     uchar replace_me = FALSE;
@@ -741,7 +741,7 @@ errtype add_obj_to_animlist(ObjID id, uchar repeat, uchar reverse, uchar cycle, 
 errtype remove_obj_from_animlist(ObjID id) {
     int i = 0;
     AnimlistCB cb = NULL;
-    void *ud;
+    intptr_t ud;
 
     for (i = 0; i < anim_counter; i++) {
         if (animlist[i].id == id) {
@@ -766,16 +766,16 @@ errtype animlist_clear() {
 }
 
 void init_animlist(void) {
-    extern void diego_teleport_callback(ObjID id, void *user_data);
-    extern void destroy_screen_callback_func(ObjID id, void *user_data);
-    extern void unshodanizing_callback(ObjID id, void *user_data);
-    extern void unmulti_anim_callback(ObjID id, void *user_data);
-    extern void multi_anim_callback(ObjID id, void *user_data);
-    extern void animate_callback_func(ObjID id, void *user_data);
-    animlist_callbacks[1] = (AnimlistCB)diego_teleport_callback;
-    animlist_callbacks[2] = (AnimlistCB)destroy_screen_callback_func;
-    animlist_callbacks[3] = (AnimlistCB)unshodanizing_callback;
-    animlist_callbacks[4] = (AnimlistCB)unmulti_anim_callback;
-    animlist_callbacks[5] = (AnimlistCB)multi_anim_callback;
-    animlist_callbacks[6] = (AnimlistCB)animate_callback_func;
+    extern void diego_teleport_callback(ObjID id, intptr_t user_data);
+    extern void destroy_screen_callback_func(ObjID id, intptr_t user_data);
+    extern void unshodanizing_callback(ObjID id, intptr_t user_data);
+    extern void unmulti_anim_callback(ObjID id, intptr_t user_data);
+    extern void multi_anim_callback(ObjID id, intptr_t user_data);
+    extern void animate_callback_func(ObjID id, intptr_t user_data);
+    animlist_callbacks[1] = diego_teleport_callback;
+    animlist_callbacks[2] = destroy_screen_callback_func;
+    animlist_callbacks[3] = unshodanizing_callback;
+    animlist_callbacks[4] = unmulti_anim_callback;
+    animlist_callbacks[5] = multi_anim_callback;
+    animlist_callbacks[6] = animate_callback_func;
 }

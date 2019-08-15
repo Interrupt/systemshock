@@ -880,7 +880,7 @@ ObjID obj_create_base(int triple) {
             obj_screen_animate(new_id);
             break;
         default:
-            add_obj_to_animlist(new_id, REPEAT_3D(ObjProps[OPTRIP(triple)].bitmap_3d), FALSE, FALSE, 0, 0, NULL, 0);
+            add_obj_to_animlist(new_id, REPEAT_3D(ObjProps[OPTRIP(triple)].bitmap_3d), FALSE, FALSE, 0, 0, 0, 0);
             break;
         }
     }
@@ -2112,19 +2112,19 @@ errtype obj_settle_func(ObjID id) {
     return (OK);
 }
 
-void destroy_screen_callback_func(ObjID id, void *user_data);
-void diego_teleport_callback(ObjID id, void *user_data);
+void destroy_screen_callback_func(ObjID id, intptr_t user_data);
+void diego_teleport_callback(ObjID id, intptr_t user_data);
 
 #define DESTROYED_SCREEN_ANIM_BASE 0x1B
 
-void destroy_screen_callback_func(ObjID id, void *data) {
+void destroy_screen_callback_func(ObjID id, intptr_t data) {
     ObjSpecID osid = objs[id].specID;
     objBigstuffs[osid].cosmetic_value = 1;
     objBigstuffs[osid].data2 = DESTROYED_SCREEN_ANIM_BASE + 3;
     objs[id].info.current_frame = 0;
 }
 
-void diego_teleport_callback(ObjID id, void *data) { obj_destroy(id); }
+void diego_teleport_callback(ObjID id, intptr_t data) { obj_destroy(id); }
 
 // A critter has been killed -- do we let it die like usual or
 // do we do something wacky?
@@ -2138,7 +2138,7 @@ uchar death_check(ObjID id, bool *b) {
         damage_sound_fx = -1;
         play_digi_fx_obj(SFX_TELEPORT, 1, id);
         remove_obj_from_animlist(id);
-        add_obj_to_animlist(id, FALSE, FALSE, FALSE, 32, 1, NULL, ANIMCB_REMOVE);
+        add_obj_to_animlist(id, FALSE, FALSE, FALSE, 32, 1, 0, ANIMCB_REMOVE);
     }
     return FALSE;
 }
@@ -2215,7 +2215,7 @@ uchar obj_combat_destroy(ObjID id) {
             objBigstuffs[osid].cosmetic_value = 4;
             objBigstuffs[osid].data1 = 0;
             objBigstuffs[osid].data2 = DESTROYED_SCREEN_ANIM_BASE;
-            add_obj_to_animlist(id, 0, 0, 0, 0, 2, NULL, ANIMCB_REMOVE);
+            add_obj_to_animlist(id, 0, 0, 0, 0, 2, 0, ANIMCB_REMOVE);
             damage_sound_fx = SFX_MONITOR_EXPLODE;
             damage_sound_id = id;
             retval = FALSE;
