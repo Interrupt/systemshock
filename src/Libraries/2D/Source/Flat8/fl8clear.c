@@ -71,7 +71,7 @@ void flat8_clear(long color) {
         doub_vl = double_stack;
 
         lastbytes = w;
-        if (firstbytes = (int)p & 3) // check for boundary problems
+        if (firstbytes = (intptr_t)p & 3) // check for boundary problems
             lastbytes -= firstbytes;
 
         middoubles = lastbytes >> 3;
