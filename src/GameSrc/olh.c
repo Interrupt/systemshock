@@ -296,7 +296,7 @@ void olh_do_panel_ref(short xl, short yl) {
         char namebuf[80];
 
         get_object_lookname(obj, namebuf, sizeof(namebuf));
-        lg_sprintf(buf, get_temp_string(REF_STR_helpGump), namebuf);
+        sprintf(buf, get_temp_string(REF_STR_helpGump), namebuf);
     } else if (objs[obj].obclass == CLASS_FIXTURE) {
         Ref ref = 0;
         if (objs[obj].subclass == FIXTURE_SUBCLASS_CONTROL)
@@ -396,7 +396,7 @@ void olh_do_cursor(short xl, short yl) {
 
         get_string(id, stringbuf, sizeof(stringbuf));
         get_object_lookname(obj, namebuf, sizeof(namebuf));
-        lg_sprintf(buf, stringbuf, namebuf);
+        sprintf(buf, stringbuf, namebuf);
     }
     draw_olh_string(buf, xl, yl);
 }
