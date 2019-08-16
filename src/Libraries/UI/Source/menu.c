@@ -134,7 +134,7 @@ Gadget *gad_menu_create(Gadget *parent, LGPoint *coord, int z, TNGStyle *sty, in
    return (retgad);
 }
 
-errtype gad_menu_add_line(Gadget *menu, char *label, hotkey_callback f, short keycode, ulong context, void *user_data, char *help_text)
+errtype gad_menu_add_line(Gadget *menu, char *label, hotkey_callback f, ushort keycode, uint32_t context, intptr_t user_data, char *help_text)
 {
    return(tng_menu_add_line(menu->tng_data, label, f, keycode, context, user_data, help_text));
 }

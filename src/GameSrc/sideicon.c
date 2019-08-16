@@ -81,10 +81,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------
 
 void side_icon_language_change(void);
-uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata);
+uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, intptr_t udata);
 void zoom_side_icon_to_mfd(int icon, int waretype, int wnum);
 void zoom_to_side_icon(LGPoint from, int icon);
-uchar side_icon_hotkey_func(ushort keycode, ulong context, int i);
+uchar side_icon_hotkey_func(ushort keycode, uint32_t context, intptr_t i);
 void side_icon_draw_bm(LGRect *r, ubyte icon, ubyte art);
 
 // ----------
@@ -193,27 +193,27 @@ void init_side_icon_popups(void) {
 #ifdef DUMMY // not yet, bucko
 
 void init_side_icon_hotkeys(void) {
-    uchar side_icon_hotkey_func(ushort key, ulong context, int i);
-    uchar side_icon_progset_hotkey_func(ushort key, ulong context, int i);
-    uchar lantern_change_setting_hkey(ushort key, ulong context, void *i);
-    uchar shield_change_setting_hkey(ushort key, ulong context, void *i);
-    uchar side_icon_prog_hotkey_func(ushort key, ulong context, void *notused);
+    uchar side_icon_hotkey_func(ushort key, uint32_t context, intptr_t i);
+    uchar side_icon_progset_hotkey_func(ushort key, uint32_t context, intptr_t i);
+    uchar lantern_change_setting_hkey(ushort key, uint32_t context, intptr_t i);
+    uchar shield_change_setting_hkey(ushort key, uint32_t context, intptr_t i);
+    uchar side_icon_prog_hotkey_func(ushort key, uint32_t context, intptr_t notused);
     int i;
 
-    hotkey_add(KB_FLAG_ALT | KB_FLAG_DOWN | '4', DEMO_CONTEXT, lantern_change_setting_hkey, NULL);
-    hotkey_add(KB_FLAG_ALT | KB_FLAG_DOWN | '5', DEMO_CONTEXT, shield_change_setting_hkey, NULL);
+    hotkey_add(KB_FLAG_ALT | KB_FLAG_DOWN | '4', DEMO_CONTEXT, lantern_change_setting_hkey, 0);
+    hotkey_add(KB_FLAG_ALT | KB_FLAG_DOWN | '5', DEMO_CONTEXT, shield_change_setting_hkey, 0);
 
-    hotkey_add(KB_FLAG_DOWN | '0', DEMO_CONTEXT, (hotkey_callback)side_icon_hotkey_func, (void *)(NUM_SIDE_ICONS - 1));
+    hotkey_add(KB_FLAG_DOWN | '0', DEMO_CONTEXT, side_icon_hotkey_func, NUM_SIDE_ICONS - 1);
 #ifdef PROGRAM_SIDEICON
-    hotkey_add('`', DEMO_CONTEXT, (hotkey_callback)side_icon_prog_hotkey_func, NULL);
-    hotkey_add(KB_FLAG_DOWN | shiftnums[0], DEMO_CONTEXT, (hotkey_callback)side_icon_progset_hotkey_func,
-               (void *)(NUM_SIDE_ICONS - 1));
+    hotkey_add('`', DEMO_CONTEXT, ide_icon_prog_hotkey_func, 0);
+    hotkey_add(KB_FLAG_DOWN | shiftnums[0], DEMO_CONTEXT, side_icon_progset_hotkey_func,
+               NUM_SIDE_ICONS - 1);
 #endif
     for (i = 0; i < NUM_SIDE_ICONS - 1; i++) {
-        hotkey_add(KB_FLAG_DOWN | ('1' + i), DEMO_CONTEXT, (hotkey_callback)side_icon_hotkey_func, (void *)i);
+        hotkey_add(KB_FLAG_DOWN | ('1' + i), DEMO_CONTEXT, side_icon_hotkey_func, i);
 #ifdef PROGRAM_SIDEICON
-        hotkey_add(KB_FLAG_DOWN | shiftnums[1 + i], DEMO_CONTEXT, (hotkey_callback)side_icon_progset_hotkey_func,
-                   (void *)i);
+        hotkey_add(KB_FLAG_DOWN | shiftnums[1 + i], DEMO_CONTEXT, side_icon_progset_hotkey_func,
+                   i);
 #endif
     }
 }
@@ -243,7 +243,7 @@ void screen_init_side_icons(LGRegion *root) {
     r.ul = side_icons[0].r.ul;
     r.lr = side_icons[(NUM_SIDE_ICONS - 1) / 2].r.lr;
     macro_region_create_with_autodestroy(root, left_region, &r);
-    uiInstallRegionHandler(left_region, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, &side_icon_mouse_callback, (void *)0,
+    uiInstallRegionHandler(left_region, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, &side_icon_mouse_callback, 0,
                            &id);
     uiSetRegionDefaultCursor(left_region, NULL);
 
@@ -251,7 +251,7 @@ void screen_init_side_icons(LGRegion *root) {
     r.lr = side_icons[(NUM_SIDE_ICONS - 1)].r.lr;
     macro_region_create_with_autodestroy(root, right_region, &r);
     uiInstallRegionHandler(right_region, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, &side_icon_mouse_callback,
-                           (void *)((NUM_SIDE_ICONS + 1) / 2), &id);
+                           ((NUM_SIDE_ICONS + 1) / 2), &id);
     uiSetRegionDefaultCursor(right_region, NULL);
 
     return;
@@ -284,7 +284,7 @@ void zoom_side_icon_to_mfd(int icon, int waretype, int wnum) {
 extern LGCursor globcursor;
 
 int last_side_icon = -1;
-uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata) {
+uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
     extern uchar fullscrn_icons;
     uchar retval = FALSE;
     uiMouseEvent *m;
@@ -344,7 +344,7 @@ uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, void *udata) {
     return retval;
 }
 
-uchar side_icon_hotkey_func(ushort keycode, ulong context, int i) {
+uchar side_icon_hotkey_func(ushort keycode, uint32_t context, intptr_t i) {
     int type = icon_data[i].waretype;
     int num = IDX_OF_TYPE(type, icon_data[i].waretrip);
     if ((!global_fullmap->cyber) || (i == 1)) {
@@ -355,7 +355,7 @@ uchar side_icon_hotkey_func(ushort keycode, ulong context, int i) {
 }
 
 #ifdef PROGRAM_SIDEICON
-uchar side_icon_progset_hotkey_func(ushort keycode, ulong context, int i) {
+uchar side_icon_progset_hotkey_func(ushort keycode, uint32_t context, intptr_t i) {
     char mess[80];
     int l;
     programmed_sideicon = i;
@@ -366,7 +366,7 @@ uchar side_icon_progset_hotkey_func(ushort keycode, ulong context, int i) {
     return TRUE;
 }
 
-uchar side_icon_prog_hotkey_func(ushort keycode, ulong context, void *notused) {
+uchar side_icon_prog_hotkey_func(ushort keycode, uint32_t context, intptr_t notused) {
     return (side_icon_hotkey_func(keycode, context, programmed_sideicon));
 }
 #endif

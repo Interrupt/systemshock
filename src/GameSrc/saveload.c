@@ -1473,7 +1473,7 @@ obj_out:
                 obj_screen_animate(oid);
                 break;
             default:
-                add_obj_to_animlist(oid, REPEAT_3D(ObjProps[OPNUM(oid)].bitmap_3d), FALSE, FALSE, 0, 0, NULL, 0);
+                add_obj_to_animlist(oid, REPEAT_3D(ObjProps[OPNUM(oid)].bitmap_3d), FALSE, FALSE, 0, 0, 0, 0);
                 break;
             }
         }

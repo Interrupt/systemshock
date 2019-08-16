@@ -486,7 +486,7 @@ errtype journey_newgame_func(void)
 
   INFO("Started new game!");
 
-  change_mode_func(0, 0, (void *)GAME_LOOP);
+  change_mode_func(0, 0, GAME_LOOP);
 
   return OK;
 }
@@ -897,7 +897,7 @@ errtype load_that_thar_game(int which_slot)
     player_create_initial();
     player_struct.level = 0xFF; // make sure we load textures
     Poke_SaveName(which_slot);
-    change_mode_func(0, 0, (void *)GAME_LOOP);
+    change_mode_func(0, 0, GAME_LOOP);
     retval = load_game(save_game_name);
     if (retval != OK)
     {
@@ -1035,7 +1035,7 @@ void go_and_start_the_game_already(void)
 
 
 
-uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
+uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
   uiMouseEvent *mev = (uiMouseEvent *)ev;
   int which_one = -1;
@@ -1044,9 +1044,8 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
   uchar diff_changed;
 
 #ifndef NO_DUMMIES
-  void *dummy;
-  dummy = user_data;
-  dummy = r;
+  intptr_t dummy = user_data;
+  LGRegion *dummy2 = r;
 #endif
 
   if (mev->action & MOUSE_LDOWN)
@@ -1132,7 +1131,7 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
 
 
 
-uchar intro_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
+uchar intro_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
   uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
   int code = kev->code & ~(KB_FLAG_DOWN | KB_FLAG_2ND);

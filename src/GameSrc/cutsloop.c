@@ -87,7 +87,7 @@ void AudioStreamCallback(void *userdata, unsigned char *stream, int len)
 
 
 
-uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
+uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
   uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
   int code = kev->code & ~(KB_FLAG_DOWN | KB_FLAG_2ND);
@@ -109,7 +109,7 @@ uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, void *user_data)
 
 
 
-uchar cutscene_mouse_handler(uiEvent *ev, LGRegion *r, void *user_data)
+uchar cutscene_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
 }
 

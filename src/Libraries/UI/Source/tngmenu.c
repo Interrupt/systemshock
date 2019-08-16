@@ -298,8 +298,8 @@ errtype tng_menu_selection(TNG *ptng)
    return(OK);
 }
 
-errtype tng_menu_add_line(TNG *ptng, char *label, hotkey_callback f, short keycode, ulong context,
-   void *user_data, char *help_text)
+errtype tng_menu_add_line(TNG *ptng, char *label, hotkey_callback f, ushort keycode, uint32_t context,
+   intptr_t user_data, char *help_text)
 {
    MenuElement *newelem;
 
@@ -335,7 +335,7 @@ MenuElement *tng_menu_add_basic(TNG *ptng, char *label)
 
    newelem->submenu = NULL;
    newelem->f = NULL;
-   newelem->user_data = NULL;
+   newelem->user_data = 0;
    newelem->keycode = 0;
    newelem->context = 0;
 

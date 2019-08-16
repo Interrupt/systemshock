@@ -202,15 +202,15 @@ fix inpJoystickSens = FIX_UNIT;
 extern uchar game_paused;
 
 #ifdef SVGA_SUPPORT
-extern uchar change_svga_mode(short keycode, ulong context, void *data);
+extern uchar change_svga_mode(ushort keycode, uint32_t context, intptr_t data);
 #endif
-extern uchar toggle_bool_func(short keycode, ulong context, void *thebool);
+extern uchar toggle_bool_func(ushort keycode, uint32_t context, intptr_t thebool);
 LGPoint use_cursor_pos;
 
 #ifdef RCACHE_TEST
-extern uchar res_cache_usage_func(short keycode, ulong context, void *data);
+extern uchar res_cache_usage_func(ushort keycode, uint32_t context, intptr_t data);
 #endif
-// extern uchar texture_annihilate_func(short keycode, ulong context, void* data);
+// extern uchar texture_annihilate_func(ushort keycode, uint32_t context, intptrr_t data);
 
 // 6d wackiness
 uchar inp6d_exists = FALSE;
@@ -220,7 +220,7 @@ void inp6d_chk(void);
 #include <i6dvideo.h>
 
 static int tracker_initial_pos[3] = {0, 0, 0};
-uchar recenter_headset(short keycode, ulong context, void *data);
+uchar recenter_headset(ushort keycode, uint32_t context, intptr_t data);
 #endif
 
 // globals for doubling headset angular values
@@ -231,16 +231,16 @@ uchar inp6d_bdouble = FALSE;
 // and joysticks, heck, why be efficient
 uchar joystick_mouse_emul = FALSE;
 uchar joystick_count = 0;
-uchar recenter_joystick(short keycode, ulong context, void *data);
+uchar recenter_joystick(ushort keycode, uint32_t context, intptr_t data);
 
-uchar change_gamma(short keycode, ulong context, void *data);
+uchar change_gamma(ushort keycode, uint32_t context, intptr_t data);
 
 // -------------
 //  PROTOTYPES
 // -------------
 void handle_keyboard_fatigue(void);
 void poll_mouse(void);
-uchar eye_hotkey_func(short keycode, ulong context, int data);
+uchar eye_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
 
 void reload_motion_cursors(uchar cyber);
 void free_cursor_bitmaps();
@@ -249,17 +249,17 @@ void alloc_cursor_bitmaps(void);
 int view3d_mouse_input(LGPoint pos, LGRegion *reg, uchar move, int *lastsect);
 void view3d_dclick(LGPoint pos, frc *fr, bool shifted);
 void look_at_object(ObjID id);
-uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data);
+uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data);
 void view3d_rightbutton_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data);
-uchar view3d_key_handler(uiCookedKeyEvent *ev, LGRegion *r, void *data);
+uchar view3d_key_handler(uiEvent *ev, LGRegion *r, intptr_t data);
 void use_object_in_3d(ObjID obj, bool shifted);
 
-uchar MacResFunc(short keycode, ulong context, void *data);
-uchar MacSkiplinesFunc(short keycode, ulong context, void *data);
+uchar MacResFunc(ushort keycode, uint32_t context, intptr_t data);
+uchar MacSkiplinesFunc(ushort keycode, uint32_t context, intptr_t data);
 
 //EXTERN FUNCTIONS
 
-extern uchar cycle_weapons_func(short keycode, ulong context, void *data);
+extern uchar cycle_weapons_func(ushort keycode, uint32_t context, intptr_t data);
 
 // -------------
 // INPUT POLLING
@@ -905,10 +905,10 @@ void sball_chk(void) {
 
 #endif // NOT_YET
 
-uchar main_kb_callback(uiEvent *h, LGRegion *r, void *udata) {
+uchar main_kb_callback(uiEvent *h, LGRegion *r, intptr_t udata) {
 
     LGRegion *dummy2;
-    void *dummy3;
+    intptr_t dummy3;
     dummy2 = r;
     dummy3 = udata;
 
@@ -921,15 +921,15 @@ uchar main_kb_callback(uiEvent *h, LGRegion *r, void *udata) {
     return FALSE;
 }
 
-uchar posture_hotkey_func(short keycode, ulong context, void *data) {
+uchar posture_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
 #ifndef NO_DUMMIES
-    ulong dummy;
+    uint32_t dummy;
     dummy = context + keycode;
 #endif
     return player_set_posture((unsigned int)data) == OK;
 }
 
-uchar eye_hotkey_func(short keycode, ulong context, int data) {
+uchar eye_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
     extern void player_set_eye(byte);
     extern byte player_get_eye(void);
     byte eyectl = player_get_eye();
@@ -986,23 +986,23 @@ static ushort eye_lvl_keys[] = {
 // -------------------------------------
 // INITIALIZATION
 extern errtype simple_load_res_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid);
-extern uchar unpause_game_func(short keycode, ulong context, void *data);
-extern uchar keyhelp_hotkey_func(short keycode, ulong context, void *data);
-extern uchar demo_quit_func(short keycode, ulong context, void *data);
+extern uchar unpause_game_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar keyhelp_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar demo_quit_func(ushort keycode, uint32_t context, intptr_t data);
 extern void init_side_icon_hotkeys(void);
 extern void init_invent_hotkeys(void);
-extern uchar toggle_view_func(short keycode, ulong context, void *data);
-uchar toggle_profile(short keycode, ulong context, void *data);
+extern uchar toggle_view_func(ushort keycode, uint32_t context, intptr_t data);
+uchar toggle_profile(ushort keycode, uint32_t context, intptr_t data);
 #ifdef PLAYTEST
-extern uchar automap_seen(short keycode, ulong context, void *data);
-extern uchar maim_player(short keycode, ulong context, void *data);
-extern uchar salt_the_player(short keycode, ulong context, void *data);
-extern uchar give_player_hotkey(short keycode, ulong context, void *data);
-extern uchar change_clipper(short keycode, ulong context, void *data);
+extern uchar automap_seen(ushort keycode, uint32_t context, intptr_t data);
+extern uchar maim_player(ushort keycode, uint32_t context, intptr_t data);
+extern uchar salt_the_player(ushort keycode, uint32_t context, intptr_t data);
+extern uchar give_player_hotkey(ushort keycode, uint32_t context, intptr_t data);
+extern uchar change_clipper(ushort keycode, uint32_t context, intptr_t data);
 #endif
 #ifndef PLAYTEST
-extern uchar version_spew_func(short keycode, ulong context, void *data);
-extern uchar location_spew_func(short keycode, ulong context, void *data);
+extern uchar version_spew_func(ushort keycode, uint32_t context, intptr_t data);
+extern uchar location_spew_func(ushort keycode, uint32_t context, intptr_t data);
 #endif
 
 #define ckpoint_input(val) Spew(DSRC_TESTING_Test0, ("ii %s @%d\n", val, *tmd_ticks));
@@ -1067,12 +1067,12 @@ extern void change_svga_screen_mode(void);
 bool gShowFrameCounter = false;
 bool gShowMusicGlobals = false;
 
-uchar MacQuitFunc(short keycode, ulong context, void *data) {
+uchar MacQuitFunc(ushort keycode, uint32_t context, intptr_t data) {
     gPlayingGame = FALSE;
     return TRUE;
 }
 
-uchar MacResFunc(short keycode, ulong context, void *data) {
+uchar MacResFunc(ushort keycode, uint32_t context, intptr_t data) {
     DoubleSize = !DoubleSize;
     change_svga_screen_mode();
 
@@ -1089,7 +1089,7 @@ uchar MacResFunc(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar MacSkiplinesFunc(short keycode, ulong context, void *data) {
+uchar MacSkiplinesFunc(ushort keycode, uint32_t context, intptr_t data) {
     if (!DoubleSize) // Skip lines only applies in double-size mode.
     {
         message_info("Skip lines works only in low-res mode.");
@@ -1101,7 +1101,7 @@ uchar MacSkiplinesFunc(short keycode, ulong context, void *data) {
     return TRUE;
 }
 
-uchar MacDetailFunc(short keycode, ulong context, void *data) {
+uchar MacDetailFunc(ushort keycode, uint32_t context, intptr_t data) {
     char msg[32];
     char detailStr[8];
     fauxrend_context *_frc = (fauxrend_context *)svga_render_context;
@@ -1139,7 +1139,7 @@ uchar MacDetailFunc(short keycode, ulong context, void *data) {
 /*
 // Temporary function.  Remove for final build
 
-uchar temp_FrameCounter_func(short keycode, ulong context, void* data)
+uchar temp_FrameCounter_func(ushort keycode, uint32_t context, intptr_t data)
 {
         gShowFrameCounter = !gShowFrameCounter;
 
@@ -1153,7 +1153,7 @@ uchar temp_FrameCounter_func(short keycode, ulong context, void* data)
 */
 
 /*
-uchar MacHelpFunc(short keycode, ulong context, void *data) {
+uchar MacHelpFunc(ushort keycode, uint32_t context, intptr_t data) {
     if (music_on) // Setup the environment for doing Mac stuff.
         MacTuneKillCurrentTheme();
     uiHideMouse(NULL);
@@ -1182,7 +1182,7 @@ uchar MacHelpFunc(short keycode, ulong context, void *data) {
 }
 */
 
-uchar toggle_opengl_func(short keycode, ulong context, void *data) {
+uchar toggle_opengl_func(ushort keycode, uint32_t context, intptr_t data) {
     toggle_opengl();
     return TRUE;
 }
@@ -1246,98 +1246,98 @@ void init_input(void) {
 
     // Game wrapper hotkeys
     // these are in all versions, playtest and not
-    hotkey_add(CONTROL('f'), DEMO_CONTEXT, change_mode_func, (void *)FULLSCREEN_LOOP);
+    hotkey_add(CONTROL('f'), DEMO_CONTEXT, change_mode_func, FULLSCREEN_LOOP);
 #ifdef AUDIOLOGS
-    hotkey_add(CONTROL('.'), DEMO_CONTEXT, audiolog_cancel_func, NULL);
+    hotkey_add(CONTROL('.'), DEMO_CONTEXT, audiolog_cancel_func, 0);
 #endif
-    hotkey_add(CONTROL('s'), DEMO_CONTEXT, save_hotkey_func, NULL);
-    hotkey_add(CONTROL('S'), DEMO_CONTEXT, save_hotkey_func, NULL);
-    hotkey_add(CONTROL('l'), DEMO_CONTEXT, saveload_hotkey_func, (void *)TRUE);
-    hotkey_add(CONTROL('L'), DEMO_CONTEXT, saveload_hotkey_func, (void *)TRUE);
+    hotkey_add(CONTROL('s'), DEMO_CONTEXT, save_hotkey_func, 0);
+    hotkey_add(CONTROL('S'), DEMO_CONTEXT, save_hotkey_func, 0);
+    hotkey_add(CONTROL('l'), DEMO_CONTEXT, saveload_hotkey_func, TRUE);
+    hotkey_add(CONTROL('L'), DEMO_CONTEXT, saveload_hotkey_func, TRUE);
 
     //KLC - not in Mac version
-    // hotkey_add('?', DEMO_CONTEXT, keyhelp_hotkey_func, NULL);
+    // hotkey_add('?', DEMO_CONTEXT, keyhelp_hotkey_func, 0);
     //
     // hotkey_add('/',DEMO_CONTEXT,toggle_bool_func,&joystick_mouse_emul);
     //
-    hotkey_add(ALT(KEY_BS), DEMO_CONTEXT, reload_weapon_hotkey, (void *)0);
-    hotkey_add(CONTROL(KEY_BS), DEMO_CONTEXT, reload_weapon_hotkey, (void *)1);
-    hotkey_add(ALT('\''), DEMO_CONTEXT, arm_grenade_hotkey, (void *)0);
-    hotkey_add(CONTROL('\''), DEMO_CONTEXT, select_grenade_hotkey, (void *)0);
-    hotkey_add(ALT(';'), DEMO_CONTEXT, use_drug_hotkey, (void *)0);
-    hotkey_add(CONTROL(';'), DEMO_CONTEXT, select_drug_hotkey, (void *)0);
+    hotkey_add(ALT(KEY_BS), DEMO_CONTEXT, reload_weapon_hotkey, 0);
+    hotkey_add(CONTROL(KEY_BS), DEMO_CONTEXT, reload_weapon_hotkey, 1);
+    hotkey_add(ALT('\''), DEMO_CONTEXT, arm_grenade_hotkey, 0);
+    hotkey_add(CONTROL('\''), DEMO_CONTEXT, select_grenade_hotkey, 0);
+    hotkey_add(ALT(';'), DEMO_CONTEXT, use_drug_hotkey, 0);
+    hotkey_add(CONTROL(';'), DEMO_CONTEXT, select_drug_hotkey, 0);
 
     //#ifndef PLAYTEST
-    //   hotkey_add(DOWN(KEY_PRNTSCRN), EVERY_CONTEXT, gifdump_func, NULL);
+    //   hotkey_add(DOWN(KEY_PRNTSCRN), EVERY_CONTEXT, gifdump_func, 0);
 
-    hotkey_add(DOWN(KEY_BS), DEMO_CONTEXT, clear_fullscreen_func, NULL);
-    hotkey_add(ALT('h'), DEMO_CONTEXT, hud_color_bank_cycle, NULL);
-    hotkey_add(ALT('H'), DEMO_CONTEXT, hud_color_bank_cycle, NULL);
-    hotkey_add(CONTROL('m'), DEMO_CONTEXT, toggle_music_func, NULL);
-    hotkey_add(CONTROL('M'), DEMO_CONTEXT, toggle_music_func, NULL);
-    //   hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,(void *)TRUE);
+    hotkey_add(DOWN(KEY_BS), DEMO_CONTEXT, clear_fullscreen_func, 0);
+    hotkey_add(ALT('h'), DEMO_CONTEXT, hud_color_bank_cycle, 0);
+    hotkey_add(ALT('H'), DEMO_CONTEXT, hud_color_bank_cycle, 0);
+    hotkey_add(CONTROL('m'), DEMO_CONTEXT, toggle_music_func, 0);
+    hotkey_add(CONTROL('M'), DEMO_CONTEXT, toggle_music_func, 0);
+    //   hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,TRUE);
 
-    hotkey_add(DOWN('f'), DEMO_CONTEXT, toggle_mouse_look, (void *)TRUE);
+    hotkey_add(DOWN('f'), DEMO_CONTEXT, toggle_mouse_look, TRUE);
 
-    hotkey_add(DOWN('p'), DEMO_CONTEXT, pause_game_func, (void *)TRUE);
+    hotkey_add(DOWN('p'), DEMO_CONTEXT, pause_game_func, TRUE);
 
     // Cheats!
-    hotkey_add(CONTROL('2'), DEMO_CONTEXT, toggle_giveall_func, (void *)TRUE);
-    hotkey_add(CONTROL('3'), DEMO_CONTEXT, toggle_physics_func, (void *)TRUE);
-    hotkey_add(CONTROL('4'), DEMO_CONTEXT, toggle_up_level_func, (void *)TRUE);
-    hotkey_add(CONTROL('5'), DEMO_CONTEXT, toggle_down_level_func, (void *)TRUE);
+    hotkey_add(CONTROL('2'), DEMO_CONTEXT, toggle_giveall_func, TRUE);
+    hotkey_add(CONTROL('3'), DEMO_CONTEXT, toggle_physics_func, TRUE);
+    hotkey_add(CONTROL('4'), DEMO_CONTEXT, toggle_up_level_func, TRUE);
+    hotkey_add(CONTROL('5'), DEMO_CONTEXT, toggle_down_level_func, TRUE);
 
-    hotkey_add(DOWN(KEY_ESC), DEMO_CONTEXT, wrapper_options_func, (void *)TRUE);
+    hotkey_add(DOWN(KEY_ESC), DEMO_CONTEXT, wrapper_options_func, TRUE);
     for (i = 0; i < NUM_POSTURES; i++) {
-        hotkey_add(DOWN(posture_keys[i]), DEMO_CONTEXT, posture_hotkey_func, (void *)i);
-        hotkey_add(DOWN(toupper(posture_keys[i])), DEMO_CONTEXT, posture_hotkey_func, (void *)i);
+        hotkey_add(DOWN(posture_keys[i]), DEMO_CONTEXT, posture_hotkey_func, i);
+        hotkey_add(DOWN(toupper(posture_keys[i])), DEMO_CONTEXT, posture_hotkey_func, i);
     }
-    hotkey_add(CONTROL('q'), DEMO_CONTEXT, MacQuitFunc, NULL);
-    hotkey_add(CONTROL('1'), DEMO_CONTEXT, MacDetailFunc, NULL);
-    hotkey_add(CONTROL('/'), DEMO_CONTEXT, MacHelpFunc, NULL);
-    hotkey_add(CONTROL('?'), DEMO_CONTEXT, MacHelpFunc, NULL);
+    hotkey_add(CONTROL('q'), DEMO_CONTEXT, MacQuitFunc, 0);
+    hotkey_add(CONTROL('1'), DEMO_CONTEXT, MacDetailFunc, 0);
+    hotkey_add(CONTROL('/'), DEMO_CONTEXT, MacHelpFunc, 0);
+    hotkey_add(CONTROL('?'), DEMO_CONTEXT, MacHelpFunc, 0);
 
     //
-    // hotkey_add(ALT('x'),DEMO_CONTEXT,demo_quit_func,NULL);
-    // hotkey_add(ALT('x'),SETUP_CONTEXT,really_quit_key_func,NULL);
-    // hotkey_add(ALT('v'),DEMO_CONTEXT,toggle_view_func,NULL);
-    // hotkey_add(ALT('V'),DEMO_CONTEXT,toggle_view_func,NULL);
-    // hotkey_add(ALT(KEY_F7),DEMO_CONTEXT,version_spew_func,NULL);
+    // hotkey_add(ALT('x'),DEMO_CONTEXT,demo_quit_func,0);
+    // hotkey_add(ALT('x'),SETUP_CONTEXT,really_quit_key_func,0);
+    // hotkey_add(ALT('v'),DEMO_CONTEXT,toggle_view_func,0);
+    // hotkey_add(ALT('V'),DEMO_CONTEXT,toggle_view_func,0);
+    // hotkey_add(ALT(KEY_F7),DEMO_CONTEXT,version_spew_func,0);
     //
-    //   hotkey_add(CONTROL('8'),DEMO_CONTEXT,location_spew_func,NULL);  //testing
-    //   hotkey_add(CONTROL('0'),DEMO_CONTEXT,temp_FrameCounter_func, NULL); //testing
+    //   hotkey_add(CONTROL('8'),DEMO_CONTEXT,location_spew_func,0);  //testing
+    //   hotkey_add(CONTROL('0'),DEMO_CONTEXT,temp_FrameCounter_func, 0); //testing
 
-    hotkey_add(CONTROL('d'), DEMO_CONTEXT, change_mode_func, (void *)GAME_LOOP);
-    hotkey_add(CONTROL('D'), DEMO_CONTEXT, change_mode_func, (void *)FULLSCREEN_LOOP);
-    hotkey_add(CONTROL('a'), DEMO_CONTEXT, change_mode_func, (void *)AUTOMAP_LOOP);
-    hotkey_add(CONTROL('A'), DEMO_CONTEXT, change_mode_func, (void *)AUTOMAP_LOOP);
+    hotkey_add(CONTROL('d'), DEMO_CONTEXT, change_mode_func, GAME_LOOP);
+    hotkey_add(CONTROL('D'), DEMO_CONTEXT, change_mode_func, FULLSCREEN_LOOP);
+    hotkey_add(CONTROL('a'), DEMO_CONTEXT, change_mode_func, AUTOMAP_LOOP);
+    hotkey_add(CONTROL('A'), DEMO_CONTEXT, change_mode_func, AUTOMAP_LOOP);
     //
     //#else
-    //   hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,(void *)TRUE);
-    //   hotkey_add(CONTROL('a'), DEMO_CONTEXT, change_mode_func,  (void *) AUTOMAP_LOOP);
-    //   hotkey_add(CONTROL('A'), DEMO_CONTEXT, change_mode_func,  (void *) AUTOMAP_LOOP);
+    //   hotkey_add(DOWN(KEY_SPACE),DEMO_CONTEXT,unpause_game_func,TRUE);
+    //   hotkey_add(CONTROL('a'), DEMO_CONTEXT, change_mode_func,  AUTOMAP_LOOP);
+    //   hotkey_add(CONTROL('A'), DEMO_CONTEXT, change_mode_func,  AUTOMAP_LOOP);
     //
-    //   hotkey_add_help(DOWN(KEY_BS), DEMO_CONTEXT,clear_fullscreen_func, NULL,
+    //   hotkey_add_help(DOWN(KEY_BS), DEMO_CONTEXT,clear_fullscreen_func, 0,
     //      "Clears all overlays from the fullscreen view.");
-    //   hotkey_add_help(DOWN(KEY_PAUSE),DEMO_CONTEXT,pause_game_func,(void *)TRUE, "pause the game, gee.");
-    //   hotkey_add_help(DOWN('p'),DEMO_CONTEXT,pause_game_func,(void *)TRUE, "pause the game, gee.");
-    //   hotkey_add_help(DOWN(KEY_ESC),DEMO_CONTEXT,wrapper_options_func,(void *)TRUE,
+    //   hotkey_add_help(DOWN(KEY_PAUSE),DEMO_CONTEXT,pause_game_func,TRUE, "pause the game, gee.");
+    //   hotkey_add_help(DOWN('p'),DEMO_CONTEXT,pause_game_func,TRUE, "pause the game, gee.");
+    //   hotkey_add_help(DOWN(KEY_ESC),DEMO_CONTEXT,wrapper_options_func,TRUE,
     //      "Opens up the options menu on the main game screen.");
-    //   hotkey_add_help(CONTROL('h'), DEMO_CONTEXT, hud_color_bank_cycle, NULL, "cycle hud colors");
-    //   hotkey_add_help(CONTROL('H'), DEMO_CONTEXT, hud_color_bank_cycle, NULL, "cycle hud colors");
-    //   hotkey_add_help(CONTROL(ALT('~')),EVERY_CONTEXT,toggle_profile,(void *)TRUE, "toggle profile");
+    //   hotkey_add_help(CONTROL('h'), DEMO_CONTEXT, hud_color_bank_cycle, 0, "cycle hud colors");
+    //   hotkey_add_help(CONTROL('H'), DEMO_CONTEXT, hud_color_bank_cycle, 0, "cycle hud colors");
+    //   hotkey_add_help(CONTROL(ALT('~')),EVERY_CONTEXT,toggle_profile,TRUE, "toggle profile");
     //
     //   for (i = 0; i < NUM_POSTURES; i++)
     //   {
-    //      hotkey_add_help(DOWN(posture_keys[i]),DEMO_CONTEXT,posture_hotkey_func,(void*)i,"change posture");
-    //      hotkey_add_help(DOWN(toupper(posture_keys[i])),DEMO_CONTEXT,posture_hotkey_func,(void*)i,"change posture");
+    //      hotkey_add_help(DOWN(posture_keys[i]),DEMO_CONTEXT,posture_hotkey_func,i,"change posture");
+    //      hotkey_add_help(DOWN(toupper(posture_keys[i])),DEMO_CONTEXT,posture_hotkey_func,i,"change posture");
     //   }
-    //   hotkey_add_help(ALT('x'),EDIT_CONTEXT|SETUP_CONTEXT,quit_key_func,NULL,"quit, but ask for confirm.");
-    //   hotkey_add_help(ALT('x'),DEMO_CONTEXT,demo_quit_func,NULL,"quit, but ask for confirm on options panel.");
-    //   hotkey_add_help(ALT('X'),EVERY_CONTEXT,really_quit_key_func,NULL, "quit, no questions asked.");
-    //   hotkey_add_help(ALT('v'),EVERY_CONTEXT,toggle_view_func,NULL, "toggles between game mode and fullscreen mode.");
-    //   hotkey_add_help(ALT('V'),EVERY_CONTEXT,toggle_view_func,NULL, "toggles between game mode and fullscreen mode.");
-    //   hotkey_add(ALT('d'),EVERY_CONTEXT,mono_config_func,NULL);
+    //   hotkey_add_help(ALT('x'),EDIT_CONTEXT|SETUP_CONTEXT,quit_key_func,0,"quit, but ask for confirm.");
+    //   hotkey_add_help(ALT('x'),DEMO_CONTEXT,demo_quit_func,0,"quit, but ask for confirm on options panel.");
+    //   hotkey_add_help(ALT('X'),EVERY_CONTEXT,really_quit_key_func,0, "quit, no questions asked.");
+    //   hotkey_add_help(ALT('v'),EVERY_CONTEXT,toggle_view_func,0, "toggles between game mode and fullscreen mode.");
+    //   hotkey_add_help(ALT('V'),EVERY_CONTEXT,toggle_view_func,0, "toggles between game mode and fullscreen mode.");
+    //   hotkey_add(ALT('d'),EVERY_CONTEXT,mono_config_func,0
     //
     //   // these are some random hotkeys - debugging
     //   hotkey_add(CONTROL('q'),EVERY_CONTEXT,maim_player,"maim player");
@@ -1346,35 +1346,35 @@ void init_input(void) {
     //   hotkey_add(ALT(KEY_F3),EVERY_CONTEXT,give_player_hotkey, "Give Player Loot");
     //
     //   // Meta-slewing
-    //   hotkey_add(DOWN('r'), EDIT_CONTEXT, stupid_slew_func, (void *)13);
-    //   hotkey_add(DOWN('>'), DEMO_CONTEXT|EDIT_CONTEXT, stupid_slew_func, (void *)14);
-    //   hotkey_add(DOWN('<'), DEMO_CONTEXT|EDIT_CONTEXT, stupid_slew_func, (void *)15);
+    //   hotkey_add(DOWN('r'), EDIT_CONTEXT, stupid_slew_func, 13);
+    //   hotkey_add(DOWN('>'), DEMO_CONTEXT|EDIT_CONTEXT, stupid_slew_func, 14);
+    //   hotkey_add(DOWN('<'), DEMO_CONTEXT|EDIT_CONTEXT, stupid_slew_func, 15);
     //
     //   // 3d zoomin
-    //   hotkey_add(CONTROL('['), DEMO_CONTEXT|EDIT_CONTEXT, zoom_3d_func, (void *)TRUE);
-    //   hotkey_add(CONTROL(']'), DEMO_CONTEXT|EDIT_CONTEXT, zoom_3d_func, (void *)FALSE);
+    //   hotkey_add(CONTROL('['), DEMO_CONTEXT|EDIT_CONTEXT, zoom_3d_func, TRUE);
+    //   hotkey_add(CONTROL(']'), DEMO_CONTEXT|EDIT_CONTEXT, zoom_3d_func, FALSE);
     //
     //   ckpoint_input("hotkeys in");
     //
-    //   hotkey_add(DOWN('['),EDIT_CONTEXT,zoom_func,(void *)ZOOM_IN);
-    //   hotkey_add(DOWN(']'),EDIT_CONTEXT,zoom_func,(void *)ZOOM_OUT);
-    //   hotkey_add(CONTROL('d'),EDIT_CONTEXT,to_demo_mode_func,NULL);
+    //   hotkey_add(DOWN('['),EDIT_CONTEXT,zoom_func,ZOOM_IN);
+    //   hotkey_add(DOWN(']'),EDIT_CONTEXT,zoom_func,ZOOM_OUT);
+    //   hotkey_add(CONTROL('d'),EDIT_CONTEXT,to_demo_mode_func,0);
     //
     //#endif
-    //   hotkey_add(KEY_F11,DEMO_CONTEXT|EDIT_CONTEXT,change_gamma,(void *) 1);
-    //   hotkey_add(KEY_F12,DEMO_CONTEXT|EDIT_CONTEXT,change_gamma,(void *)-1);
+    //   hotkey_add(KEY_F11,DEMO_CONTEXT|EDIT_CONTEXT,change_gamma, 1);
+    //   hotkey_add(KEY_F12,DEMO_CONTEXT|EDIT_CONTEXT,change_gamma,-1);
     //
-    hotkey_add(CONTROL('h'), DEMO_CONTEXT, toggle_olh_func, NULL);
-    hotkey_add(CONTROL('H'), DEMO_CONTEXT, toggle_olh_func, NULL);
+    hotkey_add(CONTROL('h'), DEMO_CONTEXT, toggle_olh_func, 0);
+    hotkey_add(CONTROL('H'), DEMO_CONTEXT, toggle_olh_func, 0);
     hotkey_add(ALT('o'), DEMO_CONTEXT, olh_overlay_func, &olh_overlay_on);
     hotkey_add(ALT('O'), DEMO_CONTEXT, olh_overlay_func, &olh_overlay_on);
-    hotkey_add(CONTROL('g'), EVERY_CONTEXT, toggle_opengl_func, NULL);
+    hotkey_add(CONTROL('g'), EVERY_CONTEXT, toggle_opengl_func, 0);
     //
     //   // take these ifdefs out if memory bashing on shippable
-    ////   hotkey_add(ALT(CONTROL(KEY_F4)),EVERY_CONTEXT,texture_annihilate_func,NULL);
+    ////   hotkey_add(ALT(CONTROL(KEY_F4)),EVERY_CONTEXT,texture_annihilate_func,0);
     //#ifdef RCACHE_TEST
-    //   hotkey_add(ALT(KEY_F4),EVERY_CONTEXT,res_cache_usage_func,(void *)TRUE);
-    //   hotkey_add(CONTROL(KEY_F4),EVERY_CONTEXT,res_cache_usage_func,(void *)FALSE);
+    //   hotkey_add(ALT(KEY_F4),EVERY_CONTEXT,res_cache_usage_func,TRUE);
+    //   hotkey_add(CONTROL(KEY_F4),EVERY_CONTEXT,res_cache_usage_func,FALSE);
     //#endif
     //   init_side_icon_hotkeys();
     //
@@ -1382,7 +1382,7 @@ void init_input(void) {
 
     //for (i = 0; i < NUM_EYE_LVL_KEYS; i++)
     //{
-    //   hotkey_add(DOWN(eye_lvl_keys[i]),DEMO_CONTEXT,(hotkey_callback)eye_hotkey_func,(void*)0);
+    //   hotkey_add(DOWN(eye_lvl_keys[i]),DEMO_CONTEXT,eye_hotkey_func,0);
     //}
 
     // KLC - stuff for VR headsets
@@ -1412,7 +1412,7 @@ void init_input(void) {
     //         } while (inp6d_geth==NULL);
     //
     //         {
-    //            hotkey_add(ALT('g'),DEMO_CONTEXT|EDIT_CONTEXT,recenter_headset,NULL);
+    //            hotkey_add(ALT('g'),DEMO_CONTEXT|EDIT_CONTEXT,recenter_headset,0);
     //            inp6d_headset=TRUE;
     //                 tracker_initial_pos[0]= inp6d_geth->ry;
     //                 tracker_initial_pos[1]= inp6d_geth->rx;
@@ -1454,7 +1454,7 @@ void init_input(void) {
     //#ifdef PLAYTEST
     //      mprintf("Got %d joystick pots\n",joystick_count);
     //#endif
-    //      hotkey_add(ALT('j'),DEMO_CONTEXT|EDIT_CONTEXT,recenter_joystick,NULL);
+    //      hotkey_add(ALT('j'),DEMO_CONTEXT|EDIT_CONTEXT,recenter_joystick,0);
     //   }
     //
 }
@@ -1960,7 +1960,7 @@ void use_object_in_3d(ObjID obj, bool shifted) {
 
         if (shifted)
         {
-            extern void absorb_object_on_cursor(short keycode, ulong context, void *data); //see invent.c
+            extern void absorb_object_on_cursor(ushort keycode, uint32_t context, intptr_t data); //see invent.c
             absorb_object_on_cursor(0, 0, 0); //parameters unused
         }
         else
@@ -2202,35 +2202,37 @@ void view3d_dclick(LGPoint pos, frc *fr, bool shifted) {
 
 // -------------------------------------------------------------------------------
 // view3d_mouse_handler is the actual installed mouse handler, dispatching to the above functions
-uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
+uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
     static uchar got_focus = FALSE;
+    uiMouseEvent *me = (uiMouseEvent*)ev;
+    view3d_data *data = (view3d_data*)v;
     uchar retval = TRUE;
     LGPoint pt;
-    LGPoint evp = ev->pos;
+    LGPoint evp = me->pos;
     extern int _fr_glob_flags;
 
     pt = evp;
 
 #ifdef STEREO_SUPPORT
     if (convert_use_mode == 5) {
-        extern uchar inventory_mouse_handler(uiEvent * ev, LGRegion * r, void *data);
-        extern uchar mfd_view_callback(uiEvent * e, LGRegion * r, void *udata);
+        extern uchar inventory_mouse_handler(uiEvent * ev, LGRegion * r, intptr_t data);
+        extern uchar mfd_view_callback(uiEvent * e, LGRegion * r, intptr_t udata);
         switch (i6d_device) {
         case I6D_CTM:
             if (full_visible & FULL_INVENT_MASK)
-                return (inventory_mouse_handler((uiEvent *)ev, r, data));
+                return (inventory_mouse_handler(ev, r, v));
             if ((full_visible & FULL_L_MFD_MASK) && (evp.x < ((MFD_VIEW_LFTX + MFD_VIEW_WID) << 1)))
-                return (mfd_view_callback((uiEvent *)ev, r, (void *)0));
+                return (mfd_view_callback(ev, r, 0));
             if ((full_visible & FULL_R_MFD_MASK) && (evp.x > ((MFD_VIEW_RGTX + MFD_VIEW_WID) >> 1)))
-                return (mfd_view_callback((uiEvent *)ev, r, (void *)1));
+                return (mfd_view_callback(ev, r, 1));
             break;
         case I6D_VFX1:
             if (full_visible & FULL_INVENT_MASK)
-                return (inventory_mouse_handler((uiEvent *)ev, r, data));
+                return (inventory_mouse_handler(ev, r, v));
             if ((full_visible & FULL_L_MFD_MASK) && (evp.x < ((MFD_VIEW_LFTX + MFD_VIEW_WID) << 1)))
-                return (mfd_view_callback((uiEvent *)ev, r, (void *)0));
+                return (mfd_view_callback(ev, r, 0));
             if ((full_visible & FULL_R_MFD_MASK) && (evp.x > ((MFD_VIEW_RGTX + MFD_VIEW_WID) >> 1)))
-                return (mfd_view_callback((uiEvent *)ev, r, (void *)1));
+                return (mfd_view_callback(ev, r, 1));
             break;
         }
     }
@@ -2254,7 +2256,7 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
                                     CONTROL_NO_CHANGE);
         return (FALSE);
     }
-    if (ev->action & MOUSE_LDOWN) {
+    if (me->action & MOUSE_LDOWN) {
         data->ldown = TRUE;
         data->lastleft = evp;
         if (full_game_3d && !got_focus) {
@@ -2264,7 +2266,7 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
         chg_set_flg(_current_3d_flag);
         //      view3d_constrain_mouse(r,LBUTTON_CONSTRAIN_BIT);
     }
-    if (ev->action & MOUSE_LUP || !(ev->buttons & (1 << MOUSE_LBUTTON))) {
+    if (me->action & MOUSE_LUP || !(me->buttons & (1 << MOUSE_LBUTTON))) {
         data->ldown = FALSE;
         if (full_game_3d && got_focus) {
             if (uiReleaseFocus(r, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE) == OK)
@@ -2272,10 +2274,10 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
         }
         //      view3d_unconstrain_mouse(LBUTTON_CONSTRAIN_BIT);
     }
-    if (ev->action & MOUSE_LUP && abs(evp.y - data->lastleft.y) < uiDoubleClickTolerance &&
+    if (me->action & MOUSE_LUP && abs(evp.y - data->lastleft.y) < uiDoubleClickTolerance &&
         abs(evp.x - data->lastleft.x) < uiDoubleClickTolerance) {
         //make shift+leftclick act as double-leftclick with alternate effects
-        if (ev->modifiers & 1) { //shifted click; see sdl_events.c
+        if (me->modifiers & 1) { //shifted click; see sdl_events.c
             view3d_dclick(evp, data->fr, TRUE); //TRUE indicates shifted
             data->lastleft = MakePoint(-100, -100);
         }
@@ -2310,8 +2312,8 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
             data->lastleft.x = -255;
         }
     }
-    if ((ev->action & (MOUSE_RDOWN | MOUSE_RUP)) || (ev->buttons & (1 << MOUSE_RBUTTON)))
-        view3d_rightbutton_handler(ev, r, data);
+    if ((me->action & (MOUSE_RDOWN | MOUSE_RUP)) || (me->buttons & (1 << MOUSE_RBUTTON)))
+        view3d_rightbutton_handler(me, r, data);
 
     /* KLC - done in another place now.
        else
@@ -2328,18 +2330,18 @@ uchar view3d_mouse_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
        }
 
     */
-    if ((ev->buttons & (1 << MOUSE_RBUTTON)) == 0 ||
-        ((ev->buttons & (1 << MOUSE_RBUTTON)) == 0 && global_fullmap->cyber))
+    if ((me->buttons & (1 << MOUSE_RBUTTON)) == 0 ||
+        ((me->buttons & (1 << MOUSE_RBUTTON)) == 0 && global_fullmap->cyber))
         physics_set_one_control(MOUSE_CONTROL_BANK, CONTROL_ZVEL, 0);
 
-    if (ev->action & UI_MOUSE_LDOUBLE) {
+    if (me->action & UI_MOUSE_LDOUBLE) {
         // Spew(DSRC_USER_I_Motion,("use this, bay-bee!\n"));
         view3d_dclick(evp, data->fr, FALSE);
         data->lastleft = MakePoint(-100, -100);
     }
 
-    if (ev->action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
-        cycle_weapons_func(0, 0, (void *)(ev->action & MOUSE_WHEELUP ? -1 : 1));
+    if (me->action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
+        cycle_weapons_func(0, 0, me->action & MOUSE_WHEELUP ? -1 : 1);
     }
 
     // data->ldown = TRUE;
@@ -2357,15 +2359,16 @@ typedef struct _view3d_kdata {
 
 extern int FireKeys[]; //see MacSrc/Prefs.c
 
-uchar view3d_key_handler(uiCookedKeyEvent *ev, LGRegion *r, void *data)
+uchar view3d_key_handler(uiEvent *ev, LGRegion *r, intptr_t data)
 {
+    uiCookedKeyEvent *ke = (uiCookedKeyEvent*)ev;
   int i, detect = 0, fire_pressed = 0;
 
   i = 0;
   while (FireKeys[i] != 0)
   {
-    if (ev->code == FireKeys[i]) detect = 1;
-    if (ev->code == (FireKeys[i] | KB_FLAG_DOWN)) {detect = 1; fire_pressed = 1; break;}
+    if (ke->code == FireKeys[i]) detect = 1;
+    if (ke->code == (FireKeys[i] | KB_FLAG_DOWN)) {detect = 1; fire_pressed = 1; break;}
     i++;
   }
   if (!detect) return FALSE;
@@ -2374,7 +2377,7 @@ uchar view3d_key_handler(uiCookedKeyEvent *ev, LGRegion *r, void *data)
   {
     if (weapon_button_up) // if we haven't fired already
     {
-      LGPoint evp = ev->pos;
+      LGPoint evp = ke->pos;
       ss_point_convert(&(evp.x), &(evp.y), FALSE);
       fire_player_weapon(&evp, r, !fire_slam);
       fire_slam = TRUE;
@@ -2626,7 +2629,7 @@ void inp_use_sidestep_junk() {
         LGPoint pos;
 
         if (input_cursor_mode == INPUT_OBJECT_CURSOR) {
-            extern void absorb_object_on_cursor(short keycode, ulong context, void *data);
+            extern void absorb_object_on_cursor(ushort keycode, uint32_t context, intptr_t data);
             absorb_object_on_cursor(0, 0, 0);
         } else {
             pos = MakePoint(_current_view->abs_x + RectWidth(_current_view->r) / 2,
@@ -2880,7 +2883,7 @@ void swift_chk(void) {
 // various hacked hotkey functions....
 #pragma disable_message(202)
 #if defined(VFX1_SUPPORT) || defined(CTM_SUPPORT)
-uchar recenter_headset(short keycode, ulong context, void *data) {
+uchar recenter_headset(ushort keycode, uint32_t context, intptr_t data) {
     long start_time = *tmd_ticks;
     i6s_event *inp6d_geth;
     do {
@@ -2897,13 +2900,13 @@ uchar recenter_headset(short keycode, ulong context, void *data) {
 }
 #endif
 
-uchar recenter_joystick(short keycode, ulong context, void *data) {
+uchar recenter_joystick(ushort keycode, uint32_t context, intptr_t data) {
     joy_center();
     string_message_info(REF_STR_CenterJoyDone);
     return FALSE;
 }
 
-uchar change_gamma(short keycode, ulong context, void *data) {
+uchar change_gamma(ushort keycode, uint32_t context, intptr_t data) {
     static fix cit_gamma = fix_make(1, 0);
     int dir = (int)data;
     if ((dir < 0) && (cit_gamma > fix_make(0, 0x6000)))
@@ -3306,7 +3309,7 @@ void joystick_chk(void) {
 #ifdef PLAYTEST
 #include <wsample.h>
 #pragma disable_message(202)
-uchar toggle_profile(short keycode, ulong context, void *data) {
+uchar toggle_profile(ushort keycode, uint32_t context, intptr_t data) {
     static uchar UserProf = FALSE;
     if (UserProf)
         _MARK_("User Off");
@@ -3336,18 +3339,18 @@ void install_motion_mouse_handler(LGRegion *r, frc *fr) {
     data->lastright.y = 0;
     data->fr = fr;
     uiInstallRegionHandler(r, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE | UI_EVENT_USER_DEFINED,
-                           (uiHandlerProc)view3d_mouse_handler, data, &cid);
+                           view3d_mouse_handler, (intptr_t)data, &cid);
 
     // Yeah, yeah, I know, it's not a mouse handler...
-    uiInstallRegionHandler(r, UI_EVENT_KBD_COOKED, (uiHandlerProc)view3d_key_handler, NULL, &cid);
+    uiInstallRegionHandler(r, UI_EVENT_KBD_COOKED, view3d_key_handler, 0, &cid);
     uiSetRegionDefaultCursor(r, NULL);
 }
 
-extern void motion_keycheck_handler(uiEvent *, LGRegion *, void *);
+extern uchar motion_keycheck_handler(uiEvent *, LGRegion *, intptr_t);
 
 void install_motion_keyboard_handler(LGRegion *r) {
     int cid;
-    uiInstallRegionHandler(r, UI_EVENT_KBD_POLL, (uiHandlerProc)motion_keycheck_handler, NULL, &cid);
+    uiInstallRegionHandler(r, UI_EVENT_KBD_POLL, motion_keycheck_handler, 0, &cid);
 }
 
 void pop_cursor_object(void) {

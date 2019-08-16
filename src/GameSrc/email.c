@@ -159,7 +159,7 @@ void free_email_buffer(void);
 void draw_more_string(int x, int y, uchar footermask);
 void email_draw_text(Id email_id, bool really_an_email);
 void email_page_exit(void);
-uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *r, void *data);
+uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *r, intptr_t data);
 void parse_email_mugs(char *mug, uchar *mcolor, ushort mugnums[NUM_MFDS], uchar setup);
 void mfd_emailmug_expose(MFD *mfd, ubyte control);
 uchar mfd_emailmug_handler(MFD *m, uiEvent *ev);
@@ -598,7 +598,7 @@ void email_page_exit(void) {
     }
 }
 
-uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *r, void *data) {
+uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     if (input_cursor_mode == INPUT_OBJECT_CURSOR)
         return FALSE;
     if (inventory_page != INV_EMAILTEXT_PAGE) {
@@ -978,7 +978,7 @@ void read_email(Id new_base, int num) {
 void add_email_handler(LGRegion *r) {
     int id;
     uiInstallRegionHandler(r, UI_EVENT_MOUSE_MOVE | UI_EVENT_MOUSE | UI_EVENT_KBD_COOKED, email_invpanel_input_handler,
-                           NULL, &id);
+                           0, &id);
 }
 
 //=====================================================

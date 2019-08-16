@@ -418,10 +418,10 @@ uchar do_selection(inv_display *dp, int row);
 void add_object_on_cursor(inv_display *dp, int row);
 uchar inventory_handle_leftbutton(uiEvent *ev, inv_display *dp, int row);
 uchar inventory_handle_rightbutton(uiEvent *ev, LGRegion *reg, inv_display *dp, int row);
-uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, void *);
-uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *);
-uchar invent_hotkey_func(ushort, ulong, int data);
-uchar cycle_weapons_func(ushort, ulong, int data);
+uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t);
+uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t);
+uchar invent_hotkey_func(ushort, uint32_t, intptr_t data);
+uchar cycle_weapons_func(ushort, uint32_t, intptr_t data);
 void init_invent_hotkeys(void);
 void invent_language_change(void);
 errtype inventory_update_screen_mode();
@@ -430,7 +430,7 @@ void inv_update_fullscreen(uchar full);
 void super_drop_func(int dispnum, int row);
 void super_use_func(int dispnum, int row);
 void gen_log_displays(int pgnum);
-void absorb_object_on_cursor(short, ulong, void *);
+void absorb_object_on_cursor(ushort, uint32_t, intptr_t);
 uchar gen_inv_page(int pgnum, int *i, inv_display **dp);
 uchar gen_inv_displays(int *i, inv_display **dp);
 
@@ -965,8 +965,8 @@ void generic_drop_func(inv_display *dp, int row) {
 
 static char *generic_quant_func(inv_display *dp, int n, int q, char *buf) {
 #ifndef NO_DUMMIES
-    int dummy;
-    dummy = n + (int)dp;
+    char *dummy;
+    dummy = n + (char*)dp;
 #endif // NO_DUMMIES
     //  itoa(q,buf,10);
     sprintf(buf, "%d", q);
@@ -975,8 +975,8 @@ static char *generic_quant_func(inv_display *dp, int n, int q, char *buf) {
 
 char *null_name_func(inv_display *dp, int n, char *buf) {
 #ifndef NO_DUMMIES
-    int goof;
-    goof = (int)dp + n;
+    char *goof;
+    goof = (char*)dp + n;
 #endif // NO_DUMMIES
     *buf = '\0';
     return buf;
@@ -2177,7 +2177,7 @@ uchar inventory_handle_rightbutton(uiEvent *ev, LGRegion *reg, inv_display *dp, 
 
 #define SEARCH_MARGIN 2
 
-uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, void *data) {
+uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     uchar retval = FALSE;
     uiMouseEvent *mev = (uiMouseEvent *)ev;
     int relx;
@@ -2291,11 +2291,12 @@ uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, void *data) {
 }
 
 int last_invent_cnum = -1; // last cursor num set for region
-uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
-    LGPoint pos = ev->pos;
+uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
+    uiMouseEvent *me = (uiMouseEvent*)ev;
+    LGPoint pos = me->pos;
     int cnum;
 
-    if (full_game_3d && (ev->buttons & (1 << MOUSE_LBUTTON)) != 0 && (ev->action & MOUSE_LDOWN) == 0 &&
+    if (full_game_3d && (me->buttons & (1 << MOUSE_LBUTTON)) != 0 && (me->action & MOUSE_LDOWN) == 0 &&
         uiLastMouseRegion[MOUSE_LBUTTON] != NULL && uiLastMouseRegion[MOUSE_LBUTTON] != r) {
         uiSetRegionDefaultCursor(r, NULL);
         return FALSE;
@@ -2327,7 +2328,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
         uiSetRegionDefaultCursor(r, c);
     }
 
-    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (ev->action & (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE))) {
+    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (me->action & (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE))) {
         AddResult pop = (AddResult)add_to_some_page(object_on_cursor, FALSE);
         if (IS_POP_RESULT(pop))
             pop_cursor_object();
@@ -2337,7 +2338,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
     if (page_button_state[cnum] == BttnDummy)
         return FALSE;
 
-    if (ev->action & MOUSE_LDOWN) {
+    if (me->action & MOUSE_LDOWN) {
         int i = cnum;
         short x = FIRST_BTTN_X + i * BUTTON_X_STEP;
         if (pos.x >= x && pos.x < x + INVENT_BTTN_WD && page_button_state[i] != BttnDummy) {
@@ -2370,7 +2371,7 @@ uchar pagebutton_mouse_handler(uiMouseEvent *ev, LGRegion *r, void *data) {
 #define MAX_HOTKEY_PAGES 6
 #define EMPTY_PAGE(i) (page_button_state[i] == BttnDummy)
 
-uchar invent_hotkey_func(ushort keycode, ulong context, int data) {
+uchar invent_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
     if (inventory_page < 0)
         inventory_page = MAX_HOTKEY_PAGES;
     if (inventory_page >= MAX_HOTKEY_PAGES)
@@ -2404,7 +2405,7 @@ uchar invent_hotkey_func(ushort keycode, ulong context, int data) {
     return TRUE;
 }
 
-uchar cycle_weapons_func(ushort keycode, ulong context, int data) {
+uchar cycle_weapons_func(ushort keycode, uint32_t context, intptr_t data) {
     if (global_fullmap->cyber) {
         int ac = player_struct.actives[ACTIVE_COMBAT_SOFT];
         int bound1 = (data > 0) ? NUM_COMBAT_SOFTS : -1;
@@ -2439,15 +2440,15 @@ uchar cycle_weapons_func(ushort keycode, ulong context, int data) {
 
 void init_invent_hotkeys(void) {
     /*  later
-    //   hotkey_add(PAGEUP_KEY,DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)0);
-       hotkey_add(PAGEUP_KEY|KB_FLAG_2ND,DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)0);
-       hotkey_add(KB_FLAG_DOWN|KB_FLAG_ALT|'[',DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)0);
-    //   hotkey_add(PAGEDN_KEY,DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)1);
-       hotkey_add(PAGEDN_KEY|KB_FLAG_2ND,DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)1);
-       hotkey_add(KB_FLAG_DOWN|KB_FLAG_ALT|']',DEMO_CONTEXT,(hotkey_callback)invent_hotkey_func,(void*)1);
+    //   hotkey_add(PAGEUP_KEY,DEMO_CONTEXT,invent_hotkey_func,0);
+       hotkey_add(PAGEUP_KEY|KB_FLAG_2ND,DEMO_CONTEXT,invent_hotkey_func,0);
+       hotkey_add(KB_FLAG_DOWN|KB_FLAG_ALT|'[',DEMO_CONTEXT,invent_hotkey_func,0);
+    //   hotkey_add(PAGEDN_KEY,DEMO_CONTEXT,invent_hotkey_func,1);
+       hotkey_add(PAGEDN_KEY|KB_FLAG_2ND,DEMO_CONTEXT,invent_hotkey_func,1);
+       hotkey_add(KB_FLAG_DOWN|KB_FLAG_ALT|']',DEMO_CONTEXT,invent_hotkey_func,1);
     */
-    hotkey_add(KEY_TAB | KB_FLAG_DOWN, DEMO_CONTEXT, (hotkey_callback)cycle_weapons_func, (void *)1);
-    hotkey_add(KEY_TAB | KB_FLAG_DOWN | KB_FLAG_SHIFT, DEMO_CONTEXT, (hotkey_callback)cycle_weapons_func, (void *)-1);
+    hotkey_add(KEY_TAB | KB_FLAG_DOWN, DEMO_CONTEXT, cycle_weapons_func, 1);
+    hotkey_add(KEY_TAB | KB_FLAG_DOWN | KB_FLAG_SHIFT, DEMO_CONTEXT, cycle_weapons_func, -1);
 }
 
 void invent_language_change(void) {
@@ -2481,7 +2482,7 @@ LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **p
     invrect.lr.x = invrect.ul.x + INVENTORY_PANEL_WIDTH;
     invrect.lr.y = invrect.ul.y + INVENTORY_PANEL_HEIGHT;
     region_create(root, invreg, &invrect, 0, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
-    uiInstallRegionHandler(invreg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, inventory_mouse_handler, NULL, &id);
+    uiInstallRegionHandler(invreg, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE, inventory_mouse_handler, 0, &id);
     uiSetRegionDefaultCursor(invreg, NULL);
     add_email_handler(invreg);
     if (pinvent != NULL)
@@ -2492,7 +2493,7 @@ LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **p
     invrect.lr.y = RectHeight(root->r);
     region_create(root, pagereg, &invrect, 0, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
     uiInstallRegionHandler(pagereg, (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), (uiHandlerProc)pagebutton_mouse_handler,
-                           NULL, &id);
+                           0, &id);
     uiSetRegionDefaultCursor(pagereg, &globcursor);
 
     if (pbuttons != NULL)
@@ -2689,7 +2690,7 @@ void inv_update_fullscreen(uchar full) {
     // THE DISPLAY LIST ARRAY
     // ----------------------
 
-#define FIELD_OFFSET(fld) (int)&(((Player *)0)->fld)
+#define FIELD_OFFSET(fld) (offsetof(Player, fld))
 
 inv_display inv_display_list[] = {
     // Page 0, weapons, grenades, drugs
@@ -3451,7 +3452,7 @@ uchar gen_inv_displays(int *i, inv_display **dp) {
     return FALSE;
 }
 
-void absorb_object_on_cursor(short keycode, ulong context, void *data) {
+void absorb_object_on_cursor(ushort keycode, uint32_t context, intptr_t data) {
     if (object_on_cursor == 0)
         return;
 

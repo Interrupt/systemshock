@@ -2478,7 +2478,7 @@ uchar keypad_num(int b);
 char *keypad_name(int b, char *buf);
 char *mfd_keypad_assemble(keypad_data_type *keypad_data, char *buf);
 errtype mfd_keypad_input(MFD *m, char b_num);
-uchar keypad_hotkey_func(short keycode, ulong context, void *data);
+uchar keypad_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
 void install_keypad_hotkeys(void);
 uchar mfd_keypad_handler(MFD *m, uiEvent *ev);
 uchar mfd_keypad_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *data);
@@ -2588,7 +2588,7 @@ errtype mfd_keypad_input(MFD *mfd, char b_num) {
     return (OK);
 }
 
-uchar keypad_hotkey_func(short keycode, ulong context, void *data) {
+uchar keypad_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
     extern MFD mfd[];
     uchar digit = kb2ascii(keycode) - '0';
     int m = NUM_MFDS;
@@ -2602,8 +2602,8 @@ uchar keypad_hotkey_func(short keycode, ulong context, void *data) {
 void install_keypad_hotkeys(void) {
     int i;
     for (i = 0; i < 10; i++)
-        // KLC      hotkey_add(('0'+i)|KB_FLAG_DOWN|KB_FLAG_2ND, DEMO_CONTEXT, keypad_hotkey_func, NULL);
-        hotkey_add(('0' + i) | KB_FLAG_DOWN, DEMO_CONTEXT, keypad_hotkey_func, NULL);
+        // KLC      hotkey_add(('0'+i)|KB_FLAG_DOWN|KB_FLAG_2ND, DEMO_CONTEXT, keypad_hotkey_func, 0);
+        hotkey_add(('0' + i) | KB_FLAG_DOWN, DEMO_CONTEXT, keypad_hotkey_func, 0);
 }
 
 uchar mfd_keypad_handler(MFD *m, uiEvent *ev) {

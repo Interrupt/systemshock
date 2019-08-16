@@ -93,7 +93,7 @@ uchar is_container(ObjID id, int **d1, int **d2);
 uchar obj_fixture_zoom(ObjID id, uchar in_inv, uchar *messagep);
 errtype obj_tractor_beam_func(ObjID id, uchar on);
 errtype gear_power_outage();
-void unmulti_anim_callback(ObjID id, void *user_data);
+void unmulti_anim_callback(ObjID id, intptr_t user_data);
 errtype obj_screen_animate(ObjID id);
 uchar obj_keypad_crunch(int p, uchar digits[]);
 errtype keypad_trigger(ObjID id, uchar digits[]);
@@ -287,7 +287,7 @@ access_ok:
                 retval = TRUE;
             }
 
-            add_obj_to_animlist(id, FALSE, FALSE, FALSE, 32, 0, NULL, 0); // play anim forwards
+            add_obj_to_animlist(id, FALSE, FALSE, FALSE, 32, 0, 0, 0); // play anim forwards
             play_fx = TRUE;
 
             // remove render-blocking bit, since well, we're open.
@@ -312,7 +312,7 @@ access_ok:
         }
     } else {
         char real_frame = objs[id].info.current_frame;
-        add_obj_to_animlist(id, FALSE, TRUE, FALSE, 32, 0, NULL, 0); // play anim backwards
+        add_obj_to_animlist(id, FALSE, TRUE, FALSE, 32, 0, 0, 0); // play anim backwards
         play_fx = TRUE;
     }
     if (play_fx) {
@@ -1491,10 +1491,10 @@ errtype obj_door_lock(ObjID door_id, uchar new_lock) {
     return (OK);
 }
 
-void multi_anim_callback(ObjID id, void *user_data);
+void multi_anim_callback(ObjID id, intptr_t user_data);
 uchar in_anim_callback = FALSE;
 
-void unmulti_anim_callback(ObjID id, void *user_data) {
+void unmulti_anim_callback(ObjID id, intptr_t user_data) {
     int orig_parm = (int)user_data;
     int *pp2, *pp1;
 
@@ -1512,12 +1512,12 @@ void unmulti_anim_callback(ObjID id, void *user_data) {
         break;
     }
     objs[id].info.current_frame = 0;
-    add_obj_to_animlist(id, TRUE, *pp1 & 0x2, *pp1 & 0x1, 0, 5, NULL, ANIMCB_REPEAT | ANIMCB_CYCLE);
+    add_obj_to_animlist(id, TRUE, *pp1 & 0x2, *pp1 & 0x1, 0, 5, 0, ANIMCB_REPEAT | ANIMCB_CYCLE);
     *pp2 = orig_parm;
     in_anim_callback = FALSE;
 }
 
-void multi_anim_callback(ObjID id, void *data) {
+void multi_anim_callback(ObjID id, intptr_t data) {
     int *pp2, *pp1;
     uchar do_swap = FALSE;
 
@@ -1547,7 +1547,7 @@ void multi_anim_callback(ObjID id, void *data) {
         if (do_swap) {
             remove_obj_from_animlist(id);
             objs[id].info.current_frame = 0;
-            add_obj_to_animlist(id, FALSE, FALSE, FALSE, 0, 4, (void *)*pp2, ANIMCB_REMOVE);
+            add_obj_to_animlist(id, FALSE, FALSE, FALSE, 0, 4, *pp2, ANIMCB_REMOVE);
             *pp2 = *pp2 >> 16;
         }
     }
@@ -1561,20 +1561,20 @@ errtype obj_screen_animate(ObjID id) {
     case CLASS_BIGSTUFF:
         if (objBigstuffs[objs[id].specID].data2 >> 16)
             retval = add_obj_to_animlist(id, TRUE, objBigstuffs[objs[id].specID].data1 & 0x2,
-                                         objBigstuffs[objs[id].specID].data1 & 0x1, 0, 5, NULL,
+                                         objBigstuffs[objs[id].specID].data1 & 0x1, 0, 5, 0,
                                          ANIMCB_REPEAT | ANIMCB_CYCLE);
         else
             retval = add_obj_to_animlist(id, TRUE, objBigstuffs[objs[id].specID].data1 & 0x2,
-                                         objBigstuffs[objs[id].specID].data1 & 0x1, 0, 0, NULL, 0);
+                                         objBigstuffs[objs[id].specID].data1 & 0x1, 0, 0, 0, 0);
         break;
     case CLASS_SMALLSTUFF:
         if (objSmallstuffs[objs[id].specID].data2 >> 16)
             retval = add_obj_to_animlist(id, TRUE, objSmallstuffs[objs[id].specID].data1 & 0x2,
-                                         objSmallstuffs[objs[id].specID].data1 & 0x1, 0, 5, NULL,
+                                         objSmallstuffs[objs[id].specID].data1 & 0x1, 0, 5, 0,
                                          ANIMCB_REPEAT | ANIMCB_CYCLE);
         else
             retval = add_obj_to_animlist(id, TRUE, objBigstuffs[objs[id].specID].data1 & 0x2,
-                                         objBigstuffs[objs[id].specID].data1 & 0x1, 0, 0, NULL, 0);
+                                         objBigstuffs[objs[id].specID].data1 & 0x1, 0, 0, 0, 0);
         break;
     }
     return (OK);

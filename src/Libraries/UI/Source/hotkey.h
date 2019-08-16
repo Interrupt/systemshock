@@ -53,6 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // C Library Includes
 
 // System Library Includes
+#include <stdint.h>
 #include "error.h"
 #include "hash.h" 
 #include "kbcook.h"
@@ -73,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define HKSORT_KEYCODE  1
 #define HKSORT_ASCII    2
 
-typedef uchar (*hotkey_callback)(short keycode, ulong context, void* state); 
+typedef uchar (*hotkey_callback)(ushort keycode, uint32_t context, intptr_t state); 
 
 typedef struct _hotkey_entry
 {
@@ -84,11 +85,11 @@ typedef struct _hotkey_entry
 
 typedef struct _hotkey_link
 {
-   ulong context;
+   uint32_t context;
 #ifdef HOTKEY_HELP
    hotkey_callback func;
 #endif
-   void* state;
+   intptr_t state;
    char *help_text;
    int next;
 } hotkey_link;
@@ -104,12 +105,12 @@ extern Hashtable hotkey_table;
 errtype hotkey_init(int tblsize);
 // Initialize hotkey table, giving an initial context and table size.  
 
-errtype hotkey_add(short keycode, ulong context_mask, hotkey_callback func, void* state);
+errtype hotkey_add(ushort keycode, uint32_t context_mask, hotkey_callback func, intptr_t state);
 // installs a hotkey handler for a specific cooked keycode in the set of contexts described by context_mask.  
 // This handler will take precidence over previously-installed handlers.  
 
 #ifdef HOTKEY_HELP
-errtype hotkey_add_help(short keycode, ulong context_mask, hotkey_callback func, void* state, char *help_text);
+errtype hotkey_add_help(ushort keycode, uint32_t context_mask, hotkey_callback func, intptr_t state, char *help_text);
 // like hotkey_add, but also takes a help string which it stores
 // for later reference.
 
