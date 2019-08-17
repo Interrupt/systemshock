@@ -1,6 +1,5 @@
-
-#include "adlmidi.h"
 #include "Xmi.h"
+#include "MusicDevice.h"
 
 #ifdef USE_SDL_MIXER
 
@@ -141,38 +140,26 @@ int MacTuneLoadTheme(char* theme_base, int themeID) {
 	#define MAX_KEYS                   10
 	#define NUM_LAYERABLE_SUPERCHUNKS  22
 	#define KEY_BAR_RESOLUTION          2
-	
+
 	extern uchar track_table[NUM_SCORES][SUPERCHUNKS_PER_SCORE];
 	extern uchar transition_table[NUM_TRANSITIONS];
 	extern uchar layering_table[NUM_LAYERS][MAX_KEYS];
 	extern uchar key_table[NUM_LAYERABLE_SUPERCHUNKS][KEY_BAR_RESOLUTION];
-	
+
     StopTheMusic();
 
 	FreeXMI();
-	
+
 	if (strncmp(theme_base, "thm", 3))
 	{
-	  // Try to use sblaster files, fall back to genmidi
-	  sprintf(filename, "res/sound/sblaster/%s.xmi", theme_base);
-	  int readFile = ReadXMI(filename);
-
-	  if(!readFile) {
-	  	sprintf(filename, "res/sound/genmidi/%s.xmi", theme_base);
-	  	ReadXMI(filename);
-	  }
+	  sprintf(filename, "res/sound/%s/%s.xmi", MusicDev->musicType, theme_base);
+	  ReadXMI(filename);
 	}
 	else
 	{
-	  // Try to use sblaster files, fall back to genmidi
-	  sprintf(filename, "res/sound/sblaster/thm%i.xmi", themeID);
-	  int readFile = ReadXMI(filename);
+	  sprintf(filename, "res/sound/%s/thm%i.xmi", MusicDev->musicType, themeID);
+	  ReadXMI(filename);
 
-	  if(!readFile) {
-	  	sprintf(filename, "res/sound/genmidi/thm%i.xmi", themeID);
-	  	ReadXMI(filename);
-	  }
-	
 	  sprintf(filename, "res/sound/thm%i.bin", themeID);
 	  extern FILE *fopen_caseless(const char *path, const char *mode); //see caseless.c
 	  f = fopen_caseless(filename, "rb");
