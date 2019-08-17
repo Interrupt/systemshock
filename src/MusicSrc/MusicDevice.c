@@ -166,6 +166,7 @@ static MusicDevice *createNullMidiDevice()
     dev->isOpen = 0;
     dev->outputIndex = 0;
     dev->deviceType = Music_None;
+    dev->musicType = MUSICTYPE_SBLASTER;
     return dev;
 }
 
@@ -341,6 +342,7 @@ static MusicDevice *createAdlMidiDevice()
     adev->dev.isOpen = 0;
     adev->dev.outputIndex = 0;
     adev->dev.deviceType = Music_AdlMidi;
+    adev->dev.musicType = MUSICTYPE_SBLASTER;
     return &adev->dev;
 }
 
@@ -993,6 +995,7 @@ static MusicDevice *createNativeMidiDevice()
     ndev->alsaOutputId = 0;
     ndev->alsaOutputPort = 0;
 #endif
+    ndev->dev.musicType = MUSICTYPE_GENMIDI;
     return &(ndev->dev);
 }
 
@@ -1281,6 +1284,7 @@ static MusicDevice *createFluidSynthDevice()
     fdev->dev.isOpen = 0;
     fdev->dev.outputIndex = 0;
     fdev->dev.deviceType = Music_FluidSynth;
+    fdev->dev.musicType = MUSICTYPE_GENMIDI;
     return &(fdev->dev);
 }
 #endif // USE_FLUIDSYNTH
