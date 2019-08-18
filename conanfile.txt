@@ -1,0 +1,22 @@
+[build_requires]
+fluidsynth/2.0.5@bincrafters/stable
+glew/2.1.0@bincrafters/stable
+sdl2/2.0.9@bincrafters/stable
+sdl2_mixer/2.0.4@bincrafters/stable
+
+[options]
+# Disable unused dependencies
+
+sdl2:jack=False
+sdl2:nas=False
+
+sdl2_mixer:mad=False
+sdl2_mixer:modplug=False
+sdl2_mixer:mpg123=False
+sdl2_mixer:ogg=False
+sdl2_mixer:opus=False
+sdl2_mixer:tinymidi=False
+
+[generators]
+cmake_find_package
+
