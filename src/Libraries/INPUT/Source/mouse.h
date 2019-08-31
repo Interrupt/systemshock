@@ -69,7 +69,7 @@ typedef struct _mouse_event {
     short x; // position
     short y;
     uint16_t type; // Event mask, bits defined below
-    ulong timestamp;
+    uint32_t timestamp;
     uchar buttons;
     uchar modifiers; // Added for Mac version
     char pad[4];     // pad to sixteen bytes
@@ -107,10 +107,10 @@ errtype mouse_init(short xsize, short ysize);
 errtype mouse_shutdown(void);
 
 // Tell the mouse library where to get timestamps from.
-errtype mouse_set_timestamp_register(ulong *tstamp);
+// errtype mouse_set_timestamp_register(ulong *tstamp);
 
 // Get the current mouse timestamp
-ulong mouse_get_time(void);
+uint32_t mouse_get_time(void);
 
 // Get the mouse position
 errtype mouse_get_xy(short *x, short *y);
@@ -119,10 +119,10 @@ errtype mouse_get_xy(short *x, short *y);
 errtype mouse_put_xy(short x, short y);
 
 // Check the state of a mouse button
-errtype mouse_check_btn(short button, bool *result);
+// errtype mouse_check_btn(short button, bool *result);
 
 // look at the next mouse event.
-errtype mouse_look_next(ss_mouse_event *result);
+// errtype mouse_look_next(ss_mouse_event *result);
 
 // get & pop the next mouse event
 errtype mouse_next(ss_mouse_event *result);
@@ -143,19 +143,19 @@ errtype mouse_unset_callback(int id);
 errtype mouse_constrain_xy(short xl, short yl, short xh, short yh);
 
 // Set the mouse rate and accelleration threshhold
-errtype mouse_set_rate(short xr, short yr, short thold);
+// errtype mouse_set_rate(short xr, short yr, short thold);
 
 // Get the mouse rate and accelleration threshhold
-errtype mouse_get_rate(short *xr, short *yr, short *thold);
+// errtype mouse_get_rate(short *xr, short *yr, short *thold);
 
 // Sets the mouse coordinate bounds to (0,0) - (x-1,y-1),
 // and scales the current values of the mouse sensitivity accordingly.
-errtype mouse_set_screensize(short x, short y);
+// errtype mouse_set_screensize(short x, short y);
 
 // Find the min and max "virtual" coordinates of the mouse position
-errtype mouse_extremes(short *xmin, short *ymin, short *xmax, short *ymax);
+// errtype mouse_extremes(short *xmin, short *ymin, short *xmax, short *ymax);
 
 // Sets mouse handedness (true for left-handed)
-errtype mouse_set_lefty(uchar lefty);
+// errtype mouse_set_lefty(uchar lefty);
 
 #endif // _MOUSE_H
