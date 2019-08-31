@@ -318,9 +318,9 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc) {
         return 0x7D; //  kVK_DownArrow  = 0x7D, aka _DOWN_
     case SDLK_UP:
         return 0x7E; //  kVK_UpArrow    = 0x7E, aka _UP_
+    default:
+        return KBC_NONE;
     }
-
-    return KBC_NONE;
 }
 
 int MouseX;
@@ -773,7 +773,6 @@ void pump_events(void) {
 //  Globals
 //------------------
 int pKbdStatusFlags;
-uchar pKbdGetKeys[16]; // TODO: eliminate, use sshockKeyStates instead
 
 //---------------------------------------------------------------
 //  Startup and keyboard handlers and initialize globals.   Shutdown follows.
@@ -781,9 +780,7 @@ uchar pKbdGetKeys[16]; // TODO: eliminate, use sshockKeyStates instead
 int kb_startup(void *v) {
     pKbdStatusFlags = 0;
 
-    LG_memset(pKbdGetKeys, 0, 16); // Zero out the GetKeys buffer
-
-    LG_memset(sshockKeyStates, 0, sizeof(sshockKeyStates));
+    memset(sshockKeyStates, 0, sizeof(sshockKeyStates));
     nextKBevent = 0;
 
     return (0);
