@@ -606,8 +606,7 @@ void pump_events(void) {
             // hack to allow pressing shift after move key
             // sets all current shock states in array to shifted or non-shifted
             if (ev.key.keysym.sym == SDLK_LSHIFT || ev.key.keysym.sym == SDLK_RSHIFT) {
-                int i;
-                for (i = 0; i < 256; i++)
+                for (int i = 0; i < 256; i++)
                     if (sshockKeyStates[i]) {
                         if (ev.key.state == SDL_PRESSED)
                             sshockKeyStates[i] |= KB_MOD_SHIFT;
@@ -618,14 +617,14 @@ void pump_events(void) {
         } break;
 
         case SDL_TEXTINPUT: {
-            int len = strlen(ev.text.text), i;
+            uint32_t len = strlen(ev.text.text);
 
             // for every utf8 char in null-terminated string
-            for (i = 0; i < len; i++) {
+            for (uint32_t i = 0; i < len; i++) {
                 int ch = ev.text.text[i];
 
                 // ignore if non-printable key
-                if (ch < 32 || ch > 126)
+                if (!isprint(ch))
                     continue;
 
                 kbs_event keyEvent = {0};
@@ -633,8 +632,8 @@ void pump_events(void) {
                 keyEvent.modifiers = 0;
 
                 // if uppercase, lower it and set shift modifier
-                if (ch >= 'A' && ch <= 'Z') {
-                    ch = ch - 'A' + 'a';
+                if (isupper(ch)) {
+                    ch = tolower(ch);
                     keyEvent.modifiers |= KB_MOD_SHIFT;
                 }
 
