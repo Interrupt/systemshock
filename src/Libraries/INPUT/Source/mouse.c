@@ -45,7 +45,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SDL.h>
 
-#include "lg.h"
 #include "error.h"
 #include "mouse.h"
 #include "tickcount.h"
@@ -54,15 +53,6 @@ typedef struct _mouse_state {
     short x, y;
     short butts;
 } mouse_state;
-
-/*
-typedef struct
-{
-        TMTask			task;					// The actual TimeManager task structure
-        long				appA5;				// We need this silly thing for 68K programs
-}
-MouseTask, *MouseTaskPtr;
-*/
 
 /*
 #define DEFAULT_XRATE 16  			// Default mouse sensitivity parameters
@@ -127,10 +117,9 @@ int mouseVelYmin = 0x80000000;
 extern void MouseHandler(void);
 extern ulong mouseHandlerSize;
 */
-// TimerUPP		pMousePollPtr;
-// MouseTask		pMousePollTask;
-extern short gActiveLeft, gActiveTop;
-bool gRBtnWasDown = true;
+
+// extern short gActiveLeft, gActiveTop;
+// bool gRBtnWasDown = true;
 extern uchar pKbdGetKeys[16];
 
 //----------------
@@ -148,18 +137,10 @@ static void ReadMouseState(mouse_state *pMouseState);
 
 // KLC - try calling this from the main timer task.
 //---------------------------------------------------------------
-//#ifdef __powerc
-// pascal void MousePollProc(TMTaskPtr tmTaskPtr)
-//#else
-void MousePollProc(void)
-//#endif
-{
+void MousePollProc(void) {
     // TODO: is this even still needed? if so, can it be replaced by setting mouseInstant* in pump_events() ?
     //       if the callbacks from mouseCall[] are still needed, could they also be called in pump_events() ?
     //       if not, could they be the only thing called here, while mouseInstant* is still set in pump_events() ?
-
-    short i;
-    ss_mouse_event e;
 
     extern ss_mouse_event latestMouseEvent;
     mouseInstantButts = latestMouseEvent.buttons;
@@ -172,7 +153,7 @@ void MousePollProc(void)
         ss_mouse_event e = latestMouseEvent;
         e.type = MOUSE_MOTION;
 
-        for (i = 0; i < mouseCalls; i++)
+        for (uint16_t i = 0; i < mouseCalls; i++)
             if (mouseCall[i] != NULL)
                 mouseCall[i](&e, mouseCallData[i]);
 
@@ -189,10 +170,6 @@ void MousePollProc(void)
         }
     }
 
-    //#ifndef __powerc
-    //	MouseTaskPtr		tmTaskPtr = GetMouseTask();				// get address of task record
-    //	long					curA5 = SetA5(tmTaskPtr->appA5);		// save and set value of
-    //A5 #endif
     /*Point					mp;
     short					i;
     mouse_event		e;
@@ -237,11 +214,6 @@ queue. short newin = mouseQueueIn, newout = mouseQueueOut; short in = newin; mou
             }
     }
 //	PrimeTime((QElemPtr)tmTaskPtr, 50);						// Check 20 times a second.
-
-//#ifndef __powerc
-//	SetA5(curA5);
-// restore A5
-//#endif
 
 */
 }
@@ -416,106 +388,13 @@ void _mouse_update_vel(void)
 */
 
 // --------------------------------------------------------
-// mouse_get_xy() gets coords of mouse
-//	---------------------------------------------------------
-//  For Mac version: Use GetMouse().
-
-#if 0 // moved to sdl_events.c
-errtype mouse_get_xy(short* x, short* y)
-{
-	int x_, y_;
-	uint mouse_state = SDL_GetMouseState(&x_, &y_);
-	if(x)  *x = x_;
-	if(y)  *y = y_;
-
-/*   if (!mouse_installed)
-   {
-      Warning(("mouse_get_xy(): mouse not installed.\n"));
-      return ERR_NODEV;
-   }
-   _mouse_update_vel();
-   *x = mouseInstantX;
-   *y = mouseInstantY;
-
-   Spew(DSRC_MOUSE_GetXY,("mouse_get_xy(): *x = %d, *y = %d\n",*x,*y)); */
-   return OK;
-}
-
-// Set the mouse position
-extern SDL_Window* window;
-errtype mouse_put_xy(short x, short y)
-{
-	// thanks to Mark for the help! - phs, 8/1/95
-
-	SDL_WarpMouseInWindow(window, x, y);
-
-	mouseInstantX = x;
-	mouseInstantY = y;
-	
-	return OK;
-
-	/*Point *RawMouse;
-	char *CrsrNew;
-
-	Point pt;
-  
-	pt.h = x;
-	pt.v = y;
-  
-	LocalToGlobal(&pt);
-  
-	MTemp = (Point *) 0x0828;
-	RawMouse = (Point *) 0x082c;
-	CrsrNew = (char *) 0x08ce;
- 
- 	MTemp->v = pt.v;
- 	MTemp->h = pt.h;
-
-	RawMouse->v = pt.v;
-	RawMouse->h = pt.h; 	
- 
- 	*CrsrNew=1;
-
-	return OK;*/
-
-/*
-   union REGS regs;
-   mouse_state ms;
-   Spew(DSRC_MOUSE_PutXY,("mouse_put_xy(%d,%d)\n",x,y));
-   if (!mouse_installed)
-   {
-      Warning(("mouse_put_xy(): mouse not installed.\n"));
-      return ERR_NODEV;
-   }
-   regs.x.eax = 0x0004;
-   regs.x.ecx = x << mouseXshift;
-   regs.x.edx = y << mouseYshift;
-   int386(INT_MOUSE,&regs,&regs);
-   ReadMouseState(&ms);
-   mouseInstantX = ms.x >> mouseXshift;
-   mouseInstantY = ms.y >> mouseYshift;
-   if ((mouseMask & MOUSE_MOTION) != 0)
-   {
-      mouse_event me;
-      me.x = mouseInstantX;
-      me.y = mouseInstantY;
-      me.type = MOUSE_MOTION;
-      me.timestamp = *mouse_ticks;
-      me.buttons = mouseInstantButts;
-      mouse_generate(me);
-   }
-   return OK;
-*/
-}
-#endif
-
-// --------------------------------------------------------
 // mouse_check_btn checks button state.
 //   res = ptr to result
 //   button = button number 0-2
 //	---------------------------------------------------------
 //  For Mac version: Basically just return true or false right now.
-
+// WH: no use
+#if 0
 errtype mouse_check_btn(short button, bool *res) {
 
     if (button == 1) {
@@ -532,7 +411,7 @@ errtype mouse_check_btn(short button, bool *res) {
        Spew(DSRC_MOUSE_CheckBtn,("mouse_check_btn(%d,%x) *res = %d\n",button,res,*res)); */
     return OK;
 }
-
+#endif
 // ---------------------------------------------------------
 // mouse_look_next gets the event in front the event queue,
 // but does not remove the event from the queue.
@@ -540,7 +419,8 @@ errtype mouse_check_btn(short button, bool *res) {
 //	---------------------------------------------------------
 //  For Mac version: Check the normal Mac event queue for mouse events.  The events
 //  looked for depend on the 'mouseMask' setting.
-
+// WH: no use
+#if 0
 errtype mouse_look_next(ss_mouse_event *res) {
     printf("mouse_look_next not implemented.\n");
 
@@ -594,218 +474,7 @@ errtype mouse_look_next(ss_mouse_event *res) {
     */
     return OK;
 }
-
-// ---------------------------------------------------------
-// mouse_next gets the event in the front event queue,
-// and removes the event from the queue.
-// res = ptr to event to be filled.
-//	---------------------------------------------------------
-//  For Mac version: Get event from the normal Mac event queue for mouse events.
-//  The events looked for depend on the 'mouseMask' setting.
-#if 0  // DG: already moved to sdl_events.c
-int btn_right = 0;
-int btn_left  = 0;
-errtype mouse_next(mouse_event *res)
-{
-	short				eventMask;
-	//EventRecord	theEvent;
-	Boolean			nowDown;
-	uchar			rbType = 0;
-
-	int mouse_x;
-	int mouse_y;
-
-	SDL_PumpEvents();
-
-	uint mouse_state = SDL_GetMouseState(&mouse_x, &mouse_y);
-	res->x = mouse_x;
-	res->y = mouse_y;
-	res->buttons = 0;
-	res->timestamp = mouse_get_time();
-	res->modifiers = 0;
-	res->type = MOUSE_MOTION;
-
-	if(mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-		if(!btn_left) {
-			res->buttons = 1;
-			btn_left = TRUE;
-			res->type = MOUSE_LDOWN;
-			return OK;
-		}
-	}
-	else if(btn_left) {
-		res->buttons = 1;
-		btn_left = FALSE;
-		res->type = MOUSE_LUP;
-		return OK;
-	}
-
-	if(mouse_state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-		if(!btn_right) {
-			res->buttons = 2;
-			btn_right = TRUE;
-			res->type = MOUSE_RDOWN;
-			return OK;
-		}
-	}
-	else if(btn_right) {
-		res->buttons = 2;
-		btn_right = FALSE;
-		res->type = MOUSE_RUP;
-		return OK;
-	}
-
-	// If there's not a mouse click event, check the internal queue for mouse
-	// movement events.
-	if (mouseMask & MOUSE_MOTION)
-	{
-		if (mouseQueueOut == mouseQueueIn)			// If no motion events, return an error.
-			return ERR_DUNDERFLOW;
-		else
-		{
-	  		*res = mouseQueue[mouseQueueOut];		// Return the event and adjust the queue.
-	  		mouseQueueOut = (mouseQueueOut + 1 < mouseQueueSize) ? mouseQueueOut + 1 : 0;
-	  	}
-	}
-	else
-		return ERR_DUNDERFLOW; // If there are no events at all, return an error.
-
-	return ERR_DUNDERFLOW;
-	
-	// First, check to see if we get a simulated right button event.  This occurs for the
-	// space, enter, and return keys.
-	
-	/*nowDown = kb_state(0x31) || kb_state(0x4C) || kb_state(0x24);
-	if (!gRBtnWasDown)											// If the right button was not already down
-	{
-		if (nowDown)													// and it is down now
-		{
-			rbType = MOUSE_RDOWN;							// trigger a MOUSE_RDOWN event.
-			gRBtnWasDown = TRUE;
-		}
-	}
-	else if (!nowDown)												// If the right button was down but now is up
-	{
-		rbType = MOUSE_RUP;									// trigger a MOUSE_RUP event.
-		gRBtnWasDown = FALSE;
-	}
-	if (rbType)														// Send a right button event
-	{
-		printf(" 4\n");
-		Point mp = *(Point *)0x830;							// Get mouse location from low memory.
-		mp.h -= gActiveLeft;										// Convert to "local" screen coordinates.
-		mp.v -= gActiveTop;
-
-		res->x = mp.h;												// Fill out the event record.
-		res->y = mp.v;
-		res->type = rbType;
-		res->timestamp = theEvent.when;
-		res->buttons = 2;
-		res->modifiers = 0;
-		return OK;
-	}*/
-
-	/*if (theEvent.what == keyDown || theEvent.what == keyUp)					// If it's a key event
-	{
-		uchar	scanCode = (theEvent.message & keyCodeMask) >> 8;
-		if (scanCode == 0x31 || scanCode == 0x4C || scanCode == 0x24)		// and it's a "right button" key
-		{
-			GlobalToLocal(&theEvent.where);				// Send off the appropriate MOUSE_Rxxx event.
-			res->x = theEvent.where.h;
-			res->y = theEvent.where.v;
-			if (theEvent.what == keyDown)
-				res->type = MOUSE_RDOWN;
-			else
-				res->type = MOUSE_RUP;
-			res->timestamp = theEvent.when;
-			res->buttons = 2;
-			res->modifiers = (uchar)(theEvent.modifiers >> 8);
-				return OK;
-		}
-		else
-			goto checkMotion;									// Else, there's no click event.
-	}
-
-	GlobalToLocal(&theEvent.where);
-	res->x = theEvent.where.h;								// fill in the mouse_event record.
-	res->y = theEvent.where.v;
-	res->timestamp = theEvent.when;
-	if (theEvent.modifiers & optionKey)					// If the option keys is down, send back a 
-	{																	// right-button event.
-		if (theEvent.what == mouseDown) {
-			printf("MOUSE_RDOWN\n");
-			res->type = MOUSE_RDOWN;
-		}
-		else if (theEvent.what == mouseUp)
-			res->type = MOUSE_RUP;
-		res->buttons = 2;
-		res->modifiers = 0;
-	}
-	else																// Otherwise it's a left-button event.
-	{
-		if (theEvent.what == mouseDown) {
-			printf("MOUSE_LDOWN\n");
-			res->type = MOUSE_LDOWN;
-		}
-		else if (theEvent.what == mouseUp)
-			res->type = MOUSE_LUP;
-		res->buttons = 1;
-		res->modifiers = (uchar)(theEvent.modifiers >> 8);
-	}
-		return OK;
-	
-checkMotion:
-	// If there's not a mouse click event, check the internal queue for mouse
-	// movement events.
-	if (mouseMask & MOUSE_MOTION)
-	{
-		if (mouseQueueOut == mouseQueueIn)			// If no motion events, return an error.
-			return ERR_DUNDERFLOW;
-		else
-		{
-	  		*res = mouseQueue[mouseQueueOut];		// Return the event and adjust the queue.
-	  		mouseQueueOut = (mouseQueueOut + 1 < mouseQueueSize) ? mouseQueueOut + 1 : 0;
-	  	}
-	}
-	
-	// If there are no events at all, return an error.
-	else
-		return ERR_DUNDERFLOW;
-	
-/*
-  Spew(DSRC_MOUSE_Next,("entering mouse_next()\n"));
-   if (mouseQueueOut == mouseQueueIn)
-      _mouse_update_vel();
-  if (mouseQueueOut == mouseQueueIn)
-   {
-      Spew(DSRC_MOUSE_Next,("mouse_next(): Queue Underflow.\n"));
-      return ERR_DUNDERFLOW;
-   }
-  *res = mouseQueue[mouseQueueOut];
-
-  // Hey, keep in mind that mouseQueueOut and In can NEVER be invalid,
-  // not even for a sec, because  the interrupt handler might 
-  // discover them in that invalid state and this would be BAD(TM).
-  
-  mouseQueueOut = (mouseQueueOut + 1 < mouseQueueSize) ? mouseQueueOut + 1 : 0;
-
-  return OK;*/
-}
-
-
-// -------------------------------------------------------
-// mouse_flush() flushes the mouse event queue. 
-//	---------------------------------------------------------
-//  For Mac version: Flush the Mac event queue of mouse messages.  
-  
-errtype mouse_flush(void)
-{
-	//FlushEvents(mouseDown | mouseUp, 0);
-//   Spew(DSRC_MOUSE_Flush,("Entering mouse_flush()\n"));
-	mouseQueueIn = mouseQueueOut = 0;
-	return OK;
-}
-#endif // 0 - moved to sdl_events
+#endif
 
 /*
 // -------------------------------------------------------
@@ -871,9 +540,9 @@ errtype mouse_set_callback(mouse_callfunc f, void *data, int *id) {
 // id = unique id of function to unset
 
 errtype mouse_unset_callback(int id) {
-    //	Spew(DSRC_MOUSE_UnsetCallback,("entering mouse_unset_callback(%d)\n",id));
+    // Spew(DSRC_MOUSE_UnsetCallback,("entering mouse_unset_callback(%d)\n",id));
     if (id >= mouseCalls || id < 0) {
-        //		Spew(DSRC_MOUSE_UnsetCallback,("mouse_unset_callback(): id out of range \n"));
+        // Spew(DSRC_MOUSE_UnsetCallback,("mouse_unset_callback(): id out of range \n"));
         return ERR_RANGE;
     }
     mouseCall[id] = NULL;
@@ -968,9 +637,8 @@ errtype mouse_set_timestamp_register(ulong* tstamp)
 //	--------------------------------------------------------
 // For Mac version:  Just return TickCount().
 
-ulong mouse_get_time(void) {
-    return (ulong)TickCount();
-    //   return *mouse_ticks;
+uint32_t mouse_get_time(void) {
+    return TickCount();
 }
 
 //	--------------------------------------------------------
