@@ -98,7 +98,7 @@ void game_loop(void) {
     // Handle paused game state
     if (game_paused) {
         if (redraw_paused) {
-            Spew("gameloop", "Drawing pause!\n");
+            TRACE("%s: Drawing pause!", __FUNCTION__);
             draw_pause_string();
             redraw_paused = FALSE;
         }
@@ -115,26 +115,26 @@ void game_loop(void) {
         loopLine(GL | 0x10, update_state(time_passes)); // move game time
 
         if (time_passes) {
-            Spew("gameloop", "ai_run\n");
+            TRACE("%s: ai_run", __FUNCTION__);
             loopLine(GL | 0x12, ai_run());
 
-            Spew("gameloop", "gamesys_run\n");
+            TRACE("%s: gamesys_run", __FUNCTION__);
             loopLine(GL | 0x13, gamesys_run());
 
-            Spew("gameloop", "advance_animations\n");
+            TRACE("%s: advance_animations", __FUNCTION__);
             loopLine(GL | 0x14, advance_animations());
         }
-        Spew("gameloop", "wares_update\n");
+        TRACE("%s: wares_update", __FUNCTION__);
         loopLine(GL | 0x16, wares_update());
 
-        Spew("gameloop", "message_clear_check\n");
+        TRACE("%s: message_clear_check", __FUNCTION__);
         loopLine(GL | 0x1D, message_clear_check()); // This could be done more cleverly with change flags...
 
         if (localChanges) {
-            Spew("gameloop", "render_run\n");
+            TRACE("%s: render_run", __FUNCTION__);
             loopLine(GL | 0x1A, render_run());
 
-            Spew("gameloop", "status_vitals_update\n");
+            TRACE("%s: status_vitals_update", __FUNCTION__);
             loopLine(GL | 0x17, if (!full_game_3d) status_vitals_update(FALSE));
             /*KLC - no longer needed
             if (_change_flag&ANIM_UPDATE)
@@ -147,12 +147,12 @@ void game_loop(void) {
             if (full_game_3d && ((_change_flag & INVENTORY_UPDATE) || (_change_flag & MFD_UPDATE)))
                 _change_flag |= DEMOVIEW_UPDATE;
             if (_change_flag & INVENTORY_UPDATE) {
-                Spew("gameloop", "INVENTORY_UPDATE\n");
+                TRACE("%s: INVENTORY_UPDATE", __FUNCTION__);
                 chg_unset_flg(INVENTORY_UPDATE);
                 loopLine(GL | 0x1B, inventory_draw());
             }
             if (_change_flag & MFD_UPDATE) {
-                Spew("gameloop", "MFD_UPDATE\n");
+                TRACE("%s: MFD_UPDATE", __FUNCTION__);
                 chg_unset_flg(MFD_UPDATE);
                 loopLine(GL | 0x18, mfd_update());
             }
@@ -165,25 +165,25 @@ void game_loop(void) {
             }
         }
         if (!full_game_3d) {
-            Spew("gameloop", "update_meters\n");
+            TRACE("%s: update_meters", __FUNCTION__);
             loopLine(GL | 0x19, update_meters(FALSE));
         }
         if (!full_game_3d && olh_overlay_on) {
-            Spew("gameloop", "olh_overlay\n");
+            TRACE("%s: olh_overlay", __FUNCTION__);
             olh_overlay();
         }
 
-        Spew("gameloop", "physics_run\n");
+        TRACE("%s: physics_run", __FUNCTION__);
         loopLine(GL | 0x15, physics_run());
         {
             if (!olh_overlay_on && olh_active && !global_fullmap->cyber) {
-                Spew("gameloop", "olh_scan_objects\n");
+                TRACE("%s: olh_scan_objects", __FUNCTION__);
                 olh_scan_objects();
             }
         }
         // KLC - does nothing!         loopLine(GL|0x1D,synchronous_update());
         if (sfx_on || music_on) {
-            Spew("gameloop", "sound_frame_update\n");
+            TRACE("%s: sound_frame_update", __FUNCTION__);
             loopLine(GL | 0x1C, mlimbs_do_ai());
             loopLine(GL | 0x1E, sound_frame_update());
         }
@@ -194,7 +194,7 @@ void game_loop(void) {
 			gamma_dealfunc(gShockPrefs.doGamma);
         }
 
-        Spew("gameloop", "destroy_destroyed_objects\n");
+        TRACE("%s: destroy_destroyed_objects", __FUNCTION__);
         loopLine(GL | 0x20, destroy_destroyed_objects());
         loopLine(GL | 0x21, check_cspace_death());
     }

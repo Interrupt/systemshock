@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "fix.h"
-#include "dbg.h"
+#include "lg.h"
 #include "trigtab.h"
 #include <stdint.h>
 #include <stdlib.h>

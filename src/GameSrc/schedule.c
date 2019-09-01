@@ -418,12 +418,12 @@ static SchedHandler sched_handlers[] = {
 static ushort current_tstamp = 0;
 
 errtype schedule_init(Schedule *s, int size, uchar grow) {
-    Spew("schedule", "schedule_init\n");
+    TRACE("%s: schedule_init", __FUNCTION__);
     return pqueue_init(&s->queue, size, sizeof(SchedEvent), compare_events, grow);
 }
 
 errtype schedule_free(Schedule *s) {
-    Spew("schedule", "schedule_free\n");
+    TRACE("%s: schedule_free", __FUNCTION__);
     return pqueue_destroy(&s->queue);
 }
 
@@ -435,7 +435,7 @@ errtype schedule_event(Schedule *s, SchedEvent *ev) {
         return ERR_NOEFFECT;
     }
 
-    Spew("schedule", "Scheduling an event.\n");
+    TRACE("%s: Scheduling an event.", __FUNCTION__);
 
     retval = pqueue_insert(&s->queue, ev);
     if (retval != OK) {

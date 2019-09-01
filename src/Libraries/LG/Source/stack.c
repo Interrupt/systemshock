@@ -35,8 +35,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
 */
 
+#include "lg.h"
 #include "memall.h"
-#include "dbg.h"
 
 //////////////////////////////
 //

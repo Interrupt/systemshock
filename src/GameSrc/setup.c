@@ -1069,7 +1069,7 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
               if ((mev->pos.y > journey_y[i]) && (mev->pos.y < journey_y[i + 1])) which_one = i >> 1;
               else i += 2;
             }
-            Spew(DSRC_USER_I_Screen, ("which_one = %d\n", which_one));
+            TRACE("%s: which_one = %d", __FUNCTION__, which_one);
             if (which_one != -1)
             {
               uiHideMouse(NULL);
@@ -1110,8 +1110,7 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
             old_diff = player_struct.difficulty[i / 4];
             draw_difficulty_description(i / 4, 0);
             player_struct.difficulty[i / 4] = i % 4;
-            Spew(DSRC_GAMESYS_Init,
-                 ("difficulty %d set to %d (verify = %d)\n", i / 4, i % 4, player_struct.difficulty[i / 4]));
+            TRACE("%s: difficulty %d set to %d (verify = %d)", __FUNCTION__, i / 4, i % 4, player_struct.difficulty[i / 4]);
             draw_difficulty_char(((i / 4) * 4) + old_diff);
             draw_difficulty_char(i);
             draw_difficulty_description(i / 4, NORMAL_ENTRY_COLOR);

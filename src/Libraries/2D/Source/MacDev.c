@@ -19,13 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // device driver for standard Mac 640x480 256 color mode
 #include "grnull.h"
 #include "grd.h"
+#include "lg.h"
 #include "MacDev.h"
 #include "cnvdrv.h"
 #include "cnvtab.h"
 #include "bitmap.h"
 #include "fcntab.h"
 #include "lintab.h"
-#include "dbg.h"
 #include "ShockBitmap.h"
 
 #include <SDL.h>

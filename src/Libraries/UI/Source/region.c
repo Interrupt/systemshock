@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // Source Code for the LGRegion library
 
-#include "dbg.h"
-//#include <_ui.h>
 #include "region.h"
 #include "slist.h"
 
