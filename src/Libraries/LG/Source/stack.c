@@ -59,7 +59,7 @@ void *MemStackAlloc (MemStack *ms, long size)
 
    if (newptr > (char *) ms->baseptr + ms->sz)
    {
-      Warning (("MemStackAlloc: can't alloc\n"));
+      WARN("%s: can't alloc", __FUNCTION__);
       return NULL;
    }
 
@@ -78,7 +78,7 @@ void *MemStackRealloc (MemStack *ms, void *ptr, long newsize)
 
    if (newptr > (char *)ms->baseptr + ms->sz)
    {
-      Warning(("MemStackRealloc: can't realloc\n"));
+      WARN("%s: can't realloc", __FUNCTION__);
       return NULL;
    }
    ms->topptr = (char *)ptr + newsize;
@@ -95,7 +95,7 @@ uchar MemStackFree (MemStack *ms, void *ptr)
 {
    if (ms->topptr < ptr)
    {
-      Warning (("MemStackFree: freed in wrong order\n"));
+      WARN("%s: freed in wrong order", __FUNCTION__);
       return FALSE;
    }
 

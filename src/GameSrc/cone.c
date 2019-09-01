@@ -694,7 +694,7 @@ uchar find_view_area(fix *cone_list, fix floor_val, fix roof_val, int *count, fi
         }
 
         if (index < 2) {
-            Warning(("HEY - Only one point for cone - this is bad....\n"));
+            WARN("%s: HEY - Only one point for cone - this is bad...", __FUNCTION__);
         }
 
         index = radius_fix(index, new_pts, viewer_point);
@@ -869,7 +869,7 @@ void simple_cone_clip_pass(void) {
 
         if ((viewer_position.gX < MAP_X) && (viewer_position.gX > FIX_ZERO) && (viewer_position.gZ < MAP_Y) &&
             (viewer_position.gZ > FIX_ZERO)) {
-            Warning(("Not a valid cone found and we're inside the map!\n"));
+            WARN("%s: Not a valid cone found and we're inside the map!", __FUNCTION__);
         }
         return;
     }

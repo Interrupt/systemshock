@@ -687,17 +687,17 @@ uchar ObjSysOkay(void) {
         //		DBG_Anal ({RangeAdd (cur);})
         if (cur < 0 || cur >= NUM_OBJECTS) {
             //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-            DebugString("Invalid ID in free chain"); // cur
+            DEBUG("%s: Invalid ID in free chain", __FUNCTION__); // cur
             return FALSE;
         }
         if (objs[cur].active) {
             //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-            DebugString("Active Obj in free chain"); // objs[cur]
+            DEBUG("%s: Active Obj in free chain", __FUNCTION__); // objs[cur]
             return FALSE;
         }
         if (usedObj[cur] == OBJ_FREE) {
             //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-            DebugString("Obj is free more than once"); // usedObj[cur]
+            DEBUG("%s: Obj is free more than once", __FUNCTION__); // usedObj[cur]
             return FALSE;
         }
         usedObj[cur] = OBJ_FREE;
@@ -713,17 +713,17 @@ uchar ObjSysOkay(void) {
         //		DBG_Anal ({RangeAdd (cur);})
         if (cur < 0 || cur >= NUM_OBJECTS) {
             //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-            DebugString("Invalid ID in Obj used chain"); // cur
+            DEBUG("%s: Invalid ID in Obj used chain", __FUNCTION__); // cur
             return FALSE;
         }
         if (usedObj[cur] == OBJ_FREE) {
             //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-            DebugString("Obj is free and used chain"); // cur
+            DEBUG("%s: Obj is free and used chain", __FUNCTION__); // cur
             return FALSE;
         }
         if (usedObj[cur] == OBJ_USED) {
             //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-            DebugString("Obj is used twice"); // cur
+            DEBUG("%s: Obj is used twice", __FUNCTION__); // cur
             return FALSE;
         }
         usedObj[cur] = OBJ_USED;
@@ -733,7 +733,7 @@ uchar ObjSysOkay(void) {
 
     for (cur = 1; cur < NUM_OBJECTS; cur++) {
         if (usedObj[cur] == 0) {
-            DebugString("Obj is neither free nor used"); // cur
+            DEBUG("%s: Obj is neither free nor used", __FUNCTION__); // cur
             return FALSE;
         }
     }
@@ -751,12 +751,12 @@ uchar ObjSysOkay(void) {
         //		DBG_Anal ({RangeAdd (cur);})
         if (cur < 0 || cur >= NUM_REF_OBJECTS) {
             //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-            DebugString("Invalid ID in ObjRef free chain"); // cur
+            DEBUG("%s: Invalid ID in ObjRef free chain", __FUNCTION__); // cur
             return FALSE;
         }
         if (usedRef[cur] == OBJ_FREE) {
             //			DBG_Anal ({RangeFlush ();}) SpewAnal (("%s\n", range_str));
-            DebugString("ObjRef is free more than once"); // cur
+            DEBUG("%s: ObjRef is free more than once", __FUNCTION__); // cur
             return FALSE;
         }
         usedRef[cur] = OBJ_FREE;
@@ -773,11 +773,11 @@ uchar ObjSysOkay(void) {
         cur = ((ObjSpec *)head->data)->next;
         while (cur) {
             if (cur < 0 || cur >= head->size) {
-                DebugString("Invalid ID (cur) in Class (i) free chain"); //
+                DEBUG("%s: Invalid ID (cur) in Class (i) free chain", __FUNCTION__);
                 return FALSE;
             }
             if (usedObj[cur] == OBJ_FREE) {
-                DebugString("Class (i) ObjSpec (cur) is free more than once"); //
+                DEBUG("%s: Class (i) ObjSpec (cur) is free more than once", __FUNCTION__);
                 return FALSE;
             }
             usedObj[cur] = OBJ_FREE;
@@ -786,15 +786,15 @@ uchar ObjSysOkay(void) {
         cur = ((ObjSpec *)head->data)->bits.id;
         while (cur) {
             if (cur < 0 || cur >= head->size) {
-                DebugString("Invalid ID (cur) in Class (i) used chain"); //
+                DEBUG("%s: Invalid ID (cur) in Class (i) used chain", __FUNCTION__);
                 return FALSE;
             }
             if (usedObj[cur] == OBJ_FREE) {
-                DebugString("Class (i) ObjSpec (cur) is free and used"); //
+                DEBUG("%s: Class (i) ObjSpec (cur) is free and used", __FUNCTION__);
                 return FALSE;
             }
             if (usedObj[cur] == OBJ_USED) {
-                DebugString("Class (i) ObjSpec (cur) is used twice"); //
+                DEBUG("%s: Class (i) ObjSpec (cur) is used twice", __FUNCTION__);
                 return FALSE;
             }
             usedObj[cur] = OBJ_USED;
@@ -802,7 +802,7 @@ uchar ObjSysOkay(void) {
         }
         for (cur = 1; cur < head->size; cur++) {
             if (usedObj[cur] == 0) {
-                DebugString("Class (i) ObjSpec (cur) is neither free nor used"); //
+                DEBUG("%s: Class (i) ObjSpec (cur) is neither free nor used", __FUNCTION__);
                 return FALSE;
             }
         }
@@ -852,26 +852,26 @@ uchar ObjSysOkay(void) {
 
             if (usedRef[ref] & OBJ_FREE) {
                 ObjRefStateBinSprint(str, refbin);
-                DebugString("ObjRef (ref) is free and in map bin (str)"); //
+                DEBUG("%s: ObjRef (ref) is free and in map bin (str)", __FUNCTION__);
                 return FALSE;
             }
 
             if (usedRef[ref] & OBJ_IN_MAP) {
                 ObjRefStateBinSprint(str, refbin);
-                DebugString("ObjRef (ref) exists in two bins (one is str)"); //
+                DEBUG("%s: ObjRef (ref) exists in two bins (one is str)", __FUNCTION__);
                 return FALSE;
             }
 
             if (!ObjRefStateBinEqual(objRefs[ref].state.bin, refbin)) {
                 ObjRefStateBinSprint(str, refbin);
                 ObjRefStateBinSprint(str2, objRefs[ref].state.bin);
-                DebugString("ObjRef (ref) thinks it is in (str2) but is in (str)"); //
+                DEBUG("%s: ObjRef (ref) thinks it is in (str2) but is in (str)", __FUNCTION__);
                 return FALSE;
             }
 
             if (objRefs[ref].obj == OBJ_NULL) {
                 ObjRefStateBinSprint(str, refbin);
-                DebugString("ObjRef (ref) in (str) points to null Obj"); //
+                DEBUG("%s: ObjRef (ref) in (str) points to null Obj", __FUNCTION__);
                 return FALSE;
             }
 
@@ -901,12 +901,12 @@ uchar ObjSysOkay(void) {
 
         do {
             if (i == MAX_REFS_PER_OBJ) {
-                DebugString("Too many ObjRefs refer to Obj (cur)"); //
+                DEBUG("%s: Too many ObjRefs refer to Obj (cur)", __FUNCTION__);
                 return FALSE;
             }
 
             if (objRefs[ref].obj != cur) {
-                DebugString("Obj (cur) points to ObjRef (ref) but not vice versa"); //
+                DEBUG("%s: Obj (cur) points to ObjRef (ref) but not vice versa", __FUNCTION__);
                 return FALSE;
             }
 
@@ -925,7 +925,7 @@ uchar ObjSysOkay(void) {
             ObjSpecHeader *head;
 
             if (objs[cur].obclass < 0 || objs[cur].obclass >= NUM_CLASSES) {
-                DebugString("Obj (cur) has invalid obclass (objs[cur].obclass)"); //
+                DEBUG("%s: Obj (cur) has invalid obclass (objs[cur].obclass)", __FUNCTION__);
                 return FALSE;
             }
 
@@ -934,7 +934,7 @@ uchar ObjSysOkay(void) {
 
             if (((ObjSpec *)(data + head->struct_size * objs[cur].specID))->bits.id != cur ||
                 ((ObjSpec *)(data + head->struct_size * objs[cur].specID))->bits.tile == TRUE) {
-                DebugString("Obj (cur) obclass-specific data does not point back to it"); //
+                DEBUG("%s: Obj (cur) obclass-specific data does not point back to it", __FUNCTION__);
                 return FALSE;
             }
         }

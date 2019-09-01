@@ -227,13 +227,13 @@ void compute_YXZ(g3s_matrix *view_matrix) {
     view_matrix->m9 = fix_mul(cosh_s, cosp);
 }
 
-void compute_YZX(g3s_matrix *view_matrix) { DebugString("compute_YZX needs to be implemented"); }
+void compute_YZX(g3s_matrix *view_matrix) { DEBUG("%s: needs to be implemented", __FUNCTION__); }
 
-void compute_XZY(g3s_matrix *view_matrix) { DebugString("compute_XZY needs to be implemented"); }
+void compute_XZY(g3s_matrix *view_matrix) { DEBUG("%s: needs to be implemented", __FUNCTION__); }
 
-void compute_ZXY(g3s_matrix *view_matrix) { DebugString("compute_ZXY needs to be implemented"); }
+void compute_ZXY(g3s_matrix *view_matrix) { DEBUG("%s: needs to be implemented", __FUNCTION__); }
 
-void compute_ZYX(g3s_matrix *view_matrix) { DebugString("compute_ZYX needs to be implemented"); }
+void compute_ZYX(g3s_matrix *view_matrix) { DEBUG("%s: needs to be implemented", __FUNCTION__); }
 
 // invalid does nothing (and does it well!)
 void compute_invalid(g3s_matrix *view_matrix) {}

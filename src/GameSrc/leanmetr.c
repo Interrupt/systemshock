@@ -303,7 +303,7 @@ void lean_icon(LGPoint *pos, grs_bitmap **icon, int *inum) {
         f->bm.bits = (uchar *)(f + 1);
         *icon = &(f->bm);
     } else
-        DebugString("No lean resource bitmap!");
+        DEBUG("%s: No lean resource bitmap!", __FUNCTION__);
 
     // Determine where to draw the bitmap.
     pos->y = 53 - (*icon)->h;

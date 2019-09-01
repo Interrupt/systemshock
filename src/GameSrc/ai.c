@@ -737,7 +737,7 @@ errtype ai_fire_special(ObjID src, ObjID target, int proj_triple, ObjLoc src_loc
 
     proj_id = obj_create_base(proj_triple);
     if (proj_id == OBJ_NULL) {
-        Warning(("Could not create slow projectile!\n"));
+        WARN("%s: Could not create slow projectile!", __FUNCTION__);
         return (OK);
     }
 

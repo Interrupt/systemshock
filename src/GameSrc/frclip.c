@@ -268,7 +268,7 @@ void span_fixup(void) {
         span_left(_fr_y_cen, 0) = lg_min(span_left(_fr_y_cen, 0), span_left(_fr_y_cen, 1));
         span_right(_fr_y_cen, 0) = lg_max(span_right(_fr_y_cen, 0), span_right(_fr_y_cen, 1));
     } else
-        Warning(("Only one span at y center\n"));
+        WARN("%s: Only one span at y center", __FUNCTION__);
     fr_span_parse();
 #if _fr_defdbg(VECSPEW)
     if (_fr_dbgflg_chk(VECSPEW)) {

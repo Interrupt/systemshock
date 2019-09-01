@@ -329,7 +329,7 @@ int fr_free_view(frc *view) {
             _sr = NULL; /* no longer a default rendering context */
         if ((_fr->flags & FR_DOUBLEB_MASK) && ((_fr->flags & FR_OWNBITS_MASK) == 0)) {
             //         free(_fr->main_canvas.bm.bits);  // deal w/any other canvii
-            DebugString("Hey!  We shouldn't ever be doing this!");
+            DEBUG("%s: Hey! We shouldn't ever be doing this!", __FUNCTION__);
             free(_fr->realCanvasPtr);
         }
         free(_fr);

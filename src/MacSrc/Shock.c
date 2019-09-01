@@ -221,7 +221,7 @@ void InitSDL()
 	SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
 	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO) < 0) {
-		DebugString("SDL: Init failed");
+		DEBUG("%s: Init failed", __FUNCTION__);
 	}
 
 	// TODO: figure out some universal set of settings that work...

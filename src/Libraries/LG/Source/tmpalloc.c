@@ -59,7 +59,7 @@ int temp_mem_init(MemStack *ms)
 //            TEMP_BUF_SIZE));
 //      if ((ms=(MemStack *)Malloc(sizeof(MemStack)+TEMP_BUF_SIZE))==NULL) {
       if ((ms=(MemStack *)malloc(sizeof(MemStack)+TEMP_BUF_SIZE))==NULL) {
-         Warning(("TempMemInit: can't allocate dynamic buffer.\n"));
+         WARN("%s: can't allocate dynamic buffer.", __FUNCTION__);
          return -1;
       }
       stack_dynamic=TRUE;

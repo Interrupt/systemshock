@@ -260,7 +260,7 @@ fix fix_safe_pyth_dist(fix a, fix b) {
         if (a > 0x2fffffff) {
             //			ssWarning (("Overflow in
             // fix_safe_pyth_dist\n"));  DebugStr("\pOverflow in fix_safe_pyth_dist");
-            DebugString("Overflow in fix_safe_pyth_dist");
+            DEBUG("%s: Overflow in fix_safe_pyth_dist", __FUNCTION__);
             return 0;
         }
         for (;;) {
