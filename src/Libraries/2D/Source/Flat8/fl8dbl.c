@@ -25,18 +25,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Bitmap doubling primitives.
 //
 
+#include <stdbool.h>
+
 #include "blndat.h"
 #include "grs.h"
-#include <stdbool.h>
-#include <stdlib.h>
+#include "lg.h"
 
 // ------------------------------------------------------------------------
 // PowerPC routines
 // ------------------------------------------------------------------------
 // ========================================================================
 void flat8_flat8_h_double_ubitmap(grs_bitmap *bm) {
-    extern void DebugString(char *msg);
-    DebugString("call mark");
+    DEBUG("%s: call mark", __FUNCTION__);
     /* 	int		h,v,endh,endv;
             uchar *src=bm->bits, *dst=grd_bm.bits;
             long	srcAdd,dstAdd;
@@ -125,6 +125,7 @@ void flat8_flat8_smooth_hv_double_ubitmap(grs_bitmap *src, grs_bitmap *dst) {
 
     return;
 
+/* // WH - unused code
     dst->row <<= 1;
     flat8_flat8_smooth_h_double_ubitmap(src, dst);
 
@@ -171,4 +172,5 @@ void flat8_flat8_smooth_hv_double_ubitmap(grs_bitmap *src, grs_bitmap *dst) {
 
     for (; savetemp > 0; savetemp--)
         *(dstPtr++) = *(srcPtr++);
+*/
 }

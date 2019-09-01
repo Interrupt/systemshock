@@ -162,7 +162,7 @@ void score_objs(int o_num) {
                         break;
                     }
                 if (i == partition_cnt)
-                    Warning(("lost my partition"));
+                    WARN("%s: lost my partition", __FUNCTION__);
             }
             score_list[draw_last_cnt] = tmp;
         } else {
@@ -198,7 +198,7 @@ int do_part_sort(int ptype, int lo, int hi, int ploc) {
         if (ploc < --hi)
             score_list[ploc] = score_list[hi];
     } else
-        Warning(("Partition not in list"));
+        WARN("%s: Partition not in list", __FUNCTION__);
 
     if (near_f) {
         ptptr[0] = hi - 1;
