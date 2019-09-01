@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * This file is part of the 2d library.
  */
 
-#include "dbg.h"
+#include "lg.h"
 #include "memall.h"
 #include "tmpalloc.h"
 //#include <_lg.h>

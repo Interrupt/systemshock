@@ -360,7 +360,7 @@ void gamesys_render_effects(void) {
     short mx, my;
     extern uchar full_game_3d;
 
-    Spew("gamerend", "gamesys_render_effects\n");
+    TRACE("%s: gamerend", __FUNCTION__);
 
     if ((!global_fullmap->cyber) && (!secret_render_fx)) {
         ubyte active = player_struct.actives[ACTIVE_WEAPON];
@@ -569,7 +569,7 @@ uchar gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y
     uchar *orig_bits;
     int orig_h, loop, orig_w;
 
-    Spew("gamerend", "gamesys_draw_func\n");
+    TRACE("%s: gamerend", __FUNCTION__);
 
     if (flags & FR_WINDOWD_MASK)
         gamesys_render_effects(); // static gets drawn over window dressing due to this

@@ -44,7 +44,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lzw.h"
 #include "res.h"
 #include "res_.h"
-#include "dbg.h"
 
 //-------------------------------
 //  Private Prototypes

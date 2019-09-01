@@ -34,13 +34,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include <string.h>
+#include "log.h"
 
-//#include "memall.h"
-#include "dbg.h"
+// Relative path workaround
+#define THIS_FILE ((strrchr(__FILE__, '/') ?: __FILE__ - 1) + 1)
 
+/**
+ * Main function for logging, and helper functions
+ * @param level log level (LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL)
+ * @param string printf-like string with format
+ * @example LOGGER(LOG_TRACE, "My name is %s", name);
+**/
+#define LOGGER(level, ...) log_log(level, THIS_FILE, __LINE__, __VA_ARGS__)
+#define TRACE(...) log_log(LOG_TRACE, THIS_FILE, __LINE__, __VA_ARGS__)
+#define DEBUG(...) log_log(LOG_DEBUG, THIS_FILE, __LINE__, __VA_ARGS__)
+#define INFO(...) log_log(LOG_INFO, THIS_FILE, __LINE__, __VA_ARGS__)
+#define WARN(...) log_log(LOG_WARN, THIS_FILE, __LINE__, __VA_ARGS__)
+#define ERROR(...) log_log(LOG_ERROR, THIS_FILE, __LINE__, __VA_ARGS__)
 
 // DG: helpful for seeing which stubbed out things are even used
-
 // prints a stub message (incl. containing function)
 #define STUB(msg) \
 	printf("STUB: %s() %s\n", __FUNCTION__, msg);
