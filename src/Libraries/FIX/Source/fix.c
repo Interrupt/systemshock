@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "fix.h"
-#include "dbg.h"
+#include "lg.h"
 #include "trigtab.h"
 #include <stdint.h>
 #include <stdlib.h>
@@ -260,7 +260,7 @@ fix fix_safe_pyth_dist(fix a, fix b) {
         if (a > 0x2fffffff) {
             //			ssWarning (("Overflow in
             // fix_safe_pyth_dist\n"));  DebugStr("\pOverflow in fix_safe_pyth_dist");
-            DebugString("Overflow in fix_safe_pyth_dist");
+            DEBUG("%s: Overflow in fix_safe_pyth_dist", __FUNCTION__);
             return 0;
         }
         for (;;) {

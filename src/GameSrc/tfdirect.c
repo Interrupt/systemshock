@@ -414,7 +414,7 @@ parse_ichk:
     case TF_FLG_ICHK_EDGE: // are we close enough?
         break;             // fall through to attentuation case
     case TF_FLG_ICHK_NONE:
-        Warning(("tfd: no ichk data\n"));
+        WARN("%s: tfd: no ichk data", __FUNCTION__);
     case TF_FLG_ICHK_OUT:
         return fix_0;
     }

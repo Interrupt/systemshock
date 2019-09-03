@@ -439,7 +439,7 @@ errtype trap_monster_func(int p1, int p2, int p3, int p4) {
     char monster_count;
     MapElem *pme;
 
-    Spew("trigger", "trap_monster_func\n");
+    TRACE("%s: trigger", __FUNCTION__);
 
     quan = qdata_get(p3);
     switch (player_struct.difficulty[COMBAT_DIFF_INDEX]) {
@@ -568,7 +568,7 @@ errtype trap_ai_func(int p1, int p2, int p3, int p4) {
     ObjRefID oref;
     ObjID oid, o1, o2;
 
-    Spew("trigger", "trap_ai_func\n");
+    TRACE("%s: trigger", __FUNCTION__);
 
     if (p1 & 0x40000) {
         if ((objs[p1 & 0xFFFF].active) && (objs[p1 & 0xFFFF].obclass == CLASS_CRITTER))
@@ -642,7 +642,7 @@ errtype trap_scheduler_func(int p1, int p2, int p3, int p4) {
     TrapSchedEvent new_event;
     uint *p;
 
-    Spew("trigger", "trap_scheduler_func\n");
+    TRACE("%s: trigger", __FUNCTION__);
 
     if ((p3 >= 0xFFFF) || ((p3 > 0x1000) && (QUESTBIT_GET(p3 & 0xFFF))) || ((p3 < 0x1000) && (p3 > 0))) {
         switch (objs[current_trap].obclass) {
@@ -712,7 +712,7 @@ errtype trap_main_light_func(int p1, int p2, int p3, int p4) {
     if (!(p3 & 0x10000))
         trap_lighting_func(TRUE, p1, p2, p3 & 0xffff, p4);
 
-    Spew("trigger", "trap_main_light_func\n");
+    TRACE("%s: trigger", __FUNCTION__);
 
     // Do transition rescheduling & incrementing
     if (p2 & 0xFFFF) {
@@ -762,7 +762,7 @@ errtype trap_lighting_func(uchar floor, int p1, int p2, int p3, int p4) {
     char light_state;
     uint *p;
 
-    Spew("trigger", "trap_lighting_func\n");
+    TRACE("%s: trigger", __FUNCTION__);
 
     o1 = qdata_get(p1 & 0xFFFF);
     o2 = qdata_get(p1 >> 16);
@@ -1067,7 +1067,7 @@ errtype trap_create_obj_func(int p1, int p2, int p3, int p4) {
     ObjID new_id, oid;
     ObjLoc new_loc;
 
-    Spew("trigger", "trap_create_obj_func\n");
+    TRACE("%s: trigger", __FUNCTION__);
 
     if ((p1 & 0xFFFF) == OBJ_NULL) {
         return (ERR_NOEFFECT);
@@ -1114,7 +1114,7 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4) {
     qarg = p2 & 0xFFFF;
     mod = p2 >> 16;
 
-    Spew("trigger", "trap_questbit_func\n");
+    TRACE("%s: trigger", __FUNCTION__);
 
     if ((p1 & 0xF000) == 0)
         p1 |= 0x2000;
@@ -1217,7 +1217,7 @@ errtype trap_cutscene_func(int p1, int p2, int p3, int p4) {
 }
 
 errtype trap_terrain_func(int p1, int p2, int p3, int p4) {
-    Spew("trigger", "trap_terrain_func\n");
+    TRACE("%s: trigger", __FUNCTION__);
     MapElem *pme;
     uchar reprocess = FALSE;
     extern void rendedit_process_tilemap(FullMap * map, LGRect * r, uchar newMap);
@@ -1244,7 +1244,7 @@ errtype trap_terrain_func(int p1, int p2, int p3, int p4) {
 }
 
 errtype trap_height_func(int p1, int p2, int p3, int p4) {
-    Spew("trigger", "trap_height_func\n");
+    TRACE("%s: trigger", __FUNCTION__);
     MapElem *pme;
     HeightSchedEvent hse;
     ushort use_val;
@@ -1568,7 +1568,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
     void check_panel_ref(uchar puntme);
     void email_slam_hack(short which);
 
-    Spew("trigger", "trap_hack_func\n");
+    TRACE("%s: trigger", __FUNCTION__);
 
     // As we need hacks in the game, just add new
     // cases here to do your particular hack.

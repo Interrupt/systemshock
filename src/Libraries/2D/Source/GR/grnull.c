@@ -34,8 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision
  */
 
-extern void DebugString(char* msg);
+#include <lg.h>
 
 void gr_null (void) {}
-void gr_not_imp (void) {DebugString("Graphics function not implemented");}
+void gr_not_imp (void) {DEBUG("%s: Graphics function not implemented", __FUNCTION__);}
 void gr_not_imp_test (void) {} 

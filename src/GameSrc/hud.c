@@ -279,7 +279,7 @@ void hud_update_lines(short x, short *y, short unused1, short unused2) {
                         break;
                     }
                 if (j >= NUM_HUDLINE_BUFFERS) {
-                    Warning(("No room for one more hudline\n"));
+                    WARN("%s: No room for one more hudline", __FUNCTION__);
                     continue;
                 }
 

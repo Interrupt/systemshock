@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // Source Code for the LGRegion library
 
-#include "dbg.h"
-//#include <_ui.h>
 #include "region.h"
 #include "slist.h"
 
@@ -891,7 +889,7 @@ errtype region_add_sequence_expose(LGRegion *reg, LGRect exp_rect)
    rse = get_rse_from_pool();
    if (rse == NULL)
    {
-      Warning(("No available RSE's in pool!\n"));
+      WARN("%s: No available RSE's in pool!", __FUNCTION__);
       return(ERR_NOMEM);
    }
    rse->reg = reg;

@@ -28,8 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rect.h"
 #include "slab.h"
 #include "event.h" 
-#include "dbg.h"
-//#include <_ui.h>
 #include "vmouse.h"
 
 

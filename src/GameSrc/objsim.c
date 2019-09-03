@@ -353,7 +353,7 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
     switch (*type) {
     case TPOLY_TYPE_ALT_TMAP:
         if (!ResInUse(TEXTURE_SMALL_ID + *index)) {
-            Warning(("Invalid tpoly alt texture type request!"));
+            WARN("%s: Invalid tpoly alt texture type request!", __FUNCTION__);
             useme = 0;
         } else
             useme = TEXTURE_SMALL_ID + *index;
@@ -499,7 +499,7 @@ grs_bitmap *obj_get_model_data(ObjID id, fix *x, fix *y, fix *z, grs_bitmap *bm2
     grs_bitmap *temp_bm = NULL;
 
     if (!objs[id].active) {
-        Warning(("Attempted to get model params from invalid object!\n"));
+        WARN("%s: Attempted to get model params from invalid object!", __FUNCTION__);
         return (NULL);
     }
     switch (objs[id].obclass) {
@@ -663,7 +663,7 @@ grs_bitmap *obj_get_model_data(ObjID id, fix *x, fix *y, fix *z, grs_bitmap *bm2
         if ((p5 & 0x7F) >= NUM_LOADED_TEXTURES) {
             temp_bm = SAFE_TEXTURE;
             *bm2 = *temp_bm;
-            Warning(("Bogus Tmap"));
+            WARN("%s: Bogus Tmap", __FUNCTION__);
         } // doofy you screwed up thing
         else {
             temp_bm = get_texture_map(p5 & 0x7F, TEXTURE_64_INDEX);
@@ -680,7 +680,7 @@ grs_bitmap *obj_get_model_data(ObjID id, fix *x, fix *y, fix *z, grs_bitmap *bm2
     if (p4 & 0x80) {
         if ((p4 & 0x7F) >= NUM_LOADED_TEXTURES) {
             retval = SAFE_TEXTURE;
-            Warning(("Bogus Tmap"));
+            WARN("%s: Bogus Tmap", __FUNCTION__);
         } else // doofy you screwed up thing
             retval = get_texture_map(p4 & 0x7F, TEXTURE_64_INDEX);
     } else {
@@ -1256,7 +1256,7 @@ errtype obj_create_player(ObjLoc *plr_loc) {
 
     player_struct.rep = obj_create_base(PLAYER_TRIP);
     if (player_struct.rep == OBJ_NULL) {
-        Warning(("MAJOR BADNESS!! Could not create player!\n"));
+        WARN("%s: MAJOR BADNESS!! Could not create player!", __FUNCTION__);
         return (ERR_NOEFFECT);
     }
     player_dos_obj = &(objs[PLAYER_OBJ]);
