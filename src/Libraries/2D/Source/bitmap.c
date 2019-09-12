@@ -76,7 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "bitmap.h"
 #include "grbm.h"
 
-extern long		gScreenRowbytes;
+extern int32_t		gScreenRowbytes;
 
 /* initialize a new bitmap structure. set bits, type, flags, w, and h from
    arguments. set align to 0 and calculate row from width depending on what

@@ -49,26 +49,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 //ColorSpec 		*gOriginalColors;
 uint32_t                        gRandSeed;
-short				gMainVRef;
+//short				gMainVRef;
 //CursHandle		gWatchCurs;
-short				gOriginalDepth = -1;
-short				gLastAlertDepth = -1;
-short				gStartupDepth;
+//short				gOriginalDepth = -1;
+//short				gLastAlertDepth = -1;
+//short				gStartupDepth;
 char				*gScreenAddress;
-long				gScreenRowbytes;
+int32_t				gScreenRowbytes;
 short				gScreenWide, gScreenHigh;
 short				gActiveWide, gActiveHigh;
 short				gActiveLeft, gActiveTop;
 //Rect				gActiveArea, gOffActiveArea;
 //Boolean			gIsPowerPC = false;
-long				gDataDirID;
-short				gDataVref;
-long				gCDDataDirID;
-short				gCDDataVref;
-long				gAlogDirID;
-short				gAlogVref;
-long				gBarkDirID;
-short				gBarkVref;
+//long				gDataDirID;
+//short				gDataVref;
+//long				gCDDataDirID;
+//short				gCDDataVref;
+//long				gAlogDirID;
+//short				gAlogVref;
+//long				gBarkDirID;
+//short				gBarkVref;
 //Boolean			gMenusHid;
 
 //---------------------------
@@ -200,8 +200,8 @@ void StringAlert(short stringnum)
 //------------------------------------------------------------------------------------
 //  Close all our resources, then quit.
 //------------------------------------------------------------------------------------
-void Cleanup(void)
-{
+//void Cleanup(void)
+//{
 	/*GDHandle	devhandle;
 
 	MacTuneShutdown();
@@ -224,7 +224,7 @@ void Cleanup(void)
 	mouse_shutdown();
 	kb_shutdown();
 	ResTerm();*/
-}
+//}
 
 //------------------------------------------------------------------------------------
 //  Normal cleanup when the program quits.

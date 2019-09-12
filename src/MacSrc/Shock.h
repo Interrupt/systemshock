@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define TESTING		1
 
 //#ifdef IS_REALLY_OSX
-
+/*
 //--------------------
 // Menus
 //--------------------
@@ -102,33 +102,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define testZoomOut				7
 #define testRender				9
 #endif
+*/
 
 //--------------------
 // Graphics Defines
 //--------------------
-#define screenMaxX			640L
-#define screenMaxY			480L
+//#define screenMaxX			640L
+//#define screenMaxY			480L
 
 //--------------------
 // File Types
 //--------------------
-#define kAppFileType 			'Shok'
-#define kGameFileType 		'Sgam'
-#define kRsrcFileType 		'Sres'
+//#define kAppFileType 			'Shok'
+//#define kGameFileType 		'Sgam'
+//#define kRsrcFileType 		'Sres'
 
 //--------------------
 //  Function Prototypes
 //--------------------
-typedef void* WindowPtr; // FIXME: get rid of UpdateWindow()?
-typedef void* MenuHandle; // FIXME: what's gMainMenus about?
+//typedef void* WindowPtr; // FIXME: get rid of UpdateWindow()?
+//typedef void* MenuHandle; // FIXME: what's gMainMenus about?
 int main(int argc, char** argv);
-void HandleEvents(void);
-void UpdateWindow(WindowPtr wind);
-void DoCommand(unsigned long mResult);
-bool DoSaveGame(void);
-bool DoSaveGameAs(void);
-void DoQuit(void);
-void ScrollCredits(void);
+//void HandleEvents(void);
+//void UpdateWindow(WindowPtr wind);
+//void DoCommand(unsigned long mResult);
+//bool DoSaveGame(void);
+//bool DoSaveGameAs(void);
+//void DoQuit(void);
+//void ScrollCredits(void);
 
 void InitSDL();
 void SetSDLPalette(int index, int count, uchar *pal);
@@ -139,42 +140,42 @@ bool CheckArgument(char* name);
 //--------------------
 // Public Globals
 //--------------------
-extern WindowPtr		gMainWindow;
-extern MenuHandle		gMainMenus[kNumMenus];
+//extern WindowPtr		gMainWindow;
+//extern MenuHandle		gMainMenus[kNumMenus];
 //extern RgnHandle		gCursorRgn;
 //extern short				gCursorSet;
-extern bool			gDone;
-extern bool			gInForeground;
-extern bool			gIsNewGame;
+//extern bool			gDone;
+//extern bool			gInForeground;
+//extern bool			gIsNewGame;
 //extern FSSpec				gSavedGameFile;
-extern long					gGameSavedTime;
+//extern long					gGameSavedTime;
 
 //extern Handle				gExtraMemory;
 //extern ColorSpec*		gOriginalColors;
 extern uint32_t                 gRandSeed;
-extern short				gMainVRef;
+//extern short				gMainVRef;
 // extern Handle				gWatchCurs;
 
-extern short				gOriginalDepth;
-extern short				gStartupDepth;
-extern short				gLastAlertDepth;
+//extern short				gOriginalDepth;
+//extern short				gStartupDepth;
+//extern short				gLastAlertDepth;
 extern char					*gScreenAddress;
-extern long					gScreenRowbytes;
+extern int32_t				gScreenRowbytes;
 extern short				gScreenWide, gScreenHigh;
-extern short				gActiveWide, gActiveHigh;
-extern short				gActiveLeft, gActiveTop;
+//extern short				gActiveWide, gActiveHigh;
+//extern short				gActiveLeft, gActiveTop;
 //extern Rect				gActiveArea, gOffActiveArea;
 
 //extern Boolean			gIsPowerPC;
 
-extern long					gDataDirID;
-extern short				gDataVref;
-extern long					gCDDataDirID;
-extern short				gCDDataVref;
-extern long					gAlogDirID;
-extern short				gAlogVref;
-extern long					gBarkDirID;
-extern short				gBarkVref;
+//extern long					gDataDirID;
+//extern short				gDataVref;
+//extern long					gCDDataDirID;
+//extern short				gCDDataVref;
+//extern long					gAlogDirID;
+//extern short				gAlogVref;
+//extern long					gBarkDirID;
+//extern short				gBarkVref;
 
 
 extern grs_screen  *cit_screen;

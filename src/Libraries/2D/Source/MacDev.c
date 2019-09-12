@@ -86,7 +86,8 @@ void mac_set_mode(void) {
     grd_uline_fill_table_list[BMT_DEVICE] = (grt_uline_fill_table *)flat8_uline_fill_table;
 }
 
-void ChangeScreenSize(int width, int height) {
+
+void ChangeScreenSize(short width, short height) {
     extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
     if (gScreenWide == width && gScreenHigh == height)
         return;
@@ -94,7 +95,6 @@ void ChangeScreenSize(int width, int height) {
     extern SDL_Renderer *renderer;
     extern SDL_Window *window;
 
-    extern char *gScreenAddress;
     extern long gScreenRowbytes;
 
     INFO("ChangeScreenSize");

@@ -65,15 +65,15 @@ extern uchar startup_music;
 //--------------------
 //  Globals
 //--------------------
-WindowPtr			gMainWindow;
-MenuHandle		gMainMenus[kNumMenus];
+//WindowPtr			gMainWindow;
+//MenuHandle		gMainMenus[kNumMenus];
 //RgnHandle			gCursorRgn;
 short				gCursorSet;
-bool				gDone = false;
-bool				gInForeground = true;
+//bool				gDone = false;
+//bool				gInForeground = true;
 bool				gPlayingGame;		//¥¥¥ Temp
-bool				gIsNewGame;
-long					gGameSavedTime;
+//bool				gIsNewGame;
+//long					gGameSavedTime;
 bool				gDeadPlayerQuit;
 bool				gGameCompletedQuit;
 
@@ -201,10 +201,10 @@ bool CheckArgument(char* arg) {
 //------------------------------------------------------------------------------------
 //		Handle Quit menu command/apple event.
 //------------------------------------------------------------------------------------
-void DoQuit(void)
-{
-	gDone = true;
-}
+//void DoQuit(void)
+//{
+//	gDone = true;
+//}
 
 #define NEEDED_DISKSPACE   700000
 //------------------------------------------------------------------------------------
