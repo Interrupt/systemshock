@@ -54,8 +54,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 RNDSTREAM_STD(start_rnd);
 
 void rnd_init(void) {
-    long random_seed;
-    long seed;
+    uint32_t random_seed;
+    uint32_t seed;
 
     // try to get a completely random value - take the bottom two bytes to be
     // the random seed

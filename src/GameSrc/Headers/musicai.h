@@ -152,7 +152,7 @@ ulong mlimbs_combat;
 int current_score, current_zone, current_mode, random_flag;
 int current_transition, last_score;
 int boring_count;
-int mlimbs_boredom;
+uint32_t mlimbs_boredom;
 int *output_table;
 uchar wait_flag;
 int next_mode, ai_cycle;

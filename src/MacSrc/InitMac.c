@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //QDGlobals	qd;
 #endif
 //ColorSpec 		*gOriginalColors;
-unsigned long	gRandSeed;
+uint32_t                        gRandSeed;
 short				gMainVRef;
 //CursHandle		gWatchCurs;
 short				gOriginalDepth = -1;

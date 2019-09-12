@@ -151,7 +151,7 @@ extern long					gGameSavedTime;
 
 //extern Handle				gExtraMemory;
 //extern ColorSpec*		gOriginalColors;
-extern unsigned long	gRandSeed;
+extern uint32_t                 gRandSeed;
 extern short				gMainVRef;
 // extern Handle				gWatchCurs;
 

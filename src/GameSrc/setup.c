@@ -302,7 +302,7 @@ errtype draw_username(int color, char *string)
 
 void flash_username(void)
 {
-  long flash_done;
+  uint32_t flash_done;
 
   uiHideMouse(&name_rect);
   gr_set_fcolor(SELECTED_COLOR - 4);
@@ -534,10 +534,10 @@ int WonGame_ShowStats = 0;
 
 
 //ticks: 0 wait forever
-int WaitForKey(ulong ticks)
+int WaitForKey(uint32_t ticks)
 {
-  ulong end_ticks = (ulong)TickCount();
-  ulong key_ticks = end_ticks + (!ticks ? 500 : (ticks*1/8));
+  uint32_t end_ticks = TickCount();
+  uint32_t key_ticks = end_ticks + (!ticks ? 500 : (ticks*1/8));
   end_ticks = ticks ? end_ticks + ticks : 0;
   int ch;
 
@@ -570,7 +570,7 @@ int WaitForKey(ulong ticks)
 
     kbs_event ev = kb_next();
     ch = ev.ascii;
-    ticks = (ulong)TickCount();
+    ticks = TickCount();
 
     if ((ch == 27 || ch == ' ' || ch == '\r') && ticks >= key_ticks) break;
     if (end_ticks && ticks >= end_ticks) break;
@@ -1388,13 +1388,13 @@ errtype setup_init(void)
 
 
 
-void pause_for_key(ulong wait_time)
+void pause_for_key(uint32_t wait_time)
 {
   waiting_for_key = true;
 
-  ulong wait_until = TickCount() + wait_time;
+  uint32_t wait_until = TickCount() + wait_time;
 
-  while (waiting_for_key && ((ulong)TickCount() < wait_until))
+  while (waiting_for_key && (TickCount() < wait_until))
   {
     input_chk();
     pump_events();

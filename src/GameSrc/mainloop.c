@@ -116,7 +116,7 @@ void loopmode_enter(short loopmode) { (*enter_modes[loopmode])(); }
 extern void MousePollProc(void);
 void mainloop(int argc, char *argv[]) {
     extern void SDLDraw(void);
-    extern long gShockTicks;
+    extern uint32_t gShockTicks;
     extern bool gPlayingGame;
     extern void pump_events(void);
 

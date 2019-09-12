@@ -136,7 +136,7 @@ errtype init_load_resources();
 errtype init_3d_objects();
 errtype obj_3d_shutdown();
 void init_popups();
-uchar pause_for_input(ulong wait_time);
+uchar pause_for_input(uint32_t wait_time);
 void shock_alloc_ipal();
 
 extern void rendedit_process_tilemap(FullMap *fmap, LGRect *r, uchar newMap);
@@ -192,12 +192,12 @@ uchar real_archive_fn[64];
 MemStack temp_memstack;
 #define TEMP_STACK_SIZE (16 * 1024)
 
-uchar pause_for_input(ulong wait_time) {
+uchar pause_for_input(uint32_t wait_time) {
     extern void pump_events(void);
     bool gotInput = false;
 
-    ulong wait_until = TickCount() + wait_time;
-    while (!gotInput && ((ulong)TickCount() < wait_until)) {
+    uint32_t wait_until = TickCount() + wait_time;
+    while (!gotInput && (TickCount() < wait_until)) {
         pump_events();
         SDLDraw();
     }
@@ -231,7 +231,7 @@ void init_all(void) {
        char norun[1];
        extern char savegame_dir[50];
        extern Datapath savegame_dpath; */
-    ulong pause_time;
+    uint32_t pause_time;
     int i;
     bool speed_splash = FALSE;
     /*
