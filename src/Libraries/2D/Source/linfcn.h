@@ -58,10 +58,12 @@ extern void gri_flat8_uvline_clut (short, short, short, long, long);
 extern void gri_flat8_uvline_xor (short, short, short, long, long);
 extern void gri_flat8_uvline_blend (short, short, short, long, long);
 
-extern void gri_flat8_ucline_norm (long, long, grs_vertex *, grs_vertex *);
+extern void gri_flat8_ucline_norm (int32_t c, int32_t parm, grs_vertex *, grs_vertex *);
+/*
 extern void gri_flat8_ucline_clut (long, long, grs_vertex *, grs_vertex *);
 extern void gri_flat8_ucline_xor (long, long, grs_vertex *, grs_vertex *);
 extern void gri_flat8_ucline_blend (long, long, grs_vertex *, grs_vertex *);
+*/
 
 extern void gri_flat8_usline_norm (long, long, grs_vertex *, grs_vertex *);
 extern void gri_flat8_usline_clut (long, long, grs_vertex *, grs_vertex *);
@@ -69,20 +71,27 @@ extern void gri_flat8_usline_xor (long, long, grs_vertex *, grs_vertex *);
 extern void gri_flat8_usline_blend (long, long, grs_vertex *, grs_vertex *);
 
 extern void gri_flat8_wire_poly_uline (long, long, grs_vertex *, grs_vertex *);
+/*
 extern void gri_flat8_wire_poly_uline_xor (long, long, grs_vertex *, grs_vertex *);
 extern void gri_flat8_wire_poly_uline_blend (long, long, grs_vertex *, grs_vertex *);
+*/
 
+/*
 extern void gri_flat8_wire_poly_usline_norm (long, long, grs_vertex *, grs_vertex *);
 extern void gri_flat8_wire_poly_usline_clut (long, long, grs_vertex *, grs_vertex *);
 extern void gri_flat8_wire_poly_usline_xor (long, long, grs_vertex *, grs_vertex *);
 extern void gri_flat8_wire_poly_usline_blend (long, long, grs_vertex *, grs_vertex *);
+*/
 
 extern void gri_flat8_wire_poly_ucline_norm (long, long, grs_vertex *, grs_vertex *);
 extern void gri_flat8_wire_poly_ucline_clut (long, long, grs_vertex *, grs_vertex *);
+/*
 extern void gri_flat8_wire_poly_ucline_xor (long, long, grs_vertex *, grs_vertex *);
 extern void gri_flat8_wire_poly_ucline_blend (long, long, grs_vertex *, grs_vertex *);
+*/
 /* bank8 and modex have their own hlines only */
 
+/*
 extern void gri_modex_uhline_ns (short, short, short, long, long);
 extern void gri_modex_uhline_clut (short, short, short, long, long);
 extern void gri_modex_uhline_xor (short, short, short, long, long);
@@ -92,5 +101,5 @@ extern void gri_bank8_uhline_ns (short, short, short, long, long);
 extern void gri_bank8_uhline_clut (short, short, short, long, long);
 extern void gri_bank8_uhline_xor (short, short, short, long, long);
 extern void gri_bank8_uhline_blend (short, short, short, long, long);
-
+*/
 #endif
