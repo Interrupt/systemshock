@@ -22,14 +22,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Author: lmfeeney $
  * $Date: 1994/06/11 02:36:15 $
 */
-
+#include <stdint.h>
 #include "pixfill.h"
 
 /* unclipped vertical line with integral coordinates.
    fill type information is obtained from grd_pixel_fill,
    which in turn calls gr_set_upixel
 */
-void gri_gen_uvline_fill (short x0, short y0, short y1, long c, long parm)
+void gri_gen_uvline_fill (short x0, short y0, short y1, int32_t c, int32_t parm)
 {
    short t;
 

@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/06/11 02:35:29 $
 */
 
+#include <stdint.h>
 #include "pixfill.h"
 
 /* draw an unclipped horizontal line with integral coordinates.
@@ -30,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    which in turn calls gr_set_upixel
  */
 
-void gri_gen_uhline_fill (short x0, short y0, short x1, long c, long parm)
+void gri_gen_uhline_fill (short x0, short y0, short x1, int32_t c, int32_t parm)
 {
    short t;
 

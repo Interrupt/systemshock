@@ -124,7 +124,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* norm */
 
-void gri_flat8_uline_ns(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
+void gri_flat8_uline_ns(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1) {
 #include "fl8lin.h"
 }
 
@@ -136,7 +136,7 @@ void gri_flat8_uline_ns(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
         c = (long)(((uchar *)parm)[c]); \
     } while (0)
 
-void gri_flat8_uline_clut(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
+void gri_flat8_uline_clut(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1) {
 #include "fl8lin.h"
 }
 
@@ -163,7 +163,7 @@ void gri_flat8_uline_clut(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
         }                        \
     } while (0)
 
-void gri_flat8_uline_xor(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
+void gri_flat8_uline_xor(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1) {
 #include "fl8lin.h"
 }
 
@@ -236,6 +236,6 @@ void gri_flat8_uline_xor(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
         ;                     \
     } while (0)
 
-void gri_flat8_uline_blend(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
+void gri_flat8_uline_blend(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1) {
 #include "fl8lin.h"
 }

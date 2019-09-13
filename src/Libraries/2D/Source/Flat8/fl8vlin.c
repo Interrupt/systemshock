@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* clut should be in _ns everywhere, it doesn't need its own function */
 
-void gri_flat8_uvline_ns(short x0, short y0, short y1, long c, long parm) {
+void gri_flat8_uvline_ns(short x0, short y0, short y1, int32_t c, int32_t parm) {
     uchar *p;
     short t;
     int grow = grd_bm.row;
@@ -80,7 +80,7 @@ void gri_flat8_uvline_ns(short x0, short y0, short y1, long c, long parm) {
     }
 }
 
-void gri_flat8_uvline_clut(short x0, short y0, short y1, long c, long parm) {
+void gri_flat8_uvline_clut(short x0, short y0, short y1, int32_t c, int32_t parm) {
     uchar *p;
     short t;
     int grow = grd_bm.row;
@@ -98,7 +98,7 @@ void gri_flat8_uvline_clut(short x0, short y0, short y1, long c, long parm) {
     }
 }
 
-void gri_flat8_uvline_xor(short x0, short y0, short y1, long c, long parm) {
+void gri_flat8_uvline_xor(short x0, short y0, short y1, int32_t c, int32_t parm) {
     uchar *p;
     short t;
     int grow = grd_bm.row;
@@ -116,7 +116,7 @@ void gri_flat8_uvline_xor(short x0, short y0, short y1, long c, long parm) {
 }
 
 /* punt */
-void gri_flat8_uvline_blend(short x0, short y0, short y1, long c, long parm) {
+void gri_flat8_uvline_blend(short x0, short y0, short y1, int32_t c, int32_t parm) {
     uchar *p;
     short t;
     int grow = grd_bm.row;

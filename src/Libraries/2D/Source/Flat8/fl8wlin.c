@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fill.h"
 #include "plytyp.h"
 
-#define gr_get_ipal_index(r, g, b) (long)((((r) >> 19) & 0x1f) | (((g) >> 14) & 0x3e0) | (((b) >> 9) & 0x7c00))
+#define gr_get_ipal_index(r, g, b) (int32_t)((((r) >> 19) & 0x1f) | (((g) >> 14) & 0x3e0) | (((b) >> 9) & 0x7c00))
 #define do_hline_inc_x \
     do {               \
         p[x] = c;      \
@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             p[x] = c;  \
         } while (x > x_new)
 
-void gri_flat8_wire_poly_uline(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
+void gri_flat8_wire_poly_uline(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1) {
     int y, y_max, x, x_new;
     fix x0, y0;
     fix x1, y1;

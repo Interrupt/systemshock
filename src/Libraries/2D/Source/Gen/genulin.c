@@ -61,7 +61,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
-void gri_gen_uline_fill (long c, long parm, grs_vertex *v0, grs_vertex *v1)
+void gri_gen_uline_fill (int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1)
 {
    fix x0, x1, y0, y1;        /* actually use x and y */
    fix dx, dy;		      /* delta's in x and y */

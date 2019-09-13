@@ -46,7 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       grd_pixel_fill(c,parm,x,y);                      \
    } while (x>x_new)
 
-void gri_gen_wire_poly_uline(long c, long parm, grs_vertex *v0, grs_vertex *v1) {
+void gri_gen_wire_poly_uline(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1) {
    int y,y_max,x,x_new;
    fix x0,y0;
    fix x1,y1;
