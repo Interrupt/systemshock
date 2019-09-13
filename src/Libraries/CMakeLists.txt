@@ -84,7 +84,7 @@ set(2D_SRC
 	2D/Source/Gen/gencnv.c
 	2D/Source/Gen/genuslin.c
 	2D/Source/Gen/genvpoly.c
-	2D/Source/Gen/general.c
+#	2D/Source/Gen/general.c
 	2D/Source/Gen/gencirc.c
 	2D/Source/Gen/genfl8.c
 	2D/Source/Gen/genf24.c
