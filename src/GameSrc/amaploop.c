@@ -202,7 +202,7 @@ void fsmap_startup(void) {
     gr_set_canvas(FULLMAP_CANVAS);
     gr_clear(0xff);
     amap_pixratio_set(FIX_UNIT);
-    fsmap_font = (grs_font *)ResLockRaw(RES_largeTechFont); // KLC - was RES_mfdFont
+    fsmap_font = (grs_font *)ResLock(RES_largeTechFont, FORMAT_FONT); // KLC - was RES_mfdFont
     gr_set_font(fsmap_font);
     gr_init_sub_canvas(FULLMAP_CANVAS, &fsmap_actual, AMAP_LFT(grd_bm.w), AMAP_TOP(grd_bm.h), AMAP_WID(grd_bm.w),
                        AMAP_HGT(grd_bm.h));

@@ -146,6 +146,11 @@ const ResLayout FullMapLayout = {
 	{ RFFT_END,    0 }
     }
 };
+const ResourceFormat FullMapFormat = { ResDecode,
+				       NULL,
+				       (UserDecodeData)&FullMapLayout,
+				       NULL };
+#define FORMAT_FULLMAP (&FullMapFormat)
 
 
 // Describe the layout of the anims table in a resfile.
@@ -163,6 +168,11 @@ const ResLayout AnimLayoutPC = {
 	{ RFFT_END,    0 }
     }
 };
+const ResourceFormat AnimFormat = { ResDecode,
+				    NULL,
+				    (UserDecodeData)&AnimLayoutPC,
+				    NULL };
+#define FORMAT_ANIM (&AnimFormat)
 
 // Describe the layout of the objects table in a resfile. (27-byte PC record).
 const ResLayout ObjLayoutPC = {
@@ -193,6 +203,11 @@ const ResLayout ObjLayoutPC = {
 	{ RFFT_END,    0 }
     }
 };
+const ResourceFormat ObjFormat = { ResDecode,
+				   NULL,
+				   (UserDecodeData)&ObjLayoutPC,
+				   NULL };
+#define FORMAT_OBJ (&ObjFormat)
 
 //-------------------------------------------------------
 void store_objects(char **buf, ObjID *obj_array, char obj_count) {
@@ -894,7 +909,7 @@ errtype load_current_map(Id id_num) {
     // for now, this is only defined for coming from version 9
     {
 	int fullmap_idx = idx++;
-	void *fullmap_buf = ResLock(id_num + fullmap_idx, ResDecode, (UserDecodeData)&FullMapLayout, NULL);
+	void *fullmap_buf = ResLock(id_num + fullmap_idx, FORMAT_FULLMAP);
 	memcpy(global_fullmap, fullmap_buf, sizeof(FullMap));
 	ResUnlock(id_num + fullmap_idx);
 	//        REF_READ(id_num, idx++, *global_fullmap);
@@ -924,7 +939,7 @@ errtype load_current_map(Id id_num) {
 
         uchar *dst_ptr = global_fullmap->sched[0].queue.vec;
         // FIXME does this need decoding?
-        memmove(dst_ptr, ResLockRaw(id_num + idx), queue_size);
+        memmove(dst_ptr, ResLock(id_num + idx, FORMAT_RAW), queue_size);
         ResUnlock(id_num + idx++);
         global_fullmap->sched[0].queue.fullness = (queue_size / sizeof(SchedEvent)) - 1;
     } else
@@ -1002,7 +1017,7 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, objs);
     } else {
-	void *op = ResLock(id_num + idx, ResDecode, (UserDecodeData)&ObjLayoutPC, NULL);
+	void *op = ResLock(id_num + idx, FORMAT_OBJ);
 	memcpy(objs, op, NUM_OBJECTS * sizeof *objs);
         ResUnlock(id_num + idx);
         idx++;
@@ -1083,7 +1098,7 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, objHardwares);
     } else {
 	// FIXME do this with a decoder
-        uchar *hp = (uchar *)ResLockRaw(id_num + idx);
+        uchar *hp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         for (i = 0; i < NUM_OBJECTS_HARDWARE; i++) {
             memmove(&objHardwares[i], hp, 7);
             hp += 7;
@@ -1101,7 +1116,7 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, objSoftwares);
     } else {
 	// FIXME do this with a decoder
-        uchar *sp = (uchar *)ResLockRaw(id_num + idx);
+        uchar *sp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         for (i = 0; i < NUM_OBJECTS_SOFTWARE; i++) {
             memmove(&objSoftwares[i], sp, 7);
             memmove(&objSoftwares[i].data_munge, sp + 7, 2);
@@ -1195,7 +1210,7 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, objContainers);
     } else {
 	// FIXME do this with a decoder
-        uchar *sp = (uchar *)ResLockRaw(id_num + idx);
+        uchar *sp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         for (i = 0; i < NUM_OBJECTS_CONTAINER; i++) {
             memmove(&objContainers[i], sp, 17);
             memmove(&objContainers[i].data1, sp + 17, 4);
@@ -1280,7 +1295,7 @@ errtype load_current_map(Id id_num) {
     } else {
         // Convert the default hardware.  Resource is array of 7-byte structs.  Ours is 8.
 	// FIXME do this with a decoder.
-        uchar *hp = (uchar *)ResLockRaw(id_num + idx);
+        uchar *hp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         memmove(&default_hardware, hp, 7);
         /*SwapShortBytes(&default_hardware.id);
         SwapShortBytes(&default_hardware.next);
@@ -1295,7 +1310,7 @@ errtype load_current_map(Id id_num) {
     } else {
         // Convert the default software.  Resource is array of 9-byte structs.  Ours is 10.
 	// FIXME do this with a decoder.
-        uchar *sp = (uchar *)ResLockRaw(id_num + idx);
+        uchar *sp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         memmove(&default_software, sp, 7);
         memmove(&default_software.data_munge, sp + 7, 2);
         // BlockMoveData(sp, &default_software, 7);
@@ -1366,7 +1381,7 @@ errtype load_current_map(Id id_num) {
     } else {
         // Convert the default container.  Resource is a 21-byte struct.  Ours is 22.
 	// FIXME do this with a decoder.
-        uchar *sp = (uchar *)ResLockRaw(id_num + idx);
+        uchar *sp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         memmove(&default_container, sp, 17);
         memmove(&default_container.data1, sp + 17, 4);
         // BlockMoveData(sp, &default_container, 17);
@@ -1416,7 +1431,7 @@ errtype load_current_map(Id id_num) {
     } else {
         // Convert the anim textures.  Resource is a 7-byte struct.  Ours is 8.
 	// FIXME do this with a decoder.
-        uchar *ap = (uchar *)ResLockRaw(id_num + idx);
+        uchar *ap = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         for (i = 0; i < NUM_ANIM_TEXTURE_GROUPS; i++) {
             memmove(&animtextures[i], ap, 7);
             ap += 7;
@@ -1448,7 +1463,7 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, level_gamedata);
     } else {
 	// FIXME do this with a decoder.
-        uchar *ldp = (uchar *)ResLockRaw(id_num + idx);
+        uchar *ldp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         LG_memset(&level_gamedata, 0, sizeof(LevelData));
         memmove(&level_gamedata, ldp, 9);
         memmove(&level_gamedata.exit_time, ldp + 9, 4);
@@ -1503,7 +1518,7 @@ errtype load_current_map(Id id_num) {
     if (map_version > MAP_VERSION_NUMBER) {
         REF_READ(id_num, idx++, animlist);
     } else {
-	void *ap = ResLock(id_num + idx, ResDecode, (UserDecodeData)&AnimLayoutPC, NULL);
+	void *ap = ResLock(id_num + idx, FORMAT_ANIM);
 	memcpy(animlist, ap, MAX_ANIMLIST_SIZE * sizeof(AnimListing));
         ResUnlock(id_num + idx);
         idx++;

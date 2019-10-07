@@ -118,7 +118,7 @@ void mfd_accesscard_expose(MFD *mfd, ubyte control) {
                 }
             }
             *s = '\0';
-            gr_set_font((grs_font *)ResLockRaw(MFD_FONT));
+            gr_set_font((grs_font *)ResLock(MFD_FONT, FORMAT_FONT));
             mfd_string_wrap = FALSE;
             wrap_text(buf, CODES_WID);
             gr_string_size(buf, &w, &h);

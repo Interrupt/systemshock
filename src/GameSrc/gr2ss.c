@@ -80,8 +80,8 @@ uchar perform_svga_conversion(uchar mask) {
 void ss_scale_string(char *s, short x, short y) {
     // needs to scale still!
     // know about different fonts instead?  That would be better...
-    grs_font *ttfont = (grs_font *)ResLockRaw(RES_tinyTechFont);
-    grs_font *mlfont = (grs_font *)ResLockRaw(RES_mediumLEDFont);
+    grs_font *ttfont = (grs_font *)ResLock(RES_tinyTechFont, FORMAT_FONT);
+    grs_font *mlfont = (grs_font *)ResLock(RES_mediumLEDFont, FORMAT_FONT);
     grs_font *f = gr_get_font();
     int c = gr_get_fcolor();
     Id use_font = ID_NULL;
@@ -130,12 +130,12 @@ void ss_scale_string(char *s, short x, short y) {
                 gr_scale_string(s, x - S_DELTA, y, SCONV_X(w) - S_DELTA, SCONV_Y(h));
             } else {
                 gr_push_canvas(i6d_ss->cf_left);
-                gr_set_font((grs_font *)ResLockRaw(use_font));
+                gr_set_font((grs_font *)ResLock(use_font, FORMAT_FONT));
                 gr_set_fcolor(c);
                 gr_string(s, x + S_DELTA, y);
                 gr_pop_canvas();
                 gr_push_canvas(i6d_ss->cf_right);
-                gr_set_font((grs_font *)ResLockRaw(use_font));
+                gr_set_font((grs_font *)ResLock(use_font, FORMAT_FONT));
                 gr_set_fcolor(c);
                 gr_string(s, x - S_DELTA, y);
             }
@@ -147,7 +147,7 @@ void ss_scale_string(char *s, short x, short y) {
                 gr_string_size(s, (short *)&w, (short *)&h);
                 gr_scale_string(s, x, y, SCONV_X(w), SCONV_Y(h));
             } else {
-                gr_set_font((grs_font *)ResLockRaw(use_font));
+                gr_set_font((grs_font *)ResLock(use_font, FORMAT_FONT));
                 gr_string(s, x, y);
             }
 #ifdef STEREO_SUPPORT

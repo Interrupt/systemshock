@@ -99,7 +99,7 @@ void make_popup_cursor(LGCursor *c, grs_bitmap *bm, char *s, uint tmplt, uchar a
 
     gr_clear(0);
     ss_bitmap(pbm, 0, 0);
-    gr_set_font(FontLock(RES_tinyTechFont));
+    gr_set_font(ResLock(RES_tinyTechFont, FORMAT_FONT));
     gr_string_size(s, &w, &h);
     // ss_point_convert(&w, &h, FALSE);
 
@@ -149,7 +149,7 @@ void make_email_cursor(LGCursor *c, grs_bitmap *bm, uchar page, bool init) {
     ss_set_hack_mode(2, &temp);
 #endif
 
-    gr_font_char_size(FontGet(EMAIL_CURS_FONT), 'X', &w, &h);
+    gr_font_char_size(ResGet(EMAIL_CURS_FONT, FORMAT_FONT), 'X', &w, &h);
     h += 2;
     w = EMAIL_CURS_WID;
 #ifdef SVGA_SUPPORT
@@ -165,7 +165,7 @@ void make_email_cursor(LGCursor *c, grs_bitmap *bm, uchar page, bool init) {
     gr_make_canvas(bm, &gc);
     gr_push_canvas(&gc);
     gr_clear(0);
-    gr_set_font(FontLock(EMAIL_CURS_FONT));
+    gr_set_font(ResLock(EMAIL_CURS_FONT, FORMAT_FONT));
     gr_string_size("Page goof", &w, &h);
     x = EMAIL_CURS_MARG;
     y = 1;

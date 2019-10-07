@@ -195,8 +195,7 @@ typedef struct {
 } grs_font;
 
 // Access to fonts in resources.
-#define FontLock(id) (grs_font *)ResLockRaw(id)
-#define FontGet(id) (grs_font *)ResGetRaw(id)
+#define FORMAT_FONT FORMAT_RAW
 
 /* structure for drawing context.  the context contains data about which
    color, font attributes, filling attributes, and an embedded clipping

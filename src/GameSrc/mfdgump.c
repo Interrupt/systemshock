@@ -135,7 +135,7 @@ void mfd_gump_expose(MFD *mfd, ubyte control) {
                 gump_idlist[i] = OBJ_NULL;
             LAST_INPUT_ROW = 0xFF;
         }
-        gr_set_font(FontLock(MFD_FONT));
+        gr_set_font(ResLock(MFD_FONT, FORMAT_FONT));
         if (gump_num_objs == 0) {
             short x, y;
             char *s = get_temp_string(REF_STR_EmptyGump);
