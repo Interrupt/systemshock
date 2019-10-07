@@ -44,6 +44,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res.h"
 #include "res_.h"
 
+const ResourceFormat RefTableFormat = { ResDecodeRefTable,
+					NULL,
+					0,
+					ResFreeRefTable };
 //      ---------------------------------------------------------
 //
 //      RefLock() locks a compound resource and returns ptr to item.

@@ -588,7 +588,7 @@ void PrintWinStats(void)
   short w, h;
 
   grs_font *fon = gr_get_font();
-  gr_set_font(FontLock(RES_coloraliasedFont));
+  gr_set_font(ResLock(RES_coloraliasedFont, FORMAT_FONT));
 
   gr_clear(0);
 
@@ -694,7 +694,7 @@ void PrintCredits(void)
     }
 
     grs_font *fon = gr_get_font();
-    gr_set_font(FontLock(RES_coloraliasedFont));
+    gr_set_font(ResLock(RES_coloraliasedFont, FORMAT_FONT));
     short w, h;
     gr_string_size(buf, &w, &h);
     x = (columns == 1) ? (320-w)/2 : (cur_col == 0) ? 320/2-8-w : 320/2+8;
@@ -847,7 +847,7 @@ errtype draw_sg_slot(int slot_num)
     get_string(REF_STR_UnusedSave, temp, 64);
   }
 
-  gr_set_font(FontLock(RES_smallTechFont));
+  gr_set_font(ResLock(RES_smallTechFont, FORMAT_FONT));
   gr_string_size(temp, &x, &y);
 
   while ((x > SG_SLOT_WD - SG_SLOT_OFFSET_X) && (sz > 0))

@@ -227,7 +227,7 @@ errtype draw_full_res_bm(Ref id, int x, int y, uchar fade_in) {
 
     // Set the palette right, if one is provided....
     if (f->pallOff) {
-        temp_pall = (short *)(((uchar *)ResGetRaw(REFID(id))) + f->pallOff);
+        temp_pall = (short *)(((uchar *)ResGet(REFID(id), FORMAT_RAW)) + f->pallOff);
         gr_set_pal(*temp_pall, *(temp_pall + 1), (uchar *)(temp_pall + 2));
     }
 
@@ -269,7 +269,7 @@ int res_bm_height(Ref id) {
 }
 
 errtype res_draw_text_shadowed(Id id, char *text, int x, int y, uchar shadow) {
-    gr_set_font(FontLock(id));
+    gr_set_font(ResLock(id, FORMAT_FONT));
     draw_shadowed_string(text, x, y, shadow);
     ResUnlock(id);
     return (OK);

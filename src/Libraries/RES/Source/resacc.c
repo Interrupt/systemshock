@@ -44,6 +44,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h> // free()
 #include <string.h>
 
+// An empty ResourceFormat struct means no translation is needed.
+const ResourceFormat RawFormat = { NULL, NULL, 0, NULL };
+
 void *ResDecode(void *raw, size_t size, UserDecodeData ud)
 {
     // Layout.
@@ -110,8 +113,11 @@ void *ResDecode(void *raw, size_t size, UserDecodeData ud)
 //
 //      Returns: ptr to locked resource
 //      ---------------------------------------------------------
-void *ResLock(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer) {
+void *ResLock(Id id, const ResourceFormat *format) {
     ResDesc *prd;
+    const ResDecodeFunc decoder = (format == NULL) ? NULL : format->decoder;
+    const UserDecodeData data = (format == NULL) ? 0 : format->data;
+    const ResFreeFunc freer = (format == NULL) ? NULL : format->freer;
 
     //  Check if valid id
     //  DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
@@ -187,9 +193,11 @@ void ResUnlock(Id id) {
 //                              Lock(), Get(), etc.
 //      ---------------------------------------------------------
 
-void *ResGet(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer) {
+void *ResGet(Id id, const ResourceFormat *format) {
     ResDesc *prd;
-
+    ResDecodeFunc decoder = (format == NULL) ? NULL : format->decoder;
+    UserDecodeData data = (format == NULL) ? 0 : format->data;
+    ResFreeFunc freer = (format == NULL) ? NULL : format->freer;
     // Check if valid id
     // ValidateRes(id);
 

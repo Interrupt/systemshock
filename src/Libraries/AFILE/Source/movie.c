@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 int32_t AfilePrepareRes(Id id, Afile *afile) {
 
     // Grab the raw data and let the library deal with it.
-    uint8_t *ptr = ResLockRaw(id);
+    uint8_t *ptr = ResLock(id, FORMAT_RAW);
     int size = ResSize(id);
     MFILE *mf;
 

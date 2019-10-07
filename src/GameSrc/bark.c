@@ -102,7 +102,7 @@ void mfd_bark_expose(MFD *mfd, ubyte control) {
             RefTable *prt = ResReadRefTable(REFID(mfd_bark_string));
 
             if (RefIndexValid(prt, REFINDEX(mfd_bark_string))) {
-                gr_set_font((grs_font *)ResLockRaw(MFD_FONT));
+                gr_set_font((grs_font *)ResLock(MFD_FONT, FORMAT_FONT));
                 hyphenated_wrap_text(get_temp_string(mfd_bark_string), buf, MFD_VIEW_WID - 2);
                 gr_string_size(buf, &w, &h);
                 gr_set_fcolor(mfd_bark_color);

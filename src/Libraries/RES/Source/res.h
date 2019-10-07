@@ -138,21 +138,38 @@ typedef intptr_t UserDecodeData;
 // data and user data. Returns decoded data. Default is to free decoded data
 // using free() but the caller can supply a custom free function.
 typedef void *(*ResDecodeFunc)(void*, size_t, UserDecodeData);
+// Encoder function. Same signature as decoder; takes cooked data and returns
+// raw data for file, violating the laws of thermodynamics but allowing portable
+// saving. Encoded data is always freed using free().
+typedef void *(*ResEncodeFunc)(void*, size_t, UserDecodeData);
 // Function to free decoded data, if free() won't cut it.
 typedef void (*ResFreeFunc)(void*);
 
 // Decode a resource using a ResLayout. Prototyped as a decode function.
 void *ResDecode(void *raw, size_t size, UserDecodeData layout);
 
+// Describes the format of a resource for serialisation and deserialisation to
+// and from disc file.
+typedef struct {
+    ResDecodeFunc decoder; // deserialise data from disc.
+    ResEncodeFunc encoder; // serialise data to disc.
+    UserDecodeData data;   // aux data, typically a pointer to a layout struct.
+    ResFreeFunc freer;     // free cooked (only) data.
+} ResourceFormat;
+
+// An empty ResourceFormat struct means no translation is needed.
+extern const ResourceFormat RawFormat;
+#define FORMAT_RAW (&RawFormat)
+// A null ResourceFormat means to preload the raw data and translate later.
+#define FORMAT_PRELOAD ((ResourceFormat*)NULL)
+
 //      ---------------------------------------------------------
 //              ACCESS TO RESOURCES (ID'S)  (resacc.c)
 //      ---------------------------------------------------------
 
-void *ResLock(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer);                  // lock resource & get ptr
-#define ResLockRaw(id) ResLock(id, NULL, 0, NULL)
+void *ResLock(Id id, const ResourceFormat *format);   // lock resource & get ptr
 void ResUnlock(Id id);                 // unlock resource
-void *ResGet(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer);                   // get ptr to resource (dangerous!)
-#define ResGetRaw(id) ResGet(id, NULL, 0, NULL)
+void *ResGet(Id id, const ResourceFormat *format);    // get ptr to resource (dangerous!)
 void *ResExtract(Id id, void *buffer); // extract resource into buffer
 void ResDrop(Id id);                   // drop resource from immediate use
 void ResDelete(Id id);                 // delete resource forever
@@ -190,8 +207,11 @@ void ResFreeRefTable(void *ptr);         // free ref table
 int32_t ResExtractRefTable(Id id, RefTable *prt,
                            int32_t size);             // extract reftable
 // Get a ref table from a resource.
-#define RefTableGet(ref) ((RefTable*)ResGet(ref, ResDecodeRefTable, 0, ResFreeRefTable))
-#define RefTableLock(ref) ((RefTable*)ResLock(ref, ResDecodeRefTable, 0, ResFreeRefTable))
+extern const ResourceFormat RefTableFormat;
+#define FORMAT_REFTABLE (&RefTableFormat)
+
+#define RefTableGet(ref) ((RefTable*)ResGet(ref, FORMAT_REFTABLE))
+#define RefTableLock(ref) ((RefTable*)ResLock(ref, FORMAT_REFTABLE))
 void *RefExtract(RefTable *prt, Ref ref, void *buff); // extract ref
 // Extract a ref, decoding as we go
 void *RefExtractDecoded(RefTable *prt, Ref ref, const ResLayout *layout, void *buff);

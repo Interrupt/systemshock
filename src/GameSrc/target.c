@@ -152,7 +152,7 @@ void mfd_target_expose(MFD *m, ubyte control) {
             char buf[80];
             short w, h;
             draw_res_bm(MKREF(RES_mfdArtOverlays, MFD_ART_TRIOP), 0, 0);
-            gr_set_font(FontLock(TARGET_FONT));
+            gr_set_font(ResLock(TARGET_FONT, FORMAT_FONT));
             get_string((version > 0) ? REF_STR_NoTarget : REF_STR_NoTargetWare, buf, sizeof(buf));
             wrap_text(buf, MFD_VIEW_WID);
             mfd_string_wrap = FALSE;
@@ -273,7 +273,7 @@ void mfd_target_expose(MFD *m, ubyte control) {
                 dist = fix_fast_pyth_dist(dist, fix_from_obj_height(PLAYER_OBJ) -
                                                     fix_from_obj_height(player_struct.curr_target));
                 gr_set_fcolor(TEXT_COLOR);
-                gr_set_font(FontLock(TARGET_FONT));
+                gr_set_font(ResLock(TARGET_FONT, FORMAT_FONT));
                 //            if (full)
                 siz = mfd_full_draw_string(get_temp_string(REF_STR_TargRange), LEFT_MARGIN, y, TEXT_COLOR, TARGET_FONT,
                                            TRUE, TRUE);
