@@ -1974,7 +1974,7 @@ errtype inventory_clear(void) {
         r.lr.x = INVENTORY_PANEL_X + INVENTORY_PANEL_WIDTH;
         r.lr.y = INVENTORY_PANEL_Y + INVENTORY_PANEL_HEIGHT;
         if (dirty_inv_canvas) {
-            FrameDesc *f = FrameGet(REF_IMG_bmBlankInventoryPanel);
+            FrameDesc *f = RefGet(REF_IMG_bmBlankInventoryPanel, FORMAT_FRAMEDESC);
             LG_memcpy(inv_backgnd.bits, f + 1, f->bm.w * f->bm.h);
             dirty_inv_canvas = FALSE;
         }
@@ -2512,7 +2512,7 @@ LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **p
         }
 
         // Pull in the background bitmap
-        f = FrameLock(REF_IMG_bmBlankInventoryPanel);
+        f = RefLock(REF_IMG_bmBlankInventoryPanel, FORMAT_FRAMEDESC);
         inv_backgnd = f->bm;
 
         // This background is going to get used by the 360 ware

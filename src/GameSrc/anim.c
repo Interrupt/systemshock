@@ -35,7 +35,7 @@ void AnimRecur() {
 	STORE_CLIP(a, b, c, d);
 
 	// grab this frame
-	FrameDesc *f = FrameLock(current_anim.currFrameRef);
+	FrameDesc *f = RefLock(current_anim.currFrameRef, FORMAT_FRAMEDESC);
 
     if (f != NULL) {
     	f->bm.bits = (uchar *)(f + 1);
@@ -96,7 +96,7 @@ ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, LGPoint loc, char unknown
 	DEBUG("Playing animation: %x", animRef);
 
 	// FIXME do we need a decoder?
-	AnimHead *head = (AnimHead *)RefGetRaw(animRef);
+	AnimHead *head = (AnimHead *)RefGet(animRef, FORMAT_RAW);
 	if(head != NULL) {
 		TRACE("Animation frames at %x", head->frameSetId);
 	}

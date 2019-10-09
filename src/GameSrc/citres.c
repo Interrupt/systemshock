@@ -55,6 +55,8 @@ const ResLayout FrameDescLayout = {
     { RFFT_END, 0 }
   }
 };
+const ResourceFormat FrameDescFormat = {
+    ResDecode, NULL, (UserDecodeData)&FrameDescLayout, NULL };
 
 // Internal Prototypes
 errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar tmp_mem, LGRect *anchor,
@@ -64,7 +66,7 @@ grs_bitmap *lock_bitmap_from_ref_anchor(Ref r, LGRect *anchor) {
     FrameDesc *f;
     if (r == 0)
         return (NULL);
-    f = FrameLock(r);
+    f = RefLock(r, FORMAT_FRAMEDESC);
     if (f == NULL) {
         //      Warning(("Could not lock bitmap %d!",r));
         return (NULL);

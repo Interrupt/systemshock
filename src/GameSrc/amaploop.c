@@ -380,7 +380,7 @@ void fsmap_draw_map(void) {
 
     // KLC - changed to draw the background logo double size
     //   draw_res_bm(REF_IMG_bmTriLogoBack,(grd_bm.w-w)/2,(grd_bm.h-h)/2);
-    f = FrameLock(REF_IMG_bmTriLogoBack);
+    f = RefLock(REF_IMG_bmTriLogoBack, FORMAT_FRAMEDESC);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
     f->bm.bits = (uchar *)(f + 1);
