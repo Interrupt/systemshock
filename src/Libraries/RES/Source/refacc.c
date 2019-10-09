@@ -59,12 +59,14 @@ const ResourceFormat RefTableFormat = { ResDecodeRefTable,
 //  For Mac version:  Change 'ptr' refs to 'hdl', lock resource handle and
 //  return ptr.
 
-void *RefLock(Ref ref, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer) {
+void *RefLock(Ref ref, const ResourceFormat *format) {
     Id id = REFID(ref);
     ResDesc *prd;
     RefTable *prt;
     RefIndex index;
-    assert(freer == NULL); // not supporting custom free functions yet
+    const ResDecodeFunc decoder = format->decoder;
+    const UserDecodeData data = format->data;
+    assert(format->freer == NULL); // not supporting custom free functions yet
 
     if (!RefCheckRef(ref)) {
         ERROR("%s: Bad ref ID!", __FUNCTION__);
@@ -124,13 +126,15 @@ void *RefLock(Ref ref, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc f
 //  For Mac version:  Lose debug and stats.  Change 'ptr' refs to 'hdl'.  Locks
 //  the resource handle before returning the ref ptr.
 
-void *RefGet(Ref ref, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer) {
+void *RefGet(Ref ref, const ResourceFormat *format) {
     Id id = REFID(ref);
     ResDesc *prd;
     RefTable *prt;
     RefIndex index;
+    const ResDecodeFunc decoder = format->decoder;
+    const UserDecodeData data = format->data;
 
-    assert(freer == NULL); // custom free not yet supported
+    assert(format->freer == NULL); // custom free not yet supported
     
     // Check for valid ref
     if (RefCheckRef(ref) != true) {

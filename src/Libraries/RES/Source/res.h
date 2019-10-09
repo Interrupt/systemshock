@@ -196,11 +196,9 @@ typedef struct {
 // Decode raw ref table from file and return a RefTable.
 void *ResDecodeRefTable(void *raw, size_t size, UserDecodeData);
 
-void *RefLock(Ref ref, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer);                      // lock compound res, get ptr to item
-#define RefLockRaw(ref) RefLock(ref, NULL, 0, NULL)
+void *RefLock(Ref ref, const ResourceFormat *format);  // lock compound res, get ptr to item
 #define RefUnlock(ref) ResUnlock(REFID(ref)) // unlock compound res item
-void *RefGet(Ref ref, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer);                       // get ptr to item in comp. res (dangerous!)
-#define RefGetRaw(ref) RefGet(ref, NULL, 0, NULL)
+void *RefGet(Ref ref, const ResourceFormat *format);   // get ptr to item in comp. res (dangerous!)
 
 RefTable *ResReadRefTable(Id id);        // alloc & read ref table
 void ResFreeRefTable(void *ptr);         // free ref table

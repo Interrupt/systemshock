@@ -216,7 +216,7 @@ char *get_olh_string(ObjID obj, char *buf) {
 
 got_id:
     if (r != 0) {
-        char *s = (char *)RefLockRaw(r);
+        char *s = (char *)RefLock(r, FORMAT_RAW);
         sprintf(buf, s, get_object_long_name(ID2TRIP(obj), NULL, 0));
         RefUnlock(r);
     }

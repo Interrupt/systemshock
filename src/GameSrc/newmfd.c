@@ -290,7 +290,7 @@ void screen_init_mfd(uchar fullscrn) {
         mfd_canvas_bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID) * MAX_HT(MFD_VIEW_HGT));
 
         // Pull in the background bitmap
-        f = FrameLock(REF_IMG_bmBlankMFD);
+        f = RefLock(REF_IMG_bmBlankMFD, FORMAT_FRAMEDESC);
         mfd_background = f->bm;
         mfd_background.bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID) * MAX_HT(MFD_VIEW_HGT));
 

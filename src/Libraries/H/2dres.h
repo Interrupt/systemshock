@@ -66,9 +66,8 @@ typedef struct {
 
 // On-disc layout of a FrameDesc.
 extern const ResLayout FrameDescLayout;
-// Lock and decode a frame ref.
-#define FrameLock(ref) RefLock(ref, ResDecode, (UserDecodeData)&FrameDescLayout, NULL)
-#define FrameGet(ref) RefGet(ref, ResDecode, (UserDecodeData)&FrameDescLayout, NULL)
+extern const ResourceFormat FrameDescFormat;
+#define FORMAT_FRAMEDESC (&FrameDescFormat)
 
 // These are the ref-based 2d macros.  They have the goofy do/while(0)
 // so that you may use them in an if statement without C whining.

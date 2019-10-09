@@ -22,6 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define OBJ3D_BASE RES_object3d_0
 
 // FIXME probably need a decoder here
-#define get_model_data(model_num) RefLockRaw(MKREF(RES_MODEL_BASE + (model_num), 0))
+#define get_model_data(model_num) RefLock(MKREF(RES_MODEL_BASE + (model_num), 0), FORMAT_RAW)
 #define release_model_data(model_num) RefUnlock(MKREF(RES_MODEL_BASE + (model_num), 0))
 #define model_valid(model_num) ResInUse(RES_MODEL_BASE + (model_num))
