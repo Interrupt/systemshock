@@ -202,8 +202,8 @@ errtype save_game(char *fname, char *comment) {
         return ERR_FOPEN;
     }
 
-    // Save comment
-    ResMake(idx, (void *)comment, strlen(comment) + 1, RTYPE_APP, filenum, RDF_LZW);
+    // Sakeave comment
+    ResMake(idx, (void *)comment, strlen(comment) + 1, RTYPE_APP, filenum, RDF_LZW, FORMAT_RAW);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
@@ -216,7 +216,7 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum,
     // RDF_LZW);
 
-    ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, 0);
+    ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, 0, FORMAT_RAW);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
@@ -227,7 +227,7 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum,
     // RDF_LZW);
 
-    ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, 0);
+    ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, 0, FORMAT_RAW);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
@@ -236,7 +236,7 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE,
     // RTYPE_APP, filenum, RDF_LZW);
     ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent) * GAME_SCHEDULE_SIZE, RTYPE_APP, filenum,
-            0);
+            0, FORMAT_RAW);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
