@@ -95,14 +95,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void load_level_data();
 void store_objects(char **buf, ObjID *obj_array, char obj_count);
 void restore_objects(char *buf, ObjID *obj_array, char obj_count);
-errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags);
+errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags, const ResourceFormat *format);
 
-#define REF_WRITE(id_num, index, x)                  \
-    write_id(id_num, index, &(x), sizeof(x), fd, 0)
-#define REF_WRITE_LZW(id_num, index, x)                    \
-    write_id(id_num, index, &(x), sizeof(x), fd, RDF_LZW)
+#define REF_WRITE(id_num, index, x, f)			\
+    write_id(id_num, index, &(x), sizeof(x), fd, 0, f)
+#define REF_WRITE_LZW(id_num, index, x, f)			\
+    write_id(id_num, index, &(x), sizeof(x), fd, RDF_LZW, f)
 #define REF_WRITE_RAW(id_num, index, ptr, sz)      \
-    write_id(id_num, index, ptr, sz, fd, RDF_LZW)
+    write_id(id_num, index, ptr, sz, fd, RDF_LZW, FORMAT_RAW)
 #define REF_READ(id_num, index, x)    \
     ResExtract(id_num + index, &(x))
 
@@ -396,8 +396,8 @@ uchar go_to_different_level(int targlevel) {
 
 #define ANOTHER_DEFINE_FOR_NUM_LEVELS 16
 
-errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags) {
-    ResMake(id_num + index, ptr, sz, RTYPE_APP, fd, flags);
+errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags, const ResourceFormat *format) {
+    ResMake(id_num + index, ptr, sz, RTYPE_APP, fd, flags, format);
     if (ResWrite(id_num + index) == -1)
         critical_error(CRITERR_FILE | 6);
     ResUnmake(id_num + index);
@@ -453,12 +453,15 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
         return ERR_FOPEN;
     }
 
-    REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
+    REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie, FORMAT_RAW);
 
-    REF_WRITE(id_num, idx++, vnum);
-    REF_WRITE(id_num, idx++, ovnum);
-    REF_WRITE(id_num, idx++, *global_fullmap);
-
+    // xx02 Map version number.
+    REF_WRITE(id_num, idx++, vnum, FORMAT_RAW);
+    // xx03 Object version number.
+    REF_WRITE(id_num, idx++, ovnum, FORMAT_RAW);
+    // xx04 Fullmap.
+    REF_WRITE(id_num, idx++, *global_fullmap, FORMAT_FULLMAP);
+    // xx05 Tile map.
     REF_WRITE_RAW(id_num, idx++, MAP_MAP, sizeof(MapElem) * 64 * 64);
 
     // Here we are writing out the schedules.  It's only a teeny tiny rep exposure.
@@ -466,71 +469,77 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
         int sz = lg_min(global_fullmap->sched[i].queue.fullness + 1, global_fullmap->sched[i].queue.size);
         REF_WRITE_RAW(id_num, idx++, global_fullmap->sched[i].queue.vec, sizeof(SchedEvent) * sz);
     }
-    REF_WRITE(id_num, idx++, loved_textures);
+    // xx07 Textures.
+    REF_WRITE(id_num, idx++, loved_textures, FORMAT_RAW);
 
     obj_zero_unused();
-    REF_WRITE_LZW(id_num, idx++, objs);
-    REF_WRITE_LZW(id_num, idx++, objRefs);
-    REF_WRITE(id_num, idx++, objGuns);
-    REF_WRITE(id_num, idx++, objAmmos);
-    REF_WRITE_LZW(id_num, idx++, objPhysicss);
-    REF_WRITE(id_num, idx++, objGrenades);
-    REF_WRITE(id_num, idx++, objDrugs);
-    REF_WRITE(id_num, idx++, objHardwares);
-    REF_WRITE(id_num, idx++, objSoftwares);
-    REF_WRITE_LZW(id_num, idx++, objBigstuffs);
-    REF_WRITE_LZW(id_num, idx++, objSmallstuffs);
-    REF_WRITE_LZW(id_num, idx++, objFixtures);
-    REF_WRITE_LZW(id_num, idx++, objDoors);
-    REF_WRITE(id_num, idx++, objAnimatings);
-    REF_WRITE_LZW(id_num, idx++, objTraps);
-    REF_WRITE_LZW(id_num, idx++, objContainers);
-    REF_WRITE_LZW(id_num, idx++, objCritters);
+    // xx08 Main object list. Always EASYSAVES, so no conversion needed.
+    REF_WRITE_LZW(id_num, idx++, objs, FORMAT_RAW);
+    // xx09 Object refs.
+    REF_WRITE_LZW(id_num, idx++, objRefs, FORMAT_RAW);
+    // xx10-xx24 Object specific stuff. All EASYSAVES again.
+    REF_WRITE(id_num, idx++, objGuns, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objAmmos, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objPhysicss, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objGrenades, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objDrugs, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objHardwares, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objSoftwares, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objBigstuffs, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objSmallstuffs, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objFixtures, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objDoors, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objAnimatings, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objTraps, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objContainers, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objCritters, FORMAT_RAW);
 
-    // Default objects
-    REF_WRITE(id_num, idx++, default_gun);
-    REF_WRITE(id_num, idx++, default_ammo);
-    REF_WRITE(id_num, idx++, default_physics);
-    REF_WRITE(id_num, idx++, default_grenade);
-    REF_WRITE(id_num, idx++, default_drug);
-    REF_WRITE(id_num, idx++, default_hardware);
-    REF_WRITE(id_num, idx++, default_software);
-    REF_WRITE(id_num, idx++, default_bigstuff);
-    REF_WRITE(id_num, idx++, default_smallstuff);
-    REF_WRITE(id_num, idx++, default_fixture);
-    REF_WRITE(id_num, idx++, default_door);
-    REF_WRITE(id_num, idx++, default_animating);
-    REF_WRITE(id_num, idx++, default_trap);
-    REF_WRITE(id_num, idx++, default_container);
-    REF_WRITE(id_num, idx++, default_critter);
+    // xx25-xx29 Default objects
+    REF_WRITE(id_num, idx++, default_gun, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_ammo, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_physics, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_grenade, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_drug, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_hardware, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_software, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_bigstuff, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_smallstuff, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_fixture, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_door, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_animating, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_trap, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_container, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_critter, FORMAT_RAW);
 
     idx++; // KLC - not used   REF_WRITE(id_num,idx++,mvnum);
 
     //   idx++; // where flickers once lived
     idx++; // KLC - not used   REF_WRITE(id_num,idx++,filler);
-    REF_WRITE(id_num, idx++, animtextures);
+    // xx42 Texture animation.
+    REF_WRITE(id_num, idx++, animtextures, FORMAT_RAW);
+    // xx43-xx44 Surveillance
+    REF_WRITE(id_num, idx++, hack_cam_objs, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, hack_cam_surrogates, FORMAT_RAW);
 
-    REF_WRITE(id_num, idx++, hack_cam_objs);
-    REF_WRITE(id_num, idx++, hack_cam_surrogates);
-
-    // Other level data -- at resource id right after maps
+    // xx45 Other level data -- at resource id right after maps
     level_gamedata.size = sizeof(level_gamedata);
-    REF_WRITE(id_num, idx++, level_gamedata);
+    REF_WRITE(id_num, idx++, level_gamedata, FORMAT_RAW);
 #ifdef SAVE_AUTOMAP_STRINGS
     //   REF_WRITE(id_num, idx++, amap_str_reref(0));
     // LZW later   ResMake(id_num + (idx++), &(amap_str_reref(0)), AMAP_STRING_SIZE, RTYPE_APP, fd,  RDF_LZW);
-    ResMake(id_num + (idx++), (amap_str_reref(0)), AMAP_STRING_SIZE, RTYPE_APP, fd, 0);
+    ResMake(id_num + (idx++), (amap_str_reref(0)), AMAP_STRING_SIZE, RTYPE_APP, fd, 0, FORMAT_RAW);
     ResWrite(id_num + (idx - 1));
     ResUnmake(id_num + (idx - 1));
     goof = amap_str_deref(amap_str_next());
-    REF_WRITE(id_num, idx++, goof);
+    REF_WRITE(id_num, idx++, goof, FORMAT_RAW);
 #endif
     idx++; // KLC - no need to be saved.   REF_WRITE(id_num, idx++, player_edms);
-    REF_WRITE(id_num, idx++, paths);
-    REF_WRITE(id_num, idx++, used_paths);
-    REF_WRITE(id_num, idx++, animlist);
-    REF_WRITE(id_num, idx++, anim_counter);
-    REF_WRITE(id_num, idx++, h_sems);
+    // xx49-xx50 Paths
+    REF_WRITE(id_num, idx++, paths, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, used_paths, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, animlist, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, anim_counter, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, h_sems, FORMAT_RAW);
 
     /* KLC - not used
        if (pack)
@@ -542,7 +551,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
        }
     */
     verify_cookie = VERIFY_COOKIE_VALID;
-    REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
+    REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie, FORMAT_RAW);
     ResCloseFile(fd);
 
     // FlushVol(nil, fSpec->vRefNum);                   // Make sure everything is saved.

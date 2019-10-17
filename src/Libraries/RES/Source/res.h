@@ -382,7 +382,7 @@ proper DBG bit set
 //	----------------------------------------------------------
 
 // make resource from data block
-void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint8_t flags);
+void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint8_t flags, const ResourceFormat *format);
 // make empty compound resource
 void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags);
 // add item to compound
