@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  For Mac version, use Resource Manager to add the resource to indicated res
 //  file.
 
-void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint8_t flags, const ResourceFormat *format) {
+void ResMake(Id id, void *ptr, size_t size, uint8_t type, int32_t filenum, uint8_t flags, const ResourceFormat *format) {
 
     TRACE("%s: Making id $%x", __FUNCTION__, id);
     ResDesc *prd;
@@ -74,7 +74,14 @@ void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint
     }
 
     // Add us to the soup, set lock so doesn't get swapped out
-    prd->ptr = ptr;
+    if (format != NULL && format->encoder != NULL) {
+        prd->decoded = ptr;
+	prd->ptr = (format->encoder)(ptr, &size, format->data);
+	prd->flags = RES_OWNS_RAW_PTR;
+    } else {
+	prd->ptr = ptr;
+	prd->flags = 0;
+    }
     prd->size = size;
     prd->filenum = filenum;
     prd->lock = 1;
@@ -231,4 +238,10 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
 //  For Mac version: use ReleaseResource to free the handle (the pointer that
 //  the handle was made from will still be around).
 
-void ResUnmake(Id id) { memset(RESDESC(id), 0, sizeof(ResDesc)); }
+void ResUnmake(Id id) {
+    ResDesc *prd = RESDESC(id);
+    if (prd->flags & RES_OWNS_RAW_PTR) {
+	free(prd->ptr);
+    }
+    memset(prd, 0, sizeof(ResDesc));
+}

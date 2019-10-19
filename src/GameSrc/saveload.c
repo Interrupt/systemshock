@@ -147,7 +147,7 @@ const ResLayout FullMapLayout = {
     }
 };
 const ResourceFormat FullMapFormat = { ResDecode,
-				       NULL,
+				       ResEncode,
 				       (UserDecodeData)&FullMapLayout,
 				       NULL };
 #define FORMAT_FULLMAP (&FullMapFormat)

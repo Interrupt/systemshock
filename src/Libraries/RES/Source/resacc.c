@@ -105,6 +105,68 @@ void *ResDecode(void *raw, size_t size, UserDecodeData ud)
     return buff;
 }
 
+void *ResEncode(void *cooked, size_t *size, UserDecodeData ud)
+{
+    // Layout.
+    const ResLayout *layout = (const ResLayout*)ud;
+    // Number of entries, if it's an array.
+    int nentries = (layout->flags & LAYOUT_FLAG_ARRAY) ? *size / layout->msize : 1;
+    // Total size of the data on disc.
+    size_t bufsize = layout->dsize * nentries;
+    if (layout->flags & LAYOUT_FLAG_RAW_DATA_FOLLOWS) {
+        // Additional raw data follows; add its size to the buffer.
+        assert(nentries == 1);
+        bufsize += *size - layout->msize;
+    }
+    void *buff = malloc(bufsize);
+    // Working pointer into the "raw" data.
+    uchar *rp = buff;
+    int i;
+    for (i = 0; i < nentries; ++i) {
+        uchar *b = ((uchar *)cooked) + i * layout->msize;
+        uchar *bp;
+        const ResField *field = layout->fields;
+
+        while (field->type != RFFT_END) {
+            bp = b + field->offset;
+            switch (field->type) {
+            case RFFT_PAD:
+                rp += field->offset;
+                break;
+            case RFFT_UINT8:
+                *rp++ = *bp;
+                break;
+            case RFFT_UINT16:
+		*rp++ = (*(uint16_t*)bp) & 0xff;
+		*rp++ = (*(uint16_t*)bp) >> 8;
+                break;
+            case RFFT_UINT32:
+		*rp++ = (*(uint32_t*)bp) & 0xff;
+		*rp++ = ((*(uint32_t*)bp) >> 8) & 0xff;
+		*rp++ = ((*(uint32_t*)bp) >> 16) & 0xff;
+		*rp++ = ((*(uint32_t*)bp) >> 24) & 0xff;
+                break;
+            case RFFT_INTPTR:
+                // These occupy 32 bits in file but expand to pointer size in memory.
+		*rp++ = (*(uintptr_t*)bp) & 0xff;
+		*rp++ = ((*(uintptr_t*)bp) >> 8) & 0xff;
+		*rp++ = ((*(uintptr_t*)bp) >> 16) & 0xff;
+		*rp++ = ((*(uintptr_t*)bp) >> 24) & 0xff;
+                break;
+            case RFFT_RAW: // should be last entry
+                memcpy(rp, bp, bufsize - (rp-(uchar*)buff));
+                break;
+            default:
+                assert(!"Invalid resource field type");
+            }
+            ++field;
+        }
+    }
+    // Return the size of the 'raw' data.
+    *size = bufsize;
+    return buff;
+}
+
 //      ---------------------------------------------------------
 //
 //      ResLock() locks a resource and returns ptr.

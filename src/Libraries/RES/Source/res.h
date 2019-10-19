@@ -141,12 +141,14 @@ typedef void *(*ResDecodeFunc)(void*, size_t, UserDecodeData);
 // Encoder function. Same signature as decoder; takes cooked data and returns
 // raw data for file, violating the laws of thermodynamics but allowing portable
 // saving. Encoded data is always freed using free().
-typedef void *(*ResEncodeFunc)(void*, size_t, UserDecodeData);
+typedef void *(*ResEncodeFunc)(void*, size_t*, UserDecodeData);
 // Function to free decoded data, if free() won't cut it.
 typedef void (*ResFreeFunc)(void*);
 
 // Decode a resource using a ResLayout. Prototyped as a decode function.
 void *ResDecode(void *raw, size_t size, UserDecodeData layout);
+// Encode a resource using a ResLayout.
+void *ResEncode(void *raw, size_t *size, UserDecodeData layout);
 
 // Describes the format of a resource for serialisation and deserialisation to
 // and from disc file.
@@ -273,11 +275,13 @@ typedef struct {
     uint32_t offset : 27;  // offset in file
     Id next;               // next resource in LRU order
     Id prev;               // previous resource in LRU order
-    /*uint32_t flags;*/    // misc flags (RDF_XXX, see below)
+    uint32_t flags;        // resource management flags
     /*uint16_t type : 8;*/ // resource type (RTYPE_XXX, see restypes.h)
     void *decoded;         // decoded data, if in-memory format is different.
     ResFreeFunc free_func; // free func; if NULL decoded is freed using free().
 } ResDesc;
+
+#define RES_OWNS_RAW_PTR 1
 
 typedef struct {
     uint16_t flags : 8; // misc flags (RDF_XXX, see below)
@@ -382,7 +386,7 @@ proper DBG bit set
 //      ----------------------------------------------------------
 
 // make resource from data block
-void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint8_t flags, const ResourceFormat *format);
+void ResMake(Id id, void *ptr, size_t size, uint8_t type, int32_t filenum, uint8_t flags, const ResourceFormat *format);
 // make empty compound resource
 void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags);
 // add item to compound
