@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __OBJPROP_H
 #define __OBJPROP_H
 
-#pragma pack(push,2)
-
 /*
  * $Source: n:/project/cit/src/inc/RCS/objprop.h $
  * $Revision: 1.33 $
@@ -35,6 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objstuff.h"
 #include "objgame.h"
 #include "objcrit.h"
+
+#pragma pack(push,2)
 
 // The overall object properties typedef
 typedef struct ObjProp {

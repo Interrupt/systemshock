@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __OBJECTS_H
 #define __OBJECTS_H
 
-#pragma pack(push,2)
-
 /*
 ** $Header: r:/prj/cit/src/inc/RCS/objects.h 1.18 1994/08/30 07:15:13 xemu Exp $
 *
@@ -65,6 +63,8 @@ typedef short ObjSpecID;
 #ifndef OBJAPP_H
 #include "objapp.h"
 #endif
+
+#pragma pack(push,2)
 
 // The common data for all objects
 typedef struct Obj {
