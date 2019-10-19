@@ -5,8 +5,8 @@ SDL_version=2.0.9
 SDL2_mixer_version=2.0.4
 GLEW_version=2.1.0
 CMAKE_version=3.11.3
-#CMAKE_architecture=win64-x64
-CMAKE_architecture=win32-x86
+CMAKE_architecture=win64-x64
+#CMAKE_architecture=win32-x86
 CMAKE_target=Unix\ Makefiles
 
 # Removing the mwindows linker option lets us get console output
@@ -19,7 +19,7 @@ function build_sdl {
 	tar xvf SDL2-${SDL_version}.tar.gz
 	pushd SDL2-${SDL_version}
 
-	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" --host=i686-w64-mingw32 --prefix=${install_dir}/built_sdl
+	./configure --host=x86_64-w64-mingw32 --prefix=${install_dir}/built_sdl
 	remove_mwindows
 	make
 	make install
@@ -35,7 +35,7 @@ function build_sdl_mixer {
 	tar xf SDL2_mixer-${SDL2_mixer_version}.tar.gz --exclude=Xcode
 	pushd SDL2_mixer-${SDL2_mixer_version}
 
-	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" --host=i686-w64-mingw32 --disable-sdltest --with-sdl-prefix=${install_dir}/built_sdl --prefix=${install_dir}/built_sdl_mixer 
+	./configure --host=x86_64-w64-mingw32  --disable-sdltest --with-sdl-prefix=${install_dir}/built_sdl --prefix=${install_dir}/built_sdl_mixer 
 	
 	remove_mwindows
 	make

@@ -46,6 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"  // every file should have this
 #include "error.h"
 #include <stdio.h>
+#include <stdint.h>
 
 // Defines
 // Comparson function, works like strcmp
