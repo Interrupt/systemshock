@@ -4,19 +4,14 @@ project(shockolate VERSION 0.7.8)
 
 include(FeatureSummary)
 
-#set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
-#set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS ON)
-set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS OFF)
-set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
-
 # Required for stdbool.h
 set(CMAKE_C_STANDARD 99)
 # For nullptr in C++
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Werror")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Werror -D__STDC_LIMIT_MACROS")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STDC_LIMIT_MACROS")
 
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
 add_feature_info(ENABLE_EXAMPLES ENABLE_EXAMPLES "Enable example application (can be broken!)")

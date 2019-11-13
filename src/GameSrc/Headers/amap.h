@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __AMAP_H
 
 // header for the real infernal automap
+#include "objects.h"
 
 // defines
 #define AMAP_PURE_MODE 0x0000
@@ -75,7 +76,7 @@ void amap_draw(curAMap *amptr, int expose);
 void amap_version_set(int id, int new_ver);
 void automap_init(int version, int id);
 void amap_invalidate(int id);
-ushort amap_loc_note_check(curAMap *amptr, void *curmp, int *x, int *y, int *to_do); // ushort is an ObjID
+ObjID amap_loc_note_check(curAMap *amptr, void *curmp, int *x, int *y, int *to_do); // ushort is an ObjID
 uchar amap_flags(curAMap *amptr, int flags, int set);                  // set -1 to toggle
 uchar amap_zoom(curAMap *amptr, uchar set, int zoom_delta);
 void amap_pan(curAMap *amptr, int dir, int *dist);

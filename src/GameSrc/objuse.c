@@ -1769,11 +1769,11 @@ errtype obj_cspace_collide(ObjID id, ObjID collider) {
                 while ((version & 1) == 0)
                     game++, version = version >> 1;
                 version = 0;
-                sprintf(str_buf, "\"%s\" %s", (char *)RefGet(REF_STR_GameName0 + game),
-                        (char *)RefGet(MKREF(RES_objshortnames, OPTRIP(GAMES_TRIPLE))));
+                sprintf(str_buf, "\"%s\" %s", (char *)RefGet(REF_STR_GameName0 + game, FORMAT_RAW),
+                        (char *)RefGet(MKREF(RES_objshortnames, OPTRIP(GAMES_TRIPLE)), FORMAT_RAW));
             }
             if (version) {
-                sprintf(str_buf + strlen(str_buf), " %s%d", (char *)RefGet(REF_STR_VersionPrefix), version);
+                sprintf(str_buf + strlen(str_buf), " %s%d", (char *)RefGet(REF_STR_VersionPrefix, FORMAT_RAW), version);
             }
             strcat(str_buf, get_string(REF_STR_CspaceAcquire, temp, 20));
             if (shameful_obselete_flag)
