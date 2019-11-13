@@ -1203,12 +1203,12 @@ void init_input(void) {
 void init_input(void) {
     extern void init_motion_polling();
     int i = 0;
-    // KLC	int kbdt, joy_type;
+    // KLC      int kbdt, joy_type;
     int dvec[2];
 
     // init keyboard
-    // KLC	for (i = 0; i < 0x80; i++)
-    // KLC	kb_clear_state(i,KBA_REPEAT);
+    // KLC      for (i = 0; i < 0x80; i++)
+    // KLC      kb_clear_state(i,KBA_REPEAT);
     hotkey_init(NUM_HOTKEYS);
 
     // KLC
@@ -1223,8 +1223,8 @@ void init_input(void) {
 
     // init mouse
     // KLC   mouse_set_timestamp_register((ulong*)tmd_ticks);
-    dvec[0] = 8;  // KLC 30;		// default double click deleay;
-    dvec[1] = 45; // 175;	// default double click time
+    dvec[0] = 8;  // KLC 30;            // default double click deleay;
+    dvec[1] = 45; // 175;       // default double click time
     i = 2;
     // KLC   config_get_value(CFG_DCLICK_RATE_VAR,CONFIG_INT_TYPE,dvec,&i);
     uiDoubleClickDelay = dvec[0];
@@ -2136,10 +2136,13 @@ char *get_object_lookname(ObjID id, char use_string[], int sz) {
     } break;
     }
     // If we haven't set ref or ref is garbage, use the long name.
-    if ((ref == -1) || !(RefIndexValid((RefTable *)ResGet(REFID(ref)), REFINDEX(ref)))) {
+    char *temp = (ref == -1) ? NULL : RefGet(ref, FORMAT_RAW);
+    if (temp == NULL) {
         strcat(use_string, get_object_long_name(usetrip, NULL, 0));
-    } else
-        get_string(ref, use_string, sz);
+    } else {
+        strncpy(use_string, temp, sz);
+        use_string[sz-1] = '\0';
+    }
     return (use_string);
 }
 
@@ -2341,7 +2344,7 @@ uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
     }
 
     if (me->action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
-        cycle_weapons_func(0, 0, me->action & MOUSE_WHEELUP ? -1 : 1);
+        cycle_weapons_func(0, 0, (me->action & MOUSE_WHEELUP ? -1 : 1));
     }
 
     // data->ldown = TRUE;
@@ -2361,7 +2364,7 @@ extern int FireKeys[]; //see MacSrc/Prefs.c
 
 uchar view3d_key_handler(uiEvent *ev, LGRegion *r, intptr_t data)
 {
-    uiCookedKeyEvent *ke = (uiCookedKeyEvent*)ev;
+  uiCookedKeyEvent *ke = (uiCookedKeyEvent*)ev;
   int i, detect = 0, fire_pressed = 0;
 
   i = 0;

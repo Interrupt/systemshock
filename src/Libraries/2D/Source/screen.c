@@ -77,6 +77,11 @@ grs_screen *gr_alloc_screen(short w, short h) {
     s->x = 0;
     s->y = 0;
 
+    s->pal = NULL;
+    s->ipal = NULL;
+    s->ltab = NULL;
+    s->clut = NULL;
+
     /* set up global canvases. */
     s->c = c;
     gr_init_canvas(c, s->bm.bits, BMT_DEVICE, w, h);

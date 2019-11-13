@@ -45,14 +45,14 @@ int gri_lit_wall_umap_loop(grs_tmap_loop_info *tli) {
 
     // locals used to store copies of tli-> stuff, so its in registers on the PPC
     int k, y;
-    ulong t_mask;
-    ulong t_wlog;
+    uint32_t t_mask;
+    uint32_t t_wlog;
     uchar *t_bits;
     uchar *p_dest;
-    long gr_row;
+    int32_t gr_row;
     uchar *g_ltab;
     fix inv_dy;
-    long *t_vtab;
+    int32_t *t_vtab;
 
 #if InvDiv
     inv_dy = fix_div(fix_make(1, 0), tli->w);
@@ -235,15 +235,15 @@ void gri_opaque_lit_wall_umap_init(grs_tmap_loop_info *tli) {
 {
 extern int HandleWallLitLoop1D_PPC(grs_tmap_loop_info *tli,
                                                                                                                                                 fix u, fix v, fix i, fix dv, fix di, fix dy,
-                                                                                                                                                uchar *g_ltab, long *t_vtab, uchar *o_bits,
-                                                                                                                                                long gr_row, ulong t_mask, ulong t_wlog);
+                                                                                                                                                uchar *g_ltab, int32_t *t_vtab, uchar *o_bits,
+                                                                                                                                                int32_t gr_row, uint32_t t_mask, uint32_t t_wlog);
 }*/
 
 int HandleWallLitLoop1D_C(grs_tmap_loop_info *tli, fix u, fix v, fix i, fix dv, fix di, fix dy, uchar *g_ltab,
-                          uchar *o_bits, long gr_row, ulong t_mask, ulong t_wlog) {
+                          uchar *o_bits, int32_t gr_row, uint32_t t_mask, uint32_t t_wlog) {
     fix d, inv_dy;
     register fix lefty, righty;
-    long k, y;
+    int32_t k, y;
     uchar *t_bits;
     uchar *p_dest;
 
@@ -326,9 +326,9 @@ int gri_lit_wall_umap_loop_1D(grs_tmap_loop_info *tli) {
 
     // locals used to store copies of tli-> stuff, so its in registers on the PPC
     int k, y;
-    ulong t_mask;
-    ulong t_wlog;
-    long gr_row;
+    uint32_t t_mask;
+    uint32_t t_wlog;
+    int32_t gr_row;
     uchar *g_ltab;
     uchar *o_bits;
     fix inv_dy;

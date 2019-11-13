@@ -74,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define HKSORT_KEYCODE  1
 #define HKSORT_ASCII    2
 
-typedef uchar (*hotkey_callback)(ushort keycode, uint32_t context, intptr_t state); 
+typedef uchar (*hotkey_callback)(ushort keycode, uint32_t context, intptr_t state);
 
 typedef struct _hotkey_entry
 {

@@ -290,7 +290,7 @@ void mfd_games_expose(MFD *m, ubyte control) {
         ss_safe_set_cliprect(0, 0, MFD_VIEW_WID, MFD_VIEW_HGT);
         mfd_clear_rects();
 
-        fon = (grs_font *)ResLock(RES_tinyTechFont);
+        fon = ResLock(RES_tinyTechFont, FORMAT_FONT);
         gr_set_font(fon);
 
         cur_mode = GAME_MODE;
@@ -2225,8 +2225,8 @@ void tictactoe_drawwin(ttt_state *st) {
     if (p1.x > 0) {
         ss_int_line(p1.x, p1.y, p2.x, p2.y);
         sprintf(buf, "%s%s",
-            realwin == st->whoplayer ? (char *)RefGet(REF_STR_YouHave) : (char *)RefGet(REF_STR_ComputerHas),
-            (char *)RefGet(REF_STR_Won));
+            realwin == st->whoplayer ? (char *)RefGet(REF_STR_YouHave, FORMAT_RAW) : (char *)RefGet(REF_STR_ComputerHas, FORMAT_RAW),
+            (char *)RefGet(REF_STR_Won, FORMAT_RAW));
         draw_shadowed_text(buf, MFD_VIEW_WID - gr_string_width(buf) - 1, 1);
     }
 }
@@ -2938,7 +2938,7 @@ static int wing_get_facing(int i) {
 static void scale_res_bm(int ref, int x, int y, int w, int h) {
     FrameDesc *f;
 
-    f = (FrameDesc *)RefLock(ref);
+    f = RefLock(ref, FORMAT_FRAMEDESC);
     if (!f)
         return;
 

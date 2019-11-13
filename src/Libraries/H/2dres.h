@@ -63,6 +63,87 @@ typedef struct {
     int32_t pallOff; // offset to pallette
                      // bitmap's bits follow immediately
 } FrameDesc;
+
+// On-disc layout of a FrameDesc.
+extern const ResLayout FrameDescLayout;
+extern const ResourceFormat FrameDescFormat;
+#define FORMAT_FRAMEDESC (&FrameDescFormat)
+
+// These are the ref-based 2d macros.  They have the goofy do/while(0)
+// so that you may use them in an if statement without C whining.
+
+// Draw a bitmap, given its ref (unclipped)
+
+#define gr_ubitmap_ref(ref,x,y)  do {     \
+   FrameDesc *pfd = RefGet(ref);          \
+   pfd->bm.bits = (uchar *)(pfd + 1);     \
+   gr_ubitmap(&pfd->bm, x, y);            \
+   } while (0)
+
+// Draw a bitmap, given its ref (clipped)
+
+#define gr_bitmap_ref(ref,x,y) do {       \
+   FrameDesc *pfd = RefGet(ref);          \
+   pfd->bm.bits = (uchar *)(pfd + 1);     \
+   gr_bitmap(&pfd->bm, x, y);             \
+   } while(0)
+
+// Draw a scaled bitmap, given its ref (unclipped)
+
+#define gr_scale_ubitmap_ref(ref,x,y,w,h) do {  \
+   FrameDesc *pfd = RefGet(ref);                \
+   pfd->bm.bits = (uchar *)(pfd + 1);           \
+   gr_scale_ubitmap(&pfd->bm, x, y, w, h);      \
+   } while(0)
+
+// Draw a scaled bitmap, given its ref (clipped)
+
+#define gr_scale_bitmap_ref(ref,x,y,w,h) do {   \
+   FrameDesc *pfd = RefGet(ref);                \
+   pfd->bm.bits = (uchar *)(pfd + 1);           \
+   gr_scale_bitmap(&pfd->bm, x, y, w, h);       \
+   } while(0)
+
+// Set an image's associated (partial) palette, if any
+
+#define gr_set_pal_imgref(ref) do {             \
+   FrameDesc *pfd = RefGet(ref);                \
+   if (pfd->pallOff) {                          \
+      short *p = (short *)((uchar *) ResGet(REFID(ref)) + pfd->pallOff);   \
+      gr_set_pal(*p, *(p+1), (uchar *)(p+2));   \
+      }                                         \
+   } while(0)
+
+// Copy an image's associated (partial) palette to memory
+//  (palp is a pointer to start of destination pallette)
+
+#define gr_cpy_pal_imgref(ref, palp) do {       \
+   FrameDesc *pfd = RefGet(ref);                \
+   if (pfd->pallOff) {                          \
+      short *p = (short *)((uchar *) ResGet(REFID(ref)) + pfd->pallOff);   \
+      LG_memcpy((uchar *)(palp + (*p * 3)), (uchar *)(p+2), *(p+1) * 3 );         \
+      }                                         \
+   } while(0)
+
+// Data types for a cylindrical bitmap object
+// eventually we'll want one for a full 3d one
+
+typedef struct {
+   int nviews;    // number of views
+   fix ppu;       // pixels per unit
+   uchar bisym;    // bilateral symmetry or not (means its a mirror)
+   int off[1];    // offsets, in reality there should be off[nview] of them
+} CylBMObj;       // cylindrical 3d bitmap object
+
+typedef struct {
+   grs_bitmap bm;
+   byte  u1,v1;   // anchor point 1
+   byte  u2,v2;   // anchor point 2
+   fix   vper1;   //  v1 / (v2-v1)
+   fix   vper2;   // (h-v2) / (v2-v1)
+   fix   uper;    // (w - u) / u
+} CylBMFrame;     // one frame of the cylindrical bm object.  Always put the bits after this.  S
+
 #pragma pack(pop)
 
 #endif

@@ -269,7 +269,7 @@ draw_poly_common_raw:
 
     // copy to temp buffer for clipping
     // BlockMove(p,vbuf,n_verts<<2);
-    memmove(vbuf, p, n_verts << 2);
+    memmove(vbuf, p, n_verts * sizeof *p);
 
     n_verts = g3_clip_polygon(n_verts, vbuf, _vbuf2);
     if (!n_verts)

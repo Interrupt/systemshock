@@ -427,7 +427,7 @@ uchar _tt_wrap_check(long *line_num, long *cur_pos)
          tt_fill_line(NULL,TTF_INSFRONT,ln+1,s);
          _tt_break_line(ln,brk-1);
          _tt->line_info[ln].flg&=(~TTC_FLG_RET); /* punt the return */
-         printf("Note strlen %d and stl %ld for .%s./.%s.\n",strlen(s),_tt->line_info[(*line_num)+1].stl,s,_tt->lines[(*line_num)+1]);
+         printf("Note strlen %lu and stl %ld for .%s./.%s.\n",strlen(s),_tt->line_info[(*line_num)+1].stl,s,_tt->lines[(*line_num)+1]);
          if ((*cur_pos)>brk)
           { (*line_num)++; (*cur_pos)-=brk; }
          wr=TRUE;

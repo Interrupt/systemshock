@@ -130,7 +130,7 @@ void mfd_ammo_expose(ubyte control) {
     uchar full = control & MFD_EXPOSE_FULL;
     if (control & MFD_EXPOSE) // Time to draw stuff
     {
-        gr_set_font((grs_font *)ResGet(MFD_FONT));
+        gr_set_font((grs_font *)ResGet(MFD_FONT, FORMAT_FONT));
 
         // Clear the canvas by drawing the background bitmap
         if (!full_game_3d)
@@ -215,7 +215,7 @@ uchar mfd_ammo_handler(MFD *m, uiEvent *ev) {
         return FALSE;
 
     pos = MakePoint(ev->pos.x - m->rect.ul.x, ev->pos.y - m->rect.ul.y);
-    gr_font_char_size((grs_font *)ResGet(MFD_FONT), 'X', &w, &h);
+    gr_font_char_size((grs_font *)ResGet(MFD_FONT, FORMAT_FONT), 'X', &w, &h);
 
     line = (pos.y - AMMO_LIST_Y) / h;
     if (line <= 0)

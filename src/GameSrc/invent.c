@@ -715,7 +715,7 @@ void draw_weapons_list(inv_display *dp) {
     char buf[BUFSZ];
     int i, s;
     short y;
-    gr_set_font((grs_font *)ResLock(WEAPONS_FONT));
+    gr_set_font(ResLock(WEAPONS_FONT, FORMAT_FONT));
 
     if (newpage) {
         gr_set_fcolor(dp->titlecolor);
@@ -900,7 +900,7 @@ static char *generic_name_func(void *vdp, int num, char *buf) {
 
 static void generic_draw_list(inv_display *dp) {
     uchar newpage = inv_last_page != inventory_page;
-    gr_set_font((grs_font *)ResLock(ITEM_FONT));
+    gr_set_font(ResLock(ITEM_FONT, FORMAT_FONT));
 
     draw_quant_list(dp, newpage);
     ResUnlock(ITEM_FONT);
@@ -965,7 +965,7 @@ void generic_drop_func(inv_display *dp, int row) {
 
 static char *generic_quant_func(inv_display *dp, int n, int q, char *buf) {
 #ifndef NO_DUMMIES
-    char *dummy;
+    char* dummy;
     dummy = n + (char*)dp;
 #endif // NO_DUMMIES
     //  itoa(q,buf,10);
@@ -975,7 +975,7 @@ static char *generic_quant_func(inv_display *dp, int n, int q, char *buf) {
 
 char *null_name_func(inv_display *dp, int n, char *buf) {
 #ifndef NO_DUMMIES
-    char *goof;
+    char* goof;
     goof = (char*)dp + n;
 #endif // NO_DUMMIES
     *buf = '\0';
@@ -1019,7 +1019,7 @@ void push_live_grenade_cursor(ObjID obj) {
     void *bits = grenade_bmap_buffer;
 
     grenade_bmap = *bmap;
-    gr_set_font((grs_font *)ResLock(ITEM_FONT));
+    gr_set_font(ResLock(ITEM_FONT, FORMAT_FONT));
     get_string(REF_STR_WordLiveGrenade, live_string, sizeof(live_string));
     gr_string_size(live_string, &w, &h);
     w++;
@@ -1046,7 +1046,7 @@ void push_live_grenade_cursor(ObjID obj) {
     gr_init_bitmap(&grenade_bmap, (uchar *)bits, grenade_bmap.type, grenade_bmap.flags, grenade_bmap.w, grenade_bmap.h);
     gr_init_canvas(&cursor_canvas, (uchar *)bits, BMT_FLAT8, grenade_bmap.w, grenade_bmap.h);
     gr_push_canvas(&cursor_canvas);
-    gr_set_font((grs_font *)ResGet(ITEM_FONT));
+    gr_set_font(ResGet(ITEM_FONT, FORMAT_FONT));
     gr_clear(0);
 #ifdef SVGA_SUPPORT
     if (convert_use_mode > 0) {
@@ -1449,7 +1449,7 @@ void draw_general_list(inv_display *dp) {
     ubyte known_active = known_actives[dp->activenum];
     uchar newactive = known_active != active;
 
-    gr_set_font((grs_font *)ResLock(ITEM_FONT));
+    gr_set_font(ResLock(ITEM_FONT, FORMAT_FONT));
 
     if (newpage) {
         gr_set_fcolor(dp->titlecolor);
@@ -1704,7 +1704,7 @@ extern char *email_name_func(void *dp, int num, char *buf);
 static uchar email_morebuttons[2];
 
 void email_more_draw(inv_display *dp) {
-    gr_set_font((grs_font *)ResLock(ITEM_FONT));
+    gr_set_font(ResLock(ITEM_FONT, FORMAT_FONT));
 
     if (dp->relnum % 2 == 1) {
         int i;
@@ -1974,7 +1974,7 @@ errtype inventory_clear(void) {
         r.lr.x = INVENTORY_PANEL_X + INVENTORY_PANEL_WIDTH;
         r.lr.y = INVENTORY_PANEL_Y + INVENTORY_PANEL_HEIGHT;
         if (dirty_inv_canvas) {
-            FrameDesc *f = (FrameDesc *)RefGet(REF_IMG_bmBlankInventoryPanel);
+            FrameDesc *f = RefGet(REF_IMG_bmBlankInventoryPanel, FORMAT_FRAMEDESC);
             LG_memcpy(inv_backgnd.bits, f + 1, f->bm.w * f->bm.h);
             dirty_inv_canvas = FALSE;
         }
@@ -2492,7 +2492,7 @@ LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **p
     invrect.ul.y = invrect.lr.y;
     invrect.lr.y = RectHeight(root->r);
     region_create(root, pagereg, &invrect, 0, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
-    uiInstallRegionHandler(pagereg, (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), (uiHandlerProc)pagebutton_mouse_handler,
+    uiInstallRegionHandler(pagereg, (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), pagebutton_mouse_handler,
                            0, &id);
     uiSetRegionDefaultCursor(pagereg, &globcursor);
 
@@ -2512,16 +2512,14 @@ LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **p
         }
 
         // Pull in the background bitmap
-        ResLock(RES_gamescrGfx);
-        f = (FrameDesc *)RefLock(REF_IMG_bmBlankInventoryPanel);
+        f = RefLock(REF_IMG_bmBlankInventoryPanel, FORMAT_FRAMEDESC);
         inv_backgnd = f->bm;
 
         // This background is going to get used by the 360 ware
         // in fullscreen mode, so we need extra bits
         inv_backgnd.bits = (uchar *)malloc(MAX_INV_FULL_WD(INV_FULL_WD) * MAX_INV_FULL_HT(grd_cap->h - GAME_MESSAGE_Y));
         LG_memcpy(inv_backgnd.bits, (f + 1), f->bm.w * f->bm.h);
-        ResUnlock(RES_gamescrGfx);
-        ResUnlock(RES_gamescrGfx);
+	RefUnlock(REF_IMG_bmBlankInventoryPanel);
 
         // init the canvas
         gr_init_sub_canvas(grd_scr_canv, &inv_norm_canvas, INVENTORY_PANEL_X, INVENTORY_PANEL_Y, INVENTORY_PANEL_WIDTH,

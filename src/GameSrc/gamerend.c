@@ -179,7 +179,7 @@ void do_secret_fx(void) { // boy is this a hack....
     Ref str;
 
     if (fx_font == NULL)
-        fx_font = (grs_font *)ResLock(RES_mfdFont);
+        fx_font = ResLock(RES_mfdFont, FORMAT_FONT);
     switch (secret_render_fx & TYPE_REND_SFX) {
     case DYING_REND_SFX: // chevron drain, perhaps dim out, view rock at end.....
         secret_render_fx++;
@@ -252,7 +252,7 @@ void do_secret_fx(void) { // boy is this a hack....
         int stage = (MISSION_3_TICKS - player_struct.game_time) / CIT_CYCLE;
 
         tmp_buf[0] = tmp_buf[1] = '0';
-        f = (grs_font *)ResLock(FAKEWIN_NUM_FONT);
+        f = ResLock(FAKEWIN_NUM_FONT, FORMAT_FONT);
         gr_set_font(f);
         gr_string_size(tmp_buf, &w, &h);
 

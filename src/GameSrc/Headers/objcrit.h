@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objsim.h"
 #include "objclass.h"
 
-#pragma pack(2)
+#pragma pack(push,2)
 
 typedef struct {
     //   COMMON_OBJSPEC_FIELDS;
@@ -48,7 +48,7 @@ typedef struct {
     fix des_heading, des_speed, urgency;
     short wait_frames;
     ushort flags;
-    ulong attack_count; // can attack when game time reaches this
+    uint32_t attack_count; // can attack when game time reaches this
     ubyte ai_mode;
     ubyte mood;
     ubyte orders;
@@ -81,7 +81,7 @@ typedef struct {
     fix des_heading, des_speed, urgency;
     short wait_frames;
     short base_time_interval;
-    ulong attack_count; // can attack when game time reaches this
+    uint32_t attack_count; // can attack when game time reaches this
     ubyte ai_mode;
     ubyte mood;
     ubyte orders;
@@ -263,5 +263,7 @@ extern ObjCritter default_critter;
 #define get_crit_view(oisd) (objCritters[osid].current_posture >> 8)
 #define set_crit_view(osid, newview) \
     objCritters[osid].current_posture = (newview << 8) + (objCritters[osid].current_posture & 0xF)
+
+#pragma pack(pop)
 
 #endif // __OBJCRIT_H

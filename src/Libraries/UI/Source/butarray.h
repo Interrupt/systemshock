@@ -95,11 +95,11 @@ Gadget *gad_buttonarray_create(Gadget *parent, LGPoint coord, int z, int msize_x
 
 // Fills in a slot in the button array with a button of type type, with display information disp_data.
 // The button will occupy the first empty slot.
-errtype gad_buttonarray_addbutton(Gadget *g, int type, void *disp_data);
+errtype gad_buttonarray_addbutton(Gadget *g, int type, intptr_t disp_data);
 
 // Like gad_buttonarray_addbutton but allows specification of the x and y coordinates within the 
 // button matrix for the new button.
-errtype gad_buttonarray_addbutton_at(Gadget *g, int type, void *disp_data, int coord_x, int coord_y);
+errtype gad_buttonarray_addbutton_at(Gadget *g, int type, intptr_t disp_data, int coord_x, int coord_y);
 
 // Set the offset of the buttonarray to an arbitrary x & y coordinate
 errtype gad_buttonarray_setoffset(Gadget *g, int offset_x, int offset_y);

@@ -191,16 +191,6 @@ extern grs_canvas inv_view360_canvas;
 #define BUTTON_COLOR GREEN_BASE + 2
 #define BUTTON_SHADOW 7
 
-#define BUTTON_USERDATA_SIZ 32
-
-typedef struct {
-    LGRect rect;
-    uchar user[BUTTON_USERDATA_SIZ];
-    ulong evmask;
-    void (*drawfunc)(uchar butid);
-    uchar (*handler)(uiEvent *ev, uchar butid);
-} opt_button;
-
 // SLIDER WIDGETS:
 // structure for slider widget.  The slider has a pointer to a uchar,
 // ushort, or uint, which it sets to a value in the range [0,maxval].
@@ -314,6 +304,21 @@ typedef struct {
 // handled by another gadget is taken by the slorker.
 //
 typedef uchar (*slorker)(uchar butid);
+
+typedef struct {
+    LGRect rect;
+    union {
+        opt_slider_state     slider_st;
+        opt_pushbutton_state pushbutton_st;
+        opt_text_state       text_st;
+        opt_multi_state      multi_st;
+        opt_textlist_state   textlist_st;
+        slorker              sl;
+    } user;
+    ulong evmask;
+    void (*drawfunc)(uchar butid);
+    uchar (*handler)(uiEvent *ev, uchar butid);
+} opt_button;
 
 void verify_screen_init(void (*verify)(uchar butid), slorker slork);
 // void verify_screen_init(void (*verify)(uchar butid), void (*slork)(uchar butid));
@@ -445,7 +450,7 @@ void wrapper_draw_background(short ulx, short uly, short lrx, short lry) {
 }
 
 void slider_draw_func(uchar butid) {
-    opt_slider_state *st = (opt_slider_state *)&(OButtons[butid].user);
+    opt_slider_state *st = &(OButtons[butid].user.slider_st);
     short w, h, sw;
     char *title;
 
@@ -479,7 +484,7 @@ void slider_draw_func(uchar butid) {
 }
 
 void slider_deal(uchar butid, uchar deal) {
-    opt_slider_state *st = (opt_slider_state *)&(OButtons[butid].user);
+    opt_slider_state *st = &(OButtons[butid].user.slider_st);
     uint val;
 
     deal = deal || st->smooth;
@@ -496,7 +501,7 @@ void slider_deal(uchar butid, uchar deal) {
 //
 
 uchar slider_handler(uiEvent *ev, uchar butid) {
-    opt_slider_state *st = (opt_slider_state *)&(OButtons[butid].user);
+    opt_slider_state *st = &(OButtons[butid].user.slider_st);
     uiMouseEvent *mev = (uiMouseEvent *)ev;
 
     switch (ev->type) {
@@ -527,7 +532,7 @@ uchar slider_handler(uiEvent *ev, uchar butid) {
 
 void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void *var, uint maxval, uchar baseval,
                  void *dealfunc, LGRect *r) {
-    opt_slider_state *st = (opt_slider_state *)&OButtons[butid].user;
+    opt_slider_state *st = &OButtons[butid].user.slider_st;
     uint val;
 
     if (maxval)
@@ -565,7 +570,7 @@ void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void *var, 
 void pushbutton_draw_func(uchar butid) {
     char *btext;
     short w, h;
-    opt_pushbutton_state *st = (opt_pushbutton_state *)&OButtons[butid].user;
+    opt_pushbutton_state *st = &OButtons[butid].user.pushbutton_st;
 
     w = BR(butid).lr.x - BR(butid).ul.x;
     h = BR(butid).lr.y - BR(butid).ul.y;
@@ -579,15 +584,15 @@ void pushbutton_draw_func(uchar butid) {
 uchar pushbutton_handler(uiEvent *ev, uchar butid) {
     if (((ev->type == UI_EVENT_MOUSE) && (ev->subtype & MOUSE_DOWN)) ||
         ((ev->type == UI_EVENT_KBD_COOKED) &&
-         ((((uiCookedKeyEvent *)ev)->code & 0xFF) == ((opt_pushbutton_state *)(&OButtons[butid].user))->keyeq))) {
-        ((opt_pushbutton_state *)&OButtons[butid].user)->pushfunc(butid);
+         ((((uiCookedKeyEvent *)ev)->code & 0xFF) == OButtons[butid].user.pushbutton_st.keyeq))) {
+        OButtons[butid].user.pushbutton_st.pushfunc(butid);
         return TRUE;
     }
     return FALSE;
 }
 
 void pushbutton_init(uchar butid, uchar keyeq, Ref descrip, void (*pushfunc)(uchar butid), LGRect *r) {
-    opt_pushbutton_state *st = (opt_pushbutton_state *)&OButtons[butid].user;
+    opt_pushbutton_state *st = &OButtons[butid].user.pushbutton_st;
 
     OButtons[butid].rect = *r;
     OButtons[butid].evmask = UI_EVENT_MOUSE | UI_EVENT_KBD_COOKED;
@@ -601,14 +606,14 @@ void pushbutton_init(uchar butid, uchar keyeq, Ref descrip, void (*pushfunc)(uch
 }
 
 void dim_pushbutton(uchar butid) {
-    opt_pushbutton_state *st = (opt_pushbutton_state *)&OButtons[butid].user;
+    opt_pushbutton_state *st = &OButtons[butid].user.pushbutton_st;
     OButtons[butid].evmask = 0;
     st->fcolor += 4;
     st->shadow -= 3;
 }
 
 void bright_pushbutton(uchar butid) {
-    opt_pushbutton_state *st = (opt_pushbutton_state *)&OButtons[butid].user;
+    opt_pushbutton_state *st = &OButtons[butid].user.pushbutton_st;
     OButtons[butid].evmask = 0;
     st->fcolor -= 2;
     st->shadow += 2;
@@ -616,7 +621,7 @@ void bright_pushbutton(uchar butid) {
 
 // text widget
 void text_draw_func(uchar butid) {
-    opt_text_state *st = (opt_text_state *)&OButtons[butid].user;
+    opt_text_state *st = &OButtons[butid].user.text_st;
     char *s = get_temp_string(st->descrip);
 
     wrap_text(s, BR(butid).lr.x - BR(butid).ul.x);
@@ -626,7 +631,7 @@ void text_draw_func(uchar butid) {
 }
 
 void textwidget_init(uchar butid, uchar color, Ref descrip, LGRect *r) {
-    opt_text_state *st = (opt_text_state *)&OButtons[butid].user;
+    opt_text_state *st = &OButtons[butid].user.text_st;
 
     OButtons[butid].rect = *r;
     st->descrip = descrip;
@@ -639,7 +644,7 @@ void textwidget_init(uchar butid, uchar color, Ref descrip, LGRect *r) {
 // a keywidget is just like a pushbutton, but invisible.
 //
 void keywidget_init(uchar butid, uchar keyeq, void (*pushfunc)(uchar butid)) {
-    opt_pushbutton_state *st = (opt_pushbutton_state *)&OButtons[butid].user;
+    opt_pushbutton_state *st = &OButtons[butid].user.pushbutton_st;
 
     OButtons[butid].evmask = UI_EVENT_KBD_COOKED;
     OButtons[butid].drawfunc = NULL;
@@ -692,7 +697,7 @@ void multi_draw_func(uchar butid) {
     char *btext;
     short w, h, x, y;
     uint val = 0;
-    opt_multi_state *st = (opt_multi_state *)&OButtons[butid].user;
+    opt_multi_state *st = &OButtons[butid].user.multi_st;
 
     gr_set_fcolor(BUTTON_COLOR);
     ss_rect(BR(butid).ul.x, BR(butid).ul.y, BR(butid).lr.x, BR(butid).lr.y);
@@ -712,7 +717,7 @@ void multi_draw_func(uchar butid) {
 
 uchar multi_handler(uiEvent *ev, uchar butid) {
     uint val = 0, delta = 0;
-    opt_multi_state *st = (opt_multi_state *)&OButtons[butid].user;
+    opt_multi_state *st = &OButtons[butid].user.multi_st;
 
     if (ev->type == UI_EVENT_MOUSE) {
         if (ev->subtype & MOUSE_LEFT)
@@ -722,7 +727,7 @@ uchar multi_handler(uiEvent *ev, uchar butid) {
     } else if (ev->type == UI_EVENT_KBD_COOKED) {
         uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
 
-        if (tolower(kev->code & 0xFF) == ((opt_multi_state *)(&OButtons[butid].user))->keyeq) {
+        if (tolower(kev->code & 0xFF) == st->keyeq) {
             if (isupper(kev->code & 0xFF))
                 delta = st->num_opts - 1;
             else
@@ -745,7 +750,7 @@ uchar multi_handler(uiEvent *ev, uchar butid) {
 
 void multi_init(uchar butid, uchar key, Ref descrip, Ref optbase, Ref feedbase, uchar type, void *var, uchar num_opts,
                 void *dealfunc, LGRect *r) {
-    opt_multi_state *st = (opt_multi_state *)&OButtons[butid].user;
+    opt_multi_state *st = &OButtons[butid].user.multi_st;
 
     OButtons[butid].rect = *r;
     OButtons[butid].drawfunc = multi_draw_func;
@@ -767,7 +772,7 @@ void multi_init(uchar butid, uchar key, Ref descrip, Ref optbase, Ref feedbase, 
 
 #pragma disable_message(202)
 uchar keyslork_handler(uiEvent *ev, uchar butid) {
-    slorker *slork = (slorker *)(&OButtons[butid].user);
+    slorker *slork = &OButtons[butid].user.sl;
 
     return ((*slork)(butid));
 }
@@ -775,7 +780,7 @@ uchar keyslork_handler(uiEvent *ev, uchar butid) {
 
 void slork_init(uchar butid, slorker slork) {
     LG_memset(&OButtons[butid].rect, 0, sizeof(LGRect));
-    *((slorker *)&(OButtons[butid].user)) = slork;
+    OButtons[butid].user.sl = slork;
     OButtons[butid].evmask = UI_EVENT_KBD_COOKED;
     OButtons[butid].drawfunc = NULL;
     OButtons[butid].handler = keyslork_handler;
@@ -836,7 +841,7 @@ void textlist_draw_line(opt_textlist_state *st, int line, uchar butid) {
 
 void textlist_draw_func(uchar butid) {
     int i;
-    opt_textlist_state *st = (opt_textlist_state *)&OButtons[butid].user;
+    opt_textlist_state *st = &OButtons[butid].user.textlist_st;
 
     for (i = 0; i < st->numblocks; i++) {
         textlist_draw_line(st, i, butid);
@@ -889,7 +894,7 @@ void textlist_select_line(opt_textlist_state *st, uchar butid, uchar line, uchar
 
 uchar textlist_handler(uiEvent *ev, uchar butid) {
     uchar line;
-    opt_textlist_state *st = (opt_textlist_state *)&OButtons[butid].user;
+    opt_textlist_state *st = &OButtons[butid].user.textlist_st;
 
     if ((ev->type == UI_EVENT_MOUSE) && (ev->subtype & MOUSE_DOWN)) {
         uiMouseEvent *mev = (uiMouseEvent *)ev;
@@ -1010,7 +1015,7 @@ uchar textlist_handler(uiEvent *ev, uchar butid) {
 void textlist_init(uchar butid, char *text, uchar numblocks, uchar blocksiz, uchar editable, ushort editmask,
                    ushort selectmask, ushort initmask, Ref invalidstr, uchar validcol, uchar selectcol,
                    uchar invalidcol, Ref selectprompt, void (*dealfunc)(uchar butid, uchar index), LGRect *r) {
-    opt_textlist_state *st = (opt_textlist_state *)&OButtons[butid].user;
+    opt_textlist_state *st = &OButtons[butid].user.textlist_st;
 
     if (r == NULL) {
         BR(butid).ul.x = 2;
@@ -1607,7 +1612,7 @@ void screenmode_change(uchar new_mode) {
     extern short mode_id;
     mode_id = new_mode;
     QUESTVAR_SET(SCREENMODE_QVAR, new_mode);
-    change_mode_func(0, 0, _current_loop);
+    change_mode_func(0, 0, (unsigned int)_current_loop);
     wrapper_screenmode_hack = TRUE;
 
     INFO("Changed screen mode to %i\n", mode_id);
@@ -2183,7 +2188,7 @@ void wrapper_start(void (*init)(void)) {
     inventory_page = -1;
     wrapper_panel_on = TRUE;
     suspend_game_time();
-    opt_font = (grs_font *)ResLock(OPTIONS_FONT);
+    opt_font = ResLock(OPTIONS_FONT, FORMAT_FONT);
 #ifndef STATIC_BUTTON_STORE
     OButtons = (opt_button *)(_offscreen_mfd.bm.bits);
     fv = full_visible;
@@ -2267,7 +2272,7 @@ errtype do_savegame_guts(uchar slot) {
 
 #pragma disable_message(202)
 uchar wrapper_region_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
-    uiMouseEvent *me = (uiMouseEvent*)ev;
+    uiMouseEvent* me = (uiMouseEvent*)ev;
     /*if (global_fullmap->cyber)
     {
        uiSetRegionDefaultCursor(r,NULL);
@@ -2303,7 +2308,7 @@ errtype make_options_cursor(void) {
     gr_push_canvas(&cursor_canv);
     gr_clear(0);
     s = get_temp_string(REF_STR_ClickForOptions);
-    gr_set_font((grs_font *)ResLock(OPTIONS_FONT));
+    gr_set_font(ResLock(OPTIONS_FONT, FORMAT_FONT));
     wrap_text(s, orig_w - 3);
     gr_string_size(s, &w, &h);
     gr_set_fcolor(0xB8);

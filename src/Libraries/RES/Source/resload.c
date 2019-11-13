@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-//#include <io.h>
+#include <assert.h>
 #include <stdlib.h>
 
 #include "lzw.h"
@@ -57,10 +57,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //		id = resource id
 //	-----------------------------------------------------------
 
-void *ResLoadResource(Id id) {
+void *ResLoadResource(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer) {
     ResDesc *prd;
 
-    // If doesn't exit, forget it
+    // If doesn't exist, forget it
     if (!ResInUse(id))
         return NULL;
     if (!ResCheckId(id))
@@ -74,13 +74,26 @@ void *ResLoadResource(Id id) {
         return NULL;
     }
 
-    // Allocate memory, setting magic id so pager can tell who it is if need be.
-    prd->ptr = malloc(prd->size);
-    if (prd->ptr == NULL)
-        return (NULL);
-
-    // Load from disk
-    ResRetrieve(id, prd->ptr);
+    // Should not be called if resource is already loaded, unless it's been
+    // preloaded and we now need to decode it.
+    if (prd->ptr == NULL) {
+	// Allocate memory, setting magic id so pager can tell who it is if need be.
+	prd->ptr = malloc(prd->size);
+	if (prd->ptr == NULL)
+	    return (NULL);
+	// Load from disk
+	ResRetrieve(id, prd->ptr);
+    } else {
+	assert(decoder != NULL);
+    }
+    // Set free func if supplied.
+    prd->free_func = freer;
+    // Decode if a decoder was supplied.
+    if (decoder != NULL) {
+	assert(prd->decoded == NULL);
+	prd->decoded = decoder(prd->ptr, prd->size, data);
+	return prd->decoded;
+    }
 
     // Return ptr
     return (prd->ptr);
@@ -130,7 +143,7 @@ bool ResRetrieve(Id id, void *buffer) {
         p += sizeof(int16_t);
         fread(p, sizeof(int32_t), (numRefs + 1), fd);
         p += sizeof(int32_t) * (numRefs + 1);
-        size -= REFTABLESIZE(numRefs);
+        size -= (p - (uint8_t*)buffer);
     }
 
     // Read in data

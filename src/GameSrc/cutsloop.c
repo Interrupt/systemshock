@@ -234,7 +234,7 @@ void cutscene_loop(void)
     {
       short w, h, x, y;
       grs_font *fon = gr_get_font();
-      gr_set_font((grs_font *)ResLock(RES_cutsceneFont));
+      gr_set_font((grs_font *)ResLock(RES_cutsceneFont, FORMAT_FONT));
       gr_string_size(buf, &w, &h);
       x = (320-w)/2;
       y = 158+(200-158-h)/2;

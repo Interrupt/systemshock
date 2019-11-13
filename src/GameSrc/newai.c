@@ -606,7 +606,8 @@ void load_combat_art(int cp_num) {
         extern ulong last_real_time;
         for (p = ATTACKING_CRITTER_POSTURE; p <= ATTACKING2_CRITTER_POSTURE; p++) {
             if (p != KNOCKBACK_CRITTER_POSTURE) {
-                ResLock(posture_bases[p] + cp_num);
+                // FIXME does this need decoding?
+                ResLock(posture_bases[p] + cp_num, FORMAT_PRELOAD);
                 ResUnlock(posture_bases[p] + cp_num);
             }
         }

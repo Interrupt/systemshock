@@ -37,6 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res.h"
 #include "res_.h"
 
+#define REFPTR(prt,index) (((char*)(prt)->raw_data)+(prt)->entries[index].offset)
+
 //	--------------------------------------------------------
 //
 //	ResMake() makes a resource from a data block.
@@ -53,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  For Mac version, use Resource Manager to add the resource to indicated res
 //  file.
 
-void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint8_t flags) {
+void ResMake(Id id, void *ptr, size_t size, uint8_t type, int32_t filenum, uint8_t flags, const ResourceFormat *format) {
 
     TRACE("%s: Making id $%x", __FUNCTION__, id);
     ResDesc *prd;
@@ -72,7 +74,14 @@ void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint
     }
 
     // Add us to the soup, set lock so doesn't get swapped out
-    prd->ptr = ptr;
+    if (format != NULL && format->encoder != NULL) {
+        prd->decoded = ptr;
+	prd->ptr = (format->encoder)(ptr, &size, format->data);
+	prd->flags = RES_OWNS_RAW_PTR;
+    } else {
+	prd->ptr = ptr;
+	prd->flags = 0;
+    }
     prd->size = size;
     prd->filenum = filenum;
     prd->lock = 1;
@@ -81,6 +90,7 @@ void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint
     prd2->type = type;
 }
 
+#if 0 // not used by game code
 //	---------------------------------------------------------------
 //
 //	ResMakeCompound() makes an empty compound resource
@@ -100,11 +110,12 @@ void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags) {
     sizeTable = REFTABLESIZE(0);
     prt = (RefTable *)malloc(sizeTable);
     prt->numRefs = 0;
-    prt->offset[0] = sizeTable;
+    prt->raw_data = ((uint8_t*)prt) + sizeTable;
 
     // Make a resource out of it
     ResMake(id, prt, sizeTable, type, filenum, flags | RDF_COMPOUND);
 }
+#endif
 
 //	---------------------------------------------------------------
 //
@@ -115,12 +126,13 @@ void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags) {
 //			resource)
 //		itemSize = size of item
 //	---------------------------------------------------------------
+// FIXME needs rework to add or replace a decoded item.
 
 void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
     ResDesc *prd;
     RefTable *prt;
     RefIndex index, i;
-    int32_t sizeItemOffsets, oldSize, sizeDiff;
+    int32_t sizeEntries, oldSize, sizeDiff;
 
     // Error check
     if (!RefCheckRef(ref))
@@ -133,7 +145,7 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
 
     prt = (RefTable *)prd->ptr;
     if (prt == NULL) {
-        prt = (RefTable *)RefGet(ref);
+        prt = RefTableGet(ref);
     }
 
     // If index within current range of compound resource, replace or insert
@@ -152,52 +164,62 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
             sizeDiff = oldSize - itemSize;
 
             for (i = index + 1; i <= prt->numRefs; i++)
-                prt->offset[i] -= sizeDiff;
+                prt->entries[i].offset -= sizeDiff;
             prd->size -= sizeDiff;
             memmove(REFPTR(prt, index + 1), REFPTR(prt, index + 1) + sizeDiff,
-                    prt->offset[prt->numRefs] - prt->offset[index + 1]);
+                    prt->entries[prt->numRefs].offset - prt->entries[index + 1].offset);
             memcpy(REFPTR(prt, index), pitem, itemSize);
-            prd->ptr = realloc(prd->ptr, prd->size);
+	    prt = realloc(prt, prd->size);
+            prd->ptr = prt;
+	    prt->raw_data = (void*)((char*)prt + REFTABLESIZE(prt->numRefs));
         } else {
             // New item is larger.
             // Spew(DSRC_RES_Make, ("ResAddRef: replacing smaller ref\n"));
             sizeDiff = itemSize - oldSize;
 
             prd->size += sizeDiff;
-            prd->ptr = prt = (RefTable *)realloc(prd->ptr, prd->size);
+	    prt = realloc(prt, prd->size);
+            prd->ptr = prt;
+	    prt->raw_data = (void*)((char*)prt + REFTABLESIZE(prt->numRefs));
             memmove(REFPTR(prt, index + 1) + sizeDiff, REFPTR(prt, index + 1),
-                    prt->offset[prt->numRefs] - prt->offset[index + 1]);
+                    prt->entries[prt->numRefs].offset - prt->entries[index + 1].offset);
 
             for (i = index + 1; i <= prt->numRefs; i++)
-                prt->offset[i] += sizeDiff;
+                prt->entries[i].offset += sizeDiff;
             memcpy(REFPTR(prt, index), pitem, itemSize);
         }
+	// Update the size in the table.
+	prt->entries[index].size = itemSize;
     } else {
         // Else if index exceeds current range, expand
         // Spew(DSRC_RES_Make, ("ResAddRef: extending compound resource\n"));
 
         // Extend resource for new offset(s) and data item
-        sizeItemOffsets = sizeof(int32_t) * ((index + 1) - prt->numRefs);
-        prd->size += sizeItemOffsets + itemSize;
+        sizeEntries = sizeof(RefTableEntry) * ((index + 1) - prt->numRefs);
+        prd->size += sizeEntries + itemSize;
         prd->ptr = realloc(prd->ptr, prd->size);
         prt = (RefTable *)prd->ptr;
 
         // Shift data upwards to make room for new offset(s)
-        memmove(REFPTR(prt, 0) + sizeItemOffsets, REFPTR(prt, 0), prd->size - REFTABLESIZE(index + 1));
+        memmove(REFPTR(prt, 0) + sizeEntries, REFPTR(prt, 0), prd->size - REFTABLESIZE(index + 1));
+	prt->raw_data = (void*)((char*)prt) + REFTABLESIZE(index);
 
         // Advance old offsets, set new ones
-        for (i = 0; i <= prt->numRefs; i++) {
-            prt->offset[i] += sizeItemOffsets;
-        }
+	// No need to update offsets, they are relative to the raw_data pointer
+	// which we've already updated.
+	//        for (i = 0; i <= prt->numRefs; i++) {
+	//            prt->offset[i] += sizeItemOffsets;
+	//        }
 
-        for (i = prt->numRefs + 1; i <= index; i++) {
-            prt->offset[i] = prt->offset[prt->numRefs];
+        for (i = prt->numRefs; i < index; i++) {
+            prt->entries[i].offset = prt->entries[prt->numRefs-1].offset;
         }
         // Save size of whole dir entry
-        prt->offset[index + 1] = prt->offset[index] + itemSize;
+	//        prt->offset[index + 1] = prt->offset[index] + itemSize;
 
         // Copy data into place, set new numRefs
         memcpy(REFPTR(prt, index), pitem, itemSize);
+	prt->entries[index].size = itemSize;
         prt->numRefs = index + 1;
     }
 }
@@ -216,4 +238,10 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
 //  For Mac version: use ReleaseResource to free the handle (the pointer that
 //  the handle was made from will still be around).
 
-void ResUnmake(Id id) { memset(RESDESC(id), 0, sizeof(ResDesc)); }
+void ResUnmake(Id id) {
+    ResDesc *prd = RESDESC(id);
+    if (prd->flags & RES_OWNS_RAW_PTR) {
+	free(prd->ptr);
+    }
+    memset(prd, 0, sizeof(ResDesc));
+}

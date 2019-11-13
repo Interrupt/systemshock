@@ -72,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Typedefs
 typedef struct {
    int type;
-   void *disp_data;
+   intptr_t disp_data;
 } TNGButtonArrayElement;
 
 typedef struct _butdrawcallback
@@ -144,8 +144,8 @@ uchar tng_buttonarray_signal(TNG *ptng, ushort signal);
 
 errtype tng_buttonarray_select(TNG *ptng);
 errtype tng_buttonarray_scroll(TNG *ptng);
-errtype tng_buttonarray_addbutton_at(TNG *ptng, int type, void *disp_data, int coord_x, int coord_y);
-errtype tng_buttonarray_addbutton(TNG *ptng, int type, void *disp_data);
+errtype tng_buttonarray_addbutton_at(TNG *ptng, int type, intptr_t disp_data, int coord_x, int coord_y);
+errtype tng_buttonarray_addbutton(TNG *ptng, int type, intptr_t disp_data);
 errtype tng_buttonarray_setoffset(TNG *ptng, int offset_x, int offset_y);
 
 // Draws button i,j of the buttonarray pointed to by ptng.

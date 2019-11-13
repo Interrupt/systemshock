@@ -46,17 +46,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"  // every file should have this
 #include "error.h"
 #include <stdio.h>
+#include <stdint.h>
 
 // Defines
 // Comparson function, works like strcmp
 typedef int (*QueueCompare)(void* elem1, void* elem2);
 
-#pragma pack(2)
+#pragma pack(push,2)
 typedef struct _pqueue
 {
-   int size;
-   int fullness;
-   int elemsize;
+   int32_t size;
+   int32_t fullness;
+   int32_t elemsize;
    uchar grow;
    char* vec;
    QueueCompare comp;
@@ -95,5 +96,6 @@ errtype pqueue_destroy(PQueue* q);
 
 // Globals
 
-#endif // __PQUEUE_H
+#pragma pack(pop)
 
+#endif // __PQUEUE_H

@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision
  *
  */
-
+#include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -344,7 +344,9 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum, int32_t dataOffset
 
     if (pDirEntry->flags & RDF_LOADONOPEN) {
         currOffset = ftell(resFile[filenum].fd);
-        ResLoadResource(pDirEntry->id);
+	// Preload raw data, subsequent Lock() or Get() calls will decode if
+	// the caller so wishes.
+        ResLoadResource(pDirEntry->id, NULL, 0, NULL);
         ResAddToTail(prd);
         fseek(resFile[filenum].fd, currOffset, SEEK_SET);
     }

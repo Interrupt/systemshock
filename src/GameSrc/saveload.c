@@ -95,14 +95,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void load_level_data();
 void store_objects(char **buf, ObjID *obj_array, char obj_count);
 void restore_objects(char *buf, ObjID *obj_array, char obj_count);
-errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags);
+errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags, const ResourceFormat *format);
 
-#define REF_WRITE(id_num, index, x)                  \
-    write_id(id_num, index, &(x), sizeof(x), fd, 0)
-#define REF_WRITE_LZW(id_num, index, x)                    \
-    write_id(id_num, index, &(x), sizeof(x), fd, RDF_LZW)
+#define REF_WRITE(id_num, index, x, f)			\
+    write_id(id_num, index, &(x), sizeof(x), fd, 0, f)
+#define REF_WRITE_LZW(id_num, index, x, f)			\
+    write_id(id_num, index, &(x), sizeof(x), fd, RDF_LZW, f)
 #define REF_WRITE_RAW(id_num, index, ptr, sz)      \
-    write_id(id_num, index, ptr, sz, fd, RDF_LZW)
+    write_id(id_num, index, ptr, sz, fd, RDF_LZW, FORMAT_RAW)
 #define REF_READ(id_num, index, x)    \
     ResExtract(id_num + index, &(x))
 
@@ -119,6 +119,95 @@ extern ObjID hack_cam_objs[NUM_HACK_CAMERAS];
 extern ObjID hack_cam_surrogates[NUM_HACK_CAMERAS];
 extern height_semaphor h_sems[NUM_HEIGHT_SEMAPHORS];
 extern uchar trigger_check;
+
+// Describe the layout of the map info structure (FullMap). While technically
+// this ends in an array, in practice it only ever has a single entry so just
+// treat it as a flat structure.
+const ResLayout FullMapLayout = {
+    58,              // size on disc
+    sizeof(FullMap), // size in memory
+    0,               // flags
+    {
+	{ RFFT_UINT32, offsetof(FullMap, x_size)                  },
+	{ RFFT_UINT32, offsetof(FullMap, y_size)                  },
+	{ RFFT_UINT32, offsetof(FullMap, x_shft)                  },
+	{ RFFT_UINT32, offsetof(FullMap, y_shft)                  },
+	{ RFFT_UINT32, offsetof(FullMap, z_shft)                  },
+	{ RFFT_PAD,    4 /* map elems pointer */                  },
+	{ RFFT_UINT8,  offsetof(FullMap, cyber)                   },
+	{ RFFT_UINT32, offsetof(FullMap, x_scale)                 },
+	{ RFFT_UINT32, offsetof(FullMap, y_scale)                 },
+	{ RFFT_UINT32, offsetof(FullMap, z_scale)                 },
+	{ RFFT_UINT32, offsetof(FullMap, sched[0].queue.size)     },
+	{ RFFT_UINT32, offsetof(FullMap, sched[0].queue.fullness) },
+	{ RFFT_UINT32, offsetof(FullMap, sched[0].queue.elemsize) },
+	{ RFFT_UINT8,  offsetof(FullMap, sched[0].queue.grow)     },
+	{ RFFT_PAD,    12 /* 3 pointers at end */                 },
+	{ RFFT_END,    0 }
+    }
+};
+const ResourceFormat FullMapFormat = { ResDecode,
+				       ResEncode,
+				       (UserDecodeData)&FullMapLayout,
+				       NULL };
+#define FORMAT_FULLMAP (&FullMapFormat)
+
+
+// Describe the layout of the anims table in a resfile.
+const ResLayout AnimLayoutPC = {
+    15,                  // size on disc
+    sizeof(AnimListing), // size in memory
+    LAYOUT_FLAG_ARRAY,   // flags
+    {
+	{ RFFT_UINT16, offsetof(AnimListing, id)        },
+	{ RFFT_UINT8,  offsetof(AnimListing, flags)     },
+	{ RFFT_UINT16, offsetof(AnimListing, cbtype)    },
+	{ RFFT_UINT32, offsetof(AnimListing, callback)  },
+	{ RFFT_INTPTR, offsetof(AnimListing, user_data) },
+	{ RFFT_UINT16, offsetof(AnimListing, speed)     },
+	{ RFFT_END,    0 }
+    }
+};
+const ResourceFormat AnimFormat = { ResDecode,
+				    NULL,
+				    (UserDecodeData)&AnimLayoutPC,
+				    NULL };
+#define FORMAT_ANIM (&AnimFormat)
+
+// Describe the layout of the objects table in a resfile. (27-byte PC record).
+const ResLayout ObjLayoutPC = {
+    27,                // size on disc
+    sizeof(Obj),       // size in memory
+    LAYOUT_FLAG_ARRAY, // flags
+    {
+	{ RFFT_UINT8,  offsetof(Obj, active)              },
+	{ RFFT_UINT8,  offsetof(Obj, obclass)             },
+	{ RFFT_UINT8,  offsetof(Obj, subclass)            },
+	{ RFFT_UINT16, offsetof(Obj, specID)              },
+	{ RFFT_UINT16, offsetof(Obj, ref)                 },
+	{ RFFT_UINT16, offsetof(Obj, next)                },
+	{ RFFT_UINT16, offsetof(Obj, prev)                },
+	{ RFFT_UINT16, offsetof(Obj, loc.x)               },
+	{ RFFT_UINT16, offsetof(Obj, loc.y)               },
+	{ RFFT_UINT8,  offsetof(Obj, loc.z)               },
+	{ RFFT_UINT8,  offsetof(Obj, loc.p)               },
+	{ RFFT_UINT8,  offsetof(Obj, loc.h)               },
+	{ RFFT_UINT8,  offsetof(Obj, loc.b)               },
+	{ RFFT_UINT8,  offsetof(Obj, info.ph)             },
+	{ RFFT_UINT8,  offsetof(Obj, info.type)           },
+	{ RFFT_UINT16, offsetof(Obj, info.current_hp)     },
+	{ RFFT_UINT8,  offsetof(Obj, info.make_info)      },
+	{ RFFT_UINT8,  offsetof(Obj, info.current_frame)  },
+	{ RFFT_UINT8,  offsetof(Obj, info.time_remainder) },
+	{ RFFT_UINT8,  offsetof(Obj, info.inst_flags)     },
+	{ RFFT_END,    0 }
+    }
+};
+const ResourceFormat ObjFormat = { ResDecode,
+				   NULL,
+				   (UserDecodeData)&ObjLayoutPC,
+				   NULL };
+#define FORMAT_OBJ (&ObjFormat)
 
 //-------------------------------------------------------
 void store_objects(char **buf, ObjID *obj_array, char obj_count) {
@@ -217,12 +306,12 @@ uchar go_to_different_level(int targlevel) {
         // KLC      start_asynch_digi_fx();
         dynmem_mask = DYNMEM_PARTIAL;
     }
-    //   else if (music_on)									// Don't play music
+    //   else if (music_on)                                                                     // Don't play music
     //   while
-    //      MacTuneShutdown();								// elevator switches levels
+    //      MacTuneShutdown();                                                          // elevator switches levels
 
     // KLC - if changing levels via the elevator, we need to make sure the elevator music
-    //			  continues playing.  We'll do this by queueing up 3 additional chunks of music.
+    //                    continues playing.  We'll do this by queueing up 3 additional chunks of music.
     else if (music_on) {
         for (int t = 0; t < 3; t++) {
             MacTuneQueueTune(mlimbs_boredom);
@@ -307,8 +396,8 @@ uchar go_to_different_level(int targlevel) {
 
 #define ANOTHER_DEFINE_FOR_NUM_LEVELS 16
 
-errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags) {
-    ResMake(id_num + index, ptr, sz, RTYPE_APP, fd, flags);
+errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags, const ResourceFormat *format) {
+    ResMake(id_num + index, ptr, sz, RTYPE_APP, fd, flags, format);
     if (ResWrite(id_num + index) == -1)
         critical_error(CRITERR_FILE | 6);
     ResUnmake(id_num + index);
@@ -364,12 +453,15 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
         return ERR_FOPEN;
     }
 
-    REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
+    REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie, FORMAT_RAW);
 
-    REF_WRITE(id_num, idx++, vnum);
-    REF_WRITE(id_num, idx++, ovnum);
-    REF_WRITE(id_num, idx++, *global_fullmap);
-
+    // xx02 Map version number.
+    REF_WRITE(id_num, idx++, vnum, FORMAT_RAW);
+    // xx03 Object version number.
+    REF_WRITE(id_num, idx++, ovnum, FORMAT_RAW);
+    // xx04 Fullmap.
+    REF_WRITE(id_num, idx++, *global_fullmap, FORMAT_FULLMAP);
+    // xx05 Tile map.
     REF_WRITE_RAW(id_num, idx++, MAP_MAP, sizeof(MapElem) * 64 * 64);
 
     // Here we are writing out the schedules.  It's only a teeny tiny rep exposure.
@@ -377,71 +469,77 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
         int sz = lg_min(global_fullmap->sched[i].queue.fullness + 1, global_fullmap->sched[i].queue.size);
         REF_WRITE_RAW(id_num, idx++, global_fullmap->sched[i].queue.vec, sizeof(SchedEvent) * sz);
     }
-    REF_WRITE(id_num, idx++, loved_textures);
+    // xx07 Textures.
+    REF_WRITE(id_num, idx++, loved_textures, FORMAT_RAW);
 
     obj_zero_unused();
-    REF_WRITE_LZW(id_num, idx++, objs);
-    REF_WRITE_LZW(id_num, idx++, objRefs);
-    REF_WRITE(id_num, idx++, objGuns);
-    REF_WRITE(id_num, idx++, objAmmos);
-    REF_WRITE_LZW(id_num, idx++, objPhysicss);
-    REF_WRITE(id_num, idx++, objGrenades);
-    REF_WRITE(id_num, idx++, objDrugs);
-    REF_WRITE(id_num, idx++, objHardwares);
-    REF_WRITE(id_num, idx++, objSoftwares);
-    REF_WRITE_LZW(id_num, idx++, objBigstuffs);
-    REF_WRITE_LZW(id_num, idx++, objSmallstuffs);
-    REF_WRITE_LZW(id_num, idx++, objFixtures);
-    REF_WRITE_LZW(id_num, idx++, objDoors);
-    REF_WRITE(id_num, idx++, objAnimatings);
-    REF_WRITE_LZW(id_num, idx++, objTraps);
-    REF_WRITE_LZW(id_num, idx++, objContainers);
-    REF_WRITE_LZW(id_num, idx++, objCritters);
+    // xx08 Main object list. Always EASYSAVES, so no conversion needed.
+    REF_WRITE_LZW(id_num, idx++, objs, FORMAT_RAW);
+    // xx09 Object refs.
+    REF_WRITE_LZW(id_num, idx++, objRefs, FORMAT_RAW);
+    // xx10-xx24 Object specific stuff. All EASYSAVES again.
+    REF_WRITE(id_num, idx++, objGuns, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objAmmos, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objPhysicss, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objGrenades, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objDrugs, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objHardwares, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objSoftwares, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objBigstuffs, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objSmallstuffs, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objFixtures, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objDoors, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, objAnimatings, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objTraps, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objContainers, FORMAT_RAW);
+    REF_WRITE_LZW(id_num, idx++, objCritters, FORMAT_RAW);
 
-    // Default objects
-    REF_WRITE(id_num, idx++, default_gun);
-    REF_WRITE(id_num, idx++, default_ammo);
-    REF_WRITE(id_num, idx++, default_physics);
-    REF_WRITE(id_num, idx++, default_grenade);
-    REF_WRITE(id_num, idx++, default_drug);
-    REF_WRITE(id_num, idx++, default_hardware);
-    REF_WRITE(id_num, idx++, default_software);
-    REF_WRITE(id_num, idx++, default_bigstuff);
-    REF_WRITE(id_num, idx++, default_smallstuff);
-    REF_WRITE(id_num, idx++, default_fixture);
-    REF_WRITE(id_num, idx++, default_door);
-    REF_WRITE(id_num, idx++, default_animating);
-    REF_WRITE(id_num, idx++, default_trap);
-    REF_WRITE(id_num, idx++, default_container);
-    REF_WRITE(id_num, idx++, default_critter);
+    // xx25-xx29 Default objects
+    REF_WRITE(id_num, idx++, default_gun, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_ammo, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_physics, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_grenade, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_drug, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_hardware, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_software, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_bigstuff, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_smallstuff, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_fixture, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_door, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_animating, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_trap, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_container, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, default_critter, FORMAT_RAW);
 
     idx++; // KLC - not used   REF_WRITE(id_num,idx++,mvnum);
 
     //   idx++; // where flickers once lived
     idx++; // KLC - not used   REF_WRITE(id_num,idx++,filler);
-    REF_WRITE(id_num, idx++, animtextures);
+    // xx42 Texture animation.
+    REF_WRITE(id_num, idx++, animtextures, FORMAT_RAW);
+    // xx43-xx44 Surveillance
+    REF_WRITE(id_num, idx++, hack_cam_objs, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, hack_cam_surrogates, FORMAT_RAW);
 
-    REF_WRITE(id_num, idx++, hack_cam_objs);
-    REF_WRITE(id_num, idx++, hack_cam_surrogates);
-
-    // Other level data -- at resource id right after maps
+    // xx45 Other level data -- at resource id right after maps
     level_gamedata.size = sizeof(level_gamedata);
-    REF_WRITE(id_num, idx++, level_gamedata);
+    REF_WRITE(id_num, idx++, level_gamedata, FORMAT_RAW);
 #ifdef SAVE_AUTOMAP_STRINGS
     //   REF_WRITE(id_num, idx++, amap_str_reref(0));
     // LZW later   ResMake(id_num + (idx++), &(amap_str_reref(0)), AMAP_STRING_SIZE, RTYPE_APP, fd,  RDF_LZW);
-    ResMake(id_num + (idx++), (amap_str_reref(0)), AMAP_STRING_SIZE, RTYPE_APP, fd, 0);
+    ResMake(id_num + (idx++), (amap_str_reref(0)), AMAP_STRING_SIZE, RTYPE_APP, fd, 0, FORMAT_RAW);
     ResWrite(id_num + (idx - 1));
     ResUnmake(id_num + (idx - 1));
     goof = amap_str_deref(amap_str_next());
-    REF_WRITE(id_num, idx++, goof);
+    REF_WRITE(id_num, idx++, goof, FORMAT_RAW);
 #endif
     idx++; // KLC - no need to be saved.   REF_WRITE(id_num, idx++, player_edms);
-    REF_WRITE(id_num, idx++, paths);
-    REF_WRITE(id_num, idx++, used_paths);
-    REF_WRITE(id_num, idx++, animlist);
-    REF_WRITE(id_num, idx++, anim_counter);
-    REF_WRITE(id_num, idx++, h_sems);
+    // xx49-xx50 Paths
+    REF_WRITE(id_num, idx++, paths, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, used_paths, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, animlist, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, anim_counter, FORMAT_RAW);
+    REF_WRITE(id_num, idx++, h_sems, FORMAT_RAW);
 
     /* KLC - not used
        if (pack)
@@ -453,10 +551,10 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
        }
     */
     verify_cookie = VERIFY_COOKIE_VALID;
-    REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
+    REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie, FORMAT_RAW);
     ResCloseFile(fd);
 
-    // FlushVol(nil, fSpec->vRefNum);			// Make sure everything is saved.
+    // FlushVol(nil, fSpec->vRefNum);                   // Make sure everything is saved.
 
     if (make_player)
         obj_create_player(&plr_loc);
@@ -712,7 +810,7 @@ errtype expand_old_class(char cl, short new_start)
 void load_level_data() {
     extern errtype load_small_texturemaps();
 
-    // KLC-removed from here	obj_load_art(FALSE);
+    // KLC-removed from here    obj_load_art(FALSE);
     load_small_texturemaps();
 }
 
@@ -720,7 +818,7 @@ void SwapLongBytes(void *pval4);
 void SwapShortBytes(void *pval2);
 #define MAKE4(c0, c1, c2, c3) ((((ulong)c0) << 24) | (((ulong)c1) << 16) | (((ulong)c2) << 8) | ((ulong)c3))
 
-//	---------------------------------------------------------
+//      ---------------------------------------------------------
 // Â¥ Put this in some more appropriate, global place.
 void SwapLongBytes(void *pval4) {
     long *temp = (long *)pval4;
@@ -819,7 +917,11 @@ errtype load_current_map(Id id_num) {
     // convert_from is the version we are coming from.
     // for now, this is only defined for coming from version 9
     {
-        REF_READ(id_num, idx++, *global_fullmap);
+	int fullmap_idx = idx++;
+	void *fullmap_buf = ResLock(id_num + fullmap_idx, FORMAT_FULLMAP);
+	memcpy(global_fullmap, fullmap_buf, sizeof(FullMap));
+	ResUnlock(id_num + fullmap_idx);
+	//        REF_READ(id_num, idx++, *global_fullmap);
 
         MAP_MAP = (MapElem *)static_map;
         ResExtract(id_num + idx++, MAP_MAP);
@@ -845,7 +947,8 @@ errtype load_current_map(Id id_num) {
         }
 
         uchar *dst_ptr = global_fullmap->sched[0].queue.vec;
-        memmove(dst_ptr, ResLock(id_num + idx), queue_size);
+        // FIXME does this need decoding?
+        memmove(dst_ptr, ResLock(id_num + idx, FORMAT_RAW), queue_size);
         ResUnlock(id_num + idx++);
         global_fullmap->sched[0].queue.fullness = (queue_size / sizeof(SchedEvent)) - 1;
     } else
@@ -923,15 +1026,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, objs);
     } else {
-        uchar *op = (uchar *)ResLock(id_num + idx);
-        for (i = 0; i < NUM_OBJECTS; i++) {
-            memmove(&objs[i].active, op, 1);
-            memmove(&objs[i].obclass, op + 1, 1);
-            memmove(&objs[i].subclass, op + 2, 1);
-            memmove(&objs[i].specID, op + 3, 24);
-
-            op += 27;
-        }
+	void *op = ResLock(id_num + idx, FORMAT_OBJ);
+	memcpy(objs, op, NUM_OBJECTS * sizeof *objs);
         ResUnlock(id_num + idx);
         idx++;
     }
@@ -1010,7 +1106,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, objHardwares);
     } else {
-        uchar *hp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder
+        uchar *hp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         for (i = 0; i < NUM_OBJECTS_HARDWARE; i++) {
             memmove(&objHardwares[i], hp, 7);
             hp += 7;
@@ -1027,7 +1124,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, objSoftwares);
     } else {
-        uchar *sp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder
+        uchar *sp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         for (i = 0; i < NUM_OBJECTS_SOFTWARE; i++) {
             memmove(&objSoftwares[i], sp, 7);
             memmove(&objSoftwares[i].data_munge, sp + 7, 2);
@@ -1120,7 +1218,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, objContainers);
     } else {
-        uchar *sp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder
+        uchar *sp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         for (i = 0; i < NUM_OBJECTS_CONTAINER; i++) {
             memmove(&objContainers[i], sp, 17);
             memmove(&objContainers[i].data1, sp + 17, 4);
@@ -1204,7 +1303,8 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, default_hardware);
     } else {
         // Convert the default hardware.  Resource is array of 7-byte structs.  Ours is 8.
-        uchar *hp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *hp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         memmove(&default_hardware, hp, 7);
         /*SwapShortBytes(&default_hardware.id);
         SwapShortBytes(&default_hardware.next);
@@ -1218,7 +1318,8 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, default_software);
     } else {
         // Convert the default software.  Resource is array of 9-byte structs.  Ours is 10.
-        uchar *sp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *sp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         memmove(&default_software, sp, 7);
         memmove(&default_software.data_munge, sp + 7, 2);
         // BlockMoveData(sp, &default_software, 7);
@@ -1288,7 +1389,8 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, default_container);
     } else {
         // Convert the default container.  Resource is a 21-byte struct.  Ours is 22.
-        uchar *sp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *sp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         memmove(&default_container, sp, 17);
         memmove(&default_container.data1, sp + 17, 4);
         // BlockMoveData(sp, &default_container, 17);
@@ -1337,7 +1439,8 @@ errtype load_current_map(Id id_num) {
         REF_READ(id_num, idx++, animtextures);
     } else {
         // Convert the anim textures.  Resource is a 7-byte struct.  Ours is 8.
-        uchar *ap = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *ap = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         for (i = 0; i < NUM_ANIM_TEXTURE_GROUPS; i++) {
             memmove(&animtextures[i], ap, 7);
             ap += 7;
@@ -1368,7 +1471,8 @@ errtype load_current_map(Id id_num) {
     if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
         REF_READ(id_num, idx++, level_gamedata);
     } else {
-        uchar *ldp = (uchar *)ResLock(id_num + idx);
+	// FIXME do this with a decoder.
+        uchar *ldp = (uchar *)ResLock(id_num + idx, FORMAT_RAW);
         LG_memset(&level_gamedata, 0, sizeof(LevelData));
         memmove(&level_gamedata, ldp, 9);
         memmove(&level_gamedata.exit_time, ldp + 9, 4);
@@ -1423,17 +1527,8 @@ errtype load_current_map(Id id_num) {
     if (map_version > MAP_VERSION_NUMBER) {
         REF_READ(id_num, idx++, animlist);
     } else {
-        uchar *ap = (uchar *)ResLock(id_num + idx);
-        for (i = 0; i < MAX_ANIMLIST_SIZE; i++) {
-            memmove(&animlist[i].id, ap, 2);
-            memmove(&animlist[i].flags, ap + 2, 1);
-            memmove(&animlist[i].cbtype, ap + 3, 12);
-            ap += 15;
-            /*SwapShortBytes(&animlist[i].id);
-            SwapShortBytes(&animlist[i].cbtype);
-            SwapLongBytes(&animlist[i].callback);
-            SwapShortBytes(&animlist[i].speed);*/
-        }
+	void *ap = ResLock(id_num + idx, FORMAT_ANIM);
+	memcpy(animlist, ap, MAX_ANIMLIST_SIZE * sizeof(AnimListing));
         ResUnlock(id_num + idx);
         idx++;
     }

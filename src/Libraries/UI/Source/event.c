@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "array.h" 
 #include "rect.h"
 #include "slab.h"
-#include "event.h" 
+#include "event.h"
 #include "vmouse.h"
 
 
@@ -60,7 +60,7 @@ typedef struct _ui_event_handler
    ulong typemask;  // Which event types does this handle?    
      /* handler proc: called when a specific event is received */
    uiHandlerProc proc; 
-   intptr_t state;  // handler-specific state data 
+   intptr_t state;  // handler-specific state data
    int next;     // used for chaining handlers.  
 } uiEventHandler;
 

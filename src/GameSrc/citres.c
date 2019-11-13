@@ -23,12 +23,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/07 13:22:58 $
  *
  */
+#include <assert.h>
 #include <string.h>
 
 #include "citres.h"
 #include "criterr.h"
 #include "gr2ss.h"
 #include "statics.h"
+
+// Defines the layout of a FrameDesc within a resource file.
+const ResLayout FrameDescLayout = {
+  28, // on-disc size
+  sizeof(FrameDesc), // in-memory size
+  LAYOUT_FLAG_RAW_DATA_FOLLOWS, // flags
+  {
+    { RFFT_PAD, 4 }, // skip placeholder bits pointer
+    { RFFT_UINT8,  offsetof(FrameDesc,bm.type) },
+    { RFFT_UINT8,  offsetof(FrameDesc,bm.align) },
+    { RFFT_UINT16, offsetof(FrameDesc,bm.flags) },
+    { RFFT_UINT16, offsetof(FrameDesc,bm.w) },
+    { RFFT_UINT16, offsetof(FrameDesc,bm.h) },
+    { RFFT_UINT16, offsetof(FrameDesc,bm.row) },
+    { RFFT_UINT8,  offsetof(FrameDesc,bm.wlog) },
+    { RFFT_UINT8,  offsetof(FrameDesc,bm.hlog) },
+    { RFFT_UINT16, offsetof(FrameDesc,updateArea.ul.x) },
+    { RFFT_UINT16, offsetof(FrameDesc,updateArea.ul.y) },
+    { RFFT_UINT16, offsetof(FrameDesc,updateArea.lr.x) },
+    { RFFT_UINT16, offsetof(FrameDesc,updateArea.lr.y) },
+    { RFFT_UINT32, offsetof(FrameDesc,pallOff) },
+    { RFFT_RAW,    sizeof(FrameDesc) }, // raw bitmap data follows
+    { RFFT_END, 0 }
+  }
+};
+const ResourceFormat FrameDescFormat = {
+    ResDecode, NULL, (UserDecodeData)&FrameDescLayout, NULL };
 
 // Internal Prototypes
 errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar tmp_mem, LGRect *anchor,
@@ -38,7 +66,7 @@ grs_bitmap *lock_bitmap_from_ref_anchor(Ref r, LGRect *anchor) {
     FrameDesc *f;
     if (r == 0)
         return (NULL);
-    f = (FrameDesc *)RefLock(r);
+    f = RefLock(r, FORMAT_FRAMEDESC);
     if (f == NULL) {
         //      Warning(("Could not lock bitmap %d!",r));
         return (NULL);
@@ -70,6 +98,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
     FrameDesc *f;
     uchar alloced_fdesc = FALSE;
     extern int memcount;
+    const size_t size = RefSizeDecoded(rt, i, &FrameDescLayout);
 
     if (!RefIndexValid(rt, i)) {
         //      Warning(("Bitmap index %i invalid!\n",i));
@@ -78,22 +107,23 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
     }
 
     rid = MKREF(id_num, i);
-    if (RefSize(rt, i) > FRAME_BUFFER_SIZE) {
+    if (size > FRAME_BUFFER_SIZE) {
         //      Warning(("damn, we have to malloc...need %d, buffer = %d\n",RefSize(rt,i),FRAME_BUFFER_SIZE));
-        f = (FrameDesc *)malloc(RefSize(rt, i));
+        assert(!tmp_mem); // we're freeing it, better not return a pointer to it
+        f = (FrameDesc *)malloc(size);
         alloced_fdesc = TRUE;
     } else {
         //      mprintf("look, Refsize is only %d!\n",RefSize(rt,i));
         f = (FrameDesc *)frameBuffer;
     }
 
-    memcount += RefSize(rt, i);
+    memcount += size;
     if (f == NULL) {
         //      Warning(("Could not load bitmap from resource #%d!\n",id_num));
         printf("Could not load bitmap from resource #%d!\n", id_num);
         return (ERR_FREAD);
     }
-    RefExtract(rt, rid, f);
+    RefExtractDecoded(rt, rid, &FrameDescLayout, f);
 
     if (anchor != NULL)
         *anchor = f->anchorArea;

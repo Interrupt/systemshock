@@ -33,7 +33,7 @@ uchar *gr_rsd8_unpack(uchar *src, uchar *dest)
  	uchar		code,val;
  	short		count,count2;
  	ushort	longcode;
- 	ulong		longval, *longdest, *longsrc;
+ 	uint32_t		longval, *longdest, *longsrc;
  
  	do
  	 {
@@ -45,11 +45,11 @@ uchar *gr_rsd8_unpack(uchar *src, uchar *dest)
  		 	
  		 	if (count>=kMinLongLoop)		// if at least kMinLongLoop bytes, do long word stuff
  		 	 {
- 		 	 	longval = val + (((ulong) val)<<8);
+ 		 	 	longval = val + (((uint32_t) val)<<8);
  		 	 	longval += longval<<16;
  		 	 	count2 = count>>2;
  		 	 	count &= 3;
- 		 	 	longdest = (ulong *) dest;
+ 		 	 	longdest = (uint32_t *) dest;
  		 	 	
  		 	 	while (count2--)
  		 	 	 	*(longdest++) = longval;
@@ -67,8 +67,8 @@ uchar *gr_rsd8_unpack(uchar *src, uchar *dest)
  		 	 {
  		 	 	count2 = count>>2;
  		 	 	count &= 3;
- 		 	 	longdest = (ulong *) dest;
- 		 	 	longsrc = (ulong *) src;
+ 		 	 	longdest = (uint32_t *) dest;
+ 		 	 	longsrc = (uint32_t *) src;
  		 	 	
  		 	 	while (count2--)
  		 	 	 	*(longdest++) = *(longsrc++);
@@ -89,7 +89,7 @@ uchar *gr_rsd8_unpack(uchar *src, uchar *dest)
  		 	 {
  		 	 	count2 = count>>2;
  		 	 	count &= 3;
- 		 	 	longdest = (ulong *) dest;
+ 		 	 	longdest = (uint32_t *) dest;
  		 	 	
  		 	 	while (count2--)
  		 	 	 	*(longdest++) = longval;
@@ -115,7 +115,7 @@ uchar *gr_rsd8_unpack(uchar *src, uchar *dest)
 	 		 	 {
 	 		 	 	count2 = count>>2;
 	 		 	 	count &= 3;
-	 		 	 	longdest = (ulong *) dest;
+	 		 	 	longdest = (uint32_t *) dest;
 	 		 	 	
 	 		 	 	while (count2--)
 	 		 	 	 	*(longdest++) = longval;
@@ -134,8 +134,8 @@ uchar *gr_rsd8_unpack(uchar *src, uchar *dest)
 	 		 	 {
 	 		 	 	count2 = count>>2;
 	 		 	 	count &= 3;
-	 		 	 	longdest = (ulong *) dest;
-	 		 	 	longsrc = (ulong *) src;
+	 		 	 	longdest = (uint32_t *) dest;
+	 		 	 	longsrc = (uint32_t *) src;
 	 		 	 	
 	 		 	 	while (count2--)
 	 		 	 	 	*(longdest++) = *(longsrc++);
@@ -154,11 +154,11 @@ uchar *gr_rsd8_unpack(uchar *src, uchar *dest)
 	 		 	
 	 		 	if (count>=kMinLongLoop)		// if at least kMinLongLoop bytes, do long word stuff
 	 		 	 {
-	 		 	 	longval = val + (((ulong) val)<<8);
+	 		 	 	longval = val + (((uint32_t) val)<<8);
 	 		 	 	longval += longval<<16;
 	 		 	 	count2 = count>>2;
 	 		 	 	count &= 3;
-	 		 	 	longdest = (ulong *) dest;
+	 		 	 	longdest = (uint32_t *) dest;
 	 		 	 	
 	 		 	 	while (count2--)
 	 		 	 	 	*(longdest++) = longval;
