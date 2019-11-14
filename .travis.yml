@@ -12,13 +12,13 @@ matrix:
       dist: bionic
       sudo: required
       env:
-        - SDL2_LIB=ON
-        - SDL2_MIXER_LIB=ON
-        - FLUIDSYNTH_LIB=ON
+        - SDL2_LIB=BUNDLED
+        - SDL2_MIXER_LIB=BUNDLED
+        - FLUIDSYNTH_LIB=BUNDLED
       addons:
         apt:
           packages:
-            - cmake-data cmake libfluidsynth-dev libsdl2-dev libsdl2-mixer-dev libglu1-mesa-dev libgl1-mesa-dev
+            - cmake-data cmake libglu1-mesa-dev libgl1-mesa-dev # libfluidsynth-dev libsdl2-dev libsdl2-mixer-dev
       compiler: gcc
     - os: osx
       compiler: clang
@@ -34,7 +34,7 @@ matrix:
         - FLUIDSYNTH_LIB=OFF # Bundled lib failed to compile
 
 script:
-  #- sudo TRAVIS=$TRAVIS ./osx-linux/install_32bit_sdl.sh
+  - sudo TRAVIS=$TRAVIS ./osx-linux/install_32bit_sdl.sh
   - cmake -DENABLE_SDL2=${SDL2_LIB} -DENABLE_SOUND=${SDL2_MIXER_LIB} -DENABLE_FLUIDSYNTH=${FLUIDSYNTH_LIB} .
   - make -j2 systemshock
 
