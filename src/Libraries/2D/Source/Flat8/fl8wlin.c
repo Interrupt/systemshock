@@ -58,7 +58,7 @@ void gri_flat8_wire_poly_uline(int32_t c, int32_t parm, grs_vertex *v0, grs_vert
     if (gr_get_fill_type() == FILL_SOLID)
         c = (uchar)parm;
     else if (gr_get_fill_type() == FILL_CLUT)
-        c = ((uchar *)parm)[c];
+        c = ((uchar *)(intptr_t)parm)[c];
     if (v1->y > v0->y) {
         y = fix_cint(v0->y);
         y_max = fix_cint(v1->y);

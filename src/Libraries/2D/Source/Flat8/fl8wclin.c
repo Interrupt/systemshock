@@ -82,6 +82,6 @@ void gri_flat8_wire_poly_ucline_norm(int32_t c, int32_t parm, grs_vertex *v0, gr
         } while (x > x_new)
 
 void gri_flat8_wire_poly_ucline_clut(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1) {
-    uchar *clut = (uchar *)parm;
+    uchar *clut = (uchar *)(intptr_t)parm;
 #include "fl8wclin.h"
 }

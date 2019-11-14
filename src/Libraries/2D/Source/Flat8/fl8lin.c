@@ -133,7 +133,7 @@ void gri_flat8_uline_ns(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1)
 #undef flat8_pixel_fill_init
 #define flat8_pixel_fill_init           \
     do {                                \
-        c = (long)(((uchar *)parm)[c]); \
+        c = (int32_t)(((uchar *)(intptr_t)parm)[c]); \
     } while (0)
 
 void gri_flat8_uline_clut(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1) {

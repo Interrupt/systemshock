@@ -90,7 +90,7 @@ void gri_flat8_uhline_clut(short x0, short y0, short x1, int32_t c, int32_t parm
         x1 = t;
     }
 
-    c = (int32_t)(((uchar *)parm)[c]);
+    c = (int32_t)(((uchar *)(intptr_t)parm)[c]);
     p = grd_bm.bits + y0 * grd_bm.row + x0;
     memset(p, c, x1 - x0 + 1);
 }

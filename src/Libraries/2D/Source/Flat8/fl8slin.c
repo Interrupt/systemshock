@@ -65,7 +65,7 @@ void gri_flat8_usline_norm(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *
 #undef macro_plot_i
 #define macro_plot_i(x, p, i)              \
     do {                                   \
-        p[x] = (int32_t)(((uchar *)parm)[i]); \
+        p[x] = (int32_t)(((uchar *)(intptr_t)parm)[i]); \
     } while (0)
 
 void gri_flat8_usline_clut(int32_t c, int32_t parm, grs_vertex *v0, grs_vertex *v1) {
