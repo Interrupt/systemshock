@@ -162,6 +162,7 @@ set(GAME_SRC
 	src/GameSrc/amaploop.c
 	src/GameSrc/ammomfd.c
 	src/GameSrc/anim.c
+	src/GameSrc/archiveformat.c
 	src/GameSrc/audiolog.c
 	src/GameSrc/automap.c
 	src/GameSrc/bark.c

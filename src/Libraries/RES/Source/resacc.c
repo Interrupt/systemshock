@@ -47,20 +47,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // An empty ResourceFormat struct means no translation is needed.
 const ResourceFormat RawFormat = { NULL, NULL, 0, NULL };
 
-void *ResDecode(void *raw, size_t size, UserDecodeData ud)
+void *ResDecode(void *raw, size_t *size, UserDecodeData ud)
 {
     // Layout.
     const ResLayout *layout = (const ResLayout*)ud;
     // Working pointer into the raw data.
     uchar *rp = raw;
     // Number of entries, if it's an array.
-    int nentries = (layout->flags & LAYOUT_FLAG_ARRAY) ? size / layout->dsize : 1;
+    int nentries = (layout->flags & LAYOUT_FLAG_ARRAY) ? *size / layout->dsize : 1;
     // Total size of the decoded data.
     size_t bufsize = layout->msize * nentries;
     if (layout->flags & LAYOUT_FLAG_RAW_DATA_FOLLOWS) {
         // Additional raw data follows; add its size to the buffer.
         assert(nentries == 1);
-        bufsize += size - layout->dsize;
+        bufsize += *size - layout->dsize;
     }
     void *buff = malloc(bufsize);
     int i;
@@ -71,7 +71,12 @@ void *ResDecode(void *raw, size_t size, UserDecodeData ud)
 
         while (field->type != RFFT_END) {
             bp = b + field->offset;
-            switch (field->type) {
+	    if (field->type > RFFT_BIN_BASE) {
+		// Fixed size binary data, treated as flat byte array.
+		int binsize = field->type - RFFT_BIN_BASE;
+		memcpy(bp, rp, binsize);
+		rp += binsize;
+	    } else switch (field->type) {
             case RFFT_PAD:
                 rp += field->offset;
                 break;
@@ -94,7 +99,7 @@ void *ResDecode(void *raw, size_t size, UserDecodeData ud)
                 rp += 4;
                 break;
             case RFFT_RAW: // should be last entry
-                memcpy(bp, rp, size - (rp-(uchar*)raw));
+                memcpy(bp, rp, *size - (rp-(uchar*)raw));
                 break;
             default:
                 assert(!"Invalid resource field type");
@@ -102,6 +107,8 @@ void *ResDecode(void *raw, size_t size, UserDecodeData ud)
             ++field;
         }
     }
+    // Update size with the decoded data size.
+    *size = bufsize;
     return buff;
 }
 
@@ -129,7 +136,12 @@ void *ResEncode(void *cooked, size_t *size, UserDecodeData ud)
 
         while (field->type != RFFT_END) {
             bp = b + field->offset;
-            switch (field->type) {
+	    if (field->type > RFFT_BIN_BASE) {
+		// Fixed size binary data, treated as flat byte array.
+		int binsize = field->type - RFFT_BIN_BASE;
+		memcpy(rp, bp, binsize);
+		rp += binsize;
+	    } else switch (field->type) {
             case RFFT_PAD:
                 rp += field->offset;
                 break;
@@ -193,7 +205,8 @@ void *ResLock(Id id, const ResourceFormat *format) {
         if (decoder != NULL) {
             // Caller wants it decoded, decode if not already done.
             if (prd->decoded == NULL) {
-                prd->decoded = decoder(prd->ptr, prd->size, data);
+		size_t size = prd->size;
+                prd->decoded = decoder(prd->ptr, &size, data);
                 prd->free_func = freer;
             }
             return prd->decoded;
@@ -281,7 +294,8 @@ void *ResGet(Id id, const ResourceFormat *format) {
     // data.
     if (decoder != NULL) {
         if (prd->decoded == NULL) {
-            prd->decoded = decoder(prd->ptr, prd->size, data);
+	    size_t size = prd->size;
+            prd->decoded = decoder(prd->ptr, &size, data);
             prd->free_func = freer;
         }
         return prd->decoded;
@@ -304,10 +318,29 @@ void *ResGet(Id id, const ResourceFormat *format) {
 //	---------------------------------------------------------
 //  For Mac version:  Copies information from resource handle into the buffer.
 
-void *ResExtract(Id id, void *buffer) {
-    // Retrieve the data into the buffer, please
-    if (ResRetrieve(id, buffer)) {
-        return (buffer);
+void *ResExtract(Id id, const ResourceFormat *format, void *buffer) {
+    ResDecodeFunc decoder = format->decoder;
+    if (decoder != NULL) {
+	// Get the raw data into a temporary buffer.
+	size_t size = ResSize(id);
+	void *tbuf = malloc(size);
+	if (ResRetrieve(id, tbuf)) {
+	    void *dbuf = decoder(tbuf, &size, format->data);
+	    memcpy(buffer, dbuf, size);
+	    if (format->freer != NULL) {
+		format->freer(dbuf);
+	    } else {
+		free(dbuf);
+	    }
+	    free(tbuf);
+	    return buffer;
+	}
+	free(tbuf);
+    } else {
+        // Retrieve the data into the buffer, please
+        if (ResRetrieve(id, buffer)) {
+            return (buffer);
+        }
     }
 
     ERROR("%s: failed for %x", __FUNCTION__, id);

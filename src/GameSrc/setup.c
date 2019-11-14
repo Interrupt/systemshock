@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <unistd.h>
 
+#include "archiveformat.h"
 #include "ShockDialogs.h"
 #include "setup.h"
 #include "colors.h"
@@ -1316,7 +1317,7 @@ errtype load_savegame_names(void)
       if (ResInUse(OLD_SAVE_GAME_ID_BASE))
       {
 #ifdef OLD_SG_FORMAT
-                ResExtract(OLD_SAVE_GAME_ID_BASE, comments[i]);
+	  ResExtract(OLD_SAVE_GAME_ID_BASE, FORMAT_RAW, comments[i]);
                 valid_save |= (1 << i);
 #else
                 strcpy(comments[i], "<< BAD VERSION >>");
@@ -1328,7 +1329,7 @@ errtype load_savegame_names(void)
         {
           int verify_cookie;
 
-          ResExtract(SAVELOAD_VERIFICATION_ID, &verify_cookie);
+          ResExtract(SAVELOAD_VERIFICATION_ID, FORMAT_U32, &verify_cookie);
           switch (verify_cookie)
           {
             case OLD_VERIFY_COOKIE_VALID:
@@ -1337,7 +1338,7 @@ errtype load_savegame_names(void)
               //                     break;
 
             case VERIFY_COOKIE_VALID:
-              ResExtract(SAVE_GAME_ID_BASE, comments[i]);
+		ResExtract(SAVE_GAME_ID_BASE, FORMAT_RAW, comments[i]);
               valid_save |= (1 << i);
             break;
 
@@ -1423,7 +1424,7 @@ void splash_draw(bool show_splash)
   if (pal_file < 0) INFO("Could not open splshpal.res!");
 
   uchar splash_pal[768];
-  ResExtract(RES_splashPalette, splash_pal);
+  ResExtract(RES_splashPalette, FORMAT_RAW, splash_pal);
 
   // Set initial palette
 

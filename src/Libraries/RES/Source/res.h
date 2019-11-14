@@ -101,15 +101,17 @@ typedef uint16_t RefIndex; // index part of ref
 #define ID_MIN 3  // id's from 3 and up are valid
 
 // Types of resource field within a resfile.
-typedef enum {
-    RFFT_PAD,      // not decoded, skip 'offset' bytes
-    RFFT_UINT8,    // 8-bit integer
-    RFFT_UINT16,   // 16-bit integer
-    RFFT_UINT32,   // 32-bit integer
-    RFFT_INTPTR,   // 32 bits on disc, 32 or 64 bits in memory.
-    RFFT_RAW,      // raw data, copy 'offset' bytes or rest of resource if 0
-    RFFT_END       // mark end of table
-} ResFileFieldType;
+typedef int ResFileFieldType;
+#define RFFT_PAD    0  // not decoded, skip 'offset' bytes
+#define RFFT_UINT8  1  // 8-bit integer
+#define RFFT_UINT16 2  // 16-bit integer
+#define RFFT_UINT32 3  // 32-bit integer
+#define RFFT_INTPTR 4  // 32 bits on disc, 32 or 64 bits in memory.
+#define RFFT_RAW    5  // raw data, copy 'offset' bytes or rest of resource if 0
+#define RFFT_END    6  // mark end of table
+#define RFFT_BIN_BASE 0x100
+
+#define RFFT_BIN(x) (RFFT_BIN_BASE+(x))
 
 // Describes the layout of a resource structure.
 typedef struct {
@@ -137,7 +139,7 @@ typedef intptr_t UserDecodeData;
 // Function to decode a resource loaded from disc. Takes raw data, size of raw
 // data and user data. Returns decoded data. Default is to free decoded data
 // using free() but the caller can supply a custom free function.
-typedef void *(*ResDecodeFunc)(void*, size_t, UserDecodeData);
+typedef void *(*ResDecodeFunc)(void*, size_t*, UserDecodeData);
 // Encoder function. Same signature as decoder; takes cooked data and returns
 // raw data for file, violating the laws of thermodynamics but allowing portable
 // saving. Encoded data is always freed using free().
@@ -146,7 +148,7 @@ typedef void *(*ResEncodeFunc)(void*, size_t*, UserDecodeData);
 typedef void (*ResFreeFunc)(void*);
 
 // Decode a resource using a ResLayout. Prototyped as a decode function.
-void *ResDecode(void *raw, size_t size, UserDecodeData layout);
+void *ResDecode(void *raw, size_t *size, UserDecodeData layout);
 // Encode a resource using a ResLayout.
 void *ResEncode(void *raw, size_t *size, UserDecodeData layout);
 
@@ -172,7 +174,7 @@ extern const ResourceFormat RawFormat;
 void *ResLock(Id id, const ResourceFormat *format);   // lock resource & get ptr
 void ResUnlock(Id id);                 // unlock resource
 void *ResGet(Id id, const ResourceFormat *format);    // get ptr to resource (dangerous!)
-void *ResExtract(Id id, void *buffer); // extract resource into buffer
+void *ResExtract(Id id, const ResourceFormat *format, void *buffer); // extract resource into buffer
 void ResDrop(Id id);                   // drop resource from immediate use
 void ResDelete(Id id);                 // delete resource forever
 
@@ -196,7 +198,7 @@ typedef struct {
 } RefTable;
 
 // Decode raw ref table from file and return a RefTable.
-void *ResDecodeRefTable(void *raw, size_t size, UserDecodeData);
+void *ResDecodeRefTable(void *raw, size_t *size, UserDecodeData);
 
 void *RefLock(Ref ref, const ResourceFormat *format);  // lock compound res, get ptr to item
 #define RefUnlock(ref) ResUnlock(REFID(ref)) // unlock compound res item

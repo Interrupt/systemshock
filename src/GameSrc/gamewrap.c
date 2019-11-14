@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ShockDialogs.h"
 
 #include "amap.h"
+#include "archiveformat.h"
 #include "criterr.h"
 #include "cybmem.h"
 #include "cybstrng.h"
@@ -227,7 +228,7 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum,
     // RDF_LZW);
 
-    ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, 0, FORMAT_RAW);
+    ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, 0, FORMAT_SCHEDULE);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
@@ -236,7 +237,7 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE,
     // RTYPE_APP, filenum, RDF_LZW);
     ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent) * GAME_SCHEDULE_SIZE, RTYPE_APP, filenum,
-            0, FORMAT_RAW);
+            0, FORMAT_SCHEDULE_QUEUE);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
@@ -269,10 +270,10 @@ errtype load_game_schedules(void) {
     int idx = SCHEDULE_BASE_ID;
 
     oldvec = game_seconds_schedule.queue.vec;
-    ResExtract(idx++, (void *)&game_seconds_schedule);
+    ResExtract(idx++, FORMAT_SCHEDULE, &game_seconds_schedule);
     game_seconds_schedule.queue.vec = oldvec;
     game_seconds_schedule.queue.comp = compare_events;
-    ResExtract(idx++, (void *)oldvec);
+    ResExtract(idx++, FORMAT_SCHEDULE_QUEUE, oldvec);
     return OK;
 }
 
@@ -351,7 +352,8 @@ errtype load_game(char *fname) {
     filenum = ResOpenFile(CURRENT_GAME_FNAME);
     old_plr = player_struct.rep;
     orig_lvl = player_struct.level;
-    ResExtract(SAVE_GAME_ID_BASE + 1, (void *)&player_struct);
+    // TODO Player struct is still a bit much to handle with a format.
+    ResExtract(SAVE_GAME_ID_BASE + 1, FORMAT_RAW, (void *)&player_struct);
 
     obj_check_time = 0; // KLC - added because it needs to be reset for Mac version.
 

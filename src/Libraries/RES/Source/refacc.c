@@ -106,7 +106,8 @@ void *RefLock(Ref ref, const ResourceFormat *format) {
     void *raw = ((uint8_t*)(prt->raw_data)) + prt->entries[index].offset;
     if (decoder != NULL) {
 	if (prt->entries[index].decoded_data == NULL) {
-	    prt->entries[index].decoded_data = decoder(raw, prt->entries[index].size, data);
+	    size_t size = prt->entries[index].size;
+	    prt->entries[index].decoded_data = decoder(raw, &size, data);
 	}
 	return prt->entries[index].decoded_data;
     } else {
@@ -168,7 +169,8 @@ void *RefGet(Ref ref, const ResourceFormat *format) {
     void *raw = ((uint8_t*)(prt->raw_data)) + prt->entries[index].offset;
     if (decoder != NULL) {
 	if (prt->entries[index].decoded_data == NULL) {
-	    prt->entries[index].decoded_data = decoder(raw, prt->entries[index].size, data);
+	    size_t size = prt->entries[index].size;
+	    prt->entries[index].decoded_data = decoder(raw, &size, data);
 	}
 	return prt->entries[index].decoded_data;
     } else {
@@ -281,7 +283,7 @@ int32_t ResExtractRefTable(Id id, RefTable *prt, int32_t size) {
     return (0);
 }
 
-void *ResDecodeRefTable(void *raw, size_t size, UserDecodeData data) {
+void *ResDecodeRefTable(void *raw, size_t *size, UserDecodeData data) {
     RefIndex i;
     uint32_t offset;
     // First grab the table size. We'll be pulling stuff in bytewise because it

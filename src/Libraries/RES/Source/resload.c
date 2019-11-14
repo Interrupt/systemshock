@@ -91,7 +91,8 @@ void *ResLoadResource(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFree
     // Decode if a decoder was supplied.
     if (decoder != NULL) {
 	assert(prd->decoded == NULL);
-	prd->decoded = decoder(prd->ptr, prd->size, data);
+	size_t size = prd->size;
+	prd->decoded = decoder(prd->ptr, &size, data);
 	return prd->decoded;
     }
 
