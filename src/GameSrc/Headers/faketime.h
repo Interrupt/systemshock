@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* total bogosity that saves having to alter 50 source files */
 /* the non-time-faking parts of faketime + the new improved timer.h */
 
-#define CIT_CYCLE 280u
+#define CIT_CYCLE 280
 #define CIT_FREQ (TMD_FREQ / CIT_CYCLE)
 
 #define APPROX_CIT_CYCLE_HZ 256u
