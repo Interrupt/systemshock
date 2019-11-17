@@ -62,7 +62,7 @@ typedef struct {
 typedef struct {
    void (*scanline_func)();   /* function to do scanline.   */
    void (*shell_func)();      /* perspective mapping shell. */
-   union {uchar *clut; long fill_parm;};
+   union {uchar *clut; intptr_t fill_parm;};
    fix scan_slope;
    int dp;
    fix alpha_u;
@@ -82,7 +82,7 @@ typedef struct {
    union {fix y_fix,x_fix;};
    fix u,du,v,dv,i,di;
    fix u0,v0;
-   union {uchar *clut; long fill_parm;};
+   union {uchar *clut; intptr_t fill_parm;};
    fix unum,vnum,dunum,dvnum,denom;
    fix dxl,dyl,dtl,dxr,dyr,dtr;
    fix cl,cr;

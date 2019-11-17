@@ -131,42 +131,7 @@ typedef struct {
    grs_point3d u_grad;
    grs_point3d v_grad;
 } grs_per_context;
-typedef struct {
-   void (*scanline_func)();   
-   void (*shell_func)();      
-   union {uchar *clut; long fill_parm;};
-   fix scan_slope;
-   int dp;
-   fix alpha_u;
-   fix beta_u;
-   fix gamma_u;
-   fix alpha_v;
-   fix beta_v;
-   fix gamma_v;
-   fix a;
-   fix b;
-   fix c;
-} grs_per_setup;
-typedef struct {
-   uchar *p_dst_final;
-   int p_dst_off;
-   union {fix y_fix,x_fix;};
-   fix u,du,v,dv,i,di;
-   fix u0,v0;
-   union {uchar *clut; long fill_parm;};
-   fix unum,vnum,dunum,dvnum,denom;
-   fix dxl,dyl,dtl,dxr,dyr,dtr;
-   fix cl,cr;
-   fix scan_slope;
-   int dp;
-   union {int yp,xp;};
-   union {int x,y;};
-   union {int xl,yl;};
-   union {int xr,yr;};
-   union {int xr0,yr0;};
-   int u_mask,v_mask,v_shift;
-   int scale;
-} grs_per_info;
+
 extern grs_sys_info grd_info;
 extern grs_drvcap *grd_cap;
 extern grs_drvcap grd_mode_cap;
