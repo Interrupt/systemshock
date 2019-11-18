@@ -37,8 +37,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /* Perspective mapper context structure. */
-#include "GR/grs.h"
-
 #ifndef __TMAPS_H
 #define __TMAPS_H
 
