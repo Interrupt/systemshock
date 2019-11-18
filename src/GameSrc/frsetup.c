@@ -622,9 +622,6 @@ int fr_prepare_view(frc *view) {
     _fr_ret;
 }
 
-/* For cyberspace model which uses g3_start_object_matrix()...*/
-extern fix EDMS_Dirac_basis[9];
-
 #ifdef STEREO_SUPPORT
 extern uchar hack_cameras_needed;
 #endif
@@ -760,16 +757,18 @@ int fr_start_view(void) {
     }
 
     if (_frp.faces.cyber) {
+	// Grab the Dirac from EDMS and copy to the system matrix.
+	fix *basis = EDMS_Dirac_basis();
 
-        system_matrix.m1 = EDMS_Dirac_basis[0];
-        system_matrix.m2 = EDMS_Dirac_basis[1];
-        system_matrix.m3 = EDMS_Dirac_basis[2];
-        system_matrix.m4 = EDMS_Dirac_basis[3];
-        system_matrix.m5 = EDMS_Dirac_basis[4];
-        system_matrix.m6 = EDMS_Dirac_basis[5];
-        system_matrix.m7 = EDMS_Dirac_basis[6];
-        system_matrix.m8 = EDMS_Dirac_basis[7];
-        system_matrix.m9 = EDMS_Dirac_basis[8];
+        system_matrix.m1 = basis[0];
+        system_matrix.m2 = basis[1];
+        system_matrix.m3 = basis[2];
+        system_matrix.m4 = basis[3];
+        system_matrix.m5 = basis[4];
+        system_matrix.m6 = basis[5];
+        system_matrix.m7 = basis[6];
+        system_matrix.m8 = basis[7];
+        system_matrix.m9 = basis[8];
 
         g3_set_view_matrix(&viewer_position, &system_matrix, _fr->viewer_zoom);
         //    g3_set_view_angles(&viewer_position,&viewer_orientation,ANGLE_ORDER,use_zoom);

@@ -32,7 +32,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <assert.h>
 #include <string.h>
-#include <unistd.h>
+#if defined(_MSC_VER)
+#include <windows.h>  // SetFilePointer / SetEndOfFile
+#else
+#include <unistd.h>   // ftruncate
+#endif
 
 #include "lg.h"
 #include "lzw.h"
@@ -304,7 +308,12 @@ int32_t ResPack(int32_t filenum) {
     // write directory on closing)
 
     // FIXME Non-portable
+#ifndef _MSC_VER
     ftruncate(fileno(prf->fd), dataWrite);
+#else // So much for POSIX.
+    SetFilePointer(fileno(prf->fd), dataWrite, NULL, FILE_BEGIN);
+    SetEndOfFile(fileno(prf->fd));
+#endif
 
     // Return # bytes reclaimed
     TRACE("%s: reclaimed %d bytes", __FUNCTION__, sizeReclaimed);

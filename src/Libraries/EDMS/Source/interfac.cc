@@ -91,9 +91,9 @@ Q terrain(Q X, Q Y, int32_t deriv) {
 
 //	Same with Indoors...
 //	--------------------
-void indoor_terrain(Q X, Q Y, Q Z, Q R, physics_handle ph) {
+TerrainHit indoor_terrain(Q X, Q Y, Q Z, Q R, physics_handle ph, TFType type) {
     if ((X > 1) && (Y > 1) && (X < 64) && (Y < 64)) {
-        Indoor_Terrain(X.to_fix(), Y.to_fix(), Z.to_fix(), R.to_fix(), ph);
+        return Indoor_Terrain(X.to_fix(), Y.to_fix(), Z.to_fix(), R.to_fix(), ph, type);
     } else {
         //      EDMS_robot_global_badness_indicator = 1000;
         //      mout << "!EDMS: integrator = " << EDMS_integrating << " !!\n";
@@ -115,6 +115,8 @@ void indoor_terrain(Q X, Q Y, Q Z, Q R, physics_handle ph) {
             //         mout << "!EDMS: No further information is available for physics handle -1.  SORRY!\n";
         }
     }
+    // If we're off the map, we should probably terminate the search.
+    return HIT_FACELET;
 }
 
 //      And with Freefall...

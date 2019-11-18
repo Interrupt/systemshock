@@ -345,13 +345,11 @@ uchar gamesys_fatigue = TRUE;
 
 #define SKATE_MOD 8
 
-extern int EDMS_pelvis_is_climbing;
-
 void fatigue_player(void) {
     byte *c = player_struct.controls;
     int deltat, deltaf;
     extern uchar jumpjets_active;
-    if (gamesys_fatigue && !jumpjets_active && !EDMS_pelvis_is_climbing) {
+    if (gamesys_fatigue && !jumpjets_active && !EDMS_pelvis_is_climbing()) {
         deltat = player_struct.deltat;
         deltaf = run_fatigue_rate * (fatigue_val(c[CONTROL_YVEL]) + fatigue_val(2 * c[CONTROL_ZVEL]) +
                                      // fatigue_val(c[CONTROL_XVEL])/64 +
@@ -845,7 +843,7 @@ void do_stuff_every_second() {
             update_email_ware();
         }
         if (player_struct.fatigue > 0 && player_struct.controls[CONTROL_YVEL] <= SPRINT_CONTROL_THRESHOLD &&
-            !EDMS_pelvis_is_climbing) {
+            !EDMS_pelvis_is_climbing()) {
             int newf = player_struct.fatigue - player_struct.fatigue_regen;
             player_struct.fatigue_regen += fatigue_accum_rate;
             if (player_struct.fatigue_regen > player_struct.fatigue_regen_max)

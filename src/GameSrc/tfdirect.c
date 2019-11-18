@@ -70,7 +70,7 @@ void _tf_get_crosses(void);
 fix tf_solve_2d_case(int flags);
 int _stair_check(fix walls[4][2], int flags);
 void terrfunc_one_map_square(int fmask);
-bool tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, int tf_type);
+TerrainHit tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, TFType tf_type);
 
 // old style physics...
 extern TerrainData terrain_info;
@@ -80,7 +80,6 @@ ss_facelet_return ss_edms_facelets[SS_MAX_FACELETS];
 uchar ss_edms_facelet_cnt;
 int ss_edms_bcd_flags;
 int ss_edms_bcd_param;
-uchar ss_edms_stupid_flag = TFD_FULL;
 
 // globals...
 fix (*tf_vert_2d)[2]; // 2d vertices of the face, when reset
@@ -634,7 +633,7 @@ uchar tf_wall_check[5][2][5] = {
     {{fcs(Z, Z), fcs(S, Z), fcs(S, N), fcs(Z, Z)}, {fcs(Z, Z), fcs(S, N), fcs(Z, N), fcs(Z, Z)}},
     {{fcs(Z, Z), fcs(S, Z), fcs(S, N), fcs(Z, N), fcs(Z, Z)}, {fcs(Z, Z), fcs(S, Z), fcs(S, N), fcs(Z, N), fcs(Z, Z)}}};
 
-bool tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int32_t ph, int32_t tf_type) {
+TerrainHit tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int32_t ph, TFType tf_type) {
     int32_t fce_minc, xd, yd, xo, yo, centered; // fce_minc is map increment between lines, ?d LGRect size, xo clip offset
     fix minx, miny, maxx, maxy, cenx, ceny; // for full radius of us, center for us, all really ints in the end
 
@@ -656,7 +655,7 @@ bool tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int32_t ph, int32_t tf_
             ss_edms_bcd_flags |= ((uint)v_to_cur[mb]) << SS_BCD_CURR_SHF;
     }
     if (tf_type == TFD_BCD)
-        return false;
+        return MISS;
 
     ObjsClearDealt();
     tf_talk_setup();
@@ -728,7 +727,7 @@ bool tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int32_t ph, int32_t tf_
                 terrfunc_one_map_square(((*xmsk_now) << 1) | (*ymsk_now) | FACELET_MASK_I);
                 tf_Stat(multi);
                 if ((tf_type == TFD_RCAST) && ss_edms_facelet_cnt)
-                    return true;
+                    return HIT_FACELET;
             }
     }
     if (tf_type == TFD_FULL) { // actually figure out what is up with the facelets, send and all
@@ -753,7 +752,7 @@ bool tf_direct(fix fix_x, fix fix_y, fix fix_z, fix rad, int32_t ph, int32_t tf_
             tile_hit(cenx, ceny);
     }
 
-    return ss_edms_facelet_cnt != 0;
+    return (ss_edms_facelet_cnt == 0) ? MISS : HIT_FACELET;
 }
 
 void tf_global_bcd_add(int flg, int param) {
@@ -767,11 +766,6 @@ void tf_global_bcd_add(int flg, int param) {
 /* actual call
  * note us passing lots of annoying useless things on the stack and annoying everyone
  */
-// extern "C"
-//\{
-void Indoor_Terrain(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph);
-//}
-
-void Indoor_Terrain(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph) {
-    tf_direct(fix_x, fix_y, fix_z, rad, ph, ss_edms_stupid_flag);
+TerrainHit Indoor_Terrain(fix fix_x, fix fix_y, fix fix_z, fix rad, int ph, TFType type) {
+    return tf_direct(fix_x, fix_y, fix_z, rad, ph, type);
 }
