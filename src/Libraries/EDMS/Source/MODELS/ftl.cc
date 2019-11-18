@@ -129,12 +129,8 @@ physics_handle EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q ran
         for (stepper = 0; (stepper < max_step) && (checker == 0); stepper++) {
             checker = 0;
 
-            ss_edms_stupid_flag = TFD_RCAST;
-
-            indoor_terrain(X[0], // Get the info...
-                           X[1], X[2], size, -1);
-
-            ss_edms_stupid_flag = TFD_FULL;
+            TerrainHit hit = indoor_terrain(X[0], // Get the info...
+                           X[1], X[2], size, -1, TFD_RCAST);
 
             //	Check the terrain...
             //	====================
@@ -142,7 +138,7 @@ physics_handle EDMS_cast_projectile(Q *X, Q D[3], Q kick, Q knock, Q size, Q ran
             checker = (terrain_info.cx) | (terrain_info.cy) | (terrain_info.cz) | (terrain_info.fx) |
                       (terrain_info.fy) | (terrain_info.fz) | (terrain_info.wx) | (terrain_info.wy) | (terrain_info.wz);
 #else
-            checker = (ss_edms_facelet_cnt != 0);
+            checker = (hit == HIT_FACELET);
 #endif
 
             //	Check for object collisions...

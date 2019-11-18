@@ -45,6 +45,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ======================
 #include "physhand.h"
 
+#include "ss_flet.h"
+
 //	Actual object types...
 //	======================
 extern Q VACUUM, MARBLE, ROBOT, FIELD_POINT, BIPED, PELVIS, DEATH, D_FRAME;
@@ -128,12 +130,12 @@ void EDMS_release_object(physics_handle ph);
 //	Terrain
 //	=======
 Q terrain(Q X, Q Y, int32_t deriv);                         // This calls Terrain()
-void indoor_terrain(Q X, Q Y, Q Z, Q R, physics_handle ph); // Indoor for Citadel, FBO, etc...
+TerrainHit indoor_terrain(Q X, Q Y, Q Z, Q R, physics_handle ph, TFType type); // Indoor for Citadel, FBO, etc...
 
 extern "C" {
 
 fix Terrain(fix X, fix Y, int32_t deriv);                           // This is provided by the user...
-void Indoor_Terrain(fix X, fix Y, fix Z, fix R, physics_handle ph); // As is this...
+TerrainHit Indoor_Terrain(fix X, fix Y, fix Z, fix R, physics_handle ph, TFType type); // As is this...
 
 //	Here's the actual indoor guy we ask for...
 //	------------------------------------------

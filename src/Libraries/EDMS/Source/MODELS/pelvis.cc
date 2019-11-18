@@ -42,7 +42,7 @@ Q EDMS_CYBER_FLOW2X = 200;
 Q EDMS_CYBER_FLOW3X = 270;
 
 int32_t EDMS_BCD = 0;
-int32_t EDMS_pelvis_is_climbing = 0;
+bool pelvis_is_climbing = false;
 int32_t edms_ss_head_bcd_flags;
 
 fix hacked_head_bob_1 = fix_make(1, 0);
@@ -111,10 +111,11 @@ void pelvis_idof(int32_t object) {
     //	====================================================
     extern void shall_we_dance(int32_t object, Q &result0, Q &result1, Q &result2);
 
-    EDMS_pelvis_is_climbing = 0;
+    pelvis_is_climbing = false;
 
     indoor_terrain(A[object][0][0], // Get the info...
-                   A[object][1][0], A[object][2][0], i_object[22], on2ph[object]);
+                   A[object][1][0], A[object][2][0], i_object[22],
+		   on2ph[object], TFD_FULL);
 
     V_ceiling[0].fix_to(terrain_info.cx); // Put it in...
     V_ceiling[1].fix_to(terrain_info.cy);
@@ -458,7 +459,7 @@ void get_head_of_death(int32_t object) {
     final_y = -sin_alpha * offset_x + cos_alpha * offset_y;
 
     indoor_terrain(A[object][0][0] + final_x, A[object][1][0] + final_y, A[object][2][0] + offset_z, .75 * i_object[22],
-                   -1 /*on2ph[object]*/);
+                   -1 /*on2ph[object]*/, TFD_FULL);
 
     Q mag = i_object[18] * i_object[18] + i_object[19] * i_object[19];
     if (mag < .1 && abs(V_floor[0]) < .05 * i_object[22] && abs(V_floor[1]) < .05 * i_object[22]) {
@@ -515,7 +516,7 @@ void get_body_of_death(int32_t object) {
     final_y = -sin_alpha * offset_x + cos_alpha * offset_y;
 
     indoor_terrain(A[object][0][0] + final_x, A[object][1][0] + final_y, A[object][2][0] + offset_z, .33 * i_object[0],
-                   -1 /*on2ph[object]*/);
+                   -1 /*on2ph[object]*/, TFD_FULL);
 
     //      Zero result!
     //      ============
@@ -580,7 +581,7 @@ void do_climbing(int32_t object) {
         if (ratio > 0)
             ass = 0;
 
-        EDMS_pelvis_is_climbing = 1;
+        pelvis_is_climbing = true;
 
         if (checker > 0) {
             io17 = .02 * ass; // + 100*( .2*i_object[22] - V_[floor][2] );
@@ -773,6 +774,11 @@ int32_t make_pelvis(Q init_state[6][3], Q params[10]) {
 //      -----------
 extern "C" {
 
+bool EDMS_pelvis_is_climbing()
+{
+    return pelvis_is_climbing;
+}
+    
 void EDMS_lean_o_meter(physics_handle ph, fix &lean, fix &crouch) {
 
     lean = crouch = 0;

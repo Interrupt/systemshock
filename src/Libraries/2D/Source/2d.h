@@ -24,6 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "plytyp.h"
 #include "tmaps.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif // !defined(__cplusplus)
+
 #pragma pack(push,2)
 
 typedef struct {
@@ -1660,5 +1664,9 @@ extern void fcount_report();
 extern void fcount_install();
 
 #pragma pack(pop)
+
+#if defined(__cplusplus)
+}
+#endif // !defined(__cplusplus)
 
 #endif /* __2D_H */

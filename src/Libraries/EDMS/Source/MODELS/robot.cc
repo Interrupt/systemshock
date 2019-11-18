@@ -106,7 +106,7 @@ void robot_idof(int32_t object) {
     EDMS_robot_global_badness_indicator = 0;
 
     // Get the info...
-    indoor_terrain(A00, A10, A20, I[object][IDOF_ROBOT_RADIUS], on2ph[object]);
+    indoor_terrain(A00, A10, A20, I[object][IDOF_ROBOT_RADIUS], on2ph[object], TFD_FULL);
 
     //        if (EDMS_robot_global_badness_indicator != 0 ) {
     //                                        mout << "!Robot.cc: thinks that X: " << A00 << ", Y: " << A10 << ", Z: "

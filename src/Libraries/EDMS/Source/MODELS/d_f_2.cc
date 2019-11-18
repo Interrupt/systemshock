@@ -247,7 +247,8 @@ void get_boundary_conditions(int object, Q radius, Q position[3], Q derivatives[
 
     //	Find locations...
     //	-----------------
-    indoor_terrain(position[0], position[1], position[2], radius, on2ph[object]);
+    indoor_terrain(position[0], position[1], position[2], radius,
+		   on2ph[object], TFD_FULL);
 
     //		Convert-a-tron...
     //		-----------------

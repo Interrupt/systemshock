@@ -90,11 +90,8 @@ void dirac_frame_idof(int32_t object) {
 
     //	CyberSpace BCD information...
     //	-----------------------------
-    ss_edms_stupid_flag = TFD_RCAST;
-
-    indoor_terrain(A[object][0][0], A[object][1][0], A[object][2][0], I[object][26], -1);
-
-    ss_edms_stupid_flag = TFD_FULL;
+    indoor_terrain(A[object][0][0], A[object][1][0], A[object][2][0],
+		   I[object][26], -1, TFD_RCAST);
 
     if (ss_edms_bcd_flags & SS_BCD_CURR_ON) {
 
