@@ -259,6 +259,7 @@ set(RES_SRC
 	RES/Source/resbuild.c
 	RES/Source/res.c
 	RES/Source/resfile.c
+	RES/Source/resformat.c
 	RES/Source/resload.c
 	RES/Source/resmake.c
 	RES/Source/restypes.c

@@ -520,14 +520,14 @@ void mfd_weapon_draw_ammo_buttons(int num_ammo_buttons, int ammo_subclass, ubyte
         triple = MAKETRIP(CLASS_AMMO, ammo_subclass, curr_ammo_type);
 
         sprintf(buf, "%d", ammo_count);
-        gr_set_font(ResGet(RES_mediumLEDFont, FORMAT_FONT));
+        gr_set_font(ResGet(RES_mediumLEDFont));
         mfd_string_shadow = MFD_SHADOW_NEVER;
         mfd_draw_font_string(buf, MFD_VIEW_WID - gr_string_width(buf) - 2, AMMO_BUTTON_Y + 2, GOOD_RED,
                              RES_mediumLEDFont, TRUE);
         mfd_string_shadow = MFD_SHADOW_FULLSCREEN; // default
 
         get_object_short_name(triple, buf2, 50);
-        gr_set_font(ResGet(MFD_FONT, FORMAT_FONT));
+        gr_set_font(ResGet(MFD_FONT));
         mfd_draw_string(buf2, MFD_VIEW_WID - gr_string_width(buf2) - 2, AMMO_NAME_Y, GREEN_YELLOW_BASE, TRUE);
 
         draw_ammo_button(triple, 0, AMMO_BUTTON_Y);
@@ -997,7 +997,7 @@ void mfd_item_micro_expose(uchar full, int triple) {
 
         // Draw the appropriate weapon art
         id = mfd_bmap_id(triple);
-        if (RefIndexValid(RefTableGet(REFID(id)), REFINDEX(id)))
+        if (RefIndexValid((RefTable *)ResGet(REFID(id)), REFINDEX(id)))
             draw_raw_resource_bm(id, (MFD_VIEW_WID - res_bm_width(id)) / 2, y);
         else
             ResUnlock(REFID(id));
@@ -1027,7 +1027,7 @@ void mfd_item_micro_hires_expose(uchar full, int triple) {
         y += siz.y + 2;
 
         id = mfd_bmap_id(triple);
-        if (RefIndexValid(RefTableGet(REFID(id)), REFINDEX(id)))
+        if (RefIndexValid((RefTable *)ResGet(REFID(id)), REFINDEX(id)))
             draw_hires_resource_bm(id, (SCONV_X(MFD_VIEW_WID) - res_bm_width(id)) / 2, SCONV_Y(y));
         else
             ResUnlock(REFID(id));

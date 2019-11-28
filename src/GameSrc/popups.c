@@ -149,7 +149,7 @@ void make_email_cursor(LGCursor *c, grs_bitmap *bm, uchar page, bool init) {
     ss_set_hack_mode(2, &temp);
 #endif
 
-    gr_font_char_size(ResGet(EMAIL_CURS_FONT, FORMAT_FONT), 'X', &w, &h);
+    gr_font_char_size(ResGet(EMAIL_CURS_FONT), 'X', &w, &h);
     h += 2;
     w = EMAIL_CURS_WID;
 #ifdef SVGA_SUPPORT

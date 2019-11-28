@@ -346,7 +346,7 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum, int32_t dataOffset
         currOffset = ftell(resFile[filenum].fd);
 	// Preload raw data, subsequent Lock() or Get() calls will decode if
 	// the caller so wishes.
-        ResLoadResource(pDirEntry->id, NULL, 0, NULL);
+        ResLoadResource(pDirEntry->id, FORMAT_RAW);
         ResAddToTail(prd);
         fseek(resFile[filenum].fd, currOffset, SEEK_SET);
     }

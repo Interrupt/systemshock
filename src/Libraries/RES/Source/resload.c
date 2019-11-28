@@ -49,6 +49,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Private Prototypes
 //-------------------------------
 
+// Defined in resformat.c
+extern const ResourceFormat *ResLookUpFormat(Id id);
+
 //	-----------------------------------------------------------
 //
 //	ResLoadResource() loads a resource object, decompressing it if it is
@@ -57,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //		id = resource id
 //	-----------------------------------------------------------
 
-void *ResLoadResource(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFreeFunc freer) {
+void *ResLoadResource(Id id, const ResourceFormat *format) {
     ResDesc *prd;
 
     // If doesn't exist, forget it
@@ -73,6 +76,16 @@ void *ResLoadResource(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFree
     if (prd->size == 0) {
         return NULL;
     }
+    // Format. If not specified, see if we can find a known format for the
+    // resource type.
+    if (format == NULL) {
+        format = ResLookUpFormat(id);
+    }
+    // No format isn't allowed at this stage.
+    if (format == NULL) {
+	ERROR("ResLoadResource(): unknown resource format");
+	return NULL;
+    }
 
     // Should not be called if resource is already loaded, unless it's been
     // preloaded and we now need to decode it.
@@ -84,15 +97,15 @@ void *ResLoadResource(Id id, ResDecodeFunc decoder, UserDecodeData data, ResFree
 	// Load from disk
 	ResRetrieve(id, prd->ptr);
     } else {
-	assert(decoder != NULL);
+	assert(format->decoder != NULL);
     }
     // Set free func if supplied.
-    prd->free_func = freer;
+    prd->free_func = format->freer;
     // Decode if a decoder was supplied.
-    if (decoder != NULL) {
+    if (format->decoder != NULL) {
 	assert(prd->decoded == NULL);
 	size_t size = prd->size;
-	prd->decoded = decoder(prd->ptr, &size, data);
+	prd->decoded = format->decoder(prd->ptr, &size, format->data);
 	return prd->decoded;
     }
 

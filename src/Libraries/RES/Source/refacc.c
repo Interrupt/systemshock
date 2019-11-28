@@ -77,7 +77,7 @@ void *RefLock(Ref ref, const ResourceFormat *format) {
     prd = RESDESC(id);
 
     if (prd->decoded == NULL) {
-        if (ResLoadResource(id, ResDecodeRefTable, 0, ResFreeRefTable) == NULL) {
+        if (ResLoadResource(id, NULL) == NULL) {
             return (NULL);
         }
     }
@@ -146,7 +146,7 @@ void *RefGet(Ref ref, const ResourceFormat *format) {
     // Get hold of ref
     prd = RESDESC(id);
     if (prd->decoded == NULL) {
-        if (ResLoadResource(REFID(ref), ResDecodeRefTable, 0, ResFreeRefTable) == NULL) {
+        if (ResLoadResource(REFID(ref), NULL) == NULL) {
             ERROR("%s: RefID %x == NULL!", __FUNCTION__, ref);
             return (NULL);
         }

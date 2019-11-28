@@ -77,6 +77,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "restypes.h"
 #endif
 
+#include "resformat.h"
+
 #pragma pack(push,2)
 
 //	---------------------------------------------------------
@@ -100,80 +102,13 @@ typedef uint16_t RefIndex; // index part of ref
 #define ID_TAIL 2 // holds tail ptr for LRU chain
 #define ID_MIN 3  // id's from 3 and up are valid
 
-// Types of resource field within a resfile.
-typedef int ResFileFieldType;
-#define RFFT_PAD    0  // not decoded, skip 'offset' bytes
-#define RFFT_UINT8  1  // 8-bit integer
-#define RFFT_UINT16 2  // 16-bit integer
-#define RFFT_UINT32 3  // 32-bit integer
-#define RFFT_INTPTR 4  // 32 bits on disc, 32 or 64 bits in memory.
-#define RFFT_RAW    5  // raw data, copy 'offset' bytes or rest of resource if 0
-#define RFFT_END    6  // mark end of table
-#define RFFT_BIN_BASE 0x100
-
-#define RFFT_BIN(x) (RFFT_BIN_BASE+(x))
-
-// Describes the layout of a resource structure.
-typedef struct {
-    ResFileFieldType type;   // type of field
-    size_t offset;           // offset in memory
-} ResField;
-
-typedef struct {
-    size_t dsize;        // size of resource on disc
-    size_t msize;        // size of resource in memory
-    uint32_t flags;      // misc. info.
-    ResField fields[];
-} ResLayout;
-
-// Indicates that multiple records exist within a resource, each of 'dsize'
-// bytes, up to the resource size.
-#define LAYOUT_FLAG_ARRAY            0x01
-// Indicates that raw data (e.g. bitmap data) follows a header in the resource.
-// The header is decoded according to the layout and the raw data is copied to
-// immediately following it.
-#define LAYOUT_FLAG_RAW_DATA_FOLLOWS 0x02
-
-// User data for a resource decoding function.
-typedef intptr_t UserDecodeData;
-// Function to decode a resource loaded from disc. Takes raw data, size of raw
-// data and user data. Returns decoded data. Default is to free decoded data
-// using free() but the caller can supply a custom free function.
-typedef void *(*ResDecodeFunc)(void*, size_t*, UserDecodeData);
-// Encoder function. Same signature as decoder; takes cooked data and returns
-// raw data for file, violating the laws of thermodynamics but allowing portable
-// saving. Encoded data is always freed using free().
-typedef void *(*ResEncodeFunc)(void*, size_t*, UserDecodeData);
-// Function to free decoded data, if free() won't cut it.
-typedef void (*ResFreeFunc)(void*);
-
-// Decode a resource using a ResLayout. Prototyped as a decode function.
-void *ResDecode(void *raw, size_t *size, UserDecodeData layout);
-// Encode a resource using a ResLayout.
-void *ResEncode(void *raw, size_t *size, UserDecodeData layout);
-
-// Describes the format of a resource for serialisation and deserialisation to
-// and from disc file.
-typedef struct {
-    ResDecodeFunc decoder; // deserialise data from disc.
-    ResEncodeFunc encoder; // serialise data to disc.
-    UserDecodeData data;   // aux data, typically a pointer to a layout struct.
-    ResFreeFunc freer;     // free cooked (only) data.
-} ResourceFormat;
-
-// An empty ResourceFormat struct means no translation is needed.
-extern const ResourceFormat RawFormat;
-#define FORMAT_RAW (&RawFormat)
-// A null ResourceFormat means to preload the raw data and translate later.
-#define FORMAT_PRELOAD ((ResourceFormat*)NULL)
-
 //	---------------------------------------------------------
 //		ACCESS TO RESOURCES (ID'S)  (resacc.c)
 //	---------------------------------------------------------
 
 void *ResLock(Id id, const ResourceFormat *format);   // lock resource & get ptr
 void ResUnlock(Id id);                 // unlock resource
-void *ResGet(Id id, const ResourceFormat *format);    // get ptr to resource (dangerous!)
+void *ResGet(Id id);    // get ptr to resource (dangerous!)
 void *ResExtract(Id id, const ResourceFormat *format, void *buffer); // extract resource into buffer
 void ResDrop(Id id);                   // drop resource from immediate use
 void ResDelete(Id id);                 // delete resource forever
@@ -208,11 +143,7 @@ RefTable *ResReadRefTable(Id id);        // alloc & read ref table
 void ResFreeRefTable(void *ptr);         // free ref table
 int32_t ResExtractRefTable(Id id, RefTable *prt,
                            int32_t size);             // extract reftable
-// Get a ref table from a resource.
-extern const ResourceFormat RefTableFormat;
-#define FORMAT_REFTABLE (&RefTableFormat)
 
-#define RefTableGet(ref) ((RefTable*)ResGet(ref, FORMAT_REFTABLE))
 #define RefTableLock(ref) ((RefTable*)ResLock(ref, FORMAT_REFTABLE))
 void *RefExtract(RefTable *prt, Ref ref, void *buff); // extract ref
 // Extract a ref, decoding as we go

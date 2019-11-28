@@ -262,7 +262,7 @@ LGPoint draw_olh_string(char *s, short xl, short yl) {
     short x, y;
 
     string_replace_char(s, '\n', CHAR_SOFTSP);
-    gr_set_font(ResGet(RES_tinyTechFont, FORMAT_FONT));
+    gr_set_font(ResGet(RES_tinyTechFont));
     gr_set_fcolor(hud_colors[hud_color_bank][2]);
     wrap_text(s, OLH_WRAP_WID);
     gr_string_size(s, &w, &h);

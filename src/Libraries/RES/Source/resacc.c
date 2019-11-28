@@ -215,7 +215,7 @@ void *ResLock(Id id, const ResourceFormat *format) {
     }
 
     // If resource not loaded, load it now
-    if (ResLoadResource(id, decoder, data, freer) == NULL) {
+    if (ResLoadResource(id, format) == NULL) {
         ERROR("ResLock: Could not load %x", id);
         return (NULL);
     } else if (prd->lock == 0)
@@ -268,11 +268,8 @@ void ResUnlock(Id id) {
 //				Lock(), Get(), etc.
 //	---------------------------------------------------------
 
-void *ResGet(Id id, const ResourceFormat *format) {
+void *ResGet(Id id) {
     ResDesc *prd;
-    ResDecodeFunc decoder = (format == NULL) ? NULL : format->decoder;
-    UserDecodeData data = (format == NULL) ? 0 : format->data;
-    ResFreeFunc freer = (format == NULL) ? NULL : format->freer;
     // Check if valid id
     // ValidateRes(id);
 
@@ -282,7 +279,7 @@ void *ResGet(Id id, const ResourceFormat *format) {
     // Load resource or move to tail
     prd = RESDESC(id);
     if (prd->ptr == NULL) {
-        if (ResLoadResource(id, decoder, data, freer) == NULL) {
+        if (ResLoadResource(id, NULL) == NULL) {
             return (NULL);
         }
         ResAddToTail(prd);
@@ -292,12 +289,7 @@ void *ResGet(Id id, const ResourceFormat *format) {
 
     // If it wants decoded, decode if not already done and return the decoded
     // data.
-    if (decoder != NULL) {
-        if (prd->decoded == NULL) {
-	    size_t size = prd->size;
-            prd->decoded = decoder(prd->ptr, &size, data);
-            prd->free_func = freer;
-        }
+    if (prd->decoded != NULL) {
         return prd->decoded;
     }
     // ValidateRes(id);

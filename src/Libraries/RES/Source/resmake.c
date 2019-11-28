@@ -145,7 +145,7 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
 
     prt = (RefTable *)prd->ptr;
     if (prt == NULL) {
-        prt = RefTableGet(ref);
+        prt = (RefTable *)ResGet(ref);
     }
 
     // If index within current range of compound resource, replace or insert

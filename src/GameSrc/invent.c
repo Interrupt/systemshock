@@ -1046,7 +1046,7 @@ void push_live_grenade_cursor(ObjID obj) {
     gr_init_bitmap(&grenade_bmap, (uchar *)bits, grenade_bmap.type, grenade_bmap.flags, grenade_bmap.w, grenade_bmap.h);
     gr_init_canvas(&cursor_canvas, (uchar *)bits, BMT_FLAT8, grenade_bmap.w, grenade_bmap.h);
     gr_push_canvas(&cursor_canvas);
-    gr_set_font(ResGet(ITEM_FONT, FORMAT_FONT));
+    gr_set_font(ResGet(ITEM_FONT));
     gr_clear(0);
 #ifdef SVGA_SUPPORT
     if (convert_use_mode > 0) {

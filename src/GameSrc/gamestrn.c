@@ -76,7 +76,7 @@ void init_strings(void) {
 }
 
 char *get_string(int num, char *buf, int bufsize) {
-    RefTable *table = RefTableGet(REFID(num));
+    RefTable *table = (RefTable *)ResGet(REFID(num));
     if (!ResInUse(REFID(num)) || !RefIndexValid(table, REFINDEX(num))) {
         if (buf != NULL) {
             *buf = '\0';
