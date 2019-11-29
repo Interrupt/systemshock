@@ -106,9 +106,9 @@ typedef uint16_t RefIndex; // index part of ref
 //		ACCESS TO RESOURCES (ID'S)  (resacc.c)
 //	---------------------------------------------------------
 
-void *ResLock(Id id, const ResourceFormat *format);   // lock resource & get ptr
+void *ResLock(Id id);                  // lock resource & get ptr
 void ResUnlock(Id id);                 // unlock resource
-void *ResGet(Id id);    // get ptr to resource (dangerous!)
+void *ResGet(Id id);                   // get ptr to resource (dangerous!)
 void *ResExtract(Id id, const ResourceFormat *format, void *buffer); // extract resource into buffer
 void ResDrop(Id id);                   // drop resource from immediate use
 void ResDelete(Id id);                 // delete resource forever
@@ -144,7 +144,6 @@ void ResFreeRefTable(void *ptr);         // free ref table
 int32_t ResExtractRefTable(Id id, RefTable *prt,
                            int32_t size);             // extract reftable
 
-#define RefTableLock(ref) ((RefTable*)ResLock(ref, FORMAT_REFTABLE))
 void *RefExtract(RefTable *prt, Ref ref, void *buff); // extract ref
 // Extract a ref, decoding as we go
 void *RefExtractDecoded(RefTable *prt, Ref ref, const ResLayout *layout, void *buff);

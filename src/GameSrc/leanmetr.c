@@ -180,7 +180,7 @@ void set_base_lean_bmap(uchar shield) {
             ResUnlock(lean_bmap_res);
             ResDrop(lean_bmap_res);
         }
-        ResLock(baseRes, FORMAT_PRELOAD); // Load hi and lock the new bitmap series.
+        ResLock(baseRes); // Load hi and lock the new bitmap series.
         lean_bmap_res = baseRes; // this is our base bitmap now
     }
 
@@ -199,7 +199,7 @@ void set_base_lean_bmap(uchar shield) {
                 ResUnlock(shield_bmap_res);
                 ResDrop(shield_bmap_res);
             }
-            ResLock(baseRes, FORMAT_PRELOAD); // Load hi and lock the new bitmap series.
+            ResLock(baseRes); // Load hi and lock the new bitmap series.
             shield_bmap_res = baseRes; // this is our base shield bitmap now
         }
     } else {

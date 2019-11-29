@@ -83,7 +83,7 @@ void *ResLoadResource(Id id, const ResourceFormat *format) {
     }
     // No format isn't allowed at this stage.
     if (format == NULL) {
-	ERROR("ResLoadResource(): unknown resource format");
+	ERROR("ResLoadResource(): unknown resource format %d", RESDESC2(id)->type);
 	return NULL;
     }
 

@@ -275,7 +275,7 @@ int res_bm_height(Ref id) {
 }
 
 errtype res_draw_text_shadowed(Id id, char *text, int x, int y, uchar shadow) {
-    gr_set_font(ResLock(id, FORMAT_FONT));
+    gr_set_font(ResLock(id));
     draw_shadowed_string(text, x, y, shadow);
     ResUnlock(id);
     return (OK);

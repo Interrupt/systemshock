@@ -290,7 +290,7 @@ void mfd_games_expose(MFD *m, ubyte control) {
         ss_safe_set_cliprect(0, 0, MFD_VIEW_WID, MFD_VIEW_HGT);
         mfd_clear_rects();
 
-        fon = ResLock(RES_tinyTechFont, FORMAT_FONT);
+        fon = ResLock(RES_tinyTechFont);
         gr_set_font(fon);
 
         cur_mode = GAME_MODE;

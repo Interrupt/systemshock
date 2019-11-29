@@ -715,7 +715,7 @@ void draw_weapons_list(inv_display *dp) {
     char buf[BUFSZ];
     int i, s;
     short y;
-    gr_set_font(ResLock(WEAPONS_FONT, FORMAT_FONT));
+    gr_set_font(ResLock(WEAPONS_FONT));
 
     if (newpage) {
         gr_set_fcolor(dp->titlecolor);
@@ -900,7 +900,7 @@ static char *generic_name_func(void *vdp, int num, char *buf) {
 
 static void generic_draw_list(inv_display *dp) {
     uchar newpage = inv_last_page != inventory_page;
-    gr_set_font(ResLock(ITEM_FONT, FORMAT_FONT));
+    gr_set_font(ResLock(ITEM_FONT));
 
     draw_quant_list(dp, newpage);
     ResUnlock(ITEM_FONT);
@@ -1019,7 +1019,7 @@ void push_live_grenade_cursor(ObjID obj) {
     void *bits = grenade_bmap_buffer;
 
     grenade_bmap = *bmap;
-    gr_set_font(ResLock(ITEM_FONT, FORMAT_FONT));
+    gr_set_font(ResLock(ITEM_FONT));
     get_string(REF_STR_WordLiveGrenade, live_string, sizeof(live_string));
     gr_string_size(live_string, &w, &h);
     w++;
@@ -1449,7 +1449,7 @@ void draw_general_list(inv_display *dp) {
     ubyte known_active = known_actives[dp->activenum];
     uchar newactive = known_active != active;
 
-    gr_set_font(ResLock(ITEM_FONT, FORMAT_FONT));
+    gr_set_font(ResLock(ITEM_FONT));
 
     if (newpage) {
         gr_set_fcolor(dp->titlecolor);
@@ -1704,7 +1704,7 @@ extern char *email_name_func(void *dp, int num, char *buf);
 static uchar email_morebuttons[2];
 
 void email_more_draw(inv_display *dp) {
-    gr_set_font(ResLock(ITEM_FONT, FORMAT_FONT));
+    gr_set_font(ResLock(ITEM_FONT));
 
     if (dp->relnum % 2 == 1) {
         int i;

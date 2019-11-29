@@ -485,7 +485,7 @@ void email_draw_text(Id email_id, bool really_an_email) {
     gr2ss_override = OVERRIDE_ALL;
 #endif
     gr_push_canvas(pinv_canvas);
-    gr_set_font((grs_font *)ResLock(email_font, FORMAT_FONT));
+    gr_set_font((grs_font *)ResLock(email_font));
     if (!full_game_3d)
         uiHideMouse(inventory_region->r);
     inventory_clear();

@@ -1140,7 +1140,7 @@ void draw_mfd_item_spew(Ref id, int n) {
     char buf[256];
     int i;
 
-    gr_set_font(ResLock(MFD_FONT, FORMAT_FONT));
+    gr_set_font(ResLock(MFD_FONT));
     buf[0] = '\0';
 #ifdef CONCATENATE_ITEMSPEW
     for (i = 0; i < n; i++, id++)
@@ -1986,7 +1986,7 @@ void mfd_bioware_expose(MFD *m, ubyte control) {
         if (!full_game_3d)
             ss_bitmap(&mfd_background, 0, 0);
         // gr_bitmap(&mfd_background, 0, 0);
-        gr_set_font(ResLock(MFD_FONT, FORMAT_FONT));
+        gr_set_font(ResLock(MFD_FONT));
 
         if (full) {
             draw_res_bm(ref, 0, 0);
@@ -2169,7 +2169,7 @@ errtype draw_shodan_influence(MFD *mfd, uchar amt) {
     // extract_temp_res_bitmap(&bm, REF_IMG_EmailMugShotBase+FIRST_SHODAN_MUG +amt);
     // gr_bitmap(&bm, 0, 0);
 
-    gr_set_font(ResLock(MFD_FONT, FORMAT_FONT));
+    gr_set_font(ResLock(MFD_FONT));
     wrap_text(s, MFD_VIEW_WID);
     mfd_draw_string(s, 2, 2, SHODAN_COLOR, TRUE);
     ResUnlock(MFD_FONT);
@@ -2390,7 +2390,7 @@ void mfd_elevator_expose(MFD *mfd, ubyte control) {
         if (full || elev_data->mfd_last[mfd->id].currlev != elev_data->stat.currlev) {
             short w, h;
             int lev = elev_data->stat.currlev;
-            gr_set_font(ResLock(ELEV_STATUS_FONT, FORMAT_FONT));
+            gr_set_font(ResLock(ELEV_STATUS_FONT));
             level_to_floor(lev, buf);
             gr_string_size(buf, &w, &h);
             mfd_draw_font_string(buf, ELEV_STATUS_X - w, ELEV_STATUS_Y, ELEV_STATUS_COLOR, ELEV_STATUS_FONT, TRUE);
@@ -2403,7 +2403,7 @@ void mfd_elevator_expose(MFD *mfd, ubyte control) {
             short w, h;
             //         LGPoint bstep = { ELEV_BTTNS_WD/ELEV_BTTN_COLS,
             //                        ELEV_BTTNS_HT/ELEV_BTTN_ROWS };
-            gr_set_font(ResLock(MFD_FONT, FORMAT_FONT));
+            gr_set_font(ResLock(MFD_FONT));
             for (i = 0, l = 0; i < NUM_ELEVATOR_BUTTONS; i++) {
                 ubyte clr;
                 LGPoint bttn;
@@ -2684,7 +2684,7 @@ void mfd_keypad_expose(MFD *mfd, ubyte control) {
             //                        KEYPAD_BTTNS_HT/KEYPAD_BTTN_ROWS };
 
             // Draw cool LED at top of MFD
-            gr_set_font(ResLock(KEYPAD_STATUS_FONT, FORMAT_FONT));
+            gr_set_font(ResLock(KEYPAD_STATUS_FONT));
             mfd_keypad_assemble(keypad_data, buf);
             gr_string_size(buf, &w, &h);
             mfd_draw_font_string(buf, KEYPAD_STATUS_X - w, KEYPAD_STATUS_Y, KEYPAD_STATUS_COLOR, KEYPAD_STATUS_FONT,
@@ -2693,7 +2693,7 @@ void mfd_keypad_expose(MFD *mfd, ubyte control) {
             ResUnlock(KEYPAD_STATUS_FONT);
 
             // Draw buttons
-            gr_set_font(ResLock(MFD_FONT, FORMAT_FONT));
+            gr_set_font(ResLock(MFD_FONT));
             for (i = 0; i < NUM_KEYPAD_BUTTONS; i++) {
                 ubyte clr;
                 LGPoint bttn;
@@ -2828,7 +2828,7 @@ void mfd_hud_expose(MFD* mfd, ubyte control)
             }
             gr_set_fcolor(HUDWARE_BOX_COLOR);
             ss_box(x,y,x+HUDWARE_BOX_SIZE,y+HUDWARE_BOX_SIZE);
-            gr_set_font(ResLock(MFD_FONT, FORMAT_FONT));
+            gr_set_font(ResLock(MFD_FONT));
             s = get_temp_string(REF_STR_HudBase+i);
             textx = (MFD_VIEW_WID - HUDWARE_BOX_SIZE - gr_string_width(s))/2 + HUDWARE_BOX_SIZE;
             mfd_draw_string(s,textx,y+1,gr_get_fcolor(),TRUE);

@@ -45,12 +45,16 @@ const ResLayout FontLayout = {
 const ResourceFormat FontFormat = RES_FORMAT(FontLayout);
 
 // Table of "well-known" resource formats, indexed by resource type.
-#define MAX_SUPPORTED_TYPE RTYPE_FONT
+#define MAX_SUPPORTED_TYPE RTYPE_VOC
 const ResourceFormat *ResTypeLayout[MAX_SUPPORTED_TYPE + 1] = {
     NULL, // FIXME RTYPE_UNKNOWN (actually palette)
     NULL, // FIXME RTYPE_STRING
     NULL, // FIXME RTYPE_BITMAP
-    &FontFormat // RTYPE_FONT
+    &FontFormat, // RTYPE_FONT
+    NULL, // FIXME RTYPE_ANIM
+    NULL, // FIXME RTYPE_PALL
+    NULL, // FIXME RTYPE_SHADTAB
+    &RawFormat,  // RTYPE_VOC (not translated)
 };
 
 const ResourceFormat *ResLookUpFormat(Id id) {

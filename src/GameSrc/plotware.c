@@ -245,7 +245,7 @@ void mfd_plotware_expose(MFD *mfd, ubyte control) {
             mfd_clear_rects();
 
         // INSERT GRAPHICS CODE HERE
-        gr_set_font(ResLock(MFD_FONT, FORMAT_FONT));
+        gr_set_font(ResLock(MFD_FONT));
         for (i = 0; PlotDisplays[i].page < NUM_PAGES; i++) {
             char buf[40], vbuf[40];
             short val;

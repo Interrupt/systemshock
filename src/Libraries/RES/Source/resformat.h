@@ -84,9 +84,6 @@ typedef struct {
 extern const ResourceFormat RawFormat;
 #define FORMAT_RAW (&RawFormat)
 
-// FIXME shouldn't need this
-#define FORMAT_PRELOAD ((const ResourceFormat *)NULL)
-
 // Make a format out of a layout.
 #define RES_FORMAT(layout) \
     { ResDecode, ResEncode, (UserDecodeData)&layout, NULL }

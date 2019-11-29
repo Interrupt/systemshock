@@ -168,7 +168,7 @@ static void draw_help_text(char *str, uchar wire, void *puzzle) {
     grs_bitmap foot;
     uchar bcolor;
 
-    gr_set_font(ResLock(MFD_FONT, FORMAT_FONT));
+    gr_set_font(ResLock(MFD_FONT));
     wrap_text(str, MFD_VIEW_WID - 1 - (2 * MFD_MARGIN_WID));
     gr_string_size(str, &sw, &sh);
     // special annointed string gets illustrative bitmap.

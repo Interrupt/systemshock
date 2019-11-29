@@ -229,7 +229,7 @@ int anim_frames(ObjID id) {
     switch (objs[id].obclass) {
     case CLASS_DOOR:
         //		prt = ResReadRefTable(door_id(id));
-        prt = RefTableLock(door_id(id));
+        prt = (RefTable *)ResLock(door_id(id));
         retval = prt->numRefs;
         //		ResFreeRefTable(prt);
         ResUnlock(door_id(id));

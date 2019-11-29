@@ -125,7 +125,7 @@ void mfd_fixture_expose(MFD *mfd, ubyte control) {
                 get_string(REF_STR_Name0 + objs[player_struct.panel_ref].info.make_info, buf, sizeof(buf));
             else
                 get_object_long_name(ID2TRIP(player_struct.panel_ref), buf, sizeof(buf));
-            gr_set_font((grs_font *)ResLock(MFD_FONT, FORMAT_FONT));
+            gr_set_font((grs_font *)ResLock(MFD_FONT));
             wrap_text(buf, TEXT_LABEL_W);
             mfd_string_wrap = FALSE;
             gr_string_size(buf, &w, &h);

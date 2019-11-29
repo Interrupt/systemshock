@@ -187,11 +187,8 @@ void *ResEncode(void *cooked, size_t *size, UserDecodeData ud)
 //
 //	Returns: ptr to locked resource
 //	---------------------------------------------------------
-void *ResLock(Id id, const ResourceFormat *format) {
+void *ResLock(Id id) {
     ResDesc *prd;
-    const ResDecodeFunc decoder = (format == NULL) ? NULL : format->decoder;
-    const UserDecodeData data = (format == NULL) ? 0 : format->data;
-    const ResFreeFunc freer = (format == NULL) ? NULL : format->freer;
 
     //  Check if valid id
     //  DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
@@ -202,20 +199,14 @@ void *ResLock(Id id, const ResourceFormat *format) {
     // CC: If already loaded, use the existing bytes
     if (prd->ptr != NULL) {
         prd->lock++;
-        if (decoder != NULL) {
-            // Caller wants it decoded, decode if not already done.
-            if (prd->decoded == NULL) {
-		size_t size = prd->size;
-                prd->decoded = decoder(prd->ptr, &size, data);
-                prd->free_func = freer;
-            }
+        if (prd->decoded != NULL) {
             return prd->decoded;
         }
         return prd->ptr;
     }
 
     // If resource not loaded, load it now
-    if (ResLoadResource(id, format) == NULL) {
+    if (ResLoadResource(id, NULL) == NULL) {
         ERROR("ResLock: Could not load %x", id);
         return (NULL);
     } else if (prd->lock == 0)
@@ -224,7 +215,7 @@ void *ResLock(Id id, const ResourceFormat *format) {
     prd->lock++;
 
     // Return ptr
-    return decoder ? prd->decoded : prd->ptr;
+    return prd->decoded ? prd->decoded : prd->ptr;
 }
 
 //	---------------------------------------------------------

@@ -216,7 +216,7 @@ void mfd_map_expose(MFD *m, ubyte control) {
             // draw_hires_resource_bm(REF_IMG_bmBlankMFD, 0, 0);
             draw_raw_resource_bm(MKREF(RES_mfdArtOverlays, MFD_ART_TRIOP), 0, 0);
             get_string(REF_STR_NoAutomap, buf, sizeof(buf));
-            gr_set_font(ResLock(MFD_FONT, FORMAT_FONT));
+            gr_set_font(ResLock(MFD_FONT));
             wrap_text(buf, MFD_VIEW_WID - 2);
             gr_string_size(buf, &w, &h);
             gr_set_fcolor(RED_BASE + 5);
@@ -302,7 +302,7 @@ void automap_expose_cross_section(MFD *mfd, ubyte u) {
 
     draw_res_bm(MKREF(RES_mfdArtOverlays, MFD_ART_STATN), 0, 0);
     draw_res_bm(MKREF(RES_mfdArtOverlays, MFD_ART_LVL(player_struct.level)), 0, 0);
-    mfdamapfont = ResLock(RES_tinyTechFont, FORMAT_FONT);
+    mfdamapfont = ResLock(RES_tinyTechFont);
     gr_set_font(mfdamapfont);
     gr_set_fcolor(ORANGE_8_BASE + 2);
     fsmap_get_lev_str(buf, BUF_SIZE);
@@ -311,7 +311,7 @@ void automap_expose_cross_section(MFD *mfd, ubyte u) {
     draw_shadowed_string(buf, MFD_VIEW_WID - w - 2, 1, full_game_3d);
     ResUnlock(RES_tinyTechFont);
 
-    mfdamapfont = ResLock(RES_mfdFont, FORMAT_FONT);
+    mfdamapfont = ResLock(RES_mfdFont);
     gr_set_font(mfdamapfont);
     gr_set_fcolor(ORANGE_8_BASE);
     draw_shadowed_string(ZOOM_STR, 1, BTXT_HGT, full_game_3d);
@@ -331,7 +331,7 @@ void automap_expose_zoom(MFD *m, ubyte u) {
     int mapid = mfd_to_map(m->id);
 
     amap_draw(oAMap(mapid), 0);
-    mfdamapfont = ResLock(RES_mfdFont, FORMAT_FONT);
+    mfdamapfont = ResLock(RES_mfdFont);
     gr_set_font(mfdamapfont);
     gr_set_fcolor(ORANGE_8_BASE);
     draw_shadowed_string(SIDE_STR, 1, BTXT_HGT, full_game_3d);

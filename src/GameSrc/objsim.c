@@ -296,7 +296,7 @@ Ref ref_from_critter_data(ObjID oid, int triple, byte posture, short frame, shor
             curr_frames = CritterProps[CPTRIP(triple)].frames[posture];
         else {
             //         prt = ResReadRefTable(our_id);
-            prt = RefTableLock(our_id);
+            prt = (RefTable *)ResLock(our_id);
             curr_frames = prt->numRefs;
             //         ResFreeRefTable(prt);
             ResUnlock(our_id);
@@ -317,8 +317,7 @@ Ref ref_from_critter_data(ObjID oid, int triple, byte posture, short frame, shor
                 Id id;
                 id = critter_id_table[CPTRIP(triple)] + v + posture_bases[p];
                 if ((id != our_id) && (ResPtr(id) == NULL)) {
-                    // FIXME does this need decoding?
-                    ResLock(id, FORMAT_PRELOAD);
+                    ResLock(id);
                     ResUnlock(id);
                 }
             }
@@ -2055,7 +2054,7 @@ grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, uchar s
         currfont = RES_citadelFont;
         break;
     }
-    gr_set_font(ResLock(currfont, FORMAT_FONT));
+    gr_set_font(ResLock(currfont));
     gr_string_size(s, &w, &h);
     while (size_remaining > h) {
         if (scroll)

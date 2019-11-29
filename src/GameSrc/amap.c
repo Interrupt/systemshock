@@ -501,7 +501,7 @@ void obj_mess(curAMap *amptr, MapElem *curmp, int drw, int xm, int ym, int tsize
                             strncpy(buf, amap_note_string(cobjid), 49);
                             buf[49] = 0;
                             fon = gr_get_font();
-                            gr_set_font(ResLock(RES_tinyTechFont, FORMAT_FONT));
+                            gr_set_font(ResLock(RES_tinyTechFont));
                             md = tsize - 2;
                             wrap_text(buf, md);
                             gr_string_size(buf, &w, &h);

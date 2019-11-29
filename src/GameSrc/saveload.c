@@ -845,17 +845,10 @@ errtype load_current_map(Id id_num) {
 
     // convert_from is the version we are coming from.
     // for now, this is only defined for coming from version 9
-    {
-	int fullmap_idx = idx++;
-	void *fullmap_buf = ResLock(id_num + fullmap_idx, FORMAT_FULLMAP);
-	memcpy(global_fullmap, fullmap_buf, sizeof(FullMap));
-	ResUnlock(id_num + fullmap_idx);
-	// FIXME should probably go back to the REF_READ version.
-	//        REF_READ(id_num, idx++, *global_fullmap);
+    REF_READ(id_num, idx++, *global_fullmap);
 
-        MAP_MAP = (MapElem *)static_map;
-	REF_READ(id_num, idx++, *static_map);
-    }
+    MAP_MAP = (MapElem *)static_map;
+    REF_READ(id_num, idx++, *static_map);
 
     // Load schedules, performing some voodoo.
     global_fullmap->sched[0].queue.vec = schedvec;
@@ -877,9 +870,7 @@ errtype load_current_map(Id id_num) {
         }
 
         uchar *dst_ptr = global_fullmap->sched[0].queue.vec;
-        // FIXME does this need decoding?
-        memmove(dst_ptr, ResLock(id_num + idx, FORMAT_RAW), queue_size);
-        ResUnlock(id_num + idx++);
+	ResExtract(id_num + idx++, FORMAT_RAW, dst_ptr);
         global_fullmap->sched[0].queue.fullness = (queue_size / sizeof(SchedEvent)) - 1;
     } else
         idx++;
