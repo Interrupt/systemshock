@@ -18,7 +18,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "res.h"
 
+#include "2dres.h"
 #include "grs.h" // grs_font
+
+// Defines the layout of a FrameDesc within a resource file.
+const ResLayout FrameDescLayout = {
+  28, // on-disc size
+  sizeof(FrameDesc), // in-memory size
+  LAYOUT_FLAG_RAW_DATA_FOLLOWS, // flags
+  {
+    { RFFT_PAD, 4 }, // skip placeholder bits pointer
+    { RFFT_UINT8,  offsetof(FrameDesc,bm.type) },
+    { RFFT_UINT8,  offsetof(FrameDesc,bm.align) },
+    { RFFT_UINT16, offsetof(FrameDesc,bm.flags) },
+    { RFFT_UINT16, offsetof(FrameDesc,bm.w) },
+    { RFFT_UINT16, offsetof(FrameDesc,bm.h) },
+    { RFFT_UINT16, offsetof(FrameDesc,bm.row) },
+    { RFFT_UINT8,  offsetof(FrameDesc,bm.wlog) },
+    { RFFT_UINT8,  offsetof(FrameDesc,bm.hlog) },
+    { RFFT_UINT16, offsetof(FrameDesc,updateArea.ul.x) },
+    { RFFT_UINT16, offsetof(FrameDesc,updateArea.ul.y) },
+    { RFFT_UINT16, offsetof(FrameDesc,updateArea.lr.x) },
+    { RFFT_UINT16, offsetof(FrameDesc,updateArea.lr.y) },
+    { RFFT_UINT32, offsetof(FrameDesc,pallOff) },
+    { RFFT_RAW,    sizeof(FrameDesc) }, // raw bitmap data follows
+    { RFFT_END, 0 }
+  }
+};
+const ResourceFormat FrameDescFormat = RES_FORMAT(FrameDescLayout);
 
 // Describe a font.
 // FIXME treats the offsets table as raw, should be decoded also.
@@ -48,13 +75,13 @@ const ResourceFormat FontFormat = RES_FORMAT(FontLayout);
 #define MAX_SUPPORTED_TYPE RTYPE_VOC
 const ResourceFormat *ResTypeLayout[MAX_SUPPORTED_TYPE + 1] = {
     NULL, // FIXME RTYPE_UNKNOWN (actually palette)
-    NULL, // FIXME RTYPE_STRING
-    NULL, // FIXME RTYPE_BITMAP
-    &FontFormat, // RTYPE_FONT
+    &RawFormat,       // RTYPE_STRING (needs no translation)
+    &FrameDescFormat, // RTYPE_BITMAP
+    &FontFormat,      // RTYPE_FONT
     NULL, // FIXME RTYPE_ANIM
     NULL, // FIXME RTYPE_PALL
     NULL, // FIXME RTYPE_SHADTAB
-    &RawFormat,  // RTYPE_VOC (not translated)
+    &RawFormat,       // RTYPE_VOC (not translated)
 };
 
 const ResourceFormat *ResLookUpFormat(Id id) {
@@ -67,6 +94,19 @@ const ResourceFormat *ResLookUpFormat(Id id) {
     if (prd2->type <= MAX_SUPPORTED_TYPE) {
 	return ResTypeLayout[prd2->type];
     }
-    // stub.
+    return NULL;
+}
+
+// Find the appropriate format for refs (compound resources).
+const ResourceFormat *RefLookUpFormat(Id id) {
+    ResDesc2 *prd2 = RESDESC2(id);
+    // Shouldn't be used for non-compound resources.
+    if (!(prd2->flags & RDF_COMPOUND)) {
+	return NULL;
+    }
+    // If it's a known resource type, return that format.
+    if (prd2->type <= MAX_SUPPORTED_TYPE) {
+	return ResTypeLayout[prd2->type];
+    }
     return NULL;
 }

@@ -1974,7 +1974,7 @@ errtype inventory_clear(void) {
         r.lr.x = INVENTORY_PANEL_X + INVENTORY_PANEL_WIDTH;
         r.lr.y = INVENTORY_PANEL_Y + INVENTORY_PANEL_HEIGHT;
         if (dirty_inv_canvas) {
-            FrameDesc *f = RefGet(REF_IMG_bmBlankInventoryPanel, FORMAT_FRAMEDESC);
+            FrameDesc *f = RefGet(REF_IMG_bmBlankInventoryPanel);
             LG_memcpy(inv_backgnd.bits, f + 1, f->bm.w * f->bm.h);
             dirty_inv_canvas = FALSE;
         }

@@ -59,7 +59,7 @@ char which_lang;
 // for the custom '%S' format specifier.
 char *lg_sprintf_string_get(uint32_t ref)
 {
-    return RefGet(ref, FORMAT_RAW);
+    return RefGet(ref);
 }
 
 void init_strings(void) {
@@ -98,7 +98,7 @@ char *get_string(int num, char *buf, int bufsize) {
         return get_temp_string(num);
 }
 
-char *get_temp_string(int num) { return (char *)RefGet(num, FORMAT_RAW); }
+char *get_temp_string(int num) { return (char *)RefGet(num); }
 
 char *get_object_short_name(int trip, char *buf, int bufsize) {
     return get_string(MKREF(RES_objshortnames, OPTRIP(trip)), buf, bufsize);

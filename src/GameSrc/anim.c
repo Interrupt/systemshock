@@ -95,8 +95,7 @@ ActAnim *AnimPlayRegion(Ref animRef, LGRegion *region, LGPoint loc, char unknown
 	// start playing
 	DEBUG("Playing animation: %x", animRef);
 
-	// FIXME do we need a decoder?
-	AnimHead *head = (AnimHead *)RefGet(animRef, FORMAT_RAW);
+	AnimHead *head = (AnimHead *)RefGet(animRef);
 	if(head != NULL) {
 		TRACE("Animation frames at %x", head->frameSetId);
 	}

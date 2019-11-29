@@ -137,7 +137,7 @@ void *ResDecodeRefTable(void *raw, size_t *size, UserDecodeData);
 
 void *RefLock(Ref ref, const ResourceFormat *format);  // lock compound res, get ptr to item
 #define RefUnlock(ref) ResUnlock(REFID(ref)) // unlock compound res item
-void *RefGet(Ref ref, const ResourceFormat *format);   // get ptr to item in comp. res (dangerous!)
+void *RefGet(Ref ref);   // get ptr to item in comp. res (dangerous!)
 
 RefTable *ResReadRefTable(Id id);        // alloc & read ref table
 void ResFreeRefTable(void *ptr);         // free ref table

@@ -296,7 +296,7 @@ void lean_icon(LGPoint *pos, grs_bitmap **icon, int *inum) {
     *inum = posture * BMAPS_PER_POSTURE + ((100 - leanx) * BMAPS_PER_POSTURE / 201);
 
     // Get a pointer to the corresponding lean bitmap.
-    FrameDesc *f = RefGet(MKREF(lean_bmap_res,*inum), FORMAT_FRAMEDESC);
+    FrameDesc *f = RefGet(MKREF(lean_bmap_res,*inum));
     if (f != NULL) {
         f->bm.bits = (uchar *)(f + 1);
         *icon = &(f->bm);
@@ -508,7 +508,7 @@ void update_lean_meter(uchar force) {
         grs_bitmap *sbm;
 
         // Get a pointer to the corresponding lean bitmap.
-	FrameDesc *f = RefGet(MKREF(shield_bmap_res, inum), FORMAT_FRAMEDESC);
+	FrameDesc *f = RefGet(MKREF(shield_bmap_res, inum));
 	if (f != NULL) {
             f->bm.bits = (uint8_t *)(f + 1);
             sbm = &(f->bm);

@@ -2225,8 +2225,8 @@ void tictactoe_drawwin(ttt_state *st) {
     if (p1.x > 0) {
         ss_int_line(p1.x, p1.y, p2.x, p2.y);
         sprintf(buf, "%s%s",
-            realwin == st->whoplayer ? (char *)RefGet(REF_STR_YouHave, FORMAT_RAW) : (char *)RefGet(REF_STR_ComputerHas, FORMAT_RAW),
-            (char *)RefGet(REF_STR_Won, FORMAT_RAW));
+            realwin == st->whoplayer ? (char *)RefGet(REF_STR_YouHave) : (char *)RefGet(REF_STR_ComputerHas),
+            (char *)RefGet(REF_STR_Won));
         draw_shadowed_text(buf, MFD_VIEW_WID - gr_string_width(buf) - 1, 1);
     }
 }

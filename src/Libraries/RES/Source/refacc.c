@@ -44,6 +44,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res.h"
 #include "res_.h"
 
+const ResourceFormat *RefLookUpFormat(Id id);
+
 const ResourceFormat RefTableFormat = { ResDecodeRefTable,
 					NULL,
 					0,
@@ -127,16 +129,12 @@ void *RefLock(Ref ref, const ResourceFormat *format) {
 //  For Mac version:  Lose debug and stats.  Change 'ptr' refs to 'hdl'.  Locks
 //  the resource handle before returning the ref ptr.
 
-void *RefGet(Ref ref, const ResourceFormat *format) {
+void *RefGet(Ref ref) {
     Id id = REFID(ref);
     ResDesc *prd;
     RefTable *prt;
     RefIndex index;
-    const ResDecodeFunc decoder = format->decoder;
-    const UserDecodeData data = format->data;
 
-    assert(format->freer == NULL); // custom free not yet supported
-    
     // Check for valid ref
     if (RefCheckRef(ref) != true) {
         ERROR("%s: No valid ref!", __FUNCTION__);
@@ -166,6 +164,16 @@ void *RefGet(Ref ref, const ResourceFormat *format) {
         ERROR("%s: Invalid Index %x", __FUNCTION__, ref);
         return (NULL);
     }
+
+    const ResourceFormat *format = RefLookUpFormat(id);
+    if (format == NULL) {
+	ERROR("%s: Unknown format %d", __FUNCTION__, RESDESC2(id)->type);
+	return NULL;
+    }
+    const ResDecodeFunc decoder = format->decoder;
+    const UserDecodeData data = format->data;
+    assert(format->freer == NULL); // custom free not yet supported
+    
     void *raw = ((uint8_t*)(prt->raw_data)) + prt->entries[index].offset;
     if (decoder != NULL) {
 	if (prt->entries[index].decoded_data == NULL) {

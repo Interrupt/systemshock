@@ -58,7 +58,7 @@ LGPoint popup_hotspots[NUM_POPUPS] = {
 void init_popups(void) {
     for (int i = 0; i < NUM_POPUPS; i++) {
         Ref id = MKREF(RES_popups, i);
-        FrameDesc *f = RefGet(id, FORMAT_FRAMEDESC);
+        FrameDesc *f = RefGet(id);
         popup_rects[i] = f->anchorArea;
         if (load_res_bitmap(&popup_bitmaps[i], id, TRUE) != OK)
             critical_error(CRITERR_RES | 0xA);
