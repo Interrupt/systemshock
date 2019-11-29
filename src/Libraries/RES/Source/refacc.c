@@ -61,14 +61,11 @@ const ResourceFormat RefTableFormat = { ResDecodeRefTable,
 //  For Mac version:  Change 'ptr' refs to 'hdl', lock resource handle and
 //  return ptr.
 
-void *RefLock(Ref ref, const ResourceFormat *format) {
+void *RefLock(Ref ref) {
     Id id = REFID(ref);
     ResDesc *prd;
     RefTable *prt;
     RefIndex index;
-    const ResDecodeFunc decoder = format->decoder;
-    const UserDecodeData data = format->data;
-    assert(format->freer == NULL); // not supporting custom free functions yet
 
     if (!RefCheckRef(ref)) {
         ERROR("%s: Bad ref ID!", __FUNCTION__);
@@ -105,6 +102,15 @@ void *RefLock(Ref ref, const ResourceFormat *format) {
         ERROR("%s: Invalid Index %x", __FUNCTION__, ref);
         return (NULL);
     }
+    const ResourceFormat *format = RefLookUpFormat(id);
+    if (format == NULL) {
+	ERROR("%s: Unknown format %d", __FUNCTION__, RESDESC2(id)->type);
+	return NULL;
+    }
+    assert(format->freer == NULL); // not supporting custom free functions yet
+    const ResDecodeFunc decoder = format->decoder;
+    const UserDecodeData data = format->data;
+
     void *raw = ((uint8_t*)(prt->raw_data)) + prt->entries[index].offset;
     if (decoder != NULL) {
 	if (prt->entries[index].decoded_data == NULL) {

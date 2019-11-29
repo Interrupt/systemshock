@@ -85,7 +85,7 @@ char *get_string(int num, char *buf, int bufsize) {
             return "";
     }
     if (buf != NULL) {
-        char *s = (char *)RefLock(num, FORMAT_RAW);
+        char *s = (char *)RefLock(num);
         if (s != NULL) {
             strncpy(buf, s, bufsize);
             buf[bufsize - 1] = '\0';

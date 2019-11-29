@@ -72,7 +72,7 @@ const ResLayout FontLayout = {
 const ResourceFormat FontFormat = RES_FORMAT(FontLayout);
 
 // Table of "well-known" resource formats, indexed by resource type.
-#define MAX_SUPPORTED_TYPE RTYPE_VOC
+#define MAX_SUPPORTED_TYPE RTYPE_MOVIE
 const ResourceFormat *ResTypeLayout[MAX_SUPPORTED_TYPE + 1] = {
     NULL, // FIXME RTYPE_UNKNOWN (actually palette)
     &RawFormat,       // RTYPE_STRING (needs no translation)
@@ -82,6 +82,19 @@ const ResourceFormat *ResTypeLayout[MAX_SUPPORTED_TYPE + 1] = {
     NULL, // FIXME RTYPE_PALL
     NULL, // FIXME RTYPE_SHADTAB
     &RawFormat,       // RTYPE_VOC (not translated)
+    NULL, // FIXME RTYPE_SHAPE
+    NULL, // FIXME RTYPE_PICT
+    NULL,             // RTYPE_B2EXTERN (not used)
+    NULL,             // RTYPE_B2RELOC  (I think these are to do with the BABL
+    NULL,             // RTYPE_B2CODE    conversation engine used by the
+    NULL,             // RTYPE_B2HEADER  Underworld games. Not used by System
+    NULL,             // RTYPE_B2RESRVD  Shock.)
+    // OBJ3D types should have at least some translation, but looking at the
+    // way the format is actually handled, I'm adopting the strategy of "back
+    // away slowly, smiling but not showing your teeth" at the moment.
+    &RawFormat, // FIXME RTYPE_OBJ3D
+    NULL, // FIXME RTYPE_STENCIL
+    &RawFormat, // FIXME RTYPE_MOVIE
 };
 
 const ResourceFormat *ResLookUpFormat(Id id) {

@@ -2938,7 +2938,7 @@ static int wing_get_facing(int i) {
 static void scale_res_bm(int ref, int x, int y, int w, int h) {
     FrameDesc *f;
 
-    f = RefLock(ref, FORMAT_FRAMEDESC);
+    f = RefLock(ref);
     if (!f)
         return;
 

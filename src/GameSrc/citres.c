@@ -39,7 +39,7 @@ grs_bitmap *lock_bitmap_from_ref_anchor(Ref r, LGRect *anchor) {
     FrameDesc *f;
     if (r == 0)
         return (NULL);
-    f = RefLock(r, FORMAT_FRAMEDESC);
+    f = RefLock(r);
     if (f == NULL) {
         //      Warning(("Could not lock bitmap %d!",r));
         return (NULL);

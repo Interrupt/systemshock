@@ -2512,7 +2512,7 @@ LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **p
         }
 
         // Pull in the background bitmap
-        f = RefLock(REF_IMG_bmBlankInventoryPanel, FORMAT_FRAMEDESC);
+        f = RefLock(REF_IMG_bmBlankInventoryPanel);
         inv_backgnd = f->bm;
 
         // This background is going to get used by the 360 ware
