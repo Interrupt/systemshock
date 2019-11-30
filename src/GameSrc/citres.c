@@ -67,55 +67,38 @@ grs_bitmap *get_bitmap_from_ref_anchor(Ref r, LGRect *anchor) {
 
 errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar tmp_mem, LGRect *anchor,
                                     uchar *p) {
-    Ref rid;
-    FrameDesc *f;
-    uchar alloced_fdesc = FALSE;
     extern int memcount;
-    const size_t size = RefSizeDecoded(rt, i, &FrameDescLayout);
+    Ref rid = MKREF(id_num, i);
+    FrameDesc *f = RefGet(rid);
 
-    if (!RefIndexValid(rt, i)) {
-        //      Warning(("Bitmap index %i invalid!\n",i));
-        printf("Bitmap index %i invalid!\n", i);
-        return (ERR_FREAD);
-    }
-
-    rid = MKREF(id_num, i);
-    if (size > FRAME_BUFFER_SIZE) {
-        //      Warning(("damn, we have to malloc...need %d, buffer = %d\n",RefSize(rt,i),FRAME_BUFFER_SIZE));
-        assert(!tmp_mem); // we're freeing it, better not return a pointer to it
-        f = (FrameDesc *)malloc(size);
-        alloced_fdesc = TRUE;
-    } else {
-        //      mprintf("look, Refsize is only %d!\n",RefSize(rt,i));
-        f = (FrameDesc *)frameBuffer;
-    }
-
-    memcount += size;
     if (f == NULL) {
         //      Warning(("Could not load bitmap from resource #%d!\n",id_num));
         printf("Could not load bitmap from resource #%d!\n", id_num);
         return (ERR_FREAD);
     }
-    RefExtractDecoded(rt, rid, &FrameDescLayout, f);
+
+    const size_t size = f->bm.w * f->bm.h;
+    if (tmp_mem) {
+	// Use the global temp framebuffer ... if it's big enough.
+	assert(size <= FRAME_BUFFER_SIZE);
+	p = frameBuffer;
+    } else if (p == NULL) {
+	// Caller wants us to allocate a framebuffer.
+        p = malloc(f->bm.w * f->bm.h);
+    }
 
     if (anchor != NULL)
         *anchor = f->anchorArea;
-    if (!tmp_mem && p == NULL)
-        p = (uchar *)malloc(f->bm.w * f->bm.h * sizeof(uchar));
-    if (tmp_mem)
-        p = (uchar *)(f + 1);
 
-    memcount += f->bm.w * f->bm.h * sizeof(uchar);
-    if (!tmp_mem)
-        LG_memcpy(p, f + 1, f->bm.w * f->bm.h * sizeof(uchar));
+    memcount += f->bm.w * f->bm.h;
+    memcpy(p, f + 1, f->bm.w * f->bm.h);
     //
     if (bmp == NULL)
         DEBUG("%s: Trying to assign to a null bmp pointer!", __FUNCTION__);
     //
     *bmp = f->bm;
     bmp->bits = p;
-    if (alloced_fdesc)
-        free(f);
+
     return (OK);
 }
 
