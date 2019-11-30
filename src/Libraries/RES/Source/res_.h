@@ -48,6 +48,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 bool ResCheckId(Id id);    // returns TRUE if id ok, else FALSE + warns
 bool RefCheckRef(Ref ref); // returns TRUE if ref ok, else FALSE & warns
 
+// Size of a ref on disc (not necessarily in memory).
+#define RefSize(prt, index) (prt->entries[index].size)
+
 //	Resource loading (resload.c)
 
 void *ResLoadResource(Id id, const ResourceFormat *format);
