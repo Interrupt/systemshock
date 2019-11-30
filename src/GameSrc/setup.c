@@ -930,12 +930,11 @@ errtype journey_continue_func(uchar draw_stuff)
     RefTable *rt = ResReadRefTable(REFID(rid));
     if (RefIndexValid(rt, i))
     {
-      FrameDesc *f = (FrameDesc *)malloc(RefSizeDecoded(rt, i, &FrameDescLayout));
-      RefExtractDecoded(rt, rid, &FrameDescLayout, f);
-      f->bm.bits = (void *)(f+1);
-      f->bm.h = 200; //SUPER HACK: resource reports 320
-      ss_bitmap(&(f->bm), 0, 0);
-      free(f);
+	FrameDesc *f = RefLock(rid);
+	grs_bitmap bm = f->bm;
+        bm.h = 200; //SUPER HACK: resource reports 320
+        ss_bitmap(&bm, 0, 0);
+        RefUnlock(rid);
     }
     ResFreeRefTable(rt);
 
