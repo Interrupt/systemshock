@@ -144,15 +144,7 @@ void ResFreeRefTable(void *ptr);         // free ref table
 int32_t ResExtractRefTable(Id id, RefTable *prt,
                            int32_t size);             // extract reftable
 
-void *RefExtract(RefTable *prt, Ref ref, void *buff); // extract ref
-// Extract a ref, decoding as we go
-void *RefExtractDecoded(RefTable *prt, Ref ref, const ResLayout *layout, void *buff);
-
 #define RefIndexValid(prt, index) ((index) < (prt)->numRefs)
-#define RefSize(prt, index) (prt->entries[index].size)
-
-// Size of a ref in memory once it is decoded, if the on-disc layout is different.
-#define RefSizeDecoded(prt, index, layout) (RefSize(prt,index) + (layout)->msize - (layout)->dsize)
 
 // returns the number of refs in a resource, extracting if necessary.
 int32_t ResNumRefs(Id id);
