@@ -45,7 +45,16 @@ const ResLayout FrameDescLayout = {
     { RFFT_END, 0 }
   }
 };
-const ResourceFormat FrameDescFormat = RES_FORMAT(FrameDescLayout);
+
+// Decoder function for frames: decodes using the layout in the normal way and
+// then updates the bits pointer.
+void *FrameDecode(void *raw, size_t *size, UserDecodeData layout) {
+    FrameDesc *f = ResDecode(raw, size, layout);
+    f->bm.bits = (uchar *)(f + 1);
+    return f;
+}
+const ResourceFormat FrameDescFormat = {
+    FrameDecode, ResEncode, (UserDecodeData)&FrameDescLayout, NULL };
 
 // Describe a font.
 // FIXME treats the offsets table as raw, should be decoded also.
