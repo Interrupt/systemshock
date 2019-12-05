@@ -329,7 +329,8 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int32_t filenum, int32_t dataOffset
     
     // Fill in resource descriptor
     prd->ptr = NULL;
-    prd->size = pDirEntry->size;
+    prd->fsize = pDirEntry->size;
+    prd->msize = 0; // not decoded yet
     prd->filenum = filenum;
     prd->lock = 0;
     prd->offset = RES_OFFSET_REAL2DESC(dataOffset);

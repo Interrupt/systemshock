@@ -841,6 +841,7 @@ errtype load_current_map(Id id_num) {
 
     // Read in the global fullmap (without disrupting schedule vec ptr)
     schedvec = global_fullmap->sched[0].queue.vec; // KLC - Only one schedule, so just save it.
+    // Preserve the old schedule size in case the one being loaded is different
     int schedsize = global_fullmap->sched[0].queue.size;
 
     // convert_from is the version we are coming from.
@@ -854,26 +855,17 @@ errtype load_current_map(Id id_num) {
     global_fullmap->sched[0].queue.vec = schedvec;
     global_fullmap->sched[0].queue.comp = compare_events;
 
-    // CC: HAX HAX HAX - Why don't these get set properly?
-    global_fullmap->sched[0].queue.fullness = 0;
-    global_fullmap->sched[0].queue.size = schedsize;
-    global_fullmap->sched[0].queue.elemsize = sizeof(SchedEvent);
+    // Might have to allocate more memory for the queue
+    if (global_fullmap->sched[0].queue.size > schedsize) {
+	schedule_free(&global_fullmap->sched[0]);
+	schedule_init(&global_fullmap->sched[0], global_fullmap->sched[0].queue.size, FALSE);
+    } else {
+	// Preserve the existing size.
+	global_fullmap->sched[0].queue.size = schedsize;
+    }
 
-    int queue_size = ResSize(id_num + idx);
-
-    if (queue_size > 0) // KLC - no need to read in vec if none there.
-    {
-        // Might have to allocate more memory for the queue
-        if (queue_size > schedsize) {
-            schedule_free(&global_fullmap->sched[0]);
-            schedule_init(&global_fullmap->sched[0], queue_size, FALSE);
-        }
-
-        uchar *dst_ptr = global_fullmap->sched[0].queue.vec;
-	ResExtract(id_num + idx++, FORMAT_RAW, dst_ptr);
-        global_fullmap->sched[0].queue.fullness = (queue_size / sizeof(SchedEvent)) - 1;
-    } else
-        idx++;
+    uchar *dst_ptr = global_fullmap->sched[0].queue.vec;
+    ResExtract(id_num + idx++, FORMAT_RAW, dst_ptr);
 
     // KLC��� Big hack!  Force the schedule to growable.
     global_fullmap->sched[0].queue.grow = TRUE;

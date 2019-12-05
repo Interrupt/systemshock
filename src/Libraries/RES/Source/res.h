@@ -187,25 +187,19 @@ size;
         Id      prev;
 } ResDesc;*/
 
-// It seems a little wasteful to keep the raw and decoded data alongside each
-// other, but System Shock resources are not memory-hungry by modern standards
-// and it allows code to preload resources without necessarily knowing how to
-// decode them.
 typedef struct {
-    void *ptr;             // ptr to resource in memory, or NULL if on disk
-    uint32_t lock : 8;     // lock count
-    uint32_t size : 24;    // size of resource in bytes (1 Mb max)
-    uint32_t filenum : 5;  // file number 0-31
-    uint32_t offset : 27;  // offset in file
+    void *ptr;             // ptr to resource in memory
+    uint32_t lock;         // lock count
+    uint32_t fsize;        // size of resource in bytes (1 Mb max)
+    uint32_t msize;        // size in memory (where used; not for compound)
+    uint32_t filenum;      // file number 0-31
+    uint32_t offset;       // offset in file
     Id next;               // next resource in LRU order
     Id prev;               // previous resource in LRU order
-    uint32_t flags;        // resource management flags
+    //uint32_t flags;        // resource management flags
     /*uint16_t type : 8;*/ // resource type (RTYPE_XXX, see restypes.h)
-    void *decoded;         // decoded data, if in-memory format is different.
-    ResFreeFunc free_func; // free func; if NULL decoded is freed using free().
+    const ResourceFormat *format;// format of resource
 } ResDesc;
-
-#define RES_OWNS_RAW_PTR 1
 
 typedef struct {
     uint16_t flags : 8; // misc flags (RDF_XXX, see below)
@@ -235,7 +229,7 @@ extern Id resDescMax; // max id in res desc
 //      Information about resources
 #define ResInUse(id) (gResDesc[id].offset)
 #define ResPtr(id) (gResDesc[id].ptr)
-#define ResSize(id) (gResDesc[id].size)
+#define ResSize(id) (gResDesc[id].msize)
 #define ResLocked(id) (gResDesc[id].lock)
 #define ResFilenum(id) (gResDesc[id].filenum)
 #define ResType(id) (gResDesc2[id].type)
