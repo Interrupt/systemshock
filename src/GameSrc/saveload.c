@@ -327,7 +327,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     int i, goof;
     int idx = 0;
     int fd;
-    int map_version = MAP_EASYSAVES_VERSION_NUMBER;
+    int map_version = MAP_VERSION_NUMBER;
     int ovnum = OBJECT_VERSION_NUMBER;
     int mvnum = MISC_SAVELOAD_VERSION_NUMBER;
     ObjLoc plr_loc;
