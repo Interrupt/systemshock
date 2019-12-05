@@ -87,7 +87,7 @@ const ResourceFormat *ResTypeLayout[MAX_SUPPORTED_TYPE + 1] = {
     &RawFormat,       // RTYPE_STRING (needs no translation)
     &FrameDescFormat, // RTYPE_BITMAP
     &FontFormat,      // RTYPE_FONT
-    NULL, // FIXME RTYPE_ANIM
+    &RawFormat,       // FIXME RTYPE_ANIM
     NULL, // FIXME RTYPE_PALL
     NULL, // FIXME RTYPE_SHADTAB
     &RawFormat,       // RTYPE_VOC (not translated)
