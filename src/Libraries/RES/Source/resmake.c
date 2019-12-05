@@ -74,15 +74,10 @@ void ResMake(Id id, void *ptr, size_t size, uint8_t type, int32_t filenum, uint8
     }
 
     // Add us to the soup, set lock so doesn't get swapped out
-    if (format != NULL && format->encoder != NULL) {
-        prd->decoded = ptr;
-	prd->ptr = (format->encoder)(ptr, &size, format->data);
-	prd->flags = RES_OWNS_RAW_PTR;
-    } else {
-	prd->ptr = ptr;
-	prd->flags = 0;
-    }
-    prd->size = size;
+    prd->ptr = ptr;
+    prd->format = format;
+    prd->fsize = 0; // not encoded yet
+    prd->msize = size;
     prd->filenum = filenum;
     prd->lock = 1;
     prd->offset = RES_OFFSET_PENDING;
@@ -115,7 +110,6 @@ void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags) {
     // Make a resource out of it
     ResMake(id, prt, sizeTable, type, filenum, flags | RDF_COMPOUND);
 }
-#endif
 
 //	---------------------------------------------------------------
 //
@@ -223,6 +217,7 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
         prt->numRefs = index + 1;
     }
 }
+#endif
 
 //	-------------------------------------------------------------
 //
@@ -240,8 +235,5 @@ void ResAddRef(Ref ref, void *pitem, int32_t itemSize) {
 
 void ResUnmake(Id id) {
     ResDesc *prd = RESDESC(id);
-    if (prd->flags & RES_OWNS_RAW_PTR) {
-	free(prd->ptr);
-    }
     memset(prd, 0, sizeof(ResDesc));
 }

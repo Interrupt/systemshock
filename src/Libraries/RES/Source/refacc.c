@@ -75,7 +75,7 @@ void *RefLock(Ref ref) {
     // Load block if not in RAM
     prd = RESDESC(id);
 
-    if (prd->decoded == NULL) {
+    if (prd->ptr == NULL) {
         if (ResLoadResource(id, NULL) == NULL) {
             return (NULL);
         }
@@ -90,7 +90,7 @@ void *RefLock(Ref ref) {
     prd->lock++;
 
     // Index into ref table
-    prt = (RefTable *)prd->decoded;
+    prt = (RefTable *)prd->ptr;
     index = REFINDEX(ref);
 
     // printf("Loading ref %x %x\n", REFID(ref), index);
@@ -149,7 +149,7 @@ void *RefGet(Ref ref) {
 
     // Get hold of ref
     prd = RESDESC(id);
-    if (prd->decoded == NULL) {
+    if (prd->ptr == NULL) {
         if (ResLoadResource(REFID(ref), NULL) == NULL) {
             ERROR("%s: RefID %x == NULL!", __FUNCTION__, ref);
             return (NULL);
@@ -160,7 +160,7 @@ void *RefGet(Ref ref) {
     }
 
     // Index into ref table
-    prt = (RefTable *)prd->decoded;
+    prt = (RefTable *)prd->ptr;
     index = REFINDEX(ref);
 
     // Return ptr
@@ -311,8 +311,11 @@ void *ResDecodeRefTable(void *raw, size_t *size, UserDecodeData data) {
     // Allocate a directory for it.
     RefTable *prt = malloc(REFTABLESIZE(numRefs));
     prt->numRefs = numRefs;
-    // Point the raw data at the original resource in the first instance.
-    prt->raw_data = (uint8_t*)raw + startOffset;
+    // Copy the raw data out of the original resource (it'll be deleted once
+    // decoding is done).
+    size_t rawSize = *size - startOffset;
+    prt->raw_data = malloc(rawSize);
+    memcpy(prt->raw_data, (uint8_t*)raw + startOffset, rawSize);
     offset = (uint32_t)*rp | ((uint32_t)rp[1] << 8) | ((uint32_t)rp[2] << 16) |
 	((uint32_t)rp[3] << 24);
     rp += 4;
@@ -325,6 +328,7 @@ void *ResDecodeRefTable(void *raw, size_t *size, UserDecodeData data) {
 	prt->entries[i].decoded_data = NULL;
 	offset = next;	
     }
+    *size = 0; // not used for compound resource.
     return prt;
 }
 
@@ -334,6 +338,7 @@ void ResFreeRefTable(void *ptr) {
     for (i = 0; i < prt->numRefs; ++i) {
 	free(prt->entries[i].decoded_data);
     }
+    free(prt->raw_data);
     free(prt);
 }
 

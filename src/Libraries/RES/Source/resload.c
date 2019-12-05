@@ -73,7 +73,7 @@ void *ResLoadResource(Id id, const ResourceFormat *format) {
 
     prd = RESDESC(id);
 
-    if (prd->size == 0) {
+    if (prd->fsize == 0) {
         return NULL;
     }
     // Format. If not specified, see if we can find a known format for the
@@ -87,11 +87,10 @@ void *ResLoadResource(Id id, const ResourceFormat *format) {
 	return NULL;
     }
 
-    // Should not be called if resource is already loaded, unless it's been
-    // preloaded and we now need to decode it.
+    // Should not be called if resource is already loaded.
     if (prd->ptr == NULL) {
 	// Allocate memory, setting magic id so pager can tell who it is if need be.
-	prd->ptr = malloc(prd->size);
+	prd->ptr = malloc(prd->fsize);
 	if (prd->ptr == NULL)
 	    return (NULL);
 	// Load from disk
@@ -99,15 +98,16 @@ void *ResLoadResource(Id id, const ResourceFormat *format) {
     } else {
 	assert(format->decoder != NULL);
     }
-    // Set free func if supplied.
-    prd->free_func = format->freer;
+    // Set resource format.
+    prd->format = format;
     // Decode if a decoder was supplied.
+    size_t size = prd->fsize;
     if (format->decoder != NULL) {
-	assert(prd->decoded == NULL);
-	size_t size = prd->size;
-	prd->decoded = format->decoder(prd->ptr, &size, format->data);
-	return prd->decoded;
+	void *decoded = format->decoder(prd->ptr, &size, format->data);
+	free (prd->ptr);
+	prd->ptr = decoded;
     }
+    prd->msize = size;
 
     // Return ptr
     return (prd->ptr);
@@ -148,7 +148,7 @@ bool ResRetrieve(Id id, void *buffer) {
     // Seek to data, set up
     fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
     p = (uint8_t *)buffer;
-    size = prd->size;
+    size = prd->fsize;
 
     // If compound, read in ref table
     if (prd2->flags & RDF_COMPOUND) {

@@ -199,9 +199,6 @@ void *ResLock(Id id) {
     // CC: If already loaded, use the existing bytes
     if (prd->ptr != NULL) {
         prd->lock++;
-        if (prd->decoded != NULL) {
-            return prd->decoded;
-        }
         return prd->ptr;
     }
 
@@ -215,7 +212,7 @@ void *ResLock(Id id) {
     prd->lock++;
 
     // Return ptr
-    return prd->decoded ? prd->decoded : prd->ptr;
+    return prd->ptr;
 }
 
 //	---------------------------------------------------------
@@ -278,11 +275,6 @@ void *ResGet(Id id) {
         ResMoveToTail(prd);
     }
 
-    // If it wants decoded, decode if not already done and return the decoded
-    // data.
-    if (prd->decoded != NULL) {
-        return prd->decoded;
-    }
     // ValidateRes(id);
 
     //  Return ptr
@@ -294,8 +286,7 @@ void *ResGet(Id id) {
 //	ResExtract() extracts a resource from an open resource file.
 //
 //		id   = id
-//		buff = ptr to buffer (use ResSize() to compute needed buffer
-// size)
+//		buff = ptr to buffer
 //
 //	Returns: ptr to supplied buffer, or NULL if problem
 //	---------------------------------------------------------
@@ -303,13 +294,15 @@ void *ResGet(Id id) {
 
 void *ResExtract(Id id, const ResourceFormat *format, void *buffer) {
     ResDecodeFunc decoder = format->decoder;
+    ResDesc *prd = RESDESC(id);
     if (decoder != NULL) {
 	// Get the raw data into a temporary buffer.
-	size_t size = ResSize(id);
+	size_t size = prd->fsize;
 	void *tbuf = malloc(size);
 	if (ResRetrieve(id, tbuf)) {
 	    void *dbuf = decoder(tbuf, &size, format->data);
 	    memcpy(buffer, dbuf, size);
+	    prd->msize = size;
 	    if (format->freer != NULL) {
 		format->freer(dbuf);
 	    } else {
@@ -322,6 +315,7 @@ void *ResExtract(Id id, const ResourceFormat *format, void *buffer) {
     } else {
         // Retrieve the data into the buffer, please
         if (ResRetrieve(id, buffer)) {
+	    prd->msize = prd->fsize;
             return (buffer);
         }
     }
@@ -363,20 +357,15 @@ void ResDrop(Id id) {
         prd->lock = 0;
     }
 
-    // Free decoded data, using the freer if supplied.
-    if (prd->decoded != NULL) {
-        if (prd->free_func != NULL) {
-            prd->free_func(prd->decoded);
-        }
-        else {
-            free(prd->decoded);
-        }
-        prd->decoded = NULL;
-        prd->free_func = NULL;
-    }
     // Free the raw data.
     if (prd->ptr != NULL) {
-        free(prd->ptr);
+	assert(prd->format != NULL);
+        if (prd->format->freer != NULL) {
+            prd->format->freer(prd->ptr);
+        }
+        else {
+            free(prd->ptr);
+        }
         prd->ptr = NULL;
     }
 }

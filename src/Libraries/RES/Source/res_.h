@@ -75,6 +75,9 @@ void ResGrowResDescTable(Id id);
             ResGrowResDescTable(id); \
     }
 
+// (Private) access to resource size in the file.
+#define ResFSize(id) (gResDesc[id].fsize)
+
 #define DEFAULT_RES_GROWDIRENTRIES 128 // must be power of 2
 
 //	Data alignment aids
