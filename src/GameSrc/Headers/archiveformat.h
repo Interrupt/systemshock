@@ -7,9 +7,8 @@
 extern const ResourceFormat U32Format;
 #define FORMAT_U32 (&U32Format)
 
-extern const ResourceFormat FullMapFormat;
-#define FORMAT_FULLMAP (&FullMapFormat)
-
+// The schedules have fixed resource IDs and do not form part of the main
+// archive tables.
 extern const ResourceFormat ScheduleFormat;
 #define FORMAT_SCHEDULE (&ScheduleFormat)
 
