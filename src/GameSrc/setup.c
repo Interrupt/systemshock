@@ -26,7 +26,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __SETUP_SRC
 
 #include <string.h>
-#include <unistd.h>
+
+// TODO: extract this into a compatibility header
+#ifdef _MSC_VER
+	#ifndef F_OK
+	#define F_OK 0
+	#endif
+#else
+	#include <unistd.h>
+#endif
 
 #include "archiveformat.h"
 #include "ShockDialogs.h"

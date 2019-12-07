@@ -138,7 +138,7 @@ static char *GetPrefsPathFilename(void)
   {
     char *p = SDL_GetPrefPath("Interrupt", "SystemShock");
     snprintf(filename, sizeof(filename), "%s%s", p, PREFS_FILENAME);
-    free(p);
+    SDL_free(p);
   }
 
   return filename;
@@ -605,7 +605,7 @@ static char *GetKeybindsPathFilename(void)
   {
     char *p = SDL_GetPrefPath("Interrupt", "SystemShock");
     snprintf(filename, sizeof(filename), "%s%s", p, KEYBINDS_FILENAME);
-    free(p);
+    SDL_free(p);
   }
 
   return filename;
