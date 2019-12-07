@@ -83,7 +83,8 @@ void amap_settings_copy(curAMap *from, curAMap *to);
 
 // this is a mess
 // it modifies x and y to be map location of click
-// returns null if off map, (void*)objid if found, (void*)mapelemptr if empty
+// returns null if off map, (void*)mapelemptr if within map
+// sets amptr->note_obj to the note if found, else OBJ_NULL
 void *amap_deal_with_map_click(curAMap *amptr, int *x, int *y);
 
 // strings
