@@ -334,7 +334,7 @@ do {                                 \
 #endif
 #define gr_get_fill_type() (grd_canvas->gc.fill_type)
 #define gr_set_fill_parm(parm) \
-   (grd_canvas->gc.fill_parm=(long)(parm))
+   (grd_canvas->gc.fill_parm=(intptr_t)(parm))
 #define gr_get_fill_parm() (grd_canvas->gc.fill_parm)
 #define gr_cset_cliprect(c, l, t, r, b) \
    (c)->gc.clip.i.sten=NULL, \

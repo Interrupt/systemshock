@@ -62,7 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "otrip.h"
 
 #include <stdio.h>
-#include <unistd.h>
 
 /*
 #include <physics.h>
