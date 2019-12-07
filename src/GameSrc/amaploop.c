@@ -164,7 +164,7 @@ void fsmap_draw_map(void);
 void fsmap_draw_screen(uint chng);
 int s_bf(int btn_id, int todo);
 void fsmap_new_msg(curAMap *amptr);
-uchar amap_scroll_handler(uiEvent *ev, LGRegion *r, void *user_data);
+uchar amap_scroll_handler(uiEvent *ev, LGRegion *r, intptr_t user_data);
 void edit_mapnote(curAMap *amptr);
 uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte but);
 uchar zoom_deal(curAMap *amptr, int btn);
@@ -506,7 +506,7 @@ uchar pend_check(void) {
 #define KP_LEFT_CODE     0x56
 #define KP_RIGHT_CODE    0x58
 
-uchar amap_scroll_handler(uiEvent *ev, LGRegion *reg, void *v) {
+uchar amap_scroll_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
     int elapsed, now;
     short code;
     curAMap *amptr = oAMap(MFD_FULLSCR_MAP);

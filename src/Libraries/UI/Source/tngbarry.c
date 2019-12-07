@@ -133,7 +133,7 @@ errtype tng_buttonarray_init(void *ui_data, TNG *ptng, TNGStyle *sty, ushort opt
       for (j=0; j<msize.y; j++)
       {
          pbatng->matrix[i + (j * msize.x)].type = NULL_TYPE;
-         pbatng->matrix[i + (j * msize.x)].disp_data = NULL;
+         pbatng->matrix[i + (j * msize.x)].disp_data = 0;
          pbatng->selected[i + (j * msize.x)] = FALSE;
       }
    }
@@ -616,7 +616,7 @@ errtype tng_buttonarray_move(TNG *ptng, short code)
 }
 
 // -----------------------------
-errtype tng_buttonarray_addbutton_at(TNG *ptng, int type, void *disp_data, int coord_x, int coord_y)
+errtype tng_buttonarray_addbutton_at(TNG *ptng, int type, intptr_t disp_data, int coord_x, int coord_y)
 {
    if ((coord_x < 0) || (coord_y < 0))
    {
@@ -629,7 +629,7 @@ errtype tng_buttonarray_addbutton_at(TNG *ptng, int type, void *disp_data, int c
    return(OK);
 }
 
-errtype tng_buttonarray_addbutton(TNG *ptng, int type, void *disp_data)
+errtype tng_buttonarray_addbutton(TNG *ptng, int type, intptr_t disp_data)
 {
    int i,j;
    for (j=0; j<TNG_BA_MSIZE(ptng).y; j++)
