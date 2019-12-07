@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <unistd.h>
 
+#include "archiveformat.h"
 #include "ShockDialogs.h"
 #include "setup.h"
 #include "colors.h"
@@ -588,7 +589,7 @@ void PrintWinStats(void)
   short w, h;
 
   grs_font *fon = gr_get_font();
-  gr_set_font((grs_font *)ResLock(RES_coloraliasedFont));
+  gr_set_font(ResLock(RES_coloraliasedFont));
 
   gr_clear(0);
 
@@ -617,7 +618,7 @@ void PrintWinStats(void)
 
   y += 4;
 
-  sprintf(buf, "TIME: %lu", player_struct.game_time);
+  sprintf(buf, "TIME: %u", player_struct.game_time);
   gr_string_size(buf, &w, &h); ss_string(buf, (320-w)/2, y); y += 12;
 
   sprintf(buf, "KILLS: %d", player_struct.num_victories);
@@ -694,7 +695,7 @@ void PrintCredits(void)
     }
 
     grs_font *fon = gr_get_font();
-    gr_set_font((grs_font *)ResLock(RES_coloraliasedFont));
+    gr_set_font(ResLock(RES_coloraliasedFont));
     short w, h;
     gr_string_size(buf, &w, &h);
     x = (columns == 1) ? (320-w)/2 : (cur_col == 0) ? 320/2-8-w : 320/2+8;
@@ -847,7 +848,7 @@ errtype draw_sg_slot(int slot_num)
     get_string(REF_STR_UnusedSave, temp, 64);
   }
 
-  gr_set_font((grs_font *)ResLock(RES_smallTechFont));
+  gr_set_font(ResLock(RES_smallTechFont));
   gr_string_size(temp, &x, &y);
 
   while ((x > SG_SLOT_WD - SG_SLOT_OFFSET_X) && (sz > 0))
@@ -929,8 +930,8 @@ errtype journey_continue_func(uchar draw_stuff)
     RefTable *rt = ResReadRefTable(REFID(rid));
     if (RefIndexValid(rt, i))
     {
-      FrameDesc *f = (FrameDesc *)malloc(RefSize(rt, i));
-      RefExtract(rt, rid, f);
+      FrameDesc *f = (FrameDesc *)malloc(RefSizeDecoded(rt, i, &FrameDescLayout));
+      RefExtractDecoded(rt, rid, &FrameDescLayout, f);
       f->bm.bits = (void *)(f+1);
       f->bm.h = 200; //SUPER HACK: resource reports 320
       ss_bitmap(&(f->bm), 0, 0);
@@ -1316,7 +1317,7 @@ errtype load_savegame_names(void)
       if (ResInUse(OLD_SAVE_GAME_ID_BASE))
       {
 #ifdef OLD_SG_FORMAT
-                ResExtract(OLD_SAVE_GAME_ID_BASE, comments[i]);
+	  ResExtract(OLD_SAVE_GAME_ID_BASE, FORMAT_RAW, comments[i]);
                 valid_save |= (1 << i);
 #else
                 strcpy(comments[i], "<< BAD VERSION >>");
@@ -1328,7 +1329,7 @@ errtype load_savegame_names(void)
         {
           int verify_cookie;
 
-          ResExtract(SAVELOAD_VERIFICATION_ID, &verify_cookie);
+          ResExtract(SAVELOAD_VERIFICATION_ID, FORMAT_U32, &verify_cookie);
           switch (verify_cookie)
           {
             case OLD_VERIFY_COOKIE_VALID:
@@ -1337,7 +1338,7 @@ errtype load_savegame_names(void)
               //                     break;
 
             case VERIFY_COOKIE_VALID:
-              ResExtract(SAVE_GAME_ID_BASE, comments[i]);
+		ResExtract(SAVE_GAME_ID_BASE, FORMAT_RAW, comments[i]);
               valid_save |= (1 << i);
             break;
 
@@ -1423,7 +1424,7 @@ void splash_draw(bool show_splash)
   if (pal_file < 0) INFO("Could not open splshpal.res!");
 
   uchar splash_pal[768];
-  ResExtract(RES_splashPalette, splash_pal);
+  ResExtract(RES_splashPalette, FORMAT_RAW, splash_pal);
 
   // Set initial palette
 

@@ -227,7 +227,13 @@ errtype draw_full_res_bm(Ref id, int x, int y, uchar fade_in) {
 
     // Set the palette right, if one is provided....
     if (f->pallOff) {
-        temp_pall = (short *)(((uchar *)ResGet(REFID(id))) + f->pallOff);
+	// FIXME nasty hack to get at the private palette; the private palette
+	// is an offset from the start of the raw on-disc resource, so it
+	// includes the (raw) reftable as well as any previous ref entries.
+	RefTable *prt = (RefTable *)ResGet(REFID(id));
+	// Raw reftable size
+        size_t tabsize = sizeof(RefIndex) + (prt->numRefs+1) * sizeof(uint32_t);
+        temp_pall = (short *)((uchar *)prt->raw_data - tabsize + f->pallOff);
         gr_set_pal(*temp_pall, *(temp_pall + 1), (uchar *)(temp_pall + 2));
     }
 

@@ -2136,10 +2136,13 @@ char *get_object_lookname(ObjID id, char use_string[], int sz) {
     } break;
     }
     // If we haven't set ref or ref is garbage, use the long name.
-    if ((ref == -1) || !(RefIndexValid((RefTable *)ResGet(REFID(ref)), REFINDEX(ref)))) {
+    char *temp = (ref == -1) ? NULL : RefGet(ref);
+    if (temp == NULL) {
         strcat(use_string, get_object_long_name(usetrip, NULL, 0));
-    } else
-        get_string(ref, use_string, sz);
+    } else {
+        strncpy(use_string, temp, sz);
+        use_string[sz-1] = '\0';
+    }
     return (use_string);
 }
 

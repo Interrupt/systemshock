@@ -179,17 +179,18 @@ typedef union {
    } i;
 } grs_clip;
 
+// Font.
 typedef struct {
-	ushort id;
-	char dummy1[34];
-	short min;
-	short max;
-	char dummy2[32];
-	long cotptr;
-	long buf;
-	short w;
-	short h;
-	short off_tab[1];
+    ushort id;
+    char dummy1[34];
+    short min;
+    short max;
+    char dummy2[32];
+    int32_t cotptr;
+    int32_t buf;
+    short w;
+    short h;
+    short off_tab[1];
 } grs_font;
 
 /* structure for drawing context.  the context contains data about which

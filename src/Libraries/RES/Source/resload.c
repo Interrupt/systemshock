@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-//#include <io.h>
+#include <assert.h>
 #include <stdlib.h>
 
 #include "lzw.h"
@@ -49,6 +49,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Private Prototypes
 //-------------------------------
 
+// Defined in resformat.c
+extern const ResourceFormat *ResLookUpFormat(Id id);
+
 //	-----------------------------------------------------------
 //
 //	ResLoadResource() loads a resource object, decompressing it if it is
@@ -57,10 +60,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //		id = resource id
 //	-----------------------------------------------------------
 
-void *ResLoadResource(Id id) {
+void *ResLoadResource(Id id, const ResourceFormat *format) {
     ResDesc *prd;
 
-    // If doesn't exit, forget it
+    // If doesn't exist, forget it
     if (!ResInUse(id))
         return NULL;
     if (!ResCheckId(id))
@@ -73,14 +76,38 @@ void *ResLoadResource(Id id) {
     if (prd->size == 0) {
         return NULL;
     }
+    // Format. If not specified, see if we can find a known format for the
+    // resource type.
+    if (format == NULL) {
+        format = ResLookUpFormat(id);
+    }
+    // No format isn't allowed at this stage.
+    if (format == NULL) {
+	ERROR("ResLoadResource(): unknown resource format %d", RESDESC2(id)->type);
+	return NULL;
+    }
 
-    // Allocate memory, setting magic id so pager can tell who it is if need be.
-    prd->ptr = malloc(prd->size);
-    if (prd->ptr == NULL)
-        return (NULL);
-
-    // Load from disk
-    ResRetrieve(id, prd->ptr);
+    // Should not be called if resource is already loaded, unless it's been
+    // preloaded and we now need to decode it.
+    if (prd->ptr == NULL) {
+	// Allocate memory, setting magic id so pager can tell who it is if need be.
+	prd->ptr = malloc(prd->size);
+	if (prd->ptr == NULL)
+	    return (NULL);
+	// Load from disk
+	ResRetrieve(id, prd->ptr);
+    } else {
+	assert(format->decoder != NULL);
+    }
+    // Set free func if supplied.
+    prd->free_func = format->freer;
+    // Decode if a decoder was supplied.
+    if (format->decoder != NULL) {
+	assert(prd->decoded == NULL);
+	size_t size = prd->size;
+	prd->decoded = format->decoder(prd->ptr, &size, format->data);
+	return prd->decoded;
+    }
 
     // Return ptr
     return (prd->ptr);
@@ -130,7 +157,7 @@ bool ResRetrieve(Id id, void *buffer) {
         p += sizeof(int16_t);
         fread(p, sizeof(int32_t), (numRefs + 1), fd);
         p += sizeof(int32_t) * (numRefs + 1);
-        size -= REFTABLESIZE(numRefs);
+        size -= (p - (uint8_t*)buffer);
     }
 
     // Read in data

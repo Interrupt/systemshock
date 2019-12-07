@@ -60,9 +60,14 @@ typedef struct {
       LGRect anchorArea;  // area to anchor sub-bitmap
       LGPoint anchorPt;   // point to anchor from
       };
-   long pallOff;        // offset to pallette
+   int32_t pallOff;       // offset to pallette
                         // bitmap's bits follow immediately
 } FrameDesc;
+
+// On-disc layout of a FrameDesc.
+extern const ResLayout FrameDescLayout;
+extern const ResourceFormat FrameDescFormat;
+#define FORMAT_FRAMEDESC (&FrameDescFormat)
 
 // These are the ref-based 2d macros.  They have the goofy do/while(0)
 // so that you may use them in an if statement without C whining.
@@ -142,4 +147,3 @@ typedef struct {
 #pragma pack(pop)
 
 #endif
-

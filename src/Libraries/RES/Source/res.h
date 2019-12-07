@@ -62,6 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define DBG_ON		1
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h> // for FILE*
 #include <stdlib.h>
@@ -75,6 +76,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __RESTYPES_H
 #include "restypes.h"
 #endif
+
+#include "resformat.h"
 
 #pragma pack(push,2)
 
@@ -106,7 +109,7 @@ typedef uint16_t RefIndex; // index part of ref
 void *ResLock(Id id);                  // lock resource & get ptr
 void ResUnlock(Id id);                 // unlock resource
 void *ResGet(Id id);                   // get ptr to resource (dangerous!)
-void *ResExtract(Id id, void *buffer); // extract resource into buffer
+void *ResExtract(Id id, const ResourceFormat *format, void *buffer); // extract resource into buffer
 void ResDrop(Id id);                   // drop resource from immediate use
 void ResDelete(Id id);                 // delete resource forever
 
@@ -114,30 +117,47 @@ void ResDelete(Id id);                 // delete resource forever
 //		ACCESS TO ITEMS IN COMPOUND RESOURCES (REF'S)  (refacc.c)
 //	------------------------------------------------------------
 
-// Each compound resource starts with a Ref Table
-typedef struct __attribute__((packed)) {
+// Each compound resource starts with a Ref Table. When loaded into memory, a
+// ref table entry has a size, an offset into the raw resource (if loaded) and a
+// pointer to the decoded ref (freed when the compound resource is unloaded).
+typedef struct {
+    uint32_t size;
+    uint32_t offset;
+    void *decoded_data;
+} RefTableEntry;
+
+typedef struct {
     RefIndex numRefs;  // # items in compound resource
-    int32_t offset[1]; // offset to each item (numRefs + 1 of them)
+    void *raw_data;    // resource data if loaded.
+    RefTableEntry entries[]; // numRefs table entries
 } RefTable;
 
-void *RefLock(Ref ref);                      // lock compound res, get ptr to item
+// Decode raw ref table from file and return a RefTable.
+void *ResDecodeRefTable(void *raw, size_t *size, UserDecodeData);
+
+void *RefLock(Ref ref);  // lock compound res, get ptr to item
 #define RefUnlock(ref) ResUnlock(REFID(ref)) // unlock compound res item
-void *RefGet(Ref ref);                       // get ptr to item in comp. res (dangerous!)
+void *RefGet(Ref ref);   // get ptr to item in comp. res (dangerous!)
 
 RefTable *ResReadRefTable(Id id);        // alloc & read ref table
-#define ResFreeRefTable(prt) (free(prt)) // free ref table
+void ResFreeRefTable(void *ptr);         // free ref table
 int32_t ResExtractRefTable(Id id, RefTable *prt,
                            int32_t size);             // extract reftable
+
 void *RefExtract(RefTable *prt, Ref ref, void *buff); // extract ref
+// Extract a ref, decoding as we go
+void *RefExtractDecoded(RefTable *prt, Ref ref, const ResLayout *layout, void *buff);
 
 #define RefIndexValid(prt, index) ((index) < (prt)->numRefs)
-#define RefSize(prt, index) (prt->offset[(index) + 1] - prt->offset[index])
+#define RefSize(prt, index) (prt->entries[index].size)
+
+// Size of a ref in memory once it is decoded, if the on-disc layout is different.
+#define RefSizeDecoded(prt, index, layout) (RefSize(prt,index) + (layout)->msize - (layout)->dsize)
 
 // returns the number of refs in a resource, extracting if necessary.
 int32_t ResNumRefs(Id id);
 
-#define REFTABLESIZE(numrefs) (sizeof(RefIndex) + (((numrefs) + 1) * sizeof(int32_t)))
-#define REFPTR(prt, index) (((uint8_t *)prt) + prt->offset[index])
+#define REFTABLESIZE(numrefs) (offsetof(RefTable, entries) + ((numrefs) * sizeof(RefTableEntry)))
 
 /*
 //	-----------------------------------------------------------
@@ -149,8 +169,8 @@ void ResExtractInBlocks(Id id, void *buff, int32_t blockSize,
 void RefExtractInBlocks(RefTable *prt, Ref ref, void *buff, int32_t blockSize,
         int32_t (*f_ProcBlock)(void *buff, int32_t numBytes, int32_t iblock));
 
-#define REBF_FIRST 0x01		// set for 1st block passed to f_ProcBlock
-#define REBF_LAST  0x02		// set for last block (may also be first!)
+#define REBF_FIRST 0x01         // set for 1st block passed to f_ProcBlock
+#define REBF_LAST  0x02         // set for last block (may also be first!)
 */
 
 //	-----------------------------------------------------------
@@ -163,18 +183,22 @@ void RefExtractInBlocks(RefTable *prt, Ref ref, void *buff, int32_t blockSize,
 
 /*typedef struct
 {
-        //Handle	hdl;			// Mac resource handle.
-NULL if not in memory (on disk) int32_t	filenum;		// Mac
-resource file number uint8_t 	lock;			// lock count uint8_t
-flags;			// misc flags (RDF_XXX, see below) uint8_t 	type;
-// resource type (RTYPE_XXX, see restypes.h) uint32_t 	offset; uint32_t
+        //Handle        hdl;                    // Mac resource handle.
+NULL if not in memory (on disk) int32_t filenum;                // Mac
+resource file number uint8_t    lock;                   // lock count uint8_t
+flags;                  // misc flags (RDF_XXX, see below) uint8_t      type;
+// resource type (RTYPE_XXX, see restypes.h) uint32_t   offset; uint32_t
 size;
 
-        void* 	ptr;
-        Id   	next;
-        Id   	prev;
+        void*   ptr;
+        Id      next;
+        Id      prev;
 } ResDesc;*/
 
+// It seems a little wasteful to keep the raw and decoded data alongside each
+// other, but System Shock resources are not memory-hungry by modern standards
+// and it allows code to preload resources without necessarily knowing how to
+// decode them.
 typedef struct {
     void *ptr;             // ptr to resource in memory, or NULL if on disk
     uint32_t lock : 8;     // lock count
@@ -183,9 +207,13 @@ typedef struct {
     uint32_t offset : 27;  // offset in file
     Id next;               // next resource in LRU order
     Id prev;               // previous resource in LRU order
-    /*uint32_t flags;*/    // misc flags (RDF_XXX, see below)
+    uint32_t flags;        // resource management flags
     /*uint16_t type : 8;*/ // resource type (RTYPE_XXX, see restypes.h)
+    void *decoded;         // decoded data, if in-memory format is different.
+    ResFreeFunc free_func; // free func; if NULL decoded is freed using free().
 } ResDesc;
+
+#define RES_OWNS_RAW_PTR 1
 
 typedef struct {
     uint16_t flags : 8; // misc flags (RDF_XXX, see below)
@@ -212,7 +240,7 @@ extern ResDesc2 *gResDesc2;
 
 extern Id resDescMax; // max id in res desc
 
-//	Information about resources
+//      Information about resources
 #define ResInUse(id) (gResDesc[id].offset)
 #define ResPtr(id) (gResDesc[id].ptr)
 #define ResSize(id) (gResDesc[id].size)
@@ -254,7 +282,7 @@ void ResCloseFile(int32_t filenum); // close res file
 
 #define MAX_RESFILENUM 31 // maximum file number
 
-// extern Datapath gDatapath;	// res system's datapath (others may use)
+// extern Datapath gDatapath;   // res system's datapath (others may use)
 /*
 //	---------------------------------------------------------
 //		RESOURCE MEMORY MANAGMENT ROUTINES  (resmem.c)
@@ -272,12 +300,12 @@ void ResInstallPager(void *f(int32_t size));
 //	---------------------------------------------------------
 
 typedef struct {
-        uint16_t numLoaded;					// # resources
-loaded in ram uint16_t numLocked;					// #
-resources locked int32_t totMemAlloc;					// total
+        uint16_t numLoaded;                                     // # resources
+loaded in ram uint16_t numLocked;                                       // #
+resources locked int32_t totMemAlloc;                                   // total
 memory alloted to resources } ResStat;
 
-extern ResStat resStat;				// stats computed if
+extern ResStat resStat;                         // stats computed if
 proper DBG bit set
 */
 
@@ -290,7 +318,7 @@ proper DBG bit set
 //	----------------------------------------------------------
 
 // make resource from data block
-void ResMake(Id id, void *ptr, int32_t size, uint8_t type, int32_t filenum, uint8_t flags);
+void ResMake(Id id, void *ptr, size_t size, uint8_t type, int32_t filenum, uint8_t flags, const ResourceFormat *format);
 // make empty compound resource
 void ResMakeCompound(Id id, uint8_t type, int32_t filenum, uint8_t flags);
 // add item to compound

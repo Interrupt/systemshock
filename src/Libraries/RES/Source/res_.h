@@ -50,7 +50,7 @@ bool RefCheckRef(Ref ref); // returns TRUE if ref ok, else FALSE & warns
 
 //	Resource loading (resload.c)
 
-void *ResLoadResource(Id id);
+void *ResLoadResource(Id id, const ResourceFormat *format);
 bool ResRetrieve(Id id, void *buffer);
 
 /*

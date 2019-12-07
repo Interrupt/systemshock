@@ -69,8 +69,8 @@ void init_strings(void) {
 }
 
 char *get_string(int num, char *buf, int bufsize) {
-    RefTable *table = ResGet(REFID(num));
-    if (!ResInUse(REFID(num)) || !RefIndexValid((RefTable *)ResGet(REFID(num)), REFINDEX(num))) {
+    RefTable *table = (RefTable *)ResGet(REFID(num));
+    if (!ResInUse(REFID(num)) || !RefIndexValid(table, REFINDEX(num))) {
         if (buf != NULL) {
             *buf = '\0';
             return buf;

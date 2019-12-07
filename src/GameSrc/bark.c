@@ -98,8 +98,8 @@ void mfd_bark_expose(MFD *mfd, ubyte control) {
             char buf[256];
             short x, y;
             short w, h;
-            RefTable *prt = (RefTable *)ResLock(REFID(mfd_bark_string));
-            //            ResReadRefTable(REFID(mfd_bark_string));
+            //RefTable *prt = (RefTable *)ResLock(REFID(mfd_bark_string));
+            RefTable *prt = ResReadRefTable(REFID(mfd_bark_string));
 
             if (RefIndexValid(prt, REFINDEX(mfd_bark_string))) {
                 gr_set_font((grs_font *)ResLock(MFD_FONT));
@@ -114,8 +114,8 @@ void mfd_bark_expose(MFD *mfd, ubyte control) {
                 draw_shadowed_string(buf, x, y, mfd_bark_mug > 0 || full_game_3d);
                 ResUnlock(MFD_FONT);
             }
-            ResUnlock(REFID(mfd_bark_string));
-            //         ResFreeRefTable(prt);
+            //ResUnlock(REFID(mfd_bark_string));
+            ResFreeRefTable(prt);
         }
         if (full)
             mfd_add_rect(0, 0, MFD_VIEW_WID, MFD_VIEW_HGT);

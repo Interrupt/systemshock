@@ -69,8 +69,13 @@ typedef struct {
 typedef struct {
     uchar x;
     uchar y;
-    uchar floor : 1;
-    uchar key : 7;
+    union {
+	struct {
+	    uchar floor : 1;
+            uchar key : 7;
+	};
+	uchar floor_key;
+    };
     char inuse;
 } height_semaphor;
 
