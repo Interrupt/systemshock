@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	3. Actual chunks, as pointed at in MovieChunk[] array
 
 //	Movie chunk format
-#pragma pack(1)
+#pragma pack(push,1)
 // FIXME bitfield and little-endian hell of madness...
 /*
 typedef struct {
@@ -71,7 +71,7 @@ typedef struct {
     uint32_t played : 1;    // has this chunk been clocked out?
     uint32_t offset;        // int8_t offset to chunk start
 } MovieChunk;
-#pragma pack()
+#pragma pack(pop)
 
 //	Movie chunk types
 
@@ -96,7 +96,7 @@ typedef struct {
 #define MOVIE_FTABLE_HUFFTAB 1  // huffman table (compressed)
 
 //	Movie header layout
-#pragma pack(1)
+#pragma pack(push,1)
 typedef struct {
     uint32_t magicId;        // 'MOVI' (MOVI_MAGIC_ID)
     int32_t numChunks;       // number of chunks in movie
@@ -114,7 +114,7 @@ typedef struct {
     uint8_t reserved[216];   // so chunk is 1K in size
     uint8_t palette[768];    // palette
 } MovieHeader;
-#pragma pack()
+#pragma pack(pop)
 
 #ifndef SAMPRATE_11KHZ // also appear in voc.h
 #define SAMPRATE_11KHZ fix_make(11127, 0)

@@ -106,6 +106,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "fix.h"
 
+// FIXME pragma pack
+#pragma pack(push,2)
+
 /* system information structure. */
 typedef struct {
    uchar id_maj;     /* major id---type of graphics system */
@@ -235,5 +238,7 @@ typedef struct {
 typedef struct {
    fix x,y,z;    /* 3's */
 } grs_point3d;
+
+#pragma pack(pop)
 
 #endif /* !__GRS_H */

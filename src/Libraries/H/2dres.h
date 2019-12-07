@@ -45,11 +45,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _2DRES_H
 #define _2DRES_H
 
-#pragma pack(2)
-
 #include "../2D/Source/2d.h"
 #include "../RES/Source/res.h"
 #include "../DSTRUCT/Source/rect.h"
+
+#pragma pack(push,2)
 
 // A Ref in a resource gets you a Frame Descriptor:
 
@@ -139,6 +139,7 @@ typedef struct {
    fix   uper;    // (w - u) / u
 } CylBMFrame;     // one frame of the cylindrical bm object.  Always put the bits after this.  S
 
+#pragma pack(pop)
 
 #endif
 

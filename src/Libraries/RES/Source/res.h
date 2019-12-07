@@ -76,7 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "restypes.h"
 #endif
 
-#pragma pack(2)
+#pragma pack(push,2)
 
 //	---------------------------------------------------------
 //		ID AND REF DEFINITIONS AND MACROS
@@ -372,5 +372,7 @@ int32_t ResPack(int32_t filenum);                   // remove empty entries
 //& RFF_NEEDSPACK)
 // DG: a case-insensitive fopen()-wrapper (see resfile.c)
 extern FILE *fopen_caseless(const char *path, const char *mode);
+
+#pragma pack(pop)
 
 #endif

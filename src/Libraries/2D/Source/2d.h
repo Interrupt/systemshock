@@ -20,107 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __2D_H 
 #define __2D_H
 
-#pragma pack(2)
+#include "GR/grs.h"
 
-typedef struct {
-   uchar id_maj;     
-   uchar id_min;     
-   short memory;     
-   short modes[16];  
-} grs_sys_info;
-typedef struct {
-   short w;          
-   short h;          
-   uchar b;          
-} grs_mode_info;
-typedef ulong grs_rgb;
-typedef struct {
-   uchar *bits;      
-   uchar type;       
-   uchar align;      
-   ushort flags;     
-   short w;          
-   short h;          
-   ushort row;       
-   uchar wlog;       
-   uchar hlog;       
-} grs_bitmap;
-typedef struct _sten {
-   short l;          
-   short r;          
-   struct _sten *n;  
-} grs_sten_elem;
-typedef struct {
-   grs_sten_elem *elem;    
-   long flags;             
-} grs_stencil;
-typedef union {
-   struct {
-      grs_stencil *sten;  
-      fix left;            
-      fix top;             
-      fix right;
-      fix bot;
-   } f;
-   struct {
-      grs_stencil *sten;  
-      short pad0;
-      short left;          
-      short pad1;
-      short top;  
-      short pad2;         
-      short right;
-      short pad3;
-      short bot;
-   } i;
-} grs_clip;
-typedef struct {
-	ushort id;
-	char dummy1[34];
-	short min;
-	short max;
-	char dummy2[32];
-	long cotptr;
-	long buf;
-	short w;
-	short h;
-	short off_tab[1];
-} grs_font;
-typedef struct {
-   long fcolor;      
-   long bcolor;      
-   grs_font *font;   
-   long text_attr;   
-   long fill_type;   
-   long fill_parm;   
-   grs_clip clip;    
-} grs_context;
-typedef struct {
-   grs_bitmap  bm;   
-   grs_context gc;   
-   uchar **ytab;     
-} grs_canvas;
-typedef struct {
-   grs_bitmap bm;    
-   grs_canvas *c;    
-   uchar *pal;
-   grs_rgb *bpal;
-   uchar *ipal;
-   uchar *ltab;
-   uchar ***transtab;
-   uchar *clut;      
-   short x;          
-   short y;          
-} grs_screen;
-typedef struct {
-   fix aspect;       
-   short w;          
-   short h;          
-   uchar *vbase;     
-} grs_drvcap;
-typedef struct {
-   fix x,y,z;    
-} grs_point3d;
+#pragma pack(push,2)
+
 typedef struct {
    fix x, y;                  
    fix u, v, w;               
@@ -1766,4 +1669,7 @@ extern void fcount_start();
 extern void fcount_stop();
 extern void fcount_report();
 extern void fcount_install();
+
+#pragma pack(pop)
+
 #endif /* __2D_H */

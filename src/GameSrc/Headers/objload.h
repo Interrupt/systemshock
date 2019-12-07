@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __OBJLOAD_H
 #define __OBJLOAD_H
 
-#pragma pack(2)
-
 /*
  * $Source: u:/inc/RCS/objload.h $
  * $Revision: 1.2 $
@@ -32,6 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Includes
 #include "objprop.h"
 #include "objapp.h"
+
+#pragma pack(push,2)
 
 #define NUM_OBJECT_BIT_LEN ((NUM_OBJECT + 7) >> 3)
 
@@ -66,5 +66,7 @@ extern LGPoint anchors_3d[NUM_OBJECT + EXTRA_FRAMES];
 extern grs_bitmap *bitmaps_2d[NUM_OBJECT];
 extern grs_bitmap *bitmaps_3d[NUM_OBJECT];
 #endif
+
+#pragma pack(pop)
 
 #endif // __OBJLOAD_H
