@@ -121,7 +121,9 @@ int snd_find_free_sequence(void);
 //int   snd_sequence_play(int snd_ref, uchar *seq_dat, int seq_num, snd_midi_parms *mparm);
 //snd_midi_parms *snd_sequence_parms(int hnd_id);
 
-typedef struct {} TunePlayer; // DG: hack so compiler shuts up about the two functions using this
+typedef struct {
+    char unused;
+} TunePlayer; // DG: hack so compiler shuts up about the two functions using this
 
 TunePlayer snd_get_sequence(int seq_id);
 void  snd_end_sequence(int seq_id);

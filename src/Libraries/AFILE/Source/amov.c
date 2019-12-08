@@ -356,9 +356,10 @@ int32_t AmovReadAudio(Afile *paf, void *paudio) {
             // TRACE("%s: got audio chunk in 0x%08x offset", __FUNCTION__, pmi->pcurrChunk->offset);
             mfseek(paf->mf, pmi->pcurrChunk->offset);
             size = mfread(p, MOVIE_DEFAULT_BLOCKLEN, paf->mf);
-            memcpy(paudio + i, p, size);
+            memcpy(((uint8_t *)paudio) + i, p, size);
 			if (size < MOVIE_DEFAULT_BLOCKLEN)
-				memset(paudio + i + size, 128, MOVIE_DEFAULT_BLOCKLEN - size); //fill rest with silence (128)
+                memset(((uint8_t *)paudio) + i + size, 128,
+                       MOVIE_DEFAULT_BLOCKLEN - size); // fill rest with silence (128)
             i += size;
         }
         pmi->pcurrChunk++;
