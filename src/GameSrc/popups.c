@@ -58,7 +58,7 @@ LGPoint popup_hotspots[NUM_POPUPS] = {
 void init_popups(void) {
     for (int i = 0; i < NUM_POPUPS; i++) {
         Ref id = MKREF(RES_popups, i);
-        FrameDesc *f = (FrameDesc *)RefGet(id);
+        FrameDesc *f = RefGet(id);
         popup_rects[i] = f->anchorArea;
         if (load_res_bitmap(&popup_bitmaps[i], id, TRUE) != OK)
             critical_error(CRITERR_RES | 0xA);
@@ -99,7 +99,7 @@ void make_popup_cursor(LGCursor *c, grs_bitmap *bm, char *s, uint tmplt, uchar a
 
     gr_clear(0);
     ss_bitmap(pbm, 0, 0);
-    gr_set_font((grs_font *)ResLock(RES_tinyTechFont));
+    gr_set_font(ResLock(RES_tinyTechFont));
     gr_string_size(s, &w, &h);
     // ss_point_convert(&w, &h, FALSE);
 
@@ -149,7 +149,7 @@ void make_email_cursor(LGCursor *c, grs_bitmap *bm, uchar page, bool init) {
     ss_set_hack_mode(2, &temp);
 #endif
 
-    gr_font_char_size((grs_font *)ResGet(EMAIL_CURS_FONT), 'X', &w, &h);
+    gr_font_char_size(ResGet(EMAIL_CURS_FONT), 'X', &w, &h);
     h += 2;
     w = EMAIL_CURS_WID;
 #ifdef SVGA_SUPPORT
@@ -165,7 +165,7 @@ void make_email_cursor(LGCursor *c, grs_bitmap *bm, uchar page, bool init) {
     gr_make_canvas(bm, &gc);
     gr_push_canvas(&gc);
     gr_clear(0);
-    gr_set_font((grs_font *)ResLock(EMAIL_CURS_FONT));
+    gr_set_font(ResLock(EMAIL_CURS_FONT));
     gr_string_size("Page goof", &w, &h);
     x = EMAIL_CURS_MARG;
     y = 1;

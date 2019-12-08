@@ -204,7 +204,7 @@ errtype draw_resource_bm(Ref id, int x, int y)
    STORE_CLIP(a1,a2,a3,a4);
 //   Spew(DSRC_UI_Utilities, ("cliprect = (%d, %d)(%d, %d)\n",a1,a2,a3,a4));
    // Spew(DSRC_UI_Utilities, ("drawing bitmap to (%d, %d)\n",x,y));
-   f = (FrameDesc *)RefLock(id);
+   f = FrameLock(id);
 
    // Set the palette right
    /*¥¥¥ Ignore for now
@@ -226,7 +226,7 @@ int resource_bm_width(Ref id)
    FrameDesc *f;
    int n;
 
-   f = (FrameDesc *)RefLock(id);
+   f = FrameLock(id);
    n = f->bm.w;
    // Spew(DSRC_UI_Utilities, ("resource_bm_width = %d\n",n));
    RefUnlock(id);
@@ -238,7 +238,7 @@ int resource_bm_height(Ref id)
    FrameDesc *f;
    int n;
 
-   f = (FrameDesc *)RefLock(id);
+   f = FrameLock(id);
    n = f->bm.h;
    // Spew(DSRC_UI_Utilities, ("resource_bm_height = %d\n",n));
    RefUnlock(id);

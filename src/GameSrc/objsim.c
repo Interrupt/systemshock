@@ -1400,7 +1400,7 @@ errtype ObjClassInit(ObjID id, ObjSpecID specid, int subclass) {
 // ## INSERT NEW SUBCLASS HERE
 
 errtype obj_load_properties() {
-    // Handle	res;
+    // Handle   res;
     int version, i, j;
     char *cp;
 
@@ -2054,7 +2054,7 @@ grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, uchar s
         currfont = RES_citadelFont;
         break;
     }
-    gr_set_font((grs_font *)ResLock(currfont));
+    gr_set_font(ResLock(currfont));
     gr_string_size(s, &w, &h);
     while (size_remaining > h) {
         if (scroll)

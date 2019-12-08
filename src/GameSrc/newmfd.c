@@ -290,7 +290,7 @@ void screen_init_mfd(uchar fullscrn) {
         mfd_canvas_bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID) * MAX_HT(MFD_VIEW_HGT));
 
         // Pull in the background bitmap
-        f = (FrameDesc *)RefLock(REF_IMG_bmBlankMFD);
+        f = RefLock(REF_IMG_bmBlankMFD);
         mfd_background = f->bm;
         mfd_background.bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID) * MAX_HT(MFD_VIEW_HGT));
 
@@ -1356,7 +1356,7 @@ LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, uchar 
     short w, h;
     ushort sc1, sc2, sc3, sc4;
     short border = 0;
-    grs_font *thefont = (grs_font *)ResLock(font);
+    grs_font *thefont = ResLock(font);
 
     x = lg_min(lg_max(x, 0), MFD_VIEW_WID - 1);
     y = lg_min(lg_max(y, 0), MFD_VIEW_HGT - 1);

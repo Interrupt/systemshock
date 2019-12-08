@@ -35,7 +35,7 @@ void AnimRecur() {
 	STORE_CLIP(a, b, c, d);
 
 	// grab this frame
-	FrameDesc *f = (FrameDesc *)RefLock(current_anim.currFrameRef);
+	FrameDesc *f = RefLock(current_anim.currFrameRef);
 
     if (f != NULL) {
     	f->bm.bits = (uchar *)(f + 1);

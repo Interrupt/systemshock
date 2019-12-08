@@ -149,7 +149,7 @@ void draw_shadowed_string(char *s, short x, short y, uchar shadow) {
 }
 
 void draw_hires_resource_bm(Ref id, int x, int y) {
-    FrameDesc *f = (FrameDesc *)RefLock(id);
+    FrameDesc *f = RefLock(id);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
     f->bm.bits = (uchar *)(f + 1);
@@ -158,7 +158,7 @@ void draw_hires_resource_bm(Ref id, int x, int y) {
 }
 
 void draw_hires_halfsize_bm(Ref id, int x, int y) {
-    FrameDesc *f = (FrameDesc *)RefLock(id);
+    FrameDesc *f = RefLock(id);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
     f->bm.bits = (uchar *)(f + 1);
@@ -176,7 +176,7 @@ errtype draw_raw_res_bm_extract(Ref id, int x, int y) {
 errtype draw_raw_resource_bm(Ref id, int x, int y) {
     FrameDesc *f;
 
-    f = (FrameDesc *)RefLock(id);
+    f = RefLock(id);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
     f->bm.bits = (uchar *)(f + 1);
@@ -189,7 +189,7 @@ errtype draw_res_bm_core(Ref id, int x, int y, uchar scale) {
     FrameDesc *f;
     LGRect mouse_rect;
 
-    f = (FrameDesc *)RefLock(id);
+    f = RefLock(id);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
     mouse_rect.ul.x = x;
@@ -221,7 +221,7 @@ errtype draw_full_res_bm(Ref id, int x, int y, uchar fade_in) {
     extern void finish_pal_effect(byte id);
     extern byte palfx_start_fade_up(uchar * new_pal);
 
-    f = (FrameDesc *)RefLock(id);
+    f = RefLock(id);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
 
@@ -254,7 +254,7 @@ int res_bm_width(Ref id) {
     FrameDesc *f;
     int n;
 
-    f = (FrameDesc *)RefLock(id);
+    f = RefLock(id);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
     n = f->bm.w;
@@ -266,7 +266,7 @@ int res_bm_height(Ref id) {
     FrameDesc *f;
     int n;
 
-    f = (FrameDesc *)RefLock(id);
+    f = RefLock(id);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
     n = f->bm.h;
@@ -275,7 +275,7 @@ int res_bm_height(Ref id) {
 }
 
 errtype res_draw_text_shadowed(Id id, char *text, int x, int y, uchar shadow) {
-    gr_set_font((grs_font *)ResLock(id));
+    gr_set_font(ResLock(id));
     draw_shadowed_string(text, x, y, shadow);
     ResUnlock(id);
     return (OK);
