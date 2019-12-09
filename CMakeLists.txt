@@ -15,8 +15,8 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Werror")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Werror -D__STDC_LIMIT_MACROS")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -D__STDC_LIMIT_MACROS")
 
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
 add_feature_info(ENABLE_EXAMPLES ENABLE_EXAMPLES "Enable example application (can be broken!)")
@@ -44,7 +44,7 @@ if(ENABLE_DEBUG_BLIT)
 	add_definitions(-DDEBUGGING_BLIT)
 endif()
 
-add_compile_options(-fsigned-char -fno-strict-aliasing -Werror=implicit-function-declaration)
+add_compile_options(-fsigned-char -fno-strict-aliasing)
 
 # Find OpenGL
 if(ENABLE_OPENGL)
