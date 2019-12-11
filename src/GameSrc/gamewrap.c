@@ -86,6 +86,34 @@ extern uchar display_saveload_checkpoints;
 extern ulong obj_check_time;
 extern uchar mlimbs_on;
 
+// Player struct support for savegames.
+// DOS version savegame reserves 32 bytes for puzzle state.
+#define PL_MFD_PUZZLE_SIZE 32
+#include "playerlayout.h"
+#undef PL_MFD_PUZZLE_SIZE
+// Enhanced edition uses 64.
+#define PL_MFD_PUZZLE_SIZE 64
+#include "playerlayout.h"
+#undef PL_MFD_PUZZLE_SIZE
+
+const ResLayout *PlayerLayouts[] = { &PlayerLayout_M32, &PlayerLayout_M64 };
+// Decode wrapper for a player layout. Tries to figure out which version saved
+// the game from the resource size.
+void *decode_player(void *raw, size_t *size, UserDecodeData layout) {
+    int i;
+    for (i = 0; i < sizeof PlayerLayouts / sizeof *PlayerLayouts; ++i) {
+	if (*size == PlayerLayouts[i]->dsize) {
+	    return ResDecode(raw, size, (UserDecodeData)PlayerLayouts[i]);
+	}
+    }
+    ERROR("Could not determine format of saved player!");
+    return NULL;
+}
+// Player format. We always save as enhanced format (64-byte MFD array).
+const ResourceFormat PlayerFormat = {
+    decode_player, ResEncode, (UserDecodeData)&PlayerLayout_M64, NULL };
+#define FORMAT_PLAYER (&PlayerFormat)
+
 //-------------------
 //  INTERNAL PROTOTYPES
 //-------------------
@@ -216,7 +244,7 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum,
     // RDF_LZW);
 
-    ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, 0, FORMAT_RAW);
+    ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, 0, FORMAT_PLAYER);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
@@ -351,8 +379,8 @@ errtype load_game(char *fname) {
     filenum = ResOpenFile(CURRENT_GAME_FNAME);
     old_plr = player_struct.rep;
     orig_lvl = player_struct.level;
-    // TODO Player struct is still a bit much to handle with a format.
-    ResExtract(SAVE_GAME_ID_BASE + 1, FORMAT_RAW, (void *)&player_struct);
+
+    ResExtract(SAVE_GAME_ID_BASE + 1, FORMAT_PLAYER, (void *)&player_struct);
 
     obj_check_time = 0; // KLC - added because it needs to be reset for Mac version.
 
