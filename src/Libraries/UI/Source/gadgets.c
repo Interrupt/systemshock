@@ -650,9 +650,9 @@ errtype gadget_create_setup(Gadget **pg, Gadget *parent, GadgetClass cl, LGRect 
       fn, NULL, NULL, gd);
 
    // Install the general pushbutton handler
-   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE_MOVE, &gadget_tng_mouse_move_handler, (intptr_t)retgad, &(retgad->handler_id));
-   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE, &gadget_tng_mouse_handler, (intptr_t)retgad, &(retgad->handler_id));
-   uiInstallRegionHandler(retgad->rep, UI_EVENT_KBD_COOKED, &gadget_tng_keyboard_handler, (intptr_t)retgad, &(retgad->handler_id));
+   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE_MOVE, &gadget_tng_mouse_move_handler, (intptr_t) retgad, &(retgad->handler_id));
+   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE, &gadget_tng_mouse_handler, (intptr_t) retgad, &(retgad->handler_id));
+   uiInstallRegionHandler(retgad->rep, UI_EVENT_KBD_COOKED, &gadget_tng_keyboard_handler, (intptr_t) retgad, &(retgad->handler_id));
 
    *pg = retgad;
    return(OK);

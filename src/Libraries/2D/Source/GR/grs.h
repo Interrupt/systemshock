@@ -179,8 +179,7 @@ typedef union {
    } i;
 } grs_clip;
 
-// Font. Should be 64-bit safe to use raw data at least on PC, but it would be
-// better to define a proper decoder for it.
+// Font.
 typedef struct {
     ushort id;
     char dummy1[34];
