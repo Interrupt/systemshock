@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 grs_bitmap *lock_bitmap_from_ref_anchor(Ref r, LGRect *anchor);
 #define get_bitmap_from_ref(r) get_bitmap_from_ref_anchor(r, NULL)
 grs_bitmap *get_bitmap_from_ref_anchor(Ref r, LGRect *anchor);
-errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar transp, LGRect *anchor, uchar *p);
+errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, uchar transp, LGRect *anchor, uchar *p);
 
 // loads in a bitmap or a bitmap cursor, malloc'ing the bits
 // field.

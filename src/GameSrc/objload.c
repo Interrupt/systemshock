@@ -162,7 +162,6 @@ errtype obj_load_art(uchar flush_all) {
     LGRect dummy_anchor;
     short objart_count = 0, count_3d = 0;
     int objfnum;
-    RefTable *prt;
     short i, f;
     extern uchar empty_bitmap(grs_bitmap * bmp);
     uchar ref_buffer_used = TRUE;
@@ -193,25 +192,11 @@ errtype obj_load_art(uchar flush_all) {
         objfnum = ResOpenFile("res/data/objart.res");
         if (objfnum < 0)
             critical_error(CRITERR_RES | 5);
-
-        // prt = (RefTable *)(frameBuffer+sizeof(frameBuffer)-APPROX_REF_TAB_SIZE);
-
-        /* KLC  Changed to the following.
-                        if(ResExtractRefTable(OBJECT_ART_BASE, prt, APPROX_REF_TAB_SIZE))
-                        {
-                                prt = ResReadRefTable(OBJECT_ART_BASE);
-                                ref_buffer_used=FALSE;
-                        }
-        */
-        prt = ResReadRefTable(OBJECT_ART_BASE);
-        if (prt)
-            ref_buffer_used = FALSE;
-
         // Read out the infamous bitmap zero
         if (!bitmap_zero_loaded) {
             DEBUG("Read Bitmap Zero");
             bitmaps_3d[count_3d] = get_objbitmap_from_pool(count_3d, 1); // KLC - added here.
-            load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, prt, TRUE, &dummy_anchor, NULL);
+            load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, TRUE, &dummy_anchor, NULL);
             bitmap_zero_loaded = TRUE;
             objart_loadsize += bitmaps_3d[count_3d]->w * bitmaps_3d[count_3d]->h;
             anchors_3d[count_3d] = dummy_anchor.ul;
@@ -232,7 +217,7 @@ errtype obj_load_art(uchar flush_all) {
             // If we're not in memory, load us
             if (bitmaps_2d[i] == NULL) {
                 bitmaps_2d[i] = get_objbitmap_from_pool(i, 0);
-                load_bitmap_from_res(bitmaps_2d[i], OBJECT_ART_BASE, objart_count++, prt, TRUE, &dummy_anchor, NULL);
+                load_bitmap_from_res(bitmaps_2d[i], OBJECT_ART_BASE, objart_count++, TRUE, &dummy_anchor, NULL);
                 objart_loadsize += bitmaps_2d[i]->w * bitmaps_2d[i]->h;
                 ObjProps[i].bitmap_3d = ObjProps[i].bitmap_3d | count_3d;
                 for (f = 0; f < (FRAME_NUM_3D(ObjProps[i].bitmap_3d) + 1); f++) {
@@ -245,7 +230,7 @@ errtype obj_load_art(uchar flush_all) {
                     }
 
                     bitmaps_3d[count_3d] = get_objbitmap_from_pool(count_3d, 1);
-                    load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, prt, TRUE,
+                    load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, TRUE,
                                          &dummy_anchor, NULL);
                     objart_loadsize += bitmaps_3d[count_3d]->w * bitmaps_3d[count_3d]->h;
                     anchors_3d[count_3d] = dummy_anchor.ul;
@@ -287,8 +272,6 @@ errtype obj_load_art(uchar flush_all) {
 
     // Closedown
     if (!flush_all) {
-        if (!ref_buffer_used)
-            ResFreeRefTable(prt);
         ResCloseFile(objfnum);
     }
 
