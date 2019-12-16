@@ -367,9 +367,8 @@ int player_get_eye_fixang(void) {
 }
 
 uchar eye_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
-    uiMouseEvent *me = (uiMouseEvent*)ev;
-    short x = me->pos.x - r->abs_x;
-    short y = me->pos.y - r->abs_y;
+    short x = ev->pos.x - r->abs_x;
+    short y = ev->pos.y - r->abs_y;
     extern uchar hack_takeover;
     if (hack_takeover || global_fullmap->cyber)
         return FALSE;
@@ -378,9 +377,9 @@ uchar eye_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     eye_fine_mode = 2 * x > EYEMETER_W;
     if (!eye_fine_mode)
         y = discrete_eye_height[y * DISCRETE_EYE_POSITIONS / EYEMETER_H];
-    if (me->buttons & (1 << MOUSE_LBUTTON)) {
+    if (ev->mouse_data.buttons & (1 << MOUSE_LBUTTON)) {
         int theta;
-        if ((me->action & MOUSE_LDOWN) == 0 && uiLastMouseRegion[MOUSE_LBUTTON] != r)
+        if ((ev->mouse_data.action & MOUSE_LDOWN) == 0 && uiLastMouseRegion[MOUSE_LBUTTON] != r)
             return FALSE;
         if (eye_fine_mode)
             theta = -2 * MAX_EYE_ANGLE * (y) / (EYEMETER_H - 1) + MAX_EYE_ANGLE;
@@ -390,22 +389,21 @@ uchar eye_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
         player_set_eye_fixang(theta);
         physics_set_relax(CONTROL_YZROT, FALSE);
     }
-    if (me->buttons == 0) {
+    if (ev->mouse_data.buttons == 0) {
         //      mouse_constrain_xy(0,0,grd_cap->w-1,grd_cap->h-1);
     }
     return TRUE;
 }
 
 uchar lean_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
-    uiMouseEvent *me = (uiMouseEvent*)ev;
-    short x = me->pos.x - r->abs_x - LEANOMETER_XOFF;
-    short y = me->pos.y - r->abs_y - LEANOMETER_YOFF;
+    short x = ev->pos.x - r->abs_x - LEANOMETER_XOFF;
+    short y = ev->pos.y - r->abs_y - LEANOMETER_YOFF;
     if (x < 0 || x >= LEANOMETER_W || global_fullmap->cyber)
         return FALSE;
-    if (me->buttons & (1 << MOUSE_LBUTTON)) {
+    if (ev->mouse_data.buttons & (1 << MOUSE_LBUTTON)) {
         short posture = y * 3 / LEANOMETER_H;
         short xlean = x * 220 / (LEANOMETER_W - 1) - 110;
-        if ((me->action & MOUSE_LDOWN) == 0 && uiLastMouseRegion[MOUSE_LBUTTON] != r)
+        if ((ev->mouse_data.action & MOUSE_LDOWN) == 0 && uiLastMouseRegion[MOUSE_LBUTTON] != r)
             return FALSE;
         if (xlean > 10)
             xlean -= 10;
@@ -419,7 +417,7 @@ uchar lean_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
         physics_set_relax(CONTROL_XZROT, FALSE);
         //     ui_mouse_constrain_xy(LEANOMETER_X(),LEANOMETER_Y()+posture*LEANOMETER_H/3+1,LEANOMETER_X()+LEANOMETER_W-1,LEANOMETER_Y()+(posture+1)*LEANOMETER_H/3-1);
     }
-    if (me->buttons == 0) {
+    if (ev->mouse_data.buttons == 0) {
         extern void mouse_unconstrain(void);
         //      mouse_unconstrain();
     }

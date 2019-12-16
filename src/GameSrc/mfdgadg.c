@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern void mouse_unconstrain(void);
 uchar mfd_buttonarray_handlerproc(MFD *mfd, uiEvent *ev, MFDhandler *h);
-uchar mfd_slider_handler(MFD *mfd, uiMouseEvent *ev, MFDhandler *h);
+uchar mfd_slider_handler(MFD *mfd, uiEvent *ev, MFDhandler *h);
 
 // =======================
 // BUTTON ARRAYS
@@ -147,7 +147,7 @@ typedef struct _mfd_slider {
     uchar bttndown;
 } MFDSlider;
 
-uchar mfd_slider_handler(MFD *mfd, uiMouseEvent *ev, MFDhandler *h) {
+uchar mfd_slider_handler(MFD *mfd, uiEvent *ev, MFDhandler *h) {
     short x = mfd->rect.ul.x + h->r.ul.x;
     short y = mfd->rect.ul.y + h->r.ul.y;
     uchar retval = TRUE;
@@ -157,14 +157,14 @@ uchar mfd_slider_handler(MFD *mfd, uiMouseEvent *ev, MFDhandler *h) {
     pos.y -= y;
     if (ev->type != UI_EVENT_MOUSE && ev->type != UI_EVENT_MOUSE_MOVE)
         return FALSE;
-    if (ev->action & MOUSE_LDOWN) {
+    if (ev->mouse_data.action & MOUSE_LDOWN) {
         mouse_constrain_xy(x, y, x + RectWidth(&h->r) - 1, y + RectHeight(&h->r) - 1);
         sl->bttndown = TRUE;
     }
     if (sl->bttndown) {
         retval = sl->cb(mfd, pos.x, (uiEvent *)ev, sl->data);
     }
-    if (!(ev->buttons & (1 << MOUSE_LBUTTON))) {
+    if (!(ev->mouse_data.buttons & (1 << MOUSE_LBUTTON))) {
         sl->bttndown = FALSE;
         mouse_unconstrain();
     }

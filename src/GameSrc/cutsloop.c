@@ -89,10 +89,10 @@ void AudioStreamCallback(void *userdata, unsigned char *stream, int len)
 
 uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
-  uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
-  int code = kev->code & ~(KB_FLAG_DOWN | KB_FLAG_2ND);
+  uiCookedKeyData *kd = &ev->cooked_key_data;
+  int code = kd->code & ~(KB_FLAG_DOWN | KB_FLAG_2ND);
 
-  if (kev->code & KB_FLAG_DOWN)
+  if (kd->code & KB_FLAG_DOWN)
   {
     switch (code)
     {

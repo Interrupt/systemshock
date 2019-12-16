@@ -1045,7 +1045,6 @@ void go_and_start_the_game_already(void)
 
 uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
-  uiMouseEvent *mev = (uiMouseEvent *)ev;
   int which_one = -1;
   int i = 0;
   int old_diff;
@@ -1056,7 +1055,7 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
   LGRegion *dummy2 = r;
 #endif
 
-  if (mev->action & MOUSE_LDOWN)
+  if (ev->mouse_data.action & MOUSE_LDOWN)
   {
     // If in the splash screen, advance
     if (waiting_for_key)
@@ -1070,11 +1069,11 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
       case SETUP_JOURNEY:
         if (!journey_lock)
         {
-          if ((mev->pos.x > JOURNEY_OPT_LEFT) && (mev->pos.x < JOURNEY_OPT_RIGHT))
+          if ((ev->pos.x > JOURNEY_OPT_LEFT) && (ev->pos.x < JOURNEY_OPT_RIGHT))
           {
             while ((which_one == -1) && (i <= 6))
             {
-              if ((mev->pos.y > journey_y[i]) && (mev->pos.y < journey_y[i + 1])) which_one = i >> 1;
+              if ((ev->pos.y > journey_y[i]) && (ev->pos.y < journey_y[i + 1])) which_one = i >> 1;
               else i += 2;
             }
             TRACE("%s: which_one = %d", __FUNCTION__, which_one);
@@ -1095,10 +1094,10 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
       break;
 
       case SETUP_CONTINUE:
-        if ((mev->pos.x >= SG_SLOT_X) && (mev->pos.x <= SG_SLOT_X + SG_SLOT_WD) && (mev->pos.y >= SG_SLOT_Y) &&
-            (mev->pos.y <= SG_SLOT_Y + (NUM_SAVE_SLOTS * SG_SLOT_HT)))
+        if ((ev->pos.x >= SG_SLOT_X) && (ev->pos.x <= SG_SLOT_X + SG_SLOT_WD) && (ev->pos.y >= SG_SLOT_Y) &&
+            (ev->pos.y <= SG_SLOT_Y + (NUM_SAVE_SLOTS * SG_SLOT_HT)))
         {
-          char which = (mev->pos.y - SG_SLOT_Y) / SG_SLOT_HT;
+          char which = (ev->pos.y - SG_SLOT_Y) / SG_SLOT_HT;
           char old_sg = curr_sg;
 
           curr_sg = which;
@@ -1112,8 +1111,8 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
         // given that these are all rectangles, i bet you could just get mouse pos and divide, eh?
         for (i = 0; i < 16; i++)
         {
-          if ((mev->pos.x > (build_diff_x(i) - 2)) && (mev->pos.x < (build_diff_x(i) - 2 + DIFF_SIZE_X)) &&
-              (mev->pos.y > (build_diff_y(i) - 2)) && (mev->pos.y < (build_diff_y(i) - 2 + DIFF_SIZE_Y)))
+          if ((ev->pos.x > (build_diff_x(i) - 2)) && (ev->pos.x < (build_diff_x(i) - 2 + DIFF_SIZE_X)) &&
+              (ev->pos.y > (build_diff_y(i) - 2)) && (ev->pos.y < (build_diff_y(i) - 2 + DIFF_SIZE_Y)))
           {
             old_diff = player_struct.difficulty[i / 4];
             draw_difficulty_description(i / 4, 0);
@@ -1126,8 +1125,8 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
           }
         }
         if (diff_changed) compute_new_diff();
-        else if ((mev->pos.x > DIFF_DONE_X1) && (mev->pos.x < DIFF_DONE_X2) && (mev->pos.y > DIFF_DONE_Y1) &&
-                 (mev->pos.y < DIFF_DONE_Y2))
+        else if ((ev->pos.x > DIFF_DONE_X1) && (ev->pos.x < DIFF_DONE_X2) && (ev->pos.y > DIFF_DONE_Y1) &&
+                 (ev->pos.y < DIFF_DONE_Y2))
           go_and_start_the_game_already();
       break;
     }
@@ -1140,11 +1139,10 @@ uchar intro_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 
 uchar intro_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
-  uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
-  int code = kev->code & ~(KB_FLAG_DOWN | KB_FLAG_2ND);
+  int code = ev->cooked_key_data.code & ~(KB_FLAG_DOWN | KB_FLAG_2ND);
   char old_diff, old_setup_line = curr_setup_line, n = 0;
 
-  if (kev->code & KB_FLAG_DOWN)
+  if (ev->cooked_key_data.code & KB_FLAG_DOWN)
   {
     // If in the splash screen, advance
     if (waiting_for_key)
@@ -1281,19 +1279,22 @@ uchar intro_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
           break;
 
           default:
+	  {
             draw_username(0, player_struct.name);
             n = strlen(player_struct.name);
-            if ((kb_isprint(kev->code) && (n < sizeof(player_struct.name))) &&
-                (((kev->code & 0xff) >= 128) && ((kev->code & 0xff) <= 155) ||
-                ((kev->code & 0xff) >= 160) && ((kev->code & 0xff) <= 165) ||
-                (strchr(valid_char_string, (kev->code & 0xFF)) != NULL)))
+	    short c = ev->cooked_key_data.code;
+            if ((kb_isprint(c) && (n < sizeof(player_struct.name))) &&
+                (((c & 0xff) >= 128) && ((c & 0xff) <= 155) ||
+                ((c & 0xff) >= 160) && ((c & 0xff) <= 165) ||
+                (strchr(valid_char_string, (c & 0xFF)) != NULL)))
             {
-              player_struct.name[n] = (kev->code & 0xFF);
+              player_struct.name[n] = (c & 0xFF);
               player_struct.name[n + 1] = '\0';
             }
-            if (((kev->code & 0xFF) == KEY_BS) && (n > 0))
+            if (((c & 0xFF) == KEY_BS) && (n > 0))
               player_struct.name[n - 1] = '\0';
             draw_username(NORMAL_ENTRY_COLOR, player_struct.name);
+	  }
           break;
         }
       break;

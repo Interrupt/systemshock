@@ -669,14 +669,11 @@ void mfd_weapon_expose_beam(weapon_slot *ws, ubyte id, uchar Redraw) {
 
 uchar mfd_weapon_handler(MFD *m, uiEvent *e) {
     weapon_slot *ws;
-    uiMouseEvent *mouse;
     int triple;
 
     // Get the triple for the current weapon
     ws = &player_struct.weapons[player_struct.actives[ACTIVE_WEAPON]];
     triple = MAKETRIP(CLASS_GUN, ws->type, ws->subtype);
-
-    mouse = (uiMouseEvent *)e;
 
     switch (ws->type) {
     case GUN_SUBCLASS_BEAM:     // Is beam charge being set?
@@ -688,7 +685,7 @@ uchar mfd_weapon_handler(MFD *m, uiEvent *e) {
     case GUN_SUBCLASS_PISTOL:
     case GUN_SUBCLASS_AUTO:
     case GUN_SUBCLASS_SPECIAL:
-        if (mouse->action == MOUSE_MOTION)
+        if (e->mouse_data.action == MOUSE_MOTION)
             return FALSE;
         return mfd_weapon_projectile_handler(m, e, ws);
         break;
@@ -711,7 +708,6 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e) {
     uchar retval = TRUE;
     LGRect r;
     ubyte setting, setting_x;
-    uiMouseEvent *mouse;
     weapon_slot *ws = &player_struct.weapons[player_struct.actives[ACTIVE_WEAPON]];
     uchar overld = does_weapon_overload(ws->type, ws->subtype);
 
@@ -720,17 +716,15 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e) {
     extern uchar *backup[NUM_BACKUP_BITS];
 #endif
 
-    mouse = (uiMouseEvent *)e;
-
     // We're interested in this event iff its a mouse up,down,action event
     // in the beam status bar.
-    if (!(mouse->action & (MOUSE_LUP | MOUSE_LDOWN | MOUSE_MOTION))) {
+    if (!(e->mouse_data.action & (MOUSE_LUP | MOUSE_LDOWN | MOUSE_MOTION))) {
         return FALSE;
     }
 
     if (overld) {
         // okay - here's the overload button code
-        if (mouse->action & MOUSE_LDOWN) {
+        if (e->mouse_data.action & MOUSE_LDOWN) {
 
             if (ws->ammo < MINIMUM_OVERLOAD) {
                 // set up the rect for the overload button
@@ -763,19 +757,19 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e) {
         if (!in_or_out)
             return retval;
     }
-    if (!in_or_out && (mouse->buttons == 0))
+    if (!in_or_out && (e->mouse_data.buttons == 0))
         return retval;
 
     // If the left button was pushed, we constrain the mouse to
     // the beam status bar, and change the cursor appropriately
-    if (mouse->action & MOUSE_LDOWN) {
+    if (e->mouse_data.action & MOUSE_LDOWN) {
 
         in_or_out = TRUE;
 
         // Constrain the mouse to a 1-pixel y
         slider_cursor.hotspot.x = slider_cursor_bmap.w / 2;
-        slider_cursor.hotspot.y = (slider_cursor_bmap.h / 2) + mouse->pos.y - (r.ul.y + r.lr.y) / 2;
-        ui_mouse_constrain_xy(r.ul.x + 1, mouse->pos.y, r.lr.x - 2, mouse->pos.y);
+        slider_cursor.hotspot.y = (slider_cursor_bmap.h / 2) + e->pos.y - (r.ul.y + r.lr.y) / 2;
+        ui_mouse_constrain_xy(r.ul.x + 1, e->pos.y, r.lr.x - 2, e->pos.y);
         beam_constrain = m->id;
         // Get our funky mfd-beam-phaser-setting cursor
         uiPushRegionCursor(MFD_REGION(m), &slider_cursor);
@@ -790,7 +784,7 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e) {
     // If the left button was released, unconstrain the mouse and reset
     // the cursor bitmap.  There's no else here for the weird case that
     // an up and down event might happen "simultaneously"
-    if (mouse->action & MOUSE_LUP) {
+    if (e->mouse_data.action & MOUSE_LUP) {
 
         in_or_out = FALSE;
 
@@ -809,7 +803,7 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e) {
     // exceptions for the endpoints for aesthetics) and set the weapon
     // accordingly.
     setting_x = e->pos.x - r.ul.x;
-    if ((mouse->action & MOUSE_MOTION) && (setting_x == old_energy_setting))
+    if ((e->mouse_data.action & MOUSE_MOTION) && (setting_x == old_energy_setting))
         return retval;
     old_energy_setting = setting_x;
 
@@ -835,19 +829,17 @@ uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e) {
 uchar mfd_weapon_projectile_handler(MFD *m, uiEvent *e, weapon_slot *ws) {
     int ammo_subclass, num_ammo_buttons;
     ubyte ammo_types[3];
-    uiMouseEvent *mouse;
     LGPoint pos = e->pos;
 
     pos.x -= m->rect.ul.x;
     pos.y -= m->rect.ul.y;
-    mouse = (uiMouseEvent *)e;
 
     if (pos.y < AMMO_BUTTON_Y)
         return FALSE;
     // If we're already loaded, check for double click.
     if (ws->ammo > 0) {
         uchar retval = FALSE;
-        if (mouse->action & UI_MOUSE_LDOUBLE) {
+        if (e->mouse_data.action & UI_MOUSE_LDOUBLE) {
             extern void unload_current_weapon(void);
 
             unload_current_weapon();
@@ -856,7 +848,7 @@ uchar mfd_weapon_projectile_handler(MFD *m, uiEvent *e, weapon_slot *ws) {
             mfd_notify_func(MFD_WEAPON_FUNC, MFD_WEAPON_SLOT, FALSE, MFD_ACTIVE, FALSE);
             mfd_notify_func(MFD_ITEM_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
             retval = TRUE;
-        } else if (mouse->action & MOUSE_LDOWN) {
+        } else if (e->mouse_data.action & MOUSE_LDOWN) {
             string_message_info(REF_STR_DClickToUnload);
             retval = TRUE;
         }
@@ -864,7 +856,7 @@ uchar mfd_weapon_projectile_handler(MFD *m, uiEvent *e, weapon_slot *ws) {
     }
 
     // If it wasn't a left-mouse-button down event, throw it away.
-    if (!(mouse->action & (MOUSE_LDOWN | UI_MOUSE_LDOUBLE)))
+    if (!(e->mouse_data.action & (MOUSE_LDOWN | UI_MOUSE_LDOUBLE)))
         return FALSE;
 
     // Get the ammo data for the current weapon
@@ -1298,10 +1290,8 @@ void mfd_item_expose(MFD *m, ubyte control) {
 
 uchar mfd_item_handler(MFD *m, uiEvent *e) {
     uchar retval = FALSE;
-    uiMouseEvent *mickey;
 
-    mickey = (uiMouseEvent *)e;
-    if (!(mickey->action & MOUSE_LDOWN))
+    if (!(e->mouse_data.action & MOUSE_LDOWN))
         return retval;
 
     switch (MFDGetCurrItemClass(m->id)) {
@@ -1762,7 +1752,6 @@ errtype mfd_grenade_init(MFD_Func *f);
 void mfd_grenade_expose(MFD *mfd, ubyte control);
 
 uchar mfd_grenade_slider_handler(MFD *m, short val, uiEvent *ev, void *data) {
-    uiMouseEvent *mev = (uiMouseEvent *)ev;
     int n = player_struct.actives[ACTIVE_GRENADE];
     int triple = nth_after_triple(MAKETRIP(CLASS_GRENADE, 0, 0), n);
     short min = TimedGrenadeProps[SCTRIP(triple)].min_time_set * GRENADE_TIME_UNIT;
@@ -1782,7 +1771,7 @@ uchar mfd_grenade_slider_handler(MFD *m, short val, uiEvent *ev, void *data) {
     player_struct.grenades_time_setting[n] = setting;
     if (ev->subtype & MOUSE_LDOWN) {
         LGRect r = mfd_funcs[MFD_GRENADE_FUNC].handlers[GRENADE_SLIDER_IDX].r;
-        int my = ((uiMouseEvent *)ev)->pos.y;
+        int my = ev->pos.y;
         RECT_OFFSETTED_RECT(&r, m->rect.ul, &r);
         slider_cursor.hotspot.x = slider_cursor_bmap.w / 2;
         slider_cursor.hotspot.y = (slider_cursor_bmap.h / 2) + my - (r.ul.y + r.lr.y) / 2;
@@ -1797,7 +1786,7 @@ uchar mfd_grenade_slider_handler(MFD *m, short val, uiEvent *ev, void *data) {
 #endif
         uiPushRegionCursor(MFD_REGION(m), &slider_cursor);
     }
-    if ((mev->buttons & (1 << MOUSE_LBUTTON)) == 0) {
+    if ((ev->mouse_data.buttons & (1 << MOUSE_LBUTTON)) == 0) {
         uiCursorStack *cs;
         uiGetRegionCursorStack(MFD_REGION(m), &cs);
         uiPopCursorEvery(cs, &slider_cursor);
@@ -2234,9 +2223,8 @@ uchar mfd_elevator_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *dat
     ubyte l;
     ubyte reachl;
     ushort bit;
-    uiMouseEvent *mort = (uiMouseEvent *)ev;
 
-    if (!(mort->action & MOUSE_LDOWN))
+    if (!(ev->mouse_data.action & MOUSE_LDOWN))
         return FALSE;
 
     // If SHODAN has defeated us, indicate this for our expose func
@@ -2609,13 +2597,12 @@ void install_keypad_hotkeys(void) {
 uchar mfd_keypad_handler(MFD *m, uiEvent *ev) {
     uchar retval = FALSE;
     char n;
-    uiCookedKeyEvent *e = (uiCookedKeyEvent *)ev;
 
-    if (e->type != UI_EVENT_KBD_COOKED)
+    if (ev->type != UI_EVENT_KBD_COOKED)
         return (FALSE);
-    if (!(e->code & KB_FLAG_DOWN))
+    if (!(ev->cooked_key_data.code & KB_FLAG_DOWN))
         return (FALSE);
-    n = (e->code & 0xFF) - '0';
+    n = (ev->cooked_key_data.code & 0xFF) - '0';
     if ((n < 0) || (n > 9))
         return (FALSE);
     mfd_keypad_input(m, n);

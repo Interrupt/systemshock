@@ -131,14 +131,12 @@ int mfd_to_map(int mid) {
 uchar mfd_map_handler(MFD *m, uiEvent *e) {
     uchar retval = FALSE;
     ubyte map_state;
-    uiMouseEvent *mouse;
     int mapid = mfd_to_map(m->id);
 
     // If we don't have an automap, we shouldn't do shit.
     if (player_struct.hardwarez[HARDWARE_AUTOMAP] == 0)
         return FALSE;
-
-    mouse = (uiMouseEvent *)e;
+    uiMouseData *mouse = &e->mouse_data;
 
     if (mouse->action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
         if (!digi_fx_playing(SFX_MAP_ZOOM, NULL))

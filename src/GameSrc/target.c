@@ -522,7 +522,6 @@ void toggle_current_target() {
 
 uchar mfd_target_handler(MFD *m, uiEvent *e) {
     LGPoint pos;
-    uiMouseEvent *ratbert = (uiMouseEvent *)e;
 
     pos.x = e->pos.x - m->rect.ul.x;
     pos.y = e->pos.y - m->rect.ul.y;
@@ -533,7 +532,7 @@ uchar mfd_target_handler(MFD *m, uiEvent *e) {
     if (pos.y < BUTTON_Y || pos.x > TEXT_RIGHT_X)
         return FALSE;
 
-    if (!(ratbert->action & MOUSE_LDOWN))
+    if (!(e->mouse_data.action & MOUSE_LDOWN))
         return TRUE;
     if (pos.x >= TEXT_RIGHT_X - PAGEBUTT_W)
         toggle_current_target();
@@ -576,7 +575,6 @@ void mfd_targetware_expose(MFD *mfd, ubyte control) {
 
 uchar mfd_targetware_handler(MFD *m, uiEvent *e) {
     LGPoint pos;
-    uiMouseEvent *ratbert = (uiMouseEvent *)e;
 
     pos.x = e->pos.x - m->rect.ul.x;
     pos.y = e->pos.y - m->rect.ul.y;
@@ -584,7 +582,7 @@ uchar mfd_targetware_handler(MFD *m, uiEvent *e) {
     if (pos.y < BUTTON_Y || abs(2 * pos.x - MFD_VIEW_WID) > BUTTON_SIZE || e->type != UI_EVENT_MOUSE)
         return FALSE;
 
-    if (!(ratbert->action & MOUSE_LDOWN))
+    if (!(e->mouse_data.action & MOUSE_LDOWN))
         return TRUE;
     if (player_struct.curr_target == OBJ_NULL)
         select_closest_target();

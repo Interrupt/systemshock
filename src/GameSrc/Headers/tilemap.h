@@ -137,13 +137,6 @@ typedef struct _tilemap {
 #define CURSOR_CHANGE 0 // signalled when the cursor changes
 #define ZOOM_CHANGE 1   // signalled when zoom factor changes.
 
-typedef struct _tilemap_event {
-    UIEVFRONT
-    short subtype;
-    TileMap *tilemap;
-    UIEVBACK(sizeof(TileMap *));
-} TileMapEvent;
-
 // Prototypes
 
 errtype TileMapInit(TileMap *t, LGRegion *parent, LGRect *boundingrect, int z, FullMap *fmap, ushort zoompix,

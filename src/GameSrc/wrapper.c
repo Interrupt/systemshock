@@ -502,24 +502,23 @@ void slider_deal(uchar butid, uchar deal) {
 
 uchar slider_handler(uiEvent *ev, uchar butid) {
     opt_slider_state *st = &(OButtons[butid].user.slider_st);
-    uiMouseEvent *mev = (uiMouseEvent *)ev;
 
     switch (ev->type) {
     case UI_EVENT_MOUSE_MOVE:
-        if (mev->buttons) {
-            st->sliderpos = mev->pos.x - BR(butid).ul.x;
+        if (ev->mouse_data.buttons) {
+            st->sliderpos = ev->pos.x - BR(butid).ul.x;
             slider_deal(butid, TRUE);
             draw_button(butid);
         }
         break;
     case UI_EVENT_MOUSE:
-        if (mev->action & MOUSE_WHEELUP) {
+        if (ev->mouse_data.action & MOUSE_WHEELUP) {
             st->sliderpos = st->sliderpos <= 5 ? 0 : st->sliderpos - 5;
-        } else if (mev->action & MOUSE_WHEELDN) {
+        } else if (ev->mouse_data.action & MOUSE_WHEELDN) {
             uchar max = BR(butid).lr.x - BR(butid).ul.x - 3;
             st->sliderpos = lg_min(st->sliderpos + 5, max);
         } else {
-            st->sliderpos = mev->pos.x - BR(butid).ul.x;
+            st->sliderpos = ev->pos.x - BR(butid).ul.x;
         }
         slider_deal(butid, TRUE);
         draw_button(butid);
@@ -584,7 +583,7 @@ void pushbutton_draw_func(uchar butid) {
 uchar pushbutton_handler(uiEvent *ev, uchar butid) {
     if (((ev->type == UI_EVENT_MOUSE) && (ev->subtype & MOUSE_DOWN)) ||
         ((ev->type == UI_EVENT_KBD_COOKED) &&
-         ((((uiCookedKeyEvent *)ev)->code & 0xFF) == OButtons[butid].user.pushbutton_st.keyeq))) {
+         ((ev->cooked_key_data.code & 0xFF) == OButtons[butid].user.pushbutton_st.keyeq))) {
         OButtons[butid].user.pushbutton_st.pushfunc(butid);
         return TRUE;
     }
@@ -725,10 +724,9 @@ uchar multi_handler(uiEvent *ev, uchar butid) {
         else if (ev->subtype & MOUSE_RDOWN)
             delta = st->num_opts - 1;
     } else if (ev->type == UI_EVENT_KBD_COOKED) {
-        uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
-
-        if (tolower(kev->code & 0xFF) == st->keyeq) {
-            if (isupper(kev->code & 0xFF))
+	short code = ev->cooked_key_data.code;
+        if (tolower(code & 0xFF) == st->keyeq) {
+            if (isupper(code & 0xFF))
                 delta = st->num_opts - 1;
             else
                 delta = 1;
@@ -897,13 +895,12 @@ uchar textlist_handler(uiEvent *ev, uchar butid) {
     opt_textlist_state *st = &OButtons[butid].user.textlist_st;
 
     if ((ev->type == UI_EVENT_MOUSE) && (ev->subtype & MOUSE_DOWN)) {
-        uiMouseEvent *mev = (uiMouseEvent *)ev;
         short w, h;
 
         gr_set_font(opt_font);
         gr_char_size('X', &w, &h);
 
-        line = (mev->pos.y - BR(butid).ul.y) / h;
+        line = (ev->pos.y - BR(butid).ul.y) / h;
 
         if (st->editable && (st->editmask & (1 << line))) {
             // this is how you would do this if you wanted right-click to select
@@ -927,10 +924,10 @@ uchar textlist_handler(uiEvent *ev, uchar butid) {
         }
         return TRUE;
     } else if (ev->type == UI_EVENT_KBD_COOKED) {
-        uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
-        char k = (kev->code & 0xFF);
-        uint keycode = kev->code & ~KB_FLAG_DOWN;
-        uchar special = ((kev->code & KB_FLAG_SPECIAL) != 0);
+	short code = ev->cooked_key_data.code;
+        char k = code & 0xFF;
+        uint keycode = code & ~KB_FLAG_DOWN;
+        uchar special = ((code & KB_FLAG_SPECIAL) != 0);
         char *s;
         char upness = 0;
         char cur = st->currstring;
@@ -1052,10 +1049,8 @@ void textlist_init(uchar butid, char *text, uchar numblocks, uchar blocksiz, uch
 //
 #pragma disable_message(202)
 uchar opanel_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
-    uiMouseEvent mev;
     int b;
-
-    mev = *((uiMouseEvent *)ev);
+    uiEvent mev = *ev;
 
     if (!ev->type && (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE))
         return FALSE;
@@ -1078,10 +1073,10 @@ uchar opanel_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
 // checks all options panel widgets to see if they want to deal.
 //
 uchar opanel_kb_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
-    uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
     int b;
+    short code = ev->cooked_key_data.code;
 
-    if (!(kev->code & KB_FLAG_DOWN))
+    if (!(code & KB_FLAG_DOWN))
         return TRUE;
 
     for (b = 0; b < MAX_OPTION_BUTTONS; b++) {
@@ -1091,7 +1086,7 @@ uchar opanel_kb_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
     // if no-one else has hooked KEY_ESC, it defaults to closing
     // the wrapper panel.
     //
-    if ((kev->code & 0xFF) == KEY_ESC)
+    if ((code & 0xFF) == KEY_ESC)
         wrapper_panel_close(TRUE);
     return TRUE;
 }
@@ -2272,7 +2267,6 @@ errtype do_savegame_guts(uchar slot) {
 
 #pragma disable_message(202)
 uchar wrapper_region_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
-    uiMouseEvent *me = (uiMouseEvent*)ev;
     /*if (global_fullmap->cyber)
     {
        uiSetRegionDefaultCursor(r,NULL);
@@ -2282,7 +2276,7 @@ uchar wrapper_region_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
 
     uiSetRegionDefaultCursor(r, &option_cursor);
 
-    if (me->action & MOUSE_DOWN) {
+    if (ev->mouse_data.action & MOUSE_DOWN) {
         wrapper_options_func(0, 0, TRUE);
         return TRUE;
     }
