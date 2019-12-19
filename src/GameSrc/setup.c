@@ -261,7 +261,7 @@ errtype difficulty_draw(uchar full)
 
   if (full)
   {
-    draw_raw_res_bm_extract(REF_IMG_bmDifficultyScreen, 0, 0);
+    draw_raw_res_bm_temp(REF_IMG_bmDifficultyScreen, 0, 0);
     status_bio_draw();
   }
 
@@ -424,7 +424,7 @@ errtype journey_draw(char part)
   }
 
   // extract into buffer - AFTER we've stopped biorhythms (which used that buffer.....)
-  if (part == 0) draw_raw_res_bm_extract(REF_IMG_bmJourneyOnwards, 0, 0);
+  if (part == 0) draw_raw_res_bm_temp(REF_IMG_bmJourneyOnwards, 0, 0);
 
   for (i = 0; i < NUM_SETUP_LINES; i++)
   {

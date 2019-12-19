@@ -72,14 +72,13 @@ void mfd_bark_expose(MFD *mfd, ubyte control) {
         // gr_bitmap(&mfd_background, 0, 0);
 
         if (mfd_bark_mug > 0) {
-            grs_bitmap bm;
-            int mug = REF_IMG_EmailMugShotBase + mfd_bark_mug;
-
-            bm.bits = NULL;
-
-            extract_temp_res_bitmap(&bm, mug);
-            ss_bitmap(&bm, (MFD_VIEW_WID - bm.w) / 2, (MFD_VIEW_HGT - bm.h) / 2);
-            // gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
+	    FrameDesc *mug = RefLock(REF_IMG_EmailMugShotBase + mfd_bark_mug);
+	    if (mug != NULL) {
+		ss_bitmap(&mug->bm, (MFD_VIEW_WID - mug->bm.w) / 2, (MFD_VIEW_HGT - mug->bm.h) / 2);
+		RefUnlock(REF_IMG_EmailMugShotBase + mfd_bark_mug);
+	    } else {
+		WARN("mfd_bark_expose(): could not load mugshot ", mug);
+	    }
         } else if (!full_game_3d) {
             draw_raw_resource_bm(MKREF(RES_mfdArtOverlays, MFD_ART_TRIOP), 0, 0);
         }

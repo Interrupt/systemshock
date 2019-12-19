@@ -771,11 +771,13 @@ void mfd_emailmug_expose(MFD *mfd, ubyte control) {
                 ) // god, I love this job
 #endif
         {
-            grs_bitmap bm;
-            bm.bits = NULL;
-            extract_temp_res_bitmap(&bm, mug);
-            ss_bitmap(&bm, (MFD_VIEW_WID - bm.w) / 2, (MFD_VIEW_HGT - bm.h) / 2);
-            // gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
+	    FrameDesc *f = RefLock(mug);
+	    if (f != NULL) {
+		ss_bitmap(&f->bm, (MFD_VIEW_WID - f->bm.w) / 2, (MFD_VIEW_HGT - f->bm.h) / 2);
+		RefUnlock(mug);
+	    } else {
+		WARN("mfd_emailmug_expose(): could not load mugshot ", mug);
+	    }
         }
 
 #ifdef AUDIOLOGS

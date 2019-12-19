@@ -338,7 +338,7 @@ errtype screen_draw(void) {
 
 errtype _screen_background(void) {
     Ref back_id = REF_IMG_bmGamescreenBackground;
-    draw_raw_res_bm_extract(back_id, 0, 0);
+    draw_raw_res_bm_temp(back_id, 0, 0);
     // draw_hires_resource_bm(REF_IMG_bmGamescreenBackground, 0, 0);
     return (OK);
 }

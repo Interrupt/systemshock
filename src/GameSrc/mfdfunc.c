@@ -2150,13 +2150,9 @@ errtype draw_shodan_influence(MFD *mfd, uchar amt);
 
 errtype draw_shodan_influence(MFD *mfd, uchar amt) {
     char *s = get_temp_string(SHODAN_FAILURE_STRING);
-    grs_bitmap bm;
-    bm.bits = NULL;
 
     amt = lg_min(NUM_SHODAN_MUGS - 1, amt >> SHODAN_INTERVAL_SHIFT);
-    draw_raw_res_bm_extract(REF_IMG_EmailMugShotBase + FIRST_SHODAN_MUG + amt, 0, 0);
-    // extract_temp_res_bitmap(&bm, REF_IMG_EmailMugShotBase+FIRST_SHODAN_MUG +amt);
-    // gr_bitmap(&bm, 0, 0);
+    draw_raw_res_bm_temp(REF_IMG_EmailMugShotBase + FIRST_SHODAN_MUG + amt, 0, 0);
 
     gr_set_font(ResLock(MFD_FONT));
     wrap_text(s, MFD_VIEW_WID);
@@ -2850,7 +2846,6 @@ void severed_head_expose(MFD *mfd, ubyte control);
 void severed_head_expose(MFD *mfd, ubyte control) {
     uchar full = control & MFD_EXPOSE_FULL;
     if (full) {
-        grs_bitmap bm;
         ubyte headnum = player_struct.actives[ACTIVE_GENERAL];
         ObjID head = player_struct.inventory[headnum];
         int mug;
@@ -2869,10 +2864,13 @@ void severed_head_expose(MFD *mfd, ubyte control) {
         // gr_bitmap(&mfd_background, 0, 0);
 
         mug = REF_IMG_EmailMugShotBase + objSmallstuffs[objs[head].specID].data1;
-        bm.bits = NULL;
-        extract_temp_res_bitmap(&bm, mug);
-        ss_bitmap(&bm, (MFD_VIEW_WID - bm.w) / 2, (MFD_VIEW_HGT - bm.h) / 2);
-        // gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
+	FrameDesc *f = RefLock(mug);
+	if (f != NULL) {
+	    ss_bitmap(&f->bm, (MFD_VIEW_WID - f->bm.w) / 2, (MFD_VIEW_HGT - f->bm.h) / 2);
+	    RefUnlock(mug);
+	} else {
+	    WARN("severed_head_expose(): could not load head art ", mug);
+	}
 
         // draw the name
         mfd_draw_string(get_object_long_name(ID2TRIP(head), NULL, 0), X_MARGIN, 2, GREEN_YELLOW_BASE, TRUE);

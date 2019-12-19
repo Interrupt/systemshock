@@ -196,7 +196,7 @@ errtype obj_load_art(uchar flush_all) {
         if (!bitmap_zero_loaded) {
             DEBUG("Read Bitmap Zero");
             bitmaps_3d[count_3d] = get_objbitmap_from_pool(count_3d, 1); // KLC - added here.
-            load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, TRUE, &dummy_anchor, NULL);
+            load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, TRUE, &dummy_anchor);
             bitmap_zero_loaded = TRUE;
             objart_loadsize += bitmaps_3d[count_3d]->w * bitmaps_3d[count_3d]->h;
             anchors_3d[count_3d] = dummy_anchor.ul;
@@ -217,7 +217,7 @@ errtype obj_load_art(uchar flush_all) {
             // If we're not in memory, load us
             if (bitmaps_2d[i] == NULL) {
                 bitmaps_2d[i] = get_objbitmap_from_pool(i, 0);
-                load_bitmap_from_res(bitmaps_2d[i], OBJECT_ART_BASE, objart_count++, TRUE, &dummy_anchor, NULL);
+                load_bitmap_from_res(bitmaps_2d[i], OBJECT_ART_BASE, objart_count++, TRUE, &dummy_anchor);
                 objart_loadsize += bitmaps_2d[i]->w * bitmaps_2d[i]->h;
                 ObjProps[i].bitmap_3d = ObjProps[i].bitmap_3d | count_3d;
                 for (f = 0; f < (FRAME_NUM_3D(ObjProps[i].bitmap_3d) + 1); f++) {
@@ -231,7 +231,7 @@ errtype obj_load_art(uchar flush_all) {
 
                     bitmaps_3d[count_3d] = get_objbitmap_from_pool(count_3d, 1);
                     load_bitmap_from_res(bitmaps_3d[count_3d], OBJECT_ART_BASE, objart_count++, TRUE,
-                                         &dummy_anchor, NULL);
+                                         &dummy_anchor);
                     objart_loadsize += bitmaps_3d[count_3d]->w * bitmaps_3d[count_3d]->h;
                     anchors_3d[count_3d] = dummy_anchor.ul;
                     if (not_using_2d)

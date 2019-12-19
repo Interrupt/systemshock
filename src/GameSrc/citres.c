@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "statics.h"
 
 // Internal Prototypes
-errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, uchar tmp_mem, LGRect *anchor, uchar *p);
+errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, LGRect *anchor, uchar *p);
 
 grs_bitmap *lock_bitmap_from_ref_anchor(Ref r, LGRect *anchor) {
     FrameDesc *f;
@@ -64,7 +64,7 @@ grs_bitmap *get_bitmap_from_ref_anchor(Ref r, LGRect *anchor) {
 #pragma scheduling off
 #pragma global_optimizer off
 
-errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, uchar tmp_mem, LGRect *anchor, uchar *p) {
+errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, LGRect *anchor, uchar *p) {
     extern int memcount;
     Ref rid = MKREF(id_num, i);
     FrameDesc *f = RefGet(rid);
@@ -76,11 +76,7 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, uchar tmp
     }
 
     const size_t size = f->bm.w * f->bm.h;
-    if (tmp_mem) {
-	// Use the global temp framebuffer ... if it's big enough.
-	assert(size <= FRAME_BUFFER_SIZE);
-	p = frameBuffer;
-    } else if (p == NULL) {
+    if (p == NULL) {
 	// Caller wants us to allocate a framebuffer.
         p = malloc(f->bm.w * f->bm.h);
     }
@@ -88,13 +84,15 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, uchar tmp
     if (anchor != NULL)
         *anchor = f->anchorArea;
 
-    memcount += f->bm.w * f->bm.h;
-    memcpy(p, f + 1, f->bm.w * f->bm.h);
-    //
+    // Copy the bitmap structure across.
     if (bmp == NULL)
         DEBUG("%s: Trying to assign to a null bmp pointer!", __FUNCTION__);
-    //
     *bmp = f->bm;
+
+    // Copy the bits.
+    memcount += f->bm.w * f->bm.h; // FIXME is this needed any more?
+    memcpy(p, f->bm.bits, f->bm.w * f->bm.h);
+
     bmp->bits = p;
 
     return (OK);
@@ -105,22 +103,16 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, uchar tmp
 
 #pragma mark -
 
-errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, uchar transp, LGRect *anchor, uchar *p) {
-    return master_load_bitmap_from_res(bmp, id_num, i, FALSE, anchor, p);
+errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, uchar transp, LGRect *anchor) {
+    return master_load_bitmap_from_res(bmp, id_num, i, anchor, NULL);
 }
 
 errtype load_res_bitmap(grs_bitmap *bmp, Ref rid, uchar alloc) {
     errtype retval;
 
     // printf("load_res_bitmap %x : %x\n", REFID(rid), REFINDEX(rid));
-    retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), FALSE, NULL, (alloc) ? NULL : bmp->bits);
+    retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), NULL, (alloc) ? NULL : bmp->bits);
 
-    return (retval);
-}
-
-errtype extract_temp_res_bitmap(grs_bitmap *bmp, Ref rid) {
-    errtype retval;
-    retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), TRUE, NULL, NULL);
     return (retval);
 }
 
@@ -169,7 +161,7 @@ errtype load_res_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid, uchar allo
     ss_set_hack_mode(2, &temp);
 
     gr2ss_override = OVERRIDE_ALL;
-    master_load_bitmap_from_res(&temp_bmp, REFID(rid), REFINDEX(rid), FALSE, &anchor, NULL);
+    master_load_bitmap_from_res(&temp_bmp, REFID(rid), REFINDEX(rid), &anchor, NULL);
     w = temp_bmp.w;
     h = temp_bmp.h;
     ss_point_convert(&w, &h, FALSE);
@@ -196,7 +188,7 @@ errtype load_res_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid, uchar allo
     gr2ss_override = old_over;
 #else
     retval =
-        master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), FALSE, &anchor, (alloc) ? NULL : bmp->bits);
+        master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), &anchor, (alloc) ? NULL : bmp->bits);
     retval = uiMakeBitmapCursor(c, bmp, anchor.ul);
 #endif
     return retval;
@@ -211,7 +203,7 @@ errtype load_hires_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid, uchar al
     LGRect anchor;
 
     retval =
-        master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), FALSE, &anchor, (alloc) ? NULL : bmp->bits);
+        master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), &anchor, (alloc) ? NULL : bmp->bits);
     retval = uiMakeBitmapCursor(c, bmp, anchor.ul);
 }
 
