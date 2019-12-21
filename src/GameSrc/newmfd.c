@@ -918,7 +918,6 @@ uchar mfd_view_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
 // the button panels.
 int last_mfd_cnum[NUM_MFDS] = {-1, -1};
 uchar mfd_button_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
-    uiMouseEvent *m;
     int cnum, which_panel, which_button;
     div_t result;
 
@@ -931,11 +930,10 @@ uchar mfd_button_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
         uiSetRegionDefaultCursor(r, NULL);
         return FALSE;
     } else {
-        m = (uiMouseEvent *)e;
         which_panel = (int)udata;
 
         // Divide mouseclick height to discover which button we meant
-        result = div((m->pos.y - MFD_BTTN_Y), MFD_BTTN_SZ + MFD_BTTN_BLNK);
+        result = div((e->pos.y - MFD_BTTN_Y), MFD_BTTN_SZ + MFD_BTTN_BLNK);
         which_button = result.quot;
 
         cnum = which_button;
@@ -956,7 +954,7 @@ uchar mfd_button_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
                 uiSetRegionDefaultCursor(r, &mfd_bttn_cursors[which_panel]);
             }
 
-            if (!(m->action & (MOUSE_LDOWN | UI_MOUSE_LDOUBLE)))
+            if (!(e->mouse_data.action & (MOUSE_LDOWN | UI_MOUSE_LDOUBLE)))
                 return TRUE; // ignore all but left clickdowns
 
             // If things are ok, select button

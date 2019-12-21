@@ -229,8 +229,7 @@ uchar gump_get_useful(bool shifted) {
     return FALSE;
 }
 
-uchar mfd_gump_handler(MFD *m, uiEvent *uie) {
-    uiMouseEvent *e = (uiMouseEvent *)uie;
+uchar mfd_gump_handler(MFD *m, uiEvent *e) {
     LGPoint pos = e->pos;
     byte row;
     short x, y;
@@ -243,20 +242,20 @@ uchar mfd_gump_handler(MFD *m, uiEvent *uie) {
 
 #ifdef RIGHT_BUTTON_GUMP_UI
     if (LAST_INPUT_ROW != 0xFF && row != LAST_INPUT_ROW) {
-        if (e->buttons & (1 << MOUSE_RBUTTON)) {
+        if (e->mouse_data.buttons & (1 << MOUSE_RBUTTON)) {
             return gump_pickup(LAST_INPUT_ROW);
         }
     }
 #endif // RIGHT_BUTTON_GUMP_UI
     if (row < 0 || row >= gump_num_objs)
         return FALSE;
-    if (LAST_DOUBLE && (e->action & MOUSE_LUP)) {
+    if (LAST_DOUBLE && (e->mouse_data.action & MOUSE_LUP)) {
         return gump_pickup(row);
     }
-    if (!(e->action & (MOUSE_LDOWN | UI_MOUSE_LDOUBLE)))
+    if (!(e->mouse_data.action & (MOUSE_LDOWN | UI_MOUSE_LDOUBLE)))
         return FALSE;
 #ifdef RIGHT_BUTTON_GUMP_UI
-    if (!(e->action & (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE)) && !(e->buttons & (1 << MOUSE_RBUTTON)))
+    if (!(e->mouse_data.action & (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE)) && !(e->buttons & (1 << MOUSE_RBUTTON)))
         return FALSE;
 #endif // RIGHT_BUTTON_GUMP_UI
     // Hey, this is a little extra work, but it gets the job done.
@@ -264,14 +263,14 @@ uchar mfd_gump_handler(MFD *m, uiEvent *uie) {
     x = LEFT_MARGIN + ((row % 2 == 0) ? 0 : CONTENTS_WID) + (CONTENTS_WID - bm->w) / 2;
     y = FIRST_ITEM_Y + ((row / 2 == 0) ? 0 : CONTENTS_HGT) + (CONTENTS_HGT - bm->h) / 2;
     if (pos.x >= x && pos.x < x + bm->w && pos.y >= y && pos.y < y + bm->h) {
-        if (e->action == UI_MOUSE_LDOUBLE) {
+        if (e->mouse_data.action == UI_MOUSE_LDOUBLE) {
             LAST_DOUBLE = TRUE;
             return TRUE;
         }
         LAST_DOUBLE = FALSE;
-        if (e->action & MOUSE_LDOWN) {
+        if (e->mouse_data.action & MOUSE_LDOWN) {
             if (gump_idlist[row] != OBJ_NULL) {
-                if (e->modifiers & 1) { //shifted click; see sdl_events.c
+                if (e->mouse_data.modifiers & 1) { //shifted click; see sdl_events.c
                     //try to pickup and absorb object
                     uchar result = gump_pickup(row);
                     if (result) {
@@ -295,7 +294,7 @@ uchar mfd_gump_handler(MFD *m, uiEvent *uie) {
         if (e->action & MOUSE_RUP)
             return gump_pickup(row);
 #endif // RIGHT_BUTTON_GUMP_UI
-    } else if (e->buttons & (1 << MOUSE_RBUTTON)) {
+    } else if (e->mouse_data.buttons & (1 << MOUSE_RBUTTON)) {
         return gump_pickup(row);
     }
     LAST_DOUBLE = FALSE;

@@ -513,7 +513,7 @@ uchar amap_scroll_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
 
     if (!map_scroll_code || !map_scroll_clicked) {
         if (ev->type == UI_EVENT_KBD_POLL) {
-            code = ((uiRawKeyEvent *)ev)->scancode;
+            code = ev->raw_key_data.scancode;
             switch (code) {
             case UP_ARROW_CODE:
             case KP_UP_CODE:

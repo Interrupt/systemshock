@@ -164,7 +164,7 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
                     x--;
                 }
 
-                while (x >= 0) {
+                while (x > 0) {
                     k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
                     inv = t_clut[t_bits[k]];
                     // gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);

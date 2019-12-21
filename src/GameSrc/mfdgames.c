@@ -254,14 +254,12 @@ errtype mfd_games_init(MFD_Func *m) {
 uchar mfd_games_handler(MFD *m, uiEvent *e) {
     int cur_mode = GAME_MODE;
     uchar retval = (*game_handler_funcs[cur_mode])(m, e);
-    uiMouseEvent *mouse;
     LGRect r;
 
     // detect if you have games
     // if (player_struct.hardwarez[HARDWARE_AUTOMAP] == 0) return FALSE;
 
-    mouse = (uiMouseEvent *)e;
-    if (!(mouse->action & MOUSE_LDOWN))
+    if (!(e->mouse_data.action & MOUSE_LDOWN))
         return FALSE; // ignore click releases
 
     // Did the user click in the "menu" clickbox?
@@ -432,15 +430,13 @@ void games_expose_menu(MFD *m, ubyte control) {
 }
 
 uchar games_handle_menu(MFD *m, uiEvent *ev) {
-    uiMouseEvent *mouse;
     uint32_t game;
     uint32_t cur_games = player_struct.softs.misc[SOFTWARE_GAMES];
 
     if (GAME_MODE == GAME_MODE_MENU)
         ((menu_state *)GAME_DATA)->save_time = 0;
 
-    mouse = (uiMouseEvent *)ev;
-    if (!(mouse->action & MOUSE_LDOWN))
+    if (!(ev->mouse_data.action & MOUSE_LDOWN))
         return FALSE; // ignore click releases
 
     if (ev->pos.y - m->rect.ul.y < MENU_GAMELIST_Y)
@@ -863,10 +859,10 @@ void games_expose_road(MFD *m, ubyte tac) {
         }
     } else
         for (; games_time_diff >= ROAD_CYCLE; games_time_diff -= ROAD_CYCLE) {
-            uiMouseEvent fake_event;
+            uiEvent fake_event;
             uiMakeaDerMotionEventenHausen(&fake_event);
             games_run_road(cur_rs);
-            games_handle_road(m, (uiEvent *)&fake_event);
+            games_handle_road(m, &fake_event);
             if (cur_rs->game_state)
                 break;
         }
@@ -904,13 +900,12 @@ void games_expose_road(MFD *m, ubyte tac) {
 }
 
 uchar games_handle_road(MFD *m, uiEvent *e) {
-    uiMouseEvent *me = (uiMouseEvent *)e;
 
-    if (me->type == UI_EVENT_MOUSE) {
+    if (e->type == UI_EVENT_MOUSE) {
         road_state *cur_rs = (road_state *)GAME_DATA;
-        int bt = me->buttons;
+        int bt = e->mouse_data.buttons;
         if (bt != 0)
-            if (me->modifiers != 0)
+            if (e->mouse_data.modifiers != 0)
                 bt++;
 
         //	if (bt!=cur_rs->last_bs)
@@ -1450,15 +1445,14 @@ static void mcom_start_level(void) {
 // hey, hey, we got some user input
 static uchar games_handle_mcom(MFD *m, uiEvent *e) {
     mcom_state *ms = (mcom_state *)GAME_DATA;
-    uiMouseEvent *mouse = (uiMouseEvent *)e;
     LGPoint pos = MakePoint(e->pos.x - m->rect.ul.x, e->pos.y - m->rect.ul.y);
 
     if (ms->state == MCOM_WAIT_NEW_GAME) {
-        if (mouse->action & MOUSE_LDOWN)
+        if (e->mouse_data.action & MOUSE_LDOWN)
             mcom_start_game();
     } else if (ms->state < MCOM_PLAY_GAME || (ms->state == MCOM_PLAY_GAME && (ms->enemies || num_attackers))) {
-        int left = (mouse->action & MOUSE_LDOWN) && (mouse->modifiers == 0);
-        int right = (mouse->action & MOUSE_LDOWN) && (mouse->modifiers != 0);
+        int left = (e->mouse_data.action & MOUSE_LDOWN) && (e->mouse_data.modifiers == 0);
+        int right = (e->mouse_data.action & MOUSE_LDOWN) && (e->mouse_data.modifiers != 0);
         // KLC - no need to worry about left/right hand mouse for Mac version.
         //		if (QUESTVAR_GET(MOUSEHAND_QVAR))
         //		{
@@ -1905,14 +1899,13 @@ void games_expose_15(MFD *m, ubyte control) {
 }
 
 uchar games_handle_15(MFD *m, uiEvent *e) {
-    uiMouseEvent *me = (uiMouseEvent *)e;
     puzzle15_state *st = (puzzle15_state *)GAME_DATA;
     LGPoint pos = MakePoint(e->pos.x - m->rect.ul.x - PUZZ15_ULX, e->pos.y - m->rect.ul.y - PUZZ15_ULY);
 
     if (st->scramble > 0)
         return FALSE;
 
-    if (!(me->action & MOUSE_LDOWN))
+    if (!(e->mouse_data.action & MOUSE_LDOWN))
         return FALSE;
 
     if (pos.x < 0 || pos.y < 0)
@@ -2279,11 +2272,10 @@ uchar tictactoe_generator(void *pos, int index, bool minimizer_moves) {
 }
 
 uchar games_handle_ttt(MFD *m, uiEvent *e) {
-    uiMouseEvent *me = (uiMouseEvent *)e;
     ttt_state *st = (ttt_state *)GAME_DATA;
     LGPoint pos = MakePoint(e->pos.x - m->rect.ul.x - TTT_ULX, e->pos.y - m->rect.ul.y - TTT_ULY);
 
-    if (!(me->action & MOUSE_LDOWN))
+    if (!(e->mouse_data.action & MOUSE_LDOWN))
         return FALSE;
     if (st->whomoves != st->whoplayer)
         return TRUE;
@@ -3261,12 +3253,11 @@ static void wing_advance_to_next_level(void) {
 }
 
 uchar games_handle_wing(MFD *m, uiEvent *e) {
-    uiMouseEvent *me = (uiMouseEvent *)e;
     LGPoint pos = MakePoint(e->pos.x - m->rect.ul.x, e->pos.y - m->rect.ul.y);
     fix x, y;
 
     if (wing_game_mode != WING_PLAY_GAME) {
-        if (!(me->action & MOUSE_LDOWN))
+        if (!(e->mouse_data.action & MOUSE_LDOWN))
             return FALSE;
         if (wing_game_mode == WING_DEBRIEFING) {
             wing_game_mode = WING_BRIEFING;
@@ -3304,7 +3295,7 @@ uchar games_handle_wing(MFD *m, uiEvent *e) {
         y = y + (y > 0 ? -4096 : 4096);
 
 #ifdef PLAYTEST
-    if (wing_cheat && (me->action & MOUSE_RDOWN) && (me->buttons & 3) == 3) {
+    if (wing_cheat && (e->mouse_data.action & MOUSE_RDOWN) && (e->mouse_data.buttons & 3) == 3) {
         // right click while left button held
         wing_delete_all_but();
         wing_level |= 3;
@@ -3312,8 +3303,8 @@ uchar games_handle_wing(MFD *m, uiEvent *e) {
     }
 #endif
 
-    if (me->action & MOUSE_LDOWN) {
-        if ((me->buttons & 3) == 3) {
+    if (e->mouse_data.action & MOUSE_LDOWN) {
+        if ((e->mouse_data.buttons & 3) == 3) {
             // both buttons, assume it's an order
             wingman_order();
             wing_play_fx(WING_SFX_COMM, 0, 0);
@@ -3329,7 +3320,7 @@ uchar games_handle_wing(MFD *m, uiEvent *e) {
         return TRUE;
     }
 
-    switch (me->buttons & 3) {
+    switch (e->mouse_data.buttons & 3) {
     case 0:
     case 1:
     case 3: // both buttons pushed.  Huh.

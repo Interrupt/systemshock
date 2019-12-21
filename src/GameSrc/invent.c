@@ -2179,7 +2179,6 @@ uchar inventory_handle_rightbutton(uiEvent *ev, LGRegion *reg, inv_display *dp, 
 
 uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     uchar retval = FALSE;
-    uiMouseEvent *mev = (uiMouseEvent *)ev;
     int relx;
     inv_display *dp = NULL;
     int i;
@@ -2205,14 +2204,14 @@ uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     {
         relx = ev->pos.x - INVENTORY_PANEL_X;
     }
-    if (invpanel_focus && !(mev->buttons & (1 << MOUSE_RBUTTON))) {
+    if (invpanel_focus && !(ev->mouse_data.buttons & (1 << MOUSE_RBUTTON))) {
         uiReleaseFocus(r, UI_EVENT_MOUSE_MOVE);
         invpanel_focus = FALSE;
     }
     if (full_game_3d && !(full_visible & FULL_INVENT_MASK))
         return FALSE;
-    if (full_game_3d && !(mev->buttons & (1 << MOUSE_RBUTTON))) {
-        if (!(mev->action & ~MOUSE_MOTION))
+    if (full_game_3d && !(ev->mouse_data.buttons & (1 << MOUSE_RBUTTON))) {
+        if (!(ev->mouse_data.action & ~MOUSE_MOTION))
             return FALSE;
         if (input_cursor_mode != INPUT_OBJECT_CURSOR) {
             uchar found = FALSE;
@@ -2270,11 +2269,11 @@ uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
             break;
         }
     }
-    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (mev->action & (MOUSE_LDOWN | MOUSE_RUP | UI_MOUSE_LDOUBLE))) {
+    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (ev->mouse_data.action & (MOUSE_LDOWN | MOUSE_RUP | UI_MOUSE_LDOUBLE))) {
         add_object_on_cursor(dp, row);
         return TRUE;
     }
-    if ((mev->buttons & (1 << MOUSE_RBUTTON)) || (ev->subtype & (MOUSE_RUP | MOUSE_RDOWN)))
+    if ((ev->mouse_data.buttons & (1 << MOUSE_RBUTTON)) || (ev->subtype & (MOUSE_RUP | MOUSE_RDOWN)))
         if (inventory_handle_rightbutton(ev, r, dp, row))
             retval = TRUE;
     // Handle left button
@@ -2292,11 +2291,11 @@ uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
 
 int last_invent_cnum = -1; // last cursor num set for region
 uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
-    uiMouseEvent *me = (uiMouseEvent*)ev;
-    LGPoint pos = me->pos;
+    LGPoint pos = ev->pos;
     int cnum;
 
-    if (full_game_3d && (me->buttons & (1 << MOUSE_LBUTTON)) != 0 && (me->action & MOUSE_LDOWN) == 0 &&
+    if (full_game_3d && (ev->mouse_data.buttons & (1 << MOUSE_LBUTTON)) != 0 &&
+	(ev->mouse_data.action & MOUSE_LDOWN) == 0 &&
         uiLastMouseRegion[MOUSE_LBUTTON] != NULL && uiLastMouseRegion[MOUSE_LBUTTON] != r) {
         uiSetRegionDefaultCursor(r, NULL);
         return FALSE;
@@ -2328,7 +2327,7 @@ uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
         uiSetRegionDefaultCursor(r, c);
     }
 
-    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (me->action & (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE))) {
+    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (ev->mouse_data.action & (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE))) {
         AddResult pop = (AddResult)add_to_some_page(object_on_cursor, FALSE);
         if (IS_POP_RESULT(pop))
             pop_cursor_object();
@@ -2338,7 +2337,7 @@ uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     if (page_button_state[cnum] == BttnDummy)
         return FALSE;
 
-    if (me->action & MOUSE_LDOWN) {
+    if (ev->mouse_data.action & MOUSE_LDOWN) {
         int i = cnum;
         short x = FIRST_BTTN_X + i * BUTTON_X_STEP;
         if (pos.x >= x && pos.x < x + INVENT_BTTN_WD && page_button_state[i] != BttnDummy) {

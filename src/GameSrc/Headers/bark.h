@@ -49,8 +49,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern void mfd_bark_expose(MFD *mfd, ubyte control);
 extern void long_bark(ObjID speaker_id, uchar mug_id, int string_id, ubyte color);
-
-typedef struct {
-    ushort timestamp;
-    ushort type;
-} BarkSchedEvent;

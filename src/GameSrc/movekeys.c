@@ -347,17 +347,15 @@ void process_motion_keys(void) {
 }
 
 uchar motion_keycheck_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
-    uiPollKeyEvent *ke = (uiPollKeyEvent *)ev;
-
     // KLC - For Mac version, we'll cook our own, since we have the modifier information.
-    ushort cooked = ke->scancode | ke->mods;
+    ushort cooked = ev->poll_key_data.scancode | ev->poll_key_data.mods;
 
     short cnum, cval;
     int moveOK = TRUE;
 
     if (gKeypadOverride) // if a keypad is showing
     {
-        if (ke->scancode >= 0x52 && ke->scancode <= 0x5C) // and a keypad number was entered,
+        if (ev->poll_key_data.scancode >= 0x52 && ev->poll_key_data.scancode <= 0x5C) // and a keypad number was entered,
             moveOK = FALSE;                               // don't move.
     }
 

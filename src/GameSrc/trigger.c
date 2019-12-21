@@ -1973,7 +1973,7 @@ errtype trap_expose_func(int dmg, int dtype, int tsecs, int p4) {
 
 errtype trap_bark_func(int speaker, int strnum, int color, int hud_bark) {
     int string_id = REF_STR_TrapZeroMessage + qdata_get(strnum);
-    BarkSchedEvent new_event;
+    SchedEvent new_event;
     ushort special;
     uint timeout = 0, len;
 
@@ -2007,7 +2007,7 @@ errtype trap_bark_func(int speaker, int strnum, int color, int hud_bark) {
         timeout *= 10 + len;
         new_event.timestamp = TICKS2TSTAMP(player_struct.game_time) + timeout;
         new_event.type = BARK_SCHED_EVENT;
-        schedule_event(&game_seconds_schedule, (SchedEvent *)&new_event);
+        schedule_event(&game_seconds_schedule, &new_event);
     }
     return OK;
 }

@@ -203,9 +203,6 @@ char _itrp_gour_flg = 0;
 char _itrp_wire_flg = 0;
 char _itrp_check_flg = 0;
 
-// space for temp copy of object
-char obj_space[8000];
-
 // MLA not used, - uchar 	*struct_ptr;
 
 /*
@@ -233,15 +230,6 @@ call_next	macro
 // this is bullshit, man, takes ptr to object on the freakin' stack!
 void g3_interpret_object(ubyte *object_ptr, ...) {
     int i, scale;
-    short size;
-
-    size = *(short *)(object_ptr - 4);
-    size -= 10; // skip the first 10 bytes
-
-    // Added a guardian since size can be negative
-    if (size > 0) {
-        memmove(obj_space, object_ptr - 2, size);
-    }
 
     // lighting stuff, params are on the stack
     // so don't sweat it
@@ -362,13 +350,13 @@ g3_interpret_object_raw:
             temp = (((ulong)_view_position.gX) >> 16); // get high 16 bits
             // FIXME: DG: I guess they meant &, not &&
             if (((temp << scale) && 0xffff0000) != 0)
-                goto Exit;                             // overflow
+                return;                             // overflow
             temp = (((ulong)_view_position.gY) >> 16); // get high 16 bits
             if (((temp << scale) && 0xffff0000) != 0)
-                goto Exit;                             // overflow
+                return;                             // overflow
             temp = (((ulong)_view_position.gZ) >> 16); // get high 16 bits
             if (((temp << scale) && 0xffff0000) != 0)
-                goto Exit; // overflow
+                return; // overflow
 
             _view_position.gX <<= scale;
             _view_position.gY <<= scale;
@@ -389,11 +377,6 @@ g3_interpret_object_raw:
         opcode_table[OP_JNORM] = &do_jnorm;
     }
 
-Exit:
-    // Added a guardian since size can be negative
-    if (size > 0) {
-        memmove(object_ptr - 2, obj_space, size);
-    }
 }
 
 // interpret the object

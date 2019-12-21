@@ -221,12 +221,11 @@ uchar mfd_biohelp_handler(MFD *m, uiEvent *e) {
 }
 
 uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
-    uiMouseEvent *mev = (uiMouseEvent*) ev;
-    if (mev->action & (MOUSE_LDOWN | MOUSE_RDOWN)) {
+    if (ev->mouse_data.action & (MOUSE_LDOWN | MOUSE_RDOWN)) {
         extern void mfd_zoom_rect(LGRect *, int);
         LGRect start = {{-5, -5}, {5, 5}};
         int mfd = mfd_grab_func(MFD_BIOHELP_FUNC, MFD_INFO_SLOT);
-        RECT_MOVE(&start, mev->pos);
+        RECT_MOVE(&start, ev->pos);
         mfd_zoom_rect(&start, mfd);
 
         mfd_notify_func(MFD_BIOHELP_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);

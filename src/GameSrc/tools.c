@@ -152,7 +152,6 @@ void draw_hires_resource_bm(Ref id, int x, int y) {
     FrameDesc *f = RefLock(id);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
-    f->bm.bits = (uchar *)(f + 1);
     gr_bitmap(&f->bm, x, y);
     RefUnlock(id);
 }
@@ -161,15 +160,17 @@ void draw_hires_halfsize_bm(Ref id, int x, int y) {
     FrameDesc *f = RefLock(id);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
-    f->bm.bits = (uchar *)(f + 1);
     gr_scale_bitmap(&f->bm, x, y, (f->bm.w >> 1), (f->bm.h >> 1));
     RefUnlock(id);
 }
 
-errtype draw_raw_res_bm_extract(Ref id, int x, int y) {
-    grs_bitmap bm;
-    extract_temp_res_bitmap(&bm, id);
-    ss_bitmap(&bm, x, y);
+errtype draw_raw_res_bm_temp(Ref id, int x, int y) {
+    FrameDesc *f = RefLock(id);
+    if (f == NULL) {
+	return ERR_FREAD;
+    }
+    ss_bitmap(&f->bm, x, y);
+    RefUnlock(id);
     return OK;
 }
 
@@ -179,7 +180,6 @@ errtype draw_raw_resource_bm(Ref id, int x, int y) {
     f = RefLock(id);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
-    f->bm.bits = (uchar *)(f + 1);
     ss_bitmap(&f->bm, x, y);
     RefUnlock(id);
     return (OK);
@@ -198,7 +198,6 @@ errtype draw_res_bm_core(Ref id, int x, int y, uchar scale) {
     mouse_rect.lr.y = y + f->bm.h;
 
     // Set the palette right, if one is provided....
-    f->bm.bits = (uchar *)(f + 1);
     if (is_onscreen())
         uiHideMouse(&mouse_rect);
     if (scale)
