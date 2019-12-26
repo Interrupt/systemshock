@@ -4,10 +4,23 @@ notifications:
   email: false
 
 env:
-  - PACKAGE_NAME="shockolate-$TRAVIS_OS_NAME.tgz"
+  - PACKAGE_NAME="shockolate-$TRAVIS_OS_NAME-${BITS}bit.tgz"
 
 matrix:
   include:
+    - os: linux
+      dist: bionic
+      sudo: required
+      env:
+        - SDL2_LIB=BUNDLED
+        - SDL2_MIXER_LIB=BUNDLED
+        - FLUIDSYNTH_LIB=BUNDLED
+        - BITS=64
+      addons:
+        apt:
+          packages:
+            - cmake-data cmake libglu1-mesa-dev libgl1-mesa-dev # libfluidsynth-dev libsdl2-dev libsdl2-mixer-dev
+      compiler: gcc
     - os: linux
       dist: trusty
       sudo: required
@@ -15,6 +28,10 @@ matrix:
         - SDL2_LIB=BUNDLED
         - SDL2_MIXER_LIB=BUNDLED
         - FLUIDSYNTH_LIB=BUNDLED
+        - CMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu
+        - BITS=32
+      before_script:
+        - cp osx-linux/CMakeLists.32bit.txt ./CMakeLists.txt
       addons:
         apt:
           packages:
@@ -26,26 +43,28 @@ matrix:
         - SDL2_LIB=BUNDLED
         - SDL2_MIXER_LIB=BUNDLED
         - FLUIDSYNTH_LIB=OFF # Bundled lib failed to compile
+        - BITS=64
     - os: osx
       compiler: gcc
       env:
         - SDL2_LIB=BUNDLED
         - SDL2_MIXER_LIB=BUNDLED
         - FLUIDSYNTH_LIB=OFF # Bundled lib failed to compile
+        - BITS=64
 
 script:
-  - sudo TRAVIS=$TRAVIS ./osx-linux/install_32bit_sdl.sh
-  - cmake -DCMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu -DENABLE_SDL2=${SDL2_LIB} -DENABLE_SOUND=${SDL2_MIXER_LIB} -DENABLE_FLUIDSYNTH=${FLUIDSYNTH_LIB} .
+  - chmod a+rx ./osx-linux/*.sh
+  - sudo TRAVIS=$TRAVIS ./osx-linux/install_${BITS}bit_sdl.sh
+  - cmake -DENABLE_SDL2=${SDL2_LIB} -DENABLE_SOUND=${SDL2_MIXER_LIB} -DENABLE_FLUIDSYNTH=${FLUIDSYNTH_LIB} .
   - make -j2 systemshock
 
 before_deploy:
   - mkdir -p shockolate
   - cp systemshock shockolate
-  - cp osx-linux/install_32bit_sdl.sh shockolate
+  - cp osx-linux/install_${BITS}bit_sdl.sh shockolate/install_sdl.sh
   - cp osx-linux/readme_osx_linux.md shockolate
   - cp osx-linux/run_$TRAVIS_OS_NAME.sh shockolate/run.sh
   - cp -r shaders shockolate/
-  - cp -r lib shockolate/
   - cp -r res shockolate/
   - cp readme/readme-$TRAVIS_OS_NAME.txt shockolate/readme.txt
   - tar zcfv $PACKAGE_NAME shockolate

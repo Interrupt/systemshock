@@ -224,12 +224,12 @@ uchar go_to_different_level(int targlevel) {
         // KLC      start_asynch_digi_fx();
         dynmem_mask = DYNMEM_PARTIAL;
     }
-    //   else if (music_on)									// Don't play music
+    //   else if (music_on)                                                                     // Don't play music
     //   while
-    //      MacTuneShutdown();								// elevator switches levels
+    //      MacTuneShutdown();                                                          // elevator switches levels
 
     // KLC - if changing levels via the elevator, we need to make sure the elevator music
-    //			  continues playing.  We'll do this by queueing up 3 additional chunks of music.
+    //                    continues playing.  We'll do this by queueing up 3 additional chunks of music.
     else if (music_on) {
         for (int t = 0; t < 3; t++) {
             MacTuneQueueTune(mlimbs_boredom);
@@ -480,7 +480,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
     ResCloseFile(fd);
 
-    // FlushVol(nil, fSpec->vRefNum);			// Make sure everything is saved.
+    // FlushVol(nil, fSpec->vRefNum);                   // Make sure everything is saved.
 
     if (make_player)
         obj_create_player(&plr_loc);
@@ -736,7 +736,7 @@ errtype expand_old_class(char cl, short new_start)
 void load_level_data() {
     extern errtype load_small_texturemaps();
 
-    // KLC-removed from here	obj_load_art(FALSE);
+    // KLC-removed from here    obj_load_art(FALSE);
     load_small_texturemaps();
 }
 
@@ -744,7 +744,7 @@ void SwapLongBytes(void *pval4);
 void SwapShortBytes(void *pval2);
 #define MAKE4(c0, c1, c2, c3) ((((ulong)c0) << 24) | (((ulong)c1) << 16) | (((ulong)c2) << 8) | ((ulong)c3))
 
-//	---------------------------------------------------------
+//      ---------------------------------------------------------
 // Â¥ Put this in some more appropriate, global place.
 void SwapLongBytes(void *pval4) {
     long *temp = (long *)pval4;

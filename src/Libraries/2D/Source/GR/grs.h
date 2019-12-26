@@ -193,6 +193,9 @@ typedef struct {
     short off_tab[1];
 } grs_font;
 
+// Access to fonts in resources.
+#define FORMAT_FONT FORMAT_RAW
+
 /* structure for drawing context.  the context contains data about which
    color, font attributes, filling attributes, and an embedded clipping
    region structure. */
