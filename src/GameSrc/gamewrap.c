@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ShockDialogs.h"
 
 #include "amap.h"
+#include "archiveformat.h"
 #include "criterr.h"
 #include "cybmem.h"
 #include "cybstrng.h"
@@ -61,7 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "otrip.h"
 
 #include <stdio.h>
-#include <unistd.h>
 
 /*
 #include <physics.h>
@@ -85,6 +85,34 @@ extern char saveload_string[30];
 extern uchar display_saveload_checkpoints;
 extern ulong obj_check_time;
 extern uchar mlimbs_on;
+
+// Player struct support for savegames.
+// DOS version savegame reserves 32 bytes for puzzle state.
+#define PL_MFD_PUZZLE_SIZE 32
+#include "playerlayout.h"
+#undef PL_MFD_PUZZLE_SIZE
+// Enhanced edition uses 64.
+#define PL_MFD_PUZZLE_SIZE 64
+#include "playerlayout.h"
+#undef PL_MFD_PUZZLE_SIZE
+
+const ResLayout *PlayerLayouts[] = { &PlayerLayout_M32, &PlayerLayout_M64 };
+// Decode wrapper for a player layout. Tries to figure out which version saved
+// the game from the resource size.
+void *decode_player(void *raw, size_t *size, UserDecodeData layout) {
+    int i;
+    for (i = 0; i < sizeof PlayerLayouts / sizeof *PlayerLayouts; ++i) {
+	if (*size == PlayerLayouts[i]->dsize) {
+	    return ResDecode(raw, size, (UserDecodeData)PlayerLayouts[i]);
+	}
+    }
+    ERROR("Could not determine format of saved player!");
+    return NULL;
+}
+// Player format. We always save as enhanced format (64-byte MFD array).
+const ResourceFormat PlayerFormat = {
+    decode_player, ResEncode, (UserDecodeData)&PlayerLayout_M64, NULL };
+#define FORMAT_PLAYER (&PlayerFormat)
 
 //-------------------
 //  INTERNAL PROTOTYPES
@@ -202,8 +230,8 @@ errtype save_game(char *fname, char *comment) {
         return ERR_FOPEN;
     }
 
-    // Save comment
-    ResMake(idx, (void *)comment, strlen(comment) + 1, RTYPE_APP, filenum, RDF_LZW);
+    // Sakeave comment
+    ResMake(idx, (void *)comment, strlen(comment) + 1, RTYPE_APP, filenum, RDF_LZW, FORMAT_RAW);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
@@ -216,7 +244,7 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum,
     // RDF_LZW);
 
-    ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, 0);
+    ResMake(idx, (void *)&player_struct, sizeof(player_struct), RTYPE_APP, filenum, 0, FORMAT_PLAYER);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
@@ -227,7 +255,7 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum,
     // RDF_LZW);
 
-    ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, 0);
+    ResMake(idx, (void *)&game_seconds_schedule, sizeof(Schedule), RTYPE_APP, filenum, 0, FORMAT_SCHEDULE);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
@@ -236,7 +264,7 @@ errtype save_game(char *fname, char *comment) {
     // LZW later		ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent)*GAME_SCHEDULE_SIZE,
     // RTYPE_APP, filenum, RDF_LZW);
     ResMake(idx, (void *)game_seconds_schedule.queue.vec, sizeof(SchedEvent) * GAME_SCHEDULE_SIZE, RTYPE_APP, filenum,
-            0);
+            0, FORMAT_SCHEDULE_QUEUE);
     ResWrite(idx);
     ResUnmake(idx);
     idx++;
@@ -269,10 +297,10 @@ errtype load_game_schedules(void) {
     int idx = SCHEDULE_BASE_ID;
 
     oldvec = game_seconds_schedule.queue.vec;
-    ResExtract(idx++, (void *)&game_seconds_schedule);
+    ResExtract(idx++, FORMAT_SCHEDULE, &game_seconds_schedule);
     game_seconds_schedule.queue.vec = oldvec;
     game_seconds_schedule.queue.comp = compare_events;
-    ResExtract(idx++, (void *)oldvec);
+    ResExtract(idx++, FORMAT_SCHEDULE_QUEUE, oldvec);
     return OK;
 }
 
@@ -351,7 +379,8 @@ errtype load_game(char *fname) {
     filenum = ResOpenFile(CURRENT_GAME_FNAME);
     old_plr = player_struct.rep;
     orig_lvl = player_struct.level;
-    ResExtract(SAVE_GAME_ID_BASE + 1, (void *)&player_struct);
+
+    ResExtract(SAVE_GAME_ID_BASE + 1, FORMAT_PLAYER, (void *)&player_struct);
 
     obj_check_time = 0; // KLC - added because it needs to be reset for Mac version.
 

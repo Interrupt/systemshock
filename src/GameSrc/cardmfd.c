@@ -60,7 +60,7 @@ void mfd_accesscard_expose(MFD *mfd, ubyte control);
 #define LEFT_X 2
 #define RIGHT_X (MFD_VIEW_WID - 2)
 #define CODES_WID (RIGHT_X - LEFT_X + 1)
-#define LAST_BITS(mfd) (*(ulong *)&(player_struct.mfd_func_data[MFD_CARD_FUNC][mfd * sizeof(int)]))
+#define LAST_BITS(mfd) (*(uint32_t *)&(player_struct.mfd_func_data[MFD_CARD_FUNC][mfd * sizeof(uint32_t)]))
 #define ITEM_COLOR 0x5A
 
 void mfd_accesscard_expose(MFD *mfd, ubyte control) {
@@ -73,8 +73,8 @@ void mfd_accesscard_expose(MFD *mfd, ubyte control) {
     {
         extern int mfd_bmap_id(int);
         int i;
-        ulong lastbits = LAST_BITS(mfd->id);
-        ulong bits = 0;
+        uint32_t lastbits = LAST_BITS(mfd->id);
+        uint32_t bits = 0;
         // clear update rects
         mfd_clear_rects();
         // set up canvas
@@ -110,7 +110,7 @@ void mfd_accesscard_expose(MFD *mfd, ubyte control) {
             uchar old_wrap = mfd_string_wrap;
             char buf[256] = "";
             char *s = buf;
-            for (i = 1; i <= sizeof(ulong) * 8; i++) {
+            for (i = 1; i <= sizeof(uint32_t) * 8; i++) {
                 if (bits & (1 << i)) {
                     strcpy(s, get_temp_string(MKREF(RES_accessCards, i << 1)));
                     s += strlen(s);

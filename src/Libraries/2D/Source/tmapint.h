@@ -125,13 +125,13 @@ typedef struct {
    union {grs_tmap_edge left,top;};
    union {grs_tmap_edge right,bot;};
    fix dw;
-   ulong u_mask;
-   union {ulong v_mask,mask;};
+   uint32_t u_mask;
+   union {uint32_t v_mask,mask;};
    union {
      uchar *clut;               /* color lookup table */
      uchar solid;
    };
-   long *vtab;                /* for non power of 2 widths */
+   int32_t *vtab;              /* for non power of 2 widths */
    void (*scanline_func)();   /* function for individual scanline */
    void (*loop_func)();       /* actually, chunk function */
    union {void (*left_edge_func)(), (*top_edge_func)();};

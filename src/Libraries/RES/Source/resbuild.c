@@ -30,8 +30,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <assert.h>
 #include <string.h>
-#include <unistd.h>
+#if defined(_MSC_VER)
+#include <windows.h>  // SetFilePointer / SetEndOfFile
+#else
+#include <unistd.h>   // ftruncate
+#endif
 
 #include "lg.h"
 #include "lzw.h"
@@ -91,7 +96,7 @@ int32_t ResWrite(Id id) {
     ResFile *prf;
     ResDirEntry *pDirEntry;
     uint8_t *p;
-    uint32_t size, sizeTable;
+    size_t size, sizeTable;
     void *pcompbuff;
     int32_t compsize, padBytes;
 
@@ -123,6 +128,16 @@ int32_t ResWrite(Id id) {
     // Set resource's file offset
     prd->offset = RES_OFFSET_REAL2DESC(prf->pedit->currDataOffset);
 
+    // See if it needs encoding.
+    assert(prd->format != NULL);
+    size = prd->msize;
+    if (prd->format->encoder != NULL) {
+	p = prd->format->encoder(prd->ptr, &size, prd->format->data);
+    } else {
+	p = prd->ptr;
+    }
+    prd->fsize = size;
+
     // Fill in directory entry
     pDirEntry = ((ResDirEntry *)(prf->pedit->pdir + 1)) + prf->pedit->pdir->numEntries;
 
@@ -130,20 +145,22 @@ int32_t ResWrite(Id id) {
     prd2 = RESDESC2(id);
     pDirEntry->flags = prd2->flags;
     pDirEntry->type = prd2->type;
-    pDirEntry->size = prd->size;
+    pDirEntry->size = size;
 
     TRACE("%s: writing $%x\n", __FUNCTION__, id);
 
     // If compound, write out reftable without compression
     fseek(prf->fd, prf->pedit->currDataOffset, SEEK_SET);
-    p = prd->ptr;
     sizeTable = 0;
-    size = prd->size;
 
+    // Body (post compound res header) if compound, else main pointer.
+    uint8_t *body = p;
+    // FIXME will need rework for compound refs if we reinstate, e.g. if we want
+    // to integrate a resource/level editor.
     if (prd2->flags & RDF_COMPOUND) {
         sizeTable = REFTABLESIZE(((RefTable *)p)->numRefs);
         fwrite(p, sizeTable, 1, prf->fd);
-        p += sizeTable;
+        body = p + sizeTable;
         size -= sizeTable;
     }
 
@@ -162,8 +179,8 @@ int32_t ResWrite(Id id) {
 
     // If no compress (or failed to compress well), just write out
     if (!(pDirEntry->flags & RDF_LZW)) {
-        pDirEntry->csize = prd->size;
-        fwrite(p, size, 1, prf->fd);
+        pDirEntry->csize = size;
+        fwrite(body, size, 1, prf->fd);
     }
 
     // Pad to align on data boundary
@@ -175,6 +192,10 @@ int32_t ResWrite(Id id) {
     //  if (ftell(prf->fd) & 3)
     //    Warning(("ResWrite: misaligned writing!\n"));
 
+    // If we encoded it, free the encode buffer.
+    if (prd->format->encoder) {
+	free(p);
+    }
     // Advance dir num entries, current data offset
     prf->pedit->pdir->numEntries++;
     prf->pedit->currDataOffset = RES_OFFSET_ALIGN(prf->pedit->currDataOffset + pDirEntry->csize);
@@ -287,7 +308,12 @@ int32_t ResPack(int32_t filenum) {
     // write directory on closing)
 
     // FIXME Non-portable
+#ifndef _MSC_VER
     ftruncate(fileno(prf->fd), dataWrite);
+#else // So much for POSIX.
+    SetFilePointer(fileno(prf->fd), dataWrite, NULL, FILE_BEGIN);
+    SetEndOfFile(fileno(prf->fd));
+#endif
 
     // Return # bytes reclaimed
     TRACE("%s: reclaimed %d bytes", __FUNCTION__, sizeReclaimed);

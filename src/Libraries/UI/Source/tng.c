@@ -135,7 +135,7 @@ void TNGDrawBitmapRef(Ref ref, LGPoint pt)
 	LGRect bitRect;
 	LGRect cvRect;
 
-	pfd = (FrameDesc *) RefLock(ref);
+	pfd = FrameLock(ref);
 	pfd->bm.bits = (uchar *) (pfd + 1);
 
 	bitRect.ul = pt;
@@ -163,7 +163,7 @@ void TNGDrawTileMapRef(Ref ref, LGPoint pt)
 	FrameDesc *pfd;
 	short startx;
 
-	pfd = (FrameDesc *) RefLock(ref);
+	pfd = FrameLock(ref);
 	pfd->bm.bits = (uchar *) (pfd + 1);
 
 	while ((pt.y + pfd->bm.h) < grd_clip.top)
@@ -188,7 +188,7 @@ void TNGDrawTileMapRef(Ref ref, LGPoint pt)
 
 errtype TNGDrawText(Id id, char *text, int x, int y)
 {
-   gr_set_font((grs_font *)ResLock(id));
+   gr_set_font(FontLock(id));
    gr_string(text, x, y);
    ResUnlock(id);
    return(OK);
@@ -281,7 +281,7 @@ uchar tng_cb_mousebutt(TNG *ptng, uchar type, LGPoint loc)
          newret = FALSE;
          if (type & tngcb->condition)
          {
-	     ptng->cb_data = (intptr_t)&loc;
+            ptng->cb_data = (intptr_t)&loc;
             newret = tngcb->cb(ptng->ui_data, tngcb->user_data);
          }
          if (newret)
@@ -380,7 +380,7 @@ uchar tng_cb_mousemove(TNG *ptng, LGPoint loc)
    {
       if (tngcb->event_type == TNG_EVENT_MOUSE_MOVE)
       {
-	  ptng->cb_data = (intptr_t)&loc;
+          ptng->cb_data = (intptr_t)&loc;
          newret = tngcb->cb(ptng->ui_data, tngcb->user_data);
          if (newret)
             retval = newret;

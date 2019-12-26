@@ -46,8 +46,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define AUDIOLOG_BASE_ID       2741
 #define AUDIOLOG_BARK_BASE_ID  3100
 
-#define MIN_ALOG_SIZE   20000
-
 #define ALOG_MUSIC_DUCK  0.7
 
 
@@ -114,7 +112,7 @@ errtype audiolog_play(int email_id)
     new_alog_fn = ResOpenFile(alog_files[which_lang]);
 
   // Make sure this is a thing we have an audiolog for...
-  if (!ResInUse(AUDIOLOG_BASE_ID + email_id) || ResSize(AUDIOLOG_BASE_ID + email_id) < MIN_ALOG_SIZE)
+  if (!ResInUse(AUDIOLOG_BASE_ID + email_id))
   {
     ResCloseFile(new_alog_fn);
     end_wait();

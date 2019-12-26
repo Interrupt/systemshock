@@ -326,8 +326,8 @@ int play_digi_fx_master(int sfx_code, int num_loops, ObjID id, ushort x, ushort 
 
     // have to hash x,y no id to a secret ID code, eh?
     s_dprm.flags = 0;
-    len = ResSize(vocRes);
     addr = (uchar *)ResLock(vocRes);
+    len = ResSize(vocRes);
     if (addr != NULL) {
         retval = snd_sample_play(vocRes, len, addr, &s_dprm);
     } else

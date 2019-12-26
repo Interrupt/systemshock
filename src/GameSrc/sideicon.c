@@ -287,12 +287,10 @@ int last_side_icon = -1;
 uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
     extern uchar fullscrn_icons;
     uchar retval = FALSE;
-    uiMouseEvent *m;
     int i, type, num;
 
     if (!global_fullmap->cyber && !(full_game_3d && !fullscrn_icons)) {
         int ver;
-        m = (uiMouseEvent *)e;
 
         i = (int)udata + (e->pos.y - SIDE_ICONS_TOP_Y) / (SIDE_ICONS_HEIGHT + SIDE_ICONS_VSPACE);
         type = icon_data[i].waretype;
@@ -325,7 +323,7 @@ uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
               }
         */
 
-        if (!(m->action & MOUSE_LDOWN))
+        if (!(e->mouse_data.action & MOUSE_LDOWN))
             return retval; // ignore click releases
                            //   mprintf("  Side Icon %d: CYBER(%d,%d) [%x] REAL(%d,%d) [%x]\n",
                            //      i, side_icons[i].cyber_type, side_icons[i].cyber_num,

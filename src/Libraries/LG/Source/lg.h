@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "log.h"
 
 // Relative path workaround
-#define THIS_FILE ((strrchr(__FILE__, '/') ?: __FILE__ - 1) + 1)
+#define THIS_FILE ((strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') : __FILE__ - 1) + 1)
 
 /**
  * Main function for logging, and helper functions

@@ -24,25 +24,67 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "region.h" 
 #include "mouse.h"
 
-
-#define UIEV_DATASIZE 8
-
-
-#define UIEVFRONT  LGPoint pos;        /* all ui events have a "screen" position */  \
-                   ulong type;         /* An event type, 32 possible.   */
- 
-#define UIEVBACK(sz) char pad[UIEV_DATASIZE]
-
 // ---------------
 // INPUT EVENTS 
 // ---------------
 
+// Type-specific data for a raw key event.
+typedef struct
+{
+  short  scancode; // subtype
+  uchar  action;   // KBS_UP or _DOWN
+  ushort mods;     // KLC - modifiers added for Mac version
+} uiRawKeyData;
+
+// Poll key event is the same structure.
+typedef uiRawKeyData uiPollKeyData;
+
+
+// Cooked key events 
+typedef struct
+{
+  short code;        /* cooked keycode, chock full o' stuff */
+} uiCookedKeyData;
+
+// mouse events
+typedef struct
+{
+  short    action;   /* mouse event type, as per mouse library */
+  uint32_t tstamp;
+  ubyte    buttons; 
+  uchar    modifiers; 
+} uiMouseData;
+
+// joystick events
+typedef struct
+{
+  short   action;     /* joystick event subtype, as defined below */
+  uchar   joynum;     /* joystick number */
+  LGPoint joypos;     /* joystick position */
+} uiJoyData;
+
+// User-defined event can hold a pointer or integer.
+typedef struct
+{
+    short    subtype;
+    intptr_t data;
+} uiUserData;
+
 // Generalized input event struct
 typedef struct _ui_event
 {
-  UIEVFRONT    
-  short subtype;                 /* type specific */
-  char data[UIEV_DATASIZE];      /* type specific */
+    LGPoint  pos;
+    uint32_t type;
+    union
+    {
+	short subtype;
+	uiRawKeyData    raw_key_data;
+	uiPollKeyData   poll_key_data;
+	uiCookedKeyData cooked_key_data;
+	uiMouseData     mouse_data;
+	uiJoyData       joystick_data;
+	uiUserData      user_data;
+    };
 } uiEvent;
 
 
@@ -57,60 +99,6 @@ typedef struct _ui_event
 #define UI_EVENT_MIDI           0x10000000  // Hey, gotta be ready for the future.
 #define UI_EVENT_USER_DEFINED   0x80000000
 #define ALL_EVENTS              0xFFFFFFFF
-
-
-// Type-specific versions of event structs 
-// ---------------------------------------
-
-
-// Raw key events 
-typedef struct _ui_raw_key_event
-{      
-  UIEVFRONT    
-  short  scancode;    // subtype
-  uchar  action;      // KBS_UP or _DOWN
-  ushort mods;		  // KLC - modifiers added for Mac version
-  UIEVBACK(sizeof(uchar) + sizeof(ushort));
-} uiRawKeyEvent;
-
-typedef uiRawKeyEvent uiPollKeyEvent;
-
-// Cooked key events 
-typedef struct _ui_cooked_key_event
-{
-  UIEVFRONT    
-  short code;        /* cooked keycode, chock full o' stuff */
-  UIEVBACK(0);
-} uiCookedKeyEvent;
-
-// mouse events
-typedef struct _ui_mouse_event
-{
-  UIEVFRONT    
-  short action;        /* mouse event type, as per mouse library */
-  ulong tstamp;
-  ubyte buttons; 
-  uchar modifiers; 
-  UIEVBACK(sizeof(ulong)+sizeof(ubyte)+sizeof(uchar));
-} uiMouseEvent;
-
-// joystick events
-typedef struct _ui_joy_event
-{
-  UIEVFRONT    
-  short action;        /* joystick event subtype, as defined below */
-  uchar joynum;        /* joystick number */
-  LGPoint joypos;     /* joystick position */
-  UIEVBACK(sizeof(uchar)+sizeof(LGPoint));
-} uiJoyEvent;
-
-// user-defined events
-typedef struct _ui_user_defined_event
-{
-  UIEVFRONT 
-  short action;        /* event subtype, as defined by application */
-  UIEVBACK(0);
-} uiUserDefinedEvent;
 
 // extended mouse event types (double clicks)
 #define UI_MOUSE_LDOUBLE   (1 << 7)
@@ -240,7 +228,7 @@ errtype uiSetMouseMotionPolling(uchar poll);
 // be dispatched, and thus no motion event will be dispatched if the mouse has not moved. 
 // Defaults to FALSE
 
-errtype uiMakeMotionEvent(uiMouseEvent* ev);
+errtype uiMakeMotionEvent(uiEvent* ev);
 // Fills *ev with a mouse motion event reflecting the current mouse position.
 
 errtype uiSetKeyboardPolling(uchar* codes);

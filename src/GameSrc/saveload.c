@@ -22,13 +22,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Author: xemu $
  * $Date: 1994/11/21 21:07:36 $
  */
-
+#include <assert.h>
 #include <string.h>
 
 #include "ShockDialogs.h"
 #include "MacTune.h"
 
 #include "saveload.h"
+#include "archiveformat.h"
 #include "criterr.h"
 #include "cyber.h"
 #include "cybmem.h"
@@ -95,16 +96,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void load_level_data();
 void store_objects(char **buf, ObjID *obj_array, char obj_count);
 void restore_objects(char *buf, ObjID *obj_array, char obj_count);
-errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags);
+errtype write_id(Id id_num, short index, uint32_t version, void *ptr, long sz, int fd, short flags);
 
-#define REF_WRITE(id_num, index, x)                  \
-    write_id(id_num, index, &(x), sizeof(x), fd, 0)
-#define REF_WRITE_LZW(id_num, index, x)                    \
-    write_id(id_num, index, &(x), sizeof(x), fd, RDF_LZW)
-#define REF_WRITE_RAW(id_num, index, ptr, sz)      \
-    write_id(id_num, index, ptr, sz, fd, RDF_LZW)
-#define REF_READ(id_num, index, x)    \
-    ResExtract(id_num + index, &(x))
+const ResourceFormat *format_from_idx_version(int index, uint32_t version) {
+    // I believe these are the only formats extant.
+    const ResourceFormat *table = (version > MAP_VERSION_NUMBER) ?
+        LevelVersion12Format : LevelVersion11Format;
+    assert(index <= MAX_LEVEL_INDEX);
+    return &table[index];
+}    
+
+// Extract a level resource. Uses the version to look up the appropriate formats
+// table and the index to figure out the actual format.
+void extract_level_resource(Id id_num, int index, uint32_t version, void *ptr) {
+    // I believe these are the only formats extant.
+    ResExtract(id_num + index, format_from_idx_version(index, version), ptr);
+}
 
 #define FIRST_CSPACE_LEVEL 14
 
@@ -307,8 +314,9 @@ uchar go_to_different_level(int targlevel) {
 
 #define ANOTHER_DEFINE_FOR_NUM_LEVELS 16
 
-errtype write_id(Id id_num, short index, void *ptr, long sz, int fd, short flags) {
-    ResMake(id_num + index, ptr, sz, RTYPE_APP, fd, flags);
+errtype write_id(Id id_num, short index, uint32_t version, void *ptr, long sz, int fd, short flags) {
+    ResMake(id_num + index, ptr, sz, RTYPE_APP, fd, flags,
+	    format_from_idx_version(index, version));
     if (ResWrite(id_num + index) == -1)
         critical_error(CRITERR_FILE | 6);
     ResUnmake(id_num + index);
@@ -319,13 +327,13 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     int i, goof;
     int idx = 0;
     int fd;
-    int vnum = MAP_EASYSAVES_VERSION_NUMBER;
+    int map_version = MAP_VERSION_NUMBER;
     int ovnum = OBJECT_VERSION_NUMBER;
     int mvnum = MISC_SAVELOAD_VERSION_NUMBER;
     ObjLoc plr_loc;
     uchar make_player = FALSE;
     State player_edms;
-    int verify_cookie = 0;
+    uint32_t verify_cookie = 0;
 
     INFO("Save current map: %s", fname);
 
@@ -364,12 +372,22 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
         return ERR_FOPEN;
     }
 
+#define REF_WRITE(id_num, index, x)			\
+    write_id(id_num, index, map_version, &(x), sizeof(x), fd, 0)
+#define REF_WRITE_LZW(id_num, index, x)			\
+    write_id(id_num, index, map_version, &(x), sizeof(x), fd, RDF_LZW)
+#define REF_WRITE_RAW(id_num, index, ptr, sz)      \
+    write_id(id_num, index, map_version, ptr, sz, fd, RDF_LZW)
+
     REF_WRITE(SAVELOAD_VERIFICATION_ID, 0, verify_cookie);
 
-    REF_WRITE(id_num, idx++, vnum);
+    // xx02 Map version number.
+    REF_WRITE(id_num, idx++, map_version);
+    // xx03 Object version number.
     REF_WRITE(id_num, idx++, ovnum);
+    // xx04 Fullmap.
     REF_WRITE(id_num, idx++, *global_fullmap);
-
+    // xx05 Tile map.
     REF_WRITE_RAW(id_num, idx++, MAP_MAP, sizeof(MapElem) * 64 * 64);
 
     // Here we are writing out the schedules.  It's only a teeny tiny rep exposure.
@@ -377,11 +395,15 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
         int sz = lg_min(global_fullmap->sched[i].queue.fullness + 1, global_fullmap->sched[i].queue.size);
         REF_WRITE_RAW(id_num, idx++, global_fullmap->sched[i].queue.vec, sizeof(SchedEvent) * sz);
     }
+    // xx07 Textures.
     REF_WRITE(id_num, idx++, loved_textures);
 
     obj_zero_unused();
+    // xx08 Main object list. Always EASYSAVES, so no conversion needed.
     REF_WRITE_LZW(id_num, idx++, objs);
+    // xx09 Object refs.
     REF_WRITE_LZW(id_num, idx++, objRefs);
+    // xx10-xx24 Object specific stuff. All EASYSAVES again.
     REF_WRITE(id_num, idx++, objGuns);
     REF_WRITE(id_num, idx++, objAmmos);
     REF_WRITE_LZW(id_num, idx++, objPhysicss);
@@ -398,7 +420,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
     REF_WRITE_LZW(id_num, idx++, objContainers);
     REF_WRITE_LZW(id_num, idx++, objCritters);
 
-    // Default objects
+    // xx25-xx29 Default objects
     REF_WRITE(id_num, idx++, default_gun);
     REF_WRITE(id_num, idx++, default_ammo);
     REF_WRITE(id_num, idx++, default_physics);
@@ -419,24 +441,26 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
 
     //   idx++; // where flickers once lived
     idx++; // KLC - not used   REF_WRITE(id_num,idx++,filler);
+    // xx42 Texture animation.
     REF_WRITE(id_num, idx++, animtextures);
-
+    // xx43-xx44 Surveillance
     REF_WRITE(id_num, idx++, hack_cam_objs);
     REF_WRITE(id_num, idx++, hack_cam_surrogates);
 
-    // Other level data -- at resource id right after maps
+    // xx45 Other level data -- at resource id right after maps
     level_gamedata.size = sizeof(level_gamedata);
     REF_WRITE(id_num, idx++, level_gamedata);
 #ifdef SAVE_AUTOMAP_STRINGS
     //   REF_WRITE(id_num, idx++, amap_str_reref(0));
     // LZW later   ResMake(id_num + (idx++), &(amap_str_reref(0)), AMAP_STRING_SIZE, RTYPE_APP, fd,  RDF_LZW);
-    ResMake(id_num + (idx++), (amap_str_reref(0)), AMAP_STRING_SIZE, RTYPE_APP, fd, 0);
+    ResMake(id_num + (idx++), (amap_str_reref(0)), AMAP_STRING_SIZE, RTYPE_APP, fd, 0, FORMAT_RAW);
     ResWrite(id_num + (idx - 1));
     ResUnmake(id_num + (idx - 1));
     goof = amap_str_deref(amap_str_next());
     REF_WRITE(id_num, idx++, goof);
 #endif
     idx++; // KLC - no need to be saved.   REF_WRITE(id_num, idx++, player_edms);
+    // xx49-xx50 Paths
     REF_WRITE(id_num, idx++, paths);
     REF_WRITE(id_num, idx++, used_paths);
     REF_WRITE(id_num, idx++, animlist);
@@ -747,7 +771,9 @@ errtype load_current_map(Id id_num) {
     extern char old_bits;
     extern int compare_events(void *e1, void *e2);
 
-    int i, idx = 0, fd, version, map_version;
+    int i, idx = 0, fd;
+    uint32_t map_version;
+    uint32_t object_version;
     LGRect bounds;
     errtype retval = OK;
     bool make_player = FALSE;
@@ -789,23 +815,24 @@ errtype load_current_map(Id id_num) {
     }
 
     if (ResInUse(SAVELOAD_VERIFICATION_ID)) {
-        int verify_cookie;
-        ResExtract(SAVELOAD_VERIFICATION_ID, &verify_cookie);
+        uint32_t verify_cookie;
+        ResExtract(SAVELOAD_VERIFICATION_ID, FORMAT_U32, &verify_cookie);
         if ((verify_cookie != VERIFY_COOKIE_VALID) && (verify_cookie != OLD_VERIFY_COOKIE_VALID))
             critical_error(CRITERR_FILE | 5);
     }
 
-    // idx++;
-    REF_READ(id_num, idx++, version);
-    map_version = version;
+    // Resource xx02: map version.
+    ResExtract(id_num + idx++, FORMAT_U32, &map_version);
 
     // Check the version number of the map for this level.
-    if (version < MAP_VERSION_NUMBER) {
+    if (map_version < MAP_VERSION_NUMBER) {
         INFO("OLD MAP FORMAT!");
     }
 
+#define REF_READ(id,index,x) extract_level_resource(id, index, map_version, &(x))
+    
     //  object version number!
-    REF_READ(id_num, idx++, version);
+    REF_READ(id_num, idx++, object_version);
     // SwapLongBytes(&version);                        // Mac
 
     // Clear out old physics data and object data
@@ -814,42 +841,31 @@ errtype load_current_map(Id id_num) {
 
     // Read in the global fullmap (without disrupting schedule vec ptr)
     schedvec = global_fullmap->sched[0].queue.vec; // KLC - Only one schedule, so just save it.
+    // Preserve the old schedule size in case the one being loaded is different
     int schedsize = global_fullmap->sched[0].queue.size;
 
     // convert_from is the version we are coming from.
     // for now, this is only defined for coming from version 9
-    {
-        REF_READ(id_num, idx++, *global_fullmap);
+    REF_READ(id_num, idx++, *global_fullmap);
 
-        MAP_MAP = (MapElem *)static_map;
-        ResExtract(id_num + idx++, MAP_MAP);
-    }
+    MAP_MAP = (MapElem *)static_map;
+    REF_READ(id_num, idx++, *static_map);
 
     // Load schedules, performing some voodoo.
     global_fullmap->sched[0].queue.vec = schedvec;
     global_fullmap->sched[0].queue.comp = compare_events;
 
-    // CC: HAX HAX HAX - Why don't these get set properly?
-    global_fullmap->sched[0].queue.fullness = 0;
-    global_fullmap->sched[0].queue.size = schedsize;
-    global_fullmap->sched[0].queue.elemsize = sizeof(SchedEvent);
+    // Might have to allocate more memory for the queue
+    if (global_fullmap->sched[0].queue.size > schedsize) {
+	schedule_free(&global_fullmap->sched[0]);
+	schedule_init(&global_fullmap->sched[0], global_fullmap->sched[0].queue.size, FALSE);
+    } else {
+	// Preserve the existing size.
+	global_fullmap->sched[0].queue.size = schedsize;
+    }
 
-    int queue_size = ResSize(id_num + idx);
-
-    if (queue_size > 0) // KLC - no need to read in vec if none there.
-    {
-        // Might have to allocate more memory for the queue
-        if (queue_size > schedsize) {
-            schedule_free(&global_fullmap->sched[0]);
-            schedule_init(&global_fullmap->sched[0], queue_size, FALSE);
-        }
-
-        uchar *dst_ptr = global_fullmap->sched[0].queue.vec;
-        memmove(dst_ptr, ResLock(id_num + idx), queue_size);
-        ResUnlock(id_num + idx++);
-        global_fullmap->sched[0].queue.fullness = (queue_size / sizeof(SchedEvent)) - 1;
-    } else
-        idx++;
+    uchar *dst_ptr = global_fullmap->sched[0].queue.vec;
+    ResExtract(id_num + idx++, FORMAT_RAW, dst_ptr);
 
     // KLC��� Big hack!  Force the schedule to growable.
     global_fullmap->sched[0].queue.grow = TRUE;
@@ -917,27 +933,8 @@ errtype load_current_map(Id id_num) {
     #endif
     */
 
-    // Read in object information.  For the Mac version, copy from the resource's 27-byte structs, then
-    // place it into an Obj struct (which is 28 bytes, due to alignment).  Swap bytes as needed.
-
-    if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
-        REF_READ(id_num, idx++, objs);
-    } else {
-        uchar *op = (uchar *)ResLock(id_num + idx);
-        for (i = 0; i < NUM_OBJECTS; i++) {
-            memmove(&objs[i].active, op, 1);
-            memmove(&objs[i].obclass, op + 1, 1);
-            memmove(&objs[i].subclass, op + 2, 1);
-            memmove(&objs[i].specID, op + 3, 24);
-
-            op += 27;
-        }
-        ResUnlock(id_num + idx);
-        idx++;
-    }
-
-    // BUSTED?!
-    // REF_READ(id_num, idx++, objs);
+    // Read in object information.
+    REF_READ(id_num, idx++, objs);
 
     // Read in and convert the object refs.
     REF_READ(id_num, idx++, objRefs);
@@ -1006,41 +1003,11 @@ errtype load_current_map(Id id_num) {
           SwapShortBytes(&objDrugs[i].prev);
        }*/
 
-    // Read in and convert the hardwares.  Resource is array of 7-byte structs.  Ours are 8.
-    if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
-        REF_READ(id_num, idx++, objHardwares);
-    } else {
-        uchar *hp = (uchar *)ResLock(id_num + idx);
-        for (i = 0; i < NUM_OBJECTS_HARDWARE; i++) {
-            memmove(&objHardwares[i], hp, 7);
-            hp += 7;
-            // SwapShortBytes(&objHardwares[i].id);
-            // SwapShortBytes(&objHardwares[i].next);
-            // SwapShortBytes(&objHardwares[i].prev);
-        }
-        ResUnlock(id_num + idx);
-        idx++;
-    }
-    // REF_READ(id_num, idx++, objHardwares);
+    // Read in and convert the hardwares. 
+    REF_READ(id_num, idx++, objHardwares);
 
-    // Read in and convert the softwares.  Resource is array of 9-byte structs.  Ours are 10.
-    if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
-        REF_READ(id_num, idx++, objSoftwares);
-    } else {
-        uchar *sp = (uchar *)ResLock(id_num + idx);
-        for (i = 0; i < NUM_OBJECTS_SOFTWARE; i++) {
-            memmove(&objSoftwares[i], sp, 7);
-            memmove(&objSoftwares[i].data_munge, sp + 7, 2);
-            sp += 9;
-            /*SwapShortBytes(&objSoftwares[i].id);
-            SwapShortBytes(&objSoftwares[i].next);
-            SwapShortBytes(&objSoftwares[i].prev);
-            SwapShortBytes(&objSoftwares[i].data_munge);*/
-        }
-        ResUnlock(id_num + idx);
-        idx++;
-    }
-    // REF_READ(id_num,idx++,objSoftwares);
+    // Read in and convert the softwares.
+    REF_READ(id_num, idx++, objSoftwares);
 
     // Read in and convert the big stuff.
     REF_READ(id_num, idx++, objBigstuffs);
@@ -1116,26 +1083,8 @@ errtype load_current_map(Id id_num) {
           SwapLongBytes(&objTraps[i].p4);
        }  */
 
-    // Read in and convert the containers.  Resource is array of 21-byte structs.  Ours are 22.
-    if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
-        REF_READ(id_num, idx++, objContainers);
-    } else {
-        uchar *sp = (uchar *)ResLock(id_num + idx);
-        for (i = 0; i < NUM_OBJECTS_CONTAINER; i++) {
-            memmove(&objContainers[i], sp, 17);
-            memmove(&objContainers[i].data1, sp + 17, 4);
-            sp += 21;
-            /*SwapShortBytes(&objContainers[i].id);
-            SwapShortBytes(&objContainers[i].next);
-            SwapShortBytes(&objContainers[i].prev);
-            SwapLongBytes(&objContainers[i].contents1);
-            SwapLongBytes(&objContainers[i].contents2);
-            SwapLongBytes(&objContainers[i].data1);*/
-        }
-        ResUnlock(id_num + idx);
-        idx++;
-    }
-    // REF_READ(id_num,idx++,objContainers);
+    // Read in and convert the containers.
+    REF_READ(id_num, idx++, objContainers);
 
     // Read in and convert the critters.
     REF_READ(id_num, idx++, objCritters);
@@ -1200,33 +1149,11 @@ errtype load_current_map(Id id_num) {
        SwapShortBytes(&default_drug.next);
        SwapShortBytes(&default_drug.prev);*/
 
-    if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
-        REF_READ(id_num, idx++, default_hardware);
-    } else {
-        // Convert the default hardware.  Resource is array of 7-byte structs.  Ours is 8.
-        uchar *hp = (uchar *)ResLock(id_num + idx);
-        memmove(&default_hardware, hp, 7);
-        /*SwapShortBytes(&default_hardware.id);
-        SwapShortBytes(&default_hardware.next);
-        SwapShortBytes(&default_hardware.prev);*/
-        ResUnlock(id_num + idx);
-        idx++;
-    }
-    // REF_READ(id_num,idx++,default_hardware);
+    // Convert the default hardware.
+    REF_READ(id_num, idx++, default_hardware);
 
-    if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
-        REF_READ(id_num, idx++, default_software);
-    } else {
-        // Convert the default software.  Resource is array of 9-byte structs.  Ours is 10.
-        uchar *sp = (uchar *)ResLock(id_num + idx);
-        memmove(&default_software, sp, 7);
-        memmove(&default_software.data_munge, sp + 7, 2);
-        // BlockMoveData(sp, &default_software, 7);
-        // BlockMoveData(sp+7, &default_software.data_munge, 2);
-        ResUnlock(id_num + idx);
-        idx++;
-    }
-    // REF_READ(id_num, idx++, default_software);
+    // Convert the default software.
+    REF_READ(id_num, idx++, default_software);
 
     // Convert the default big stuff.
     REF_READ(id_num, idx++, default_bigstuff);
@@ -1284,25 +1211,8 @@ errtype load_current_map(Id id_num) {
        SwapLongBytes(&default_trap.p3);
        SwapLongBytes(&default_trap.p4);*/
 
-    if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
-        REF_READ(id_num, idx++, default_container);
-    } else {
-        // Convert the default container.  Resource is a 21-byte struct.  Ours is 22.
-        uchar *sp = (uchar *)ResLock(id_num + idx);
-        memmove(&default_container, sp, 17);
-        memmove(&default_container.data1, sp + 17, 4);
-        // BlockMoveData(sp, &default_container, 17);
-        // BlockMoveData(sp+17, &default_container.data1, 4);
-        /*SwapShortBytes(&default_container.id);
-        SwapShortBytes(&default_container.next);
-        SwapShortBytes(&default_container.prev);
-        SwapLongBytes(&default_container.contents1);
-        SwapLongBytes(&default_container.contents2);
-        SwapLongBytes(&default_container.data1);*/
-        ResUnlock(id_num + idx);
-        idx++;
-    }
-    // REF_READ(id_num,idx++,default_container);
+    // Convert the default container.
+    REF_READ(id_num, idx++, default_container);
 
     // Convert the default critter.
     REF_READ(id_num, idx++, default_critter);
@@ -1333,18 +1243,8 @@ errtype load_current_map(Id id_num) {
     */
     idx++; // skip over resource where flickers once lived
 
-    if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
-        REF_READ(id_num, idx++, animtextures);
-    } else {
-        // Convert the anim textures.  Resource is a 7-byte struct.  Ours is 8.
-        uchar *ap = (uchar *)ResLock(id_num + idx);
-        for (i = 0; i < NUM_ANIM_TEXTURE_GROUPS; i++) {
-            memmove(&animtextures[i], ap, 7);
-            ap += 7;
-        }
-        ResUnlock(id_num + idx);
-        idx++;
-    }
+    // Convert the anim textures.
+    REF_READ(id_num, idx++, animtextures);
 
     // Read in and convert the hack camera objects.
     REF_READ(id_num, idx++, hack_cam_objs);
@@ -1365,26 +1265,13 @@ errtype load_current_map(Id id_num) {
     }
 
     // Get other level data at next id
-    if (map_version == MAP_EASYSAVES_VERSION_NUMBER) {
-        REF_READ(id_num, idx++, level_gamedata);
-    } else {
-        uchar *ldp = (uchar *)ResLock(id_num + idx);
-        LG_memset(&level_gamedata, 0, sizeof(LevelData));
-        memmove(&level_gamedata, ldp, 9);
-        memmove(&level_gamedata.exit_time, ldp + 9, 4);
-        for (i = 0, ldp += 13; i < NUM_O_AMAP; i++, ldp += 27) {
-            memmove(&level_gamedata.auto_maps[i], ldp, 25);
-            memmove(&level_gamedata.auto_maps[i].sensor_rad, ldp + 25, 2);
-        }
-        ResUnlock(id_num + idx);
-        idx++;
-    }
+    REF_READ(id_num, idx++, level_gamedata);
 
 #ifdef SAVE_AUTOMAP_STRINGS
     {
         int amap_magic_num;
         char *cp = amap_str_reref(0);
-        ResExtract(id_num + idx++, cp);
+	REF_READ(id_num, idx++, *cp);
         //    REF_READ(id_num, idx++, amap_str_reref(0));     old way
         REF_READ(id_num, idx++, amap_magic_num);
         //    SwapLongBytes(&amap_magic_num);
@@ -1420,24 +1307,7 @@ errtype load_current_map(Id id_num) {
     REF_READ(id_num, idx++, used_paths);
     // SwapShortBytes(&used_paths);
 
-    if (map_version > MAP_VERSION_NUMBER) {
-        REF_READ(id_num, idx++, animlist);
-    } else {
-        uchar *ap = (uchar *)ResLock(id_num + idx);
-        for (i = 0; i < MAX_ANIMLIST_SIZE; i++) {
-            memmove(&animlist[i].id, ap, 2);
-            memmove(&animlist[i].flags, ap + 2, 1);
-            memmove(&animlist[i].cbtype, ap + 3, 12);
-            ap += 15;
-            /*SwapShortBytes(&animlist[i].id);
-            SwapShortBytes(&animlist[i].cbtype);
-            SwapLongBytes(&animlist[i].callback);
-            SwapShortBytes(&animlist[i].speed);*/
-        }
-        ResUnlock(id_num + idx);
-        idx++;
-    }
-    // REF_READ(id_num, idx++, animlist);
+    REF_READ(id_num, idx++, animlist);
 
     REF_READ(id_num, idx++, anim_counter);
     // SwapShortBytes(&anim_counter);
@@ -1499,7 +1369,7 @@ obj_out:
     if (make_player) {
         extern int score_playing;
         obj_create_player(&plr_loc);
-        if (version > 9) {
+        if (object_version > 9) {
             // Regenerate physics state from player_state here
         }
         //���      if (music_on && (score_playing != ELEVATOR_ZONE))

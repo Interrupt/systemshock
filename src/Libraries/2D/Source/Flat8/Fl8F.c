@@ -43,14 +43,14 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
 
     // locals used to store copies of tli-> stuff, so its in registers on the PPC
     uchar t_wlog;
-    ulong t_mask;
+    uint32_t t_mask;
     int x, k;
     uchar *t_bits;
     uchar *p_dest;
     fix inv;
     uchar *t_clut;
     uchar temp_pix;
-    long *t_vtab;
+    int32_t *t_vtab;
 
 #if InvDiv
     inv = fix_div(fix_make(1, 0), tli->w);
@@ -155,7 +155,7 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
                 }
                 break;
             case GRL_OPAQUE | GRL_LOG2 | GRL_CLUT:
-                while ((long)p_dest & 3 != 0) {
+                while ((intptr_t)p_dest & 3 != 0) {
                     k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
                     *(p_dest++) = t_clut[t_bits[k]];
                     // gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
@@ -164,7 +164,7 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
                     x--;
                 }
 
-                while (x >= 0) {
+                while (x > 0) {
                     k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
                     inv = t_clut[t_bits[k]];
                     // gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);

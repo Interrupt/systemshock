@@ -72,14 +72,13 @@ void mfd_bark_expose(MFD *mfd, ubyte control) {
         // gr_bitmap(&mfd_background, 0, 0);
 
         if (mfd_bark_mug > 0) {
-            grs_bitmap bm;
-            int mug = REF_IMG_EmailMugShotBase + mfd_bark_mug;
-
-            bm.bits = NULL;
-
-            extract_temp_res_bitmap(&bm, mug);
-            ss_bitmap(&bm, (MFD_VIEW_WID - bm.w) / 2, (MFD_VIEW_HGT - bm.h) / 2);
-            // gr_bitmap(&bm,(SCONV_X(MFD_VIEW_WID)-bm.w)/2, (SCONV_Y(MFD_VIEW_HGT)-bm.h)/2);
+	    FrameDesc *mug = RefLock(REF_IMG_EmailMugShotBase + mfd_bark_mug);
+	    if (mug != NULL) {
+		ss_bitmap(&mug->bm, (MFD_VIEW_WID - mug->bm.w) / 2, (MFD_VIEW_HGT - mug->bm.h) / 2);
+		RefUnlock(REF_IMG_EmailMugShotBase + mfd_bark_mug);
+	    } else {
+		WARN("mfd_bark_expose(): could not load mugshot ", mug);
+	    }
         } else if (!full_game_3d) {
             draw_raw_resource_bm(MKREF(RES_mfdArtOverlays, MFD_ART_TRIOP), 0, 0);
         }
@@ -98,8 +97,8 @@ void mfd_bark_expose(MFD *mfd, ubyte control) {
             char buf[256];
             short x, y;
             short w, h;
-            RefTable *prt = (RefTable *)ResLock(REFID(mfd_bark_string));
-            //            ResReadRefTable(REFID(mfd_bark_string));
+            //RefTable *prt = (RefTable *)ResLock(REFID(mfd_bark_string));
+            RefTable *prt = ResReadRefTable(REFID(mfd_bark_string));
 
             if (RefIndexValid(prt, REFINDEX(mfd_bark_string))) {
                 gr_set_font((grs_font *)ResLock(MFD_FONT));
@@ -114,8 +113,8 @@ void mfd_bark_expose(MFD *mfd, ubyte control) {
                 draw_shadowed_string(buf, x, y, mfd_bark_mug > 0 || full_game_3d);
                 ResUnlock(MFD_FONT);
             }
-            ResUnlock(REFID(mfd_bark_string));
-            //         ResFreeRefTable(prt);
+            //ResUnlock(REFID(mfd_bark_string));
+            ResFreeRefTable(prt);
         }
         if (full)
             mfd_add_rect(0, 0, MFD_VIEW_WID, MFD_VIEW_HGT);

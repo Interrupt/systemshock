@@ -171,13 +171,12 @@ void mfd_fixture_expose(MFD *mfd, ubyte control) {
 // ----------------
 
 uchar mfd_fixture_handler(MFD *m, uiEvent *e) {
-    uiMouseEvent *me = (uiMouseEvent *)e;
     LGRect brect = {{BUTTON_STATE_X, BUTTON_STATE_Y},
                     {BUTTON_STATE_X + BUTTON_STATE_W, BUTTON_STATE_Y + BUTTON_STATE_H}};
-    LGPoint pos = me->pos;
+    LGPoint pos = e->pos;
     pos.x -= m->rect.ul.x;
     pos.y -= m->rect.ul.y;
-    if (me->action & MOUSE_LDOWN && RECT_TEST_PT(&brect, pos)) {
+    if (e->mouse_data.action & MOUSE_LDOWN && RECT_TEST_PT(&brect, pos)) {
         object_use(player_struct.panel_ref, TRUE, OBJ_NULL);
         mfd_notify_func(MFD_FIXTURE_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
         return TRUE;

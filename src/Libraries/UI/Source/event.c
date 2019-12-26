@@ -38,13 +38,13 @@ void event_queue_add(uiEvent* e);
 uchar event_queue_next(uiEvent** e);
 uchar region_check_opacity(LGRegion* reg, ulong evmask);
 uchar event_dispatch_callback(LGRegion* reg, LGRect* r, void* v);
-void ui_set_last_mouse_region(LGRegion* reg,uiMouseEvent* ev);
+void ui_set_last_mouse_region(LGRegion* reg, uiEvent* ev);
 uchar ui_try_region(LGRegion* reg, LGPoint pos, uiEvent* ev);
 uchar ui_traverse_point(LGRegion* reg, LGPoint pos, uiEvent* data);
 uchar send_event_to_region(LGRegion* r, uiEvent* ev);
 void ui_purge_mouse_events(void);
 void ui_flush_mouse_events(ulong timestamp, LGPoint pos);
-void ui_dispatch_mouse_event(uiMouseEvent* mout);
+void ui_dispatch_mouse_event(uiEvent* mout);
 void ui_poll_keyboard(void);
 void ui_pop_up_keys(void);
 LGPoint ui_poll_mouse_position(void);
@@ -322,8 +322,8 @@ uchar   uiDoubleClicksOn[NUM_MOUSE_BTNS] = { FALSE, FALSE, FALSE } ;
 uchar   uiAltDoubleClick = FALSE;
 ushort uiDoubleClickTolerance = 5;
 static uchar   poll_mouse_motion = FALSE;
-static uiMouseEvent last_down_events[NUM_MOUSE_BTNS];
-static uiMouseEvent last_up_events[NUM_MOUSE_BTNS];
+static uiEvent last_down_events[NUM_MOUSE_BTNS];
+static uiEvent last_up_events[NUM_MOUSE_BTNS];
 
 static struct _eventqueue
 {
@@ -422,17 +422,17 @@ if (ev->type == UI_EVENT_KBD_COOKED)
 LGRegion* uiLastMouseRegion[NUM_MOUSE_BTNS];
 
 
-void ui_set_last_mouse_region(LGRegion* reg,uiMouseEvent* ev)
+void ui_set_last_mouse_region(LGRegion* reg, uiEvent* ev)
 {
    int i;
    if (ev->type != UI_EVENT_MOUSE)
       return;
    for (i = 0; i < NUM_MOUSE_BTNS; i++)
    {
-      if ((ev->action & MOUSE_BTN2DOWN(i)) != 0 ||
-          (ev->action & UI_MOUSE_BTN2DOUBLE(i)))
+      if ((ev->mouse_data.action & MOUSE_BTN2DOWN(i)) != 0 ||
+          (ev->mouse_data.action & UI_MOUSE_BTN2DOUBLE(i)))
             uiLastMouseRegion[i] = reg;
-      if (ev->action & MOUSE_BTN2UP(i))
+      if (ev->mouse_data.action & MOUSE_BTN2UP(i))
          uiLastMouseRegion[i] = NULL;
    }
 }
@@ -447,7 +447,7 @@ uchar ui_try_region(LGRegion* reg, LGPoint pos, uiEvent* ev)
    if (region_check_opacity(reg,ev->type)) retval = TRAVERSE_OPAQUE;
    else if (event_dispatch_callback(reg,&cbr,ev)) retval = TRAVERSE_HIT;
    else return retval;
-   ui_set_last_mouse_region(reg,(uiMouseEvent*)ev);
+   ui_set_last_mouse_region(reg, ev);
    return retval;
 }
 
@@ -534,12 +534,12 @@ errtype uiQueueEvent(uiEvent* ev)
       kbs_event kbe;
       for(kbe = kb_next(); kbe.code != KBC_NONE; kbe = kb_next())
       {
-         uiRawKeyEvent out;
+         uiEvent out;
          mouse_get_xy(&out.pos.x,&out.pos.y);
-         out.scancode = kbe.code;
-         out.action = kbe.state;
          out.type = UI_EVENT_KBD_RAW;
-         event_queue_add((uiEvent*)&out);
+         out.raw_key_data.scancode = kbe.code;
+         out.raw_key_data.action = kbe.state;
+         event_queue_add(&out);
       }
    }
    if (ev->type == UI_EVENT_MOUSE || ev->type == UI_EVENT_MOUSE_MOVE)
@@ -548,12 +548,12 @@ errtype uiQueueEvent(uiEvent* ev)
       errtype err = mouse_next(&mse);
       for(;err == OK; err = mouse_next(&mse))
       {
-         uiMouseEvent out;
+         uiEvent out;
          out.pos.x = mse.x;
          out.pos.y = mse.y;
          out.type = (mse.type == MOUSE_MOTION) ? UI_EVENT_MOUSE_MOVE :  UI_EVENT_MOUSE;
-         out.action = mse.type;
-         out.modifiers = mse.modifiers;
+         out.mouse_data.action = mse.type;
+         out.mouse_data.modifiers = mse.modifiers;
          event_queue_add((uiEvent*)&out);
       }
    }
@@ -569,9 +569,9 @@ void ui_purge_mouse_events(void)
    for (i = 0; i < NUM_MOUSE_BTNS; i++)
    {
       last_down_events[i].type = UI_EVENT_NULL;
-      last_down_events[i].tstamp = 0;
+      last_down_events[i].mouse_data.tstamp = 0;
       last_up_events[i].type = UI_EVENT_NULL;
-      last_up_events[i].tstamp = 0;
+      last_up_events[i].mouse_data.tstamp = 0;
    }
 }
 
@@ -585,7 +585,7 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
          last_down_events[i].type != UI_EVENT_NULL)
       {
          int crit = uiDoubleClickDelay * 5;
-         ulong timediff = timestamp - last_down_events[i].tstamp;
+         ulong timediff = timestamp - last_down_events[i].mouse_data.tstamp;
          LGPoint downpos = last_down_events[i].pos;
          uchar out = (abs(pos.x - downpos.x) > uiDoubleClickTolerance ||
                      abs(pos.y - downpos.y) > uiDoubleClickTolerance);
@@ -593,19 +593,19 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
          // OK, if we've waited DoubleClickDelay after a down event, send it out.
          if (out || timediff >= crit)
          {
-            uiMouseEvent ev;
+            uiEvent ev;
             //Spew(DSRC_UI_Polling,("flushing old clicks: crit = %d timediff = %d\n",crit,timediff));
             if (last_down_events[i].type != MOUSE_EVENT_FLUSHED)
             {
                ev = last_down_events[i];
                last_down_events[i].type = MOUSE_EVENT_FLUSHED;
-               uiDispatchEvent((uiEvent*)&ev);
+               uiDispatchEvent(&ev);
             }
             if (last_up_events[i].type != MOUSE_EVENT_FLUSHED)
             {
                ev = last_up_events[i];
                last_up_events[i].type = MOUSE_EVENT_FLUSHED;
-               uiDispatchEvent((uiEvent*)&ev);
+               uiDispatchEvent(&ev);
             }
          }
 
@@ -613,7 +613,7 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
          if (last_up_events[i].type != UI_EVENT_NULL)
          {
             crit = uiDoubleClickTime;
-            timediff = timestamp - last_up_events[i].tstamp;
+            timediff = timestamp - last_up_events[i].mouse_data.tstamp;
             if (out || timediff >= crit)
             {
                last_down_events[i].type   = UI_EVENT_NULL;
@@ -624,7 +624,7 @@ void ui_flush_mouse_events(ulong timestamp, LGPoint pos)
    }
 }
 
-void ui_dispatch_mouse_event(uiMouseEvent* mout)
+void ui_dispatch_mouse_event(uiEvent* mout)
 {
    int i;
    uchar eaten = FALSE;
@@ -632,7 +632,7 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
    bool altDown = (SDL_GetModState() & KMOD_ALT) != 0;
 
 //   ui_mouse_do_conversion(&(mout->pos.x),&(mout->pos.y),TRUE);
-   ui_flush_mouse_events(mout->tstamp,mout->pos);
+   ui_flush_mouse_events(mout->mouse_data.tstamp, mout->pos);
    for (i = 0; i < NUM_MOUSE_BTNS; i++)
    {
       if (!(uiDoubleClicksOn[i]))
@@ -641,33 +641,33 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
       //printf("Checking double click! %i\n", mout->action & MOUSE_BTN2DOWN(i));
       if (uiAltDoubleClick && altDown)
       {
-         if (mout->action & MOUSE_BTN2DOWN(i))
+         if (mout->mouse_data.action & MOUSE_BTN2DOWN(i))
          {
-            mout->action &= ~MOUSE_BTN2DOWN(i);
-            mout->action |= UI_MOUSE_BTN2DOUBLE(i);
+            mout->mouse_data.action &= ~MOUSE_BTN2DOWN(i);
+            mout->mouse_data.action |= UI_MOUSE_BTN2DOUBLE(i);
             continue;
          }
       }
       if (last_down_events[i].type != UI_EVENT_NULL)
       {
-         if (mout->action & MOUSE_BTN2DOWN(i))
+         if (mout->mouse_data.action & MOUSE_BTN2DOWN(i))
          {
             // Spew(DSRC_UI_Polling,("double click down\n"));
             // make a double click event. 
-            mout->action &= ~MOUSE_BTN2DOWN(i);
-            mout->action |= UI_MOUSE_BTN2DOUBLE(i);
+            mout->mouse_data.action &= ~MOUSE_BTN2DOWN(i);
+            mout->mouse_data.action |= UI_MOUSE_BTN2DOUBLE(i);
 
             last_down_events[i].type = UI_EVENT_NULL;
             last_up_events[i].type = UI_EVENT_NULL;
          }
-         if (mout->action & MOUSE_BTN2UP(i))
+         if (mout->mouse_data.action & MOUSE_BTN2UP(i))
          {
             // Spew(DSRC_UI_Polling,("up in time %d\n",mout->tstamp - last_down_events[i].tstamp));
             last_up_events[i] = *mout;
             eaten = TRUE;
          }
       }
-      else if (mout->action & MOUSE_BTN2DOWN(i))
+      else if (mout->mouse_data.action & MOUSE_BTN2DOWN(i))
       {
          // Spew(DSRC_UI_Polling,("saving the down\n"));
          last_down_events[i] = *mout;
@@ -675,7 +675,7 @@ void ui_dispatch_mouse_event(uiMouseEvent* mout)
       }
    }
    if (!eaten)
-      uiDispatchEvent((uiEvent*)mout);
+      uiDispatchEvent(mout);
 }
 
 // ----------------------
@@ -718,15 +718,15 @@ void ui_poll_keyboard(void)
 	{
 		if(sshockKeyStates[*key] != 0)
 		{
-			uiPollKeyEvent ev;
+			uiEvent ev;
 			ev.type = UI_EVENT_KBD_POLL;
 			ev.pos.x = 0;
 			ev.pos.y = 0;
-			ev.action = KBS_DOWN;
-			ev.scancode = *key;
-			ev.mods = inputModToUImod(sshockKeyStates[*key]);
+			ev.poll_key_data.action = KBS_DOWN;
+			ev.poll_key_data.scancode = *key;
+			ev.poll_key_data.mods = inputModToUImod(sshockKeyStates[*key]);
 
-			uiDispatchEvent((uiEvent*)&ev);
+			uiDispatchEvent(&ev);
 		}
 		// *key is a System Shock/Mac keycode
 	}
@@ -773,25 +773,25 @@ void ui_pop_up_keys(void)
 */
 }
 
-errtype uiMakeMotionEvent(uiMouseEvent* ev)
+errtype uiMakeMotionEvent(uiEvent* ev)
 {
    // haha, this is the super secret mouse library variable of the 
    // current button state. 
    extern short mouseInstantButts;
    mouse_get_xy(&ev->pos.x,&ev->pos.y);
    ev->type = UI_EVENT_MOUSE_MOVE; // must get past event mask
-   ev->action = MOUSE_MOTION;
-   ev->tstamp = mouse_get_time();
-   ev->buttons = (ubyte)mouseInstantButts;
+   ev->mouse_data.action = MOUSE_MOTION;
+   ev->mouse_data.tstamp = mouse_get_time();
+   ev->mouse_data.buttons = (ubyte)mouseInstantButts;
    return OK;
 }
 
 // Generate a fake mouse motion event and send it along...
 LGPoint ui_poll_mouse_position(void)
 {
-   uiMouseEvent ev;
+   uiEvent ev;
    uiMakeMotionEvent(&ev);
-   uiDispatchEvent((uiEvent *)(&ev));
+   uiDispatchEvent(&ev);
    return ev.pos;
 }
 
@@ -816,14 +816,14 @@ errtype uiPoll(void)
       uchar result = TRUE;
 //      ui_mouse_do_conversion(&(ev->pos.x),&(ev->pos.y),TRUE);
       if (ev->type == UI_EVENT_MOUSE)
-         ui_dispatch_mouse_event((uiMouseEvent*)ev);
+         ui_dispatch_mouse_event(ev);
       else result = uiDispatchEvent(ev);
       if (!result && ev->type == UI_EVENT_KBD_RAW)
       {
          ushort cooked;
          kbs_event kbe;
-         kbe.code = ((uiRawKeyEvent*)ev)->scancode;
-         kbe.state = ((uiRawKeyEvent*)ev)->action;
+         kbe.code = ev->raw_key_data.scancode;
+         kbe.state = ev->raw_key_data.action;
          err = kb_cook(kbe,&cooked,&result);
          if (err != OK) return err;
          if (result)
@@ -848,13 +848,12 @@ errtype uiPoll(void)
          if (kbe.code != KBC_NONE)
          {
             uchar eaten;
-            uiRawKeyEvent* ev = (uiRawKeyEvent*)&out;
             // Spew(DSRC_UI_Polling,("uiPoll(): got a keyboard event: <%d,%x>\n",kbe.state,kbe.code));
-            ev->pos = mousepos;
-            ev->scancode = kbe.code;
-            ev->action = kbe.state;
-            ev->type = UI_EVENT_KBD_RAW;
-            eaten = uiDispatchEvent((uiEvent*)ev);
+            out.pos = mousepos;
+            out.type = UI_EVENT_KBD_RAW;
+            out.raw_key_data.scancode = kbe.code;
+            out.raw_key_data.action = kbe.state;
+            eaten = uiDispatchEvent(&out);
             if (!eaten)
             {
               ushort cooked;
@@ -888,17 +887,16 @@ errtype uiPoll(void)
 
          if (err == OK)
          {
-            uiMouseEvent* mout = (uiMouseEvent*)&out;
             out.pos.x = mse.x;
             out.pos.y = mse.y;
             // note that the equality operator here means that motion-only 
             // events are MOUSE_MOVE, and others are MOUSE events.
             out.type = (mse.type == MOUSE_MOTION) ? UI_EVENT_MOUSE_MOVE :  UI_EVENT_MOUSE;
             out.subtype = mse.type;
-            mout->tstamp = mse.timestamp;
-            mout->buttons = mse.buttons;
-         	mout->modifiers = mse.modifiers;
-            ui_dispatch_mouse_event(mout);
+            out.mouse_data.tstamp = mse.timestamp;
+            out.mouse_data.buttons = mse.buttons;
+	    out.mouse_data.modifiers = mse.modifiers;
+            ui_dispatch_mouse_event(&out);
 //            uiDispatchEvent((uiEvent*)mout);
          }
          else msdone = TRUE;

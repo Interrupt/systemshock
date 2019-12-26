@@ -290,7 +290,7 @@ void screen_init_mfd(uchar fullscrn) {
         mfd_canvas_bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID) * MAX_HT(MFD_VIEW_HGT));
 
         // Pull in the background bitmap
-        f = (FrameDesc *)RefLock(REF_IMG_bmBlankMFD);
+        f = RefLock(REF_IMG_bmBlankMFD);
         mfd_background = f->bm;
         mfd_background.bits = (uchar *)malloc(MAX_WD(MFD_VIEW_WID) * MAX_HT(MFD_VIEW_HGT));
 
@@ -918,7 +918,6 @@ uchar mfd_view_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
 // the button panels.
 int last_mfd_cnum[NUM_MFDS] = {-1, -1};
 uchar mfd_button_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
-    uiMouseEvent *m;
     int cnum, which_panel, which_button;
     div_t result;
 
@@ -931,11 +930,10 @@ uchar mfd_button_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
         uiSetRegionDefaultCursor(r, NULL);
         return FALSE;
     } else {
-        m = (uiMouseEvent *)e;
         which_panel = (int)udata;
 
         // Divide mouseclick height to discover which button we meant
-        result = div((m->pos.y - MFD_BTTN_Y), MFD_BTTN_SZ + MFD_BTTN_BLNK);
+        result = div((e->pos.y - MFD_BTTN_Y), MFD_BTTN_SZ + MFD_BTTN_BLNK);
         which_button = result.quot;
 
         cnum = which_button;
@@ -956,7 +954,7 @@ uchar mfd_button_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
                 uiSetRegionDefaultCursor(r, &mfd_bttn_cursors[which_panel]);
             }
 
-            if (!(m->action & (MOUSE_LDOWN | UI_MOUSE_LDOUBLE)))
+            if (!(e->mouse_data.action & (MOUSE_LDOWN | UI_MOUSE_LDOUBLE)))
                 return TRUE; // ignore all but left clickdowns
 
             // If things are ok, select button
@@ -1356,7 +1354,7 @@ LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, uchar 
     short w, h;
     ushort sc1, sc2, sc3, sc4;
     short border = 0;
-    grs_font *thefont = (grs_font *)ResLock(font);
+    grs_font *thefont = ResLock(font);
 
     x = lg_min(lg_max(x, 0), MFD_VIEW_WID - 1);
     y = lg_min(lg_max(y, 0), MFD_VIEW_HGT - 1);

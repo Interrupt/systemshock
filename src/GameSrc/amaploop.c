@@ -164,7 +164,7 @@ void fsmap_draw_map(void);
 void fsmap_draw_screen(uint chng);
 int s_bf(int btn_id, int todo);
 void fsmap_new_msg(curAMap *amptr);
-uchar amap_scroll_handler(uiEvent *ev, LGRegion *r, void *user_data);
+uchar amap_scroll_handler(uiEvent *ev, LGRegion *r, intptr_t user_data);
 void edit_mapnote(curAMap *amptr);
 uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte but);
 uchar zoom_deal(curAMap *amptr, int btn);
@@ -380,7 +380,7 @@ void fsmap_draw_map(void) {
 
     // KLC - changed to draw the background logo double size
     //   draw_res_bm(REF_IMG_bmTriLogoBack,(grd_bm.w-w)/2,(grd_bm.h-h)/2);
-    f = (FrameDesc *)RefLock(REF_IMG_bmTriLogoBack);
+    f = RefLock(REF_IMG_bmTriLogoBack);
     if (f == NULL)
         critical_error(CRITERR_MEM | 9);
     f->bm.bits = (uchar *)(f + 1);
@@ -506,14 +506,14 @@ uchar pend_check(void) {
 #define KP_LEFT_CODE     0x56
 #define KP_RIGHT_CODE    0x58
 
-uchar amap_scroll_handler(uiEvent *ev, LGRegion *reg, void *v) {
+uchar amap_scroll_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
     int elapsed, now;
     short code;
     curAMap *amptr = oAMap(MFD_FULLSCR_MAP);
 
     if (!map_scroll_code || !map_scroll_clicked) {
         if (ev->type == UI_EVENT_KBD_POLL) {
-            code = ((uiRawKeyEvent *)ev)->scancode;
+            code = ev->raw_key_data.scancode;
             switch (code) {
             case UP_ARROW_CODE:
             case KP_UP_CODE:

@@ -60,7 +60,7 @@ errtype gad_Mac_init(Gadget *g, LGPoint extent);
 uchar gad_Mac_blank_expose(LGRegion *reg, LGRect *r);
 errtype gadget_initialize_system(void);
 uchar gadget_frob_canvas(LGRegion *reg, void *data);
-uchar gadget_tng_mouse_move_handler(uiEvent *e, LGRegion *r, void *state);
+uchar gadget_tng_mouse_move_handler(uiEvent *e, LGRegion *r, intptr_t state);
 
 
 //---------------------------------------------------------------
@@ -204,7 +204,7 @@ errtype draw_resource_bm(Ref id, int x, int y)
    STORE_CLIP(a1,a2,a3,a4);
 //   Spew(DSRC_UI_Utilities, ("cliprect = (%d, %d)(%d, %d)\n",a1,a2,a3,a4));
    // Spew(DSRC_UI_Utilities, ("drawing bitmap to (%d, %d)\n",x,y));
-   f = (FrameDesc *)RefLock(id);
+   f = FrameLock(id);
 
    // Set the palette right
    /*¥¥¥ Ignore for now
@@ -226,7 +226,7 @@ int resource_bm_width(Ref id)
    FrameDesc *f;
    int n;
 
-   f = (FrameDesc *)RefLock(id);
+   f = FrameLock(id);
    n = f->bm.w;
    // Spew(DSRC_UI_Utilities, ("resource_bm_width = %d\n",n));
    RefUnlock(id);
@@ -238,7 +238,7 @@ int resource_bm_height(Ref id)
    FrameDesc *f;
    int n;
 
-   f = (FrameDesc *)RefLock(id);
+   f = FrameLock(id);
    n = f->bm.h;
    // Spew(DSRC_UI_Utilities, ("resource_bm_height = %d\n",n));
    RefUnlock(id);
@@ -550,12 +550,12 @@ uchar gadget_tng_Mac_expose(LGRegion *reg, LGRect *r)
 	return(OK);
 }
 
-uchar gadget_tng_mouse_handler(uiEvent *e, LGRegion *r, void *state)
+uchar gadget_tng_mouse_handler(uiEvent *e, LGRegion *r, intptr_t state)
 {
    Gadget *g;
    uiMouseEvent *mickey;
    LGPoint rel;
-   void *dummy;
+   intptr_t dummy;
    dummy = state;
 
    mickey = (uiMouseEvent *)e;
@@ -565,12 +565,12 @@ uchar gadget_tng_mouse_handler(uiEvent *e, LGRegion *r, void *state)
    return(g->tng_data->mousebutt(g->tng_data, mickey->action, rel));
 }
 
-uchar gadget_tng_mouse_move_handler(uiEvent *e, LGRegion *r, void *state)
+uchar gadget_tng_mouse_move_handler(uiEvent *e, LGRegion *r, intptr_t state)
 {
    Gadget *g;
    uiMouseEvent *mickey;
    LGPoint rel;
-   void *dummy;
+   intptr_t dummy;
    dummy = state;
 
    mickey = (uiMouseEvent *)e;
@@ -580,11 +580,11 @@ uchar gadget_tng_mouse_move_handler(uiEvent *e, LGRegion *r, void *state)
    return(g->tng_data->mousemove(g->tng_data, rel));
 }
 
-uchar gadget_tng_keyboard_handler(uiEvent *e, LGRegion *r, void *state)
+uchar gadget_tng_keyboard_handler(uiEvent *e, LGRegion *r, intptr_t state)
 {
    Gadget *g;
    uiCookedKeyEvent *cke;
-   void *dummy;
+   intptr_t dummy;
    dummy = state;
    
    if ((e->type != UI_EVENT_KBD_COOKED) || !(e->subtype & KB_FLAG_DOWN))
@@ -650,9 +650,9 @@ errtype gadget_create_setup(Gadget **pg, Gadget *parent, GadgetClass cl, LGRect 
       fn, NULL, NULL, gd);
 
    // Install the general pushbutton handler
-   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE_MOVE, &gadget_tng_mouse_move_handler, retgad, &(retgad->handler_id));
-   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE, &gadget_tng_mouse_handler, retgad, &(retgad->handler_id));
-   uiInstallRegionHandler(retgad->rep, UI_EVENT_KBD_COOKED, &gadget_tng_keyboard_handler, retgad, &(retgad->handler_id));
+   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE_MOVE, &gadget_tng_mouse_move_handler, (intptr_t) retgad, &(retgad->handler_id));
+   uiInstallRegionHandler(retgad->rep, UI_EVENT_MOUSE, &gadget_tng_mouse_handler, (intptr_t) retgad, &(retgad->handler_id));
+   uiInstallRegionHandler(retgad->rep, UI_EVENT_KBD_COOKED, &gadget_tng_keyboard_handler, (intptr_t) retgad, &(retgad->handler_id));
 
    *pg = retgad;
    return(OK);

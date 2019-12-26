@@ -191,16 +191,6 @@ extern grs_canvas inv_view360_canvas;
 #define BUTTON_COLOR GREEN_BASE + 2
 #define BUTTON_SHADOW 7
 
-#define BUTTON_USERDATA_SIZ 32
-
-typedef struct {
-    LGRect rect;
-    uchar user[BUTTON_USERDATA_SIZ];
-    ulong evmask;
-    void (*drawfunc)(uchar butid);
-    uchar (*handler)(uiEvent *ev, uchar butid);
-} opt_button;
-
 // SLIDER WIDGETS:
 // structure for slider widget.  The slider has a pointer to a uchar,
 // ushort, or uint, which it sets to a value in the range [0,maxval].
@@ -314,6 +304,21 @@ typedef struct {
 // handled by another gadget is taken by the slorker.
 //
 typedef uchar (*slorker)(uchar butid);
+
+typedef struct {
+    LGRect rect;
+    union {
+        opt_slider_state     slider_st;
+        opt_pushbutton_state pushbutton_st;
+        opt_text_state       text_st;
+        opt_multi_state      multi_st;
+        opt_textlist_state   textlist_st;
+        slorker              sl;
+    } user;
+    ulong evmask;
+    void (*drawfunc)(uchar butid);
+    uchar (*handler)(uiEvent *ev, uchar butid);
+} opt_button;
 
 void verify_screen_init(void (*verify)(uchar butid), slorker slork);
 // void verify_screen_init(void (*verify)(uchar butid), void (*slork)(uchar butid));
@@ -445,7 +450,7 @@ void wrapper_draw_background(short ulx, short uly, short lrx, short lry) {
 }
 
 void slider_draw_func(uchar butid) {
-    opt_slider_state *st = (opt_slider_state *)&(OButtons[butid].user);
+    opt_slider_state *st = &(OButtons[butid].user.slider_st);
     short w, h, sw;
     char *title;
 
@@ -479,7 +484,7 @@ void slider_draw_func(uchar butid) {
 }
 
 void slider_deal(uchar butid, uchar deal) {
-    opt_slider_state *st = (opt_slider_state *)&(OButtons[butid].user);
+    opt_slider_state *st = &(OButtons[butid].user.slider_st);
     uint val;
 
     deal = deal || st->smooth;
@@ -496,25 +501,24 @@ void slider_deal(uchar butid, uchar deal) {
 //
 
 uchar slider_handler(uiEvent *ev, uchar butid) {
-    opt_slider_state *st = (opt_slider_state *)&(OButtons[butid].user);
-    uiMouseEvent *mev = (uiMouseEvent *)ev;
+    opt_slider_state *st = &(OButtons[butid].user.slider_st);
 
     switch (ev->type) {
     case UI_EVENT_MOUSE_MOVE:
-        if (mev->buttons) {
-            st->sliderpos = mev->pos.x - BR(butid).ul.x;
+        if (ev->mouse_data.buttons) {
+            st->sliderpos = ev->pos.x - BR(butid).ul.x;
             slider_deal(butid, TRUE);
             draw_button(butid);
         }
         break;
     case UI_EVENT_MOUSE:
-        if (mev->action & MOUSE_WHEELUP) {
+        if (ev->mouse_data.action & MOUSE_WHEELUP) {
             st->sliderpos = st->sliderpos <= 5 ? 0 : st->sliderpos - 5;
-        } else if (mev->action & MOUSE_WHEELDN) {
+        } else if (ev->mouse_data.action & MOUSE_WHEELDN) {
             uchar max = BR(butid).lr.x - BR(butid).ul.x - 3;
             st->sliderpos = lg_min(st->sliderpos + 5, max);
         } else {
-            st->sliderpos = mev->pos.x - BR(butid).ul.x;
+            st->sliderpos = ev->pos.x - BR(butid).ul.x;
         }
         slider_deal(butid, TRUE);
         draw_button(butid);
@@ -527,7 +531,7 @@ uchar slider_handler(uiEvent *ev, uchar butid) {
 
 void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void *var, uint maxval, uchar baseval,
                  void *dealfunc, LGRect *r) {
-    opt_slider_state *st = (opt_slider_state *)&OButtons[butid].user;
+    opt_slider_state *st = &OButtons[butid].user.slider_st;
     uint val;
 
     if (maxval)
@@ -565,7 +569,7 @@ void slider_init(uchar butid, Ref descrip, uchar type, uchar smooth, void *var, 
 void pushbutton_draw_func(uchar butid) {
     char *btext;
     short w, h;
-    opt_pushbutton_state *st = (opt_pushbutton_state *)&OButtons[butid].user;
+    opt_pushbutton_state *st = &OButtons[butid].user.pushbutton_st;
 
     w = BR(butid).lr.x - BR(butid).ul.x;
     h = BR(butid).lr.y - BR(butid).ul.y;
@@ -579,15 +583,15 @@ void pushbutton_draw_func(uchar butid) {
 uchar pushbutton_handler(uiEvent *ev, uchar butid) {
     if (((ev->type == UI_EVENT_MOUSE) && (ev->subtype & MOUSE_DOWN)) ||
         ((ev->type == UI_EVENT_KBD_COOKED) &&
-         ((((uiCookedKeyEvent *)ev)->code & 0xFF) == ((opt_pushbutton_state *)(&OButtons[butid].user))->keyeq))) {
-        ((opt_pushbutton_state *)&OButtons[butid].user)->pushfunc(butid);
+         ((ev->cooked_key_data.code & 0xFF) == OButtons[butid].user.pushbutton_st.keyeq))) {
+        OButtons[butid].user.pushbutton_st.pushfunc(butid);
         return TRUE;
     }
     return FALSE;
 }
 
 void pushbutton_init(uchar butid, uchar keyeq, Ref descrip, void (*pushfunc)(uchar butid), LGRect *r) {
-    opt_pushbutton_state *st = (opt_pushbutton_state *)&OButtons[butid].user;
+    opt_pushbutton_state *st = &OButtons[butid].user.pushbutton_st;
 
     OButtons[butid].rect = *r;
     OButtons[butid].evmask = UI_EVENT_MOUSE | UI_EVENT_KBD_COOKED;
@@ -601,14 +605,14 @@ void pushbutton_init(uchar butid, uchar keyeq, Ref descrip, void (*pushfunc)(uch
 }
 
 void dim_pushbutton(uchar butid) {
-    opt_pushbutton_state *st = (opt_pushbutton_state *)&OButtons[butid].user;
+    opt_pushbutton_state *st = &OButtons[butid].user.pushbutton_st;
     OButtons[butid].evmask = 0;
     st->fcolor += 4;
     st->shadow -= 3;
 }
 
 void bright_pushbutton(uchar butid) {
-    opt_pushbutton_state *st = (opt_pushbutton_state *)&OButtons[butid].user;
+    opt_pushbutton_state *st = &OButtons[butid].user.pushbutton_st;
     OButtons[butid].evmask = 0;
     st->fcolor -= 2;
     st->shadow += 2;
@@ -616,7 +620,7 @@ void bright_pushbutton(uchar butid) {
 
 // text widget
 void text_draw_func(uchar butid) {
-    opt_text_state *st = (opt_text_state *)&OButtons[butid].user;
+    opt_text_state *st = &OButtons[butid].user.text_st;
     char *s = get_temp_string(st->descrip);
 
     wrap_text(s, BR(butid).lr.x - BR(butid).ul.x);
@@ -626,7 +630,7 @@ void text_draw_func(uchar butid) {
 }
 
 void textwidget_init(uchar butid, uchar color, Ref descrip, LGRect *r) {
-    opt_text_state *st = (opt_text_state *)&OButtons[butid].user;
+    opt_text_state *st = &OButtons[butid].user.text_st;
 
     OButtons[butid].rect = *r;
     st->descrip = descrip;
@@ -639,7 +643,7 @@ void textwidget_init(uchar butid, uchar color, Ref descrip, LGRect *r) {
 // a keywidget is just like a pushbutton, but invisible.
 //
 void keywidget_init(uchar butid, uchar keyeq, void (*pushfunc)(uchar butid)) {
-    opt_pushbutton_state *st = (opt_pushbutton_state *)&OButtons[butid].user;
+    opt_pushbutton_state *st = &OButtons[butid].user.pushbutton_st;
 
     OButtons[butid].evmask = UI_EVENT_KBD_COOKED;
     OButtons[butid].drawfunc = NULL;
@@ -692,7 +696,7 @@ void multi_draw_func(uchar butid) {
     char *btext;
     short w, h, x, y;
     uint val = 0;
-    opt_multi_state *st = (opt_multi_state *)&OButtons[butid].user;
+    opt_multi_state *st = &OButtons[butid].user.multi_st;
 
     gr_set_fcolor(BUTTON_COLOR);
     ss_rect(BR(butid).ul.x, BR(butid).ul.y, BR(butid).lr.x, BR(butid).lr.y);
@@ -712,7 +716,7 @@ void multi_draw_func(uchar butid) {
 
 uchar multi_handler(uiEvent *ev, uchar butid) {
     uint val = 0, delta = 0;
-    opt_multi_state *st = (opt_multi_state *)&OButtons[butid].user;
+    opt_multi_state *st = &OButtons[butid].user.multi_st;
 
     if (ev->type == UI_EVENT_MOUSE) {
         if (ev->subtype & MOUSE_LEFT)
@@ -720,10 +724,9 @@ uchar multi_handler(uiEvent *ev, uchar butid) {
         else if (ev->subtype & MOUSE_RDOWN)
             delta = st->num_opts - 1;
     } else if (ev->type == UI_EVENT_KBD_COOKED) {
-        uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
-
-        if (tolower(kev->code & 0xFF) == ((opt_multi_state *)(&OButtons[butid].user))->keyeq) {
-            if (isupper(kev->code & 0xFF))
+	short code = ev->cooked_key_data.code;
+        if (tolower(code & 0xFF) == st->keyeq) {
+            if (isupper(code & 0xFF))
                 delta = st->num_opts - 1;
             else
                 delta = 1;
@@ -745,7 +748,7 @@ uchar multi_handler(uiEvent *ev, uchar butid) {
 
 void multi_init(uchar butid, uchar key, Ref descrip, Ref optbase, Ref feedbase, uchar type, void *var, uchar num_opts,
                 void *dealfunc, LGRect *r) {
-    opt_multi_state *st = (opt_multi_state *)&OButtons[butid].user;
+    opt_multi_state *st = &OButtons[butid].user.multi_st;
 
     OButtons[butid].rect = *r;
     OButtons[butid].drawfunc = multi_draw_func;
@@ -767,7 +770,7 @@ void multi_init(uchar butid, uchar key, Ref descrip, Ref optbase, Ref feedbase, 
 
 #pragma disable_message(202)
 uchar keyslork_handler(uiEvent *ev, uchar butid) {
-    slorker *slork = (slorker *)(&OButtons[butid].user);
+    slorker *slork = &OButtons[butid].user.sl;
 
     return ((*slork)(butid));
 }
@@ -775,7 +778,7 @@ uchar keyslork_handler(uiEvent *ev, uchar butid) {
 
 void slork_init(uchar butid, slorker slork) {
     LG_memset(&OButtons[butid].rect, 0, sizeof(LGRect));
-    *((slorker *)&(OButtons[butid].user)) = slork;
+    OButtons[butid].user.sl = slork;
     OButtons[butid].evmask = UI_EVENT_KBD_COOKED;
     OButtons[butid].drawfunc = NULL;
     OButtons[butid].handler = keyslork_handler;
@@ -836,7 +839,7 @@ void textlist_draw_line(opt_textlist_state *st, int line, uchar butid) {
 
 void textlist_draw_func(uchar butid) {
     int i;
-    opt_textlist_state *st = (opt_textlist_state *)&OButtons[butid].user;
+    opt_textlist_state *st = &OButtons[butid].user.textlist_st;
 
     for (i = 0; i < st->numblocks; i++) {
         textlist_draw_line(st, i, butid);
@@ -889,16 +892,15 @@ void textlist_select_line(opt_textlist_state *st, uchar butid, uchar line, uchar
 
 uchar textlist_handler(uiEvent *ev, uchar butid) {
     uchar line;
-    opt_textlist_state *st = (opt_textlist_state *)&OButtons[butid].user;
+    opt_textlist_state *st = &OButtons[butid].user.textlist_st;
 
     if ((ev->type == UI_EVENT_MOUSE) && (ev->subtype & MOUSE_DOWN)) {
-        uiMouseEvent *mev = (uiMouseEvent *)ev;
         short w, h;
 
         gr_set_font(opt_font);
         gr_char_size('X', &w, &h);
 
-        line = (mev->pos.y - BR(butid).ul.y) / h;
+        line = (ev->pos.y - BR(butid).ul.y) / h;
 
         if (st->editable && (st->editmask & (1 << line))) {
             // this is how you would do this if you wanted right-click to select
@@ -922,10 +924,10 @@ uchar textlist_handler(uiEvent *ev, uchar butid) {
         }
         return TRUE;
     } else if (ev->type == UI_EVENT_KBD_COOKED) {
-        uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
-        char k = (kev->code & 0xFF);
-        uint keycode = kev->code & ~KB_FLAG_DOWN;
-        uchar special = ((kev->code & KB_FLAG_SPECIAL) != 0);
+	short code = ev->cooked_key_data.code;
+        char k = code & 0xFF;
+        uint keycode = code & ~KB_FLAG_DOWN;
+        uchar special = ((code & KB_FLAG_SPECIAL) != 0);
         char *s;
         char upness = 0;
         char cur = st->currstring;
@@ -1010,7 +1012,7 @@ uchar textlist_handler(uiEvent *ev, uchar butid) {
 void textlist_init(uchar butid, char *text, uchar numblocks, uchar blocksiz, uchar editable, ushort editmask,
                    ushort selectmask, ushort initmask, Ref invalidstr, uchar validcol, uchar selectcol,
                    uchar invalidcol, Ref selectprompt, void (*dealfunc)(uchar butid, uchar index), LGRect *r) {
-    opt_textlist_state *st = (opt_textlist_state *)&OButtons[butid].user;
+    opt_textlist_state *st = &OButtons[butid].user.textlist_st;
 
     if (r == NULL) {
         BR(butid).ul.x = 2;
@@ -1047,10 +1049,8 @@ void textlist_init(uchar butid, char *text, uchar numblocks, uchar blocksiz, uch
 //
 #pragma disable_message(202)
 uchar opanel_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
-    uiMouseEvent mev;
     int b;
-
-    mev = *((uiMouseEvent *)ev);
+    uiEvent mev = *ev;
 
     if (!ev->type && (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE))
         return FALSE;
@@ -1073,10 +1073,10 @@ uchar opanel_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
 // checks all options panel widgets to see if they want to deal.
 //
 uchar opanel_kb_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
-    uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
     int b;
+    short code = ev->cooked_key_data.code;
 
-    if (!(kev->code & KB_FLAG_DOWN))
+    if (!(code & KB_FLAG_DOWN))
         return TRUE;
 
     for (b = 0; b < MAX_OPTION_BUTTONS; b++) {
@@ -1086,7 +1086,7 @@ uchar opanel_kb_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
     // if no-one else has hooked KEY_ESC, it defaults to closing
     // the wrapper panel.
     //
-    if ((kev->code & 0xFF) == KEY_ESC)
+    if ((code & 0xFF) == KEY_ESC)
         wrapper_panel_close(TRUE);
     return TRUE;
 }
@@ -2183,7 +2183,7 @@ void wrapper_start(void (*init)(void)) {
     inventory_page = -1;
     wrapper_panel_on = TRUE;
     suspend_game_time();
-    opt_font = (grs_font *)ResLock(OPTIONS_FONT);
+    opt_font = ResLock(OPTIONS_FONT);
 #ifndef STATIC_BUTTON_STORE
     OButtons = (opt_button *)(_offscreen_mfd.bm.bits);
     fv = full_visible;
@@ -2267,7 +2267,6 @@ errtype do_savegame_guts(uchar slot) {
 
 #pragma disable_message(202)
 uchar wrapper_region_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
-    uiMouseEvent *me = (uiMouseEvent*)ev;
     /*if (global_fullmap->cyber)
     {
        uiSetRegionDefaultCursor(r,NULL);
@@ -2277,7 +2276,7 @@ uchar wrapper_region_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
 
     uiSetRegionDefaultCursor(r, &option_cursor);
 
-    if (me->action & MOUSE_DOWN) {
+    if (ev->mouse_data.action & MOUSE_DOWN) {
         wrapper_options_func(0, 0, TRUE);
         return TRUE;
     }
@@ -2303,7 +2302,7 @@ errtype make_options_cursor(void) {
     gr_push_canvas(&cursor_canv);
     gr_clear(0);
     s = get_temp_string(REF_STR_ClickForOptions);
-    gr_set_font((grs_font *)ResLock(OPTIONS_FONT));
+    gr_set_font(ResLock(OPTIONS_FONT));
     wrap_text(s, orig_w - 3);
     gr_string_size(s, &w, &h);
     gr_set_fcolor(0xB8);

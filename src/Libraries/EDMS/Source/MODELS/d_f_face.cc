@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //      This matrix is for Douggie and his magic circus...
 //      ==================================================
-fix EDMS_Dirac_basis[9];
+fix Dirac_basis[9];
 
 //	Here we need include files for each and every model that we'll be using...
 //	==========================================================================
@@ -202,39 +202,39 @@ void EDMS_get_Dirac_frame_viewpoint(physics_handle ph, State *s) {
         //      Stuff into Matt's order...
         //      --------------------------
         /*
-                EDMS_Dirac_basis[0] = dirac_temp[0].to_fix();
-                EDMS_Dirac_basis[1] =-dirac_temp[6].to_fix();
-                EDMS_Dirac_basis[2] = dirac_temp[3].to_fix();
-                EDMS_Dirac_basis[3] =-dirac_temp[2].to_fix();
-                EDMS_Dirac_basis[4] = dirac_temp[8].to_fix();
-                EDMS_Dirac_basis[5] =-dirac_temp[5].to_fix();
-                EDMS_Dirac_basis[6] = dirac_temp[1].to_fix();
-                EDMS_Dirac_basis[7] =-dirac_temp[7].to_fix();
-                EDMS_Dirac_basis[8] = dirac_temp[4].to_fix();
+                Dirac_basis[0] = dirac_temp[0].to_fix();
+                Dirac_basis[1] =-dirac_temp[6].to_fix();
+                Dirac_basis[2] = dirac_temp[3].to_fix();
+                Dirac_basis[3] =-dirac_temp[2].to_fix();
+                Dirac_basis[4] = dirac_temp[8].to_fix();
+                Dirac_basis[5] =-dirac_temp[5].to_fix();
+                Dirac_basis[6] = dirac_temp[1].to_fix();
+                Dirac_basis[7] =-dirac_temp[7].to_fix();
+                Dirac_basis[8] = dirac_temp[4].to_fix();
         */
 
         //      Almost...
         /*
-                EDMS_Dirac_basis[0] = dirac_temp[3].to_fix();
-                EDMS_Dirac_basis[1] =-dirac_temp[6].to_fix();
-                EDMS_Dirac_basis[2] =-dirac_temp[0].to_fix();
-                EDMS_Dirac_basis[3] =-dirac_temp[5].to_fix();
-                EDMS_Dirac_basis[4] = dirac_temp[8].to_fix();
-                EDMS_Dirac_basis[5] = dirac_temp[2].to_fix();
-                EDMS_Dirac_basis[6] = dirac_temp[4].to_fix();
-                EDMS_Dirac_basis[7] =-dirac_temp[7].to_fix();
-                EDMS_Dirac_basis[8] =-dirac_temp[1].to_fix();
+                Dirac_basis[0] = dirac_temp[3].to_fix();
+                Dirac_basis[1] =-dirac_temp[6].to_fix();
+                Dirac_basis[2] =-dirac_temp[0].to_fix();
+                Dirac_basis[3] =-dirac_temp[5].to_fix();
+                Dirac_basis[4] = dirac_temp[8].to_fix();
+                Dirac_basis[5] = dirac_temp[2].to_fix();
+                Dirac_basis[6] = dirac_temp[4].to_fix();
+                Dirac_basis[7] =-dirac_temp[7].to_fix();
+                Dirac_basis[8] =-dirac_temp[1].to_fix();
         */
 
-        EDMS_Dirac_basis[0] = -dirac_temp[3].to_fix();
-        EDMS_Dirac_basis[1] = -dirac_temp[6].to_fix();
-        EDMS_Dirac_basis[2] = dirac_temp[0].to_fix();
-        EDMS_Dirac_basis[3] = dirac_temp[5].to_fix();
-        EDMS_Dirac_basis[4] = dirac_temp[8].to_fix();
-        EDMS_Dirac_basis[5] = -dirac_temp[2].to_fix();
-        EDMS_Dirac_basis[6] = -dirac_temp[4].to_fix();
-        EDMS_Dirac_basis[7] = -dirac_temp[7].to_fix();
-        EDMS_Dirac_basis[8] = dirac_temp[1].to_fix();
+        Dirac_basis[0] = -dirac_temp[3].to_fix();
+        Dirac_basis[1] = -dirac_temp[6].to_fix();
+        Dirac_basis[2] =  dirac_temp[0].to_fix();
+        Dirac_basis[3] =  dirac_temp[5].to_fix();
+        Dirac_basis[4] =  dirac_temp[8].to_fix();
+        Dirac_basis[5] = -dirac_temp[2].to_fix();
+        Dirac_basis[6] = -dirac_temp[4].to_fix();
+        Dirac_basis[7] = -dirac_temp[7].to_fix();
+        Dirac_basis[8] =  dirac_temp[1].to_fix();
 
     } // End of check for Dirac_frame or not...
 }
@@ -296,6 +296,11 @@ void EDMS_control_Dirac_frame(physics_handle ph, fix forward, fix pitch, fix yaw
     Y = -Y;
 
     control_dirac_frame(on, F, P, Y, R);
+}
+
+// Access to the Dirac matrix for the main game.
+fix *EDMS_Dirac_basis(void) {
+    return Dirac_basis;
 }
 
 void render_localize(Q &X, Q &Y, Q &Z, int32_t object) {

@@ -715,7 +715,7 @@ void draw_weapons_list(inv_display *dp) {
     char buf[BUFSZ];
     int i, s;
     short y;
-    gr_set_font((grs_font *)ResLock(WEAPONS_FONT));
+    gr_set_font(ResLock(WEAPONS_FONT));
 
     if (newpage) {
         gr_set_fcolor(dp->titlecolor);
@@ -900,7 +900,7 @@ static char *generic_name_func(void *vdp, int num, char *buf) {
 
 static void generic_draw_list(inv_display *dp) {
     uchar newpage = inv_last_page != inventory_page;
-    gr_set_font((grs_font *)ResLock(ITEM_FONT));
+    gr_set_font(ResLock(ITEM_FONT));
 
     draw_quant_list(dp, newpage);
     ResUnlock(ITEM_FONT);
@@ -1019,7 +1019,7 @@ void push_live_grenade_cursor(ObjID obj) {
     void *bits = grenade_bmap_buffer;
 
     grenade_bmap = *bmap;
-    gr_set_font((grs_font *)ResLock(ITEM_FONT));
+    gr_set_font(ResLock(ITEM_FONT));
     get_string(REF_STR_WordLiveGrenade, live_string, sizeof(live_string));
     gr_string_size(live_string, &w, &h);
     w++;
@@ -1046,7 +1046,7 @@ void push_live_grenade_cursor(ObjID obj) {
     gr_init_bitmap(&grenade_bmap, (uchar *)bits, grenade_bmap.type, grenade_bmap.flags, grenade_bmap.w, grenade_bmap.h);
     gr_init_canvas(&cursor_canvas, (uchar *)bits, BMT_FLAT8, grenade_bmap.w, grenade_bmap.h);
     gr_push_canvas(&cursor_canvas);
-    gr_set_font((grs_font *)ResGet(ITEM_FONT));
+    gr_set_font(ResGet(ITEM_FONT));
     gr_clear(0);
 #ifdef SVGA_SUPPORT
     if (convert_use_mode > 0) {
@@ -1449,7 +1449,7 @@ void draw_general_list(inv_display *dp) {
     ubyte known_active = known_actives[dp->activenum];
     uchar newactive = known_active != active;
 
-    gr_set_font((grs_font *)ResLock(ITEM_FONT));
+    gr_set_font(ResLock(ITEM_FONT));
 
     if (newpage) {
         gr_set_fcolor(dp->titlecolor);
@@ -1704,7 +1704,7 @@ extern char *email_name_func(void *dp, int num, char *buf);
 static uchar email_morebuttons[2];
 
 void email_more_draw(inv_display *dp) {
-    gr_set_font((grs_font *)ResLock(ITEM_FONT));
+    gr_set_font(ResLock(ITEM_FONT));
 
     if (dp->relnum % 2 == 1) {
         int i;
@@ -1974,7 +1974,7 @@ errtype inventory_clear(void) {
         r.lr.x = INVENTORY_PANEL_X + INVENTORY_PANEL_WIDTH;
         r.lr.y = INVENTORY_PANEL_Y + INVENTORY_PANEL_HEIGHT;
         if (dirty_inv_canvas) {
-            FrameDesc *f = (FrameDesc *)RefGet(REF_IMG_bmBlankInventoryPanel);
+            FrameDesc *f = RefGet(REF_IMG_bmBlankInventoryPanel);
             LG_memcpy(inv_backgnd.bits, f + 1, f->bm.w * f->bm.h);
             dirty_inv_canvas = FALSE;
         }
@@ -2179,7 +2179,6 @@ uchar inventory_handle_rightbutton(uiEvent *ev, LGRegion *reg, inv_display *dp, 
 
 uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     uchar retval = FALSE;
-    uiMouseEvent *mev = (uiMouseEvent *)ev;
     int relx;
     inv_display *dp = NULL;
     int i;
@@ -2205,14 +2204,14 @@ uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     {
         relx = ev->pos.x - INVENTORY_PANEL_X;
     }
-    if (invpanel_focus && !(mev->buttons & (1 << MOUSE_RBUTTON))) {
+    if (invpanel_focus && !(ev->mouse_data.buttons & (1 << MOUSE_RBUTTON))) {
         uiReleaseFocus(r, UI_EVENT_MOUSE_MOVE);
         invpanel_focus = FALSE;
     }
     if (full_game_3d && !(full_visible & FULL_INVENT_MASK))
         return FALSE;
-    if (full_game_3d && !(mev->buttons & (1 << MOUSE_RBUTTON))) {
-        if (!(mev->action & ~MOUSE_MOTION))
+    if (full_game_3d && !(ev->mouse_data.buttons & (1 << MOUSE_RBUTTON))) {
+        if (!(ev->mouse_data.action & ~MOUSE_MOTION))
             return FALSE;
         if (input_cursor_mode != INPUT_OBJECT_CURSOR) {
             uchar found = FALSE;
@@ -2270,11 +2269,11 @@ uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
             break;
         }
     }
-    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (mev->action & (MOUSE_LDOWN | MOUSE_RUP | UI_MOUSE_LDOUBLE))) {
+    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (ev->mouse_data.action & (MOUSE_LDOWN | MOUSE_RUP | UI_MOUSE_LDOUBLE))) {
         add_object_on_cursor(dp, row);
         return TRUE;
     }
-    if ((mev->buttons & (1 << MOUSE_RBUTTON)) || (ev->subtype & (MOUSE_RUP | MOUSE_RDOWN)))
+    if ((ev->mouse_data.buttons & (1 << MOUSE_RBUTTON)) || (ev->subtype & (MOUSE_RUP | MOUSE_RDOWN)))
         if (inventory_handle_rightbutton(ev, r, dp, row))
             retval = TRUE;
     // Handle left button
@@ -2292,11 +2291,11 @@ uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
 
 int last_invent_cnum = -1; // last cursor num set for region
 uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
-    uiMouseEvent *me = (uiMouseEvent*)ev;
-    LGPoint pos = me->pos;
+    LGPoint pos = ev->pos;
     int cnum;
 
-    if (full_game_3d && (me->buttons & (1 << MOUSE_LBUTTON)) != 0 && (me->action & MOUSE_LDOWN) == 0 &&
+    if (full_game_3d && (ev->mouse_data.buttons & (1 << MOUSE_LBUTTON)) != 0 &&
+	(ev->mouse_data.action & MOUSE_LDOWN) == 0 &&
         uiLastMouseRegion[MOUSE_LBUTTON] != NULL && uiLastMouseRegion[MOUSE_LBUTTON] != r) {
         uiSetRegionDefaultCursor(r, NULL);
         return FALSE;
@@ -2328,7 +2327,7 @@ uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
         uiSetRegionDefaultCursor(r, c);
     }
 
-    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (me->action & (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE))) {
+    if (input_cursor_mode == INPUT_OBJECT_CURSOR && (ev->mouse_data.action & (MOUSE_LDOWN | MOUSE_RDOWN | UI_MOUSE_LDOUBLE))) {
         AddResult pop = (AddResult)add_to_some_page(object_on_cursor, FALSE);
         if (IS_POP_RESULT(pop))
             pop_cursor_object();
@@ -2338,7 +2337,7 @@ uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
     if (page_button_state[cnum] == BttnDummy)
         return FALSE;
 
-    if (me->action & MOUSE_LDOWN) {
+    if (ev->mouse_data.action & MOUSE_LDOWN) {
         int i = cnum;
         short x = FIRST_BTTN_X + i * BUTTON_X_STEP;
         if (pos.x >= x && pos.x < x + INVENT_BTTN_WD && page_button_state[i] != BttnDummy) {
@@ -2492,7 +2491,7 @@ LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **p
     invrect.ul.y = invrect.lr.y;
     invrect.lr.y = RectHeight(root->r);
     region_create(root, pagereg, &invrect, 0, 0, REG_USER_CONTROLLED | AUTODESTROY_FLAG, NULL, NULL, NULL, NULL);
-    uiInstallRegionHandler(pagereg, (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), (uiHandlerProc)pagebutton_mouse_handler,
+    uiInstallRegionHandler(pagereg, (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE), pagebutton_mouse_handler,
                            0, &id);
     uiSetRegionDefaultCursor(pagereg, &globcursor);
 
@@ -2512,16 +2511,14 @@ LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **p
         }
 
         // Pull in the background bitmap
-        ResLock(RES_gamescrGfx);
-        f = (FrameDesc *)RefLock(REF_IMG_bmBlankInventoryPanel);
+        f = RefLock(REF_IMG_bmBlankInventoryPanel);
         inv_backgnd = f->bm;
 
         // This background is going to get used by the 360 ware
         // in fullscreen mode, so we need extra bits
         inv_backgnd.bits = (uchar *)malloc(MAX_INV_FULL_WD(INV_FULL_WD) * MAX_INV_FULL_HT(grd_cap->h - GAME_MESSAGE_Y));
         LG_memcpy(inv_backgnd.bits, (f + 1), f->bm.w * f->bm.h);
-        ResUnlock(RES_gamescrGfx);
-        ResUnlock(RES_gamescrGfx);
+	RefUnlock(REF_IMG_bmBlankInventoryPanel);
 
         // init the canvas
         gr_init_sub_canvas(grd_scr_canv, &inv_norm_canvas, INVENTORY_PANEL_X, INVENTORY_PANEL_Y, INVENTORY_PANEL_WIDTH,

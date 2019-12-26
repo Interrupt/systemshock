@@ -106,6 +106,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "fix.h"
 
+// FIXME pragma pack
+#pragma pack(push,2)
+
 /* system information structure. */
 typedef struct {
    uchar id_maj;     /* major id---type of graphics system */
@@ -122,7 +125,7 @@ typedef struct {
 } grs_mode_info;
 
 /* amazing rgb type. */
-typedef ulong grs_rgb;
+typedef uint32_t grs_rgb;
 
 /* structure for bitmaps to be drawn from and to.  if a bitmap is contained
    within a larger bitmap, the row field tells how wide the containing bitmap
@@ -149,7 +152,7 @@ typedef struct _sten {
 /* stencil header for non-rectangular clipping. */
 typedef struct {
    grs_sten_elem *elem;    /* pointer to first stencil element */
-   long flags;             /* specific stencil data. */
+   int32_t flags;             /* specific stencil data. */
 } grs_stencil;
 
 /* structure for clipping regions.  a clipping region can either be a simple
@@ -176,29 +179,30 @@ typedef union {
    } i;
 } grs_clip;
 
+// Font.
 typedef struct {
-	ushort id;
-	char dummy1[34];
-	short min;
-	short max;
-	char dummy2[32];
-	long cotptr;
-	long buf;
-	short w;
-	short h;
-	short off_tab[1];
+    ushort id;
+    char dummy1[34];
+    short min;
+    short max;
+    char dummy2[32];
+    int32_t cotptr;
+    int32_t buf;
+    short w;
+    short h;
+    short off_tab[1];
 } grs_font;
 
 /* structure for drawing context.  the context contains data about which
    color, font attributes, filling attributes, and an embedded clipping
    region structure. */
 typedef struct {
-   long fcolor;      /* current drawing color */
-   long bcolor;      /* background color */
+   int32_t fcolor;      /* current drawing color */
+   int32_t bcolor;      /* background color */
    grs_font *font;   /* font id */
-   long text_attr;   /* attributes for text */
-   long fill_type;   /* how to fill primitives */
-   long fill_parm;   /* parameter for fill */
+   int32_t text_attr;   /* attributes for text */
+   int32_t fill_type;   /* how to fill primitives */
+    intptr_t fill_parm;   /* parameter for fill */
    grs_clip clip;    /* clipping region */
 } grs_context;
 
@@ -235,5 +239,7 @@ typedef struct {
 typedef struct {
    fix x,y,z;    /* 3's */
 } grs_point3d;
+
+#pragma pack(pop)
 
 #endif /* !__GRS_H */

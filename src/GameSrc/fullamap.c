@@ -48,18 +48,16 @@ void amap_start(void);
 void amap_exit(void);
 
 uchar amap_mouse_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
-    uiMouseEvent *mev = (uiMouseEvent *)ev;
-    if (mev->action & (MOUSE_LDOWN | MOUSE_LUP | MOUSE_WHEELUP | MOUSE_WHEELDN))
-        return amap_ms_callback(oAMap(MFD_FULLSCR_MAP), mev->pos.x, mev->pos.y, mev->action, mev->buttons);
+    uiMouseData *md = &ev->mouse_data;
+    if (md->action & (MOUSE_LDOWN | MOUSE_LUP | MOUSE_WHEELUP | MOUSE_WHEELDN))
+        return amap_ms_callback(oAMap(MFD_FULLSCR_MAP), ev->pos.x, ev->pos.y, md->action, md->buttons);
     return (TRUE);
 }
 
 uchar amap_kb_callback(curAMap *amptr, int code);
 
 uchar amap_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
-    uiCookedKeyEvent *kev = (uiCookedKeyEvent *)ev;
-
-    if (amap_kb_callback(oAMap(MFD_FULLSCR_MAP), kev->code))
+    if (amap_kb_callback(oAMap(MFD_FULLSCR_MAP), ev->cooked_key_data.code))
         return FALSE;
     return (main_kb_callback(ev, r, user_data));
 }

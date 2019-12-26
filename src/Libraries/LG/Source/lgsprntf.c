@@ -286,7 +286,7 @@ int lg_vsprintf(char *buf, const char *format, va_list arglist)
                newchars=1;
                break;
             case 'b': // bool
-               arg_bool=!!va_arg(arglist,bool);
+               arg_bool=!!va_arg(arglist,int);
                if(altform) {
                   buf[dest_ind]=boolstring[arg_bool][0];
                   newchars=1;

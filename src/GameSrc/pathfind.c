@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __PATHFIND_SRC
 
+#include <assert.h>
 #include <string.h>
 
 #include "pathfind.h"
@@ -659,6 +660,7 @@ errtype find_path(char path_id) {
             i = 0;
             currpt = paths[path_id].dest;
             while (!PointsEqual(currpt, paths[path_id].source)) {
+                assert(i < NUM_PATH_STEPS);
                 j = PFE_DIR(PFE_GET_XY(currpt.x, currpt.y));
                 SET_PATH_STEP(path_id, i, j);
                 i++;

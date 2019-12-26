@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/07 13:22:58 $
  *
  */
+#include <assert.h>
 #include <string.h>
 
 #include "citres.h"
@@ -31,14 +32,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "statics.h"
 
 // Internal Prototypes
-errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar tmp_mem, LGRect *anchor,
-                                    uchar *p);
+errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, LGRect *anchor, uchar *p);
 
 grs_bitmap *lock_bitmap_from_ref_anchor(Ref r, LGRect *anchor) {
     FrameDesc *f;
     if (r == 0)
         return (NULL);
-    f = (FrameDesc *)RefLock(r);
+    f = RefLock(r);
     if (f == NULL) {
         //      Warning(("Could not lock bitmap %d!",r));
         return (NULL);
@@ -64,55 +64,37 @@ grs_bitmap *get_bitmap_from_ref_anchor(Ref r, LGRect *anchor) {
 #pragma scheduling off
 #pragma global_optimizer off
 
-errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar tmp_mem, LGRect *anchor,
-                                    uchar *p) {
-    Ref rid;
-    FrameDesc *f;
-    uchar alloced_fdesc = FALSE;
+errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, LGRect *anchor, uchar *p) {
     extern int memcount;
+    Ref rid = MKREF(id_num, i);
+    FrameDesc *f = RefGet(rid);
 
-    if (!RefIndexValid(rt, i)) {
-        //      Warning(("Bitmap index %i invalid!\n",i));
-        printf("Bitmap index %i invalid!\n", i);
-        return (ERR_FREAD);
-    }
-
-    rid = MKREF(id_num, i);
-    if (RefSize(rt, i) > FRAME_BUFFER_SIZE) {
-        //      Warning(("damn, we have to malloc...need %d, buffer = %d\n",RefSize(rt,i),FRAME_BUFFER_SIZE));
-        f = (FrameDesc *)malloc(RefSize(rt, i));
-        alloced_fdesc = TRUE;
-    } else {
-        //      mprintf("look, Refsize is only %d!\n",RefSize(rt,i));
-        f = (FrameDesc *)frameBuffer;
-    }
-
-    memcount += RefSize(rt, i);
     if (f == NULL) {
         //      Warning(("Could not load bitmap from resource #%d!\n",id_num));
         printf("Could not load bitmap from resource #%d!\n", id_num);
         return (ERR_FREAD);
     }
-    RefExtract(rt, rid, f);
+
+    const size_t size = f->bm.w * f->bm.h;
+    if (p == NULL) {
+	// Caller wants us to allocate a framebuffer.
+        p = malloc(f->bm.w * f->bm.h);
+    }
 
     if (anchor != NULL)
         *anchor = f->anchorArea;
-    if (!tmp_mem && p == NULL)
-        p = (uchar *)malloc(f->bm.w * f->bm.h * sizeof(uchar));
-    if (tmp_mem)
-        p = (uchar *)(f + 1);
 
-    memcount += f->bm.w * f->bm.h * sizeof(uchar);
-    if (!tmp_mem)
-        LG_memcpy(p, f + 1, f->bm.w * f->bm.h * sizeof(uchar));
-    //
+    // Copy the bitmap structure across.
     if (bmp == NULL)
         DEBUG("%s: Trying to assign to a null bmp pointer!", __FUNCTION__);
-    //
     *bmp = f->bm;
+
+    // Copy the bits.
+    memcount += f->bm.w * f->bm.h; // FIXME is this needed any more?
+    memcpy(p, f->bm.bits, f->bm.w * f->bm.h);
+
     bmp->bits = p;
-    if (alloced_fdesc)
-        free(f);
+
     return (OK);
 }
 
@@ -121,28 +103,16 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable 
 
 #pragma mark -
 
-errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, RefTable *rt, uchar transp, LGRect *anchor, uchar *p) {
-    return master_load_bitmap_from_res(bmp, id_num, i, rt, FALSE, anchor, p);
+errtype load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, uchar transp, LGRect *anchor) {
+    return master_load_bitmap_from_res(bmp, id_num, i, anchor, NULL);
 }
 
 errtype load_res_bitmap(grs_bitmap *bmp, Ref rid, uchar alloc) {
     errtype retval;
 
     // printf("load_res_bitmap %x : %x\n", REFID(rid), REFINDEX(rid));
+    retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), NULL, (alloc) ? NULL : bmp->bits);
 
-    RefTable *rt = ResReadRefTable(REFID(rid));
-    retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, FALSE, NULL, (alloc) ? NULL : bmp->bits);
-
-    ResFreeRefTable(rt);
-
-    return (retval);
-}
-
-errtype extract_temp_res_bitmap(grs_bitmap *bmp, Ref rid) {
-    errtype retval;
-    RefTable *rt = ResReadRefTable(REFID(rid));
-    retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, TRUE, NULL, NULL);
-    ResFreeRefTable(rt);
     return (retval);
 }
 
@@ -181,7 +151,6 @@ errtype load_res_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid, uchar allo
     LGRect anchor;
     extern int memcount;
 
-    RefTable *rt = ResReadRefTable(REFID(rid));
 #ifdef SVGA_SUPPORT
     short w, h;
     short temp;
@@ -192,7 +161,7 @@ errtype load_res_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid, uchar allo
     ss_set_hack_mode(2, &temp);
 
     gr2ss_override = OVERRIDE_ALL;
-    master_load_bitmap_from_res(&temp_bmp, REFID(rid), REFINDEX(rid), rt, FALSE, &anchor, NULL);
+    master_load_bitmap_from_res(&temp_bmp, REFID(rid), REFINDEX(rid), &anchor, NULL);
     w = temp_bmp.w;
     h = temp_bmp.h;
     ss_point_convert(&w, &h, FALSE);
@@ -208,7 +177,6 @@ errtype load_res_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid, uchar allo
     gr_clear(0);
     ss_bitmap(&temp_bmp, 0, 0);
     free(temp_bmp.bits);
-    ResFreeRefTable(rt);
     if (convert_use_mode) {
         anchor.ul.x = (SCONV_X(anchor.ul.x) + SCONV_X(anchor.ul.x + 1)) / 2;
         anchor.ul.y = (SCONV_Y(anchor.ul.y) + SCONV_Y(anchor.ul.y + 1)) / 2;
@@ -220,8 +188,7 @@ errtype load_res_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid, uchar allo
     gr2ss_override = old_over;
 #else
     retval =
-        master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, FALSE, &anchor, (alloc) ? NULL : bmp->bits);
-    ResFreeRefTable(rt);
+        master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), &anchor, (alloc) ? NULL : bmp->bits);
     retval = uiMakeBitmapCursor(c, bmp, anchor.ul);
 #endif
     return retval;
@@ -235,10 +202,8 @@ errtype load_hires_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid, uchar al
     errtype retval = OK;
     LGRect anchor;
 
-    RefTable *rt = ResReadRefTable(REFID(rid));
     retval =
-        master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), rt, FALSE, &anchor, (alloc) ? NULL : bmp->bits);
-    ResFreeRefTable(rt);
+        master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), &anchor, (alloc) ? NULL : bmp->bits);
     retval = uiMakeBitmapCursor(c, bmp, anchor.ul);
 }
 

@@ -48,9 +48,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 bool ResCheckId(Id id);    // returns TRUE if id ok, else FALSE + warns
 bool RefCheckRef(Ref ref); // returns TRUE if ref ok, else FALSE & warns
 
+// Size of a ref on disc (not necessarily in memory).
+#define RefSize(prt, index) (prt->entries[index].size)
+
 //	Resource loading (resload.c)
 
-void *ResLoadResource(Id id);
+void *ResLoadResource(Id id, const ResourceFormat *format);
 bool ResRetrieve(Id id, void *buffer);
 
 /*
@@ -71,6 +74,9 @@ void ResGrowResDescTable(Id id);
         if ((id) > resDescMax)       \
             ResGrowResDescTable(id); \
     }
+
+// (Private) access to resource size in the file.
+#define ResFSize(id) (gResDesc[id].fsize)
 
 #define DEFAULT_RES_GROWDIRENTRIES 128 // must be power of 2
 

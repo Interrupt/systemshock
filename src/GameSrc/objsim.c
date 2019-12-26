@@ -1267,7 +1267,7 @@ errtype obj_create_player(ObjLoc *plr_loc) {
     pos_list[0] = fix_from_obj_coord(plr_loc->x) >> 8;
     pos_list[1] = fix_from_obj_coord(plr_loc->y) >> 8;
     pos_list[2] = fix_from_obj_height_val(plr_loc->z) >> 8;
-    fr_objslew_go_real_height(NULL, (long *)pos_list);
+    fr_objslew_go_real_height(NULL, (int32_t *)pos_list);
     plr_loc->z = obj_height_from_fix(pos_list[2] << 8);
 
     if ((player_struct.edms_state[0]) && (!global_fullmap->cyber)) {
@@ -1400,7 +1400,7 @@ errtype ObjClassInit(ObjID id, ObjSpecID specid, int subclass) {
 // ## INSERT NEW SUBCLASS HERE
 
 errtype obj_load_properties() {
-    // Handle	res;
+    // Handle   res;
     int version, i, j;
     char *cp;
 
@@ -2054,7 +2054,7 @@ grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, uchar s
         currfont = RES_citadelFont;
         break;
     }
-    gr_set_font((grs_font *)ResLock(currfont));
+    gr_set_font(ResLock(currfont));
     gr_string_size(s, &w, &h);
     while (size_remaining > h) {
         if (scroll)

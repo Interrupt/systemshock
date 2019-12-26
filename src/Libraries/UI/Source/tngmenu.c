@@ -64,7 +64,7 @@ errtype tng_menu_init(void *ui_data, TNG *ptng, TNGStyle *sty, LGPoint coord, in
    pmntng->coord = coord;
    llist_init(&(pmntng->element_header));
 
-   f = (grs_font *)ResLock(ptng->style->font);
+   f = FontLock(ptng->style->font);
    pmntng->slot_height = f->h + TNG_MENU_SPACING;
    ResUnlock(ptng->style->font);
 

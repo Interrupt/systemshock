@@ -32,18 +32,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 // build a table of line starts for the bitmap parameter
-long *gr_make_vtab (grs_bitmap *bm)
+int32_t *gr_make_vtab (grs_bitmap *bm)
  {
  	void 	*mem;
- 	long	*dest;
- 	long	i,add,row;
- 	long	maxh;
+ 	int32_t *dest;
+ 	int32_t i,add,row;
+ 	int32_t maxh;
  	
- 	mem = gr_alloc_temp(bm->h<<2);
+ 	mem = gr_alloc_temp(bm->h * sizeof(int32_t));
  	row = bm->row;
 	add = 0L;
 	maxh = bm->h;
-	dest = (long *) mem;
+	dest = (int32_t *) mem;
 	
 	for (i=0; i<maxh; i++)
 	 {
@@ -51,6 +51,6 @@ long *gr_make_vtab (grs_bitmap *bm)
 	 	add += row;
 	 }
 
- 	return((long *) mem);
+ 	return((int32_t *) mem);
  }
 

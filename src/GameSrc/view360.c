@@ -256,7 +256,7 @@ void view360_render(void) {
                 gr_push_canvas(grd_screen_canvas);
             }
             gr_set_fcolor(WHITE);
-            gr_set_font((grs_font *)ResLock(RES_tinyTechFont));
+            gr_set_font(ResLock(RES_tinyTechFont));
             gr_string_size(update_string, &w, &h);
             RECT_FILL(&r, basex + w + 2, basey - h - 2, basex + w + 2 + gr_string_width(buf), basey - h - 2 + h);
             if (!full_game_3d)

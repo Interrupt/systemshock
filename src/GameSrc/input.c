@@ -250,7 +250,7 @@ int view3d_mouse_input(LGPoint pos, LGRegion *reg, uchar move, int *lastsect);
 void view3d_dclick(LGPoint pos, frc *fr, bool shifted);
 void look_at_object(ObjID id);
 uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data);
-void view3d_rightbutton_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data);
+void view3d_rightbutton_handler(uiEvent *ev, LGRegion *r, view3d_data *data);
 uchar view3d_key_handler(uiEvent *ev, LGRegion *r, intptr_t data);
 void use_object_in_3d(ObjID obj, bool shifted);
 
@@ -322,11 +322,11 @@ uchar view3d_got_event = FALSE;
 
 void poll_mouse(void) {
     if (_current_view != NULL) {
-        uiMouseEvent ev;
+        uiEvent ev;
         uiMakeMotionEvent(&ev);
         ev.type = UI_EVENT_USER_DEFINED;
         mouse_constrain_bits |= LOCK_CONSTRAIN_BIT;
-        uiDispatchEventToRegion((uiEvent *)&ev, _current_view);
+        uiDispatchEventToRegion(&ev, _current_view);
         mouse_constrain_bits &= ~LOCK_CONSTRAIN_BIT;
     }
 }
@@ -1753,7 +1753,7 @@ int view3d_mouse_input(LGPoint pos, LGRegion *reg, uchar move,
 }
 
 // Not a directly-installed mouse handler, called from view3d_mouse_handler
-void view3d_rightbutton_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data) {
+void view3d_rightbutton_handler(uiEvent *ev, LGRegion *r, view3d_data *data) {
     extern LGCursor fire_cursor;
     extern uchar hack_takeover;
     LGPoint aimpos = ev->pos;
@@ -1767,7 +1767,7 @@ void view3d_rightbutton_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data
     if (hack_takeover)
         return;
 
-    if (ev->action & MOUSE_RUP) {
+    if (ev->mouse_data.action & MOUSE_RUP) {
         if (!data->rdown)
             data->lastright = aimpos;
         else
@@ -1783,7 +1783,7 @@ void view3d_rightbutton_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data
         }
     }
 
-    if (ev->action & MOUSE_RDOWN) {
+    if (ev->mouse_data.action & MOUSE_RDOWN) {
         data->rdown = TRUE;
         data->lastright = aimpos;
         left_down_jump = data->ldown && !global_fullmap->cyber;
@@ -1803,13 +1803,14 @@ void view3d_rightbutton_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data
 
     switch (input_cursor_mode) {
     case INPUT_NORMAL_CURSOR:
-        if (!global_fullmap->cyber && (player_struct.fire_rate == 0) && !(ev->action & MOUSE_RDOWN))
+        if (!global_fullmap->cyber && (player_struct.fire_rate == 0) &&
+	    !(ev->mouse_data.action & MOUSE_RDOWN))
             break;
         if (left_down_jump)
             break;
         if (data->rdown) {
             // printf("FIRE WEAPON!\n");
-            if (fire_player_weapon(&aimpos, r, weapon_button_up) && (ev->action & MOUSE_RDOWN) && !fire_slam) {
+            if (fire_player_weapon(&aimpos, r, weapon_button_up) && (ev->mouse_data.action & MOUSE_RDOWN) && !fire_slam) {
                 if (full_game_3d)
                     uiPushSlabCursor(&fullscreen_slab, &fire_cursor);
                 else
@@ -1820,7 +1821,7 @@ void view3d_rightbutton_handler(uiMouseEvent *ev, LGRegion *r, view3d_data *data
         }
         break;
     case INPUT_OBJECT_CURSOR:
-        if (ev->action & MOUSE_RUP) {
+        if (ev->mouse_data.action & MOUSE_RUP) {
             fix vel = throw_oomph * FIX_UNIT;
             short dropy = DROP_REGION_Y(r);
             short y = aimpos.y;
@@ -2136,10 +2137,13 @@ char *get_object_lookname(ObjID id, char use_string[], int sz) {
     } break;
     }
     // If we haven't set ref or ref is garbage, use the long name.
-    if ((ref == -1) || !(RefIndexValid((RefTable *)ResGet(REFID(ref)), REFINDEX(ref)))) {
+    char *temp = (ref == -1) ? NULL : RefGet(ref);
+    if (temp == NULL) {
         strcat(use_string, get_object_long_name(usetrip, NULL, 0));
-    } else
-        get_string(ref, use_string, sz);
+    } else {
+        strncpy(use_string, temp, sz);
+        use_string[sz-1] = '\0';
+    }
     return (use_string);
 }
 
@@ -2204,11 +2208,11 @@ void view3d_dclick(LGPoint pos, frc *fr, bool shifted) {
 // view3d_mouse_handler is the actual installed mouse handler, dispatching to the above functions
 uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
     static uchar got_focus = FALSE;
-    uiMouseEvent *me = (uiMouseEvent*)ev;
+    uiMouseData *md = &ev->mouse_data;
     view3d_data *data = (view3d_data*)v;
     uchar retval = TRUE;
     LGPoint pt;
-    LGPoint evp = me->pos;
+    LGPoint evp = ev->pos;
     extern int _fr_glob_flags;
 
     pt = evp;
@@ -2256,7 +2260,7 @@ uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
                                     CONTROL_NO_CHANGE);
         return (FALSE);
     }
-    if (me->action & MOUSE_LDOWN) {
+    if (md->action & MOUSE_LDOWN) {
         data->ldown = TRUE;
         data->lastleft = evp;
         if (full_game_3d && !got_focus) {
@@ -2266,7 +2270,7 @@ uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
         chg_set_flg(_current_3d_flag);
         //      view3d_constrain_mouse(r,LBUTTON_CONSTRAIN_BIT);
     }
-    if (me->action & MOUSE_LUP || !(me->buttons & (1 << MOUSE_LBUTTON))) {
+    if (md->action & MOUSE_LUP || !(md->buttons & (1 << MOUSE_LBUTTON))) {
         data->ldown = FALSE;
         if (full_game_3d && got_focus) {
             if (uiReleaseFocus(r, UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE) == OK)
@@ -2274,10 +2278,10 @@ uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
         }
         //      view3d_unconstrain_mouse(LBUTTON_CONSTRAIN_BIT);
     }
-    if (me->action & MOUSE_LUP && abs(evp.y - data->lastleft.y) < uiDoubleClickTolerance &&
+    if (md->action & MOUSE_LUP && abs(evp.y - data->lastleft.y) < uiDoubleClickTolerance &&
         abs(evp.x - data->lastleft.x) < uiDoubleClickTolerance) {
         //make shift+leftclick act as double-leftclick with alternate effects
-        if (me->modifiers & 1) { //shifted click; see sdl_events.c
+        if (md->modifiers & 1) { //shifted click; see sdl_events.c
             view3d_dclick(evp, data->fr, TRUE); //TRUE indicates shifted
             data->lastleft = MakePoint(-100, -100);
         }
@@ -2312,8 +2316,8 @@ uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
             data->lastleft.x = -255;
         }
     }
-    if ((me->action & (MOUSE_RDOWN | MOUSE_RUP)) || (me->buttons & (1 << MOUSE_RBUTTON)))
-        view3d_rightbutton_handler(me, r, data);
+    if ((md->action & (MOUSE_RDOWN | MOUSE_RUP)) || (md->buttons & (1 << MOUSE_RBUTTON)))
+        view3d_rightbutton_handler(ev, r, data);
 
     /* KLC - done in another place now.
        else
@@ -2330,18 +2334,18 @@ uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
        }
 
     */
-    if ((me->buttons & (1 << MOUSE_RBUTTON)) == 0 ||
-        ((me->buttons & (1 << MOUSE_RBUTTON)) == 0 && global_fullmap->cyber))
+    if ((md->buttons & (1 << MOUSE_RBUTTON)) == 0 ||
+        ((md->buttons & (1 << MOUSE_RBUTTON)) == 0 && global_fullmap->cyber))
         physics_set_one_control(MOUSE_CONTROL_BANK, CONTROL_ZVEL, 0);
 
-    if (me->action & UI_MOUSE_LDOUBLE) {
+    if (md->action & UI_MOUSE_LDOUBLE) {
         // Spew(DSRC_USER_I_Motion,("use this, bay-bee!\n"));
         view3d_dclick(evp, data->fr, FALSE);
         data->lastleft = MakePoint(-100, -100);
     }
 
-    if (me->action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
-        cycle_weapons_func(0, 0, me->action & MOUSE_WHEELUP ? -1 : 1);
+    if (md->action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
+        cycle_weapons_func(0, 0, md->action & MOUSE_WHEELUP ? -1 : 1);
     }
 
     // data->ldown = TRUE;
@@ -2361,14 +2365,14 @@ extern int FireKeys[]; //see MacSrc/Prefs.c
 
 uchar view3d_key_handler(uiEvent *ev, LGRegion *r, intptr_t data)
 {
-    uiCookedKeyEvent *ke = (uiCookedKeyEvent*)ev;
+    uiCookedKeyData *kd = &ev->cooked_key_data;
   int i, detect = 0, fire_pressed = 0;
 
   i = 0;
   while (FireKeys[i] != 0)
   {
-    if (ke->code == FireKeys[i]) detect = 1;
-    if (ke->code == (FireKeys[i] | KB_FLAG_DOWN)) {detect = 1; fire_pressed = 1; break;}
+    if (kd->code == FireKeys[i]) detect = 1;
+    if (kd->code == (FireKeys[i] | KB_FLAG_DOWN)) {detect = 1; fire_pressed = 1; break;}
     i++;
   }
   if (!detect) return FALSE;
@@ -2377,7 +2381,7 @@ uchar view3d_key_handler(uiEvent *ev, LGRegion *r, intptr_t data)
   {
     if (weapon_button_up) // if we haven't fired already
     {
-      LGPoint evp = ke->pos;
+      LGPoint evp = ev->pos;
       ss_point_convert(&(evp.x), &(evp.y), FALSE);
       fire_player_weapon(&evp, r, !fire_slam);
       fire_slam = TRUE;

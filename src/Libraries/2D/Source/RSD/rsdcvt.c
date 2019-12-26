@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Initial revision
  * 
  */
-
+#include <assert.h>
 #include <string.h>
 #include "grs.h"
 #include "bitmap.h"
@@ -130,6 +130,7 @@ int gr_rsd8_convert(grs_bitmap *sbm, grs_bitmap *dbm)
          /* reset x to be beginning of line and set y to next scanline. */
          x -= sbm->w;
          if (over_run) {
+	     assert(over_run > 0);
             LG_memset (p_dst, kSkipColor, over_run);
             p_dst += over_run;
          }
@@ -137,8 +138,10 @@ int gr_rsd8_convert(grs_bitmap *sbm, grs_bitmap *dbm)
       }
    }
 rsd_done:
-   if (over_run=(dbm->bits+dbm->row*dbm->h)-p_dst)
+   if (over_run=(dbm->bits+dbm->row*dbm->h)-p_dst) {
+       assert(over_run > 0);
       LG_memset (p_dst, kSkipColor, over_run);
+   }
    return GR_UNPACK_RSD8_OK;
 }
    

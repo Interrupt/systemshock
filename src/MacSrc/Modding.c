@@ -87,7 +87,7 @@ int ProcessModDirectory(char* dirname) {
 		while(ep = readdir(dp)) {
 
 			printf("ep->d_name %s\n", ep->d_name);
-			char buf[strlen(dirname) + strlen(ep->d_name) + 2];
+			char* buf = (char *)malloc(strlen(dirname) + strlen(ep->d_name) + 2);
 
 			strcpy(buf, dirname);
 
@@ -101,6 +101,7 @@ int ProcessModDirectory(char* dirname) {
 			strcat(buf, ep->d_name);
 
 			ProcessModFile(buf, FALSE);
+            free(buf);
 		}
 		
 		closedir(dp);

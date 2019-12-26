@@ -39,8 +39,145 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res.h"
 #include "res_.h"
 #include "lg.h"
+
+#include <assert.h>
 #include <stdlib.h> // free()
 #include <string.h>
+
+// An empty ResourceFormat struct means no translation is needed.
+const ResourceFormat RawFormat = { NULL, NULL, 0, NULL };
+
+void *ResDecode(void *raw, size_t *size, UserDecodeData ud)
+{
+    // Layout.
+    const ResLayout *layout = (const ResLayout*)ud;
+    // Working pointer into the raw data.
+    uchar *rp = raw;
+    // Number of entries, if it's an array.
+    int nentries = (layout->flags & LAYOUT_FLAG_ARRAY) ? *size / layout->dsize : 1;
+    // Total size of the decoded data.
+    size_t bufsize = layout->msize * nentries;
+    if (layout->flags & LAYOUT_FLAG_RAW_DATA_FOLLOWS) {
+        // Additional raw data follows; add its size to the buffer.
+        assert(nentries == 1);
+        bufsize += *size - layout->dsize;
+    }
+    void *buff = malloc(bufsize);
+    int i;
+    for (i = 0; i < nentries; ++i) {
+        uchar *b = ((uchar *)buff) + i * layout->msize;
+        uchar *bp;
+        const ResField *field = layout->fields;
+
+        while (field->type != RFFT_END) {
+            bp = b + field->offset;
+	    if (field->type > RFFT_BIN_BASE) {
+		// Fixed size binary data, treated as flat byte array.
+		int binsize = field->type - RFFT_BIN_BASE;
+		memcpy(bp, rp, binsize);
+		rp += binsize;
+	    } else switch (field->type) {
+            case RFFT_PAD:
+                rp += field->offset;
+                break;
+            case RFFT_UINT8:
+                *bp = *rp++;
+                break;
+            case RFFT_UINT16:
+                *(uint16_t*)bp = (uint16_t)rp[0] | ((uint16_t)rp[1] << 8);
+                rp += 2;
+                break;
+            case RFFT_UINT32:
+                *(uint32_t*)bp = (uint32_t)rp[0] | ((uint32_t)rp[1] << 8) |
+                    ((uint32_t)rp[2] << 16) | ((uint32_t)rp[3] << 24);
+                rp += 4;
+                break;
+            case RFFT_INTPTR:
+                // These occupy 32 bits in file but expand to pointer size in memory.
+                *(uintptr_t*)bp = (uint32_t)rp[0] | ((uint32_t)rp[1] << 8) |
+                    ((uint32_t)rp[2] << 16) | ((uint32_t)rp[3] << 24);
+                rp += 4;
+                break;
+            case RFFT_RAW: // should be last entry
+                memcpy(bp, rp, *size - (rp-(uchar*)raw));
+                break;
+            default:
+                assert(!"Invalid resource field type");
+            }
+            ++field;
+        }
+    }
+    // Update size with the decoded data size.
+    *size = bufsize;
+    return buff;
+}
+
+void *ResEncode(void *cooked, size_t *size, UserDecodeData ud)
+{
+    // Layout.
+    const ResLayout *layout = (const ResLayout*)ud;
+    // Number of entries, if it's an array.
+    int nentries = (layout->flags & LAYOUT_FLAG_ARRAY) ? *size / layout->msize : 1;
+    // Total size of the data on disc.
+    size_t bufsize = layout->dsize * nentries;
+    if (layout->flags & LAYOUT_FLAG_RAW_DATA_FOLLOWS) {
+        // Additional raw data follows; add its size to the buffer.
+        assert(nentries == 1);
+        bufsize += *size - layout->msize;
+    }
+    void *buff = malloc(bufsize);
+    // Working pointer into the "raw" data.
+    uchar *rp = buff;
+    int i;
+    for (i = 0; i < nentries; ++i) {
+        uchar *b = ((uchar *)cooked) + i * layout->msize;
+        uchar *bp;
+        const ResField *field = layout->fields;
+
+        while (field->type != RFFT_END) {
+            bp = b + field->offset;
+	    if (field->type > RFFT_BIN_BASE) {
+		// Fixed size binary data, treated as flat byte array.
+		int binsize = field->type - RFFT_BIN_BASE;
+		memcpy(rp, bp, binsize);
+		rp += binsize;
+	    } else switch (field->type) {
+            case RFFT_PAD:
+                rp += field->offset;
+                break;
+            case RFFT_UINT8:
+                *rp++ = *bp;
+                break;
+            case RFFT_UINT16:
+		*rp++ = (*(uint16_t*)bp) & 0xff;
+		*rp++ = (*(uint16_t*)bp) >> 8;
+                break;
+            case RFFT_UINT32:
+		*rp++ = (*(uint32_t*)bp) & 0xff;
+		*rp++ = ((*(uint32_t*)bp) >> 8) & 0xff;
+		*rp++ = ((*(uint32_t*)bp) >> 16) & 0xff;
+		*rp++ = ((*(uint32_t*)bp) >> 24) & 0xff;
+                break;
+            case RFFT_INTPTR:
+                // These occupy 32 bits in file but expand to pointer size in memory.
+		*rp++ = (*(uintptr_t*)bp) & 0xff;
+		*rp++ = ((*(uintptr_t*)bp) >> 8) & 0xff;
+		*rp++ = ((*(uintptr_t*)bp) >> 16) & 0xff;
+		*rp++ = ((*(uintptr_t*)bp) >> 24) & 0xff;
+                break;
+            case RFFT_RAW: // should be last entry
+                memcpy(rp, bp, bufsize - (rp-(uchar*)buff));
+                break;
+            default:
+                assert(!"Invalid resource field type");
+            }
+            ++field;
+        }
+    }
+    // Return the size of the 'raw' data.
+    *size = bufsize;
+    return buff;
+}
 
 //	---------------------------------------------------------
 //
@@ -50,12 +187,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //	Returns: ptr to locked resource
 //	---------------------------------------------------------
-
 void *ResLock(Id id) {
     ResDesc *prd;
 
-    //	Check if valid id
-    //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
+    //  Check if valid id
+    //  DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return NULL;});
 
 
     prd = RESDESC(id);
@@ -67,7 +203,7 @@ void *ResLock(Id id) {
     }
 
     // If resource not loaded, load it now
-    if (ResLoadResource(id) == NULL) {
+    if (ResLoadResource(id, NULL) == NULL) {
         ERROR("ResLock: Could not load %x", id);
         return (NULL);
     } else if (prd->lock == 0)
@@ -76,7 +212,7 @@ void *ResLock(Id id) {
     prd->lock++;
 
     // Return ptr
-    return (prd->ptr);
+    return prd->ptr;
 }
 
 //	---------------------------------------------------------
@@ -122,7 +258,6 @@ void ResUnlock(Id id) {
 
 void *ResGet(Id id) {
     ResDesc *prd;
-
     // Check if valid id
     // ValidateRes(id);
 
@@ -132,7 +267,7 @@ void *ResGet(Id id) {
     // Load resource or move to tail
     prd = RESDESC(id);
     if (prd->ptr == NULL) {
-        if (ResLoadResource(id) == NULL) {
+        if (ResLoadResource(id, NULL) == NULL) {
             return (NULL);
         }
         ResAddToTail(prd);
@@ -151,17 +286,38 @@ void *ResGet(Id id) {
 //	ResExtract() extracts a resource from an open resource file.
 //
 //		id   = id
-//		buff = ptr to buffer (use ResSize() to compute needed buffer
-// size)
+//		buff = ptr to buffer
 //
 //	Returns: ptr to supplied buffer, or NULL if problem
 //	---------------------------------------------------------
 //  For Mac version:  Copies information from resource handle into the buffer.
 
-void *ResExtract(Id id, void *buffer) {
-    // Retrieve the data into the buffer, please
-    if (ResRetrieve(id, buffer)) {
-        return (buffer);
+void *ResExtract(Id id, const ResourceFormat *format, void *buffer) {
+    ResDecodeFunc decoder = format->decoder;
+    ResDesc *prd = RESDESC(id);
+    if (decoder != NULL) {
+	// Get the raw data into a temporary buffer.
+	size_t size = prd->fsize;
+	void *tbuf = malloc(size);
+	if (ResRetrieve(id, tbuf)) {
+	    void *dbuf = decoder(tbuf, &size, format->data);
+	    memcpy(buffer, dbuf, size);
+	    prd->msize = size;
+	    if (format->freer != NULL) {
+		format->freer(dbuf);
+	    } else {
+		free(dbuf);
+	    }
+	    free(tbuf);
+	    return buffer;
+	}
+	free(tbuf);
+    } else {
+        // Retrieve the data into the buffer, please
+        if (ResRetrieve(id, buffer)) {
+	    prd->msize = prd->fsize;
+            return (buffer);
+        }
     }
 
     ERROR("%s: failed for %x", __FUNCTION__, id);
@@ -201,8 +357,15 @@ void ResDrop(Id id) {
         prd->lock = 0;
     }
 
+    // Free the raw data.
     if (prd->ptr != NULL) {
-        free(prd->ptr);
+	assert(prd->format != NULL);
+        if (prd->format->freer != NULL) {
+            prd->format->freer(prd->ptr);
+        }
+        else {
+            free(prd->ptr);
+        }
         prd->ptr = NULL;
     }
 }

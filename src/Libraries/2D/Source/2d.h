@@ -20,112 +20,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __2D_H 
 #define __2D_H
 
-#pragma pack(2)
+#include "GR/grs.h"
+#include "plytyp.h"
+#include "tmaps.h"
 
-typedef struct {
-   uchar id_maj;     
-   uchar id_min;     
-   short memory;     
-   short modes[16];  
-} grs_sys_info;
-typedef struct {
-   short w;          
-   short h;          
-   uchar b;          
-} grs_mode_info;
-typedef ulong grs_rgb;
-typedef struct {
-   uchar *bits;      
-   uchar type;       
-   uchar align;      
-   ushort flags;     
-   short w;          
-   short h;          
-   ushort row;       
-   uchar wlog;       
-   uchar hlog;       
-} grs_bitmap;
-typedef struct _sten {
-   short l;          
-   short r;          
-   struct _sten *n;  
-} grs_sten_elem;
-typedef struct {
-   grs_sten_elem *elem;    
-   long flags;             
-} grs_stencil;
-typedef union {
-   struct {
-      grs_stencil *sten;  
-      fix left;            
-      fix top;             
-      fix right;
-      fix bot;
-   } f;
-   struct {
-      grs_stencil *sten;  
-      short pad0;
-      short left;          
-      short pad1;
-      short top;  
-      short pad2;         
-      short right;
-      short pad3;
-      short bot;
-   } i;
-} grs_clip;
-typedef struct {
-	ushort id;
-	char dummy1[34];
-	short min;
-	short max;
-	char dummy2[32];
-	long cotptr;
-	long buf;
-	short w;
-	short h;
-	short off_tab[1];
-} grs_font;
-typedef struct {
-   long fcolor;      
-   long bcolor;      
-   grs_font *font;   
-   long text_attr;   
-   long fill_type;   
-   long fill_parm;   
-   grs_clip clip;    
-} grs_context;
-typedef struct {
-   grs_bitmap  bm;   
-   grs_context gc;   
-   uchar **ytab;     
-} grs_canvas;
-typedef struct {
-   grs_bitmap bm;    
-   grs_canvas *c;    
-   uchar *pal;
-   grs_rgb *bpal;
-   uchar *ipal;
-   uchar *ltab;
-   uchar ***transtab;
-   uchar *clut;      
-   short x;          
-   short y;          
-} grs_screen;
-typedef struct {
-   fix aspect;       
-   short w;          
-   short h;          
-   uchar *vbase;     
-} grs_drvcap;
-typedef struct {
-   fix x,y,z;    
-} grs_point3d;
-typedef struct {
-   fix x, y;                  
-   fix u, v, w;               
-   fix i;                     
-} grs_vertex;
+#if defined(__cplusplus)
+extern "C" {
+#endif // !defined(__cplusplus)
+
+#pragma pack(push,2)
+
 typedef struct {
    grs_point3d normal;
    grs_point3d u_grad;
@@ -430,7 +334,7 @@ do {                                 \
 #endif
 #define gr_get_fill_type() (grd_canvas->gc.fill_type)
 #define gr_set_fill_parm(parm) \
-   (grd_canvas->gc.fill_parm=(long)(parm))
+   (grd_canvas->gc.fill_parm=(intptr_t)(parm))
 #define gr_get_fill_parm() (grd_canvas->gc.fill_parm)
 #define gr_cset_cliprect(c, l, t, r, b) \
    (c)->gc.clip.i.sten=NULL, \
@@ -476,15 +380,7 @@ do {                                 \
 #define gr_cget_fclip_r(c) ((c)->gc.clip.f.right)
 #define gr_cget_fclip_b(c) ((c)->gc.clip.f.bot)
 extern int gr_detect (grs_sys_info *info);
-typedef struct {
-   short tmap_type;
-   short flags;
-   uchar *clut;
-} grs_tmap_info;
-#define TMF_PER 1
-#define TMF_CLUT 2
-#define TMF_FLOOR 4
-#define TMF_WALL 4
+
 enum {
    GRM_320x200x8,
    GRM_320x200x8X,
@@ -1766,4 +1662,11 @@ extern void fcount_start();
 extern void fcount_stop();
 extern void fcount_report();
 extern void fcount_install();
+
+#pragma pack(pop)
+
+#if defined(__cplusplus)
+}
+#endif // !defined(__cplusplus)
+
 #endif /* __2D_H */

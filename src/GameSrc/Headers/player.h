@@ -51,7 +51,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define NUM_DAMAGE_TYPES 8
 
-typedef enum { MFD_EMPTY, MFD_FLASH, MFD_ACTIVE, MFD_UNAVAIL } MFD_Status;
+typedef uint8_t MFD_Status;
+#define MFD_EMPTY   0
+#define MFD_FLASH   1
+#define MFD_ACTIVE  2
+#define MFD_UNAVAIL 3
 
 #define DEFAULT_FATIGUE_REGEN 50
 #define NUM_WEAPON_SLOTS 7
@@ -116,6 +120,9 @@ typedef struct _softs {
     ubyte misc[NUM_MISC_SOFTS];
 } softs_data;
 
+// FIXME pragma
+#pragma pack(push,1)
+
 typedef struct _Player {
     // Static Game Data
     char name[20];
@@ -126,11 +133,11 @@ typedef struct _Player {
     ubyte level_diff_zorched[(NUM_LEVELS / 8) + 1]; // bitfield for levels -- 1 if difficulty dealt with yet, 0 else
 
     // system stuff
-    ulong game_time;
-    ulong last_second_update; // when was last do_stuff_every_second
-    ulong last_drug_update;
-    ulong last_ware_update;
-    ulong last_anim_check;
+    uint32_t game_time;
+    uint32_t last_second_update; // when was last do_stuff_every_second
+    uint32_t last_drug_update;
+    uint32_t last_ware_update;
+    uint32_t last_anim_check;
     int queue_time;
     int deltat;
     byte detail_level;
@@ -167,7 +174,7 @@ typedef struct _Player {
     int cspace_time_base;
     ubyte questbits[NUM_QUESTBITS / 8]; // Mask of which "quests" you have completed
     short questvars[NUM_QUESTVARS];
-    ulong hud_modes;           // What hud functions are currently active?
+    uint32_t hud_modes;           // What hud functions are currently active?
     uchar experience;          // Are you experienced?
     int fatigue;               // how fatigued are you
     ushort fatigue_spend;      // Current rate of fatigue expenditure in pts/sec
@@ -222,7 +229,7 @@ typedef struct _Player {
 
     // Combat shtuff <tm>
     ObjID curr_target; // creature currently "targeted"
-    ulong last_fire;   // last gametime the weapon fired.
+    uint32_t last_fire;   // last gametime the weapon fired.
     ushort fire_rate;  // game time required between weapon fires.
 
     // Selectied items
@@ -242,7 +249,7 @@ typedef struct _Player {
     int num_deaths;
 
     // from this point on - data is taking the time_to_level space
-    long eye_pos; // physics eye position
+    int32_t eye_pos; // physics eye position
 
     // let's hope State stays at 12 fixes
     fix edms_state[12];
@@ -260,16 +267,18 @@ typedef struct _Player {
     ushort FREE_BITS_HERE;
     uchar mfd_save_vis;
 
-    ulong auto_fire_click;
+    uint32_t auto_fire_click;
 
-    ulong posture_slam_state;
+    uint32_t posture_slam_state;
 
     uchar terseness;
 
-    ulong last_bob; // not last paul, but last bob
+    uint32_t last_bob; // not last paul, but last bob
 
     uchar pad[9];
 } Player;
+
+#pragma pack(pop)
 
 #define PLAYER_OBJ     (player_struct.rep)
 #define PLAYER_BIN_X   OBJ_LOC_BIN_X(objs[PLAYER_OBJ].loc)

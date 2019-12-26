@@ -175,7 +175,8 @@ int fnt_load_from_style(void *style_ptr)
    // Load the font data from disk
    psty = (TNGStyle *)style_ptr;
 //   _fnt_lists[hnd].font_buf = (char *)Malloc((ResSize(psty->font) + 1) * sizeof(char));
-   _fnt_lists[hnd].font_buf = (long *)ResLock(psty->font);
+   // FIXME what this cast?
+   _fnt_lists[hnd].font_buf = (long *)FontLock(psty->font);
    gr_set_font((grs_font *)_fnt_lists[hnd].font_buf);
    f = (grs_font *)gr_get_font();
 

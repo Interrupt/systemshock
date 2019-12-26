@@ -161,7 +161,7 @@ void mfd_viewhelp_expose(MFD *mfd, ubyte control) {
                 mfd_add_rect(x, y, x + BARRY_WID, y + BARRY_HGT);
                 x += BUTTON_WID + LEFT_MARGIN;
                 get_string(BOOL_FIELD_STRING(i), buf, sizeof(buf));
-                gr_set_font((grs_font *)ResLock(MFD_FONT));
+                gr_set_font(ResLock(MFD_FONT));
                 gr_string_size(buf, &w, &h);
                 y += (BUTTON_HGT - h) / 2;
                 if (checkbox_fields[i].fullscrn && !full_game_3d)

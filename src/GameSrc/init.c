@@ -644,7 +644,7 @@ errtype load_da_palette(void) {
     pal_file = ResOpenFile("res/data/gamepal.res");
     if (pal_file < 0)
         critical_error(CRITERR_RES | 4);
-    ResExtract(RES_gamePalette, ppall);
+    ResExtract(RES_gamePalette, FORMAT_RAW, ppall);
     ResCloseFile(pal_file);
     gr_set_pal(0, 256, ppall);
 

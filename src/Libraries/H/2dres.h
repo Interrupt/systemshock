@@ -45,11 +45,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _2DRES_H
 #define _2DRES_H
 
-#pragma pack(2)
-
 #include "../2D/Source/2d.h"
 #include "../RES/Source/res.h"
 #include "../DSTRUCT/Source/rect.h"
+
+#pragma pack(push,2)
 
 // A Ref in a resource gets you a Frame Descriptor:
 
@@ -60,9 +60,14 @@ typedef struct {
       LGRect anchorArea;  // area to anchor sub-bitmap
       LGPoint anchorPt;   // point to anchor from
       };
-   long pallOff;        // offset to pallette
+   int32_t pallOff;       // offset to pallette
                         // bitmap's bits follow immediately
 } FrameDesc;
+
+// On-disc layout of a FrameDesc.
+extern const ResLayout FrameDescLayout;
+extern const ResourceFormat FrameDescFormat;
+#define FORMAT_FRAMEDESC (&FrameDescFormat)
 
 // These are the ref-based 2d macros.  They have the goofy do/while(0)
 // so that you may use them in an if statement without C whining.
@@ -139,6 +144,6 @@ typedef struct {
    fix   uper;    // (w - u) / u
 } CylBMFrame;     // one frame of the cylindrical bm object.  Always put the bits after this.  S
 
+#pragma pack(pop)
 
 #endif
-
