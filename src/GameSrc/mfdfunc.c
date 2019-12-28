@@ -2331,7 +2331,7 @@ char *level_to_floor(int lev_num, char *buf) {
     return (buf);
 }
 
-#define NUMBER_BUFSZ 3
+#define NUMBER_BUFSZ 4 // don't forget the terminator!
 
 // if we null your panel_ref, return the value
 // before we nulled it.  Otherwise, return NULL.
@@ -2638,8 +2638,6 @@ void mfd_setup_keypad(char special) {
     keypad_data->special = special;
     mfd_notify_func(MFD_KEYPAD_FUNC, MFD_INFO_SLOT, TRUE, MFD_ACTIVE, TRUE);
 }
-
-#define NUMBER_BUFSZ 3
 
 void mfd_keypad_expose(MFD *mfd, ubyte control) {
     keypad_data_type *keypad_data = (keypad_data_type *)&player_struct.mfd_func_data[MFD_KEYPAD_FUNC][0];
