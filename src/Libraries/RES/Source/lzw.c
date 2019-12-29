@@ -334,11 +334,10 @@ int32_t LzwCompress(void (*f_SrcCtrl)(intptr_t srcLoc, LzwCtrl ctrl),   // func 
     // the input has been exhausted.  Note that it stops adding codes to the
     // table after all of the possible codes have been defined.
 
-    while (true) {
+    while (lzwc.lzwInputCharCount < srcSize) {
         // Get next input char, if read all data then exit loop
         lzwc.character = (*f_SrcGet)();
-        if (lzwc.lzwInputCharCount++ >= srcSize)
-            break;
+        lzwc.lzwInputCharCount++;
 
         // See if string is in string table.  If it is, get the code value.
         lzwc.index = LzwFindMatch(lzwc.string_code, lzwc.character);
