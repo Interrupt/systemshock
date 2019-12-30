@@ -1071,7 +1071,7 @@ void show_obj(ObjID cobjid) {
         case FAUBJ_TPOLY:
             switch (ID2TRIP(cobjid)) {
             case TMAP_TRIPLE: {
-                extern int all_textures;
+                extern uchar all_textures;
                 tpdata = get_texture_map(objBigstuffs[_fr_cobj->specID].data2,
                                          (all_textures) ? TEXTURE_128_INDEX : TEXTURE_64_INDEX);
                 scale = -1;
