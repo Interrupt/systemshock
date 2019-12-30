@@ -48,6 +48,9 @@ errtype check_cspace_death();
 #define CYBERMINE_DAMAGE 15
 #define CYBERHEAL_QUANTITY 70
 
+// Time until SHODAN appears to kick the player out of cyberspace.
+extern uint32_t time_until_shodan_avatar;
+
 extern void (*cspace_effect_turnoff[])(uchar, uchar);
 extern ulong cspace_effect_times[NUM_CS_EFFECTS];
 extern ulong cspace_effect_durations[NUM_CS_EFFECTS];

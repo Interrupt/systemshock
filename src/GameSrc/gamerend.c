@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tools.h"
 
+#include "cyber.h"
 #include "gamerend.h"
 #include "weapons.h"
 #include "colors.h"
@@ -664,7 +665,6 @@ uchar gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y
         switch (flags & FR_OVERLAY_MASK) {
         case FR_OVERLAY_SHODAN: {
             int i;
-            extern ulong time_until_shodan_avatar;
             extern uchar *shodan_bitmask;
             extern grs_bitmap shodan_draw_fs;
             extern grs_bitmap shodan_draw_normal;

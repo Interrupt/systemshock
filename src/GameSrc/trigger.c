@@ -1405,7 +1405,6 @@ grs_bitmap shodan_draw_normal;
 
 void hack_shodan_conquer_func(char c) {
     extern void begin_shodan_conquer_fx(uchar begin);
-    extern ulong time_until_shodan_avatar;
     extern char thresh_fail;
     extern uchar shodan_phase_in(uchar * bitmask, short x, short y, short w, short h, short num, uchar dir);
     shodan_bitmask = tmap_static_mem;

@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 extern uint16_t sintab[256 + 64 + 1];
 
-extern fixang asintab[128 + 1];
+extern fixang asintab[128 + 1 + 1];
 
 #define INTEGER_EXP_OFFSET 11
 extern uint32_t expinttab[INTEGER_EXP_OFFSET * 2 + 1];

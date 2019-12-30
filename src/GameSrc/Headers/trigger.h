@@ -83,6 +83,7 @@ typedef struct _EmailSchedEvent {
     ushort timestamp;
     ushort type;
     short datamunge;
+    short pad; // must be at least as big as a SchedEvent
 } EmailSchedEvent;
 
 // Prototypes
