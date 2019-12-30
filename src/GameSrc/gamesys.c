@@ -500,7 +500,6 @@ errtype gamesys_run(void) {
     }
 
     if (shodan_bitmask != NULL) {
-        extern uint32_t time_until_shodan_avatar;
         if (player_struct.game_time > time_until_shodan_avatar) {
             char i;
             if (thresh_fail) {
@@ -725,7 +724,6 @@ int apply_rate(int var, int rate, int t0, int t1, int vmin, int vmax) {
 
 #define ENERGY_VAR_RATE 50
 
-uint32_t time_until_shodan_avatar = 0;
 extern ObjID shodan_avatar_id;
 
 #define MY_FORALLOBJSPECS(pmo, objspec) \

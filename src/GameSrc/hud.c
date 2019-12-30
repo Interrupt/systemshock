@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <stdio.h>
 
+#include "cyber.h"
 #include "hud.h"
 #include "hudobj.h"
 #include "player.h"
@@ -172,7 +173,6 @@ void hud_delete_line(int i) {
 
 void compute_hud_var(HudLine *hl) {
     extern short shield_absorb_perc;
-    extern ulong time_until_shodan_avatar;
     extern void second_format(int sec_remain, char *s);
 
     char *text = hudline_text[HUDLINE_TEXT(hl)];
