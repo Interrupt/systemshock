@@ -17,8 +17,8 @@ platform:
 # Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
 # Uncache build_ext if external deps change
 cache:
-#  - res/music.sf2
-#  - build_ext  
+  - res/music.sf2
+  - build_ext  
 
 # Set up environment variable values for 32 and 64 bit builds
 
@@ -67,8 +67,7 @@ after_build:
   - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
   - copy build_ext\built_glew\lib\glew32.dll .
   - copy build_ext\fluidsynth-lite\src\libfluidsynth.dll .
-  - copy readme\readme-windows.txt readme.txt
-  - 7z a %ARTIFACT% systemshock.exe *.dll readme.txt shaders/ res/
+  - 7z a %ARTIFACT% systemshock.exe *.dll shaders/ res/
 
 artifacts:
   - path: systemshock-x86.zip
