@@ -21,37 +21,35 @@ Prerequisites
     - Floppy disk assets are an older version that we can't load currently
 
 
-Downloads
+Running
 =======
 
-We have CI systems in place building [distributable packages](https://github.com/Interrupt/systemshock/releases/) out of tagged commits for Linux, Mac and Windows.
+## From a prebuilt package
 
-Compiling / Running
-============
+Find a list of [downloadable packages](https://github.com/Interrupt/systemshock/releases/) for Linux, Mac and Windows. 32 and 64 bit versions are available for Linux and Windows.
 
-## Prerequisites
-  - SDL2, 32 bit
-  - SDL2_mixer, 32 bit
+## From source code
 
-## Building SDL
-### Linux/Mac
-You can use the included `build_deps.sh` shell script to build the required versions of SDL2 / SDL2_mixer or use system ones.
-Here brief options list:
+Step 1. Build the dependencies:
+* Windows: `build_win32.sh` or `build_win64.sh` (Git Bash and MinGW recommended)
+* Linux/Mac: `build_deps.sh` or the CI build scripts in `osx-linux`
+* Other: `build_deps.sh` 
 
-* `ENABLE_SDL2` - use system or bundled SDL2 (ON/BUNDLED, default BUNDLED)
-* `ENABLE_SOUND` - enable sound support (requires SDL2_mixer, ON/BUNDLED/OFF, default is BUNDLED)
-* `ENABLE_FLUIDSYNTH` - enable FluidSynth MIDI support (ON/BUNDLED/OFF, default is BUNDLED)
-* `ENABLE_OPENGL` - enable OpenGL support (ON/OFF, default ON)
-
-### Windows
-See [the Windows readme](windows/readme_windows.md).
-
-## Build and run
+Step 2. Build and run the game itself
 ```
 cmake .
 make systemshock
 ./systemshock
 ```
+
+The following CMake options are supported in the build process:
+* `ENABLE_SDL2` - use system or bundled SDL2 (ON/BUNDLED, default BUNDLED)
+* `ENABLE_SOUND` - enable sound support (requires SDL2_mixer, ON/BUNDLED/OFF, default is BUNDLED)
+* `ENABLE_FLUIDSYNTH` - enable FluidSynth MIDI support (ON/BUNDLED/OFF, default is BUNDLED)
+* `ENABLE_OPENGL` - enable OpenGL support (ON/OFF, default ON)
+
+If you find yourself needing to modify the build script for Shockolate itself, `CMakeLists.txt` is the place to look into.
+
 
 Command line parameters
 ============
@@ -71,3 +69,21 @@ Run a fan mission from specific files:
 ```
 ./systemshock my-archive.dat my-strings.res
 ```
+
+Control modifications
+=======
+
+## Movement
+
+Shockolate replaces the original game's movement with WASD controls, and uses `F` as the mouselook toggle hotkey. This differs from the Enhanced Edition's usage of `E` as the mouselook hotkey, but allows us to keep `Q` and `E` available for leaning.
+
+## Additional hotkeys
+
+* `Ctrl+G` cycles between graphics rendering modes
+* `Ctrl+F` to enable full screen mode
+* `Ctrl+D` to disable full screen mode 
+
+## Missing hotkeys
+
+* `F1..F10` for the side MFD's
+* `0..9` for the Hacker's hardware
