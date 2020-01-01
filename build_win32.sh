@@ -19,7 +19,7 @@ function build_sdl {
 	tar xvf SDL2-${SDL_version}.tar.gz
 	pushd SDL2-${SDL_version}
 
-	./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --host=x86_64-w64-mingw32 --prefix=${install_dir}/built_sdl
+	./configure --host=x86_64-w64-mingw32 --prefix=${install_dir}/built_sdl
 	remove_mwindows
 	make
 	make install
@@ -35,7 +35,7 @@ function build_sdl_mixer {
 	tar xf SDL2_mixer-${SDL2_mixer_version}.tar.gz --exclude=Xcode
 	pushd SDL2_mixer-${SDL2_mixer_version}
 
-	./configure --host=x86_64-w64-mingw32 "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32" --disable-sdltest --with-sdl-prefix=${install_dir}/built_sdl --prefix=${install_dir}/built_sdl_mixer 
+	./configure --host=x86_64-w64-mingw32 --disable-sdltest --with-sdl-prefix=${install_dir}/built_sdl --prefix=${install_dir}/built_sdl_mixer 
 	
 	remove_mwindows
 	make
