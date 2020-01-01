@@ -31,6 +31,7 @@ for:
       - set BUILD_SCRIPT=build_win32.sh
       - set ARTIFACT=systemshock-x86.zip
       - set MINGW_PATH=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin\
+      - copy CMakeLists.32bit.txt CMakeLists.txt
   -
     matrix:
       only:

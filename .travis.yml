@@ -31,7 +31,7 @@ matrix:
         - CMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu
         - BITS=32
       before_script:
-        - cp osx-linux/CMakeLists.32bit.txt ./CMakeLists.txt
+        - cp ./CMakeLists.32bit.txt ./CMakeLists.txt
       addons:
         apt:
           packages:
