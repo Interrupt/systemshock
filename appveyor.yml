@@ -40,7 +40,6 @@ for:
       - set BUILD_SCRIPT=build_win64.sh
       - set ARTIFACT=systemshock-x64.zip
       - set MINGW_PATH=C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin\
-      - copy %MINGW_PATH%\libwinpthread-1.dll .
 
    
 # Actual build script..
@@ -66,6 +65,7 @@ test: off
 after_build:
   - copy %MINGW_PATH%\libgcc*.dll .
   - copy %MINGW_PATH%\libstd*.dll .
+  - copy %MINGW_PATH%\libwinpthread-1.dll .
   - copy build_ext\built_sdl\bin\SDL*.dll .
   - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
   - copy build_ext\built_glew\lib\glew32.dll .
