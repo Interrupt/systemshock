@@ -61,8 +61,8 @@ test: off
 
 # Once building is done, we gather all the necessary DLL files and build our ZIP file.
 after_build:
-  - copy c:\mingw\bin\libgcc*.dll .
-  - copy c:\mingw\bin\libstd*.dll .
+  - copy %MINGW_PATH%\libgcc*.dll .
+  - copy %MINGW_PATH%\libstd*.dll .
   - copy build_ext\built_sdl\bin\SDL*.dll .
   - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
   - copy build_ext\built_glew\lib\glew32.dll .
