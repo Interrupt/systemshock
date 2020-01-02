@@ -107,6 +107,8 @@ void ChangeScreenSize(int width, int height) {
     SDL_SetWindowSize(window, width, height);
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
+    SDL_RaiseWindow(window); //we could lose focus above
+
     SDL_RenderSetLogicalSize(renderer, width, height);
 
     SetupOffscreenBitmaps(width, height);
