@@ -87,27 +87,33 @@ void mac_set_mode(void) {
 }
 
 void ChangeScreenSize(int width, int height) {
-    extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
-    if (gScreenWide == width && gScreenHigh == height)
-        return;
-
     extern SDL_Renderer *renderer;
     extern SDL_Window *window;
-
     extern char *gScreenAddress;
     extern long gScreenRowbytes;
+    extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
+    extern bool fullscreenActive;
+
+    if (gScreenWide == width && gScreenHigh == height)
+    {
+        SDL_ShowWindow(window); //it might be hidden on startup, so show it for the first time
+        return;
+    }
 
     INFO("ChangeScreenSize");
 
+    SDL_HideWindow(window); //when game starts up, window will already be hidden
+
     SDL_RenderClear(renderer);
 
-    extern bool fullscreenActive;
     SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
     SDL_SetWindowSize(window, width, height);
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
     SDL_RenderSetLogicalSize(renderer, width, height);
+
+    SDL_ShowWindow(window); //if game is just starting up, show it for the first time
 
     SetupOffscreenBitmaps(width, height);
 
