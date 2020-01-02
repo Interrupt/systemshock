@@ -251,10 +251,11 @@ void InitSDL()
 
 	sprintf(window_title, "System Shock - %s", SHOCKOLATE_VERSION);
 
+	//keep window hidden for now; it will be shown later during resize (see MacDev.c)
+	//raising window and showing cursor will be done later
 	window = SDL_CreateWindow(
 		window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-
+		grd_cap->w, grd_cap->h, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
 	// Create the palette
 
@@ -267,11 +268,7 @@ void InitSDL()
 
 	gr_alloc_ipal();
 
-	SDL_ShowCursor(SDL_DISABLE);
-
 	atexit(SDL_Quit);
-
-	SDL_RaiseWindow(window);
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 	SDL_RenderSetLogicalSize(renderer, grd_cap->w, grd_cap->h);
