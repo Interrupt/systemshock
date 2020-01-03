@@ -41,8 +41,8 @@ function build_fluidsynth {
 	sed -i 's/DLL"\ off/DLL"\ on/' CMakeLists.txt
 	# if building fluidsynth fails, move on without it
 	set +e
-	cmake -G "${CMAKE_target}" .
-	cmake --build .
+	${CMAKE_ROOT}/cmake -G "${CMAKE_target}" .
+	${CMAKE_ROOT}/cmake --build .
 
 	# download a soundfont that's close to the Windows default everyone knows
 	curl -o music.sf2 http://rancid.kapsi.fi/windows.sf2
