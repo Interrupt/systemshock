@@ -275,7 +275,12 @@ short play_cutscene(int id, bool show_credits)
   MacTuneKillCurrentTheme();
 
   cutscene_filehandle = ResOpenFile(cutscene_files[id]);
-  if (cutscene_filehandle <= 0) return 0;
+  if (cutscene_filehandle <= 0) {
+      // If we failed to play the cutscene, go to setup / credits.
+      _new_mode = SETUP_LOOP;
+      chg_set_flg(GL_CHG_LOOP);
+      return 0;
+  }
 
   INFO("Playing Cutscene %i", id);
 
