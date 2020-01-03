@@ -59,7 +59,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Internal Prototypes
 //----------------
 void convert_grenade_to_explosion(ExplosionData *edata, int triple);
-ubyte grenade_compute_damage(ObjID target, int wpn_triple, int power_level, ubyte *effect);
 ObjID explosion_ray_cast_attack(ObjID gren_id, ObjID target, ObjLoc *gren_loc, fix radius, fix mass, fix speed);
 void do_object_explosion(ObjID id);
 uchar activate_grenade_on_cursor(void);
@@ -100,22 +99,6 @@ void convert_grenade_to_explosion(ExplosionData *edata, int triple) {
     edata->knock_mass = fix_make(GrenadeProps[ctrip].attack_mass, 0) * 30;
     edata->offense = GrenadeProps[ctrip].offense_value;
     edata->penet = GrenadeProps[ctrip].penetration;
-}
-
-// ----------------------------------------------------------------------
-// grenade_compute_damage()
-//
-
-ubyte grenade_compute_damage(ObjID target, int wpn_triple, int power_level, ubyte *effect) {
-    ubyte effect_class =
-        (objs[target].obclass == CLASS_CRITTER) ? CritterProps[CPNUM(target)].hit_effect : NON_CRITTER_EFFECT;
-
-    *effect = effect_matrix[effect_class][GREN_TYPE][0];
-
-    return (compute_damage(target, GrenadeProps[CPTRIP(wpn_triple)].damage_type,
-                           GrenadeProps[CPTRIP(wpn_triple)].damage_modifier,
-                           GrenadeProps[CPTRIP(wpn_triple)].offense_value, GrenadeProps[CPTRIP(wpn_triple)].penetration,
-                           power_level, NULL, NULL, GREN_TYPE));
 }
 
 extern ObjID terrain_hit_exclusion;
