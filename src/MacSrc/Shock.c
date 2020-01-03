@@ -239,7 +239,8 @@ void InitSDL()
 
 	gr_init();
 
-	gr_set_mode(GRM_320x200x8, TRUE);
+	extern short svga_mode_data[];
+	gr_set_mode(svga_mode_data[gShockPrefs.doVideoMode], TRUE);
 
 	INFO("Setting up screen and render contexts");
 
@@ -253,7 +254,7 @@ void InitSDL()
 
 	window = SDL_CreateWindow(
 		window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		grd_cap->w, grd_cap->h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+		grd_cap->w, grd_cap->h, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
 
 	// Create the palette
@@ -281,6 +282,8 @@ void InitSDL()
 	init_opengl();
 
 	SDLDraw();
+
+	SDL_ShowWindow(window);
 }
 
 SDL_Color gamePalette[256];
