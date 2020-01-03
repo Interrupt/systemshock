@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 
-SDL_version=2.0.9
+SDL_version=2.0.10
 SDL2_mixer_version=2.0.4
 GLEW_version=2.1.0
 CMAKE_version=3.11.3
-CMAKE_architecture=win64-x64
-#CMAKE_architecture=win32-x86
+#CMAKE_architecture=win64-x64
+CMAKE_architecture=win32-x86
 CMAKE_target=Unix\ Makefiles
 
 # Removing the mwindows linker option lets us get console output
