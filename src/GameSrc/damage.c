@@ -951,10 +951,15 @@ int compute_damage(ObjID target, int damage_type, int damage_mod, ubyte offense,
                 *effect = effect_matrix[NON_CRITTER_EFFECT][attack_effect_type][0];
         } else if (effect != NULL)
             *effect = 0;
-    } else {
+    } else if (attack_effect_type != SPECIAL_TYPE) {
         // we didn't affect - so do the no effect one!
         if (effect)
             *effect = (!global_fullmap->cyber) ? effect_matrix[NON_CRITTER_EFFECT][attack_effect_type][0] : 0;
+    } else {
+	// Special damage type with no damage = no effect.
+	if (effect) {
+	    *effect = 0;
+	}
     }
 
     return (damage);
