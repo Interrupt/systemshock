@@ -103,8 +103,8 @@ uiSlab setup_slab;
 LGRegion setup_root_region;
 uchar play_intro_anim;
 uchar save_game_exists = FALSE;
-int setup_mode;
-int last_setup_mode;
+SetupMode setup_mode;
+SetupMode last_setup_mode;
 int intro_num;
 int splash_num;
 int diff_sum = 0;
@@ -1516,7 +1516,6 @@ void setup_loop(void)
     case SETUP_DIFFICULTY: difficulty_draw(draw_stuff); break;
     case SETUP_JOURNEY:    journey_draw(draw_stuff); break;
     case SETUP_CONTINUE:   journey_continue_func(draw_stuff); break;
-    case SETUP_ANIM:       break; // FIXME: What should this do?
     case SETUP_CREDITS:    journey_credits_func(draw_stuff); break;
   }
 }
@@ -1585,13 +1584,12 @@ void setup_start(void)
     if (!save_game_exists && start_first_time)
     {
       play_intro_anim = TRUE;
-      setup_mode = SETUP_ANIM;
     }
     else
     {
       play_intro_anim = FALSE;
-      setup_mode = SETUP_JOURNEY;
     }
+    setup_mode = SETUP_JOURNEY;
   }
 
   if (!start_first_time) closedown_game(TRUE);
