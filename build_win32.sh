@@ -4,9 +4,6 @@ set -e
 SDL_version=2.0.10
 SDL2_mixer_version=2.0.4
 GLEW_version=2.1.0
-CMAKE_version=3.11.3
-#CMAKE_architecture=win64-x64
-CMAKE_architecture=win32-x86
 CMAKE_target=Unix\ Makefiles
 
 # Removing the mwindows linker option lets us get console output
@@ -59,20 +56,12 @@ function build_fluidsynth {
 	sed -i 's/DLL"\ off/DLL"\ on/' CMakeLists.txt
 	# if building fluidsynth fails, move on without it
 	set +e
-	${CMAKE_ROOT}/cmake -G "${CMAKE_target}" .
-	${CMAKE_ROOT}/cmake --build .
+	cmake -G "${CMAKE_target}" .
+	cmake --build .
 
 	# download a soundfont that's close to the Windows default everyone knows
 	curl -o music.sf2 http://rancid.kapsi.fi/windows.sf2
 	set -e
-	popd
-}
-
-function get_cmake {
-	curl -O https://cmake.org/files/v3.11/cmake-${CMAKE_version}-${CMAKE_architecture}.zip
-	unzip cmake-${CMAKE_version}-${CMAKE_architecture}.zip
-	pushd cmake-${CMAKE_version}-${CMAKE_architecture}/bin
-	CMAKE_ROOT=`pwd -W`/
 	popd
 }
 
@@ -81,6 +70,13 @@ function get_cmake {
 if [ -d ./build_ext/ ]; then
 	echo A directory named build_ext already exists.
 	echo Please remove it if you want to recompile.
+	exit
+fi
+
+if ! [ -x "$(command -v cmake)" ]; then
+	echo CMake is needed to install Shockolate. 
+	echo Please download CMake from https://cmake.org/download/,
+	echo install it and try again in a new Git Bash window.
 	exit
 fi
 
@@ -97,16 +93,10 @@ mkdir ./build_ext/
 cd ./build_ext/
 install_dir=`pwd -W`
 
-if ! [ -x "$(command -v cmake)" ]; then
-	echo "Getting CMake"
-	get_cmake
-fi
-
-build_fluidsynth
-
 build_sdl
 build_sdl_mixer
 build_glew
+build_fluidsynth
 
 
 # Back to the root directory, copy required DLL files for the executable
