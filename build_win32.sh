@@ -113,7 +113,6 @@ mv build_ext/fluidsynth-lite/*.sf2 ./res
 if [[ -z "${APPVEYOR}" ]]; then
 	echo "Normal build"
 	echo "@echo off
-	set PATH=%PATH%;${CMAKE_ROOT}
 	cmake -G \"${CMAKE_target}\" .
 	mingw32-make systemshock" >build.bat
 else
