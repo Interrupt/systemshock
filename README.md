@@ -30,6 +30,9 @@ Find a list of [downloadable packages](https://github.com/Interrupt/systemshock/
 
 ## From source code
 
+Prerequisites: 
+- [CMake](https://cmake.org/download/) installed
+
 Step 1. Build the dependencies:
 * Windows: `build_win32.sh` or `build_win64.sh` (Git Bash and MinGW recommended)
 * Linux/Mac: `build_deps.sh` or the CI build scripts in `osx-linux`
