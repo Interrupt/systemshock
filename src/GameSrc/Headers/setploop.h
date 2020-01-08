@@ -57,11 +57,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SETUP_ANIM_UPDATE LL_CHG_BASE << 0
 
 // loop id's
-#define SETUP_ANIM       0
-#define SETUP_JOURNEY    1
-#define SETUP_DIFFICULTY 2
-#define SETUP_CREDITS    3
-#define SETUP_CONTINUE   4
+typedef enum {
+    SETUP_JOURNEY,
+    SETUP_DIFFICULTY,
+    SETUP_CREDITS,
+    SETUP_CONTINUE
+} SetupMode;
 
 // Prototypes
 void setup_loop(void);
@@ -69,6 +70,6 @@ void journey_credits_done(void);
 errtype journey_credits_func(uchar draw_stuff);
 
 // Globals
-extern int setup_mode;
+extern SetupMode setup_mode;
 
 #endif // __SETPLOOP_H
