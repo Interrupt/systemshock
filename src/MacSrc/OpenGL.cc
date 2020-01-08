@@ -450,6 +450,18 @@ void opengl_start_frame() {
     updatePalette(transparentPalette, true);
 }
 
+int get_hdpi_scaling(int *x_scale, int *y_scale) {
+    // We may need to scale up our OpenGL output to match some HDPI scaling
+    int output_width, output_height;
+    SDL_GetRendererOutputSize(renderer, &output_width, &output_height);
+
+    int screen_width, screen_height;
+    SDL_GetWindowSize(window, &screen_width, &screen_height);
+
+    *x_scale = output_width / screen_width;
+    *y_scale = output_height / screen_height;
+}
+
 void opengl_swap_and_restore() {
     // restore the view backup (without HUD overlay) for incremental
     // updates in the subsequent frame
@@ -458,7 +470,10 @@ void opengl_swap_and_restore() {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glViewport(phys_offset_x, phys_offset_y, phys_width, phys_height);
+    int x_hdpi_scale, y_hdpi_scale;
+    get_hdpi_scaling(&x_hdpi_scale, &y_hdpi_scale);
+
+    glViewport(phys_offset_x * x_hdpi_scale, phys_offset_y * y_hdpi_scale, phys_width * x_hdpi_scale, phys_height * y_hdpi_scale);
     set_blend_mode(false);
 
     glUseProgram(textureShaderProgram.shaderProgram);
