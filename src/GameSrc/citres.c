@@ -75,7 +75,6 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, LGRect *a
         return (ERR_FREAD);
     }
 
-    const size_t size = f->bm.w * f->bm.h;
     if (p == NULL) {
 	// Caller wants us to allocate a framebuffer.
         p = malloc(f->bm.w * f->bm.h);
@@ -91,8 +90,13 @@ errtype master_load_bitmap_from_res(grs_bitmap *bmp, Id id_num, int i, LGRect *a
 
     // Copy the bits.
     memcount += f->bm.w * f->bm.h; // FIXME is this needed any more?
-    memcpy(p, f->bm.bits, f->bm.w * f->bm.h);
-
+    if (f->bm.type == BMT_RSD8) {
+	gr_rsd8_convert(&f->bm, bmp);
+	// gr_rsd8_convert uses its own buffer, so copy it back.
+	memcpy(p, bmp->bits, f->bm.w * f->bm.h);
+    } else {
+	memcpy(p, f->bm.bits, f->bm.w * f->bm.h);
+    }
     bmp->bits = p;
 
     return (OK);
