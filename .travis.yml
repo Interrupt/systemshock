@@ -66,8 +66,8 @@ before_deploy:
   - cp osx-linux/run_$TRAVIS_OS_NAME.sh shockolate/run.sh
   - cp -r shaders shockolate/
   - cp -r res shockolate/
-  - tar zcfv $PACKAGE_NAME shockolate
-  - rm -r shockolate
+  - tar zcfv $PACKAGE_NAME shockolate/
+  - rm -r shockolate/
 
 deploy:
   provider: releases
