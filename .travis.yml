@@ -3,9 +3,6 @@ language: c
 notifications:
   email: false
 
-env:
-  - PACKAGE_NAME="shockolate-$TRAVIS_OS_NAME-${BITS}bit.tgz"
-
 matrix:
   include:
     - os: linux
@@ -66,6 +63,7 @@ before_deploy:
   - cp osx-linux/run_$TRAVIS_OS_NAME.sh shockolate/run.sh
   - cp -r shaders shockolate/
   - cp -r res shockolate/
+  - export PACKAGE_NAME="shockolate-$TRAVIS_OS_NAME-${BITS}bit.tgz"
   - tar zcfv $PACKAGE_NAME shockolate
   - rm -r shockolate
 
