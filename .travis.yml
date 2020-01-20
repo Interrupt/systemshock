@@ -1,7 +1,19 @@
-language: c
+language: python
+python: "3.7"
 
 notifications:
   email: false
+
+addons:
+  apt:
+    packages:
+      - cmake-data cmake libglu1-mesa-dev libgl1-mesa-dev
+
+install:
+  - pip install --upgrade pip
+  - pip install conan
+  - conan user
+  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
 matrix:
   include:
@@ -13,46 +25,26 @@ matrix:
         - SDL2_MIXER_LIB=BUNDLED
         - FLUIDSYNTH_LIB=BUNDLED
         - BITS=64
-      addons:
-        apt:
-          packages:
-            - cmake-data cmake libglu1-mesa-dev libgl1-mesa-dev # libfluidsynth-dev libsdl2-dev libsdl2-mixer-dev
-      compiler: gcc
-    - os: linux
-      dist: trusty
-      sudo: required
-      env:
-        - SDL2_LIB=BUNDLED
-        - SDL2_MIXER_LIB=BUNDLED
-        - FLUIDSYNTH_LIB=BUNDLED
-        - CMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu
-        - BITS=32
-      before_script:
-        - cp ./CMakeLists.32bit.txt ./CMakeLists.txt
-      addons:
-        apt:
-          packages:
-            - cmake-data cmake libx32gcc-4.8-dev libc6-dev-i386 gcc-multilib g++-multilib libglu1-mesa-dev:i386 libgl1-mesa-dev:i386
       compiler: gcc
     - os: osx
       compiler: clang
       env:
         - SDL2_LIB=BUNDLED
         - SDL2_MIXER_LIB=BUNDLED
-        - FLUIDSYNTH_LIB=OFF # Bundled lib failed to compile
+        - FLUIDSYNTH_LIB=BUNDLED
         - BITS=64
     - os: osx
       compiler: gcc
       env:
         - SDL2_LIB=BUNDLED
         - SDL2_MIXER_LIB=BUNDLED
-        - FLUIDSYNTH_LIB=OFF # Bundled lib failed to compile
+        - FLUIDSYNTH_LIB=BUNDLED
         - BITS=64
 
 script:
-  - chmod a+rx ./osx-linux/*.sh
-  - sudo TRAVIS=$TRAVIS ./osx-linux/install_${BITS}bit_sdl.sh
-  - cmake -DENABLE_SDL2=${SDL2_LIB} -DENABLE_SOUND=${SDL2_MIXER_LIB} -DENABLE_FLUIDSYNTH=${FLUIDSYNTH_LIB} .
+  - mkdir build && cd build
+  - conan install .. --build=missing
+  - cmake .. -DCMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu -DENABLE_SDL2=${SDL2_LIB} -DENABLE_SOUND=${SDL2_MIXER_LIB} -DENABLE_FLUIDSYNTH=${FLUIDSYNTH_LIB}
   - make -j2 systemshock
 
 before_deploy:
