@@ -1,6 +1,10 @@
 language: python
 python: "3.7"
 
+compiler:
+  - clang
+  - gcc
+
 notifications:
   email: false
 
@@ -10,8 +14,6 @@ addons:
       - cmake-data cmake libglu1-mesa-dev libgl1-mesa-dev
 
 install:
-  - pip install --upgrade pip
-  - pip install conan
   - conan user
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
@@ -19,22 +21,20 @@ matrix:
   include:
     - os: linux
       dist: bionic
+      before_install:
+        - pip install --upgrade pip
+        - pip install conan
       sudo: required
       env:
         - SDL2_LIB=BUNDLED
         - SDL2_MIXER_LIB=BUNDLED
         - FLUIDSYNTH_LIB=BUNDLED
         - BITS=64
-      compiler: gcc
     - os: osx
-      compiler: clang
-      env:
-        - SDL2_LIB=BUNDLED
-        - SDL2_MIXER_LIB=BUNDLED
-        - FLUIDSYNTH_LIB=BUNDLED
-        - BITS=64
-    - os: osx
-      compiler: gcc
+      language: shell
+      before_install:
+        - pip3 install --upgrade pip
+        - pip3 install conan
       env:
         - SDL2_LIB=BUNDLED
         - SDL2_MIXER_LIB=BUNDLED
