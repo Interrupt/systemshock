@@ -9,6 +9,7 @@ image: Visual Studio 2015
 # Tell build_windows.sh that we're building for AppVeyor
 environment:
   APPVEYOR: TRUE
+  PYTHON_HOME: "C:\\Python37"
 
 platform:
   - x64
@@ -19,7 +20,7 @@ cache:
   - res/music.sf2
 
 install:
-  - cmd: set PATH=%PATH%;%PYTHON%/Scripts/
+  - cmd: set PATH=%PYTHON_HOME%;%PYTHON_HOME%/Scripts/;%PATH%
   - cmd: pip.exe install conan
   - cmd: conan user
   - cmd: conan --version
