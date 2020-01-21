@@ -21,7 +21,8 @@ cache:
 
 install:
   # Workaround for CMake not wanting sh.exe on PATH for MinGW
-  - set PATH=%PATH:C:\Program Files\Git\bin;=%
+  - cmd: set PATH=%PATH:C:\Program Files\Git\bin;=%
+  - cmd: set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
   - cmd: set PATH=%PYTHON_HOME%;%PYTHON_HOME%/Scripts/;%PATH%
   - cmd: pip.exe install conan
   - cmd: conan user
