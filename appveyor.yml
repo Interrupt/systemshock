@@ -13,14 +13,14 @@ environment:
   matrix:
     - COMPILER: mingw
       ARCH: x86_64
-      MINGW_DIR_BIN: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin
-      CMAKE_C_COMPILER: C:/mingw-w64/x86_64-6.3.0-posix-seh-rt_v5-rev1/mingw64/bin/gcc.exe
-      CMAKE_CXX_COMPILER: C:/mingw-w64/x86_64-6.3.0-posix-seh-rt_v5-rev1/mingw64/bin/g++.exe
+      MINGW_DIR_BIN: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
+      CMAKE_C_COMPILER: C:/mingw-w64/x86_64-7.3.0-posix-seh-rt_v5-rev0/mingw64/bin/gcc.exe
+      CMAKE_CXX_COMPILER: C:/mingw-w64/x86_64-7.3.0-posix-seh-rt_v5-rev0/mingw64/bin/g++.exe
     - COMPILER: mingw
       ARCH: i686
-      MINGW_DIR_BIN: C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin
-      CMAKE_C_COMPILER: C:/mingw-w64/i686-6.3.0-posix-dwarf-rt_v5-rev1/mingw32/bin/gcc.exe
-      CMAKE_CXX_COMPILER: C:/mingw-w64/i686-6.3.0-posix-dwarf-rt_v5-rev1/mingw32/bin/g++.exe
+      MINGW_DIR_BIN: C:\mingw-w64\i686-7.3.0-posix-seh-rt_v5-rev0\mingw32\bin
+      CMAKE_C_COMPILER: C:/mingw-w64/i686-7.3.0-posix-seh-rt_v5-rev0/mingw32/bin/gcc.exe
+      CMAKE_CXX_COMPILER: C:/mingw-w64/i686-7.3.0-posix-seh-rt_v5-rev0/mingw32/bin/g++.exe
 
 # Avoid rebuilding external dependencies
 cache:
