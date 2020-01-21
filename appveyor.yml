@@ -30,7 +30,7 @@ build_script:
   - cmd: mkdir build
   - cmd: cd build
   - cmd: conan install .. --build=missing
-  - cmd: cmake .. -DENABLE_SDL2=BUNDLE -DENABLE_SOUND=BUNDLE -DENABLE_FLUIDSYNTH=BUNDLE -G "Ninja"
+  - cmd: cmake .. -DENABLE_SDL2=BUNDLED -DENABLE_SOUND=BUNDLED -DENABLE_FLUIDSYNTH=BUNDLED -G "Ninja"
   - cmd: ninja -j2
 
 # For now, we don't have any automatic tests to run
