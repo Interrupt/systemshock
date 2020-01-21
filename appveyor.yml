@@ -10,10 +10,17 @@ image: Visual Studio 2015
 environment:
   APPVEYOR: TRUE
   PYTHON_HOME: "C:\\Python37"
-
-platform:
-  - x64
-  - x86
+  matrix:
+    - COMPILER: mingw
+      ARCH: x86_64
+      MINGW_DIR_BIN: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin
+      CMAKE_C_COMPILER: C:/mingw-w64/x86_64-6.3.0-posix-seh-rt_v5-rev1/mingw64/bin/gcc.exe
+      CMAKE_CXX_COMPILER: C:/mingw-w64/x86_64-6.3.0-posix-seh-rt_v5-rev1/mingw64/bin/g++.exe
+    - COMPILER: mingw
+      ARCH: i686
+      MINGW_DIR_BIN: C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin
+      CMAKE_C_COMPILER: C:/mingw-w64/i686-6.3.0-posix-dwarf-rt_v5-rev1/mingw32/bin/gcc.exe
+      CMAKE_CXX_COMPILER: C:/mingw-w64/i686-6.3.0-posix-dwarf-rt_v5-rev1/mingw32/bin/g++.exe
 
 # Avoid rebuilding external dependencies
 cache:
@@ -21,20 +28,20 @@ cache:
 
 install:
   # Workaround for CMake not wanting sh.exe on PATH for MinGW
-  - cmd: set PATH=%PATH:C:\Program Files\Git\bin;=%
-  - cmd: set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-  - cmd: set PATH=%PYTHON_HOME%;%PYTHON_HOME%/Scripts/;%PATH%
-  - cmd: pip.exe install conan
-  - cmd: conan user
-  - cmd: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  - cmd: conan --version
+  - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+  - set PATH=%PYTHON_HOME%;%PYTHON_HOME%/Scripts/;%PATH%
+  - set PATH=%MINGW_DIR_BIN%;%PATH%
+  - pip.exe install conan
+  - conan user
+  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+  - conan --version
 
 build_script:
-  - cmd: mkdir build
-  - cmd: cd build
-  - cmd: conan install .. --build=missing
-  - cmd: cmake .. -DENABLE_SDL2=BUNDLED -DENABLE_SOUND=BUNDLED -DENABLE_FLUIDSYNTH=BUNDLED -G "MinGW Makefiles"
-  - cmd: cmake --build .
+  - mkdir build
+  - cd build
+  - conan install .. --build=missing
+  - cmake .. -DENABLE_SDL2=BUNDLED -DENABLE_SOUND=BUNDLED -DENABLE_FLUIDSYNTH=BUNDLED -G "MinGW Makefiles"
+  - cmake --build .
 
 # For now, we don't have any automatic tests to run
 test: false
