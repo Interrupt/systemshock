@@ -15,8 +15,7 @@ addons:
       - cmake-data cmake libglu1-mesa-dev libgl1-mesa-dev
 
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; pip3 install --upgrade pip ; pip3 install conan ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; pip install --upgrade pip ; pip install conan ; fi
+  - pip3 install --upgrade pip ; pip3 install conan
   - conan user
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
@@ -47,7 +46,7 @@ matrix:
 script:
   - mkdir build && cd build
   - conan install .. --build=missing
-  - cmake .. -DCMAKE_LIBRARY_PATH=/usr/lib/i386-linux-gnu -DENABLE_SDL2=${SDL2_LIB} -DENABLE_SOUND=${SDL2_MIXER_LIB} -DENABLE_FLUIDSYNTH=${FLUIDSYNTH_LIB}
+  - cmake .. -DENABLE_SDL2=${SDL2_LIB} -DENABLE_SOUND=${SDL2_MIXER_LIB} -DENABLE_FLUIDSYNTH=${FLUIDSYNTH_LIB}
   - make -j2 systemshock
 
 before_deploy:
