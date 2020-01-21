@@ -8,23 +8,29 @@ compiler:
 notifications:
   email: false
 
+dist: bionic
 addons:
   apt:
     packages:
       - cmake-data cmake libglu1-mesa-dev libgl1-mesa-dev
 
 install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; pip3 install --upgrade pip ; pip3 install conan ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; pip install --upgrade pip ; pip install conan ; fi
   - conan user
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
 matrix:
   include:
     - os: linux
-      dist: bionic
-      before_install:
-        - pip install --upgrade pip
-        - pip install conan
-      sudo: required
+      compiler: clang
+      env:
+        - SDL2_LIB=BUNDLED
+        - SDL2_MIXER_LIB=BUNDLED
+        - FLUIDSYNTH_LIB=BUNDLED
+        - BITS=64
+    - os: linux
+      compiler: gcc
       env:
         - SDL2_LIB=BUNDLED
         - SDL2_MIXER_LIB=BUNDLED
@@ -32,9 +38,6 @@ matrix:
         - BITS=64
     - os: osx
       language: shell
-      before_install:
-        - pip3 install --upgrade pip
-        - pip3 install conan
       env:
         - SDL2_LIB=BUNDLED
         - SDL2_MIXER_LIB=BUNDLED
