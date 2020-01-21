@@ -13,62 +13,29 @@ environment:
 platform:
   - x64
   - x86
-  
-# Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
-# Uncache build_ext if external deps change
+
+# Avoid rebuilding external dependencies
 cache:
   - res/music.sf2
-  - build_ext  
 
-# Set up environment variable values for 32 and 64 bit builds
-
-for:
-  -
-    matrix:
-      only:
-        - platform: x86
-    before_build:
-      - set BUILD_SCRIPT=build_win32.sh
-      - set ARTIFACT=systemshock-x86.zip
-      - set MINGW_PATH=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin\
-      - copy CMakeLists.32bit.txt CMakeLists.txt
-  -
-    matrix:
-      only:
-        - platform: x64
-    before_build:
-      - set BUILD_SCRIPT=build_win64.sh
-      - set ARTIFACT=systemshock-x64.zip
-      - set MINGW_PATH=C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin\
-   
-# Actual build script..
-# Step 1: Git has to reside in a path without spaces because the SDL build script is weird like that.
-#         So we create a symlink to the real Git, remove it from PATH and add our own.
-# Step 2: We need to use our own make.exe to build stuff, so we add that
-# Step 3: Do the actual building
+install:
+  - cmd: set PATH=%PATH%;%PYTHON%/Scripts/
+  - cmd: pip.exe install conan
+  - cmd: conan user
+  - cmd: conan --version
 
 build_script:
-  - mklink /D c:\git "C:\Program Files\Git"
-  - set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
-  - set PATH=c:\git\usr\bin;%PATH%;%MINGW_PATH%
-  - copy windows\make.exe \git\usr\bin
-  - set CMAKE_MAKE_PROGRAM=c:\git\usr\bin\make.exe
-  - sh %BUILD_SCRIPT%
-  - build.bat
+  - cmd: mkdir build
+  - cmd: cd build
+  - cmd: conan install .. --build=missing
+  - cmd: cmake .. -DENABLE_SDL2=BUNDLE -DENABLE_SOUND=BUNDLE -DENABLE_FLUIDSYNTH=BUNDLE -G "Ninja"
+  - cmd: ninja -j2
 
-   
 # For now, we don't have any automatic tests to run
-test: off
+test: false
 
 # Once building is done, we gather all the necessary DLL files and build our ZIP file.
 after_build:
-  - copy %MINGW_PATH%\libgcc*.dll .
-  - copy %MINGW_PATH%\libstd*.dll .
-  - copy %MINGW_PATH%\libwinpthread-1.dll .
-  - copy build_ext\built_sdl\bin\SDL*.dll .
-  - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
-  - copy build_ext\built_glew\lib\glew32.dll .
-  - copy build_ext\fluidsynth-lite\src\libfluidsynth.dll .
   - 7z a %ARTIFACT% systemshock.exe *.dll shaders/ res/
 
 artifacts:
