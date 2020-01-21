@@ -48,7 +48,7 @@ if(ENABLE_OPENGL)
 	if(WIN32)
 		find_package(glew REQUIRED)
 		list(APPEND OPENGL_INCLUDE_DIRS ${glew_INCLUDE_DIRS})
-		list(APPEND OPENGL_LIBRARIES glew:glew winmm)
+		list(APPEND OPENGL_LIBRARIES glew::glew winmm)
 	endif(WIN32)
 endif(ENABLE_OPENGL)
 
