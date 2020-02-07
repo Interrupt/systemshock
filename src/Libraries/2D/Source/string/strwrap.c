@@ -58,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg_types.h"
 #include "chr.h"
-#include "ctxmac.h"
+#include "grs.h"
 
 static short *pCharPixOff; // ptr to char offset table, with pfont->minch
                            // already subtracted out!
