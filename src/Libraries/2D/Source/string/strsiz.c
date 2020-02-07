@@ -45,12 +45,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "chr.h"
-#include "ctxmac.h"
+#include "grs.h"
 #include "str.h"
 
-/* calculate the width and height of a string in the specified font, and
-   return in the given pointers. */
-
+/**
+ * Calculate the width and height of a string in the specified font, and return in the given pointers.
+ * @param f font
+ * @param s string
+ * @param w returned width
+ * @param h returned height
+ */
 void gr_font_string_size(grs_font *f, char *s, short *w, short *h) {
     short *offset_tab; /* table of character offsets */
     short offset;      /* offset of current character */
@@ -76,4 +80,16 @@ void gr_font_string_size(grs_font *f, char *s, short *w, short *h) {
     }
     *w = (w_lin > w_str) ? w_lin : w_str;
     *h = h_str;
+}
+
+/**
+ * Returns the width of string in pixels for the specified font
+ * @param f font
+ * @param s string
+ * @return width of string
+ */
+short gr_font_string_width(grs_font *f, char *s) {
+    short width = 0, height = 0;
+    gr_font_string_size(f, s, &width, &height);
+    return width;
 }

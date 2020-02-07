@@ -157,7 +157,6 @@ set(2D_SRC
 	2D/Source/string/strscl.c
 	2D/Source/string/strsiz.c
 	2D/Source/string/struscl.c
-	2D/Source/string/strwid.c
 	2D/Source/string/strwrap.c
 )
 
