@@ -46,19 +46,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grs.h"
 
-/* returns the width in pixels of c in the specified font */
-
-void gr_font_char_size(grs_font *f, char c, short *w, short *h) {
+/**
+ * Returns the width in pixels of character in the specified font
+ * @param font font
+ * @param c character
+ * @param width returned width
+ * @param height returned height
+ */
+void gr_font_char_size(grs_font *font, char c, short *width, short *height) {
     short *off_tab; /* character offset table */
     short offset;   /* offset of current character */
 
-    if ((uchar)c < f->min || (uchar)c > f->max)
+    if ((uchar)c < font->min || (uchar)c > font->max)
         return;
-    off_tab = f->off_tab;
-    offset = off_tab[(uchar)c - f->min];
-    if ((uchar)c < f->min || (uchar)c > f->max)
-        *w = 0;
+    off_tab = font->off_tab;
+    offset = off_tab[(uchar)c - font->min];
+    if ((uchar)c < font->min || (uchar)c > font->max)
+        *width = 0;
     else
-        *w = off_tab[(uchar)c - f->min + 1] - offset;
-    *h = f->h;
+        *width = off_tab[(uchar)c - font->min + 1] - offset;
+    *height = font->h;
+}
+
+/**
+ * Returns the width of character in pixels for the specified font
+ * @param font font
+ * @param c character
+ * @return width of character
+ */
+short gr_font_char_width(grs_font *font, char c) {
+    short width = 0, height = 0;
+    gr_font_char_size(font, c, &width, &height);
+    return width;
 }

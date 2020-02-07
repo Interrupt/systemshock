@@ -153,7 +153,6 @@ set(2D_SRC
 	2D/Source/RSD/rsdcvt.c
 	2D/Source/RSD/RSDUnpack.c
 	2D/Source/string/chrsiz.c
-	2D/Source/string/chrwid.c
 	2D/Source/string/strscl.c
 	2D/Source/string/strsiz.c
 	2D/Source/string/struscl.c

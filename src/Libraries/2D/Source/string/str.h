@@ -50,6 +50,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern void gr_font_string_size(grs_font *f, char *s, short *w, short *h);
 extern short gr_font_string_width(grs_font *f, char *s);
 extern short gr_font_char_width(grs_font *f, char c);
-extern void gr_font_char_size(grs_font *f, char c, short *w, short *h);
+extern void gr_font_char_size(grs_font *font, char c, short *width, short *heigth);
 extern int gr_font_string_wrap(grs_font *pfont, char *ps, short width);
 extern void gr_font_string_unwrap(char *s);
