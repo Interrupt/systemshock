@@ -50,12 +50,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Calculate the width and height of a string in the specified font, and return in the given pointers.
- * @param f font
- * @param s string
- * @param w returned width
- * @param h returned height
+ * @param font font
+ * @param string string
+ * @param width returned width
+ * @param height returned height
  */
-void gr_font_string_size(grs_font *f, char *s, short *w, short *h) {
+void gr_font_string_size(grs_font *font, char *string, short *width, short *height) {
     short *offset_tab; /* table of character offsets */
     short offset;      /* offset of current character */
     short w_lin = 0;   /* current line's width so far */
@@ -63,33 +63,33 @@ void gr_font_string_size(grs_font *f, char *s, short *w, short *h) {
     short h_str;       /* height of string */
     uchar c;           /* current character */
 
-    offset_tab = f->off_tab;
-    h_str = f->h;
-    while ((c = (uchar)(*s++)) != '\0') {
+    offset_tab = font->off_tab;
+    h_str = font->h;
+    while ((c = (uchar)(*string++)) != '\0') {
         if (c == CHAR_SOFTSP)
             continue;
         if (c == '\n' || c == CHAR_SOFTCR) {
             if (w_lin > w_str)
                 w_str = w_lin;
             w_lin = 0;
-            h_str += f->h;
+            h_str += font->h;
             continue;
         }
-        offset = offset_tab[c - f->min];
-        w_lin += offset_tab[c - f->min + 1] - offset;
+        offset = offset_tab[c - font->min];
+        w_lin += offset_tab[c - font->min + 1] - offset;
     }
-    *w = (w_lin > w_str) ? w_lin : w_str;
-    *h = h_str;
+    *width = (w_lin > w_str) ? w_lin : w_str;
+    *height = h_str;
 }
 
 /**
  * Returns the width of string in pixels for the specified font
- * @param f font
- * @param s string
+ * @param font font
+ * @param string string
  * @return width of string
  */
-short gr_font_string_width(grs_font *f, char *s) {
+short gr_font_string_width(grs_font *font, char *string) {
     short width = 0, height = 0;
-    gr_font_string_size(f, s, &width, &height);
+    gr_font_string_size(font, string, &width, &height);
     return width;
 }
