@@ -9,8 +9,6 @@ set(2D_SRC
 	2D/Source/canvas.c
 #	2D/Source/chain.c
 #	2D/Source/ChnFuncs.c
-	2D/Source/chrsiz.c
-	2D/Source/chrwid.c
 	2D/Source/close.c
 	2D/Source/cnvtab.c
 	2D/Source/context.c
@@ -30,12 +28,6 @@ set(2D_SRC
 	2D/Source/screen.c
 	2D/Source/sscrn.c
 	2D/Source/StateStk.c
-#	2D/Source/strnsiz.c
-	2D/Source/strscl.c
-	2D/Source/strsiz.c
-	2D/Source/struscl.c
-	2D/Source/strwid.c
-	2D/Source/strwrap.c
 	2D/Source/svgainit.c
 	2D/Source/tempbm.c
 	2D/Source/temptm.c
@@ -160,6 +152,13 @@ set(2D_SRC
 	2D/Source/Clip/clpmono.c
 	2D/Source/RSD/rsdcvt.c
 	2D/Source/RSD/RSDUnpack.c
+	2D/Source/string/chrsiz.c
+	2D/Source/string/chrwid.c
+	2D/Source/string/strscl.c
+	2D/Source/string/strsiz.c
+	2D/Source/string/struscl.c
+	2D/Source/string/strwid.c
+	2D/Source/string/strwrap.c
 )
 
 set(GR_SRC
