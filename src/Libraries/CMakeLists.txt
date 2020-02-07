@@ -50,19 +50,15 @@ set(2D_SRC
 	2D/Source/Gen/genuvlin.c
 	2D/Source/Gen/genhlin.c
 	2D/Source/Gen/genrsdbm.c
-	2D/Source/Gen/genuchr.c
 	2D/Source/Gen/genvlin.c
 	2D/Source/Gen/genvcply.c
-	2D/Source/Gen/genstr.c
 	2D/Source/Gen/genclin.c
 	2D/Source/Gen/genfl8c.c
 	2D/Source/Gen/genrsdtm.c
 	2D/Source/Gen/genel.c
-	2D/Source/Gen/genchr.c
 	2D/Source/Gen/genwlin.c
 	2D/Source/Gen/genpix.c
 	2D/Source/Gen/genuhlin.c
-	2D/Source/Gen/genustr.c
 	2D/Source/Gen/genhfl8.c
 	2D/Source/Gen/genov.c
 	2D/Source/Gen/gente.c
@@ -153,6 +149,10 @@ set(2D_SRC
 	2D/Source/RSD/rsdcvt.c
 	2D/Source/RSD/RSDUnpack.c
 	2D/Source/string/chrsiz.c
+	2D/Source/string/genchr.c
+	2D/Source/string/genstr.c
+	2D/Source/string/genuchr.c
+	2D/Source/string/genustr.c
 	2D/Source/string/strscl.c
 	2D/Source/string/strsiz.c
 	2D/Source/string/struscl.c
