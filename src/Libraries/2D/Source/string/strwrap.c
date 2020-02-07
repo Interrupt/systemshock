@@ -69,60 +69,47 @@ static short *pCharPixOff; // ptr to char offset table, with pfont->minch
 
 #define FONT_SETFONT(pfont) (pCharPixOff = &(pfont)->off_tab[0] - (pfont)->min)
 
-//	----------------------------------------------------
-//
-//	FontWrapText() inserts wrapping codes into text.
-//	It inserts soft carriage returns into the text, and
-//	returns the number of lines needed for display.
-//
-//		pfont = ptr to font
-//		ps    = ptr to string (soft cr's and soft spaces inserted into it)
-//		width = width of area to wrap into, in pixels
-//
-//	Returns: # lines string wraps into
-
-/* renamed to gr_font_string_wrap in library */
-
+/**
+ * FontWrapText() inserts wrapping codes into text.
+ * It inserts soft carriage returns into the text, and returns the number of lines needed for display.
+ * @note renamed to gr_font_string_wrap in library
+ *
+ * @param pfont ptr to font
+ * @param ps ptr to string (soft cr's and soft spaces inserted into it)
+ * @param width width of area to wrap into, in pixels
+ * @return # lines string wraps into
+ */
 int gr_font_string_wrap(grs_font *pfont, char *ps, short width) {
     uchar *p;
     char *pmark;
     short numLines;
     short currWidth;
 
-    //	Set up to do wrapping
-
+    // Set up to do wrapping
     FONT_SETFONT(pfont);
     numLines = 0; // ps = base of current line
 
-    //	Do wrapping for each line till hit end
-
+    // Do wrapping for each line till hit end
     while (*ps) {
         pmark = NULL;  // no SOFTCR insert point yet
         currWidth = 0; // and zero width so far
         p = (uchar *)ps;
 
-        //	Loop thru each word
-
+        // Loop thru each word
         while (*p) {
-
-            //	Skip through to next CR or space or '\0', keeping track of width
-
+            // Skip through to next CR or space or '\0', keeping track of width
             while ((*p != 0) && (*p != '\n') && (*p != ' ')) {
                 currWidth += CHARWIDTH(pfont, *p);
                 p++;
             }
 
-            //	If bypassed width, break out of word loop
-
             if (currWidth > width) {
+                // If bypassed width, break out of word loop
                 if ((pmark == NULL) && (*p != 0) && (*p != '\n'))
                     pmark = (char *)p;
                 break;
-            }
-
-            //	Else set new mark point (unless eol or eos, then bust out)
-
-            else {
+            } else {
+                // Else set new mark point (unless eol or eos, then bust out)
                 if ((*p == 0) || (*p == '\n')) // hit end of line, wipe marker
                 {
                     pmark = NULL;
@@ -134,42 +121,34 @@ int gr_font_string_wrap(grs_font *pfont, char *ps, short width) {
             }
         }
 
-        //	Now insert soft cr if marked one
-
         if (pmark) {
+            // Now insert soft cr if marked one
             *pmark = CHAR_SOFTCR;
             ps = pmark + 1;
             if (*ps == ' ')          // if wrapped and following space,
                 *ps++ = CHAR_SOFTSP; // turn into (ignored) soft space
-        }
-
-        //	Otherwise, bump past cr
-        else {
+        } else {
+            // Otherwise, bump past cr
             if (*p)
                 ++p;
             ps = (char *)p;
         }
 
-        //	Bump line counter in any case
-
+        // Bump line counter in any case
         ++numLines;
     }
 
-    //	When hit end of string, return # lines encountered
-
+    // When hit end of string, return # lines encountered
     return (numLines);
 }
 
-//	--------------------------------------------------------
-//
-//	FontUnwrapText() turns soft carriage returns back into
-//	spaces.  Usually this is done prior to re-wrapping
-//	text with a new width.
-//
-//		s = ptr to string (soft cr's and spaces turned back to spaces)
-
-/* renamed to gr_font_string_unwrap in 2d library */
-
+/**
+ * FontUnwrapText() turns soft carriage returns back into spaces. Usually this is done prior to re-wrapping
+ * text with a new width.
+ * @note renamed to gr_font_string_unwrap in 2d library
+ *
+ * @param s ptr to string (soft cr's and spaces turned back to spaces)
+ */
 void gr_font_string_unwrap(char *s) {
     int c;
 
