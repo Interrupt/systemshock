@@ -615,6 +615,7 @@ errtype tight_loop(uchar check_input) {
 
 #define HYPHEN '-'
 
+// FIXME This code duplicates gr_font_string_wrap()
 int hyphenated_wrap_text(char *ps, char *out, short width) {
     char *psbase;
     char *p;
