@@ -155,7 +155,8 @@ grt_uline_fill gen_uline_fill_table[GRD_FILL_TYPES][GRD_LINE_TYPES] = {
     },
 };
 
-/* temporarily modex, bank8 and bank24 are all gen's */
+/* WH - these tables not used by game
+// temporarily modex, bank8 and bank24 are all gen's
 grt_uline_fill modex_uline_fill_table[GRD_FILL_TYPES][GRD_LINE_TYPES] = {
     {
         gri_gen_uline_fill,
@@ -214,6 +215,7 @@ grt_uline_fill modex_uline_fill_table[GRD_FILL_TYPES][GRD_LINE_TYPES] = {
     },
 };
 
+// WH - this too
 grt_uline_fill bank8_uline_fill_table[GRD_FILL_TYPES][GRD_LINE_TYPES] = {
     {
         gri_gen_uline_fill,
@@ -272,6 +274,7 @@ grt_uline_fill bank8_uline_fill_table[GRD_FILL_TYPES][GRD_LINE_TYPES] = {
     },
 };
 
+// WH - and this
 grt_uline_fill bank24_uline_fill_table[GRD_FILL_TYPES][GRD_LINE_TYPES] = {
     {
         gri_gen_uline_fill,
@@ -329,6 +332,7 @@ grt_uline_fill bank24_uline_fill_table[GRD_FILL_TYPES][GRD_LINE_TYPES] = {
         gri_gen_wire_poly_ucline
     },
 };
+*/
 
 grt_uline_fill_table *grd_uline_fill_table_list[] = {
     NULL,
