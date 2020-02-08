@@ -371,12 +371,12 @@ void games_expose_menu(MFD *m, ubyte control) {
     if (ms->save_time < TIME_TIL_SCREEN_SAVE) {
         ++ms->save_time;
         strcpy(buf, STRING(GamesMenu));
-        wrap_text(buf, MFD_VIEW_WID - 8);
+        gr_string_wrap(buf, MFD_VIEW_WID - 8);
         gr_set_fcolor(RED_8_BASE + 4);
         draw_shadowed_text(buf, 4, 1);
 
         strcpy(buf, STRING(DontPlay));
-        wrap_text(buf, MFD_VIEW_WID - 5);
+        gr_string_wrap(buf, MFD_VIEW_WID - 5);
         draw_shadowed_text(buf, 10, MFD_VIEW_HGT - 14);
 
         gr_set_fcolor(GREEN_8_BASE + 3);

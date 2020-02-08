@@ -503,18 +503,18 @@ void obj_mess(curAMap *amptr, MapElem *curmp, int drw, int xm, int ym, int tsize
                             fon = gr_get_font();
                             gr_set_font(ResLock(RES_tinyTechFont));
                             md = tsize - 2;
-                            wrap_text(buf, md);
+                            gr_string_wrap(buf, md);
                             gr_string_size(buf, &w, &h);
                             if (h > md) {
                                 // square up text iteratively
                                 md = (w + h) / 2;
-                                unwrap_text(buf);
-                                wrap_text(buf, md);
+                                gr_font_string_unwrap(buf);
+                                gr_string_wrap(buf, md);
                                 gr_string_size(buf, &w, &h);
                                 if (abs(w - h) > 4) {
                                     md = (w + h) / 2;
-                                    unwrap_text(buf);
-                                    wrap_text(buf, md);
+                                    gr_font_string_unwrap(buf);
+                                    gr_string_wrap(buf, md);
                                 }
                             }
                             gr_set_fcolor(BLACK + 1);

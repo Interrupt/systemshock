@@ -174,7 +174,7 @@ enum {
    FILL_SOLID,
    GRD_FILL_TYPES
 };
-typedef void (*grt_function_table[GRD_FILL_TYPES][GRD_FUNCS*REAL_BMT_TYPES])(); 
+typedef void (*grt_function_table[GRD_FILL_TYPES][GRD_FUNCS*REAL_BMT_TYPES])();
 extern grt_function_table gen_function_table;
 extern grt_function_table flat8_function_table;
 extern grt_function_table flat8d_function_table;
@@ -1369,6 +1369,7 @@ extern void gr_font_string_unwrap (char *s);
 #define gr_string_width(s) gr_font_string_width ((grs_font *)gr_get_font(), s)
 #define gr_char_width(c) gr_font_char_width ((grs_font *) gr_get_font(), c)
 #define gr_char_size(c, w, h) gr_font_char_size ((grs_font *) gr_get_font(), c, w, h)
+#define gr_string_wrap(string, width) gr_font_string_wrap ((grs_font *) gr_get_font(), string, width)
 
 extern void vga_save_mode (void);
 extern void vga_rest_mode (void);

@@ -120,7 +120,7 @@ void mfd_accesscard_expose(MFD *mfd, ubyte control) {
             *s = '\0';
             gr_set_font((grs_font *)ResLock(MFD_FONT));
             mfd_string_wrap = FALSE;
-            wrap_text(buf, CODES_WID);
+            gr_string_wrap(buf, CODES_WID);
             gr_string_size(buf, &w, &h);
             x += (CODES_WID - w) / 2;
             y += (MFD_VIEW_HGT - h) / 2 - Y_STEP;
