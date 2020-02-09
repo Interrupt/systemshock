@@ -13,6 +13,8 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(ENABLE_WIN32_CONSOLE "Enable log console in Windows" ON)
+add_feature_info(ENABLE_WIN32_CONSOLE ENABLE_WIN32_CONSOLE "Enable log console in Windows")
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
 add_feature_info(ENABLE_EXAMPLES ENABLE_EXAMPLES "Enable example application (can be broken!)")
 option(ENABLE_DEBUG_BLIT "Enable debugging blitter" OFF)
@@ -380,7 +382,11 @@ add_library(GAME_LIB ${GAME_SRC})
 
 # MINGW additional linker options
 if(MINGW)
-	set(WINDOWS_LIBRARIES "mingw32 -mwindows")
+	set(WINDOWS_LIBRARIES mingw32)
+	if(NOT ENABLE_WIN32_CONSOLE)
+		list(APPEND WINDOWS_LIBRARIES "-mwindows")
+	endif(NOT ENABLE_WIN32_CONSOLE)
+
 endif(MINGW)
 
 target_link_libraries(systemshock
