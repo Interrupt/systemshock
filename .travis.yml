@@ -12,7 +12,7 @@ dist: bionic
 addons:
   apt:
     packages:
-      - cmake-data cmake libglu1-mesa-dev libgl1-mesa-dev
+      - cmake-data cmake libglu1-mesa-dev libgl1-mesa-dev libpulse-dev
 
 install:
   - pip3 install --upgrade pip ; pip3 install conan

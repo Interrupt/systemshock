@@ -35,12 +35,13 @@ install:
   - conan user
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - conan --version
+  - copy windows\mingw* %USERPROFILE%\.conan\profiles\
 
 build_script:
   - mkdir build
   - cd build
-  - conan install .. --build=missing
-  - cmake .. -DENABLE_SDL2=BUNDLED -DENABLE_SOUND=BUNDLED -DENABLE_FLUIDSYNTH=BUNDLED -G "MinGW Makefiles"
+  - conan install .. --build=missing --profile=mingw_$ARCH
+  - cmake .. -DENABLE_SDL2=BUNDLED -DENABLE_SOUND=BUNDLED -DENABLE_FLUIDSYNTH=BUNDLED -G "Ninja"
   - cmake --build .
 
 # For now, we don't have any automatic tests to run
