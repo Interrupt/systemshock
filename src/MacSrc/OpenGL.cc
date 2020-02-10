@@ -1,46 +1,44 @@
 #ifdef USE_OPENGL
 
 #include <cstdio>
-#include "OpenGL.h"
-
-#ifdef _WIN32
-    #define GLEW_STATIC 1
-    #include <SDL.h>
-    #include <GL/glew.h>
-#else
-    #define GL_GLEXT_PROTOTYPES
-    #ifdef __APPLE__
-    #include <OpenGL/gl.h>
-    #else
-    #include <GL/gl.h>
-    #include <GL/glext.h>
-    #endif
-
-    #include <SDL.h>
-    #include <SDL_opengl.h>
-#endif
-
-extern "C" {
-    #include "mainloop.h"
-    #include "map.h"
-    #include "frintern.h"
-    #include "frflags.h"
-    #include "player.h"
-    #include "textmaps.h"
-    #include "star.h"
-    #include "tools.h"
-    #include "Prefs.h"
-    #include "Shock.h"
-    #include "faketime.h"
-    #include "render.h"
-    #include "wares.h"
-
-    extern SDL_Renderer *renderer;
-    extern SDL_Palette *sdlPalette;
-}
-
 #include <map>
 #include <sstream>
+#include <SDL.h>
+
+#ifdef _WIN32
+#include <GL/glew.h>
+#else
+#define GL_GLEXT_PROTOTYPES
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#include <GL/glext.h>
+#endif
+
+#include <SDL_opengl.h>
+#endif
+
+#include "OpenGL.h"
+
+extern "C" {
+#include "mainloop.h"
+#include "map.h"
+#include "frintern.h"
+#include "frflags.h"
+#include "player.h"
+#include "textmaps.h"
+#include "star.h"
+#include "tools.h"
+#include "Prefs.h"
+#include "Shock.h"
+#include "faketime.h"
+#include "render.h"
+#include "wares.h"
+
+extern SDL_Renderer *renderer;
+extern SDL_Palette *sdlPalette;
+}
 
 struct CachedTexture {
     SDL_Surface *bitmap;
@@ -49,6 +47,7 @@ struct CachedTexture {
     long lastDrawTime;
     bool locked;
 };
+
 
 struct Shader {
     GLuint shaderProgram;
