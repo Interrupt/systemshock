@@ -41,7 +41,7 @@ install:
 build_script:
   - mkdir build
   - cd build
-  - conan install .. --build=missing --profile=mingw_$ARCH
+  - conan install .. --build=missing --profile=mingw_%ARCH%
   - cmake .. -DENABLE_SDL2=BUNDLED -DENABLE_SOUND=BUNDLED -DENABLE_FLUIDSYNTH=BUNDLED -G "Ninja"
   - cmake --build .
 
