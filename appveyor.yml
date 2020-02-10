@@ -35,6 +35,7 @@ install:
   - conan user
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - conan --version
+  - mkdir %USERPROFILE%\.conan\profiles\
   - copy windows\mingw* %USERPROFILE%\.conan\profiles\
 
 build_script:
