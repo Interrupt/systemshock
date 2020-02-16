@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.1)
 
 project(shockolate VERSION 0.7.8)
 
-include(FeatureSummary)
-
 #set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
 #set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS ON)
 set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS OFF)
@@ -19,23 +17,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-D__STDC_LIMIT_MACROS)
 
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
-add_feature_info(ENABLE_EXAMPLES ENABLE_EXAMPLES "Enable example application (can be broken!)")
 option(ENABLE_DEBUG_BLIT "Enable debugging blitter" OFF)
-add_feature_info(ENABLE_DEBUG_BLIT ENABLE_DEBUG_BLIT "Enable debugging blitter")
 option(ENABLE_OPENGL "Enable OpenGL support" ON)
-add_feature_info(ENABLE_OPENGL ENABLE_OPENGL "Enable OpenGL support")
-
-set(ENABLE_SDL2 "BUNDLED" CACHE STRING "Enable SDL2 (ON/BUNDLED, default BUNDLED)")
-set_property(CACHE ENABLE_SDL2 PROPERTY STRINGS "ON" "BUNDLED")
-add_feature_info(ENABLE_SDL2 ENABLE_SOUND "Enable SDL2 support")
-
-set(ENABLE_SOUND "BUNDLED" CACHE STRING "Enable sound support (requires SDL2_mixer) (ON/BUNDLED/OFF, default BUNDLED)")
-set_property(CACHE ENABLE_SOUND PROPERTY STRINGS "ON" "BUNDLED" "OFF")
-add_feature_info(ENABLE_SOUND ENABLE_SOUND "Enable sound support (requires SDL2_mixer)")
-
-set(ENABLE_FLUIDSYNTH "BUNDLED" CACHE STRING "Enable FluidSynth MIDI support (ON/BUNDLED/OFF, default BUNDLED)")
-set_property(CACHE ENABLE_FLUIDSYNTH PROPERTY STRINGS "ON" "BUNDLED" "OFF")
-add_feature_info(ENABLE_FLUIDSYNTH ENABLE_FLUIDSYNTH "Enable FluidSynth MIDI support")
+option(ENABLE_SOUND "Enable sound support (requires SDL2_mixer)" ON)
+option(ENABLE_FLUIDSYNTH "Enable FluidSynth MIDI support" ON)
 
 # HAAAAX!!
 add_definitions(-DSVGA_SUPPORT)
@@ -113,10 +98,6 @@ endif(GIT_FOUND)
 message(STATUS "Version is ${PROJECT_VERSION}${PROJECT_REVERSION_STRING}")
 configure_file("${CMAKE_SOURCE_DIR}/src/GameSrc/Headers/shockolate_version.h.in"
 	"${CMAKE_BINARY_DIR}/src/GameSrc/Headers/shockolate_version.h" )
-
-# Configuration done. Print features
-feature_summary(WHAT ENABLED_FEATURES DESCRIPTION "Enabled features:")
-feature_summary(WHAT DISABLED_FEATURES DESCRIPTION "Disabled features:")
 
 # Sources configuration
 add_subdirectory(src/Libraries/)
