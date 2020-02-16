@@ -35,49 +35,53 @@ add_compile_options(-fsigned-char -fno-strict-aliasing)
 if(ENABLE_OPENGL)
 	find_package(OpenGL REQUIRED)
 	add_definitions(-DUSE_OPENGL)
+	list(APPEND SHOCK_INCLUDES ${OPENGL_INCLUDE_DIRS})
+	list(APPEND SHOCK_LIBRARIES ${OPENGL_LIBRARIES})
 	if(MINGW)
 		set(GLEW_USE_STATIC_LIBS 1)
 		find_package(GLEW REQUIRED)
-		list(APPEND OPENGL_INCLUDE_DIRS ${GLEW_INCLUDE_DIRS})
-		list(APPEND OPENGL_LIBRARIES GLEW::GLEW)
+		list(APPEND SHOCK_INCLUDES ${GLEW_INCLUDE_DIRS})
+		list(APPEND SHOCK_LIBRARIES GLEW::GLEW)
 	endif(MINGW)
 endif(ENABLE_OPENGL)
 
-if(ENABLE_SDL2 MATCHES "ON")
-	find_package(SDL2 REQUIRED)
-endif(ENABLE_SDL2 MATCHES "ON")
+find_package(SDL2 REQUIRED)
+list(APPEND SHOCK_INCLUDES ${SDL2_INCLUDE_DIRS})
+list(APPEND SHOCK_LIBRARIES ${SDL2_LIBRARIES})
 
-if(ENABLE_SOUND MATCHES "ON")
+if(ENABLE_SOUND)
 	# FIXME applies only for *nix systems
 	find_package(PkgConfig)
 	pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer>=2.0.4)
-	add_definitions(-DUSE_SDL_MIXER=1)
-endif(ENABLE_SOUND MATCHES "ON")
+	add_definitions(-DUSE_SDL_MIXER)
+	list(APPEND SHOCK_INCLUDES ${SDL2_MIXER_INCLUDE_DIRS})
+	list(APPEND SHOCK_LIBRARIES ${SDL2_MIXER_LIBRARIES})
+endif(ENABLE_SOUND)
 
 if(ENABLE_FLUIDSYNTH MATCHES "ON")
 	find_package(PkgConfig)
 	pkg_check_modules(FLUIDSYNTH REQUIRED fluidsynth)
-	add_definitions("-DUSE_FLUIDSYNTH=1")
+	add_definitions("-DUSE_FLUIDSYNTH")
+	list(APPEND SHOCK_INCLUDES ${FLUIDSYNTH_INCLUDE_DIRS})
+	list(APPEND SHOCK_LIBRARIES ${FLUIDSYNTH_LIBRARIES})
 endif(ENABLE_FLUIDSYNTH MATCHES "ON")
 
-include_directories(
-	${SDL2_INCLUDE_DIRS}
-	${SDL2_MIXER_INCLUDE_DIRS}
-	${FLUIDSYNTH_INCLUDE_DIRS}
-	${OPENGL_INCLUDE_DIRS}
-)
-
 if(NOT WIN32)
-  # Find ALSA for Linux native MIDI
-  # NOTE: this seems to require having 64-bit dev packages installed when building
-  #  on 64-bit OS, even when building a 32-bit binary
-  find_package(ALSA)
-  if(ALSA_FOUND)
-      message(STATUS "ALSA found")
-      include_directories(${ALSA_INCLUDE_DIRS})
-      add_definitions(-DUSE_ALSA=1)
-  endif(ALSA_FOUND)
+	# Find ALSA for Linux native MIDI
+	# NOTE: this seems to require having 64-bit dev packages installed when building
+	#  on 64-bit OS, even when building a 32-bit binary
+	find_package(ALSA)
+	if(ALSA_FOUND)
+		message(STATUS "ALSA found")
+		list(APPEND SHOCK_INCLUDES ${ALSA_INCLUDE_DIRS})
+		list(APPEND SHOCK_LIBRARIES ${ALSA_LIBRARIES})
+		add_definitions(-DUSE_ALSA)
+	endif(ALSA_FOUND)
 endif(NOT WIN32)
+
+include_directories(
+	${SHOCK_INCLUDES}
+)
 
 # Generate version based on project version
 set(PROJECT_REVERSION_STRING "")
@@ -352,6 +356,7 @@ endif(MINGW)
 
 target_link_libraries(systemshock
 	${WINDOWS_LIBRARIES} # Set it before any linker options! Beware WinMain@16 error!!
+	${SHOCK_LIBRARIES}
 	GAME_LIB
 	UI_LIB
 	2D_LIB
@@ -370,11 +375,6 @@ target_link_libraries(systemshock
 	EDMS_LIB
 	FIXPP_LIB
 	ADLMIDI_LIB
-	${SDL2_LIBRARIES}
-	${SDL2_MIXER_LIBRARIES}
-	${FLUIDSYNTH_LIBRARIES}
-	${OPENGL_LIBRARIES}
-	${ALSA_LIBRARIES}
 )
 
 # Turn on address sanitizing if wanted
