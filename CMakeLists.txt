@@ -50,25 +50,17 @@ add_compile_options(-fsigned-char -fno-strict-aliasing)
 if(ENABLE_OPENGL)
 	find_package(OpenGL REQUIRED)
 	add_definitions(-DUSE_OPENGL)
-	if(WIN32)
-		list(APPEND OPENGL_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/build_ext/built_glew/include)
-		list(APPEND OPENGL_LIBRARIES ${CMAKE_SOURCE_DIR}/build_ext/built_glew/lib/libglew32.dll.a winmm)
-	endif(WIN32)
+	if(MINGW)
+		set(GLEW_USE_STATIC_LIBS 1)
+		find_package(GLEW REQUIRED)
+		list(APPEND OPENGL_INCLUDE_DIRS ${GLEW_INCLUDE_DIRS})
+		list(APPEND OPENGL_LIBRARIES GLEW::GLEW)
+	endif(MINGW)
 endif(ENABLE_OPENGL)
 
 if(ENABLE_SDL2 MATCHES "ON")
 	find_package(SDL2 REQUIRED)
-	if(SDL2_FOUND)
-		message(STATUS "SDL2 found: ${SDL2_INCLUDE_DIRS} ${SDL2_LIBRARIES}")
-	endif(SDL2_FOUND)
 endif(ENABLE_SDL2 MATCHES "ON")
-if(ENABLE_SDL2 MATCHES "BUNDLED")
-	set(SDL2_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl)
-	find_library(SDL2_LIBRARY SDL2 PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
-	find_library(SDL2MAIN_LIBRARY SDL2main PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
-	set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include/SDL2)
-	set(SDL2_LIBRARIES "${SDL2MAIN_LIBRARY};${SDL2_LIBRARY}")
-endif(ENABLE_SDL2 MATCHES "BUNDLED")
 
 if(ENABLE_SOUND MATCHES "ON")
 	# FIXME applies only for *nix systems
@@ -76,25 +68,12 @@ if(ENABLE_SOUND MATCHES "ON")
 	pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer>=2.0.4)
 	add_definitions(-DUSE_SDL_MIXER=1)
 endif(ENABLE_SOUND MATCHES "ON")
-if(ENABLE_SOUND MATCHES "BUNDLED")
-	set(SDL2_MIXER_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl_mixer)
-	set(SDL2_MIXER_INCLUDE_DIRS ${SDL2_MIXER_DIR}/include/SDL2)
-	find_library(SDL2_MIXER_LIBRARY SDL2_mixer PATHS ${SDL2_MIXER_DIR}/lib)
-	set(SDL2_MIXER_LIBRARIES ${SDL2_MIXER_LIBRARY})
-	add_definitions(-DUSE_SDL_MIXER=1)
-endif(ENABLE_SOUND MATCHES "BUNDLED")
 
 if(ENABLE_FLUIDSYNTH MATCHES "ON")
 	find_package(PkgConfig)
 	pkg_check_modules(FLUIDSYNTH REQUIRED fluidsynth)
 	add_definitions("-DUSE_FLUIDSYNTH=1")
 endif(ENABLE_FLUIDSYNTH MATCHES "ON")
-if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
-        find_library(FLUIDSYNTH_LIBRARY fluidsynth PATHS ${CMAKE_SOURCE_DIR}/build_ext/fluidsynth-lite/src)
-	set(FLUIDSYNTH_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/build_ext/fluidsynth-lite/include)
-	set(FLUIDSYNTH_LIBRARIES ${FLUIDSYNTH_LIBRARY})
-	add_definitions("-DUSE_FLUIDSYNTH=1")
-endif(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
 
 include_directories(
 	${SDL2_INCLUDE_DIRS}
@@ -105,7 +84,7 @@ include_directories(
 
 if(NOT WIN32)
   # Find ALSA for Linux native MIDI
-  # NOTE: this seems to require having 64-bit dev pacakges installed when building
+  # NOTE: this seems to require having 64-bit dev packages installed when building
   #  on 64-bit OS, even when building a 32-bit binary
   find_package(ALSA)
   if(ALSA_FOUND)
@@ -387,7 +366,7 @@ add_library(GAME_LIB ${GAME_SRC})
 
 # MINGW additional linker options
 if(MINGW)
-	set(WINDOWS_LIBRARIES "mingw32 -mwindows")
+	set(WINDOWS_LIBRARIES mingw32 -mwindows winmm)
 endif(MINGW)
 
 target_link_libraries(systemshock
