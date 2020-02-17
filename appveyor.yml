@@ -6,78 +6,71 @@
 # See https://www.appveyor.com/docs/build-environment/ for all the details
 image: Visual Studio 2015
 
-# Tell build_windows.sh that we're building for AppVeyor
-environment:
-  APPVEYOR: TRUE
+init:
+  # Version
+  - ps: >-
+      if ($env:APPVEYOR_REPO_TAG -eq "true") {
+        Update-AppveyorBuild -Version "$($env:APPVEYOR_REPO_TAG_NAME.TrimStart("v"))"
+      } else {
+        Update-AppveyorBuild -Version "dev-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
+      }
 
-platform:
-  - x64
-  - x86
-  
+# Where our project is
+clone_folder: c:\projects\systemshock
+
+environment:
+  APPVEYOR: true
+  matrix:
+    - MINGW_VERSION: mingw32
+      ARCH: i686
+    - MINGW_VERSION: mingw64
+      ARCH: x86_64
+
+matrix:
+  fast_finish: true
+
+install:
+  # Update environment. Comment by now, not clear what's impact.
+  # - C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
+  # - C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
+  # Install/update build tools
+  - C:\msys64\usr\bin\bash.exe -lc "pacman -Sy --noconfirm mingw-w64-%ARCH%-toolchain mingw-w64-%ARCH%-cmake mingw-w64-%ARCH%-ninja"
+  # Install dependencies
+  - C:\msys64\usr\bin\bash.exe -lc "pacman -Sy --noconfirm mingw-w64-%ARCH%-glew mingw-w64-%ARCH%-SDL2 mingw-w64-%ARCH%-fluidsynth mingw-w64-%ARCH%-SDL2_mixer"
+
+build_script:
+  - set PATH=C:\msys64\%MINGW_VERSION%\bin;%PATH%
+  - set BUILD_FOLDER=build_%ARCH%
+  - C:\msys64\usr\bin\bash.exe -lc "cd /c/projects/systemshock ; mkdir %BUILD_FOLDER% ; cd %BUILD_FOLDER% ; cmake -G 'Ninja' -DCMAKE_BUILD_TYPE=Release -DPKG_CONFIG_EXECUTABLE=/%MINGW_VERSION%/bin/pkg-config.exe -DCMAKE_C_COMPILER=%ARCH%-w64-mingw32-gcc.exe -DCMAKE_CXX_COMPILER=%ARCH%-w64-mingw32-g++.exe -DENABLE_SOUND=ON -DENABLE_FLUIDSYNTH=ON -DENABLE_OPENGL=ON .. ; cmake --build . -j 2"
+  - C:\msys64\usr\bin\bash.exe -lc "mkdir -p /c/projects/systemshock/res"
+  - curl -o res/music.sf2 -C - http://rancid.kapsi.fi/windows.sf2
+
 # Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
 # Uncache build_ext if external deps change
 cache:
   - res/music.sf2
-  - build_ext  
 
-# Set up environment variable values for 32 and 64 bit builds
-
-for:
-  -
-    matrix:
-      only:
-        - platform: x86
-    before_build:
-      - set BUILD_SCRIPT=build_win32.sh
-      - set ARTIFACT=systemshock-x86.zip
-      - set MINGW_PATH=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin\
-      - copy CMakeLists.32bit.txt CMakeLists.txt
-  -
-    matrix:
-      only:
-        - platform: x64
-    before_build:
-      - set BUILD_SCRIPT=build_win64.sh
-      - set ARTIFACT=systemshock-x64.zip
-      - set MINGW_PATH=C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin\
-   
-# Actual build script..
-# Step 1: Git has to reside in a path without spaces because the SDL build script is weird like that.
-#         So we create a symlink to the real Git, remove it from PATH and add our own.
-# Step 2: We need to use our own make.exe to build stuff, so we add that
-# Step 3: Do the actual building
-
-build_script:
-  - mklink /D c:\git "C:\Program Files\Git"
-  - set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
-  - set PATH=c:\git\usr\bin;%PATH%;%MINGW_PATH%
-  - copy windows\make.exe \git\usr\bin
-  - set CMAKE_MAKE_PROGRAM=c:\git\usr\bin\make.exe
-  - sh %BUILD_SCRIPT%
-  - build.bat
-
-   
 # For now, we don't have any automatic tests to run
-test: off
+test: false
 
 # Once building is done, we gather all the necessary DLL files and build our ZIP file.
 after_build:
-  - copy %MINGW_PATH%\libgcc*.dll .
-  - copy %MINGW_PATH%\libstd*.dll .
-  - copy %MINGW_PATH%\libwinpthread-1.dll .
-  - copy build_ext\built_sdl\bin\SDL*.dll .
-  - copy build_ext\built_sdl_mixer\bin\SDL*.dll .
-  - copy build_ext\built_glew\lib\glew32.dll .
-  - copy build_ext\fluidsynth-lite\src\libfluidsynth.dll .
-  - 7z a %ARTIFACT% systemshock.exe *.dll shaders/ res/
+  # FIXME: Remove after CMake implementation
+  - C:\msys64\usr\bin\bash.exe -lc "cp -R /c/projects/systemshock/res /c/projects/systemshock/shaders /c/projects/systemshock/%BUILD_FOLDER%"
+  # Toolchain deps
+  - C:\msys64\usr\bin\bash.exe -lc "cp /%MINGW_VERSION%/bin/{libgcc*,libstdc++-6,libwinpthread-1}.dll /c/projects/systemshock/%BUILD_FOLDER%"
+  # Direct dependencies
+  - C:\msys64\usr\bin\bash.exe -lc "cp /%MINGW_VERSION%/bin/{SDL2,SDL2_mixer,libfluidsynth-2}.dll /c/projects/systemshock/%BUILD_FOLDER%"
+  # Dependencies of dependencies (seriously, these should be statically linked
+  - C:\msys64\usr\bin\bash.exe -lc "cp /%MINGW_VERSION%/bin/{libFLAC*,libglib-*,libgmodule-*,libmodplug*,libmpg123*,libportaudio-2,libreadline*,libsndfile*}.dll /c/projects/systemshock/%BUILD_FOLDER%"
+  # Ohhhh...
+  - C:\msys64\usr\bin\bash.exe -lc "cp /%MINGW_VERSION%/bin/{libogg-*,libtermcap-0,libintl-*,libiconv-*,libopus-0,libpcre-*,libopusfile-0,libvorbis-0,libvorbisenc-2,libvorbisfile-*,libspeex-*}.dll  /c/projects/systemshock/%BUILD_FOLDER%"
+  - cd C:\projects\systemshock\%BUILD_FOLDER%
+  - 7z a systemshock-%ARCH%.zip systemshock.exe *.dll shaders/ res/
 
 artifacts:
-  - path: systemshock-x86.zip
-    name: Shockolate (32bit)
-  - path: systemshock-x64.zip
-    name: Shockolate (64bit)
-
-version: '0.5.{build}'
+  - path: build_%ARCH%\systemshock-%ARCH%.zip
+    name: Shockolate (%ARCH%)
 
 # Finally, we deploy the ZIP file as a GitHub release
 # FIXME: How do we want to be building releases? Seems like this would be better as a manual process
@@ -87,7 +80,7 @@ deploy:
   - provider: GitHub
     release: $(appveyor_repo_tag_name)
     description: 'Latest release build of Shockolate'
-    artifact: systemshock-x86.zip, systemshock-x64.zip
+    artifact: systemshock-i686.zip, systemshock-x86_64.zip
     auth_token:
       secure: P1kIk8rRxKAYHqDrOWf0Zf5spfR+N86E0lO8VBu99vHtECJgPLn/Z6tBmL9cxPah  
     on:
