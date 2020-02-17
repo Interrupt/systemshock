@@ -48,7 +48,7 @@ before_script:
   - echo ARCH=${ARCH} CC=${CC}
 script:
   - mkdir build && cd build
-  - cmake -DENABLE_SOUND=ON -DENABLE_FLUIDSYNTH=ON -DENABLE_OPENGL=ON ..
+  - cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_SOUND=ON -DENABLE_FLUIDSYNTH=ON -DENABLE_OPENGL=ON ..
   - cmake --build . -j 2
 
 before_deploy:
