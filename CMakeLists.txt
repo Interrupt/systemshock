@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.1)
 
 project(shockolate VERSION 0.7.8)
 
+# Prefer new GLVND library interface
+if(POLICY CMP0072)
+	cmake_policy(SET CMP0072 NEW)
+endif()
+
 #set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
 #set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS ON)
 set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS OFF)
