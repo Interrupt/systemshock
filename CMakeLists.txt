@@ -58,13 +58,13 @@ if(ENABLE_SOUND)
 	list(APPEND SHOCK_LIBRARIES ${SDL2_MIXER_LIBRARIES})
 endif(ENABLE_SOUND)
 
-if(ENABLE_FLUIDSYNTH MATCHES "ON")
+if(ENABLE_FLUIDSYNTH)
 	find_package(PkgConfig)
 	pkg_check_modules(FLUIDSYNTH REQUIRED fluidsynth)
 	add_definitions("-DUSE_FLUIDSYNTH")
 	list(APPEND SHOCK_INCLUDES ${FLUIDSYNTH_INCLUDE_DIRS})
 	list(APPEND SHOCK_LIBRARIES ${FLUIDSYNTH_LIBRARIES})
-endif(ENABLE_FLUIDSYNTH MATCHES "ON")
+endif(ENABLE_FLUIDSYNTH)
 
 if(NOT WIN32)
 	# Find ALSA for Linux native MIDI
@@ -87,16 +87,14 @@ include_directories(
 set(PROJECT_REVERSION_STRING "")
 find_package(Git)
 if(GIT_FOUND)
-	execute_process(COMMAND ${GIT_EXECUTABLE} describe --dirty
+	execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		OUTPUT_VARIABLE git_describe_out
 		ERROR_VARIABLE git_describe_error
 		RESULT_VARIABLE git_describe_result
+		OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
-	string(REGEX MATCH "[a-z|0-9|.]*-[0-9]*-g([a-z|0-9]*)([-|a-z]*)" git_commit "${git_describe_out}")
-	set(git_commit ${CMAKE_MATCH_1})
-	set(git_dirty ${CMAKE_MATCH_2})
-	set(PROJECT_REVERSION_STRING "-g${git_commit}${git_dirty}")
+	set(PROJECT_REVERSION_STRING "-g${git_describe_out}")
 endif(GIT_FOUND)
 
 message(STATUS "Version is ${PROJECT_VERSION}${PROJECT_REVERSION_STRING}")
