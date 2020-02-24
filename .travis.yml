@@ -20,6 +20,7 @@ addons:
       - fluid-synth
       - sdl2
       - sdl2_mixer
+    update: true
 
 compiler:
   - clang
