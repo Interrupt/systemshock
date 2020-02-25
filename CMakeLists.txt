@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.11)
 
 project(shockolate VERSION 0.7.8)
 
@@ -25,7 +25,9 @@ option(ENABLE_EXAMPLES "Enable example applications" OFF)
 option(ENABLE_DEBUG_BLIT "Enable debugging blitter" OFF)
 option(ENABLE_OPENGL "Enable OpenGL support" ON)
 option(ENABLE_SOUND "Enable sound support (requires SDL2_mixer)" ON)
-option(ENABLE_FLUIDSYNTH "Enable FluidSynth MIDI support" ON)
+# Tristate Fluidsynth
+set(ENABLE_FLUIDSYNTH "LITE" CACHE STRING "Enable FluidSynth MIDI support (ON/LITE/OFF, default LITE)")
+set_property(CACHE ENABLE_FLUIDSYNTH PROPERTY STRINGS "ON" "LITE" "OFF")
 
 # HAAAAX!!
 add_definitions(-DSVGA_SUPPORT)
@@ -63,13 +65,35 @@ if(ENABLE_SOUND)
 	list(APPEND SHOCK_LIBRARIES ${SDL2_MIXER_LIBRARIES})
 endif(ENABLE_SOUND)
 
-if(ENABLE_FLUIDSYNTH)
+if(ENABLE_FLUIDSYNTH STREQUAL "LITE")
+	include(FetchContent)
+	FetchContent_Declare(
+		fluidsynth-lite
+		# For time being https://github.com/Doom64/fluidsynth-lite/pull/10
+		# https://github.com/Doom64/fluidsynth-lite
+		GIT_REPOSITORY https://github.com/winterheart/fluidsynth-lite.git
+		GIT_SHALLOW	ON
+		GIT_TAG	a414e3055a652b5c8bb34b6e5b43e537468ccde6 # 26.01.2020
+	)
+	FetchContent_GetProperties(fluidsynth-lite)
+	if(NOT fluidsynth-lite_POPULATED)
+		message(STATUS "Populating fluidsynth-lite...")
+		FetchContent_Populate(fluidsynth-lite)
+		add_subdirectory(${fluidsynth-lite_SOURCE_DIR} ${fluidsynth-lite_BINARY_DIR})
+		set_property(TARGET libfluidsynth PROPERTY C_STANDARD 11)
+		message(STATUS "Done.")
+	endif()
+	include_directories(BEFORE SYSTEM ${fluidsynth-lite_SOURCE_DIR}/include ${fluidsynth-lite_BINARY_DIR}/include)
+	add_definitions("-DUSE_FLUIDSYNTH")
+	list(APPEND SHOCK_LIBRARIES libfluidsynth)
+elseif(ENABLE_FLUIDSYNTH)
+	# Use bulky system FluidSynth
 	find_package(PkgConfig)
 	pkg_check_modules(FLUIDSYNTH REQUIRED fluidsynth)
-	add_definitions("-DUSE_FLUIDSYNTH")
 	list(APPEND SHOCK_INCLUDES ${FLUIDSYNTH_INCLUDE_DIRS})
 	list(APPEND SHOCK_LIBRARIES ${FLUIDSYNTH_LIBRARIES})
-endif(ENABLE_FLUIDSYNTH)
+	add_definitions("-DUSE_FLUIDSYNTH")
+endif(ENABLE_FLUIDSYNTH STREQUAL "LITE")
 
 if(NOT WIN32)
 	# Find ALSA for Linux native MIDI
