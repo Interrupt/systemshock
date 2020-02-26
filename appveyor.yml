@@ -36,13 +36,13 @@ install:
   # Install/update build tools
   - C:\msys64\usr\bin\bash.exe -lc "pacman -Sy --noconfirm mingw-w64-%ARCH%-toolchain mingw-w64-%ARCH%-cmake mingw-w64-%ARCH%-ninja"
   # Install dependencies
-  - C:\msys64\usr\bin\bash.exe -lc "pacman -Sy --noconfirm mingw-w64-%ARCH%-glew mingw-w64-%ARCH%-SDL2 mingw-w64-%ARCH%-fluidsynth mingw-w64-%ARCH%-SDL2_mixer"
+  - C:\msys64\usr\bin\bash.exe -lc "pacman -Sy --noconfirm mingw-w64-%ARCH%-glew mingw-w64-%ARCH%-SDL2 mingw-w64-%ARCH%-SDL2_mixer"
 
 build_script:
   - set PATH=C:\msys64\%MINGW_VERSION%\bin;%PATH%
   - set BUILD_FOLDER=build_%ARCH%
-  - C:\msys64\usr\bin\bash.exe -lc "cd /c/projects/systemshock ; mkdir %BUILD_FOLDER% ; cd %BUILD_FOLDER% ; cmake -G 'Ninja' -DCMAKE_BUILD_TYPE=Release -DPKG_CONFIG_EXECUTABLE=/%MINGW_VERSION%/bin/pkg-config.exe -DCMAKE_C_COMPILER=%ARCH%-w64-mingw32-gcc.exe -DCMAKE_CXX_COMPILER=%ARCH%-w64-mingw32-g++.exe -DENABLE_SOUND=ON -DENABLE_FLUIDSYNTH=ON -DENABLE_OPENGL=ON .. ; cmake --build . -j 2"
-  - C:\msys64\usr\bin\bash.exe -lc "mkdir -p /c/projects/systemshock/res"
+  - C:\msys64\usr\bin\bash.exe -lc "mkdir -p /c/projects/systemshock/%BUILD_FOLDER% /c/projects/systemshock/res"
+  - C:\msys64\usr\bin\bash.exe -lc "cd /c/projects/systemshock/%BUILD_FOLDER% ; cmake -G 'Ninja' -DCMAKE_BUILD_TYPE=Release -DPKG_CONFIG_EXECUTABLE=/%MINGW_VERSION%/bin/pkg-config.exe -DCMAKE_C_COMPILER=%ARCH%-w64-mingw32-gcc.exe -DCMAKE_CXX_COMPILER=%ARCH%-w64-mingw32-g++.exe -DENABLE_SOUND=ON -DENABLE_FLUIDSYNTH=LITE -DENABLE_OPENGL=ON .. ; cmake --build . -j 2"
   - curl -o res/music.sf2 -C - http://rancid.kapsi.fi/windows.sf2
 
 # Avoid rebuilding external dependencies (ie. SDL and SDL_mixer)
