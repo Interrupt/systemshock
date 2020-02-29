@@ -8,9 +8,10 @@ Prerequisites:
 * FluidSynth (optional)
 
 The following CMake options are supported in the build process:
-* `ENABLE_SOUND` - enable sound support (requires SDL2_mixer)
+* `ENABLE_SOUND` - enable sound support (requires SDL2_mixer, default is ON)
 * `ENABLE_FLUIDSYNTH` - enable FluidSynth MIDI support (ON/LITE/OFF, default is embedded LITE)
-* `ENABLE_OPENGL` - enable OpenGL support (ON/OFF, default ON)
+* `ENABLE_OPENGL` - enable OpenGL support (ON/OFF, default is ON)
+* `ENABLE_WIN_CONSOLE` - enable debug console for Windows (default is ON)
 
 ## Linux
 

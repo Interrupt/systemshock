@@ -28,6 +28,7 @@ option(ENABLE_SOUND "Enable sound support (requires SDL2_mixer)" ON)
 # Tristate Fluidsynth
 set(ENABLE_FLUIDSYNTH "LITE" CACHE STRING "Enable FluidSynth MIDI support (ON/LITE/OFF, default LITE)")
 set_property(CACHE ENABLE_FLUIDSYNTH PROPERTY STRINGS "ON" "LITE" "OFF")
+option(ENABLE_WIN_CONSOLE "Enable debug console in Windows" ON)
 
 # HAAAAX!!
 add_definitions(-DSVGA_SUPPORT)
@@ -378,7 +379,10 @@ add_library(GAME_LIB ${GAME_SRC})
 
 # MINGW additional linker options
 if(MINGW)
-	set(WINDOWS_LIBRARIES mingw32 -mwindows winmm)
+	set(WINDOWS_LIBRARIES mingw32 winmm)
+	if(ENABLE_WIN_CONSOLE)
+		list(APPEND ENABLE_WIN_CONSOLE -mwindows)
+	endif(ENABLE_WIN_CONSOLE)
 endif(MINGW)
 
 target_link_libraries(systemshock
@@ -397,7 +401,6 @@ target_link_libraries(systemshock
 	INPUT_LIB
 	PALETTE_LIB
 	RES_LIB
-#	SND_LIB
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
