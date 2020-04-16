@@ -191,9 +191,11 @@ errtype load_res_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid, uchar allo
     ss_set_hack_mode(0, &temp);
     gr2ss_override = old_over;
 #else
-    retval =
-        master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), &anchor, (alloc) ? NULL : bmp->bits);
-    retval = uiMakeBitmapCursor(c, bmp, anchor.ul);
+    retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid),
+                                         &anchor, (alloc) ? NULL : bmp->bits);
+    if (retval == OK) {
+        retval = uiMakeBitmapCursor(c, bmp, anchor.ul);
+    }
 #endif
     return retval;
 }
@@ -206,9 +208,13 @@ errtype load_hires_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid, uchar al
     errtype retval = OK;
     LGRect anchor;
 
-    retval =
-        master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid), &anchor, (alloc) ? NULL : bmp->bits);
-    retval = uiMakeBitmapCursor(c, bmp, anchor.ul);
+    retval = master_load_bitmap_from_res(bmp, REFID(rid), REFINDEX(rid),
+                                         &anchor, (alloc) ? NULL : bmp->bits);
+    if (retval == OK) {
+        retval = uiMakeBitmapCursor(c, bmp, anchor.ul);
+    }
+
+    return retval;
 }
 
 /*

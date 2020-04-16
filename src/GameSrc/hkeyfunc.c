@@ -1088,11 +1088,15 @@ uchar toggle_giveall_func(ushort keycode, uint32_t context, intptr_t data) {
 uchar toggle_up_level_func(ushort keycode, uint32_t context, intptr_t data) {
     message_info("Changing level!");
     go_to_different_level((player_struct.level + 1 + 15) % 15);
+
+    return (TRUE);
 }
 
 uchar toggle_down_level_func(ushort keycode, uint32_t context, intptr_t data) {
     message_info("Changing level!");
     go_to_different_level((player_struct.level - 1 + 15) % 15);
+
+    return (TRUE);
 }
 
 #ifdef NOT_YET //

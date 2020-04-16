@@ -105,12 +105,15 @@ uchar cutscene_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
       break;
     }
   }
+
+  return TRUE;
 }
 
 
 
 uchar cutscene_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
 {
+    return TRUE;
 }
 
 

@@ -72,6 +72,9 @@ int ProcessModArgs(int argc, char** argv) {
 	for(int i = mod_args_start; i < argc; i++) {
 		ProcessModFile(argv[i], TRUE);
 	}
+
+    // shamaz: return value is not checked anyway
+    return OK;
 }
 
 int ProcessModDirectory(char* dirname) {
@@ -84,7 +87,7 @@ int ProcessModDirectory(char* dirname) {
 		struct dirent *ep;
 
 		// Loop through all files here, calling ProcessModFile for each
-		while(ep = readdir(dp)) {
+		while ((ep = readdir(dp))) {
 
 			printf("ep->d_name %s\n", ep->d_name);
 			char* buf = (char *)malloc(strlen(dirname) + strlen(ep->d_name) + 2);
@@ -106,6 +109,9 @@ int ProcessModDirectory(char* dirname) {
 		
 		closedir(dp);
 	}
+
+    // shamaz: Returned value is not checked
+    return OK;
 }
 
 int LoadModFiles() {
@@ -115,4 +121,7 @@ int LoadModFiles() {
 			ResOpenFile(modding_additional_files[i]);
 		}
 	}
+
+    // shamaz: Returned value is not checked
+    return OK;
 }
