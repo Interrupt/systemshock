@@ -193,7 +193,13 @@ uchar set_sample_pan_gain(snd_digi_parms *sdp) {
         temp_vol = VOL_FULL;
     }
     vol = volumes[sdp->snd_ref - SFX_BASE];
-    if (vol == -1)
+
+    /*
+     * shamaz: the origial condition was (vol == -1) which is always
+     * false because vol is unsigned. Perhaps the author was thinking
+     * of something like this:
+     */
+    if (vol == VOL_FULL)
         vol = 127;
     vol = vol * curr_sfx_vol / 100;
     sdp->vol = vol * temp_vol / VOL_FULL;
