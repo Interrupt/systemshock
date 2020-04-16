@@ -1143,7 +1143,7 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4) {
                 qdata_set(p1, TRUE);
             break;
         }
-        if (((p1 & 0xFFF == REACTOR_BOOM_QB)) && (qdata_get(p1)))
+        if (((p1 & 0xFFF) == REACTOR_BOOM_QB) && (qdata_get(p1)))
             do_special_reactor_hack();
     } else {
         switch (mod) {
@@ -1697,7 +1697,7 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
         if (hi == 0)
             hi = 255;
         lo = (p4 >> 8) & 0xFF;
-        if (p3 & 0xFF == 0)
+        if (!(p3 & 0xFF))
             p3 |= 0x10;
         head += (p3 & 0xFF0000) ? -(p3 & 0xFF) : (p3 & 0xFF);
         if ((p3 & 0xFF00) == 0) {

@@ -890,8 +890,9 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
                                 string_message_info(REF_STR_WrongHead);
                             }
                         }
-                    } else if ((ID2TRIP(cursor_obj) == objFixtures[objs[id].specID].comparator & 0xFFFFFF) ||
-                               (QUESTVAR_GET(MISSION_DIFF_QVAR) < 1)) {
+                    } else if (ID2TRIP(cursor_obj) ==
+                                (objFixtures[objs[id].specID].comparator & 0xFFFFFF) ||
+                               QUESTVAR_GET(MISSION_DIFF_QVAR) < 1) {
                         obj_fixture_zoom(id, in_inv, &retval);
                         obj_destroy(cursor_obj);
                         pop_cursor_object();

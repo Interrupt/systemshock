@@ -227,15 +227,15 @@ void g3_eval_view_ahead(void) {
 // set it if necessary
 // takes args in tmp1,tmp2
 void check_for_near(void) {
-    if ((_g3d_light_type & (LT_NEAR_VIEW | LT_NEAR_LIGHT) == 0))
+    if (!(_g3d_light_type & (LT_NEAR_VIEW | LT_NEAR_LIGHT)))
         return;
 
     // if light near, evaluate
-    if ((_g3d_light_type & LT_NEAR_LIGHT) != 0)
+    if (_g3d_light_type & LT_NEAR_LIGHT)
         g3_eval_loc_light(tmp2);
 
     // if view near, eval
-    if ((_g3d_light_type & LT_NEAR_VIEW) != 0)
+    if (_g3d_light_type & LT_NEAR_VIEW)
         g3_eval_view(tmp2);
 
     // evaluate ldotv if either was local

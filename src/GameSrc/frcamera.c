@@ -132,11 +132,13 @@ uchar fr_camera_modtype(cams *cam, uchar type_on, uchar type_off) {
 // i'll give you fish, i'll give you candy, i'll give you, everything I have in my hand
 int fr_camera_update(cams *cam, uintptr_t arg1, int whicharg, uintptr_t arg2) {
     _cam_top(cam) FALSE;
-    if (arg1 != 0)
+    if (arg1 != 0) {
         if (_cam->type & CAMBIT_OBJ)
             _cam->obj_id = (unsigned int)arg1;
         else
             LG_memcpy(_cam->coor, (void*)arg1, sizeof(fix) * CAM_COOR_CNT);
+    }
+
     if (whicharg == CAM_UPDATE_ALL)
       LG_memcpy(_cam->args, (void*)arg2, sizeof(fix) * CAM_ARGS_CNT);
     else if (whicharg < CAM_ARGS_CNT)

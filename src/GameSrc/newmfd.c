@@ -1359,7 +1359,8 @@ LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, uchar 
     x = lg_min(lg_max(x, 0), MFD_VIEW_WID - 1);
     y = lg_min(lg_max(y, 0), MFD_VIEW_HGT - 1);
     STORE_CLIP(sc1, sc2, sc3, sc4);
-    if (full_game_3d && mfd_string_shadow == MFD_SHADOW_FULLSCREEN || mfd_string_shadow == MFD_SHADOW_ALWAYS)
+    if ((full_game_3d && mfd_string_shadow == MFD_SHADOW_FULLSCREEN) ||
+        mfd_string_shadow == MFD_SHADOW_ALWAYS)
         border = 1;
 
     gr_set_font(thefont);

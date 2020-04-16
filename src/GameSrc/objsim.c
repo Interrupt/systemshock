@@ -2316,9 +2316,9 @@ ObjID object_place(int triple, LGPoint square) {
 ushort obj_floor_compute(ObjID id, uchar flrh) {
     fix newsize;
 
-    if ((ObjProps[OPNUM(id)].render_type == FAUBJ_TEXTPOLY)
+    if (ObjProps[OPNUM(id)].render_type == FAUBJ_TEXTPOLY
 #ifndef NO_ANTIGRAV_CRATES
-        || (ObjProps[OPNUM(id)].render_type == FAUBJ_SPECIAL)
+        || ObjProps[OPNUM(id)].render_type == FAUBJ_SPECIAL
 #endif
     )
         newsize = 0;

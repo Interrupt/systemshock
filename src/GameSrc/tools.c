@@ -475,7 +475,7 @@ errtype message_info(const char *info_text) {
             hud_unset(HUD_MSGLINE);
         } else {
             message_resend = FALSE;
-            if (!full_game_3d && !view360_message_obscured || game_paused) {
+            if ((!full_game_3d && !view360_message_obscured) || game_paused) {
                 gr_set_fcolor(WHITE);
                 res_draw_text_shadowed(RES_tinyTechFont, buf, x, y, full_game_3d);
                 hud_unset(HUD_MSGLINE);
@@ -657,7 +657,8 @@ int hyphenated_wrap_text(char *ps, char *out, short width) {
 
             //      If bypassed width, break out of word loop
 
-            if (currWidth > width || (*p == CHAR_SOFTSP) && currWidth + gr_char_width(HYPHEN) > width) {
+            if (currWidth > width ||
+                (*p == CHAR_SOFTSP && (currWidth + gr_char_width(HYPHEN)) > width)) {
                 if ((pmark == NULL) && (*p != 0) && (*p != '\n'))
                     pmark = p;
                 break;

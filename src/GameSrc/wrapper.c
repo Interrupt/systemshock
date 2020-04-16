@@ -1052,7 +1052,7 @@ uchar opanel_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t user_data) {
     int b;
     uiEvent mev = *ev;
 
-    if (!ev->type && (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE))
+    if (!(ev->type & (UI_EVENT_MOUSE | UI_EVENT_MOUSE_MOVE)))
         return FALSE;
     if (ev->type == UI_EVENT_MOUSE && !(ev->subtype & (MOUSE_DOWN | MOUSE_UP | MOUSE_WHEEL)))
         return FALSE;

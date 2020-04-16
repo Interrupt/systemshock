@@ -386,8 +386,9 @@ void olh_do_cursor(short xl, short yl) {
     // this should be a different string if the cursor is
     // a live grenade.
     char buf[80];
-    if (objs[obj].obclass == CLASS_GRENADE && objGrenades[objs[obj].specID].flags & GREN_ACTIVE_FLAG ||
-        (ObjProps[OPNUM(obj)].flags & USELESS_FLAG) != 0)
+    if ((objs[obj].obclass == CLASS_GRENADE &&
+         objGrenades[objs[obj].specID].flags & GREN_ACTIVE_FLAG) ||
+        ObjProps[OPNUM(obj)].flags & USELESS_FLAG)
         get_string(REF_STR_helpGrenade, buf, sizeof(buf));
     else {
         char stringbuf[80];
