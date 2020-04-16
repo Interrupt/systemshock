@@ -222,7 +222,7 @@ typedef fix fix16;
 typedef uint16_t fixang;
 
 /* makes a fixed point number with integral part a and fractional part b. */
-#define fix_make(a, b) ((((uint32_t)(a)) << 16) | (b))
+#define fix_make(a, b) (int32_t)((((uint32_t)(a)) << 16) | (b))
 
 #define FIX_UNIT fix_make(1, 0)
 
