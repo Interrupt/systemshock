@@ -1640,6 +1640,7 @@ void setup_start(void)
     {
       case SETUP_DIFFICULTY: difficulty_draw(TRUE); break;
       case SETUP_JOURNEY: journey_draw(0); break;
+      default: break;
     }
     direct_into_cutscene = FALSE;
   }
