@@ -579,7 +579,9 @@ uchar mfd_targetware_handler(MFD *m, uiEvent *e) {
     pos.x = e->pos.x - m->rect.ul.x;
     pos.y = e->pos.y - m->rect.ul.y;
 
-    if (pos.y < BUTTON_Y || abs(2 * pos.x - MFD_VIEW_WID) > BUTTON_SIZE || e->type != UI_EVENT_MOUSE)
+    if (pos.y < BUTTON_Y ||
+        abs(2*(int)pos.x - (int)MFD_VIEW_WID) > BUTTON_SIZE ||
+        e->type != UI_EVENT_MOUSE)
         return FALSE;
 
     if (!(e->mouse_data.action & MOUSE_LDOWN))

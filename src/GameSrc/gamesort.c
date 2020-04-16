@@ -142,7 +142,10 @@ void score_objs(int o_num) {
             partition = -1; // secret i am a freebie code
         break;
     }
-    our_score = abs(osort_xc - _os_cobj->loc.x) + abs(osort_yc - _os_cobj->loc.y) + abs(osort_zc - _os_cobj->loc.z);
+    our_score =
+        abs((int)osort_xc - (int)_os_cobj->loc.x) +
+        abs((int)osort_yc - (int)_os_cobj->loc.y) +
+        abs((int)osort_zc - (int)_os_cobj->loc.z);
     our_score <<= 8; // 24 bits of score, should do for now
     // if bloodstain, want to | 0x80 here...
     if (partition > 0) {
