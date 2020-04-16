@@ -303,7 +303,7 @@ typedef struct g3s_point {
 #endif
 
     fix sx, sy;     // screen coords
-    byte codes;     // clip codes
+    ubyte codes;     // clip codes
     ubyte p3_flags; // misc flags
 #if 0               // #ifdef __cplusplus
 	sfix u,v;
