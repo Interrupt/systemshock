@@ -157,7 +157,8 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
             break;
         case GRL_TRANS:
             for (x = xl, u = ul; x < xr; x++) {
-                if (k = p_src[fix_fint(u)])
+                k = p_src[fix_fint(u)];
+                if (k != 0)
                     *p_dest = k; // gr_fill_upixel(k,x,tli->y);
                 u += du;
                 p_dest++;
@@ -171,7 +172,8 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
             break;
         case GRL_TRANS | GRL_CLUT:
             for (x = xl, u = ul; x < xr; x++) {
-                if (k = p_src[fix_fint(u)])
+                k = p_src[fix_fint(u)];
+                if (k != 0)
                     *p_dest = tli->clut[k]; // gr_fill_upixel(tli->clut[k],x,tli->y);
                 u += du;
                 p_dest++;
@@ -179,7 +181,8 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
             break;
         case GRL_TRANS | GRL_SOLID:
             for (x = xl, u = ul; x < xr; x++) {
-                if (k = p_src[fix_fint(u)])
+                k = p_src[fix_fint(u)];
+                if (k != 0)
                     *p_dest = tli->solid; // gr_fill_upixel((uchar )(tli->clut),x,tli->y);
                 u += du;
                 p_dest++;

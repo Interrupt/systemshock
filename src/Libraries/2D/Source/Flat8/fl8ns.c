@@ -66,7 +66,8 @@ int gri_tluc8_scale_umap_loop(grs_tmap_loop_info *tli) {
             break;
         case GRL_TRANS:
             for (p_dst = pl, u = ul; p_dst < pr; p_dst++) {
-                if (k = p_src[fix_fint(u)]) {
+                k = p_src[fix_fint(u)];
+                if (k != 0) {
                     if (tluc8tab[k] != NULL)
                         *p_dst = tluc8tab[k][*p_dst];
                     else
@@ -87,7 +88,8 @@ int gri_tluc8_scale_umap_loop(grs_tmap_loop_info *tli) {
             break;
         case GRL_TRANS | GRL_CLUT:
             for (p_dst = pl, u = ul; p_dst < pr; p_dst++) {
-                if (k = p_src[fix_fint(u)]) {
+                k = p_src[fix_fint(u)];
+                if (k != 0) {
                     if (tluc8tab[k] != NULL)
                         *p_dst = tli->clut[tluc8tab[k][*p_dst]];
                     else

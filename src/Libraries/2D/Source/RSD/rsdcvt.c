@@ -138,7 +138,7 @@ int gr_rsd8_convert(grs_bitmap *sbm, grs_bitmap *dbm)
       }
    }
 rsd_done:
-   if (over_run=(dbm->bits+dbm->row*dbm->h)-p_dst) {
+   if ((over_run = (dbm->bits+dbm->row*dbm->h)-p_dst)) {
        assert(over_run > 0);
       LG_memset (p_dst, kSkipColor, over_run);
    }

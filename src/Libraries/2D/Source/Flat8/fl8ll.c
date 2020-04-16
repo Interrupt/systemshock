@@ -138,7 +138,7 @@ int Handle_TLit_Lin_Loop2_C(fix u, fix v, fix du, fix dv, fix dx, grs_tmap_loop_
                 // assume pixel in transparent first
                 k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
                 k = t_bits[k];
-                if (k) // not transparent, move to assuming opaque
+                if (k != 0) // not transparent, move to assuming opaque
                     *p_dest = g_ltab[k + fix_light(i)];
 
                 p_dest++;
@@ -251,7 +251,8 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
             case GRL_TRANS:
                 for (; x > 0; x--) {
                     k = t_vtab[fix_fint(v)] + fix_fint(u);
-                    if (k = t_bits[k])
+                    k = t_bits[k];
+                    if (k != 0)
                         *p_dest = g_ltab[k + fix_light(i)]; // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
                     p_dest++;
                     u += du;
@@ -273,7 +274,8 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
             case GRL_TRANS | GRL_LOG2:
                 for (; x > 0; x--) {
                     k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
-                    if (k = t_bits[k])
+                    k = t_bits[k];
+                    if (k != 0)
                         *p_dest = g_ltab[k + fix_light(i)]; // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
                     p_dest++;
                     u += du;

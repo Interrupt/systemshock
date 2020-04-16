@@ -43,20 +43,25 @@ int grd_active = 0;
    returns same as gr_detect() 0 if all is well, or error code. */
 int gri_init(void)
 {
-   int err;
-   MemStack *tmp;
+    int err;
+    MemStack *tmp;
 
-   if (grd_active != 0)
-      return 0;
-   tmp=temp_mem_get_stack();
-   if (tmp==NULL)
-      if (err=temp_mem_init(NULL))
-         return err;
-   if ((err=gr_detect (&grd_info)) != 0)
+    if (grd_active != 0)
+        return 0;
+
+    tmp = temp_mem_get_stack();
+    if (tmp == NULL) {
+        err = temp_mem_init(NULL);
+        if (err != 0)
+            return err;
+    }
+
+    err = gr_detect (&grd_info);
+    if (err != 0)
 		return err;
-   gr_push_video_state (1);
-   grd_active = 1;
-   //init_inverse_table();
+    gr_push_video_state (1);
+    grd_active = 1;
+    //init_inverse_table();
 
-   return 0;
+    return 0;
 }
