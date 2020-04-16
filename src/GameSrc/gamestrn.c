@@ -52,7 +52,7 @@ int string_res_file; // string res filenum
 // EXTERNALS
 // ---------
 
-uchar *language_files[] = {"res/data/cybstrng.res", "res/data/frnstrng.res", "res/data/gerstrng.res"};
+char *language_files[] = {"res/data/cybstrng.res", "res/data/frnstrng.res", "res/data/gerstrng.res"};
 char which_lang;
 
 // Wrapper around RefGet suitable for use by lg_sprintf to get string resources
@@ -66,7 +66,7 @@ void init_strings(void) {
     // Open the string resource file.
     if (which_lang < 0 || which_lang >= sizeof(language_files) / sizeof(*language_files))
         which_lang = 0;
-    const uchar *lang_file = language_files[which_lang];
+    const char *lang_file = language_files[which_lang];
     string_res_file = ResOpenFile(lang_file);
 
     if (string_res_file < 0)
