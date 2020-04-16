@@ -168,7 +168,7 @@ void ss_scale_string(char *s, short x, short y) {
 
 void ss_string(char *s, short x, short y) {
     uchar rv;
-    if (rv = perform_svga_conversion(OVERRIDE_SCALE)) {
+    if ((rv = perform_svga_conversion(OVERRIDE_SCALE))) {
 #ifdef STEREO_SUPPORT
         if ((rv == SVGA_CONV_SCREEN) && (inp6d_stereo_active)) {
             gr_push_canvas(i6d_ss->cf_left);
@@ -192,7 +192,7 @@ void ss_string(char *s, short x, short y) {
 
 void ss_bitmap(grs_bitmap *bmp, short x, short y) {
     uchar rv;
-    if (rv = perform_svga_conversion(OVERRIDE_SCALE)) {
+    if ((rv = perform_svga_conversion(OVERRIDE_SCALE))) {
 #ifdef STEREO_SUPPORT
         if ((rv == SVGA_CONV_SCREEN) && (inp6d_stereo_active)) {
             gr_push_canvas(i6d_ss->cf_left);
@@ -223,7 +223,7 @@ void ss_ubitmap(grs_bitmap *bmp, short x, short y) {
 
 void ss_noscale_bitmap(grs_bitmap *bmp, short x, short y) {
     uchar rv;
-    if (rv = perform_svga_conversion(OVERRIDE_SCALE)) // ?
+    if ((rv = perform_svga_conversion(OVERRIDE_SCALE))) // ?
 #ifdef STEREO_SUPPORT
         if ((rv == SVGA_CONV_SCREEN) && (inp6d_stereo_active)) {
             gr_push_canvas(i6d_ss->cf_left);
@@ -253,7 +253,7 @@ void ss_scale_bitmap(grs_bitmap *bmp, short x, short y, short w, short h) {
 
 void ss_rect(short x1, short y1, short x2, short y2) {
     uchar rv;
-    if (rv = perform_svga_conversion(OVERRIDE_SCALE))
+    if ((rv = perform_svga_conversion(OVERRIDE_SCALE))) {
 #ifdef STEREO_SUPPORT
         if ((rv == SVGA_CONV_SCREEN) && (inp6d_stereo_active)) {
             int c = gr_get_fcolor();
@@ -273,13 +273,14 @@ void ss_rect(short x1, short y1, short x2, short y2) {
         } else
 #endif
             gr_rect(SCONV_X(x1), SCONV_Y(y1), SCONV_X(x2), SCONV_Y(y2));
-    else
+    } else {
         gr_rect(x1, y1, x2, y2);
+    }
 }
 
 void ss_box(short x1, short y1, short x2, short y2) {
     uchar rv;
-    if (rv = perform_svga_conversion(OVERRIDE_SCALE))
+    if ((rv = perform_svga_conversion(OVERRIDE_SCALE))) {
 #ifdef STEREO_SUPPORT
         if ((rv == SVGA_CONV_SCREEN) && (inp6d_stereo_active)) {
             int c = gr_get_fcolor();
@@ -299,8 +300,9 @@ void ss_box(short x1, short y1, short x2, short y2) {
         } else
 #endif
             gr_box(RSCONV_X(x1), RSCONV_Y(y1), RSCONV_X(x2), RSCONV_Y(y2));
-    else
+    } else {
         gr_box(x1, y1, x2, y2);
+    }
 }
 
 void ss_safe_set_cliprect(short x1, short y1, short x2, short y2) {

@@ -120,7 +120,7 @@ ushort fr_get_real(fauxrend_context *cur_fr, int x, int y) {
     if ((col >= FR_CUR_OBJ_BASE) && (col < fr_cur_obj_col))  // if we are actually exactly over an object
         return (ushort)fr_col_to_obj[col - FR_CUR_OBJ_BASE]; //  actual obj_id
     // if we found an object nearby (what to do about transparent doors)
-    if (tmpcol = check_around(cur_fr->draw_canvas.bm.bits, x, y))
+    if ((tmpcol = check_around(cur_fr->draw_canvas.bm.bits, x, y)))
         return (ushort)fr_col_to_obj[tmpcol - FR_CUR_OBJ_BASE]; //  actual obj_id
     else                                                        // its a wall folks, just a wall
         return ((ushort)0) - ((ushort)col);                     //  return a tmap as - (tmapid+1), or nothing as 0
