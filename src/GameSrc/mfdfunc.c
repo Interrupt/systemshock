@@ -447,10 +447,31 @@ uchar mfd_weapon_expose_projectile(MFD *m, weapon_slot *ws, ubyte control) {
     // Get the ammo data for the current weapon
     get_available_ammo_type(ws->type, ws->subtype, &num_ammo_buttons, ammo_types, &ammo_subclass);
 
-    //ammo_type and setting have same memory location in weapon_slot union
-    //setting can have values greater than num ammo buttons so check for and fix oob
-    if (ws->ammo_type >= num_ammo_buttons)
-        ws->ammo_type = (num_ammo_buttons ? ammo_types[0] : 0);
+    /*
+     * FIXME: shamaz 20.04.2020
+     *
+     * The following two lines were present in the code provided by
+     * Nightdive Studios, LLC along with the following comment:
+     *    > ammo_type and setting have same memory location in
+     *    > weapon_slot union. setting can have values greater than
+     *    > num ammo buttons so check for and fix oob
+     * It's not clear how oob access can happen because .setting and
+     * .ammo_type fields are used independently (based on a type of
+     * the weapon, e.g. beam or other range weapon) and never .setting
+     * value is treated as .ammo_type and vice versa.
+     *
+     * On the other hand they cause a problem when you reload your
+     * weapon with the last clip (of any suitable type). At first, if
+     * you unload this clip, it get lost (disappears from your
+     * inventory forever) even if not depleted completely. At second,
+     * this final clip is replaced with a clip of other type
+     * (sometimes even inappropriate for this particular weapon).
+     *
+     * So I find it better to comment these lines out. Seems to be
+     * perfectly safe, but some more testing is required.
+     */
+    /* if (ws->ammo_type >= num_ammo_buttons) */
+    /*     ws->ammo_type = (num_ammo_buttons ? ammo_types[0] : 0); */
 
     if ((control & MFD_EXPOSE_FULL) || (ws->ammo == 0))
         RedrawAmmoFlag = TRUE;
