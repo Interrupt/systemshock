@@ -342,11 +342,14 @@ void SetSDLPalette(int index, int count, uchar *pal)
 
 void SDLDraw()
 {
-	sdlPalette->colors[255].a = 0x00;
+    if (should_opengl_swap()) {
+        sdlPalette->colors[255].a = 0x00;
+    }
+
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, drawSurface);
-	sdlPalette->colors[255].a = 0xff;
 
 	if (should_opengl_swap()) {
+        sdlPalette->colors[255].a = 0xff;
 		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	}
 
