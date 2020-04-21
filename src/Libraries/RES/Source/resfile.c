@@ -184,6 +184,9 @@ int32_t ResOpenResFile(const char *fname, ResOpenMode mode, bool auxinfo) {
         if (prf->pedit) {
             ResReadEditInfo(prf);
             ResReadDir(prf, filenum);
+
+            // Bugfix for save games growing the entries until crashing
+            ResPack(filenum);
         } else {
             fseek(fd, fileHead.dirOffset, SEEK_SET);
             fread(&dirHead, 1, sizeof(ResDirHeader), fd);
