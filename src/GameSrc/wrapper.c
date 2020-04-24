@@ -110,7 +110,6 @@ int wrap_id = -1, wrapper_wid, wrap_key_id;
 uchar clear_panel = TRUE, wrapper_panel_on = FALSE;
 grs_font *opt_font;
 uchar olh_temp;
-uchar sfx_on;
 static bool digi_gain = true; // enable sfx volume slider
 errtype (*wrapper_cb)(int num_clicked);
 errtype (*slot_callback)(int num_clicked);

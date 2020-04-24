@@ -156,8 +156,6 @@ int mlimbs_boredom;
 int *output_table;
 uchar wait_flag;
 int next_mode, ai_cycle;
-uchar music_card = TRUE, music_on = FALSE;
-// KLC no sfx_card, sfx_on moved to DIGIFX.C     uchar sfx_card=FALSE, sfx_on=FALSE;
 int cur_digi_channels = 4;
 #else
 extern int mlimbs_peril, mlimbs_positive, mlimbs_motion, mlimbs_monster;
