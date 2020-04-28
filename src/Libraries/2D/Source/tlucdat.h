@@ -42,9 +42,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __SPNDAT
 #define __SPNDAT
 
-uchar *tluc8tab[256];
-uchar *tluc8ltab[256];
-uchar *tluc8stab;
-int tluc8nstab;
+extern uchar *tluc8tab[256];
+extern uchar *tluc8ltab[256];
+extern uchar *tluc8stab;
+extern int tluc8nstab;
 
 #endif

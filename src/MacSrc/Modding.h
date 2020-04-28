@@ -13,12 +13,12 @@
 //--------------------
 
 // Let people override the default game archive
-char* modding_archive_override;
+extern char* modding_archive_override;
 
 // Additional resource files to load
-char* modding_additional_files[MAX_MOD_FILES];
+extern char* modding_additional_files[MAX_MOD_FILES];
 
-int num_mod_files;
+extern int num_mod_files;
 
 //--------------------
 //  Function Prototypes

@@ -64,6 +64,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern void grind_music_ai();
 
+uchar music_card = TRUE, music_on = FALSE;
+
 uchar track_table[NUM_SCORES][SUPERCHUNKS_PER_SCORE];
 uchar transition_table[NUM_TRANSITIONS];
 uchar layering_table[NUM_LAYERS][MAX_KEYS];
@@ -388,7 +390,7 @@ int gen_monster(int monster_num) {
 
 int ext_rp = -1;
 
-extern mlimbs_request_info default_request;
+extern struct mlimbs_request_info default_request;
 
 errtype make_request(int chunk_num, int piece_ID) {
     current_request[chunk_num] = default_request;

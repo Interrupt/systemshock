@@ -43,21 +43,11 @@ typedef struct {
 #define MLIMBS_MAX_SEQUENCES 8
 #define MLIMBS_MAX_CHANNELS 8
 
+#include "mlimbs.h"
+
 //-----------------
 //  EXTERN GLOBALS
 //-----------------
-extern uchar mlimbs_on;
-extern char mlimbs_status;
-
-extern mlimbs_request_info current_request[MLIMBS_MAX_SEQUENCES - 1]; // Request information
-
-extern ulong mlimbs_counter;
-extern long mlimbs_error;
-extern uchar mlimbs_semaphore;
-
-extern long *gOffsets; // Array of offsets for the beginning of each tune.
-// extern TunePlayer	gPlayer; // The Tune Player.
-extern bool gTuneDone;     // True when a sequence has finished playing (set by CB proc).
 extern bool gReadyToQueue; // True when it's time to queue up a new sequence.
 
 // extern TuneCallBackUPP	gTuneCBProc;						// The tune's callback proc.

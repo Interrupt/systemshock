@@ -4,6 +4,21 @@
 #include "MusicDevice.h"
 #include "Prefs.h"
 
+unsigned int NumTracks;
+char ChannelThread[16]; //16 device channels
+int NumUsedChannels; //number of in-use device channels
+
+MIDI_EVENT **TrackEvents;
+short *TrackTiming;
+unsigned short *TrackUsedChannels;
+
+MIDI_EVENT *ThreadEventList[NUM_THREADS];
+int ThreadTiming[NUM_THREADS];
+char ThreadChannelRemap[16*NUM_THREADS];
+SDL_atomic_t DeviceChannelVolume[16]; //only msb: 0-127
+SDL_atomic_t ThreadPlaying[NUM_THREADS];
+SDL_atomic_t ThreadCommand[NUM_THREADS];
+
 MusicDevice *MusicDev;
 static SDL_mutex *MyMutex;
 
