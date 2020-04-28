@@ -1162,7 +1162,7 @@ void draw_mfd_item_spew(Ref id, int n) {
     id += i;
 #endif
         get_string(id, buf + strlen(buf), sizeof(buf) - strlen(buf));
-    wrap_text(buf, MFD_VIEW_WID - 2);
+    gr_string_wrap(buf, MFD_VIEW_WID - 2);
     gr_string_size(buf, &w, &h);
     x = (MFD_VIEW_WID - w) / 2;
     y = (MFD_VIEW_HGT - h - SPEW_VERT_MARGIN) / 2 + SPEW_VERT_MARGIN;
@@ -2176,10 +2176,10 @@ errtype draw_shodan_influence(MFD *mfd, uchar amt) {
     draw_raw_res_bm_temp(REF_IMG_EmailMugShotBase + FIRST_SHODAN_MUG + amt, 0, 0);
 
     gr_set_font(ResLock(MFD_FONT));
-    wrap_text(s, MFD_VIEW_WID);
+    gr_string_wrap(s, MFD_VIEW_WID);
     mfd_draw_string(s, 2, 2, SHODAN_COLOR, TRUE);
     ResUnlock(MFD_FONT);
-    unwrap_text(s);
+    gr_font_string_unwrap(s);
 
     mfd_add_rect(0, 0, MFD_VIEW_WID, MFD_VIEW_HGT);
     return (OK);

@@ -45,6 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 #include "audiolog.h"
 #include "gr2ss.h"
+#include "tools.h"
 
 // ============================================================
 //                   MFD BARK
@@ -93,7 +94,6 @@ void mfd_bark_expose(MFD *mfd, ubyte control) {
         }
 
         if (full && mfd_bark_string != REF_STR_Null) {
-            extern int hyphenated_wrap_text(char *, char *, short);
             char buf[256];
             short x, y;
             short w, h;

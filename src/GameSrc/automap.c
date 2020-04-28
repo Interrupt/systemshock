@@ -215,7 +215,7 @@ void mfd_map_expose(MFD *m, ubyte control) {
             draw_raw_resource_bm(MKREF(RES_mfdArtOverlays, MFD_ART_TRIOP), 0, 0);
             get_string(REF_STR_NoAutomap, buf, sizeof(buf));
             gr_set_font(ResLock(MFD_FONT));
-            wrap_text(buf, MFD_VIEW_WID - 2);
+            gr_string_wrap(buf, MFD_VIEW_WID - 2);
             gr_string_size(buf, &w, &h);
             gr_set_fcolor(RED_BASE + 5);
             draw_shadowed_string(buf, (MFD_VIEW_WID - w) / 2, (MFD_VIEW_HGT - h) / 2, full_game_3d);

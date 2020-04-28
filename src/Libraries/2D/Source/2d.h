@@ -174,7 +174,7 @@ enum {
    FILL_SOLID,
    GRD_FILL_TYPES
 };
-typedef void (*grt_function_table[GRD_FILL_TYPES][GRD_FUNCS*REAL_BMT_TYPES])(); 
+typedef void (*grt_function_table[GRD_FILL_TYPES][GRD_FUNCS*REAL_BMT_TYPES])();
 extern grt_function_table gen_function_table;
 extern grt_function_table flat8_function_table;
 extern grt_function_table flat8d_function_table;
@@ -211,9 +211,12 @@ extern grt_uline_fill_table *grd_uline_fill_table;
 extern grt_uline_fill_table *grd_uline_fill_table_list[];
 extern grt_uline_fill gen_uline_fill_table[][GRD_LINE_TYPES];  
 extern grt_uline_fill flat8_uline_fill_table[][GRD_LINE_TYPES];  
-extern grt_uline_fill bank8_uline_fill_table[][GRD_LINE_TYPES];  
+/*
+// WH - not used, see lintab.c
+extern grt_uline_fill bank8_uline_fill_table[][GRD_LINE_TYPES];
 extern grt_uline_fill bank24_uline_fill_table[][GRD_LINE_TYPES];  
-extern grt_uline_fill modex_uline_fill_table[][GRD_LINE_TYPES];  
+extern grt_uline_fill modex_uline_fill_table[][GRD_LINE_TYPES];
+*/
 extern grt_function_table *grd_function_table_list[];
 extern grt_function_table *grd_function_fill_table;
 #define gr_init_st(s,p,f) (s)->elem=(p), (s)->flags=(f)
@@ -1358,44 +1361,19 @@ int gr_free_ipal(void);
 int gr_push_video_state (int flags);
 void gr_pop_video_state (int clear);
 #endif
-extern void gr_font_string_size (grs_font *f, char *s, short *w, short *h);
-extern void gr_font_string_nsize (grs_font *f, char *s, int n, short *w, short *h);
-extern short gr_font_string_width (grs_font *f, char *s);
-extern short gr_font_string_nwidth (grs_font *f, char *s, int n);
-extern short gr_font_string_height (grs_font *f, char *s);
-extern short gr_font_string_nheight (grs_font *f, char *s, int n);
-extern void gr_font_string_uclear (grs_font *f, char *s, short x, short y);
-extern int gr_font_string_clear (grs_font *f, char *s, short x, short y);
-extern short gr_font_char_width (grs_font *f, char c);
-extern void gr_font_char_size (grs_font *f, char c, short *w, short *h);
-extern void gr_font_char_uclear (grs_font *f, char c, short x, short y);
-extern int gr_font_char_clear (grs_font *f, char c, short x, short y);
+
+extern void gr_font_string_size (grs_font *font, char *string, short *width, short *height);
+extern short gr_font_string_width (grs_font *font, char *string);
+extern short gr_font_char_width (grs_font *font, char c);
+extern void gr_font_char_size (grs_font *font, char c, short *width, short *height);
 extern int gr_font_string_wrap (grs_font *pfont, char *ps, short width);
 extern void gr_font_string_unwrap (char *s);
-#define gr_string_size(s, w, h) \
-   gr_font_string_size ((grs_font *) gr_get_font(), s, w, h)
-#define gr_string_nsize(s, n, w, h) \
-   gr_font_string_nsize ((grs_font *) gr_get_font(), s, n, w, h)
-#define gr_string_width(s) \
-   gr_font_string_width ((grs_font *)gr_get_font(), s)
-#define gr_string_nwidth(s, n) \
-   gr_font_string_nwidth ((grs_font *) gr_get_font(), s, n)
-#define gr_string_height(s) \
-   gr_font_string_height ((grs_font *)gr_get_font(), s)
-#define gr_string_nheight(s, n) \
-   gr_font_string_nheight ((grs_font *) gr_get_font(), s, n)
-#define gr_string_uclear(s, x, y) \
-   gr_font_string_uclear ((grs_font *) gr_get_font, s, x, y)
-#define gr_string_clear(s, x, y) \
-    gr_font_string_clear ((grs_font *) gr_get_font(), s, x, y)
-#define gr_char_width(c) \
-    gr_font_char_width ((grs_font *) gr_get_font(), c)
-#define gr_char_size(c, w, h) \
-    gr_font_char_size ((grs_font *) gr_get_font(), c, w, h)
-#define gr_char_uclear(c, x, y) \
-    gr_font_char_uclear ((grs_font *) gr_get_font(), c, x, y)
-#define gr_char_clear(c, x, y) \
-    gr_font_char_clear ((grs_font *) gr_get_font(), c, x, y)
+#define gr_string_size(s, w, h) gr_font_string_size ((grs_font *) gr_get_font(), s, w, h)
+#define gr_string_width(s) gr_font_string_width ((grs_font *)gr_get_font(), s)
+#define gr_char_width(c) gr_font_char_width ((grs_font *) gr_get_font(), c)
+#define gr_char_size(c, w, h) gr_font_char_size ((grs_font *) gr_get_font(), c, w, h)
+#define gr_string_wrap(string, width) gr_font_string_wrap ((grs_font *) gr_get_font(), string, width)
+
 extern void vga_save_mode (void);
 extern void vga_rest_mode (void);
 extern void vga_wait_vsync (void);

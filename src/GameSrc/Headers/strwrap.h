@@ -31,7 +31,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CHAR_SOFTCR 0x01 // soft carriage return (wrapped text)
 #define CHAR_SOFTSP 0x02 // soft space (wrapped text)
 
-extern int wrap_text(char *ps, short width);
-extern void unwrap_text(char *s);
-
 #endif // __STRWRAP_H
