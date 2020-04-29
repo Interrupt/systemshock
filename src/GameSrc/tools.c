@@ -27,8 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define __TOOLS_SRC
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -42,19 +40,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gamestrn.h"
 #include "invdims.h"
 #include "fullscrn.h"
-#include "frprotox.h"
-#include "citres.h"
 #include "hud.h"
 #include "canvchek.h"
-#include "cybmem.h"
 #include "player.h"
 #include "faketime.h"
 #include "cit2d.h"
 
 #include <SDL.h>
 #include "OpenGL.h"
-
-//#include <gifd.h>
 
 #ifndef STORE_CLIP
 #define STORE_CLIP(a, b, c, d) \
@@ -77,7 +70,6 @@ void simple_text_button(char *text, int xc, int yc, int col);
 void Rect_gr_rect(LGRect *r);
 void Rect_gr_box(LGRect *r);
 char *itoa_2_10(char *s, int val);
-int hyphenated_wrap_text(char *ps, char *out, short width);
 void zoom_rect(LGRect *start, LGRect *end);
 
 int str_to_hex(char val) {
@@ -621,10 +613,9 @@ errtype tight_loop(uchar check_input) {
 // --------------------------------------------------
 // STRING WRAPPER
 
-int wrap_text(char *ps, short width) { return gr_font_string_wrap(gr_get_font(), ps, width); }
-
 #define HYPHEN '-'
 
+// FIXME This code duplicates gr_font_string_wrap()
 int hyphenated_wrap_text(char *ps, char *out, short width) {
     char *psbase;
     char *p;
@@ -709,16 +700,6 @@ int hyphenated_wrap_text(char *ps, char *out, short width) {
     //      When hit end of string, return # lines encountered
 
     return (numLines);
-}
-
-void unwrap_text(char *s) {
-    int c;
-
-    while ((c = *s) != 0) {
-        if ((c == CHAR_SOFTCR) || (c == CHAR_SOFTSP))
-            *s = ' ';
-        s++;
-    }
 }
 
 // --------------------------------------------------------------------

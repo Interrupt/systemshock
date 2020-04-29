@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <dirent.h>
 
+char* modding_archive_override;
+char* modding_additional_files[MAX_MOD_FILES];
+int num_mod_files;
+
 int StringEndsWith( char *src, char *dst) {
 	char* s = strrchr(src, '.');
 

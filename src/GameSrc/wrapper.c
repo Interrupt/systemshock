@@ -110,7 +110,6 @@ int wrap_id = -1, wrapper_wid, wrap_key_id;
 uchar clear_panel = TRUE, wrapper_panel_on = FALSE;
 grs_font *opt_font;
 uchar olh_temp;
-uchar sfx_on;
 static bool digi_gain = true; // enable sfx volume slider
 errtype (*wrapper_cb)(int num_clicked);
 errtype (*slot_callback)(int num_clicked);
@@ -575,9 +574,9 @@ void pushbutton_draw_func(uchar butid) {
     h = BR(butid).lr.y - BR(butid).ul.y;
 
     btext = get_temp_string(st->descrip);
-    wrap_text(btext, BR(butid).lr.x - BR(butid).ul.x - 3);
+    gr_string_wrap(btext, BR(butid).lr.x - BR(butid).ul.x - 3);
     text_button(btext, BR(butid).ul.x, BR(butid).ul.y, st->fcolor, st->shadow, -w, -h);
-    unwrap_text(btext);
+    gr_font_string_unwrap(btext);
 }
 
 uchar pushbutton_handler(uiEvent *ev, uchar butid) {
@@ -623,10 +622,10 @@ void text_draw_func(uchar butid) {
     opt_text_state *st = &OButtons[butid].user.text_st;
     char *s = get_temp_string(st->descrip);
 
-    wrap_text(s, BR(butid).lr.x - BR(butid).ul.x);
+    gr_string_wrap(s, BR(butid).lr.x - BR(butid).ul.x);
     gr_set_fcolor(st->color);
     draw_shadowed_string(s, BR(butid).ul.x, BR(butid).ul.y, full_game_3d);
-    unwrap_text(s);
+    gr_font_string_unwrap(s);
 }
 
 void textwidget_init(uchar butid, uchar color, Ref descrip, LGRect *r) {
@@ -2303,13 +2302,13 @@ errtype make_options_cursor(void) {
     gr_clear(0);
     s = get_temp_string(REF_STR_ClickForOptions);
     gr_set_font(ResLock(OPTIONS_FONT));
-    wrap_text(s, orig_w - 3);
+    gr_string_wrap(s, orig_w - 3);
     gr_string_size(s, &w, &h);
     gr_set_fcolor(0xB8);
     ss_rect(1, 1, w + 2, h + 2);
     gr_set_fcolor(0xD3);
     ss_string(s, 2, 1);
-    unwrap_text(s);
+    gr_font_string_unwrap(s);
     uiMakeBitmapCursor(&option_cursor, &option_cursor_bmap, hot);
     gr_pop_canvas();
     ResUnlock(OPTIONS_FONT);

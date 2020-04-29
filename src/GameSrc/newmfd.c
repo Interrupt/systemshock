@@ -1365,7 +1365,7 @@ LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, uchar 
 
     gr_set_font(thefont);
     if (mfd_string_wrap)
-        wrap_text(s, MFD_VIEW_WID - x - 1);
+      gr_string_wrap(s, MFD_VIEW_WID - x - 1);
     gr_string_size(s, &w, &h);
     w = lg_min(w, MFD_VIEW_WID - x - border);
     h = lg_min(h, MFD_VIEW_HGT - y - border);
@@ -1384,7 +1384,7 @@ LGPoint mfd_full_draw_string(char *s, short x, short y, long c, int font, uchar 
     mfd_add_rect(x - border, y - border, x + w + border, y + h + border);
 out:
     if (mfd_string_wrap)
-        unwrap_text(s);
+      gr_font_string_unwrap(s);
     ResUnlock(font);
     RESTORE_CLIP(sc1, sc2, sc3, sc4);
 

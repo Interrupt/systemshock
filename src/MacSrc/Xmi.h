@@ -6,12 +6,12 @@
 #define THREAD_STOPTRACK  3
 #define THREAD_EXIT       4
 
-unsigned int NumTracks;
+extern unsigned int NumTracks;
 
 //-1: no thread is using this device channel;  0- : thread index that is using this device channel
-char ChannelThread[16]; //16 device channels
+extern char ChannelThread[16]; //16 device channels
 
-int NumUsedChannels; //number of in-use device channels
+extern int NumUsedChannels; //number of in-use device channels
 
 void FreeXMI(void);
 int ReadXMI(const char *filename);
@@ -39,16 +39,16 @@ struct midi_event_struct
 
 typedef struct midi_event_struct  MIDI_EVENT;
 
-MIDI_EVENT **TrackEvents;
-short *TrackTiming;
-unsigned short *TrackUsedChannels;
+extern MIDI_EVENT **TrackEvents;
+extern short *TrackTiming;
+extern unsigned short *TrackUsedChannels;
 
-MIDI_EVENT *ThreadEventList[NUM_THREADS];
-int ThreadTiming[NUM_THREADS];
-char ThreadChannelRemap[16*NUM_THREADS];
-SDL_atomic_t DeviceChannelVolume[16]; //only msb: 0-127
-SDL_atomic_t ThreadPlaying[NUM_THREADS];
-SDL_atomic_t ThreadCommand[NUM_THREADS];
+extern MIDI_EVENT *ThreadEventList[NUM_THREADS];
+extern int ThreadTiming[NUM_THREADS];
+extern char ThreadChannelRemap[16*NUM_THREADS];
+extern SDL_atomic_t DeviceChannelVolume[16]; //only msb: 0-127
+extern SDL_atomic_t ThreadPlaying[NUM_THREADS];
+extern SDL_atomic_t ThreadCommand[NUM_THREADS];
 
 struct thread_data
 {

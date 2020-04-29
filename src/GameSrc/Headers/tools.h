@@ -107,10 +107,6 @@ errtype tight_loop(uchar check_input);
 // returns whether or not a given bitmap is, well, empty.
 uchar empty_bitmap(grs_bitmap *bmp);
 
-// string wrapper functions
-int wrap_text(char *ps, short width);
-void unwrap_text(char *s);
-
 // set / unset "wait" cursor
 errtype begin_wait();
 errtype end_wait();
@@ -128,6 +124,8 @@ void gamma_dealfunc(ushort gamma_qvar);
 
 // KLC - added
 void second_format(int sec_remain, char *s);
+
+int hyphenated_wrap_text(char *ps, char *out, short width);
 
 // Globals
 

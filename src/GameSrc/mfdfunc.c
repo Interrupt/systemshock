@@ -447,10 +447,31 @@ uchar mfd_weapon_expose_projectile(MFD *m, weapon_slot *ws, ubyte control) {
     // Get the ammo data for the current weapon
     get_available_ammo_type(ws->type, ws->subtype, &num_ammo_buttons, ammo_types, &ammo_subclass);
 
-    //ammo_type and setting have same memory location in weapon_slot union
-    //setting can have values greater than num ammo buttons so check for and fix oob
-    if (ws->ammo_type >= num_ammo_buttons)
-        ws->ammo_type = (num_ammo_buttons ? ammo_types[0] : 0);
+    /*
+     * FIXME: shamaz 20.04.2020
+     *
+     * The following two lines were present in the code provided by
+     * Nightdive Studios, LLC along with the following comment:
+     *    > ammo_type and setting have same memory location in
+     *    > weapon_slot union. setting can have values greater than
+     *    > num ammo buttons so check for and fix oob
+     * It's not clear how oob access can happen because .setting and
+     * .ammo_type fields are used independently (based on a type of
+     * the weapon, e.g. beam or other range weapon) and never .setting
+     * value is treated as .ammo_type and vice versa.
+     *
+     * On the other hand they cause a problem when you reload your
+     * weapon with the last clip (of any suitable type). At first, if
+     * you unload this clip, it get lost (disappears from your
+     * inventory forever) even if not depleted completely. At second,
+     * this final clip is replaced with a clip of other type
+     * (sometimes even inappropriate for this particular weapon).
+     *
+     * So I find it better to comment these lines out. Seems to be
+     * perfectly safe, but some more testing is required.
+     */
+    /* if (ws->ammo_type >= num_ammo_buttons) */
+    /*     ws->ammo_type = (num_ammo_buttons ? ammo_types[0] : 0); */
 
     if ((control & MFD_EXPOSE_FULL) || (ws->ammo == 0))
         RedrawAmmoFlag = TRUE;
@@ -1141,7 +1162,7 @@ void draw_mfd_item_spew(Ref id, int n) {
     id += i;
 #endif
         get_string(id, buf + strlen(buf), sizeof(buf) - strlen(buf));
-    wrap_text(buf, MFD_VIEW_WID - 2);
+    gr_string_wrap(buf, MFD_VIEW_WID - 2);
     gr_string_size(buf, &w, &h);
     x = (MFD_VIEW_WID - w) / 2;
     y = (MFD_VIEW_HGT - h - SPEW_VERT_MARGIN) / 2 + SPEW_VERT_MARGIN;
@@ -2155,10 +2176,10 @@ errtype draw_shodan_influence(MFD *mfd, uchar amt) {
     draw_raw_res_bm_temp(REF_IMG_EmailMugShotBase + FIRST_SHODAN_MUG + amt, 0, 0);
 
     gr_set_font(ResLock(MFD_FONT));
-    wrap_text(s, MFD_VIEW_WID);
+    gr_string_wrap(s, MFD_VIEW_WID);
     mfd_draw_string(s, 2, 2, SHODAN_COLOR, TRUE);
     ResUnlock(MFD_FONT);
-    unwrap_text(s);
+    gr_font_string_unwrap(s);
 
     mfd_add_rect(0, 0, MFD_VIEW_WID, MFD_VIEW_HGT);
     return (OK);

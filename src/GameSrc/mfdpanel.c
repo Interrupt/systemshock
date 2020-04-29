@@ -169,7 +169,7 @@ static void draw_help_text(char *str, uchar wire, void *puzzle) {
     uchar bcolor;
 
     gr_set_font(ResLock(MFD_FONT));
-    wrap_text(str, MFD_VIEW_WID - 1 - (2 * MFD_MARGIN_WID));
+    gr_string_wrap(str, MFD_VIEW_WID - 1 - (2 * MFD_MARGIN_WID));
     gr_string_size(str, &sw, &sh);
     // special annointed string gets illustrative bitmap.
     if (!wire && !(((gridFlowPuzzle *)puzzle)->gfLayout.have_won)) {
@@ -182,7 +182,7 @@ static void draw_help_text(char *str, uchar wire, void *puzzle) {
     y = (MFD_VIEW_HGT - sh - bh) / 2;
     mfd_string_wrap = FALSE;
     mfd_draw_string(str, x, y, GREEN_YELLOW_BASE + 3, TRUE);
-    unwrap_text(str);
+    gr_font_string_unwrap(str);
     mfd_string_wrap = save_w;
     if (bmap) {
 #ifdef PUZZ_DIFF_NOHELP

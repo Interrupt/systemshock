@@ -801,9 +801,9 @@ void mfd_emailmug_expose(MFD *mfd, ubyte control) {
             get_email_string(MKREF(msg, SUBJECT_IDX), sub, sizeof(buf) - strlen(buf));
             // draw subject field only if subject string is non-null.
             if (*sub) {
-                wrap_text(buf, MFD_VIEW_WID - 1);
+                gr_string_wrap(buf, MFD_VIEW_WID - 1);
                 gr_string_size(buf, &w, &h);
-                unwrap_text(buf);
+                gr_font_string_unwrap(buf);
                 mfd_full_draw_string(buf, 0, EMAIL_SUBJECT_Y - h, mcolor, email_font, TRUE, TRUE);
             }
         }

@@ -154,13 +154,13 @@ void mfd_target_expose(MFD *m, ubyte control) {
             draw_res_bm(MKREF(RES_mfdArtOverlays, MFD_ART_TRIOP), 0, 0);
             gr_set_font(ResLock(TARGET_FONT));
             get_string((version > 0) ? REF_STR_NoTarget : REF_STR_NoTargetWare, buf, sizeof(buf));
-            wrap_text(buf, MFD_VIEW_WID);
+            gr_string_wrap(buf, MFD_VIEW_WID);
             mfd_string_wrap = FALSE;
             gr_string_size(buf, &w, &h);
             mfd_full_draw_string(buf, (MFD_VIEW_WID - w) / 2, MFD_VIEW_HGT / 2 - ((version > 0) ? h : (h / 2)),
                                  TEXT_COLOR, TARGET_FONT, TRUE, TRUE);
             mfd_string_wrap = TRUE;
-            unwrap_text(buf);
+            gr_font_string_unwrap(buf);
             if (version > 0) {
 #ifdef REF_STR_NumKills
                 sprintf(buf, "%s %d", get_string(REF_STR_NumKills, NULL, sizeof(buf)), player_struct.num_victories);
@@ -172,7 +172,7 @@ void mfd_target_expose(MFD *m, ubyte control) {
                 mfd_full_draw_string(buf, (MFD_VIEW_WID - w) / 2, MFD_VIEW_HGT / 2, TEXT_COLOR, TARGET_FONT, TRUE,
                                      TRUE);
                 mfd_string_wrap = TRUE;
-                unwrap_text(buf);
+                gr_font_string_unwrap(buf);
             }
             if (version > 0) {
                 draw_raw_resource_bm(REF_IMG_PrevPage, 0, BUTTON_Y);
