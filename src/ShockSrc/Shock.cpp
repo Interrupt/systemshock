@@ -1,6 +1,8 @@
 /*
 
+Copyright (C) 1994-1995 Looking Glass Technologies, Inc.
 Copyright (C) 2015-2018 Night Dive Studios, LLC.
+Copyright (C) 2018-2020 Shockolate project
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,20 +18,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
-//====================================================================================
-//
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
-//
-//		Shock.c	-	Mac-specific initialization and main event loop.
-//
-//====================================================================================
-
 
 //--------------------
 //  Includes
 //--------------------
-//#include <Balloons.h>
 
+extern "C" {
 #include "Shock.h"
 #include "InitMac.h"
 #include "OpenGL.h"
@@ -42,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "amaploop.h"
 #include "hkeyfunc.h"
+#include "init.h"
 #include "mainloop.h"
 #include "setup.h"
 #include "fullscrn.h"
@@ -52,6 +47,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "version.h"
 
 #include "Modding.h"
+
+//--------------------
+//  Prototypes
+//--------------------
+extern void inv_change_fullscreen(uchar on);
+
+}
 
 extern uchar game_paused;		// I've learned such bad lessons from LG.
 extern uchar objdata_loaded;
@@ -78,23 +80,7 @@ int num_args;
 char** arg_values;
 
 extern grs_screen *svga_screen;
-extern 	frc *svga_render_context;
-
-//--------------------
-//  Prototypes
-//--------------------
-extern void init_all(void);
-extern void inv_change_fullscreen(uchar on);
-extern void object_data_flush(void);
-//extern Boolean IsFullscreenWareOn(void);
-extern errtype load_da_palette(void);
-extern void ShockMain(void);
-
-//see Prefs.c
-extern void CreateDefaultKeybindsFile(void);
-extern void LoadHotkeyKeybinds(void);
-extern void LoadMoveKeybinds(void);
-
+extern frc *svga_render_context;
 errtype CheckFreeSpace(short	checkRefNum);
 
 
@@ -172,7 +158,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-bool CheckArgument(char* arg) {
+bool CheckArgument(const char* arg) {
 	if(arg == NULL)
 		return false;
 

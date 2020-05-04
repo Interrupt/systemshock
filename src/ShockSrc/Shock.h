@@ -1,6 +1,8 @@
 /*
 
+Copyright (C) 1994-1995 Looking Glass Technologies, Inc.
 Copyright (C) 2015-2018 Night Dive Studios, LLC.
+Copyright (C) 2018-2020 Shockolate project
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,13 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
-//====================================================================================
-//
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
-//
-//		Shock.h	-	Mac-specific initialization and main event loop.
-//
-//====================================================================================
 
 #include <SDL.h>
 
@@ -134,7 +129,7 @@ void InitSDL();
 void SetSDLPalette(int index, int count, uchar *pal);
 void SDLDraw();
 void CaptureMouse(bool capture);
-bool CheckArgument(char* name);
+bool CheckArgument(const char* name);
 
 //--------------------
 // Public Globals

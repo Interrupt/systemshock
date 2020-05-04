@@ -276,7 +276,7 @@ set(GAME_SRC
 )
 
 set(SHOCK_SRC
-	src/MacSrc/Shock.c
+	src/ShockSrc/Shock.cpp
 )
 
 include_directories(
@@ -301,6 +301,7 @@ include_directories(
 	src/GameSrc/Headers
 	src/MacSrc
 	src/MusicSrc
+	src/ShockSrc
 	${CMAKE_BINARY_DIR}/src/GameSrc/Headers
 )
 

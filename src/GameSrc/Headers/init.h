@@ -33,7 +33,7 @@ extern grs_bitmap material_maps[MAX_MATERIALS];
 extern void init_all(void);
 extern void free_all(void);
 extern uchar ppall[]; // pointer to main shadow palette
-
+errtype load_da_palette(void);
 void object_data_flush(void);
 errtype object_data_load(void);
 extern uchar objdata_loaded;

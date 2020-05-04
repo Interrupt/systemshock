@@ -73,6 +73,10 @@ void SetDefaultPrefs(void);
 int16_t LoadPrefs(void);
 int16_t SavePrefs(void);
 
+void CreateDefaultKeybindsFile(void);
+void LoadHotkeyKeybinds(void);
+void LoadMoveKeybinds(void);
+
 //-------------------
 //  Enums
 //-------------------
