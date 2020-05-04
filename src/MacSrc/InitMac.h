@@ -30,18 +30,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Prototypes
 //--------------------
 void InitMac(void);
-void FailNIL(void *);
+//void FailNIL(void *);
 // Handle GetResourceFail(long id, short num);
-void CheckConfig(void);
-void ErrorDie(short stringnum);
+//void CheckConfig(void);
+//void ErrorDie(short stringnum);
 void CleanupAndExit(void);
-void SetupWindows(WindowPtr *mainWind);
-void SetUpMenus(MenuHandle *theMenus, short numMenus);
-void StringAlert(short stringnum);
-void GetFolders(void);
+//void SetupWindows(WindowPtr *mainWind);
+//void SetUpMenus(MenuHandle *theMenus, short numMenus);
+//void StringAlert(short stringnum);
+//void GetFolders(void);
 void InstallShockTimers(void);
-void RemoveShockTimers(void);
-void StartShockTimer(void);
-void StopShockTimer(void);
-void HideMenuBar(void);
-void ShowMenuBar(void);
+//void RemoveShockTimers(void);
+//void StartShockTimer(void);
+//void StopShockTimer(void);
+//void HideMenuBar(void);
+//void ShowMenuBar(void);
