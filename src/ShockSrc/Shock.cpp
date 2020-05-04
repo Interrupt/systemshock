@@ -30,9 +30,6 @@ extern "C" {
 #include "Prefs.h"
 #include "ShockBitmap.h"
 #include "ShockHelp.h"
-#ifdef TESTING
-#include "Tests.h"
-#endif
 
 #include "amaploop.h"
 #include "hkeyfunc.h"
@@ -54,25 +51,11 @@ extern "C" {
 extern void inv_change_fullscreen(uchar on);
 }
 
-extern uchar game_paused; // I've learned such bad lessons from LG.
-extern uchar objdata_loaded;
-extern uchar music_on;
-extern uchar startup_music;
-
 //--------------------
 //  Globals
 //--------------------
-WindowPtr gMainWindow;
-MenuHandle gMainMenus[kNumMenus];
-// RgnHandle			gCursorRgn;
-short gCursorSet;
-bool gDone = false;
-bool gInForeground = true;
 bool gPlayingGame; //¥¥¥ Temp
-bool gIsNewGame;
-long gGameSavedTime;
 bool gDeadPlayerQuit;
-bool gGameCompletedQuit;
 
 grs_screen *cit_screen;
 int num_args;
@@ -80,7 +63,6 @@ char **arg_values;
 
 extern grs_screen *svga_screen;
 extern frc *svga_render_context;
-errtype CheckFreeSpace(short checkRefNum);
 
 //------------------------------------------------------------------------------------
 //		Main function.
@@ -110,10 +92,6 @@ int main(int argc, char **argv) {
     LoadHotkeyKeybinds();
     LoadMoveKeybinds();
 
-#ifdef TESTING
-    SetupTests();
-#endif
-
     // Process some startup arguments
 
     bool show_splash = !CheckArgument("-nosplash");
@@ -129,7 +107,6 @@ int main(int argc, char **argv) {
 
     gPlayingGame = TRUE;
     gDeadPlayerQuit = FALSE;
-    gGameCompletedQuit = FALSE;
 
     load_da_palette();
     gr_clear(0xFF);
@@ -156,7 +133,7 @@ int main(int argc, char **argv) {
 }
 
 bool CheckArgument(const char *arg) {
-    if (arg == NULL)
+    if (arg == nullptr)
         return false;
 
     for (int i = 1; i < num_args; i++) {
@@ -166,18 +143,4 @@ bool CheckArgument(const char *arg) {
     }
 
     return false;
-}
-
-//------------------------------------------------------------------------------------
-//		Handle Quit menu command/apple event.
-//------------------------------------------------------------------------------------
-void DoQuit(void) { gDone = true; }
-
-#define NEEDED_DISKSPACE 700000
-//------------------------------------------------------------------------------------
-//  See if we have enough free space to save the file.
-//------------------------------------------------------------------------------------
-errtype CheckFreeSpace(short checkRefNum) {
-    // FIXME: This should probably do something?
-    return (OK);
 }
