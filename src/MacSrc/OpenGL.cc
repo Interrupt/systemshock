@@ -450,7 +450,7 @@ void opengl_start_frame() {
     updatePalette(transparentPalette, true);
 }
 
-int get_hdpi_scaling(int *x_scale, int *y_scale) {
+void get_hdpi_scaling(int *x_scale, int *y_scale) {
     // We may need to scale up our OpenGL output to match some HDPI scaling
     int output_width, output_height;
     SDL_GetRendererOutputSize(renderer, &output_width, &output_height);
