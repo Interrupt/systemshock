@@ -66,6 +66,10 @@ before_deploy:
   - export PACKAGE_NAME="shockolate-$TRAVIS_OS_NAME-${BITS}bit.tgz"
   - tar zcfv $PACKAGE_NAME shockolate
   - rm -r shockolate
+  - mkdir -p shockolate-source
+  - cp -r systemshock/* shockolate-source/
+  - tar zcvf shockolate-source-$TRAVIS_TAG.tar.gz shockolate-source
+  - rm -r shockolate-source
 
 deploy:
   provider: releases
