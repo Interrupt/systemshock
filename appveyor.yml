@@ -30,7 +30,9 @@ matrix:
   fast_finish: true
 
 install:
-  # Update environment. Comment by now, not clear what's impact.
+  # Fix installing new zstd tarballs (https://github.com/msys2/MSYS2-packages/issues/1967).
+  - C:\msys64\usr\bin\bash.exe -lc "pacman --noconfirm -U http://repo.msys2.org/msys/x86_64/pacman-5.2.1-6-x86_64.pkg.tar.xz"
+  # Update environment. Commented by now, it's took too long without any gains (~10-12 min instead of ~3-5 min)
   # - C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
   # - C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
   # Install/update build tools
