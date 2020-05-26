@@ -864,7 +864,7 @@ errtype load_current_map(Id id_num) {
 	global_fullmap->sched[0].queue.size = schedsize;
     }
 
-    uchar *dst_ptr = global_fullmap->sched[0].queue.vec;
+    char *dst_ptr = global_fullmap->sched[0].queue.vec;
     ResExtract(id_num + idx++, FORMAT_RAW, dst_ptr);
 
     // KLC��� Big hack!  Force the schedule to growable.

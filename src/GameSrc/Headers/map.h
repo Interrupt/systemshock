@@ -409,13 +409,13 @@ void map_free(void);
 #define fix_from_obj_height_val(hval) (ACK)
 #define fix_from_obj_angle(byteval)   ((255 - fix_make(byteval, 0)) / 64)
 #else
-#define obj_coord_from_fix(fixval)    ((int)fixval >> 8)
-#define obj_height_from_fix(fixval)   (fixval >> (8 + SLOPE_SHIFT_D))
+#define obj_coord_from_fix(fixval)    ((int)(fixval) >> 8)
+#define obj_height_from_fix(fixval)   ((fixval) >> (8 + SLOPE_SHIFT_D))
 #define obj_angle_from_fix(fixval)    (fix_int(fix_div((fixval), fix_2pi) * 255))
 #define obj_angle_from_fixang(fixval) (fix_div((fixval), FIXANG_PI) >> 9)
-#define fix_from_obj_coord(sval)      ((fix)sval << 8)
+#define fix_from_obj_coord(sval)      ((fix)(sval) << 8)
 #define fix_from_obj_height(oid)      ((fix)objs[(oid)].loc.z << (8u + SLOPE_SHIFT_D))
-#define fix_from_obj_height_val(hval) (hval << (8 + SLOPE_SHIFT_D))
+#define fix_from_obj_height_val(hval) ((hval) << (8 + SLOPE_SHIFT_D))
 #define fix_from_obj_angle(byteval)   ((255 - fix_make(byteval, 0)) / 64)
 #endif
 

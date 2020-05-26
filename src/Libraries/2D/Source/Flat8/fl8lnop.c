@@ -163,7 +163,8 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
             case GRL_TRANS:
                 for (; x > 0 && v >= 0; x--) {
                     k = t_vtab[fix_fint(v)] + fix_fint(u);
-                    if (temp_pix = t_bits[k])
+                    temp_pix = t_bits[k];
+                    if (temp_pix != 0)
                         *p_dest = temp_pix; // gr_fill_upixel(t_bits[k],x,y);
                     p_dest++;
                     u += du;
@@ -181,7 +182,8 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
             case GRL_TRANS | GRL_LOG2:
                 for (; x > 0 && v >= 0; x--) {
                     k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
-                    if (temp_pix = t_bits[k])
+                    temp_pix = t_bits[k];
+                    if (temp_pix != 0)
                         *p_dest = temp_pix; // gr_fill_upixel(t_bits[k],x,y);
                     p_dest++;
                     u += du;
@@ -199,7 +201,8 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
             case GRL_TRANS | GRL_CLUT:
                 for (; x > 0 && v >= 0; x--) {
                     k = t_vtab[fix_fint(v)] + fix_fint(u);
-                    if (k = t_bits[k])
+                    k = t_bits[k];
+                    if (k != 0)
                         *p_dest = t_clut[k]; // gr_fill_upixel(tli->clut[k],x,y);
                     p_dest++;
                     u += du;
@@ -217,7 +220,8 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
             case GRL_TRANS | GRL_LOG2 | GRL_CLUT:
                 for (; x > 0 && v >= 0; x--) {
                     k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
-                    if (k = t_bits[k])
+                    k = t_bits[k];
+                    if (k != 0)
                         *p_dest = t_clut[k]; // gr_fill_upixel(tli->clut[k],x,y);
                     p_dest++;
                     u += du;

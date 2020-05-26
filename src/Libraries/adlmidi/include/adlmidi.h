@@ -211,9 +211,124 @@ enum ADL_BankAccessFlags
     ADLMIDI_Bank_CreateRt = 1|2,
 };
 
-typedef struct ADL_Instrument ADL_Instrument;
+/* ======== Instrument structures ======== */
+
+/**
+ * @brief Version of the instrument data format
+ */
+enum
+{
+    ADLMIDI_InstrumentVersion = 0,
+};
+
+/**
+ * @brief Instrument flags
+ */
+typedef enum ADL_InstrumentFlags
+{
+    /*! Is two-operator single-voice instrument (no flags) */
+    ADLMIDI_Ins_2op        = 0x00,
+    /*! Is true four-operator instrument */
+    ADLMIDI_Ins_4op        = 0x01,
+    /*! Is pseudo four-operator (two 2-operator voices) instrument */
+    ADLMIDI_Ins_Pseudo4op  = 0x02,
+    /*! Is a blank instrument entry */
+    ADLMIDI_Ins_IsBlank    = 0x04,
+
+    /*! RythmMode flags mask */
+    ADLMIDI_Ins_RhythmModeMask = 0x38,
+
+    /*! Mask of the flags range */
+    ADLMIDI_Ins_ALL_MASK   = 0x07,
+} ADL_InstrumentFlags;
+
+/**
+ * @brief Rhythm-mode drum type
+ */
+typedef enum ADL_RhythmMode
+{
+    /*! RythmMode: BassDrum */
+    ADLMIDI_RM_BassDrum  = 0x08,
+    /*! RythmMode: Snare */
+    ADLMIDI_RM_Snare     = 0x10,
+    /*! RythmMode: TomTom */
+    ADLMIDI_RM_TomTom    = 0x18,
+    /*! RythmMode: Cymbal */
+    ADLMIDI_RM_Cymbal    = 0x20,
+    /*! RythmMode: HiHat */
+    ADLMIDI_RM_HiHat     = 0x28
+} ADL_RhythmMode;
 
 
+/**
+ * @brief Operator structure, part of Instrument structure
+ */
+typedef struct ADL_Operator
+{
+    /*! AM/Vib/Env/Ksr/FMult characteristics */
+    ADL_UInt8 avekf_20;
+    /*! Key Scale Level / Total level register data */
+    ADL_UInt8 ksl_l_40;
+    /*! Attack / Decay */
+    ADL_UInt8 atdec_60;
+    /*! Systain and Release register data */
+    ADL_UInt8 susrel_80;
+    /*! Wave form */
+    ADL_UInt8 waveform_E0;
+} ADL_Operator;
+
+/**
+ * @brief Instrument structure
+ */
+typedef struct ADL_Instrument
+{
+    /*! Version of the instrument object */
+    int version;
+    /*! MIDI note key (half-tone) offset for an instrument (or a first voice in pseudo-4-op mode) */
+    ADL_SInt16 note_offset1;
+    /*! MIDI note key (half-tone) offset for a second voice in pseudo-4-op mode */
+    ADL_SInt16 note_offset2;
+    /*! MIDI note velocity offset (taken from Apogee TMB format) */
+    ADL_SInt8  midi_velocity_offset;
+    /*! Second voice detune level (taken from DMX OP2) */
+    ADL_SInt8  second_voice_detune;
+    /*! Percussion MIDI base tone number at which this drum will be played */
+    ADL_UInt8 percussion_key_number;
+    /**
+     * @var inst_flags
+     * @brief Instrument flags
+     *
+     * Enums: #ADL_InstrumentFlags and #ADL_RhythmMode
+     *
+     * Bitwise flags bit map:
+     * ```
+     * [0EEEDCBA]
+     *  A) 0x00 - 2-operator mode
+     *  B) 0x01 - 4-operator mode
+     *  C) 0x02 - pseudo-4-operator (two 2-operator voices) mode
+     *  D) 0x04 - is 'blank' instrument (instrument which has no sound)
+     *  E) 0x38 - Reserved for rhythm-mode percussion type number (three bits number)
+     *     -> 0x00 - Melodic or Generic drum (rhythm-mode is disabled)
+     *     -> 0x08 - is Bass drum
+     *     -> 0x10 - is Snare
+     *     -> 0x18 - is Tom-tom
+     *     -> 0x20 - is Cymbal
+     *     -> 0x28 - is Hi-hat
+     *  0) Reserved / Unused
+     * ```
+     */
+    ADL_UInt8 inst_flags;
+    /*! Feedback&Connection register for first and second operators */
+    ADL_UInt8 fb_conn1_C0;
+    /*! Feedback&Connection register for third and fourth operators */
+    ADL_UInt8 fb_conn2_C0;
+    /*! Operators register data */
+    ADL_Operator operators[4];
+    /*! Millisecond delay of sounding while key is on */
+    ADL_UInt16 delay_on_ms;
+    /*! Millisecond delay of sounding after key off */
+    ADL_UInt16 delay_off_ms;
+} ADL_Instrument;
 
 
 /* ======== Setup ======== */
@@ -1027,128 +1142,6 @@ extern void adl_setDebugMessageHook(struct ADL_MIDIPlayer *device, ADL_DebugMess
  * To get the valid MIDI channel you will need to apply the & 0x0F mask to every value.
  */
 extern int adl_describeChannels(struct ADL_MIDIPlayer *device, char *text, char *attr, size_t size);
-
-
-
-
-/* ======== Instrument structures ======== */
-
-/**
- * @brief Version of the instrument data format
- */
-enum
-{
-    ADLMIDI_InstrumentVersion = 0,
-};
-
-/**
- * @brief Instrument flags
- */
-typedef enum ADL_InstrumentFlags
-{
-    /*! Is two-operator single-voice instrument (no flags) */
-    ADLMIDI_Ins_2op        = 0x00,
-    /*! Is true four-operator instrument */
-    ADLMIDI_Ins_4op        = 0x01,
-    /*! Is pseudo four-operator (two 2-operator voices) instrument */
-    ADLMIDI_Ins_Pseudo4op  = 0x02,
-    /*! Is a blank instrument entry */
-    ADLMIDI_Ins_IsBlank    = 0x04,
-
-    /*! RythmMode flags mask */
-    ADLMIDI_Ins_RhythmModeMask = 0x38,
-
-    /*! Mask of the flags range */
-    ADLMIDI_Ins_ALL_MASK   = 0x07,
-} ADL_InstrumentFlags;
-
-/**
- * @brief Rhythm-mode drum type
- */
-typedef enum ADL_RhythmMode
-{
-    /*! RythmMode: BassDrum */
-    ADLMIDI_RM_BassDrum  = 0x08,
-    /*! RythmMode: Snare */
-    ADLMIDI_RM_Snare     = 0x10,
-    /*! RythmMode: TomTom */
-    ADLMIDI_RM_TomTom    = 0x18,
-    /*! RythmMode: Cymbal */
-    ADLMIDI_RM_Cymbal    = 0x20,
-    /*! RythmMode: HiHat */
-    ADLMIDI_RM_HiHat     = 0x28
-} ADL_RhythmMode;
-
-
-/**
- * @brief Operator structure, part of Instrument structure
- */
-typedef struct ADL_Operator
-{
-    /*! AM/Vib/Env/Ksr/FMult characteristics */
-    ADL_UInt8 avekf_20;
-    /*! Key Scale Level / Total level register data */
-    ADL_UInt8 ksl_l_40;
-    /*! Attack / Decay */
-    ADL_UInt8 atdec_60;
-    /*! Systain and Release register data */
-    ADL_UInt8 susrel_80;
-    /*! Wave form */
-    ADL_UInt8 waveform_E0;
-} ADL_Operator;
-
-/**
- * @brief Instrument structure
- */
-typedef struct ADL_Instrument
-{
-    /*! Version of the instrument object */
-    int version;
-    /*! MIDI note key (half-tone) offset for an instrument (or a first voice in pseudo-4-op mode) */
-    ADL_SInt16 note_offset1;
-    /*! MIDI note key (half-tone) offset for a second voice in pseudo-4-op mode */
-    ADL_SInt16 note_offset2;
-    /*! MIDI note velocity offset (taken from Apogee TMB format) */
-    ADL_SInt8  midi_velocity_offset;
-    /*! Second voice detune level (taken from DMX OP2) */
-    ADL_SInt8  second_voice_detune;
-    /*! Percussion MIDI base tone number at which this drum will be played */
-    ADL_UInt8 percussion_key_number;
-    /**
-     * @var inst_flags
-     * @brief Instrument flags
-     *
-     * Enums: #ADL_InstrumentFlags and #ADL_RhythmMode
-     *
-     * Bitwise flags bit map:
-     * ```
-     * [0EEEDCBA]
-     *  A) 0x00 - 2-operator mode
-     *  B) 0x01 - 4-operator mode
-     *  C) 0x02 - pseudo-4-operator (two 2-operator voices) mode
-     *  D) 0x04 - is 'blank' instrument (instrument which has no sound)
-     *  E) 0x38 - Reserved for rhythm-mode percussion type number (three bits number)
-     *     -> 0x00 - Melodic or Generic drum (rhythm-mode is disabled)
-     *     -> 0x08 - is Bass drum
-     *     -> 0x10 - is Snare
-     *     -> 0x18 - is Tom-tom
-     *     -> 0x20 - is Cymbal
-     *     -> 0x28 - is Hi-hat
-     *  0) Reserved / Unused
-     * ```
-     */
-    ADL_UInt8 inst_flags;
-    /*! Feedback&Connection register for first and second operators */
-    ADL_UInt8 fb_conn1_C0;
-    /*! Feedback&Connection register for third and fourth operators */
-    ADL_UInt8 fb_conn2_C0;
-    /*! Operators register data */
-    ADL_Operator operators[4];
-    /*! Millisecond delay of sounding while key is on */
-    ADL_UInt16 delay_on_ms;
-    /*! Millisecond delay of sounding after key off */
-    ADL_UInt16 delay_off_ms;
-} ADL_Instrument;
 
 #ifdef __cplusplus
 }

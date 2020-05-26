@@ -165,8 +165,7 @@ void dirac_mechanicals(int object, Q F[3], Q T[3]) {
 
     //              Auto alignment...
     //              -----------------
-    // FIXME Error?
-    if (!ss_edms_bcd_flags & SS_BCD_CURR_ON) {
+    if (!(ss_edms_bcd_flags & SS_BCD_CURR_ON)) {
         //              if ( (EDMS_BCD < 10) || (EDMS_BCD > 27) ) {
 
         if (FW[0] > 10)

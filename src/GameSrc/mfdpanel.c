@@ -1414,6 +1414,8 @@ void gpz_4int_init(gridFlowPuzzle *gfpz, uint p1, uint p2, uint p3, uint p4) {
                     if (((player_struct.panel_ref + (easified++)) & 3) == 0)
                         si = GPZ_OPEN;
                     break;
+                default:
+                    break;
                 }
             }
             gpz_set_grid_state(gfpz, r, c, si);

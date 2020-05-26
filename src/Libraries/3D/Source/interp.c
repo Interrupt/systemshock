@@ -349,13 +349,14 @@ g3_interpret_object_raw:
 
             temp = (((ulong)_view_position.gX) >> 16); // get high 16 bits
             // FIXME: DG: I guess they meant &, not &&
-            if (((temp << scale) && 0xffff0000) != 0)
+            // shamaz: Fixed that
+            if (((temp << scale) & 0xffff0000) != 0)
                 return;                             // overflow
             temp = (((ulong)_view_position.gY) >> 16); // get high 16 bits
-            if (((temp << scale) && 0xffff0000) != 0)
+            if (((temp << scale) & 0xffff0000) != 0)
                 return;                             // overflow
             temp = (((ulong)_view_position.gZ) >> 16); // get high 16 bits
-            if (((temp << scale) && 0xffff0000) != 0)
+            if (((temp << scale) & 0xffff0000) != 0)
                 return; // overflow
 
             _view_position.gX <<= scale;

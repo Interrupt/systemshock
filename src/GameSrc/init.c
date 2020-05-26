@@ -211,7 +211,7 @@ int mfdart_res_file;
 //#ifdef DEMO
 // uchar *mfdart_files[] = { "mfdart.rsrc", "mfdart.rsrc", "mfdart.rsrc" };
 //#else
-uchar *mfdart_files[] = {"res/data/mfdart.res", "res/data/mfdfrn.res", "res/data/mfdger.res"};
+char *mfdart_files[] = {"res/data/mfdart.res", "res/data/mfdfrn.res", "res/data/mfdger.res"};
 //#endif
 
 /* MLA - don't need these

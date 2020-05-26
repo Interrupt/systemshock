@@ -562,7 +562,7 @@ errtype ai_critter_really_dead(ObjSpecID osid) {
         ObjID new_obj;
         new_obj = obj_create_base(corpse_trip);
         if (new_obj) {
-            if (f = FRAME_NUM_3D(ObjProps[OPNUM(new_obj)].bitmap_3d))
+            if ((f = FRAME_NUM_3D(ObjProps[OPNUM(new_obj)].bitmap_3d)))
                 objs[new_obj].info.current_frame = rand() % (f + 1);
             else
                 objs[new_obj].info.current_frame = 0;

@@ -1283,10 +1283,11 @@ uchar intro_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data)
             draw_username(0, player_struct.name);
             n = strlen(player_struct.name);
 	    short c = ev->cooked_key_data.code;
-            if ((kb_isprint(c) && (n < sizeof(player_struct.name))) &&
-                (((c & 0xff) >= 128) && ((c & 0xff) <= 155) ||
-                ((c & 0xff) >= 160) && ((c & 0xff) <= 165) ||
-                (strchr(valid_char_string, (c & 0xFF)) != NULL)))
+            if (kb_isprint(c) &&
+                (n < sizeof(player_struct.name)) &&
+                (((c & 0xff) >= 128 && (c & 0xff) <= 155) ||
+                 ((c & 0xff) >= 160 && (c & 0xff) <= 165) ||
+                 strchr(valid_char_string, c & 0xFF) != NULL))
             {
               player_struct.name[n] = (c & 0xFF);
               player_struct.name[n + 1] = '\0';
@@ -1639,6 +1640,7 @@ void setup_start(void)
     {
       case SETUP_DIFFICULTY: difficulty_draw(TRUE); break;
       case SETUP_JOURNEY: journey_draw(0); break;
+      default: break;
     }
     direct_into_cutscene = FALSE;
   }

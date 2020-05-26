@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void criterr_init(void);
 // Initializes critical error system.
 
-void critical_error(short code);
+void critical_error(unsigned short code);
 // Exits the program with error status, printing
 // the error string for the specified code.
 

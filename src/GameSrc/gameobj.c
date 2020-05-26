@@ -303,7 +303,8 @@ void _fr_draw_poly_cube(int p_color, int x, int y, int z) {
 
 // you stand surrounded by dreams brutally crushed
 void _fr_draw_polyobj(void *model_ptr, uchar use_lighting) {
-    int pos_parm = abs(PARM_MAX - ((*tmd_ticks) & PARM_MOD)); // this is dumb
+    int parm_mod = (*tmd_ticks) & PARM_MOD;
+    int pos_parm = abs(PARM_MAX - parm_mod); // this is dumb
     int cur_ft;
     // set up clut for lighting in square and all
     // should decode 0 and FACE_ somehow... ick

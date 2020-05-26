@@ -1186,7 +1186,7 @@ static unsigned int FluidMidiGetOutputCount(MusicDevice *dev)
 #else
     DIR *dirp = opendir("res");
     struct dirent *dp = 0;
-    while (dp = readdir(dirp))
+    while ((dp = readdir(dirp)))
     {
         char *filename = dp->d_name;
         char namelen = strlen(filename);

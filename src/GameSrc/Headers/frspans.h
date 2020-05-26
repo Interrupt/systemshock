@@ -42,14 +42,14 @@ void store_x_span(int y, int lx, int rx);
 #define SPAN_LEFT  0
 #define SPAN_RIGHT 1
 
-#define span_count(y)    (x_span_lists[(y << SPAN_SHIFT) + (MAX_SPANS << 1)])
-#define span_left(y, s)  (x_span_lists[((y) << SPAN_SHIFT) + (s << 1) + SPAN_LEFT])
-#define span_right(y, s) (x_span_lists[((y) << SPAN_SHIFT) + (s << 1) + SPAN_RIGHT])
+#define span_count(y)    (x_span_lists[((y) << SPAN_SHIFT) + (MAX_SPANS << 1)])
+#define span_left(y, s)  (x_span_lists[((y) << SPAN_SHIFT) + ((s) << 1) + SPAN_LEFT])
+#define span_right(y, s) (x_span_lists[((y) << SPAN_SHIFT) + ((s) << 1) + SPAN_RIGHT])
 
-#define cone_span_left(y)  (cone_span_list[y << 1])
-#define cone_span_right(y) (cone_span_list[(y << 1) + 1])
+#define cone_span_left(y)  (cone_span_list[(y) << 1])
+#define cone_span_right(y) (cone_span_list[((y) << 1) + 1])
 
 #ifdef CLIPPER_CRACK_CHECK
 #define SPAN_NOCRACK 0xff
-#define span_crack(y) (x_span_lists[(y << SPAN_SHIFT) + (MAX_SPANS << 1) + 1])
+#define span_crack(y) (x_span_lists[((y) << SPAN_SHIFT) + (MAX_SPANS << 1) + 1])
 #endif

@@ -62,7 +62,7 @@ static char *criterr_type_messages[CRITERR_CLASSES] = {"Test",
                                                        "General failure"};
 
 typedef struct _code_string {
-    short code;
+    unsigned short code;
     char *message;
 } _code_string;
 
@@ -164,7 +164,7 @@ void criterr_init(void)
 }
 */
 
-void critical_error(short code) {
+void critical_error(unsigned short code) {
     char buf[256];
     char explain[256];
     char *s;

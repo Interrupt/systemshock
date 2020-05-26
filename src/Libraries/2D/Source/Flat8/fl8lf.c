@@ -102,7 +102,8 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
                 case GRL_TRANS:
                     for (; x > 0; x--) {
                         int k = t_vtab[fix_fint(v)] + fix_fint(u);
-                        if (k = t_bits[k]) *p_dest = g_ltab[k + fix_light(i)];
+                        k = t_bits[k];
+                        if (k != 0) *p_dest = g_ltab[k + fix_light(i)];
                         // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
                         p_dest++;
                         u += du;
@@ -125,7 +126,8 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
                 case GRL_TRANS | GRL_LOG2:
                     for (; x > 0; x--) {
                         int k = ((fix_fint(v) << t_wlog) + fix_fint(u)) & t_mask;
-                        if (k = t_bits[k]) *p_dest = g_ltab[k + fix_light(i)];
+                        k = t_bits[k];
+                        if (k != 0) *p_dest = g_ltab[k + fix_light(i)];
                         // gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
                         p_dest++;
                         u += du;
