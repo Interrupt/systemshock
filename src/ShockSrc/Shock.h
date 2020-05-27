@@ -1,6 +1,8 @@
 /*
 
+Copyright (C) 1994-1995 Looking Glass Technologies, Inc.
 Copyright (C) 2015-2018 Night Dive Studios, LLC.
+Copyright (C) 2018-2020 Shockolate project
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,26 +18,29 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-#ifndef __INIT_H
-#define __INIT_H
 
-#define MAX_MODELS 80
-#define MAX_MATERIALS 64
+#include <SDL.h>
 
-#ifndef __INIT_SRC
-extern char num_materials;
-#ifdef __2D_H
-extern grs_bitmap material_maps[MAX_MATERIALS];
-#endif
-#endif
+//--------------------
+//  Function Prototypes
+//--------------------
+int main(int argc, char **argv);
 
-// init.h
-extern void init_all(void);
-extern void free_all(void);
-extern uchar ppall[]; // pointer to main shadow palette
-errtype load_da_palette(void);
-void object_data_flush(void);
-errtype object_data_load(void);
-extern uchar objdata_loaded;
+void InitSDL();
+void SetSDLPalette(int index, int count, uchar *pal);
+void SDLDraw();
+void CaptureMouse(bool capture);
+bool CheckArgument(const char *name);
 
-#endif
+//--------------------
+// Public Globals
+//--------------------
+
+extern unsigned long gRandSeed;
+
+extern char *gScreenAddress;
+extern long gScreenRowbytes;
+extern short gScreenWide, gScreenHigh;
+
+extern grs_screen *cit_screen;
+extern SDL_Window *window;

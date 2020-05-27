@@ -143,9 +143,9 @@ feature_summary(WHAT DISABLED_FEATURES DESCRIPTION "Disabled features:")
 add_subdirectory(src/Libraries/)
 
 set(MAC_SRC
+	src/MacSrc/SDLFunctions.c
 	src/MacSrc/ShockBitmap.c
 	src/MacSrc/InitMac.c
-	src/MacSrc/Shock.c
 	src/MacSrc/Prefs.c
 	src/MacSrc/MacTune.c
 	src/MacSrc/SDLSound.c
@@ -275,6 +275,10 @@ set(GAME_SRC
 	src/GameSrc/mouselook.c
 )
 
+set(SHOCK_SRC
+	src/ShockSrc/Shock.cpp
+)
+
 include_directories(
 	src/Libraries/2D/Source
 	src/Libraries/3D/Source
@@ -297,6 +301,7 @@ include_directories(
 	src/GameSrc/Headers
 	src/MacSrc
 	src/MusicSrc
+	src/ShockSrc
 	${CMAKE_BINARY_DIR}/src/GameSrc/Headers
 )
 
@@ -381,6 +386,7 @@ add_definitions(
 
 add_executable(systemshock
 	${MAC_SRC}
+	${SHOCK_SRC}
 )
 
 add_library(GAME_LIB ${GAME_SRC})
