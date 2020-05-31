@@ -31,7 +31,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 
-//#include <3d.h>
 #include "map.h"
 #include "objects.h"
 #include "refstuf.h"

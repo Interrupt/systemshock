@@ -40,7 +40,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gamepal.h"
 #include "gamestrn.h"
 #include "gamescr.h"
-#include "gamewrap.h"
 #include "init.h"
 #include "input.h"
 #include "map.h"
@@ -48,16 +47,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "musicai.h"
 #include "objects.h"
 #include "objsim.h"
-#include "olhext.h"
 #include "palfx.h"
 #include "physics.h"
 #include "player.h"
 #include "render.h"
 #include "rendtool.h"
-#include "saveload.h"
 #include "sideicon.h"
-#include "splash.h" // for splash screen...
-#include "statics.h"
 #include "textmaps.h"
 #include "tickcount.h"
 #include "tools.h"
@@ -66,16 +61,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "game_screen.h"
 #include "shodan.h"
 #include "fullscrn.h"
-#include "wares.h"
 #include "frcamera.h"
-#include "faketime.h"
 #include "dynmem.h"
-#include "citres.h"
 
 #include "shockolate_version.h" // for system shock version number
 
 #include "Modding.h"
-#include <SDL.h>
 
 /*
 #define AIL_SOUND

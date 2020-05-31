@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "objects.h"
-#include "objsim.h"
 #include "objwpn.h"
 #include "objwarez.h"
 #include "objstuff.h"

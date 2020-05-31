@@ -41,9 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
 
-#include "criterr.h"
-#include "init.h"
-#include "rendtool.h"
 #include "game_screen.h"
 #include "fullscrn.h"
 #include "loops.h"
@@ -53,12 +50,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tickcount.h"
 #include "cutsloop.h"
 
-/*
-#include <loopdbg.h>
-#include <cutscene.h>
-
-#include <wsample.h>
-*/
 // how is the game doing, anyway, set to true at end of time
 uchar cit_success = FALSE;
 

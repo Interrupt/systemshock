@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 
+#include "cursors.h"
 #include "region.h"
 #include "slist.h"
 

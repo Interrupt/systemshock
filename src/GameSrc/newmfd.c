@@ -45,20 +45,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tools.h"
 #include "mainloop.h"
 #include "gameloop.h"
-#include "mfdart.h" // For blank MFD art
 #include "gamescr.h"
 #include "musicai.h" // for digital FX
 #include "sfxlist.h" // same
 #include "citres.h"
 #include "weapons.h"
-#include "colors.h"
 #include "cit2d.h"
-#include "gamestrn.h"
 #include "popups.h"
 #include "statics.h"
 #include "gr2ss.h"
-//#include <inp6d.h>
-//#include <i6dvideo.h>
 
 #include "cybstrng.h"
 

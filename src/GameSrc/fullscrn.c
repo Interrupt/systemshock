@@ -29,8 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Prefs.h"
 
 #include "fullscrn.h"
-#include "colors.h"
-#include "criterr.h"
 #include "cybstrng.h"
 #include "frflags.h"
 #include "frprotox.h"
@@ -45,11 +43,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "miscqvar.h"
 #include "objprop.h"
 #include "otrip.h"
-#include "palfx.h"
-#include "rendtool.h"
 #include "sideicon.h"
 #include "status.h"
-#include "textmaps.h"
 #include "tools.h"
 #include "wares.h"
 

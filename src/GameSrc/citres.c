@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/07 13:22:58 $
  *
  */
-#include <assert.h>
+
 #include <string.h>
 
 #include "citres.h"

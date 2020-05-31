@@ -26,12 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __PLAYER_SRC
 #include <string.h>
 
-#include "objprop.h"
 #include "objwpn.h"
 #include "player.h"
-#include "mainloop.h"
 #include "diffq.h" // for time limit
-#include "newmfd.h"
 #include "hud.h"
 #include "wares.h"
 #include "objsim.h"
@@ -39,16 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "cybrnd.h"
 #include "cyber.h"
-#include "physics.h"
-#include "palfx.h"
 #include "emailbit.h"
 
-/*
-#include <config.h>
-#include <gametime.h>
-#include <hkeyfunc.h>
-#include <olhext.h>
-*/
 #include "miscqvar.h"
 
 #define CFG_FATIGUE_VAR "fatigue"

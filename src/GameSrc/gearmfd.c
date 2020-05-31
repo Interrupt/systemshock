@@ -32,7 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objbit.h"
 #include "mfdart.h"
 #include "objuse.h"
-#include "cit2d.h"
 #include "cybstrng.h"
 #include "gr2ss.h"
 

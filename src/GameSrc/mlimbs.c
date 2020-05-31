@@ -23,14 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/23 00:13:15 $
  */
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-//#include <timer.h>
 
-//#include <ail.h>
 #include "mlimbs.h"
-#include "musicai.h"
 
 #define CHANNEL_MAP
 

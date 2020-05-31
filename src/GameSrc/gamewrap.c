@@ -62,21 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
 
-/*
-#include <physics.h>
-#include <tilemap.h>
-#include <damage.h>  // for destroyed_object stuff
-#include <gamesys.h>
-#include <frprotox.h>
-#include <gamestrn.h>
-#include <gr2ss.h>
-
-#include <objprop.h>
-#include <objbit.h>
-#include <hud.h>
-
-#include <wsample.h>
-*/
 #define SCHEDULE_BASE_ID 590
 
 extern long old_ticks;

@@ -47,10 +47,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybstrng.h"
 #include "gamestrn.h"
 #include "musicai.h"
-#include "cit2d.h"
 
 #include "gr2ss.h"
-#include "fullscrn.h" // for the full screen frame buffer canvas
 #include "frprotox.h"
 #include "frflags.h"
 #include "game_screen.h"

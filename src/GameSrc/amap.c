@@ -42,7 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // doors                 - maize?
 
 #include <string.h>
-#include <ctype.h>
 
 #define __AMAP_SRC
 
@@ -59,7 +58,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "otrip.h"
 #include "player.h"
 #include "refstuf.h"
-#include "textmaps.h"
 
 // and now, for objects
 #include "lvldata.h"

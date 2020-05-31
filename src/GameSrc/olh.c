@@ -34,7 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objapp.h"
 #include "objects.h"
 #include "objprop.h"
-#include "gameobj.h"
 #include "hudobj.h"
 #include "hud.h"
 #include "mainloop.h"

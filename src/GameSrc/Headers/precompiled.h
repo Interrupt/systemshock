@@ -41,7 +41,6 @@ extern "C" {
 
 #include "event.h"
 #include "hotkey.h"
-#include "menu.h"
 #include "region.h"
 #include "slab.h"
 #include "vmouse.h"

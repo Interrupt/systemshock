@@ -24,11 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <string.h>
-#include <stdlib.h>
-
-#include "faketime.h"
-
-#include "input.h"
 #include "player.h"
 #include "newmfd.h"
 #include "mfdint.h"
@@ -38,7 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rcolors.h"
 #include "tools.h"
 #include "mainloop.h"
-#include "gameloop.h"
 #include "wares.h"
 #include "lvldata.h"
 #include "cit2d.h"

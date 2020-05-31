@@ -27,11 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 
-//#include "MacTune.h"
 #include "musicai.h"
-#include "player.h"
 #include "map.h"
-#include "mapflags.h"
 #include "tools.h"
 #include "mlimbs.h"
 

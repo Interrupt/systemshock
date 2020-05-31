@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objload.h"
 #include "player.h"
 #include "objart.h"
-#include "objbit.h"
 #include "citres.h"
 #include "treasure.h"
 #include "otrip.h"

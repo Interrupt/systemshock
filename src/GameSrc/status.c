@@ -36,24 +36,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "status.h"
 #include "player.h"
 #include "tools.h"
-#include "colors.h"
-#include "mainloop.h"
-#include "gameloop.h"
-#include "newmfd.h"
 #include "gamescr.h"
 #include "faketime.h"
 #include "fullscrn.h"
-#include "citres.h"
 #include "gamesys.h"
 #include "physics.h"
 #include "objsim.h"
 #include "biotrax.h"
-#include "statics.h"
 #include "otrip.h"
 
 #include "curdat.h"
 
-#include "gamesys.h"
 #include "gr2ss.h"
 
 // Defines

@@ -24,22 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#include <math.h>
-
 #include "player.h"
 #include "status.h"
 #include "tools.h"
-#include "colors.h"
-#include "newmfd.h"
 #include "gamescr.h"
 #include "citres.h"
 #include "gamesys.h"
-#include "textmaps.h"
 #include "fullscrn.h"
 
 #include "otrip.h"
 
-#include "gamesys.h"
 #include "gr2ss.h"
 
 // Defines

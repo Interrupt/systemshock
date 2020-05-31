@@ -28,7 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 
 #include "ai.h"
 #include "combat.h"
@@ -43,16 +42,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "framer8.h"
 #include "froslew.h"
-#include "gamestrn.h"
 #include "grenades.h"
-#include "hud.h"
 #include "ice.h"
-#include "invent.h"
 #include "loops.h"
 #include "lvldata.h"
 #include "map.h"
 #include "mapflags.h"
-#include "mfdext.h"
 #include "musicai.h"
 #include "objbit.h"
 #include "objects.h"
@@ -71,12 +66,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "wares.h"
 #include "weapons.h"
 #include "mouselook.h"
-
-/*
-#include <fastmat.h>
-#include <faceleth.h>
-#include <btfunc.h>
-*/
 
 #define EXPAND_FIX(x) fix_int(x), fix_frac(x)
 

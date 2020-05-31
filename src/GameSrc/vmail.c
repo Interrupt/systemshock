@@ -45,7 +45,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "anim.h"
 
-//#include <mprintf.h>
 //#define LOTS_O_SPEW
 uchar vmail_wait_for_input = TRUE;
 

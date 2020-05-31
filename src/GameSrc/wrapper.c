@@ -35,10 +35,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mainloop.h"
 #include "hkeyfunc.h"
 #include "gamewrap.h"
-#include "saveload.h"
 #include "colors.h"
 #include "cybstrng.h"
-#include "status.h"
 #include "fullscrn.h"
 #include "render.h"
 #include "gametime.h"
@@ -47,8 +45,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gamestrn.h"
 #include "miscqvar.h"
 #include "cit2d.h"
-#include "cybmem.h"
-#include "citres.h"
 #include "sfxlist.h"
 #include "criterr.h"
 #include "gr2ss.h"
@@ -60,14 +56,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "OpenGL.h"
 
-/*
-#include <olhext.h>
-#include <inp6d.h>
-#include <i6dvideo.h>
-#include <lgsndx.h>
-#include <joystick.h>
-#include <config.h>
-*/
 
 #ifdef AUDIOLOGS
 #include "audiolog.h"

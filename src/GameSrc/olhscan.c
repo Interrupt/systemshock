@@ -34,7 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frflags.h"
 #include "olhint.h"
 #include "objects.h"
-#include "objprop.h"
 #include "game_screen.h"
 #include "fullscrn.h"
 

@@ -28,21 +28,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdint.h"
 #include "mfdext.h"
 #include "mfddims.h"
-#include "objapp.h"
 #include "tools.h"
 #include "gamestrn.h"
 #include "objuse.h"
-#include "objbit.h"
 #include "input.h"
 #include "objprop.h"
 #include "colors.h"
 #include "objload.h"
 #include "fullscrn.h"
-#include "cit2d.h"
 #include "gr2ss.h"
 
 #include "cybstrng.h"
-#include "mfdart.h"
 #include "gamescr.h"
 
 // ============================================================

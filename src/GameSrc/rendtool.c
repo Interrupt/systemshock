@@ -30,14 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "map.h"
 #include "frintern.h"
-
-#include "faketime.h"
-
-#include "gamescr.h"
 #include "fullscrn.h"
-
-#include "mainloop.h"
-#include "init.h"
 
 #include "textmaps.h"
 #include "gettmaps.h"
@@ -72,7 +65,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "curdat.h"
 
-//#include <mprintf.h>
 
 LGRect *rendrect;
 extern fauxrend_context *_fr;

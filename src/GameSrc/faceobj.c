@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
-#include "frcamera.h"
 #include "gameobj.h"
 
 #include "fr3d.h"
@@ -38,7 +37,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objprop.h"
 #include "objclass.h"
 
-#include "render.h"
 #include "otrip.h"
 #include "objbit.h"
 

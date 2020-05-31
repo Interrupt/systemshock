@@ -24,27 +24,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#define __COMBAT_C
-
-#include <stdio.h>
-#include <string.h>
-
 #include "combat.h"
 #include "objsim.h"
 #include "objprop.h"
-#include "damage.h"
-#include "game_screen.h"
 #include "tools.h"
 #include "effect.h"
 #include "otrip.h"
-#include "fullscrn.h"
 
-#include "gameloop.h"
 #include "mainloop.h"
 #include "player.h"
 
 #include "frtypes.h"
-#include "frprotox.h"
 #include "cybrnd.h"
 #include "physunit.h"
 

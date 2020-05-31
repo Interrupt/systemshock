@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frprotox.h"
 #include "gamescr.h"
 
-//Â¥Â¥#include <inp6d.h>
 
 #ifdef STEREO_SUPPORT
 #include <i6dvideo.h>
