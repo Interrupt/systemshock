@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 
 #include "Shock.h"
-#include "ShockDialogs.h"
 
 #include "citmat.h"
 #include "citres.h"

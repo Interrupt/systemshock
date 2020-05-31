@@ -37,7 +37,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include "archiveformat.h"
-#include "ShockDialogs.h"
 #include "setup.h"
 #include "colors.h"
 #include "diffq.h"

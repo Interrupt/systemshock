@@ -28,13 +28,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "citres.h"
 #include "physics.h"
 #include "player.h"
-#include "frcamera.h"
 #include "criterr.h"
 #include "froslew.h"
 #include "objprop.h"
 #include "objsim.h"
+#include "tools.h"
 #include "wares.h"
-#include "cit2d.h"
 #include "canvchek.h"
 
 #include "gamescr.h"
@@ -46,17 +45,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // DEFINES
 // -------
 
-#ifndef STORE_CLIP
-#define STORE_CLIP(a, b, c, d) \
-    a = gr_get_clip_l();       \
-    b = gr_get_clip_t();       \
-    c = gr_get_clip_r();       \
-    d = gr_get_clip_b()
-#endif // !STORE_CLIP
-
-#ifndef RESTORE_CLIP
-#define RESTORE_CLIP(a, b, c, d) gr_set_cliprect(a, b, c, d)
-#endif // !RESTORE_CLIP
 
 #define SLOT_EYEMETER_X 141
 #define SLOT_EYEMETER_Y 1

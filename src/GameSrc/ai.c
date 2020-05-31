@@ -34,7 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objcrit.h"
 #include "objwpn.h"
 #include "physics.h"
-#include "faketime.h"
 #include "player.h"
 #include "damage.h"
 #include "diffq.h"

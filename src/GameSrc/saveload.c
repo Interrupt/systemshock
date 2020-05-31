@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <assert.h>
 #include <string.h>
 
-#include "ShockDialogs.h"
 #include "MacTune.h"
 
 #include "saveload.h"

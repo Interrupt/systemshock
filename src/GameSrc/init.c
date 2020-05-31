@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Shock.h"
 #include "InitMac.h"
-#include "ShockDialogs.h"
 #include "ShockBitmap.h"
 
 #include "criterr.h"

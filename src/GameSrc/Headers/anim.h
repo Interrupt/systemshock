@@ -2,7 +2,7 @@
 #define ANIM_H
 
 #include <rect.h>
-#include <llist.h>
+//#include <llist.h>
 #include <res.h>
 #include <2d.h>
 #include <2dres.h>

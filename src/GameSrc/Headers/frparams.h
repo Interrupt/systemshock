@@ -37,7 +37,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#include "frctxt.h"
 
 #define TM_SIZE_CNT 3 /* # of different tmap sizes */
 

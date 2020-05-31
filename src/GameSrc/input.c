@@ -36,8 +36,6 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "ShockBitmap.h"
 #include "InitMac.h"
 #include "Prefs.h"
-#include "DialogHelpers.h"
-#include "ShockHelp.h"
 
 #if __profile__
 #include <Profiler.h>

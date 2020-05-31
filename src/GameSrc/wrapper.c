@@ -337,14 +337,6 @@ uchar fv;
 
 #define OPTIONS_COLOR RED_BROWN_BASE + 4
 
-// Source Code for wrapper interface and functions
-
-#define STORE_CLIP(a, b, c, d) \
-    a = gr_get_clip_l();       \
-    b = gr_get_clip_t();       \
-    c = gr_get_clip_r();       \
-    d = gr_get_clip_b()
-
 // decides on a "standard" width for our widgets based on column count
 // of current screen.  Our desire is that uniform widgets of this size
 // should have certain margins between them independent of column count.
