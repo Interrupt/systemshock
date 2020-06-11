@@ -31,17 +31,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "game_screen.h"
 #include "fullscrn.h"
-#include "mainloop.h"
 #include "hudobj.h"
 #include "cybmem.h"
 
-// Hack camera stuff
-#include "gamerend.h"
 #include "frcamera.h"
 #include "frflags.h"
 #include "froslew.h"
 #include "player.h"
-#include "cybmem.h"
 
 #include "rcolors.h"
 

@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __CITMAT_H
 #define __CITMAT_H
 
+#define RES_smallTextureMaps 0x141  // (321)
 #define RES_materialMaps 0x1db      // (475)
 #define RES_customTextureMaps 0x884 // (2180)
 

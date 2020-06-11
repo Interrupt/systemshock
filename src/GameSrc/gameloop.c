@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mainloop.h"
 #include "wares.h"
-#include "hud.h"
 #include "ai.h"
 #include "physics.h"
 #include "gamesys.h"
@@ -39,7 +38,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "newmfd.h"
 #include "faketime.h"
 #include "invent.h"
-#include "grenades.h"
 #include "damage.h"
 #include "effect.h"
 #include "fullscrn.h"

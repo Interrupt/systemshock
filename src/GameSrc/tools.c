@@ -49,17 +49,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SDL.h>
 #include "OpenGL.h"
 
-#ifndef STORE_CLIP
-#define STORE_CLIP(a, b, c, d) \
-    a = gr_get_clip_l();       \
-    b = gr_get_clip_t();       \
-    c = gr_get_clip_r();       \
-    d = gr_get_clip_b()
-#endif // !STORE_CLIP
-
-#ifndef RESTORE_CLIP
-#define RESTORE_CLIP(a, b, c, d) gr_set_cliprect(a, b, c, d)
-#endif // !RESTORE_CLIP
 
 //------------
 //  PROTOTYPES

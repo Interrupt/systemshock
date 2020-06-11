@@ -25,10 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <string.h>
-#include "init.h"
+#include <SDL.h>
+
 #include "palfx.h"
 
-#include <SDL.h>
 
 byte pal_fade_id;
 byte cyc_id0, cyc_id1, cyc_id2, cyc_id3, cyc_id4, cyc_id5;

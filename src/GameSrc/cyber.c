@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objsim.h"
 #include "objects.h"
 #include "map.h"
-#include "damage.h"
 #include "faketime.h"
 #include "mfdext.h"
 #include "fullscrn.h"
@@ -33,8 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "input.h"
 #include "mainloop.h"
 #include "hkeyfunc.h"
-#include "trigger.h"
-#include "palfx.h"
 #include "rendfx.h"
 #include "gr2ss.h"
 

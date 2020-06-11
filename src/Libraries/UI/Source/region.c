@@ -18,10 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // Source Code for the LGRegion library
 
+#include <stdlib.h>
+
+#include "cursors.h"
 #include "region.h"
 #include "slist.h"
 
-#include "gadgets.h"
 
 typedef struct {
    struct _slist *psnext;

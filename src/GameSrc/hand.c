@@ -29,7 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objclass.h"
 #include "weapons.h"
 #include "player.h"
-#include "handart.h"
 #include "hand.h"
 #include "fullscrn.h"
 #include "faketime.h"

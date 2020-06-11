@@ -62,10 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 #include "objects.h"
-//#include <_objects.h>
-#include "objsim.h"
 #include "map.h"
-//#include "range.h"
 
 /*
 #define DBG_Check(x) DBG(DSRC_OBJECTS_Check,x)

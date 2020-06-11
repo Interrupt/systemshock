@@ -28,7 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *  ship vs. not debug spew stuff
  */
 
-#include "frctxt.h"
 
 // have to learn about fixing fr_ret and all to be null
 

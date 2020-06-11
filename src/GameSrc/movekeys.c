@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "physics.h"
 #include "gamesys.h"
-#include "weapons.h"
 #include "movekeys.h"
 
 #define KEYBD_CONTROL_BANK 1

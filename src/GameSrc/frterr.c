@@ -32,11 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <stdlib.h>
 
-#include <stdio.h> // for FILE for now
-
 #include "map.h"
 #include "mapflags.h"
-#include "objects.h" // for ClearDealt
 #include "frintern.h"
 #include "frtables.h"
 #include "tilename.h"
@@ -45,7 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frquad.h"
 #include "frsubclp.h"
 #include "textmaps.h" // pain, sadness
-#include "star.h"
 
 #define FLIP_BITS
 

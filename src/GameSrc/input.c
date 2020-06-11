@@ -36,8 +36,6 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "ShockBitmap.h"
 #include "InitMac.h"
 #include "Prefs.h"
-#include "DialogHelpers.h"
-#include "ShockHelp.h"
 
 #if __profile__
 #include <Profiler.h>
@@ -51,7 +49,6 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "aiflags.h"
 #include "citres.h"
 #include "colors.h"
-#include "criterr.h"
 #include "cybstrng.h"
 #include "doorparm.h"
 #include "drugs.h"
@@ -65,28 +62,22 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "gamestrn.h"
 #include "gr2ss.h"
 #include "grenades.h"
-#include "hkeyfunc.h"
 #include "MacTune.h"
 #include "mainloop.h"
-#include "musicai.h"
-#include "newmfd.h"
 #include "objbit.h"
 #include "objects.h"
 #include "objload.h"
 #include "objsim.h"
 #include "objprop.h"
 #include "objuse.h"
-#include "olhext.h"
 #include "otrip.h"
 #include "physics.h"
 #include "player.h"
 #include "game_screen.h"
-#include "status.h"
 #include "svgacurs.h"
 #include "tools.h"
 #include "weapons.h"
 #include "mouselook.h"
-#include "wrapper.h"
 
 #ifdef NOT_YET // KLC - for VR headsets
 

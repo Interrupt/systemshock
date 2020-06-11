@@ -35,7 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "OpenGL.h"
 #include "Prefs.h"
 #include "ShockBitmap.h"
-#include "ShockHelp.h"
 #ifdef TESTING
 #include "Tests.h"
 #endif
@@ -124,6 +123,8 @@ int main(int argc, char** argv)
 	// FIXME externalize this
 	log_set_quiet(0);
 	log_set_level(LOG_INFO);
+
+        INFO("Logger initialized");
 
 	// init mac managers
 

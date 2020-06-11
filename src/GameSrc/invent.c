@@ -53,7 +53,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "criterr.h"
 
-#include "hkeyfunc.h"
 #include "objload.h"
 #include "invpages.h"
 #include "sfxlist.h"
@@ -64,7 +63,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "otrip.h"
 #include "gamescr.h"
 #include "amap.h"
-#include "citres.h"
 
 #include "game_screen.h" // was screen.h?
 

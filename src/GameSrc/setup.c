@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __SETUP_SRC
 
 #include <string.h>
+#include <SDL.h>
+
 
 // TODO: extract this into a compatibility header
 #ifdef _MSC_VER
@@ -37,7 +39,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include "archiveformat.h"
-#include "ShockDialogs.h"
 #include "setup.h"
 #include "colors.h"
 #include "diffq.h"
@@ -60,18 +61,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <hkeyfunc.h>
 #include <loops.h>
 #include <keydefs.h>
-#include <cybmem.h>
 #include <status.h>
 #include "cutsloop.h"
-#include <wrapper.h>
-#include <mlimbs.h>
 #include <musicai.h>
 #include <palfx.h>
-#include <verify.h>
 #include <gamescr.h>
-#include <gamepal.h>
-#include <gamestrn.h>
-#include <cybstrng.h>
 #include <faketime.h>
 
 #include "2d.h"
@@ -81,15 +75,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Shock.h"
 #include "Xmi.h"
 
-#include <SDL.h>
 
 #ifdef PLAYTEST
 #include <mprintf.h>
 #endif
-
-#include <mlimbs.h>
-
-
 
 #define KEYBOARD_FOCUS_COLOR  (RED_BASE + 3)
 #define NORMAL_ENTRY_COLOR    (RED_BASE + 7)

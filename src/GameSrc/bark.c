@@ -37,15 +37,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdart.h"
 #include "gamescr.h"
 #include "shodan.h"
-#include "sfxlist.h"
-#include "musicai.h"
 #include "fullscrn.h"
 #include "cit2d.h"
-#include "citres.h"
-#include "fullscrn.h"
 #include "audiolog.h"
 #include "gr2ss.h"
-#include "tools.h"
 
 // ============================================================
 //                   MFD BARK

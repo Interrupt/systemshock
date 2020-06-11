@@ -36,18 +36,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "hud.h"
 #include "player.h"
-#include "colors.h"
-#include "tilemap.h"
 #include "map.h"
-#include "mapflags.h"
 #include "citres.h"
 #include "objsim.h"
 #include "objprop.h"
 #include "objclass.h"
-#include "render.h"
 #include "hudobj.h"
 #include "otrip.h"
-#include "init.h" // for MAX_MODELS
 #include "textmaps.h"
 #include "gettmaps.h"
 #include "objbit.h"
@@ -70,8 +65,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef NEW_2d
 #include "double.h"
 #endif
-
-#include "objmode.h"
 
 #include "OpenGL.h"
 

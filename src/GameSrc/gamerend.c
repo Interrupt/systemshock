@@ -36,13 +36,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rcolors.h"
 #include "cybstrng.h" // for resurrect text
 #include "gamestrn.h"
-#include "citres.h"
 #include "gamescr.h"
 #include "mainloop.h"
 #include "game_screen.h"
 #include "player.h"
 #include "shodan.h"
-#include "criterr.h"
 
 #include "cit2d.h"
 #include "diffq.h" // for time limit
@@ -64,9 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "faketime.h"
 #include "hkeyfunc.h"
-
-#include "status.h"
-#include "statics.h"
 
 #ifdef AUDIOLOGS
 #include "audiolog.h"

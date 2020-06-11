@@ -81,7 +81,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cone.h"
 
 #include "map.h"
-#include "mapflags.h"
 #include "tilename.h"
 
 // pre prototyping

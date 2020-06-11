@@ -88,7 +88,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "frcamera.h"
 #include "froslew.h" // has objects
-#include "fauxrint.h"
 #include "map.h"
 
 fix fr_camera_last[CAM_COOR_CNT] = {0, 0, 0, 0, 0, 0};

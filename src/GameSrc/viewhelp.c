@@ -28,11 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfddims.h"
 #include "mfdgadg.h"
 #include "gamestrn.h"
-#include "mfdint.h"
 #include "tools.h"
 #include "hud.h"
 #include "fullscrn.h"
-#include "cit2d.h"
 #include "gr2ss.h"
 
 #include "gamescr.h"

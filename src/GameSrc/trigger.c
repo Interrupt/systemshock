@@ -33,7 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ai.h"
 #include "audiolog.h"
-#include "criterr.h"
 #include "cybstrng.h"
 #include "damage.h"
 #include "diffq.h"
@@ -46,7 +45,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gamerend.h"
 #include "gamescr.h"
 #include "gamestrn.h"
-#include "invent.h"
 #include "mainloop.h" // for flag setting stuff
 #include "map.h"
 #include "mapflags.h"
@@ -69,7 +67,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tilename.h"
 #include "tools.h"
 #include "trigger.h"
-#include "hkeyfunc.h"
 #include "cyber.h"
 #include "colors.h"
 #include "grenades.h"

@@ -36,9 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "colors.h"
 #include "tools.h"
 #include "gamescr.h"
-#include "effect.h"
-#include "objprop.h"
-#include "objwpn.h"
 #include "objsim.h"
 #include "objgame.h"
 #include "gamestrn.h"
@@ -47,7 +44,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 #include "olhext.h"
 #include "cit2d.h"
-#include "cybmem.h"
 #include "damage.h"
 
 #include "cybstrng.h"

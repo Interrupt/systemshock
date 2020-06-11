@@ -40,7 +40,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objgame.h"
 #include "objuse.h"
 #include "gamesys.h"
-#include "ai.h"
 #include "frparams.h"
 #include "damage.h"
 #include "mainloop.h"

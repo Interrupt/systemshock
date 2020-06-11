@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <assert.h>
 #include <string.h>
 
-#include "ShockDialogs.h"
 #include "MacTune.h"
 
 #include "saveload.h"
@@ -37,7 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "effect.h"
 #include "frflags.h"
 #include "frprotox.h"
-#include "gamerend.h"
 #include "gamewrap.h"
 #include "hkeyfunc.h"
 #include "input.h"
@@ -54,7 +52,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objcrit.h"
 #include "objver.h"
 #include "otrip.h"
-#include "mainloop.h"
 #include "map.h"
 #include "mfdext.h"
 #include "musicai.h"
@@ -68,28 +65,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "shodan.h"
 #include "statics.h"
 #include "textmaps.h"
-#include "tilemap.h"
 #include "tools.h"
 #include "trigger.h"
 #include "verify.h"
 
-/*
-#include <schedule.h>
-#include <dpaths.h>
-#include <mapflags.h>
-#include <frtables.h>
-#include <frsubclp.h>
-#include <flicker.h>
-#include <ai.h>
-#include <wsample.h>
-#include <memstat.h>
-#include <_gamesys.h>
-// #include <amap.h>  // hey, this is included in lvldata.h
-#include <ckpoint.h>
-#include <mlimbs.h>
-
-#include <mprintf.h>
-*/
 
 // INTERNAL PROTOTYPES
 // -----------------

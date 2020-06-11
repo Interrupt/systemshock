@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __MUSICAI_SRC
 
 #include <string.h>
-#include <stdlib.h>
 
 #include "Shock.h"
 #include "Prefs.h"
@@ -34,28 +33,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "musicai.h"
 #include "MacTune.h"
 
-#include "ai.h"
-#include "faketime.h"
 #include "map.h"
 #include "mapflags.h"
 #include "player.h"
-#include "sfxlist.h"
 #include "tickcount.h"
 #include "tools.h"
 
 #include "adlmidi.h"
 #include "Xmi.h"
 
-/*
-#include <mainloop.h>
-#include <_audio.h>
-#include <_testing.h>
-#include <objects.h>
-#include <objcrit.h>
-#include <texttool.h>
-#include <otrip.h>
-#include <diginode.h>
-*/
 #ifdef AUDIOLOGS
 #include "audiolog.h"
 #endif

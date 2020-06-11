@@ -27,14 +27,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
-#include "ShockDialogs.h"
-
 #include "textmaps.h"
 #include "gettmaps.h"
 #include "tools.h"
 #include "frprotox.h"
 #include "cybmem.h"
-#include "criterr.h"
 #include "citres.h"
 #include "rendtool.h"
 #include "objects.h"
@@ -44,12 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "OpenGL.h"
 
-//#include <mprintf.h>
-//#include <dpaths.h>
-//#include <config.h>
-//#include <_gfx.h>
-//#include <_system.h>
-//#include <_lg.h>
 
 uchar textures_loaded = FALSE;
 

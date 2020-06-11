@@ -31,7 +31,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "grd.h"
 #include "detect.h"
 #include "state.h"
-#include "invtab.h"
 #include "memall.h"
 #include "tmpalloc.h"
 

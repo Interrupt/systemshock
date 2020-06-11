@@ -27,15 +27,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <string.h>
 
-#include "input.h"
 #include "sideicon.h"
 #include "sideart.h"
 #include "popups.h"
-#include "gamestrn.h"
 #include "cybstrng.h"
 #include "tools.h"
-#include "mainloop.h"
-#include "game_screen.h"
 #include "fullscrn.h"
 #include "wares.h"
 #include "objsim.h"
@@ -44,12 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "faketime.h"
 #include "mfdext.h"
-#include "gameloop.h"
-#include "textmaps.h"
-#include "criterr.h"
 #include "objapp.h"
-#include "objwarez.h"
-#include "hkeyfunc.h"
 #include "musicai.h"
 #include "sfxlist.h"
 #include "gr2ss.h"

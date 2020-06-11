@@ -28,7 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 #include "tfdirect.h"
-#include "ss_flet.h"
 
 // Internal Prototypes
 void set_dumb_terrain_normal(int which, fix norm[3]);

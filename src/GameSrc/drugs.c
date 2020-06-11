@@ -29,7 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // The main C file for drug effects, updates, (un)installs.
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -44,8 +43,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "miscqvar.h"
 #include "musicai.h"
 #include "newmfd.h"
-#include "objprop.h"
-#include "objsim.h"
 #include "objwarez.h"
 #include "player.h"
 #include "sfxlist.h"

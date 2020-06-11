@@ -44,10 +44,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "musicai.h"
 #include "sfxlist.h"
 #include "ai.h"
-#include "frprotox.h"
 #include "frflags.h"
 #include "gamerend.h"
-#include "hkeyfunc.h"
 #include "gameloop.h"
 #include "target.h"
 #include "objbit.h"
@@ -65,8 +63,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "diffq.h"
 #include "hudobj.h"
 #include "amap.h"
-#include "target.h"
-#include "status.h"
 #include "cutsloop.h"
 
 #define SQUARE(x) ((x) * (x))
@@ -74,6 +70,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MAX_DAMAGE 2500
 
 extern void set_dmg_percentage(int which, ubyte percent);
+
+short destroyed_obj_count = 0;
+ObjID destroyed_ids[MAX_DESTROYED_OBJS];
 
 //----------------
 //  Internal Prototypes

@@ -87,13 +87,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define MAX_DESTROYED_OBJS 100
 
-#ifdef __COMBAT_C
-short destroyed_obj_count = 0;
-ObjID destroyed_ids[MAX_DESTROYED_OBJS];
-#else
 extern short destroyed_obj_count;
 extern ObjID destroyed_ids[MAX_DESTROYED_OBJS];
-#endif
 
 #define ADD_DESTROYED_OBJECT(X) (destroyed_ids[destroyed_obj_count++] = X)
 

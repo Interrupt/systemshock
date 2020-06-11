@@ -30,9 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdgadg.h"
 #include "status.h"
 #include "gamestrn.h"
-#include "mfdint.h"
 #include "tools.h"
-#include "cit2d.h"
 #include "citres.h"
 #include "fullscrn.h"
 
