@@ -94,7 +94,8 @@ LGRegion *root_region = &root_region_data;
 // prototypes
 errtype load_misc_cursors(void);
 
-void generic_reg_init(uchar create_it, LGRegion *reg, LGRect *rct, uiSlab *slb, uiHandlerProc key_h, uiHandlerProc maus_h) {
+void generic_reg_init(uchar create_it, LGRegion *reg, LGRect *rct, uiSlab *slb, uiHandlerProc key_h,
+                      uiHandlerProc maus_h) {
     int callid;
     if (rct == NULL)
         rct = &fscrn_rect;
@@ -349,49 +350,43 @@ static grs_bitmap _vmailbm;
 extern grs_bitmap slider_cursor_bmap;
 extern LGCursor slider_cursor;
 
-errtype load_misc_cursors(void)
-{
-  if (_targbm.bits != NULL)
-  {
-    free(_targbm.bits);
-    memset(&globcursor, 0, sizeof(LGCursor));
-    memset(&_targbm, 0, sizeof(grs_bitmap));
-  }
-  load_res_bitmap_cursor(&globcursor, &_targbm, REF_IMG_bmTargetCursor, TRUE);
+errtype load_misc_cursors(void) {
+    if (_targbm.bits != NULL) {
+        free(_targbm.bits);
+        memset(&globcursor, 0, sizeof(LGCursor));
+        memset(&_targbm, 0, sizeof(grs_bitmap));
+    }
+    load_res_bitmap_cursor(&globcursor, &_targbm, REF_IMG_bmTargetCursor, TRUE);
 
-  if (_waitbm.bits != NULL)
-  {
-    free(_waitbm.bits);
-    memset(&wait_cursor, 0, sizeof(LGCursor));
-    memset(&_waitbm, 0, sizeof(grs_bitmap));
-  }
-  load_res_bitmap_cursor(&wait_cursor, &_waitbm, REF_IMG_bmWaitCursor, TRUE);
+    if (_waitbm.bits != NULL) {
+        free(_waitbm.bits);
+        memset(&wait_cursor, 0, sizeof(LGCursor));
+        memset(&_waitbm, 0, sizeof(grs_bitmap));
+    }
+    load_res_bitmap_cursor(&wait_cursor, &_waitbm, REF_IMG_bmWaitCursor, TRUE);
 
-  if (_firebm.bits != NULL)
-  {
-    free(_firebm.bits);
-    memset(&fire_cursor, 0, sizeof(LGCursor));
-    memset(&_firebm, 0, sizeof(grs_bitmap));
-  }
-  load_res_bitmap_cursor(&fire_cursor, &_firebm, REF_IMG_bmFireCursor, TRUE);
+    if (_firebm.bits != NULL) {
+        free(_firebm.bits);
+        memset(&fire_cursor, 0, sizeof(LGCursor));
+        memset(&_firebm, 0, sizeof(grs_bitmap));
+    }
+    load_res_bitmap_cursor(&fire_cursor, &_firebm, REF_IMG_bmFireCursor, TRUE);
 
-  if (_vmailbm.bits != NULL)
-  {
-    free(_vmailbm.bits);
-    memset(&vmail_cursor, 0, sizeof(LGCursor));
-    memset(&_vmailbm, 0, sizeof(grs_bitmap));
-  }
-  load_res_bitmap_cursor(&vmail_cursor, &_vmailbm, REF_IMG_bmVmailCursor, TRUE);
+    if (_vmailbm.bits != NULL) {
+        free(_vmailbm.bits);
+        memset(&vmail_cursor, 0, sizeof(LGCursor));
+        memset(&_vmailbm, 0, sizeof(grs_bitmap));
+    }
+    load_res_bitmap_cursor(&vmail_cursor, &_vmailbm, REF_IMG_bmVmailCursor, TRUE);
 
-  if (slider_cursor_bmap.bits != NULL)
-  {
-    free(slider_cursor_bmap.bits);
-    memset(&slider_cursor, 0, sizeof(LGCursor));
-    memset(&slider_cursor_bmap, 0, sizeof(grs_bitmap));
-  }
-  load_res_bitmap_cursor(&slider_cursor, &slider_cursor_bmap, REF_IMG_bmMfdPhaserCursor, TRUE);
+    if (slider_cursor_bmap.bits != NULL) {
+        free(slider_cursor_bmap.bits);
+        memset(&slider_cursor, 0, sizeof(LGCursor));
+        memset(&slider_cursor_bmap, 0, sizeof(grs_bitmap));
+    }
+    load_res_bitmap_cursor(&slider_cursor, &slider_cursor_bmap, REF_IMG_bmMfdPhaserCursor, TRUE);
 
-  return OK;
+    return OK;
 }
 
 errtype _screen_init_mouse(LGRegion *r, uiSlab *slab, uchar do_init) {

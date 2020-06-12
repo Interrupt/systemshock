@@ -79,24 +79,24 @@ errtype biohelp_create_mouse_region(LGRegion *root);
 #define ARROW_Y (MFD_VIEW_HGT - 10)
 
 #define LEFT_MARGIN 1
-#define TOP_MARGIN  1
+#define TOP_MARGIN 1
 #define NUM_BUTTONS 4
-#define BARRY_HGT   (MFD_VIEW_HGT - 2 * TOP_MARGIN)
-#define BARRY_WID   (ARROW_X - LEFT_MARGIN)
-#define BUTTON_WID  12
-#define BUTTON_HGT  11
-#define TEXT_HGT    5
+#define BARRY_HGT (MFD_VIEW_HGT - 2 * TOP_MARGIN)
+#define BARRY_WID (ARROW_X - LEFT_MARGIN)
+#define BUTTON_WID 12
+#define BUTTON_HGT 11
+#define TEXT_HGT 5
 
 #define ITEM_COLOR (0x5A)
 
 #define STATUS_X 4
-#define GAMESCR_BIO_WIDTH  131
+#define GAMESCR_BIO_WIDTH 131
 #define GAMESCR_BIO_HEIGHT 17
 
 #define LAST_ACTIVE_BITS(mfd) (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][mfd])
-#define LAST_USED_BITS(mfd)   (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][mfd + 6])
-#define BIOHELP_PAGE          (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][2])
-#define NUM_TRACKS            (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][3])
+#define LAST_USED_BITS(mfd) (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][mfd + 6])
+#define BIOHELP_PAGE (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][2])
+#define NUM_TRACKS (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][3])
 
 void mfd_biohelp_expose(MFD *mfd, ubyte control) {
     uchar full = control & MFD_EXPOSE_FULL;
@@ -236,19 +236,17 @@ uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
 LGCursor biohelp_cursor;
 grs_bitmap biohelp_cursor_bmap;
 
-errtype biohelp_load_cursor(void)
-{
-  if (biohelp_cursor_bmap.bits != NULL)
-  {
-    free(biohelp_cursor_bmap.bits);
+errtype biohelp_load_cursor(void) {
+    if (biohelp_cursor_bmap.bits != NULL) {
+        free(biohelp_cursor_bmap.bits);
 
-    memset(&biohelp_cursor, 0, sizeof(LGCursor));
-    memset(&biohelp_cursor_bmap, 0, sizeof(grs_bitmap));
-  }
+        memset(&biohelp_cursor, 0, sizeof(LGCursor));
+        memset(&biohelp_cursor_bmap, 0, sizeof(grs_bitmap));
+    }
 
-  load_res_bitmap_cursor(&biohelp_cursor, &biohelp_cursor_bmap, REF_IMG_QuestionCursor, TRUE);
+    load_res_bitmap_cursor(&biohelp_cursor, &biohelp_cursor_bmap, REF_IMG_QuestionCursor, TRUE);
 
-  return OK;
+    return OK;
 }
 
 errtype biohelp_create_mouse_region(LGRegion *root) {
