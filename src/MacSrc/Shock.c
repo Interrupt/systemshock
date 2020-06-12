@@ -28,53 +28,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
-//#include <Balloons.h>
-
-#include "Shock.h"
-#include "InitMac.h"
-#include "OpenGL.h"
-#include "Prefs.h"
-#include "ShockBitmap.h"
-#ifdef TESTING
-#include "Tests.h"
-#endif
-
-#include "amaploop.h"
-#include "hkeyfunc.h"
-#include "mainloop.h"
-#include "setup.h"
-#include "fullscrn.h"
-#include "status.h"
-#include "map.h"
-#include "gr2ss.h"
-#include "frflags.h"
-#include "version.h"
-#include "shockolate_version.h"
-
-#include "Modding.h"
-
 #include <math.h>
 #include <SDL.h>
 
-extern uchar game_paused;		// I've learned such bad lessons from LG.
-extern uchar objdata_loaded;
-extern uchar music_on;
-extern uchar startup_music;
+#include "InitMac.h"
+#include "Modding.h"
+#include "OpenGL.h"
+#include "Prefs.h"
+#include "Shock.h"
+#include "ShockBitmap.h"
+
+#include "amaploop.h"
+#include "gr2ss.h"
+#include "hkeyfunc.h"
+#include "mainloop.h"
+#include "setup.h"
+#include "shockolate_version.h"
+#include "status.h"
+#include "version.h"
 
 //--------------------
 //  Globals
 //--------------------
-WindowPtr			gMainWindow;
-MenuHandle		gMainMenus[kNumMenus];
-//RgnHandle			gCursorRgn;
-short				gCursorSet;
-bool				gDone = false;
-bool				gInForeground = true;
-bool				gPlayingGame;		//¥¥¥ Temp
-bool				gIsNewGame;
-long					gGameSavedTime;
-bool				gDeadPlayerQuit;
-bool				gGameCompletedQuit;
+bool gPlayingGame;
 
 grs_screen  *cit_screen;
 SDL_Window* window;
@@ -83,7 +59,6 @@ SDL_Renderer* renderer;
 
 SDL_AudioDeviceID device;
 
-char window_title[128];
 int num_args;
 char** arg_values;
 
@@ -96,18 +71,12 @@ extern 	frc *svga_render_context;
 extern void init_all(void);
 extern void inv_change_fullscreen(uchar on);
 extern void object_data_flush(void);
-//extern Boolean IsFullscreenWareOn(void);
 extern errtype load_da_palette(void);
-extern void ShockMain(void);
 
 //see Prefs.c
 extern void CreateDefaultKeybindsFile(void);
 extern void LoadHotkeyKeybinds(void);
 extern void LoadMoveKeybinds(void);
-
-void InitSDL();
-void SDLDraw(void);
-errtype CheckFreeSpace(short	checkRefNum);
 
 
 //------------------------------------------------------------------------------------
@@ -141,10 +110,6 @@ int main(int argc, char** argv)
     LoadHotkeyKeybinds();
     LoadMoveKeybinds();
 	
-#ifdef TESTING
-	SetupTests();
-#endif
-
 	// Process some startup arguments
 
 	bool show_splash = !CheckArgument("-nosplash");
@@ -158,9 +123,7 @@ int main(int argc, char** argv)
 	init_all();
 	setup_init();
 
-	gPlayingGame = TRUE;
-	gDeadPlayerQuit = FALSE;
-	gGameCompletedQuit = FALSE;
+	gPlayingGame = true;
 
 	load_da_palette();
 	gr_clear(0xFF);
@@ -199,24 +162,6 @@ bool CheckArgument(char* arg) {
 	return false;
 }
 
-//------------------------------------------------------------------------------------
-//		Handle Quit menu command/apple event.
-//------------------------------------------------------------------------------------
-void DoQuit(void)
-{
-	gDone = true;
-}
-
-#define NEEDED_DISKSPACE   700000
-//------------------------------------------------------------------------------------
-//  See if we have enough free space to save the file.
-//------------------------------------------------------------------------------------
-errtype CheckFreeSpace(short	checkRefNum)
-{
-	// FIXME: This should probably do something?
-	return (OK);
-}
-
 void InitSDL()
 {
 	SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
@@ -250,7 +195,7 @@ void InitSDL()
 	SetupOffscreenBitmaps(grd_cap->w, grd_cap->h);
 
 	// Open our window!
-
+        char window_title[128];
 	sprintf(window_title, "System Shock - %s", SHOCKOLATE_VERSION);
 
 	window = SDL_CreateWindow(

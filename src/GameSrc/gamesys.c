@@ -731,9 +731,6 @@ extern ObjID shodan_avatar_id;
 #define REALSPACE_HUDS \
     (HUD_RADPOISON | HUD_BIOPOISON | HUD_FATIGUE | HUD_BIOHAZARD | HUD_RADIATION | HUD_ZEROGRAV | HUD_ENVIROUSE)
 
-extern bool gPlayingGame;
-extern bool gDeadPlayerQuit;
-
 void do_stuff_every_second() {
     long running_dt = player_struct.game_time - player_struct.last_second_update;
     extern int bio_energy_var;

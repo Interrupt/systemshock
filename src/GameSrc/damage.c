@@ -400,8 +400,6 @@ int shield_absorb_damage(int damage, ubyte ub, byte shield_absorb, ubyte shield_
 }
 
 uchar alternate_death = FALSE;
-extern bool gPlayingGame;
-extern bool gDeadPlayerQuit;
 
 // kill_player()
 // kills the player, checks for traps and stuff, so on

@@ -24,24 +24,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //====================================================================================
 
-#define	kShockTicksFreq		-14286		//-3571
+// How many tick passed since game startup
+extern uint32_t gShockTicks;
+
+extern char					*gScreenAddress;
+extern long					gScreenRowbytes;
+extern short				gScreenWide, gScreenHigh;
+extern short				gActiveWide, gActiveHigh;
+extern short				gActiveLeft, gActiveTop;
 
 //--------------------
 //  Prototypes
 //--------------------
 void InitMac(void);
-void FailNIL(void *);
-// Handle GetResourceFail(long id, short num);
-void CheckConfig(void);
-void ErrorDie(short stringnum);
 void CleanupAndExit(void);
-void SetupWindows(WindowPtr *mainWind);
-void SetUpMenus(MenuHandle *theMenus, short numMenus);
-void StringAlert(short stringnum);
-void GetFolders(void);
 void InstallShockTimers(void);
-void RemoveShockTimers(void);
-void StartShockTimer(void);
-void StopShockTimer(void);
-void HideMenuBar(void);
-void ShowMenuBar(void);

@@ -1051,7 +1051,7 @@ void alloc_cursor_bitmaps(void)
 }
 
 #include "frtypes.h"
-extern bool gPlayingGame;
+//extern bool gPlayingGame;
 extern bool DoubleSize;
 extern bool SkipLines;
 extern void change_svga_screen_mode(void);
@@ -1059,7 +1059,6 @@ bool gShowFrameCounter = false;
 bool gShowMusicGlobals = false;
 
 uchar MacQuitFunc(ushort keycode, uint32_t context, intptr_t data) {
-    gPlayingGame = FALSE;
     return TRUE;
 }
 

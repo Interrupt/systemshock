@@ -1187,10 +1187,6 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4) {
 
 extern uchar alternate_death;
 
-extern bool gPlayingGame;
-extern bool gDeadPlayerQuit;
-extern bool gGameCompletedQuit;
-
 errtype trap_cutscene_func(int p1, int p2, int p3, int p4) {
     short cs = qdata_get(p1);
 
@@ -1667,8 +1663,6 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
         if (curr_alog != -1)
             secret_pending_hack = 1;
         else {
-            gDeadPlayerQuit = TRUE; // The player is dead.
-            //gPlayingGame = FALSE;   // Hop out of the game loop.
 
             INFO("GAME OVER!\n");
             play_cutscene(DEATH_CUTSCENE, FALSE);

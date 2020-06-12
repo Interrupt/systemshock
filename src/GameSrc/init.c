@@ -186,8 +186,8 @@ uchar pause_for_input(ulong wait_time) {
     extern void pump_events(void);
     bool gotInput = false;
 
-    ulong wait_until = TickCount() + wait_time;
-    while (!gotInput && ((ulong)TickCount() < wait_until)) {
+    uint32_t wait_until = TickCount() + wait_time;
+    while (!gotInput && (TickCount() < wait_until)) {
         pump_events();
         SDLDraw();
     }

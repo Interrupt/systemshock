@@ -41,22 +41,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
 
+#include "InitMac.h"
+#include "Shock.h"
+#include "cutsloop.h"
 #include "game_screen.h"
 #include "fullscrn.h"
 #include "loops.h"
-#include <input.h>
-#include <setup.h>
-#include <status.h>
+#include "input.h"
+#include "setup.h"
+#include "status.h"
 #include "tickcount.h"
-#include "cutsloop.h"
 
 // how is the game doing, anyway, set to true at end of time
 uchar cit_success = FALSE;
 
 // are we "paused"
 uchar game_paused = FALSE;
-
-void ShockMain(void);
 
 extern void automap_loop(void);
 extern void amap_start();
@@ -106,9 +106,6 @@ void loopmode_enter(short loopmode) { (*enter_modes[loopmode])(); }
 
 extern void MousePollProc(void);
 void mainloop(int argc, char *argv[]) {
-    extern void SDLDraw(void);
-    extern long gShockTicks;
-    extern bool gPlayingGame;
     extern void pump_events(void);
 
     while (_current_loop >= 0 && gPlayingGame) {

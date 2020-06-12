@@ -28,67 +28,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 //  Includes
 //--------------------
-//#include <Palettes.h>
-//#include <GestaltEqu.h>
-//#include <Movies.h>
-
-#include "Shock.h"
-#include "InitMac.h"
-#include "ShockBitmap.h"
-//#include "MacTune.h"
 #include <SDL.h>
 
+#include "InitMac.h"
+#include "Shock.h"
+#include "ShockBitmap.h"
 #include "shockolate_version.h"
-#include "tickcount.h"
 
 //--------------------
 //  Globals
 //--------------------
-#ifndef __MWERKS__
-//QDGlobals	qd;
-#endif
-//ColorSpec 		*gOriginalColors;
-unsigned long	gRandSeed;
-short				gMainVRef;
-//CursHandle		gWatchCurs;
-short				gOriginalDepth = -1;
-short				gLastAlertDepth = -1;
-short				gStartupDepth;
 char				*gScreenAddress;
 long				gScreenRowbytes;
 short				gScreenWide, gScreenHigh;
 short				gActiveWide, gActiveHigh;
 short				gActiveLeft, gActiveTop;
-//Rect				gActiveArea, gOffActiveArea;
-//Boolean			gIsPowerPC = false;
-long				gDataDirID;
-short				gDataVref;
-long				gCDDataDirID;
-short				gCDDataVref;
-long				gAlogDirID;
-short				gAlogVref;
-long				gBarkDirID;
-short				gBarkVref;
-//Boolean			gMenusHid;
-
-//---------------------------
-//  Externs
-//---------------------------
-void status_bio_update(void);
-extern uchar gBioInited;
-void MousePollProc(void);
-
-
-//---------------------------
-//  Internal Prototypes
-//---------------------------
-void Cleanup(void);
 
 //---------------------------
 //  Time Manager routines and globals
 //---------------------------
-long				gShockTicks;
-long 				*tmd_ticks;
+uint32_t gShockTicks;
+uint32_t *tmd_ticks;
 
 //------------------------------------------------------------------------------------
 //		Initialize the Macintosh managers.
@@ -96,44 +56,8 @@ long 				*tmd_ticks;
 void InitMac(void)
 {
 	INFO("Starting %s", SHOCKOLATE_VERSION);
-
-	// Get a random seed
-	gRandSeed = TickCount();
-	gRandSeed += TickCount()<<8;
-
 	InstallShockTimers(); // needed for the tick pointer
 }
-
-//------------------------------------------------------------------------------------
-//		Get a resource and fail correctly if it can't be loaded.
-//------------------------------------------------------------------------------------
-/*Handle GetResourceFail(long id, short num)
-{
-	Handle 	h;
-	
-	h = GetResource(id, num);
-	if (h) return(h);
-	
-#if 1
-	STUB("If GetResource() and friends are relevant after all, implement this..")
-#else
-
-	// At this point GetResource failed, figure out why.
-	SetResLoad(false);
-	h = GetResource(id, num);
-	SetResLoad(true);
-	
-	if (gExtraMemory)
-		DisposHandle(gExtraMemory);
-	
-	if (h) 
-		ErrorDie(1);		// resource is there, must be a memory problem
-	else
-		ErrorDie(3);		// resource not there, somethings bad
-#endif
-	return (nil);
-}*/
-
 
 //------------------------------------------------------------------------------------
 //  Startup the SystemShock timer.
@@ -142,88 +66,6 @@ void InstallShockTimers(void)
 {
 	gShockTicks = 0;
 	tmd_ticks = &gShockTicks;
-}
-
-//------------------------------------------------------------------------------------
-//  Remove the SystemShock timer.
-//------------------------------------------------------------------------------------
-void RemoveShockTimers(void)
-{
-#if 1
-	STUB("if the timer is still used, remove it here..")
-#else
-	RmvTime((QElemPtr)&pShockTicksTask);					// Stop the Shock ticks task
-//	DisposeRoutineDescriptor(pShockTicksPtr);					// Dispose its UPP
-#endif
-}
-
-//------------------------------------------------------------------------------------
-//  Timer tick callback.
-//------------------------------------------------------------------------------------
-Uint32 TimerTickCallback(Uint32 interval, void *param)
-{
-	gShockTicks++;
-	return interval;
-}
- 
-//------------------------------------------------------------------------------------
-//  Display an alert using the str# resource with index strignum, then die.
-//------------------------------------------------------------------------------------
-void ErrorDie(short stringnum)
-{
-	/*if (gExtraMemory)
-		DisposHandle(gExtraMemory);	// free our extra space
- 
- 	StringAlert(stringnum);
-	CleanupAndExit();*/
-}
-
-//------------------------------------------------------------------------------------
-// 	Display an alert using the str# resource with index strignum
-//------------------------------------------------------------------------------------
-void StringAlert(short stringnum)
-{
-	/*Str255		message, explain;
-	
-	InitCursor();
-	GetIndString(message, 1000, stringnum);
-	GetIndString(explain, 1001, stringnum);
-	ParamText(message, explain, "", "");
-	
-	if (*explain)
-		StopAlert(1001, nil);
-	else
-		StopAlert(1000, nil);*/
-}
-
-#pragma mark -
-//------------------------------------------------------------------------------------
-//  Close all our resources, then quit.
-//------------------------------------------------------------------------------------
-void Cleanup(void)
-{
-	/*GDHandle	devhandle;
-
-	MacTuneShutdown();
-	RemoveShockTimers();
-
-	snd_kill_all_samples();
-	snd_shutdown();
-	
-	if (gOriginalDepth != -1)											// If color depth was changed at beginning of app,
-	{																				// then switch it back to the original.
-		devhandle = GetMainDevice();
-		if (devhandle)
-			if (HasDepth(devhandle, gOriginalDepth, 0, 0))
-				SetDepth(devhandle, gOriginalDepth, 0, 0);
-	}
-	else
-		CleanupPalette();													// Else switch back to original 8-bit palette.
-	
-	gr_close();
-	mouse_shutdown();
-	kb_shutdown();
-	ResTerm();*/
 }
 
 //------------------------------------------------------------------------------------

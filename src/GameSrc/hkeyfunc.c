@@ -209,8 +209,7 @@ uchar keyhelp_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
 #endif // NOT_YET
 
 uchar really_quit_key_func(ushort keycode, uint32_t context, intptr_t data) {
-    extern uchar gPlayingGame;
-    gPlayingGame = FALSE;
+    gPlayingGame = false;
     return TRUE;
 }
 
