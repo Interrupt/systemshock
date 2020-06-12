@@ -25,7 +25,7 @@ extern uint32_t gShockTicks;
 
 // Pointer to screen
 extern intptr_t *gScreenAddress;
-extern long gScreenRowbytes;
+extern int32_t gScreenRowbytes;
 // Size of current window
 extern int32_t gScreenWide, gScreenHigh;
 

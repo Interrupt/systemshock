@@ -76,13 +76,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "bitmap.h"
 #include "grbm.h"
 
-extern long gScreenRowbytes;
+extern int32_t gScreenRowbytes;
 
 /* initialize a new bitmap structure. set bits, type, flags, w, and h from
    arguments. set align to 0 and calculate row from width depending on what
    type of bitmap. */
 void gr_init_bm(grs_bitmap *bm, uchar *p, uchar type, ushort flags, short w, short h) {
-    int row;
+    int row = 0;
     int v;
 
     /* calculate row from type and w. */

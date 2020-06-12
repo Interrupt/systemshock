@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Globals
 
 intptr_t *gScreenAddress;
-long gScreenRowbytes;
+int32_t gScreenRowbytes;
 int32_t gScreenWide, gScreenHigh;
 
 //  Time Manager routines and globals
