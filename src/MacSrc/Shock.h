@@ -46,4 +46,5 @@ bool CheckArgument(char *name);
 extern bool gPlayingGame;
 
 extern grs_screen *cit_screen;
+extern SDL_Renderer *renderer;
 extern SDL_Window *window;

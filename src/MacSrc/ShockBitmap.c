@@ -1,6 +1,8 @@
 /*
 
+Copyright (C) 1994-1995 Looking Glass Technologies, Inc.
 Copyright (C) 2015-2018 Night Dive Studios, LLC.
+Copyright (C) 2018-2020 Shockolate Project
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,13 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-//====================================================================================
-//
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
-//
-//		ShockBitmap.c	-	Manages off-screen bitmaps and palettes.
-//
-//====================================================================================
+// ShockBitmap.c - Manages off-screen bitmaps and palettes.
 
 //--------------------
 //  Includes
@@ -37,6 +33,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 SDL_Surface *drawSurface;
 SDL_Surface *offscreenDrawSurface;
+
+void ChangeScreenSize(int width, int height) {
+    if (gScreenWide == width && gScreenHigh == height)
+        return;
+
+    INFO("ChangeScreenSize");
+
+    SDL_RenderClear(renderer);
+
+    extern bool fullscreenActive;
+    SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+
+    SDL_SetWindowSize(window, width, height);
+    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+
+    SDL_RenderSetLogicalSize(renderer, width, height);
+
+    SetupOffscreenBitmaps(width, height);
+
+    gScreenWide = width;
+    gScreenHigh = height;
+}
 
 //------------------------------------------------------------------------------------
 //		Setup the main offscreen bitmaps.

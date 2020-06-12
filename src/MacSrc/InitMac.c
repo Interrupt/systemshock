@@ -39,9 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------
 char *gScreenAddress;
 long gScreenRowbytes;
-short gScreenWide, gScreenHigh;
-short gActiveWide, gActiveHigh;
-short gActiveLeft, gActiveTop;
+int32_t gScreenWide, gScreenHigh;
 
 //---------------------------
 //  Time Manager routines and globals

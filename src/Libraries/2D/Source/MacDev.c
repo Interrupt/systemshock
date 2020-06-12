@@ -86,37 +86,6 @@ void mac_set_mode(void) {
     grd_uline_fill_table_list[BMT_DEVICE] = (grt_uline_fill_table *)flat8_uline_fill_table;
 }
 
-void ChangeScreenSize(int width, int height) {
-    extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
-    if (gScreenWide == width && gScreenHigh == height)
-        return;
-
-    extern SDL_Renderer *renderer;
-    extern SDL_Window *window;
-
-    extern char *gScreenAddress;
-    extern long gScreenRowbytes;
-
-    INFO("ChangeScreenSize");
-
-    SDL_RenderClear(renderer);
-
-    extern bool fullscreenActive;
-    SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-
-    SDL_SetWindowSize(window, width, height);
-    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-
-    SDL_RenderSetLogicalSize(renderer, width, height);
-
-    SetupOffscreenBitmaps(width, height);
-
-    gScreenWide = width;
-    gScreenHigh = height;
-    gActiveWide = width;
-    gActiveHigh = height;
-}
-
 //------------------------------------------------------------------------
 // set the color palette (copy entries into gMainColorHand, then call SetEntries
 // and ResetCTSeed).

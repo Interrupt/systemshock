@@ -1,6 +1,8 @@
 /*
 
+Copyright (C) 1994-1995 Looking Glass Technologies, Inc.
 Copyright (C) 2015-2018 Night Dive Studios, LLC.
+Copyright (C) 2018-2020 Shockolate Project
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,22 +18,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-//====================================================================================
-//
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
-//
-//		ShockBitmap.c	-	Manages off-screen bitmaps and palettes.
-//
-//====================================================================================
+// ShockBitmap.c - Manages off-screen bitmaps and palettes.
 
 #include <SDL.h>
 
-typedef struct ShockBitmap ShockBitmap; // FIXME: if this is actually needed, provide a portable struct
+// Globals
 
+// Current draw surface
 extern SDL_Surface *drawSurface;
+// Offscreen draw surface
 extern SDL_Surface *offscreenDrawSurface;
 
-//--------------------
-//  Prototypes
-//--------------------
+// Prototypes
+
+/// Change screen size.
+void ChangeScreenSize(int width, int height);
+
+/// Setup the main offscreen bitmaps.
 void SetupOffscreenBitmaps(int width, int height);

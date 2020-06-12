@@ -27,11 +27,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // How many tick passed since game startup
 extern uint32_t gShockTicks;
 
+// Pointer to screen
 extern char *gScreenAddress;
 extern long gScreenRowbytes;
-extern short gScreenWide, gScreenHigh;
-extern short gActiveWide, gActiveHigh;
-extern short gActiveLeft, gActiveTop;
+// Size of current window
+extern int32_t gScreenWide, gScreenHigh;
 
 //--------------------
 //  Prototypes

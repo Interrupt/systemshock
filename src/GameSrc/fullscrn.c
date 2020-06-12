@@ -256,7 +256,6 @@ void change_svga_screen_mode() {
         /*if (svga_screen!=NULL)
                 gr_free_screen(svga_screen);*/
 
-        extern void ChangeScreenSize(int w, int h);
         ChangeScreenSize(cur_w, cur_h);
 
         svga_screen = gr_alloc_screen(cur_w, cur_h);
