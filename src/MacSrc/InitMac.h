@@ -1,6 +1,8 @@
 /*
 
+Copyright (C) 1994-1995 Looking Glass Technologies, Inc.
 Copyright (C) 2015-2018 Night Dive Studios, LLC.
+Copyright (C) 2018-2020 Shockolate Project
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,19 +18,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-//====================================================================================
-//
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
-//
-//		InitMac.h	-	Initialize Mac toolbox managers and setup the application's globals.
-//
-//====================================================================================
+// InitMac.h - Initialize Mac toolbox managers and setup the application's globals.
 
 // How many tick passed since game startup
 extern uint32_t gShockTicks;
 
 // Pointer to screen
-extern char *gScreenAddress;
+extern intptr_t *gScreenAddress;
 extern long gScreenRowbytes;
 // Size of current window
 extern int32_t gScreenWide, gScreenHigh;
@@ -36,6 +32,15 @@ extern int32_t gScreenWide, gScreenHigh;
 //--------------------
 //  Prototypes
 //--------------------
+
+/// Initialize the Macintosh managers.
 void InitMac(void);
+
+/**
+ * Normal cleanup when the program quits.
+ * @deprecated Actually does nothing
+ */
 void CleanupAndExit(void);
+
+/// Startup the SystemShock timer.
 void InstallShockTimers(void);

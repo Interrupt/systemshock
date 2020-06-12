@@ -85,5 +85,5 @@ void SetupOffscreenBitmaps(int width, int height) {
     gScreenRowbytes = drawSurface->w;
     gScreenAddress = drawSurface->pixels;
 
-    grd_mode_cap.vbase = (uchar *)gScreenAddress;
+    grd_mode_cap.vbase = gScreenAddress;
 }

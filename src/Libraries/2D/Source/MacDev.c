@@ -23,18 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "MacDev.h"
 #include "cnvdrv.h"
 #include "cnvtab.h"
-#include "bitmap.h"
 #include "fcntab.h"
 #include "lintab.h"
-#include "ShockBitmap.h"
-
-#include <SDL.h>
-
-#include <stdio.h> // printf()
-
-// extern CTabHandle           gMainColorHand;
-
-// #include <Carbon/Carbon.h>
 
 // NOTE!
 //
@@ -70,16 +60,14 @@ void (**mac_device_table[])() = {(ptr_type)gr_null,       // init device
 // Mac specific device routines
 //========================================================================
 
-extern char *gScreenAddress;
-// extern void opengl_resize(int width, int height);
-// extern bool can_use_opengl(void);
+extern intptr_t *gScreenAddress;
 
 //------------------------------------------------------------------------
 // init the graphics mode, set up function tables and screen base address
 //
 void mac_set_mode(void) {
     INFO("Initializing graphics mode");
-    grd_mode_cap.vbase = (uchar *)gScreenAddress;
+    grd_mode_cap.vbase = gScreenAddress;
 
     grd_canvas_table_list[BMT_DEVICE] = flat8_canvas_table;
     grd_function_table_list[BMT_DEVICE] = (grt_function_table *)flat8_function_table;
