@@ -26,38 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SDL.h>
 
-#if 1
-
-#else
-//--------------------
-//  Types
-//--------------------
-typedef struct {
-    Ptr Address;
-    long RowBytes;
-    GrafPtr bits;
-    Rect bounds;
-    Boolean Color;
-
-    BitMap BWBits; // B&W port & map
-    GrafPort BWPort;
-
-    CGrafPort CPort; // color port
-
-    Handle OrigBits;
-
-} ShockBitmap;
-
-//--------------------
-//  Globals
-//--------------------
-extern PixMapHandle gScreenPixMap;
-extern CTabHandle gMainColorHand;
-extern Boolean gChangedColors;
-// extern ShockBitmap			gMainOffScreen;
-
-#endif // 0
-
 typedef struct ShockBitmap ShockBitmap; // FIXME: if this is actually needed, provide a portable struct
 
 extern SDL_Surface *drawSurface;
@@ -67,16 +35,3 @@ extern SDL_Surface *offscreenDrawSurface;
 //  Prototypes
 //--------------------
 void SetupOffscreenBitmaps(int width, int height);
-void ResetCTSeed(void);
-void RememberSeed(void);
-void FixPalette(void);
-// void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color);
-void FreeShockBitmap(ShockBitmap *theMap);
-// Handle Build8PixMap(CGrafPtr theCGrafPtr,short width, short height);
-short CurScreenDepth(void);
-void CheckBitDepth(void);
-void CleanupPalette(void);
-void LoadPictShockBitmap(ShockBitmap *theMap, short PictID);
-
-void SetupTitleScreen(void);
-// int DoShockTitleButtons(Point mousePt);
