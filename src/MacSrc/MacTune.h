@@ -52,8 +52,8 @@ extern bool gReadyToQueue; // True when it's time to queue up a new sequence.
 
 // extern TuneCallBackUPP	gTuneCBProc;						// The tune's callback proc.
 // extern CalcTuneTask		gCalcTuneTask;					// Global to hold task info.
-// extern TimerUPP			gCalcTuneProcPtr;				// UPP for the 6-second time manager tune
-// determiner task.
+// extern TimerUPP			gCalcTuneProcPtr;				// UPP for the 6-second time manager
+// tune determiner task.
 
 //-----------------
 //  PROTOTYPES

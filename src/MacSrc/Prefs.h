@@ -28,14 +28,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Types
 //--------------------
 typedef struct {
-    short prefVer;              // Version - set to 0 for now.
-    short prefPlayIntro;        // Play intro at startup if non-zero.
+    short prefVer;       // Version - set to 0 for now.
+    short prefPlayIntro; // Play intro at startup if non-zero.
 
     // Game Options
-    short goMsgLength;          // 0 - normal, 1 - brief
+    short goMsgLength; // 0 - normal, 1 - brief
     bool goPopupLabels;
     bool goOnScreenHelp;
-    short goLanguage;           // 0 - English, 1 - French, 2 - German
+    short goLanguage; // 0 - English, 1 - French, 2 - German
     bool goCaptureMouse;
     bool goInvertMouseY;
 
@@ -50,8 +50,8 @@ typedef struct {
 
     // Display Options
     short doVideoMode;
-    short doResolution;         // 0 - High, 1 - Low
-    short doDetail;             // 0 - Min, 1-Low, 2-High, 3-Max
+    short doResolution; // 0 - High, 1 - Low
+    short doDetail;     // 0 - Min, 1-Low, 2-High, 3-Max
     short doGamma;
     bool doUseQD;
     bool doUseOpenGL;
@@ -77,10 +77,10 @@ int16_t SavePrefs(void);
 //  Enums
 //-------------------
 enum OPT_SEQ_ { // Must be in the same order as in wraper.h
-        OPT_SEQ_ADLMIDI = 0,
-        OPT_SEQ_NativeMI,
+    OPT_SEQ_ADLMIDI = 0,
+    OPT_SEQ_NativeMI,
 #ifdef USE_FLUIDSYNTH
-        OPT_SEQ_FluidSyn,
+    OPT_SEQ_FluidSyn,
 #endif // USE_FLUIDSYNTH
-        OPT_SEQ_Max
+    OPT_SEQ_Max
 };
