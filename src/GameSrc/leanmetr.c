@@ -74,7 +74,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define BMAPS_PER_POSTURE 3
 
 extern uchar full_game_3d;
-extern void physics_set_relax(int axis, uchar relax);
 
 static ubyte discrete_eye_height[DISCRETE_EYE_POSITIONS] = {
     3,
@@ -123,27 +122,6 @@ ushort shield_bmap_res = 0;
 
 uchar eye_fine_mode = FALSE;
 
-// ---------
-// PROTOTYPES
-// ---------
-void set_base_lean_bmap(uchar shield);
-fix compute_filter_weight(ulong deltat);
-fix apply_weighted_filter(fix input, fix state, ulong deltat);
-void slam_posture_meter_state(void);
-fix velocity_crouch_filter(fix crouch);
-void lean_icon(LGPoint *pos, grs_bitmap **icon, int *inum);
-void player_reset_eye(void);
-byte player_get_eye(void);
-void player_set_eye_fixang(int ang);
-int player_get_eye_fixang(void);
-uchar eye_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t);
-uchar lean_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t);
-void init_posture_meters(LGRegion *root, uchar fullscreen);
-void update_lean_meter(uchar force);
-void draw_eye_bitmap(grs_bitmap *eye_bmap, LGPoint pos, int lasty);
-void update_eye_meter(uchar force);
-void update_meters(uchar force);
-void zoom_to_lean_meter(void);
 
 // ---------
 // INTERNALS
@@ -406,7 +384,6 @@ uchar lean_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data) {
         //     ui_mouse_constrain_xy(LEANOMETER_X(),LEANOMETER_Y()+posture*LEANOMETER_H/3+1,LEANOMETER_X()+LEANOMETER_W-1,LEANOMETER_Y()+(posture+1)*LEANOMETER_H/3-1);
     }
     if (ev->mouse_data.buttons == 0) {
-        extern void mouse_unconstrain(void);
         //      mouse_unconstrain();
     }
     return TRUE;
@@ -600,7 +577,6 @@ void update_meters(uchar force) {
 }
 
 void zoom_to_lean_meter(void) {
-    extern void zoom_rect(LGRect *, LGRect *);
     extern bool DoubleSize;
 
     LGPoint pos;

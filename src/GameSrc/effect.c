@@ -24,11 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#define _EFFECT_SRC
-
 #include <string.h>
 
+#include "grenades.h"
 #include "objgame.h"
+#include "objuse.h"
+#include "trigger.h"
 #include "effect.h"
 #include "weapons.h" // for handart stuff
 #include "objprop.h"
@@ -52,6 +53,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "doorparm.h"
 
 #define HANDART_SPEED 85
+
+short anim_counter = 0;
+AnimListing animlist[MAX_ANIMLIST_SIZE];
 
 #define MAX_ANIMLIST_CALLBACKS 10
 AnimlistCB animlist_callbacks[MAX_ANIMLIST_CALLBACKS];
@@ -90,15 +94,12 @@ ubyte effect_matrix[CRIT_HIT_NUM][AMMO_TYPES][SEVERITIES] = {
      }
 };
 
-// External Prototypes
-extern void do_object_explosion(ObjID id);
 
 // Internal Prototypes
 void critter_light_world(ObjID id);
 void critter_unlight_world(ObjID id);
 int anim_frames(ObjID id);
 errtype increment_anim(ulong num_units);
-uchar anim_data_from_id(ObjID id, bool *reverse, bool *cycle);
 void init_animlist(void);
 
 // -----------------------------------------------------------------
@@ -261,7 +262,6 @@ int anim_frames(ObjID id) {
 #define BRIGHT_LIGHT_FLASH 60L // brightness of flash
 #define LIGHT_DELTA 4          // time length of flash
 
-extern void lamp_change_setting(byte offset);
 extern ubyte energy_expulsion;
 extern ubyte handart_count;
 extern uchar handart_flash;
@@ -763,12 +763,6 @@ errtype animlist_clear() {
 }
 
 void init_animlist(void) {
-    extern void diego_teleport_callback(ObjID id, intptr_t user_data);
-    extern void destroy_screen_callback_func(ObjID id, intptr_t user_data);
-    extern void unshodanizing_callback(ObjID id, intptr_t user_data);
-    extern void unmulti_anim_callback(ObjID id, intptr_t user_data);
-    extern void multi_anim_callback(ObjID id, intptr_t user_data);
-    extern void animate_callback_func(ObjID id, intptr_t user_data);
     animlist_callbacks[1] = diego_teleport_callback;
     animlist_callbacks[2] = destroy_screen_callback_func;
     animlist_callbacks[3] = unshodanizing_callback;

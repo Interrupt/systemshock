@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "newmfd.h"
 #include "mfdint.h"
 #include "mfddims.h"
+#include "mfdpanel.h"
 #include "colors.h"
 #include "rcolors.h"
 #include "tools.h"
@@ -63,12 +64,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // -------
 // Globals
 // -------
-
-#ifdef LOST_TREASURES_OF_MFD_GAMES
-extern void fstack_init(uchar *fs, uint siz);
-#endif
-
-#define PUZZLE_DIFFICULTY (QUESTVAR_GET(PUZZLE_DIFF_QVAR))
 
 // special storage used by mfdgames and by wiring puzzles
 // but note it's not managed correctly across save/restore etc.
@@ -211,9 +206,6 @@ void games_run_bots(bots_state *bs);
 static void mcom_start_level(void);
 int tictactoe_evaluator(void *pos);
 
-void mfd_games_turnon(bool, uchar);
-void mfd_games_turnoff(bool, uchar);
-
 void (*game_expose_funcs[])(MFD *m, ubyte control) = {games_expose_pong, games_expose_mcom, games_expose_road,
                                                       games_expose_bots, games_expose_15,   games_expose_ttt,
                                                       games_expose_null, games_expose_wing, games_expose_menu};
@@ -277,7 +269,6 @@ void mfd_games_expose(MFD *m, ubyte control) {
     int cur_mode;
     grs_font *fon;
     ulong dt = player_struct.deltat;
-    extern int mfd_slot_primary(int slot);
 
     if (control & MFD_EXPOSE) {
 
@@ -3398,7 +3389,7 @@ uchar mfd_games_hack_func(short keycode, ulong context, void* data)
 }
 */
 
-void mfd_games_turnon(bool b, uchar real_start) {
+void mfd_games_turnon(uchar visible, uchar real_start) {
     if (real_start) {
         int mfd = mfd_grab_func(MFD_GAMES_FUNC, MFD_INFO_SLOT);
         GAME_MODE = GAME_MODE_MENU;
@@ -3408,7 +3399,7 @@ void mfd_games_turnon(bool b, uchar real_start) {
     }
 }
 
-void mfd_games_turnoff(bool b, uchar real_start) {
+void mfd_games_turnoff(uchar visible, uchar real_stop) {
     // game shutdown code goes here.
 }
 

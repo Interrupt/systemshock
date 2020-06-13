@@ -48,7 +48,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#define __FRMAIN_SRC
+#ifdef AUDIOLOGS
+#include "audiolog.h"
+#endif
+
 #include "frtypes.h"
 #include "frintern.h"
 #include "frparams.h"
@@ -57,11 +60,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 int fr_pipe_go_2(void);
 int fr_pipe_go_3(void);
-
-// for synchronous update...
-#ifdef AUDIOLOGS
-extern errtype audiolog_loop_callback();
-#endif
 
 // extern "C"
 //{

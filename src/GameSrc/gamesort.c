@@ -42,14 +42,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // want outrageous mprintf's? of course you do!
 //#define SORT_SPEW
 
-extern void show_obj(ObjID curO);
-
 // Internal Prototypes
 void sort_section(int low, int hi);
 void score_objs(int o_num);
 int do_part_sort(int ptype, int lo, int hi, int ploc);
 void partition_sort(void);
-void render_sorted_objs(void);
 
 #define MAX_SORTED_REFS 64
 

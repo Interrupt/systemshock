@@ -187,10 +187,8 @@ uchar toggle_mouse_look(ushort keycode, uint32_t context, intptr_t data);
 // uchar (ushort keycode, uint32_t context, intptr_t data);
 
 // Globals
-#ifdef __HKEYFUNC_SRC
-int current_palette_mode = TERRAIN_MODE;
-#else
+
+// Unused?
 extern int current_palette_mode;
-#endif
 
 #endif // __HKEYFUNC_H

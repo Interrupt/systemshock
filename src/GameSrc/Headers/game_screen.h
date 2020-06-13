@@ -73,18 +73,10 @@ uchar main_kb_callback(uiEvent *h, LGRegion *r, intptr_t udata);
 void generic_reg_init(uchar create_reg, LGRegion *reg, LGRect *rct, uiSlab *slb, uiHandlerProc key_h, uiHandlerProc maus_h);
 
 // Globals
-#ifdef __SCREEN_SRC
-uchar *default_font_buf;
-LGRegion *root_region, *mainview_region, *status_region, *inventory_region_game;
-LGRegion *pagebutton_region_game;
-LGCursor globcursor, wait_cursor, fire_cursor;
-frc *normal_game_fr_context;
-#else
 extern uchar *default_font_buf;
 extern LGRegion *root_region, *mainview_region, *inventory_region_game, *status_region;
 extern LGRegion *pagebutton_region_game;
 extern LGCursor globcursor, wait_cursor, fire_cursor;
 extern frc *normal_game_fr_context;
-#endif
 
 #endif // __GAMESCREEN_H

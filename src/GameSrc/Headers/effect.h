@@ -170,6 +170,7 @@ errtype add_obj_to_animlist(ObjID id, uchar repeat, uchar reverse, uchar cycle, 
                             short cbtype);
 errtype remove_obj_from_animlist(ObjID id);
 errtype animlist_clear();
+uchar anim_data_from_id(ObjID id, bool *reverse, bool *cycle);
 
 #define MAX_ANIMLIST_SIZE 64
 
@@ -190,12 +191,7 @@ typedef struct {
     short speed;
 } AnimListing;
 
-#ifdef _EFFECT_SRC
-short anim_counter = 0;
-AnimListing animlist[MAX_ANIMLIST_SIZE];
-#else
 extern short anim_counter;
 extern AnimListing animlist[MAX_ANIMLIST_SIZE];
-#endif
 
 #endif // __EFFECT_H

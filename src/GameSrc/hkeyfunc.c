@@ -23,14 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/18 00:24:50 $
  */
 
-#define __HKEYFUNC_SRC
-
 #include <string.h>
+#include <hkeyfunc.h>
 
 #include "Shock.h"
 #include "Prefs.h"
 
 #include "fullscrn.h"
+#include "grenades.h"
+#include "invent.h"
 #include "loops.h"
 #include "mfdint.h"
 #include "mfdext.h"
@@ -49,6 +50,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  PROTOTYPES
 //--------------
 int select_object_by_class(int obclass, int num, ubyte *quantlist);
+
+int current_palette_mode = TERRAIN_MODE;
 
 #ifdef NOT_YET //
 
@@ -276,8 +279,6 @@ uchar toggle_view_func(ushort keycode, uint32_t context, intptr_t data) {
 #endif // NOT_YET
 
 void start_music(void) {
-    extern errtype mlimbs_AI_init(void);
-
     //   if (music_card)
     //   {
     if (MacTuneInit() == 0) {
@@ -321,11 +322,7 @@ uchar toggle_music_func(ushort keycode, uint32_t context, intptr_t data) {
 
 uchar arm_grenade_hotkey(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar show_all_actives;
-    extern void super_drop_func(int dispnum, int row);
-    extern void mfd_force_update(void);
-    extern errtype inventory_draw(void);
     extern short inv_last_page;
-    extern uchar activate_grenade_on_cursor(void);
     int i, row, act;
 
     if (!show_all_actives) {
@@ -383,9 +380,6 @@ uchar select_drug_hotkey(ushort keycode, uint32_t context, intptr_t data) {
 
 uchar use_drug_hotkey(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar show_all_actives;
-    extern void super_use_func(int dispnum, int row);
-    extern void mfd_force_update(void);
-    extern errtype inventory_draw(void);
     extern short inv_last_page;
     int i, row, act;
 
@@ -1307,7 +1301,6 @@ uchar unpause_callback(uiEvent *, LGRegion *, void *) { return (TRUE); }
 
 uchar pause_game_func(ushort keycode, uint32_t context, intptr_t data) {
     extern uchar game_paused, redraw_paused;
-    extern LGRegion *inventory_region;
 
     game_paused = !game_paused;
     CaptureMouse(!game_paused);

@@ -25,7 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	Mac version by Ken Cobb,  2/9/95
 
 #include <stdio.h>
+#include <SDL.h>
 
+#include "MacTune.h"
 #include "afile.h"
 #include "movie.h"
 #include "audiolog.h"
@@ -35,8 +37,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mainloop.h"
 #include "bark.h"
 #include "miscqvar.h"
-
-#include <SDL.h>
 
 #define AUDIOLOG_BASE_ID 2741
 #define AUDIOLOG_BARK_BASE_ID 3100
@@ -62,8 +62,6 @@ extern uchar curr_alog_vol;
 extern char which_lang;
 
 extern SDL_AudioDeviceID device;
-
-extern void MacTuneUpdateVolume(void);
 
 errtype audiolog_init(void) { return OK; }
 

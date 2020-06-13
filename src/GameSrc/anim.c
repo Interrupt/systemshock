@@ -19,15 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SDL.h>
 
+#include "Shock.h"
 #include "anim.h"
-#include "tools.h"
 #include "gr2ss.h"
+#include "tools.h"
+#include "sdl_events.h"
 
 ActAnim current_anim;
-
-extern void SDLDraw(void);
-extern void pump_events(void);
-
 bool done_playing_anim = false;
 
 // play

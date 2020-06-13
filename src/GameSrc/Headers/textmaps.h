@@ -121,13 +121,19 @@ typedef struct {
 #define GET_TEXTURE_INDEX(tid, size) texture_array[ANIMTEXT_BASE(tid) + ANIMTEXT_FRAME(tid)].size_index[(size)]
 
 // Prototypes
+void free_textures(void);
 void load_textures();
 errtype load_alternate_textures();
+errtype load_master_texture_properties();
+errtype load_small_texturemaps(void);
 errtype bitmap_array_unload(int *num_bitmaps, grs_bitmap *arr[]);
 errtype Init_Lighting(void);
-errtype load_master_texture_properties();
 errtype unload_master_texture_properties();
 errtype clear_texture_properties();
+
+
+// returns whether or not a given bitmap is, well, empty.
+uchar empty_bitmap(grs_bitmap *bmp);
 
 #define SHADING_TABLE_FNAME "shadtabl.dat"
 #define SHADING_TABLE_AMBER_FNAME "ambrtabl.dat"

@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __INPUT_H
 
 #include "frtypesx.h"
-//#include <Carbon/Carbon.h>
+#include "objects.h"
 
 // -------
 // DEFINES
@@ -51,6 +51,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // PROTOS
 // ------
 
+/**
+ * @deprecated does nothing
+ */
+void alloc_cursor_bitmaps(void);
+
+/**
+ * @deprecated does nothing
+ */
+void free_cursor_bitmaps();
+
 void input_chk(void);
 // uchar main_kb_callback(uiEvent *h, LGRegion *r, intptr_t udata);
 void shutdown_input(void);
@@ -59,7 +69,16 @@ void install_motion_mouse_handler(LGRegion *r, frc *fr);
 void install_motion_keyboard_handler(LGRegion *r);
 void pop_cursor_object(void);
 void push_cursor_object(short id);
+void reload_motion_cursors(uchar cyber);
 void reset_input_system(void);
+
+char *get_object_lookname(ObjID id, char use_string[], int sz);
+
+uchar check_object_dist(ObjID obj1, ObjID obj2, fix crit);
+
+void SetMotionCursorForMouseXY(void);
+
+uchar citadel_check_input(void);
 
 // -------
 // GLOBALS

@@ -29,5 +29,8 @@ extern void palfx_fade_up(uchar do_now);
 extern void palfx_fade_down();
 extern void palfx_init();
 
+void finish_pal_effect(byte id);
+byte palfx_start_fade_up(uchar *new_pal);
+
 extern byte cyc_id0, cyc_id1, cyc_id2, cyc_id3, cyc_id4, cyc_id5;
 #endif // __PALFX_H

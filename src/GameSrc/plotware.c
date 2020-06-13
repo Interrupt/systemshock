@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mfdint.h"
 #include "mfdext.h"
+#include "mfdfunc.h"
 #include "mfddims.h"
 #include "objsim.h"
 #include "gamestrn.h"
@@ -42,8 +43,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gamescr.h"
 #include "otrip.h"
 #include "cybstrng.h"
-
+#include "plotware.h"
 #include "shodan.h"
+#include "trigger.h"
 
 // ============================================================
 //                      DA PLOTWARE
@@ -52,7 +54,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // -------
 // DEFINES
 // -------
-extern short qdata_get(short);
 
 #define MFD_PLOTWARE_FUNC 16
 #define ITEM_COLOR 0x5A
@@ -82,11 +83,8 @@ typedef struct _plot_display {
 // ----------
 void fill_time(short val, char *vbuf);
 bool do_plotware_hack(int hack_num, char *vbuf);
-void mfd_plotware_expose(MFD *mfd, ubyte control);
 void plotware_showpage(uchar page);
 uchar plotware_button_handler(MFD *m, LGPoint bttn, uiEvent *ev, void *data);
-errtype mfd_plotware_init(MFD_Func *f);
-void plotware_turnon(uchar visible, uchar real);
 
 // --------
 //  GLOBALS
@@ -219,10 +217,7 @@ bool do_plotware_hack(int hack_num, char *vbuf) {
 
 #define BUTTON_Y (MFD_VIEW_HGT - res_bm_height(REF_IMG_PrevPage) - 2)
 
-extern void mfd_item_micro_expose(uchar full, int triple);
-
 void mfd_plotware_expose(MFD *mfd, ubyte control) {
-    extern void mfd_item_micro_hires_expose(bool, int);
     uchar full = control & MFD_EXPOSE_FULL;
     if (control == 0) // MFD is drawing stuff
     {

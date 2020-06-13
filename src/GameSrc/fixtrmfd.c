@@ -60,8 +60,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TEXT_COLOR 0x4C
 
-extern void check_panel_ref(uchar punt);
-
 typedef struct _fixture_data {
     ObjID last_obj;
     uchar last_state;
@@ -70,11 +68,6 @@ typedef struct _fixture_data {
 #define MFD_FIXTURE_DATA(lr) ((fixture_data *)&mfd_fdata[MFD_FIXTURE_FUNC][lr * 3])
 #define FIXTURE_STATE (mfd_fdata[MFD_FIXTURE_FUNC][7])
 
-// ----------
-//  PROTOTYPES
-// ----------
-void mfd_fixture_expose(MFD *mfd, ubyte control);
-uchar mfd_fixture_handler(MFD *m, uiEvent *e);
 
 // ---------------
 // EXPOSE FUNCTION

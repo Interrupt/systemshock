@@ -28,13 +28,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 
 #include "ai.h"
-#include "combat.h" // for ADD_DESTROYED_OBJECT
 #include "cyber.h"
 #include "cybstrng.h"
 #include "damage.h"
 #include "diffq.h" // for time limit
 #include "drugs.h"
 #include "effect.h"
+#include "email.h"
 #include "faketime.h"
 #include "frflags.h"
 #include "frprotox.h"
@@ -44,9 +44,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gamerend.h"
 #include "gamesys.h"
 #include "hud.h"
+#include "input.h"
 #include "lvldata.h"
 #include "mainloop.h"
 #include "map.h"
+#include "mfdfunc.h"
 #include "miscqvar.h"
 #include "musicai.h"
 #include "newmfd.h"
@@ -63,6 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "physics.h"
 #include "rendfx.h"
+#include "rendtool.h"
 #include "schedule.h"
 #include "sfxlist.h"
 #include "shodan.h"
@@ -103,19 +106,13 @@ LevelData level_gamedata;
 Schedule game_seconds_schedule;
 
 // prototypes
-void game_sched_init(void);
-void game_sched_free(void);
-void unshodanizing_callback(ObjID id, intptr_t user_data);
 void check_nearby_objects(void);
 void fatigue_player(void);
 uchar shodan_phase_in(uchar *bitmask, short x, short y, short w, short h, short num, uchar dir);
-void check_hazard_regions(MapElem *newElem);
 uchar panel_ref_sanity(ObjID obj);
-void check_panel_ref(uchar puntme);
 int apply_rate(int var, int rate, int t0, int t1, int vmin, int vmax);
 void do_stuff_every_second(void);
 void expose_player_real(short damage, ubyte type, ushort tsecs);
-void expose_player(byte damage, ubyte type, ushort tsecs);
 
 void game_sched_init(void) { schedule_init(&game_seconds_schedule, GAME_SCHEDULE_SIZE, FALSE); }
 
@@ -166,7 +163,6 @@ void check_nearby_objects() {
     extern char mlimbs_machine;
     extern int mlimbs_monster;
     int new_monster;
-    extern short compute_3drep(Obj * cobj, ObjID cobjid, int obj_type);
 #ifdef USE_3DREP_FOR_SHODANIZING
     short rep;
 #endif
@@ -447,11 +443,7 @@ short shodan_region_full_height[] = {FULL_VIEW_HEIGHT / 8, FULL_VIEW_HEIGHT, FUL
 errtype gamesys_run(void) {
     ObjSpecID osi;
     uchar dummy;
-    // extern void destroy_destroyed_objects(void);
-    // extern uchar trap_activate(ObjID id, uchar * use_message);
-    extern void set_global_lighting(short new_val);
     extern uchar *shodan_bitmask;
-    extern ulong page_amount;
 
 #ifdef AUTOCORRECT_DIFF_TRASH
     for (int i = 0; i < 4; i++) {
@@ -500,7 +492,6 @@ errtype gamesys_run(void) {
             char i;
             if (thresh_fail) {
                 errtype trap_hack_func(int p1, int p2, int p3, int p4);
-                extern void begin_shodan_conquer_fx(uchar begin);
                 begin_shodan_conquer_fx(FALSE);
                 shodan_bitmask = NULL;
                 trap_hack_func(GAME_OVER_HACK, 0, 0, 0);
@@ -643,13 +634,10 @@ uchar panel_ref_sanity(ObjID obj) {
 void check_panel_ref(uchar puntme) {
     // static short old_x, old_y;
     // extern void restore_mfd_slot(int mfd_id);
-    extern uchar check_object_dist(ObjID obj1, ObjID obj2, fix crit);
 
     ObjID id = player_struct.panel_ref;
 
     if (id != OBJ_NULL && (id != PLAYER_OBJ || puntme)) {
-        extern ubyte mfd_get_func(ubyte mfd_id, ubyte s);
-        extern uchar mfd_distance_remove(ubyte slot_funca);
         uchar punt = puntme;
         if (objs[id].active) {
             punt = punt || !check_object_dist(id, PLAYER_OBJ, MAX_USE_DIST);
@@ -736,7 +724,6 @@ void do_stuff_every_second() {
     extern int bio_energy_var;
     extern int bio_absorb;
     extern int rad_absorb;
-    extern ulong player_death_time;
     int last = (player_struct.last_second_update >> HEALTH_RESTORE_PRECISION) & HEALTH_RESTORE_MASK;
     int next = (player_struct.game_time >> HEALTH_RESTORE_PRECISION) & HEALTH_RESTORE_MASK;
 
@@ -773,8 +760,6 @@ void do_stuff_every_second() {
             }
             hud_unset(REALSPACE_HUDS);
         } else {
-            extern void update_email_ware(void);
-
             if ((QUESTBIT_GET(REACTOR_BOOM_QB)) && (!QUESTBIT_GET(BRIDGE_SEPARATED_QB)) && ((rand() & 0x3F) == 1)) {
                 play_digi_fx(SFX_RUMBLE, 2);
                 fr_global_mod_flag(FR_SFX_SHAKE, FR_SFX_MASK);
@@ -792,9 +777,6 @@ void do_stuff_every_second() {
                 }
             }
             if (player_struct.energy == 0) {
-                extern void hardware_power_outage(void);
-                extern errtype gear_power_outage(void);
-
                 if (!player_struct.energy_out) {
                     string_message_info(REF_STR_PowerRanOut);
                     play_digi_fx(SFX_POWER_OUT, 1);

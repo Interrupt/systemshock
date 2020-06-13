@@ -60,6 +60,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TERSENESS_QBIT 0x180
 
 // Prototypes
+uchar demo_quit_func(ushort keycode, uint32_t context, intptr_t data);
+
+errtype make_options_cursor(void);
+
+#ifdef AUDIOLOGS
+void recompute_audiolog_level(ushort vol);
+#endif
+void recompute_digifx_level(ushort vol);
+void recompute_music_level(ushort vol);
+
+void digichan_dealfunc(short val);
+
+void language_change(uchar lang);
+
+void screenmode_screen_init(void);
+
+void wrapper_start(void (*init)(void));
 
 // Replaces the inventory panel with a wrapper input paneloid thing,
 // which is 2 by width text buttons for the user to click on.  When clicked,
@@ -67,14 +84,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // as an argument.
 uchar wrapper_options_func(ushort keycode, uint32_t context, intptr_t data);
 
+errtype wrapper_create_mouse_region(LGRegion *root);
+
 #define NUM_SAVE_SLOTS 8
 #define SAVE_COMMENT_LEN 32
 
 // Globals
-#ifndef __WRAPPER_SRC
 extern char save_game_name[];
-extern char comments[NUM_SAVE_SLOTS][SAVE_COMMENT_LEN];
-#endif
+extern char comments[NUM_SAVE_SLOTS + 1][SAVE_COMMENT_LEN];
+
 #define Poke_SaveName(game_num)                    \
     {                                              \
         save_game_name[6] = '0' + (game_num >> 3); \

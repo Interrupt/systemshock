@@ -27,10 +27,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include "frprotox.h"
+#include "map.h"
+
+uchar draw_tmap_p(int ptcnt);
+
 void fr_show_rate(int color);
 void game_fr_startup(void);
 void game_fr_shutdown(void);
 uchar *get_free_frame_buffer_bits(int size);                            // to get bitmap bits
 void *get_scr_canvas_from_frame_buffer(int x, int y, int wid, int hgt); // to get an actual canvas
 void game_fr_reparam(int is_128s, int full_scrn, int show_all);
+
+void game_redrop_rad(int rad_mod);
+
+void free_model_vtexts(char model_num);
+void load_model_vtexts(char model_num);
+void set_global_lighting(short l_lev);
+
+void rendedit_process_tilemap(FullMap *fmap, LGRect *r, uchar newMap);
+
+ushort fr_get_at_raw(frc *fr, int x, int y, uchar again, uchar transp);
+void change_detail_level(byte new_level);
+
 #endif // __RENDTOOL_H

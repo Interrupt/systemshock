@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdext.h"
 #include "mfddims.h"
 #include "mfdgadg.h"
+#include "newmfd.h"
 #include "status.h"
 #include "gamestrn.h"
 #include "tools.h"
@@ -49,12 +50,8 @@ uchar status_track_free(int track);
 uchar status_track_active(int track);
 void status_track_activate(int track, uchar active);
 
-errtype mfd_biohelp_init(MFD_Func *f);
-void mfd_biohelp_expose(MFD *mfd, ubyte control);
 uchar mfd_biohelp_button_handler(MFD *m, LGPoint bttn, uiEvent *ev, void *data);
-uchar mfd_biohelp_handler(MFD *m, uiEvent *e);
 uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data);
-errtype biohelp_load_cursor();
 errtype biohelp_create_mouse_region(LGRegion *root);
 
 // ---------------
@@ -180,7 +177,7 @@ void mfd_biohelp_expose(MFD *mfd, ubyte control) {
 // HANDLERS
 // --------
 
-uchar mfd_biohelp_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *v) {
+uchar mfd_biohelp_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *data) {
     int track = -1;
     int i = 0;
     if (!(ev->subtype & MOUSE_LDOWN))
@@ -218,9 +215,8 @@ uchar mfd_biohelp_handler(MFD *m, uiEvent *e) {
     return retval;
 }
 
-uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
+uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *reg, intptr_t data) {
     if (ev->mouse_data.action & (MOUSE_LDOWN | MOUSE_RDOWN)) {
-        extern void mfd_zoom_rect(LGRect *, int);
         LGRect start = {{-5, -5}, {5, 5}};
         int mfd = mfd_grab_func(MFD_BIOHELP_FUNC, MFD_INFO_SLOT);
         RECT_MOVE(&start, ev->pos);

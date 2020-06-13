@@ -66,7 +66,7 @@ uchar *our_valloc (short w, short h)
    if (grd_valloc_mode)
       return (uchar *)0;
    else
-      return grd_cap->vbase;
+      return (uchar *)grd_cap->vbase;
 }
 
 void vfree (uchar *p)

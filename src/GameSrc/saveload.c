@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "effect.h"
 #include "frflags.h"
 #include "frprotox.h"
+#include "gametime.h"
 #include "gamewrap.h"
 #include "hkeyfunc.h"
 #include "input.h"
@@ -51,6 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objgame.h"
 #include "objcrit.h"
 #include "objver.h"
+#include "objuse.h"
 #include "otrip.h"
 #include "map.h"
 #include "mfdext.h"
@@ -168,8 +170,6 @@ void restore_objects(char *buf, ObjID *obj_array, char obj_count) {
 uchar go_to_different_level(int targlevel) {
     State player_state;
     char *buf;
-    extern void update_level_gametime(void);
-    extern errtype do_level_entry_triggers();
     uchar in_cyber = global_fullmap->cyber;
     uchar retval = FALSE;
     errtype rv;
@@ -189,8 +189,6 @@ uchar go_to_different_level(int targlevel) {
         saveload_static = TRUE;
     }
     if (saveload_static) {
-        extern void physics_zero_all_controls();
-        extern void start_asynch_digi_fx();
         uchar old_music;
         physics_zero_all_controls();
         fr_global_mod_flag(FR_SOLIDFR_STATIC, FR_SOLIDFR_MASK);
@@ -227,7 +225,6 @@ uchar go_to_different_level(int targlevel) {
         EDMS_get_state(objs[PLAYER_OBJ].info.ph, &player_state);
         LG_memcpy(player_struct.edms_state, &player_state, sizeof(fix) * 12);
     } else {
-        extern errtype early_exit_cyberspace_stuff();
         early_exit_cyberspace_stuff();
     }
 
@@ -260,8 +257,6 @@ uchar go_to_different_level(int targlevel) {
 
     // Undo static if we did it before
     if (saveload_static) {
-        extern void clear_digi_fx();
-        extern void stop_asynch_digi_fx();
         saveload_static = FALSE;
         fr_global_mod_flag(0, FR_SOLIDFR_MASK);
         if (music_on)
@@ -470,7 +465,7 @@ errtype save_current_map(char *fname, Id id_num, uchar flush_mem, uchar pack) {
 
     end_wait();
     {
-        extern void spoof_mouse_event();
+        // extern void spoof_mouse_event();
         // what does this do???      spoof_mouse_event();
     }
 
@@ -713,8 +708,6 @@ errtype expand_old_class(char cl, short new_start)
 */
 
 void load_level_data() {
-    extern errtype load_small_texturemaps();
-
     // KLC-removed from here    obj_load_art(FALSE);
     load_small_texturemaps();
 }
@@ -740,15 +733,9 @@ void SwapShortBytes(void *pval2) {
 //---------------------------------------------------------------------------------
 // errtype load_current_map(char* fn, Id id_num, Datapath* dpath)
 errtype load_current_map(Id id_num) {
-    void rendedit_process_tilemap(FullMap * fmap, LGRect * r, bool newMap);
-    extern errtype set_door_data(ObjID id);
     extern int physics_handle_max;
     extern ObjID physics_handle_id[MAX_OBJ];
-    void cit_sleeper_callback(physics_handle caller);
-    extern void edms_delete_go();
-    extern void reload_motion_cursors(bool cyber);
     extern char old_bits;
-    extern int compare_events(void *e1, void *e2);
 
     int i, idx = 0, fd;
     uint32_t map_version;
@@ -1315,7 +1302,6 @@ obj_out:
         }
 
         if (do_anims && ANIM_3D(ObjProps[OPNUM(oid)].bitmap_3d)) {
-            extern errtype obj_screen_animate(ObjID id);
             switch (TRIP2CL(ID2TRIP(oid))) {
             case CLASS_BIGSTUFF:
             case CLASS_SMALLSTUFF:

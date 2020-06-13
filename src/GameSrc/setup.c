@@ -23,8 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/23 00:05:51 $
  */
 
-#define __SETUP_SRC
-
 #include <string.h>
 #include <SDL.h>
 
@@ -37,9 +35,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <unistd.h>
 #endif
 
+#ifdef SVGA_SUPPORT
+#include "fullscrn.h"
+#endif
+
 #include "archiveformat.h"
 #include "setup.h"
 #include "colors.h"
+#include "cybmem.h"
 #include "diffq.h"
 #include "gamewrap.h"
 #include "gr2ss.h"
@@ -50,27 +53,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "version.h"
 #include "wrapper.h"
 #include "verify.h"
+#include "sdl_events.h"
 #include "cybstrng.h"
 #include "gamestrn.h"
 
-#include <mainloop.h>
-#include <tools.h>
-#include <input.h>
-#include <game_screen.h>
-#include <hkeyfunc.h>
-#include <loops.h>
-#include <keydefs.h>
-#include <status.h>
+#include "mainloop.h"
+#include "tools.h"
+#include "input.h"
+#include "game_screen.h"
+#include "hkeyfunc.h"
+#include "loops.h"
+#include "keydefs.h"
+#include "status.h"
 #include "cutsloop.h"
-#include <musicai.h>
-#include <palfx.h>
-#include <gamescr.h>
-#include <faketime.h>
+#include "musicai.h"
+#include "palfx.h"
+#include "gamescr.h"
+#include "faketime.h"
 
 #include "2d.h"
 #include "splash.h"
 #include "splshpal.h"
 #include "tickcount.h"
+#include "MacTune.h"
 #include "Shock.h"
 #include "Xmi.h"
 
@@ -120,18 +125,6 @@ errtype draw_difficulty_description(int which_cat, int color);
 errtype journey_newgame_func(void);
 errtype journey_continue_func(uchar draw_stuff);
 errtype draw_username(int color, char *string);
-
-extern errtype load_da_palette();
-extern errtype musicai_shutdown(void);
-extern int MacTuneLoadTheme(char *theme_base, int themeID);
-extern void MacTuneKillCurrentTheme(void);
-extern void check_and_update_initial(void);
-extern void second_format(int sec_remain, char *s);
-extern void pump_events(void);
-extern void SDLDraw(void);
-#ifdef SVGA_SUPPORT
-extern void change_svga_screen_mode();
-#endif
 
 //*****************************************************************************
 
@@ -1405,7 +1398,6 @@ void setup_loop(void) {
 
 // if these don't get reset, sticky residue of any old game sticks around
 void empty_slate(void) {
-    extern int flush_resource_cache(void);
     flush_resource_cache();
 
     extern uint _fr_glob_flags;

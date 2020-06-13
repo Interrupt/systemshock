@@ -112,8 +112,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define NO_SPIKE    0x01
 #define SPIKE_NOISE 0x02
 
-void status_vitals_start();
-void status_vitals_end();
 errtype draw_status_arrow(int x_coord, int y);
 void draw_status_bar(ushort x0, ushort x1, ushort cutoff, ushort y);
 

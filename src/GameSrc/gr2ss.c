@@ -48,9 +48,6 @@ fix inv_convert_y[MAX_CONVERT_TYPES][MAX_USE_MODES];
 #define SVGA_CONV_SCREEN 2
 
 // Internal prototypes
-uchar perform_svga_conversion(uchar mask);
-void ss_scale_string(char *s, short x, short y);
-void mouse_unconstrain(void);
 
 uchar perform_svga_conversion(uchar mask) {
     extern uchar full_game_3d;

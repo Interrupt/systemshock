@@ -82,13 +82,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#define __FRCAMERA_SRC
 #include <string.h>
 #include <stdlib.h> // for abs, of course
 
 #include "frcamera.h"
 #include "froslew.h" // has objects
 #include "map.h"
+#include "physics.h"
 
 fix fr_camera_last[CAM_COOR_CNT] = {0, 0, 0, 0, 0, 0};
 fix cam_slew_scale[CAM_COOR_CNT] = {fix_make(4, 0), fix_make(4, 0), fix_make(4, 0), 128, 128, 128};
@@ -192,10 +192,6 @@ void fr_camera_getobjloc(int oid, fix *store) {
     Obj *cobj = &objs[oid];
 
     if (cobj->info.ph != -1) {
-#ifndef __RENDTEST__
-        extern uchar get_phys_info(int ph, fix *targ_array, int cnt);
-#endif
-
         get_phys_info(cobj->info.ph, store, 6);
     } else {
         store[0] = cobj->loc.x << 8;

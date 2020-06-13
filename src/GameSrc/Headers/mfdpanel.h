@@ -16,10 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-#include "objects.h"
-#include "player.h"
+#ifndef MFDPANEL_H
+#define MFDPANEL_H
+
 #include "diffq.h"
 #include "faketime.h"
+#include "mfdint.h"
+#include "objects.h"
+#include "player.h"
 
 char mfd_setup_accesspanel(uchar special, ObjID id);
 char mfd_type_accesspanel(ObjID id);
@@ -182,6 +186,19 @@ gpz_state gpz_get_grid_state(gridFlowPuzzle *gfpz, short row, short col);
 void gpz_4int_init(gridFlowPuzzle *gfpz, uint p1, uint p2, uint p3, uint p4);
 void gpz_4int_update(gridFlowPuzzle *gfpz);
 
+errtype mfd_accesspanel_init(MFD_Func *f);
+uchar mfd_accesspanel_handler(MFD *mfd, uiEvent *ev);
+void mfd_accesspanel_expose(MFD *mfd, ubyte control);
+
+errtype mfd_gridpanel_init(MFD_Func *f);
+uchar mfd_gridpanel_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *data);
+uchar mfd_gridpanel_handler(MFD *m, uiEvent *ev);
+void mfd_gridpanel_expose(MFD *mfd, ubyte control);
+
+int mfd_slot_primary(int slot);
+
 #define last_access_help_string (*((int *)&player_struct.mfd_func_data[MFD_ACCESSPANEL_FUNC][0]))
 #define access_primary_mfd      (*(((char *)&player_struct.mfd_func_data[MFD_ACCESSPANEL_FUNC][0] + sizeof(int))))
 #define grid_primary_mfd        (*(((char *)&player_struct.mfd_func_data[MFD_GRIDPANEL_FUNC][0])))
+
+#endif

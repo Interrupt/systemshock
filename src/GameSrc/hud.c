@@ -145,7 +145,6 @@ void hud_free_line(int i);
 void hud_delete_line(int i);
 void compute_hud_var(HudLine *hl);
 void hud_update_lines(short x, short *y, short xwid, short ywid);
-void hud_shutdown_lines(void);
 
 // --------------
 //  FUNCTIONS
@@ -169,7 +168,6 @@ void hud_delete_line(int i) {
 
 void compute_hud_var(HudLine *hl) {
     extern short shield_absorb_perc;
-    extern void second_format(int sec_remain, char *s);
 
     char *text = hudline_text[HUDLINE_TEXT(hl)];
     int len = strlen(text);
@@ -252,7 +250,6 @@ void compute_hud_var(HudLine *hl) {
 void hud_update_lines(short x, short *y, short unused1, short unused2) {
     int i;
     short use_x, use_y;
-    extern void strip_newlines(char *buf);
 
     for (i = 0; i < HUD_LINES; i++)
         if (hud_lines[i].mask & player_struct.hud_modes) {
@@ -495,11 +492,8 @@ ubyte targ_frame = NUM_TARG_FRAMES;
 
 #define TARG_COLOR 2
 
-void hud_do_objs(short xtop, short ytop, short xwid, short ywid, uchar reverse);
-
-void hud_do_objs(short xtop, short ytop, short unused1, short unused2, uchar reverse) {
+void hud_do_objs(short xtop, short ytop, short xwid, short ywid, uchar reverse) {
     int i;
-    extern ObjID beam_effect_id;
     // KLC   short a,b,c,d;
     // KLC   STORE_CLIP(a,b,c,d);
     PointSetNull(target_screen_rect.ul);

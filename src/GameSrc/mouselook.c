@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SDL.h>
 
+#include "leanmetr.h"
 #include "mouselook.h"
 #include "mouse.h"
 #include "player.h"
@@ -30,12 +31,6 @@ float mlook_hsens = 250;
 float mlook_vsens = 50;
 
 int mlook_vel_x, mlook_vel_y;
-
-extern void pump_events();
-extern void player_set_eye_fixang(int ang);
-extern void physics_set_relax(int axis, uchar relax);
-extern void player_set_eye(byte);
-extern byte player_get_eye();
 
 extern uchar game_paused;
 extern short mouseInstantX, mouseInstantY;

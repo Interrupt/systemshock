@@ -193,12 +193,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Prototypes
 
+void gamescr_bio_func(void);
+void diff_bio_func(void);
+
+
 // Draw the background for the biorhythm thing
 
 void status_bio_set(short bio_mode);
 void status_bio_init(void);
 void status_bio_start(void);
 void status_bio_end(void);
+void status_bio_update_screenmode();
 
 void status_bio_draw(void);
 extern void status_vitals_init();

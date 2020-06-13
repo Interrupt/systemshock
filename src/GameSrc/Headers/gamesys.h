@@ -85,6 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Includes
+#include "map.h"
 #include "objwpn.h"
 #include "objwarez.h"
 #include "schedtyp.h"
@@ -130,6 +131,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Run the game system for one frame
 errtype gamesys_run(void);
+
+void check_panel_ref(uchar puntme);
+void unshodanizing_callback(ObjID id, intptr_t user_data);
+
+void game_sched_init(void);
+void game_sched_free(void);
+
+void check_hazard_regions(MapElem *newElem);
+
+void expose_player(byte damage, ubyte type, ushort tsecs);
 
 // Globals
 extern Schedule game_seconds_schedule;

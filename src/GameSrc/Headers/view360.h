@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
+#include "mfdint.h"
+
 // render contexts for MFD and invent panels.
 #define NUM_360_CONTEXTS 3
 
@@ -39,3 +42,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern uchar view360_active_contexts[NUM_360_CONTEXTS]; // which contexts should actually draw
 extern uchar view360_context_views[NUM_360_CONTEXTS];   // which view is being shown by a given context
+
+void view360_init(void);
+void view360_shutdown(void);
+void mfd_view360_expose(MFD *mfd, ubyte control);
+uchar inv_is_360_view(void);
+void view360_update_screen_mode(void);
+void view360_render(void);
+void view360_setup_mode(uchar mode);
+void view360_restore_inventory(void);
+int view360_fullscrn_draw_callback(void *, void *vbm, int x, int y, int flg);
+void view360_turnon(uchar visible, uchar real_start);
+void view360_turnoff(uchar visible, uchar real_stop);
+bool view360_check(void);

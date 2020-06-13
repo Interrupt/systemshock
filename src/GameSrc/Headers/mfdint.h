@@ -179,7 +179,6 @@ extern errtype mfd_add_rect(short x, short y, short x1, short y1);
 extern void mfd_update_rects(MFD *m);
 extern ubyte mfd_get_func(ubyte mfd_id, ubyte s);
 
-extern char *get_free_frame_buffer_bits(int);
 #define MFD_EXTRACT_BUF (get_free_frame_buffer_bits(-1))
 
 // -------
@@ -193,17 +192,9 @@ extern ubyte mfd_string_shadow;
 #define MFD_SHADOW_ALWAYS     1
 #define MFD_SHADOW_FULLSCREEN 2
 
-#ifdef __NEWMFD_SRC
-grs_bitmap mfd_background;
-grs_canvas *pmfd_canvas;
-#endif
-#ifndef __NEWMFD_SRC
 extern grs_bitmap mfd_background;
 extern grs_canvas *pmfd_canvas;
-#endif
-#ifndef __NEWMFD_SRC
 extern uchar Flash;
-#endif
 
 // ------
 // Macros

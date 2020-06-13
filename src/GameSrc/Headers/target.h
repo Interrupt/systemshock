@@ -57,6 +57,14 @@ void mfd_target_expose(MFD *m, ubyte control);
 uchar mfd_target_handler(MFD *m, uiEvent *e);
 void toggle_current_target();
 
+void mfd_targetware_expose(MFD *mfd, ubyte control);
+uchar mfd_targetware_handler(MFD *m, uiEvent *e);
+
+void right_justify_num(char *num, int dlen);
+uchar iter_eligible_targets(ObjSpecID *sid);
+void select_closest_target(void);
+void toggle_current_target_backwards(void);
+
 // Globals
 
 #endif // __TARGET_H

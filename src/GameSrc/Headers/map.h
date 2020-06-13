@@ -337,13 +337,8 @@ typedef struct {
 #include "mapnorm.h"
 #endif
 
-#ifdef __MAP_SRC
-MapElem *global_map;
-FullMap *global_fullmap;
-#else
 extern MapElem *global_map;
 extern FullMap *global_fullmap;
-#endif
 
 FullMap *map_create(int xshf, int yshf, int zshf, uchar cyb);
 uchar map_set_default(FullMap *fmap);

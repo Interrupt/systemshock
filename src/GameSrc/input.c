@@ -36,15 +36,7 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "ShockBitmap.h"
 #include "InitMac.h"
 #include "Prefs.h"
-
-#if __profile__
-#include <Profiler.h>
-#endif
-
-#define __INPUT_SRC
-
 #include "input.h"
-
 #include "ai.h"
 #include "aiflags.h"
 #include "citres.h"
@@ -62,8 +54,11 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "gamestrn.h"
 #include "gr2ss.h"
 #include "grenades.h"
+#include "invent.h"
+#include "leanmetr.h"
 #include "MacTune.h"
 #include "mainloop.h"
+#include "movekeys.h"
 #include "objbit.h"
 #include "objects.h"
 #include "objload.h"
@@ -73,6 +68,7 @@ static char sbcopy[] = "Spaceball Interface Copyright 1994 Spaceball Technologie
 #include "otrip.h"
 #include "physics.h"
 #include "player.h"
+#include "rendtool.h"
 #include "game_screen.h"
 #include "svgacurs.h"
 #include "tools.h"
@@ -134,11 +130,6 @@ ubyte fatigue_threshold = 5;
 #define sqr(x) ((x) * (x))
 
 extern LGRect target_screen_rect;
-extern int fr_get_at_raw(frc *fr, int x, int y, uchar again, uchar transp);
-
-extern void mouse_unconstrain(void);
-
-char *get_object_lookname(ObjID id, char use_string[], int sz);
 
 extern uiSlab fullscreen_slab;
 extern uiSlab main_slab;
@@ -192,10 +183,6 @@ fix inpJoystickSens = FIX_UNIT;
 // checking for game paused
 extern uchar game_paused;
 
-#ifdef SVGA_SUPPORT
-extern uchar change_svga_mode(ushort keycode, uint32_t context, intptr_t data);
-#endif
-extern uchar toggle_bool_func(ushort keycode, uint32_t context, intptr_t thebool);
 LGPoint use_cursor_pos;
 
 #ifdef RCACHE_TEST
@@ -233,9 +220,6 @@ void handle_keyboard_fatigue(void);
 void poll_mouse(void);
 uchar eye_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
 
-void reload_motion_cursors(uchar cyber);
-void free_cursor_bitmaps();
-void alloc_cursor_bitmaps(void);
 
 int view3d_mouse_input(LGPoint pos, LGRegion *reg, uchar move, int *lastsect);
 void view3d_dclick(LGPoint pos, frc *fr, bool shifted);
@@ -250,7 +234,6 @@ uchar MacSkiplinesFunc(ushort keycode, uint32_t context, intptr_t data);
 
 //EXTERN FUNCTIONS
 
-extern uchar cycle_weapons_func(ushort keycode, uint32_t context, intptr_t data);
 
 // -------------
 // INPUT POLLING
@@ -325,9 +308,6 @@ void poll_mouse(void) {
 uchar checking_mouse_button_emulation = FALSE;
 uchar mouse_button_emulated = FALSE;
 
-uchar citadel_check_input(void);
-// HATE HATE HATE HATE
-
 uchar citadel_check_input(void) {
     if (uiCheckInput())
         return (TRUE);
@@ -370,9 +350,6 @@ uchar citadel_check_input(void) {
 }
 
 void input_chk(void) {
-    extern void setup_motion_polling(void);
-    extern void process_motion_keys(void);
-
     setup_motion_polling();
     view3d_got_event = FALSE;
     uiPoll();
@@ -921,8 +898,6 @@ uchar posture_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
 }
 
 uchar eye_hotkey_func(ushort keycode, uint32_t context, intptr_t data) {
-    extern void player_set_eye(byte);
-    extern byte player_get_eye(void);
     byte eyectl = player_get_eye();
     int r = 1 + (player_struct.drug_status[DRUG_REFLEX] > 0 && !global_fullmap->cyber);
 
@@ -976,13 +951,6 @@ static ushort eye_lvl_keys[] = {
 #define NUM_EYE_LVL_KEYS (sizeof(eye_lvl_keys) / sizeof(ushort))
 // -------------------------------------
 // INITIALIZATION
-extern errtype simple_load_res_bitmap_cursor(LGCursor *c, grs_bitmap *bmp, Ref rid);
-extern uchar unpause_game_func(ushort keycode, uint32_t context, intptr_t data);
-extern uchar keyhelp_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
-extern uchar demo_quit_func(ushort keycode, uint32_t context, intptr_t data);
-extern void init_side_icon_hotkeys(void);
-extern void init_invent_hotkeys(void);
-extern uchar toggle_view_func(ushort keycode, uint32_t context, intptr_t data);
 uchar toggle_profile(ushort keycode, uint32_t context, intptr_t data);
 #ifdef PLAYTEST
 extern uchar automap_seen(ushort keycode, uint32_t context, intptr_t data);
@@ -990,10 +958,6 @@ extern uchar maim_player(ushort keycode, uint32_t context, intptr_t data);
 extern uchar salt_the_player(ushort keycode, uint32_t context, intptr_t data);
 extern uchar give_player_hotkey(ushort keycode, uint32_t context, intptr_t data);
 extern uchar change_clipper(ushort keycode, uint32_t context, intptr_t data);
-#endif
-#ifndef PLAYTEST
-extern uchar version_spew_func(ushort keycode, uint32_t context, intptr_t data);
-extern uchar location_spew_func(ushort keycode, uint32_t context, intptr_t data);
 #endif
 
 #define ckpoint_input(val) Spew(DSRC_TESTING_Test0, ("ii %s @%d\n", val, *tmd_ticks));
@@ -1054,7 +1018,6 @@ void alloc_cursor_bitmaps(void)
 //extern bool gPlayingGame;
 extern bool DoubleSize;
 extern bool SkipLines;
-extern void change_svga_screen_mode(void);
 bool gShowFrameCounter = false;
 bool gShowMusicGlobals = false;
 
@@ -1838,7 +1801,6 @@ void view3d_rightbutton_handler(uiEvent *ev, LGRegion *r, view3d_data *data) {
 
 uchar check_object_dist(ObjID obj1, ObjID obj2, fix crit) {
     uchar retval = FALSE;
-    extern fix ID2radius(ObjID);
     fix critrad = ID2radius(obj2);
     fix dx = fix_from_obj_coord(objs[obj1].loc.x) - fix_from_obj_coord(objs[obj2].loc.x);
     fix dy = fix_from_obj_coord(objs[obj1].loc.y) - fix_from_obj_coord(objs[obj2].loc.y);
@@ -1859,14 +1821,11 @@ void use_object_in_3d(ObjID obj, bool shifted) {
     uchar success = FALSE;
     ObjID telerod = OBJ_NULL;
     uchar showname = FALSE;
-    extern uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj);
     extern ObjID physics_handle_id[MAX_OBJ];
     int mode = USE_MODE(obj);
     char buf[80];
     Ref usemode = ID_NULL;
     extern short loved_textures[];
-    extern char *get_texture_name(int, char *, int);
-    extern char *get_texture_use_string(int, char *, int);
 
     if (global_fullmap->cyber) {
         if (ID2TRIP(obj) != INFONODE_TRIPLE) {
@@ -1949,9 +1908,7 @@ void use_object_in_3d(ObjID obj, bool shifted) {
         if (objs[obj].obclass == CLASS_GRENADE)
             grenade_contact(obj, INT_MAX);
 
-        if (shifted)
-        {
-            extern void absorb_object_on_cursor(ushort keycode, uint32_t context, intptr_t data); //see invent.c
+        if (shifted) {
             absorb_object_on_cursor(0, 0, 0); //parameters unused
         }
         else
@@ -2009,7 +1966,6 @@ char *get_object_lookname(ObjID id, char use_string[], int sz) {
     int l;
     int usetrip = ID2TRIP(id);
     extern short loved_textures[];
-    extern char *get_texture_name(int, char *, int);
 
     strcpy(use_string, "");
 
@@ -2149,7 +2105,6 @@ void look_at_object(ObjID id) {
 // Not a directly-installed mouse handler, called from view3d_mouse_handler
 void view3d_dclick(LGPoint pos, frc *fr, bool shifted) {
     extern short loved_textures[];
-    extern char *get_texture_use_string(int, char *, int);
     extern uchar hack_takeover;
     short obj_trans, obj;
     frc *use_frc;
@@ -2291,7 +2246,6 @@ uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
                 look_at_object(id);
             } else if ((short)id < 0) {
                 extern short loved_textures[];
-                extern char *get_texture_name(int, char *, int);
                 int tnum = loved_textures[~id];
                 if (global_fullmap->cyber)
                     string_message_info(REF_STR_CybWall);
@@ -3340,8 +3294,6 @@ void install_motion_mouse_handler(LGRegion *r, frc *fr) {
     uiSetRegionDefaultCursor(r, NULL);
 }
 
-extern uchar motion_keycheck_handler(uiEvent *, LGRegion *, intptr_t);
-
 void install_motion_keyboard_handler(LGRegion *r) {
     int cid;
     uiInstallRegionHandler(r, UI_EVENT_KBD_POLL, motion_keycheck_handler, 0, &cid);
@@ -3355,8 +3307,6 @@ void pop_cursor_object(void) {
     uiPopSlabCursor(&main_slab);
     input_cursor_mode = INPUT_NORMAL_CURSOR;
 }
-
-extern void push_live_grenade_cursor(ObjID obj);
 
 void push_cursor_object(short obj) {
     LGPoint hotspot;

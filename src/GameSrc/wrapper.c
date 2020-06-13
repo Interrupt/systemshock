@@ -23,10 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/28 06:40:50 $
  */
 
-#define __WRAPPER_SRC
-
 #include <limits.h>
 
+#include "newmfd.h"
 #include "wrapper.h"
 #include "tools.h"
 #include "invent.h"
@@ -43,8 +42,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "musicai.h"
 #include "input.h"
 #include "gamestrn.h"
+#include "mfdext.h"
 #include "miscqvar.h"
 #include "cit2d.h"
+#include "rendtool.h"
+#include "sideicon.h"
+#include "sndcall.h"
 #include "sfxlist.h"
 #include "criterr.h"
 #include "gr2ss.h"
@@ -64,8 +67,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdart.h" // for the slider bar
 
 #include "MacTune.h"
-
-extern void text_button(char *text, int xc, int yc, int col, int shad, int w, int h);
 
 #define LOAD_BUTTON          0
 #define SAVE_BUTTON          1
@@ -114,22 +115,18 @@ int inp6d_curr_fov = 60;
 
 errtype music_slots();
 errtype wrapper_do_save();
-extern errtype inventory_clear(void);
 errtype wrapper_panel_close(uchar clear_message);
 errtype do_savegame_guts(uchar slot);
-void wrapper_start(void (*init)(void));
 void quit_verify_pushbutton_handler(uchar butid);
 uchar quit_verify_slorker(uchar butid);
 void save_verify_pushbutton_handler(uchar butid);
 uchar save_verify_slorker(uchar butid);
-errtype make_options_cursor(void);
 void free_options_cursor(void);
 
 void input_screen_init(void);
 void joystick_screen_init(void);
 void sound_screen_init(void);
 void soundopt_screen_init(void);
-void screenmode_screen_init(void);
 void video_screen_init(void);
 
 uint multi_get_curval(uchar type, void *p);
@@ -138,8 +135,6 @@ void multi_set_curval(uchar type, void *p, uint val, void *deal);
 extern LGCursor slider_cursor;
 extern grs_bitmap slider_cursor_bmap;
 extern char which_lang;
-
-extern void mouse_unconstrain(void);
 
 void options_screen_init(void);
 void wrapper_init(void);
@@ -1151,10 +1146,6 @@ errtype wrapper_panel_close(uchar clear_message) {
     uiCursorStack *cs;
     extern uiSlab *uiCurrentSlab;
     int i;
-    extern void mfd_force_update_single(int which_mfd);
-#ifdef SVGA_SUPPORT
-    extern errtype mfd_clear_all();
-#endif
 
     if (!wrapper_panel_on)
         return ERR_NOEFFECT;
@@ -1362,7 +1353,6 @@ void recompute_digifx_level(ushort vol) {
         if (!digi_fx_playing(SFX_NEAR_1, NULL))
             play_digi_fx(SFX_NEAR_1, 1);
         // update volume (main loop is not running at this point)
-        extern void sound_frame_update(void);
         sound_frame_update();
 #endif
     } else {
@@ -1376,7 +1366,6 @@ void recompute_digifx_level(ushort vol) {
 #ifdef AUDIOLOGS
 void recompute_audiolog_level(ushort vol) {
     curr_alog_vol = QVAR_TO_VOLUME(vol);
-    extern void sound_frame_update(void);
     sound_frame_update();
 }
 #endif
@@ -1598,9 +1587,6 @@ void language_change(uchar lang) {
     extern int string_res_file, mfdart_res_file;
     extern char *mfdart_files[];
     extern char *language_files[];
-    extern void invent_language_change(void);
-    extern void mfd_language_change(void);
-    extern void side_icon_language_change(void);
 
     ResCloseFile(string_res_file);
     ResCloseFile(mfdart_res_file);
@@ -1646,7 +1632,6 @@ void joysens_dealfunc(ushort joysens_qvar) {
 
 #pragma disable_message(202)
 void center_joy_go(uchar butid) {
-    extern uchar recenter_joystick(ushort keycode, uint32_t context, intptr_t data);
 
     // recenter_joystick(0,0,0);
     joystick_screen_init();
@@ -1684,7 +1669,6 @@ static void renderer_dealfunc(bool unused) {
 }
 
 void detail_dealfunc(uchar det) {
-    extern errtype change_detail_level(byte new_level);
 
     change_detail_level(det);
     uiHideMouse(NULL);
@@ -1732,8 +1716,6 @@ void headset_fov_dealfunc(int hackval) {
 
 #pragma disable_message(202)
 void olh_dealfunc(uchar olh) {
-    extern uchar toggle_olh_func(ushort keycode, uint32_t context, intptr_t data);
-
     toggle_olh_func(0, 0, 0);
 }
 #pragma enable_message(202)
@@ -2085,8 +2067,6 @@ uchar wrapper_options_func(ushort keycode, uint32_t context, intptr_t data) {
 // THE LOAD GAME SCREEN: Initialization, update funcs
 //
 
-extern void spoof_mouse_event();
-
 #pragma disable_message(202)
 void load_dealfunc(uchar butid, uchar index) {
     begin_wait();
@@ -2149,9 +2129,6 @@ void save_screen_init(void) {
 }
 
 void wrapper_start(void (*init)(void)) {
-    extern void reset_input_system(void);
-    extern errtype change_detail_level(byte new_level);
-
     if (wrapper_panel_on)
         return;
     inv_last_page = inventory_page;

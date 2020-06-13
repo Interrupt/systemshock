@@ -43,9 +43,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 
+#include "gr2ss.h"
 #include "mfdgadg.h"
 
-extern void mouse_unconstrain(void);
 uchar mfd_buttonarray_handlerproc(MFD *mfd, uiEvent *ev, MFDhandler *h);
 uchar mfd_slider_handler(MFD *mfd, uiEvent *ev, MFDhandler *h);
 

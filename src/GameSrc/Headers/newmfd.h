@@ -35,4 +35,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mfdext.h"
 
+void cap_mfds_with_func(uchar func, uchar max);
+void fullscreen_refresh_mfd(ubyte mfd_id);
+void mfd_change_fullscreen(uchar on);
+int mfd_choose_func(int my_func, int my_slot);
+errtype mfd_clear_all();
+void mfd_draw_button_panel(ubyte mfd_id);
+ubyte mfd_get_func(ubyte mfd_id, ubyte s);
+uchar mfd_scan_opacity(int mfd_id, LGPoint epos);
+errtype mfd_update_screen_mode();
+void mfd_zoom_rect(LGRect *start, int mfdnum);
+void mfd_language_change(void);
+
 #endif // NEWMFD_H

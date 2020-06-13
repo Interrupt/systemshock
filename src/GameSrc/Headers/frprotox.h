@@ -104,9 +104,9 @@ ushort fr_get_at(frc *view, int x, int y, uchar transp);
 
 //======== From frutil.c
 char *fr_get_frame_rate(void);
+ushort fr_get_again(frc *fr, int x, int y);
 
 //======== Externals to provide, initialized to dumb things
-#ifndef __FRSETUP_SRC
 extern int _fr_default_detail;
 extern int _fr_global_detail;
 extern void (*fr_mouse_hide)(void), (*fr_mouse_show)(void);
@@ -116,7 +116,6 @@ extern void (*fr_clip_start)(uchar headnorth);
 extern void (*fr_rend_start)(void);
 #ifdef __2D_H
 extern grs_bitmap *(*fr_get_tmap)(void);
-#endif
 #endif
 
 // default versions of above, defined in frsetup and set there

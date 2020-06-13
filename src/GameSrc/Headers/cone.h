@@ -67,10 +67,8 @@ uchar find_view_area(fix *cone_list, fix fix_floor, fix fix_roof, int *count, fi
 // run the cone clip and render it.
 void simple_cone_clip_pass(void);
 
-#ifndef __CONE_SRC
 extern fix span_lines[8];
 extern byte span_index[2];
 extern fix span_intersect[4];
-#endif
 
 #endif // __CONE_H

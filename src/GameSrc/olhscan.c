@@ -54,11 +54,6 @@ extern fauxrend_context *svga_render_context;
 #define FULL_SCAN_WID (FULL_VIEW_WIDTH / SCAN_RATIO)
 #define FULL_SCAN_HGT (FULL_VIEW_HEIGHT / SCAN_RATIO)
 
-void olh_init_single_scan(fauxrend_context **outxt, fauxrend_context *intxt);
-void olh_init_scan(void);
-void olh_free_scan(void);
-void olh_svga_deal(void);
-ushort olh_scan_objs(void);
 
 void olh_init_single_scan(fauxrend_context **outxt, fauxrend_context *intxt) {
     uchar *mem = ((grs_canvas *)fr_get_canvas(intxt))->bm.bits;

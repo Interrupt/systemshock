@@ -60,6 +60,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Prototypes
 
+void update_level_gametime(void);
+
 // Increment game time by one frame
 errtype update_state(uchar run_time);
 

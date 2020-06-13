@@ -25,8 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Source code for the Citadel Screen routines
 
-#define __SCREEN_SRC
-
+#ifdef SVGA_SUPPORT
+#include "fullscrn.h"
+#endif
+#include "frcursors.h"
 #include "game_screen.h"
 #include "tools.h"
 #include "gamescr.h"
@@ -40,6 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gr2ss.h"
 #include "invent.h"
 #include "invdims.h"
+#include "leanmetr.h"
+#include "wrapper.h"
 #include "Shock.h"
 
 /*
@@ -78,10 +82,15 @@ LGRegion mv_region_data, msg_region_data, status_region_data;
 uiSlab main_slab;
 LGRegion *msg_region;
 
+uchar *default_font_buf;
+LGRegion *root_region, *mainview_region, *status_region, *inventory_region_game;
+LGRegion *pagebutton_region_game;
+LGCursor globcursor, wait_cursor, fire_cursor;
+frc *normal_game_fr_context;
+
 errtype _screen_init_mouse(LGRegion *r, uiSlab *slab, uchar do_init);
 errtype _screen_background(void);
 
-extern void mouse_unconstrain(void);
 byte pal_shf_id;
 LGCursor vmail_cursor;
 
@@ -92,7 +101,6 @@ LGRegion root_region_data;
 LGRegion *root_region = &root_region_data;
 
 // prototypes
-errtype load_misc_cursors(void);
 
 void generic_reg_init(uchar create_it, LGRegion *reg, LGRect *rct, uiSlab *slb, uiHandlerProc key_h,
                       uiHandlerProc maus_h) {
@@ -114,8 +122,6 @@ void generic_reg_init(uchar create_it, LGRegion *reg, LGRect *rct, uiSlab *slb, 
 // Initialize the main game screen and draw it's initial state
 LGRect mainview_rect;
 errtype screen_init(void) {
-    extern void init_posture_meters(LGRegion *, bool);
-    extern errtype wrapper_create_mouse_region(LGRegion *);
     extern LGRegion *fullview_region;
     int callid;
     extern void (*ui_mouse_convert)(short *px, short *py, uchar down);
@@ -210,11 +216,7 @@ errtype screen_init(void) {
 extern void game_redrop_rad(int rad_mod);
 
 void screen_start() {
-    extern errtype load_da_palette();
     extern LGRegion *pagebutton_region, *inventory_region;
-#ifdef SVGA_SUPPORT
-    extern void change_svga_screen_mode();
-#endif
 
     /*  Not yet
        // Check the config system to see if time should automatically be running
@@ -244,11 +246,7 @@ void screen_start() {
 #endif
 
     CaptureMouse(true);
-
-    extern void SetMotionCursorForMouseXY(void);
     SetMotionCursorForMouseXY();
-
-    return;
 }
 
 void screen_exit() {
@@ -263,8 +261,6 @@ void screen_exit() {
 
 #ifdef SVGA_SUPPORT
     if ((_new_mode != GAME_LOOP) && (_new_mode != FULLSCREEN_LOOP)) {
-        extern void change_svga_cursors();
-        extern void status_bio_update_screenmode();
 
         s_table = gr_get_light_tab();
         gr_get_pal(0, 256, &cur_pal[0]);
@@ -303,7 +299,6 @@ void screen_exit() {
 // that is handled by direct calls from the main loop
 
 errtype screen_draw(void) {
-    extern void update_meters(bool);
     // Just go through and draw all the component parts....
     // In theory, they should all be clever enough to redraw
     // efficiently.  Alternatively, this should only be called
@@ -390,7 +385,6 @@ errtype load_misc_cursors(void) {
 }
 
 errtype _screen_init_mouse(LGRegion *r, uiSlab *slab, uchar do_init) {
-    extern errtype ui_init_cursors(void);
 
     ui_init_cursors(); // KLC - do this here, take out of uiInit.
     load_misc_cursors();

@@ -30,15 +30,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "weapons.h"
 #include "damage.h"
+#include "hand.h"
+#include "hudobj.h"
 #include "objclass.h"
 #include "objprop.h"
 #include "objwpn.h"
 #include "player.h"
+#include "sdl_events.h"
 #include "gameloop.h"
 #include "objsim.h"
 #include "gamestrn.h"
 #include "newmfd.h"
+#include "mfdfunc.h"
 #include "musicai.h"
+#include "rendtool.h"
 #include "combat.h"
 #include "sfxlist.h"
 #include "tools.h"
@@ -74,15 +79,12 @@ uchar muzzle_fire_light;
 short mouse_attack_x = -1;
 short mouse_attack_y = -1;
 
-extern void weapon_mfd_for_reload(void);
-
 //----------------
 //  Internal Prototypes
 //----------------
-uchar does_weapon_overload(int type, int subtype);
 void weapon_properties(int triple, ubyte *damage_modifier, ubyte *offense);
 ObjID do_effect_fix(ObjID owner, ubyte effect, ubyte start, Combat_Pt effect_point, short location);
-ObjID do_wall_hit(Combat_Pt *hit_point, Combat_Pt vector, int triple, short mouse_x, short mouse_y, uchar do_effect);
+ObjID do_wall_hit(Combat_Pt *hit_point, Combat_Pt pt, int triple, short mouse_x, short mouse_y, uchar do_effect);
 uchar player_fire_handtohand(LGPoint *pos, ubyte slot, ObjID *what_hit, int gun_triple);
 uchar decrease_ammo(ubyte slot, int shots);
 uchar player_fire_projectile(LGPoint *pos, LGRegion *r, ubyte slot, int gun_triple);
@@ -91,11 +93,9 @@ uchar player_fire_energy(LGPoint *pos, ubyte slot, int gun_triple);
 uchar player_fire_slow_projectile_weapon(LGPoint *pos, ubyte slot, int gun_triple);
 uchar player_fire_energy_proj(LGPoint *pos, ubyte slot, int gun_triple);
 uchar fire_player_software(LGPoint *pos, LGRegion *r, uchar pull);
-void unload_current_weapon(void);
 void check_temperature(weapon_slot *ws, uchar clear);
 uchar reload_current_weapon(void);
 uchar reload_weapon_hotkey(ushort keycode, uint32_t context, intptr_t data);
-uchar ready_to_draw_handart(void);
 
 // -------------------------------------------------
 // does_weapon_overload()
@@ -207,7 +207,6 @@ ObjID do_effect_fix(ObjID owner, ubyte effect, ubyte start, Combat_Pt effect_poi
 ObjID do_wall_hit(Combat_Pt *hit_point, Combat_Pt pt, int triple, short mouse_x, short mouse_y, uchar do_effect) {
     ubyte effect = 0;
     ObjID id = OBJ_NULL;
-    extern ushort fr_get_at_raw(frc * fr, int x, int y, uchar again, uchar transp);
     ObjID efft;
 
     // you know this should all be changed, so change it when
@@ -253,8 +252,6 @@ ObjID do_wall_hit(Combat_Pt *hit_point, Combat_Pt pt, int triple, short mouse_x,
             if (efft && (TRIP2CL(triple) == CLASS_GUN)) {
                 if (TRIP2SC(triple) == GUN_SUBCLASS_BEAM) {
                     extern ObjID beam_effect_id;
-                    extern void hudobj_set_id(short id, uchar val);
-
                     beam_effect_id = efft;
                     hudobj_set_id(beam_effect_id, TRUE);
                 }
@@ -286,8 +283,6 @@ ObjID do_wall_hit(Combat_Pt *hit_point, Combat_Pt pt, int triple, short mouse_x,
 // ---------------------------------------------------------------------------
 // player_fire_handtohand()
 //
-
-extern void get_phys_state(int ph, State *new_state, ObjID id);
 
 uchar player_fire_handtohand(LGPoint *p, ubyte slot, ObjID *what_hit, int gun_triple) {
     fix attack_mass;
@@ -1237,8 +1232,6 @@ void cool_off_beam_weapons(void) {
             }
         }
     }
-
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -1272,7 +1265,6 @@ void randomize_cursor_pos(LGPoint *cpos, LGRegion *reg, ubyte p)
   {
     mouse_put_xy(x, y);
 
-    extern void set_mouse_chaos(short dx, short dy); //see sdl_events.c
     set_mouse_chaos(dx, dy);
   }
 }
@@ -1402,7 +1394,6 @@ void SetMotionCursorsColorForActiveWeapon(void)
 //
 
 void change_selected_weapon(int new_weapon) {
-    extern void reset_handart_count(int wpn);
 
     if (global_fullmap->cyber)
         return;

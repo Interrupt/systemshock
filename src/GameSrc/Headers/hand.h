@@ -48,5 +48,7 @@ extern ubyte weapon_to_handart[NUM_GUN];
 
 Ref get_handart(int *x_offset, int *y_offset, int *beam_x_offset, short mouse_x, short mouse_y);
 void notify_draw_handart(void);
+void reset_handart_count(int wpn_num);
+
 
 #endif // __HAND_H

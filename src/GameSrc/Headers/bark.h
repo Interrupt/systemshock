@@ -35,6 +35,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
  */
+#ifndef BARK_H
+#define BARK_H
 
 #include "mfdint.h" // for MFD struct
 
@@ -47,5 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define mfd_bark_color (player_struct.mfd_func_data[MFD_BARK_FUNC][sizeof(int) + sizeof(ObjID)])
 #define mfd_bark_mug (player_struct.mfd_func_data[MFD_BARK_FUNC][sizeof(int) + sizeof(ObjID) + sizeof(uchar)])
 
-extern void mfd_bark_expose(MFD *mfd, ubyte control);
-extern void long_bark(ObjID speaker_id, uchar mug_id, int string_id, ubyte color);
+void mfd_bark_expose(MFD *mfd, ubyte control);
+void long_bark(ObjID speaker_id, uchar mug_id, int string_id, ubyte color);
+
+#endif

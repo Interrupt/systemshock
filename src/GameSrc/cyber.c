@@ -34,6 +34,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "hkeyfunc.h"
 #include "rendfx.h"
 #include "gr2ss.h"
+#include "drugs.h"
+#include "init.h"
+#include "musicai.h"
+#include "saveload.h"
+#include "wares.h"
 
 #define FIRST_CSPACE_LEVEL 14
 #define MIN_CSPACE_EXIT_HP 10
@@ -49,14 +54,10 @@ uint32_t time_until_shodan_avatar = 0;
 
 ObjID cspace_decoy_obj = OBJ_NULL;
 ObjLoc recall_objloc;
-extern void turbo_turnoff(uchar visible, uchar real);
-extern void decoy_turnoff(uchar visible, uchar real);
 
 ulong cspace_effect_times[NUM_CS_EFFECTS] = {0, 0, 0};
 ulong cspace_effect_durations[NUM_CS_EFFECTS] = {CIT_CYCLE * 30, CIT_CYCLE * 15, CIT_CYCLE};
 void (*cspace_effect_turnoff[])(uchar visible, uchar real) = {turbo_turnoff, decoy_turnoff, NULL};
-
-errtype early_exit_cyberspace_stuff();
 
 uchar cyber_nodie = FALSE;
 // FILE *gCyberHdl;
@@ -66,15 +67,10 @@ errtype check_cspace_death() {
         if (player_struct.cspace_hp == 1)
             hud_set(HUD_CYBERDANGER);
         else if (player_struct.cspace_hp == 0) {
-            extern errtype go_to_different_level(int targlevel);
-
             // If we're in endgame mode, we lose.
             if (shodan_bitmask != NULL) {
-                errtype trap_hack_func(int p1, int p2, int p3, int p4);
-                extern void begin_shodan_conquer_fx(uchar begin);
                 extern char thresh_fail;
                 if (!cyber_nodie) {
-                    extern errtype mai_player_death();
                     cyber_nodie = TRUE;
                     mai_player_death();
                     time_until_shodan_avatar = player_struct.game_time + (CIT_CYCLE * 8);
@@ -109,15 +105,7 @@ errtype check_cspace_death() {
 }
 
 MFD_Status status_back[MFD_NUM_REAL_SLOTS];
-
-extern void hardware_closedown(uchar visible);
-extern void hardware_startup(uchar visible);
-
 int old_loop;
-
-extern void drug_closedown(bool visible);
-extern void drug_startup(bool visible);
-extern void shock_alloc_ipal();
 
 errtype enter_cyberspace_stuff(char dest_lev) {
     int i;

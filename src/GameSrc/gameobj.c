@@ -26,10 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <string.h> // for memset
 
-#include "frcamera.h"
+#include "effect.h"
 #include "gameobj.h"
 
 #include "fr3d.h"
+#include "frcamera.h"
 #include "frintern.h"
 #include "frtables.h"
 
@@ -40,12 +41,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "citres.h"
 #include "objsim.h"
 #include "objprop.h"
+#include "objuse.h"
 #include "objclass.h"
 #include "hudobj.h"
 #include "otrip.h"
 #include "textmaps.h"
 #include "gettmaps.h"
 #include "objbit.h"
+#include "rendtool.h"
 
 #include "frflags.h"
 
@@ -77,13 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define MAX_VCOLORS NUM_SLOW_VCOLORS
 
-// should get this into headers
-extern grs_bitmap *get_text_bitmap_obj(ObjID cobjid, char dest_type, char *scale);
-// extern Ref ref_from_critter_data(ObjID oid, int triple, ubyte posture, ubyte frame, ubyte view);
-
 extern int (*g3_tmap_func)(int n, g3s_phandle *vp, grs_bitmap *bm);
-
-extern int fr_n_3d_models;
 
 extern MapElem *_fdt_mptr;
 
@@ -108,7 +105,6 @@ void draw_ice(void);
 void draw_ice_wall(void);
 void _fr_draw_tmtile(grs_bitmap *draw_bm, int col_val, g3s_phandle *plst, uchar dblface, uchar use_lighting);
 void _fr_draw_bitmap(grs_bitmap *draw_bm, int dist, int sc, int anch_x, int anch_y);
-short compute_3drep(Obj *cobj, ObjID cobjid, int obj_type);
 
 int munge_val(int val, int range, int delta) {
     int base = range - delta;
@@ -639,12 +635,8 @@ void _fr_draw_bitmap(grs_bitmap *draw_bm, int dist, int sc, int anch_x, int anch
 
 #define SECRET_FURNITURE_DEFAULT_O3DREP 0x80
 
-extern char extract_object_special_color(ObjID id);
-
 short compute_3drep(Obj *cobj, ObjID cobjid, int obj_type) {
     short o3drep = -1;
-    extern uchar anim_data_from_id(ObjID, bool *, bool *);
-    extern uchar obj_is_display(int triple);
 
     // fix for screens with data2 of zero wanting to animate,
     // and other bigstuffs presumbably wanting to use it as a default.
@@ -688,9 +680,6 @@ short compute_3drep(Obj *cobj, ObjID cobjid, int obj_type) {
 #define TRANSLUCENT_INVISOS
 //#define TLUC_IN_2D
 
-extern void load_model_vtexts(char model_num);
-extern void free_model_vtexts(char model_num);
-
 // in effect.c also
 #define MAX_TELEPORT_FRAME 10
 #define TELEPORT_COLOR 0x1C
@@ -718,8 +707,6 @@ void show_obj(ObjID cobjid) {
     int obj_type, tluc_val = 0xFF, index = 0, loc_h;
     uchar light_me = TRUE;
     extern cams objmode_cam;
-    extern uchar obj_too_smart(ObjID id);
-    extern void check_up(int num);
 
 //   check_up(0x220000|cobjid);
 //   mprintf("cobjid = %x\n",cobjid);
@@ -920,8 +907,7 @@ void show_obj(ObjID cobjid) {
         case LG_CRT_TRIPLE:
         case SECURE_CONTR_TRIPLE: {
             extern grs_bitmap tmap_bm[];
-            extern grs_bitmap *obj_get_model_data(ObjID id, fix * x, fix * y, fix * z, grs_bitmap * bm2, Ref * ref1,
-                                                  Ref * ref2);
+
             grs_bitmap *b1, b2;
             Ref ref1 = 0, ref2 = 0;
             fix fx, fy, fz;

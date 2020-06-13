@@ -43,38 +43,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
-#define __AMAP_SRC
-
+#include "cit2d.h"
+#include "colors.h"
+#include "cybstrng.h"
+#include "frquad.h"
+#include "gamescr.h"
+#include "gamestrn.h"
+#include "gr2ss.h"
+#include "lvldata.h"
 #include "map.h"
 #include "mapflags.h"
-#include "tilename.h"
-#include "frquad.h"
-#include "colors.h"
-#include "rcolors.h"
+#include "musicai.h"
+#include "objbit.h"
+#include "objgame.h"
 #include "objprop.h"
 #include "objuse.h"
-#include "objgame.h"
-#include "objbit.h"
 #include "otrip.h"
 #include "player.h"
+#include "rcolors.h"
 #include "refstuf.h"
-
-// and now, for objects
-#include "lvldata.h"
-#include "tools.h"
-#include "cybstrng.h"
-#include "gamestrn.h"
-#include "gamescr.h"
-#include "cit2d.h"
-#include "musicai.h"
-
-#include "gr2ss.h"
+#include "tilename.h"
 
 #define FMK_INT_XX (FMK_INT_NW || FMK_INT_SW || FMK_INT_EW || FMK_INT_WW)
 #define FMK_INT_INT (1 << 8)
 
-// actual dimensions of a typical monitor,
-// for calculating pixel ratio.
+// actual dimensions of a typical monitor, for calculating pixel ratio.
 #define STD_SCR_WID 11
 #define STD_SCR_HGT 8
 
@@ -142,7 +135,6 @@ int pixratio_shf = 0;
 //-------------------
 // Prototypes
 //-------------------
-void amap_version_set(int id, int new_ver);
 void obj_draw(int xm, int ym, Obj *cobj, int tsize, int so, int color);
 void line_draw(int xm, int ym, Obj *cobj, int tsize, int full, int color);
 void obj_mess(curAMap *amptr, MapElem *curmp, int drw, int xm, int ym, int tsize, int pass);
@@ -151,12 +143,10 @@ void tile_draw(int xm, int ym, int tiletype, int size, int offs, int color);
 void wall_draw(int xm, int ym, int wallcode, int size, MapElem *cur);
 void draw_radius_obj(curAMap *amptr, short OtoF, int col, int zeroscrx, int zeroscry, int rad);
 void draw_full_obj(curAMap *amptr, short OtoF, int col, int zeroscrx, int zeroscry);
-void amap_pixratio_set(fix ratio);
 void *amap_loc_to_sq(curAMap *amptr, int *x, int *y);
 ObjID amap_loc_get_note(void *map_sq);
 ObjID amap_loc_note_check(curAMap *amptr, void *curmp, int *x, int *y, int *to_do);
 void amap_fixup_existing(int tolera, int delta);
-grs_bitmap *screen_automap_bitmap(char which_amap);
 
 // for now, create a default automap thingy
 void amap_version_set(int id, int new_ver) {

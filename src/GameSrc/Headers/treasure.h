@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
+// You got nothing. Zero.
 #define NOTHING_TRIPLE 0xFFFFFFFF
 #define NUM_TREASURE_TYPES 15
 #define NUM_TREASURE_SLOTS 7
 #define NUM_TREASURE_ENTRIES 2
 
-#ifndef __AI_SRC
 extern int treasure_table[NUM_TREASURE_TYPES][NUM_TREASURE_SLOTS][NUM_TREASURE_ENTRIES];
-#endif

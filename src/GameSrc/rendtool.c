@@ -26,12 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *  support for render functions and tools, such as mouse and so on
  */
 
-#define __RENDTOOL_SRC
-
 #include "map.h"
 #include "frintern.h"
 #include "fullscrn.h"
-
+#include "gamerend.h"
 #include "textmaps.h"
 #include "gettmaps.h"
 
@@ -65,6 +63,62 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "curdat.h"
 
+// pain, stupidity, yes
+char model_vtext_data[] = {
+    29, -1,
+    21, 15, 16, -1,
+    37, 15, 21, -1,
+    38, 3, -1,
+    39, -1,
+    21, -1,
+    21, -1,
+    1, 2, 3, 4, -1,
+    23, 21, 16, -1,
+    25, 47, -1,
+    9, 48, -1,
+    40, 49, -1,
+    49, -1,
+    22, 21, -1,
+    5, 7, -1,
+    50, -1,
+    7, -1,
+    5, 7, 8, -1,
+    10, 11, 15, 16, 21, -1,
+    0, -1,
+    13, 15, 46, -1,
+    18, 19, -1,
+    0, 26, -1,
+    8, 28, 7, -1,
+    20, 15, -1,
+    1, 21, 39, -1,
+    18, 21, -1,
+    12, -1,
+    41, 39, 2, 15, 6, 21, -1,
+    8, -1,
+    10, 11, 12, 13, 21, -1,
+    14, 15, 16, 17, -1,
+    26, -1,
+    0, -1,
+    0, -1,
+    0, -1,
+    0, -1,
+    0, -1,
+    36, -1,
+    24, -1,
+    0, -1,
+    0, -1,
+    0, -1,
+    0, -1,
+    0, -1,
+    0, -1,
+    0, -1,
+    0, -1,
+    0, -1,
+    17, 32, 21, -1,
+    43, -1,
+    -1,
+};
+
 
 LGRect *rendrect;
 extern fauxrend_context *_fr;
@@ -89,14 +143,7 @@ grs_bitmap *game_fr_tmap_full(void);
 void game_rend_start(void);
 void game_fr_clip_start(uchar headnorth);
 
-void game_redrop_rad(int rad_mod);
-void change_detail_level(byte new_level);
-void set_global_lighting(short l_lev);
 void fauxrend_camera_setfunc(TileCamera *tc);
-void rendedit_process_tilemap(FullMap *fmap, LGRect *r, uchar newMap);
-ushort fr_get_at_raw(frc *fr, int x, int y, uchar again, uchar transp);
-void load_model_vtexts(char model_num);
-void free_model_vtexts(char model_num);
 
 // Note that I have fixed this so that the cursor does not flicker.
 // It just works.  Note its simplistic beauty.	I love this job.
@@ -253,8 +300,6 @@ int game_fr_idx(void) { return _game_fr_tmap; }
 
 extern g3s_phandle _fdt_tmppts[8]; /* these are used for all temporary point sets */
 
-uchar draw_tmap_p(int ptcnt);
-
 // should i draw this texture/map/so on
 uchar draw_tmap_p(int ptcnt) {
     // JAEMZ JAEMZ JAEMZ JAEMZ
@@ -370,8 +415,6 @@ void game_fr_clip_start(uchar headnorth) {
     }
 }
 
-extern int gamesys_draw_func(void *dest_canvas, void *dest_bm, int x, int y, int flags);
-extern void gamesys_render_func(void *dest_bitmap, int flags);
 
 /*KLC - no longer used here
 // new regieme, has gruesome hacks for memory saving....
@@ -472,7 +515,6 @@ void fauxrend_camera_setfunc(TileCamera *tc) {
 // Like fr_get_at, but takes real screen coordinates.
 ushort fr_get_at_raw(frc *fr, int x, int y, uchar again, uchar transp) {
     extern fauxrend_context *_sr;
-    extern ushort fr_get_again(frc * fr, int x, int y);
     _fr_top(fr);
     if (again)
         return fr_get_again(_fr, x - _fr->xtop, y - _fr->ytop);

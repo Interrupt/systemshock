@@ -61,7 +61,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Prototypes
 
+errtype set_posture_safe(ObjSpecID osid, ubyte new_pos);
+errtype set_posture_movesafe(ObjSpecID osid, ubyte new_pos);
+errtype clear_critter_controls(ObjSpecID osid);
+errtype apply_EDMS_controls(ObjSpecID osid);
+errtype roll_on_dnd_treasure_tables(int *pcont, char treasure_type);
+
 // External Functions:
+
 // Let all the AI system spend time figuring out what to do.  Those AIs that know what they are doing,
 // do it, others plan, the time load is hopefully distributed as nicely as possible
 errtype ai_run(void);
@@ -75,6 +82,9 @@ errtype ai_critter_really_dead(ObjSpecID osid);
 
 // actually do attack
 errtype ai_attack_player(ObjSpecID osid, char a);
+
+errtype ai_fire_special(ObjID src, ObjID target, int proj_triple, ObjLoc src_loc, ObjLoc target_loc, uchar a,
+                        int duration);
 
 // Change a critter's posture, and do appropriate
 // things to other anim variables

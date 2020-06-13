@@ -19,20 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __INIT_H
 #define __INIT_H
 
-#define MAX_MODELS 80
-#define MAX_MATERIALS 64
-
-#ifndef __INIT_SRC
-extern char num_materials;
-#ifdef __2D_H
-extern grs_bitmap material_maps[MAX_MATERIALS];
-#endif
-#endif
-
 // init.h
 extern void init_all(void);
 extern void free_all(void);
 extern uchar ppall[]; // pointer to main shadow palette
+
+extern void shock_alloc_ipal();
+
+errtype load_da_palette(void);
 
 void object_data_flush(void);
 errtype object_data_load(void);

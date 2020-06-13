@@ -72,22 +72,6 @@ uchar view360_render_on = FALSE;
 short view360_last_update = 0;
 uchar view360_is_rendering = FALSE;
 
-// ---------
-// INTERNALS
-// ---------
-void view360_setup_mode(uchar mode);
-void view360_restore_inventory(void);
-int view360_fullscrn_draw_callback(void *, void *vbm, int x, int y, int flg);
-uchar inv_is_360_view(void);
-void view360_init(void);
-void view360_shutdown(void);
-void view360_update_screen_mode(void);
-void view360_render(void);
-void mfd_view360_expose(MFD *mfd, ubyte control);
-void view360_turnon(uchar visible, uchar real_start);
-void view360_turnoff(uchar visible, uchar real_stop);
-bool view360_check(void);
-
 // Set up/turn on all contexts & cameras for the specified mode.
 void view360_setup_mode(uchar mode) {
     ubyte version = player_struct.hardwarez[CPTRIP(SENS_HARD_TRIPLE)];
@@ -124,7 +108,6 @@ void view360_setup_mode(uchar mode) {
 
 void view360_restore_inventory() {
     if (_current_loop == GAME_LOOP) {
-        extern void inv_change_fullscreen(uchar on);
         chg_set_flg(INVENTORY_UPDATE);
         inv_change_fullscreen(full_game_3d);
         view360_message_obscured = FALSE;
@@ -318,7 +301,7 @@ void mfd_view360_expose(MFD *mfd, ubyte control) { ACTIVE[mfd->id] = control; }
 #define VIEW_MODE(s) (((s)&MODE_MASK) >> MODE_SHF)
 #define VIEW_MODE_SET(s, v) ((s) = ((s) & ~MODE_MASK) | ((v) << MODE_SHF))
 
-void view360_turnon(uchar visible, uchar real_stop) {
+void view360_turnon(uchar visible, uchar real_start) {
     uint8_t s = player_struct.hardwarez_status[HARDWARE_360];
 
     if (visible) {

@@ -79,7 +79,10 @@ uchar amap_flags(curAMap *amptr, int flags, int set);                  // set -1
 uchar amap_zoom(curAMap *amptr, uchar set, int zoom_delta);
 void amap_pan(curAMap *amptr, int dir, int *dist);
 uchar amap_get_note(curAMap *amptr, char *buf);
+void amap_pixratio_set(fix ratio);
 void amap_settings_copy(curAMap *from, curAMap *to);
+
+grs_bitmap *screen_automap_bitmap(char which_amap);
 
 // this is a mess
 // it modifies x and y to be map location of click

@@ -26,8 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <string.h>
 
+#include "ai.h"
 #include "amap.h"
 #include "audiolog.h"
+#include "bark.h"
 #include "criterr.h"
 #include "cyber.h"
 #include "cybstrng.h"
@@ -35,6 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "diffq.h"
 #include "doorparm.h"
 #include "effect.h"
+#include "email.h"
 #include "faketime.h"
 #include "fullscrn.h"
 #include "gamestrn.h"
@@ -45,6 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "invent.h"
 #include "mainloop.h"
 #include "mapflags.h"
+#include "mfdfunc.h"
+#include "mfdgump.h"
 #include "mfdpanel.h"
 #include "musicai.h"
 #include "newmfd.h"
@@ -54,6 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objstuff.h"
 #include "objuse.h"
 #include "otrip.h"
+#include "physics.h"
 #include "player.h"
 #include "render.h"
 #include "saveload.h"
@@ -67,11 +73,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define MFD_FIXTURE_FLAG 0x8 // class flag for mfd fixtures
 
-extern void mfd_setup_elevator(ushort levmask, ushort reachmask, ushort curlevel, uchar special);
-extern void mfd_setup_keypad(char special);
-extern void save_mfd_slot(int mfd_id);
-extern void restore_mfd_slot(int mfd_id);
-extern short qdata_get(short qdata);
 errtype accesspanel_trigger(ObjID id);
 
 // -----------
@@ -82,18 +83,9 @@ int grab_and_zoom_mfd(int mfd_func, int mfd_slot, bool shifted);
 errtype obj_access_fail_message(int stringref, char access_level, char offset);
 uchar really_really_locked(int qvar);
 uchar use_door(ObjID id, uchar in_inv, ObjID cursor_obj);
-uchar obj_too_smart(ObjID id);
 void container_check(ObjID obj, char *count, ObjID *pidlist);
-char container_extract(ObjID *pidlist, int d1, int d2);
-void container_stuff(ObjID *pidlist, int numobjs, int *d1, int *d2);
-uchar is_container(ObjID id, int **d1, int **d2);
 uchar obj_fixture_zoom(ObjID id, uchar in_inv, uchar *messagep);
-errtype obj_tractor_beam_func(ObjID id, uchar on);
-errtype gear_power_outage();
-void unmulti_anim_callback(ObjID id, intptr_t user_data);
-errtype obj_screen_animate(ObjID id);
 uchar obj_keypad_crunch(int p, uchar digits[]);
-errtype keypad_trigger(ObjID id, uchar digits[]);
 uchar try_use_epick(ObjID panel, ObjID cursor_obj);
 ObjID door_in_square(ObjLoc *loc, uchar usable);
 void regenetron_door_hack();
@@ -110,7 +102,6 @@ void zoom_mfd(int mfd, bool shifted) {
     extern LGPoint use_cursor_pos;
     LGPoint ucp;
 
-    extern void mfd_zoom_rect(LGRect *, int);
     extern bool DoubleSize;
 
     if (!shifted)
@@ -139,7 +130,7 @@ errtype obj_access_fail_message(int stringref, char access_level, char offset) {
 
 // dir true for door_closing
 uchar door_moving(ObjID door, uchar dir) {
-    uchar anim_data_from_id(ObjID id, bool *reverse, bool *cycle);
+    //uchar anim_data_from_id(ObjID id, bool *reverse, bool *cycle);
 
     bool moving, closing;
 
@@ -148,7 +139,6 @@ uchar door_moving(ObjID door, uchar dir) {
 }
 
 #define COMPAR_ESC_ACCESS 0xFF
-extern uchar comparator_check(int comparator, ObjID obj, uchar *special_code);
 
 uchar door_locked(ObjID obj) {
     ObjSpecID spec = objs[obj].specID;
@@ -196,7 +186,7 @@ uchar really_really_locked(int qvar) { return (qvar == 0x5E || qvar == 0xE7); }
 //      and should be used by anyone other than the player trying
 //      to use the door.
 //
-uchar use_door(ObjID id, uchar in_inv, ObjID cursorObj) {
+uchar use_door(ObjID id, uchar in_inv, ObjID cursor_obj) {
     uchar retval = FALSE;
     uchar play_fx = FALSE;
     uchar use_card = FALSE;
@@ -524,8 +514,6 @@ errtype obj_tractor_beam_func(ObjID id, uchar on) {
 }
 
 errtype gear_power_outage() {
-    extern errtype obj_tractor_beam_func(ObjID id, uchar on);
-
     ObjID obj;
     char i;
     for (i = 0; i < NUM_GENERAL_SLOTS; i++) {
@@ -562,7 +550,6 @@ uchar try_use_epick(ObjID panel, ObjID cursor_obj) {
 }
 
 #define PLASTIQUE_TIME 10
-extern void remove_general_item(ObjID obj);
 extern bool gKeypadOverride;
 
 bool ObjectUseShifted = FALSE; //set if shift key was held when using object
@@ -575,12 +562,9 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
     char i;
     ObjSpecID osid;
     uchar special;
-    extern errtype do_random_loot(ObjID corpse);
     extern char camera_map[NUM_HACK_CAMERAS];
     extern ObjID hack_cam_objs[NUM_HACK_CAMERAS];
     extern ubyte next_text_line;
-    extern errtype inventory_draw_new_page(int num);
-    extern void read_email(Id new_base, int num);
     int *d1, *d2;
     bool shifted;
 
@@ -590,9 +574,6 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
     // First, the multi-class behavior objects
     if (is_container(id, &d1, &d2)) {
         int mfd;
-        extern uchar gump_get_useful(bool shifted);
-        extern void gump_clear(void);
-
         if (id == player_struct.panel_ref && object_on_cursor == 0) {
             gump_get_useful(shifted);
             return TRUE;
@@ -621,7 +602,6 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
 
     if (global_fullmap->cyber) {
         uchar did_something = FALSE;
-        extern void long_bark(ObjID speaker_id, uchar mug_id, int string_id, ubyte color);
         switch (ID2TRIP(id)) {
         case CYBERHEAL_TRIPLE:
             if (player_struct.cspace_hp != PLAYER_MAX_HP) {
@@ -673,7 +653,6 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj) {
     }
 
     switch (objs[id].obclass) {
-        extern uchar comparator_check(int comparator, ObjID obj, uchar *special_code);
     case CLASS_TRAP:
         if (ID2TRIP(id) == MAPNOTE_TRIPLE) {
             char buf[80];
@@ -1337,7 +1316,6 @@ uchar elevator_use(short dest_level, ubyte which_panel) {
     extern uchar robot_antisocial;
     char *buf;
 #endif
-    extern void check_panel_ref(uchar puntme);
 
     if (dest_level == player_struct.level) {
         string_message_info(REF_STR_ElevatorSameFloor);
@@ -1489,7 +1467,6 @@ errtype obj_door_lock(ObjID door_id, uchar new_lock) {
     return (OK);
 }
 
-void multi_anim_callback(ObjID id, intptr_t user_data);
 uchar in_anim_callback = FALSE;
 
 void unmulti_anim_callback(ObjID id, intptr_t user_data) {
@@ -1664,7 +1641,6 @@ ulong last_obj_time;
 
 // Collision with something while in cyberspace
 errtype obj_cspace_collide(ObjID id, ObjID collider) {
-    extern errtype collide_objects(ObjID collision, ObjID victim, int bad);
     char str_buf[60], temp[20];
     int bigstuff_fake = 0, trip;
     uchar select = FALSE;

@@ -153,15 +153,28 @@ void instantiate_dirac(int triple, Dirac_frame *new_dirac);
 
 errtype apply_gravity_to_one_object(ObjID oid, fix new_grav);
 
+uchar get_phys_info(int ph, fix *list, int cnt);
+
+void get_phys_state(int ph, State *new_state, ObjID id);
+
+fix ID2radius(ObjID id);
+
+void physics_set_relax(int axis, uchar relax);
+
+void physics_zero_all_controls(void);
+
+void state_to_objloc(State *s, ObjLoc *l);
+
+void cit_sleeper_callback(physics_handle caller);
+
+void edms_delete_go(void);
+
+errtype collide_objects(ObjID collision, ObjID victim, int bad);
+
 // Globals
 
-#ifdef __PHYSICS_SRC
-TerrainData terrain_info;
-State standard_state;
-#else
 extern TerrainData terrain_info;
 extern State standard_state;
 extern Robot standard_robot;
-#endif
 
 #endif // __PHYSICS_H

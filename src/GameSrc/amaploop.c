@@ -27,31 +27,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
-#include "../MacSrc/ShockBitmap.h"
+#include "ShockBitmap.h"
 
+#include "amaploop.h"
 #include "audiolog.h"
 #include "criterr.h"
-#include "tools.h"
-#include "gamescr.h"
-#include "rcolors.h"
-#include "mainloop.h"
-#include "amaploop.h"
-#include "lvldata.h"
+#include "cybstrng.h"
 #include "faketime.h"
-#include "map.h"
-#include "otrip.h"
+#include "frflags.h"
+#include "gamescr.h"
+#include "gamestrn.h"
+#include "gr2ss.h"
+#include "lvldata.h"
+#include "mainloop.h"
+#include "mfdfunc.h"
+#include "musicai.h"
 #include "objgame.h"
 #include "objsim.h"
+#include "otrip.h"
 #include "player.h"
+#include "rcolors.h"
 #include "wares.h"
-#include "cybstrng.h"
-#include "gamestrn.h"
-#include "musicai.h"
-
-#include "gr2ss.h"
-#include "frprotox.h"
-#include "frflags.h"
-#include "game_screen.h"
 
 // octant-wise, that is...
 #define NORTH 0
@@ -108,8 +104,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define BTN_TALK 0xdead // hack code for todo
 #define BTN_PEND 0xbeef
 
-extern void amap_pixratio_set(fix);
-
 // limit framerate while scrolling to avoid flicker?
 // should really do something real about flicker anyway.
 #define SCROLL_FRATE 90
@@ -155,16 +149,13 @@ uchar pend_check(void);
 // --------------------
 void trail_sp_punt(void);
 void fsmap_button_redraw(void);
-char *fsmap_get_lev_str(char *buf, int siz);
 void fsmap_interface_draw(void);
 void fsmap_message_redraw(void);
 void fsmap_draw_map(void);
 void fsmap_draw_screen(uint chng);
 int s_bf(int btn_id, int todo);
 void fsmap_new_msg(curAMap *amptr);
-uchar amap_scroll_handler(uiEvent *ev, LGRegion *r, intptr_t user_data);
 void edit_mapnote(curAMap *amptr);
-uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte but);
 uchar zoom_deal(curAMap *amptr, int btn);
 uchar flags_deal(curAMap *amptr, int btn, int todo);
 void btn_init(curAMap *amptr);
@@ -175,7 +166,6 @@ void btn_init(curAMap *amptr);
 // and he pull out True Love
 
 void fsmap_startup(void) {
-    void btn_init(curAMap * amptr);
     int i, n = 0, f, b, todo;
     grs_font *fsmap_font;
 
@@ -303,7 +293,6 @@ void fsmap_button_redraw(void) {
 }
 
 char *fsmap_get_lev_str(char *buf, int siz) {
-    extern char *level_to_floor(int lev_num, char *buf);
     int l;
 
     get_string(REF_STR_Level, buf, siz);
@@ -416,10 +405,7 @@ void fsmap_draw_screen(uint chng) {
     gr_pop_canvas();
 }
 
-extern void mlimbs_do_ai();
-
 void automap_loop(void) {
-    extern void loop_debug(void);
     uint cf = _change_flag;
 
     // KLC - does nothing      loopLine(GL|0x1D,synchronous_update());
@@ -568,7 +554,6 @@ void edit_mapnote(curAMap *amptr) {
 }
 
 uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte b) {
-    extern void mouse_unconstrain(void);
     int scregion = 0;
 
     if (action & (MOUSE_WHEELUP | MOUSE_WHEELDN)) {
