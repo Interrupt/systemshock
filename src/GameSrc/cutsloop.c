@@ -17,8 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+#include <SDL.h>
+
+#include "Shock.h"
 #include "cutsloop.h"
 #include "mainloop.h"
+#include "fullscrn.h"
 #include "game_screen.h"
 #include "gamescr.h"
 #include "tools.h"
@@ -29,10 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "afile.h"
 #include "movie.h"
-
-#include <SDL.h>
-
-
 
 SDL_AudioStream *cutscene_audiostream = NULL;
 
@@ -84,11 +84,6 @@ extern char FrnSubtitle[256];
 extern char GerSubtitle[256];
 
 extern SDL_AudioDeviceID device;
-
-
-extern void change_svga_screen_mode(void);
-extern void CaptureMouse(bool capture);
-
 
 
 void AudioStreamCallback(void *userdata, unsigned char *stream, int len)

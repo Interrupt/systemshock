@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-#define __MAP_SRC
+
 /*
  * $Source: r:/prj/cit/src/RCS/map.c $
  * $Revision: 1.15 $
@@ -28,6 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "map.h"
 #include "schedule.h"
 #include "statics.h"
+
+MapElem *global_map;
+FullMap *global_fullmap;
 
 //------------------------
 //  Defines
@@ -109,8 +112,6 @@ void map_init(void) {
 }
 
 void map_free(void) {
-    extern errtype schedule_free(Schedule * s);
-
     for (int i = 0; i < NUM_MAP_SCHEDULES; i++)
         schedule_free(&global_fullmap->sched[i]);
     free(fm_map(global_fullmap));

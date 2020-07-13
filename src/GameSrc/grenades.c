@@ -24,8 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#define __GRENADES_C
-
 #include "grenades.h"
 #include "effect.h"
 #include "objwpn.h"
@@ -50,6 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybstrng.h"
 #include "frprotox.h"
 #include "frflags.h"
+#include "physics.h"
 #include "physunit.h"
 #include "trigger.h" // for trap_sfx_func()
 
@@ -59,8 +58,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void convert_grenade_to_explosion(ExplosionData *edata, int triple);
 ObjID explosion_ray_cast_attack(ObjID gren_id, ObjID target, ObjLoc *gren_loc, fix radius, fix mass, fix speed);
 void do_object_explosion(ObjID id);
-uchar activate_grenade_on_cursor(void);
-void reactivate_mine(ObjID id);
 
 ExplosionData game_explosions[GAME_EXPLS] = {
     // RADIUS        RADIUS CHG      DMG   DCHG DTYPE           KNOCK_MASS         OFF  PENET
@@ -127,7 +124,6 @@ ObjID explosion_ray_cast_attack(ObjID gren_id, ObjID target, ObjLoc *gren_loc, f
 
     if (objs[target].info.ph != -1) {
         State new_state;
-        extern void get_phys_state(int ph, State *new_state, ObjID id);
         get_phys_state(objs[target].info.ph, &new_state, target);
         dest.x = new_state.X;
         dest.y = new_state.Y;

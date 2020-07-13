@@ -27,24 +27,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * Citadel Renderer
  *  object draw/setup code
  */
-#define __FROBJ_SRC
 
 #include <stdlib.h>
 
 #include "map.h"
 #include "objects.h"
 #include "refstuf.h"
-
+#include "faceobj.h"
 #include "frintern.h"
 #include "frparams.h"
 #include "frsubclp.h"
 #include "frflags.h"
-
+#include "gamesort.h"
 #include "tilename.h"
-
-extern void render_sorted_objs(void);
-extern void sort_show_obj(ObjID cobjid);
-extern void facelet_obj(ObjID cobjid);
 
 uchar pick_best_ref(ObjRefID cRef);
 

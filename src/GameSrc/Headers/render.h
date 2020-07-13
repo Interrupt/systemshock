@@ -49,31 +49,6 @@ errtype render_run(void);
 // Globals
 extern LGRect *rendrect;
 
-#ifdef __RENDER_SRC
-uchar fr_texture = TRUE;
-uchar fr_txt_walls = TRUE;
-uchar fr_txt_floors = TRUE;
-uchar fr_txt_ceilings = TRUE;
-uchar fr_lights_out = FALSE;
-uchar fr_lighting = TRUE;
-uchar fr_play_lighting = FALSE;
-uchar fr_normal_lights = TRUE;
-int fr_detail_value = 100;
-int fr_drop[TM_SIZE_CNT] = {1, 4, 10};
-int fr_view_radius = 10;
-int fr_clear_color = 0;
-uchar fr_show_tilecursor = FALSE;
-uchar fr_cont_tilecursor = FALSE;
-uchar fr_show_all = TRUE;
-int fr_qscale_obj = 2;
-int fr_qscale_crit = 2;
-uchar fr_highlights = FALSE;
-int fr_normal_shf = 2;
-int fr_lite_rad1 = 0, fr_lite_base1 = 10, fr_lite_rad2 = 7, fr_lite_base2 = 0;
-fix fr_lite_slope = (-fix_make(2, 0) + fix_make(0, 0x5000)), fr_lite_yint = fix_make(12, 0x2000);
-int fr_detail_master = 3; /* 0-3 master detail */
-int fr_pseudo_spheres = 0;
-#else
 extern uchar fr_texture;
 extern uchar fr_txt_walls;
 extern uchar fr_txt_floors;
@@ -81,8 +56,6 @@ extern uchar fr_txt_ceilings;
 extern uchar fr_lighting, fr_play_lighting, fr_lights_out, fr_normal_lights;
 extern int fr_detail_value;
 extern int fr_drop[TM_SIZE_CNT];
-extern uchar fr_view_radius;
-extern uchar fr_clear_color;
 extern uchar fr_show_tilecursor;
 extern uchar fr_cont_tilecursor;
 extern uchar fr_show_all;
@@ -93,7 +66,6 @@ extern int fr_normal_shf;
 extern fix fr_lite_slope, fr_lite_yint;
 extern int fr_detail_master;
 extern int fr_pseudo_spheres;
-#endif
 
 #define MAX_CAMERAS_VISIBLE 2
 #define NUM_HACK_CAMERAS 8
@@ -108,5 +80,7 @@ errtype do_screen_static(void);
 errtype render_hack_cameras(void);
 errtype hack_camera_takeover(int hack_cam);
 errtype hack_camera_relinquish(void);
+
+void tile_hit(int mx, int my);
 
 #endif // __RENDER_H

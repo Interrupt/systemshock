@@ -27,3 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 errtype mfd_games_init(MFD_Func *f);
 uchar mfd_games_handler(MFD *m, uiEvent *e);
 void mfd_games_expose(MFD *m, ubyte control);
+
+void mfd_games_turnon(uchar visible, uchar real_start);
+void mfd_games_turnoff(uchar visible, uchar real_stop);

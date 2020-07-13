@@ -41,13 +41,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "game_screen.h"
 #include "player.h"
 #include "shodan.h"
-
+#include "bark.h"
 #include "cit2d.h"
+#include "damage.h"
 #include "diffq.h" // for time limit
+#include "email.h"
 #include "newmfd.h"
 #include "fullscrn.h"
 
-#include "grenades.h"
 #include "hud.h"
 #include "hand.h"
 #include "wares.h"
@@ -70,17 +71,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern uchar tmap_big_buffer[];
 
 // prototypes
-void set_shield_raisage(uchar going_up);
-void begin_shodan_conquer_fx(uchar begin);
-void set_dmg_percentage(int which, ubyte percent);
 void do_secret_fx(void);
 void gamesys_render_effects(void);
 uchar use_ir_hack(void);
 void draw_single_static_line(uchar *line_base, int lx, int rx, int c_base);
 void draw_line_static(grs_bitmap *stat_dest, int dens1, int color1);
-void draw_full_static(grs_bitmap *stat_dest, int c_base);
-uchar gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y, int flags);
-void gamesys_render_func(void *fake_dest_bitmap, int flags);
 
 errtype gamerend_init(void) {
     handart_show = 1;
@@ -139,8 +134,6 @@ extern ObjID beam_effect_id;
 #define FAKEWIN_PAPER       0x8
 #define FAKEWIN_STRING_BASE REF_STR_fakewinStrings
 
-extern uchar kill_player(void);
-
 // about a quarter second, really
 #define V_CLOCK 0x040
 #define V_MASK (~0x03f)
@@ -163,7 +156,6 @@ static uchar systems_line_colors[] = {RED_8_BASE, RED_8_BASE + 3, ORANGE_8_BASE,
 extern uchar flatline_heart;
 extern uchar chi_amp;
 
-extern void regenerate_player(void);
 ulong secret_sfx_time;
 void do_secret_fx(void) { // boy is this a hack....
     static char dot_buf[] = "........";
@@ -225,7 +217,6 @@ void do_secret_fx(void) { // boy is this a hack....
         if (*tmd_ticks - sfx_time > V_CLOCK) {
             secret_render_fx++;
             if (c_val == REBORN_FRAMES) {
-                extern errtype spoof_mouse_event(void);
                 extern uchar music_on;
                 secret_render_fx = 0;
 
@@ -285,9 +276,6 @@ void do_secret_fx(void) { // boy is this a hack....
         }
         if (stage < 22) {
             if (c_val == 1) {
-                extern void long_bark(ObjID speaker_id, uchar mug_id, int string_id, ubyte color);
-                extern void add_email_datamunge(short mung, uchar select);
-                extern void read_email(Id new_base, int num);
                 fr_global_mod_flag(FR_SFX_SHAKE, FR_SFX_MASK);
                 long_bark(OBJ_NULL, FIRST_SHODAN_MUG + 3, REF_STR_Null, 0);
                 mfd_change_slot(MFD_LEFT, MFD_INFO_SLOT);
@@ -361,7 +349,6 @@ void gamesys_render_effects(void) {
     if ((!global_fullmap->cyber) && (!secret_render_fx)) {
         ubyte active = player_struct.actives[ACTIVE_WEAPON];
         extern uchar hack_takeover;
-        extern ulong player_death_time;
 
         // check to make sure we have an active weapon before drawing handart
         if ((player_struct.weapons[active].type != EMPTY_WEAPON_SLOT) && !hack_takeover && !saveload_static) {
@@ -386,8 +373,6 @@ void gamesys_render_effects(void) {
             // Get the weapon art to draw.
             temp = get_handart(&deltax, &deltay, &beamx, mx, my);
             if (temp != ID_NULL) {
-                extern uchar ready_to_draw_handart(void);
-
                 if (handart_show != 1) // are we showing an attack frame?
                 {
                     // If this is a beam weapon, we need to draw the beam during attack.
@@ -558,8 +543,7 @@ short vhold_shift = 0;
 #define FULL_CONVERT_X
 
 // returns whether to send the bitmap out in the render
-uchar gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y, int flags) {
-    extern void hud_do_objs(short xtop, short ytop, short xwid, short ywid, uchar rev);
+int gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y, int flags) {
     grs_canvas *dest_canvas = (grs_canvas *)fake_dest_canvas;
     grs_bitmap *dest_bm = (grs_bitmap *)fake_dest_bm;
     uchar *orig_bits;

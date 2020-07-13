@@ -84,9 +84,15 @@ void activate_grenade(ObjSpecID osid);
 // will explode the grenade with id, and it'll show a special effect if arg is TRUE
 void do_explosion(ObjLoc loc, ObjID exclusion, ubyte special_effect, ExplosionData *attack_data);
 
+void do_object_explosion(ObjID id);
+
 // void do_explosion(ObjLoc loc, ObjID exclusion, ubyte special_effect, fix radius, fix radius_change, int damage_mod,
 // int damage_change, int dtype, fix knock_mass, fix knock_speed, ubyte offense,ubyte penet);/  void do_explosion(ObjID
 // id, uchar special_effect);
+
+uchar activate_grenade_on_cursor(void);
+
+void reactivate_mine(ObjID id);
 
 void do_grenade_explosion(ObjID id, uchar special_effect);
 

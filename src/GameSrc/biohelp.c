@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdext.h"
 #include "mfddims.h"
 #include "mfdgadg.h"
+#include "newmfd.h"
 #include "status.h"
 #include "gamestrn.h"
 #include "tools.h"
@@ -49,12 +50,8 @@ uchar status_track_free(int track);
 uchar status_track_active(int track);
 void status_track_activate(int track, uchar active);
 
-errtype mfd_biohelp_init(MFD_Func *f);
-void mfd_biohelp_expose(MFD *mfd, ubyte control);
 uchar mfd_biohelp_button_handler(MFD *m, LGPoint bttn, uiEvent *ev, void *data);
-uchar mfd_biohelp_handler(MFD *m, uiEvent *e);
 uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t data);
-errtype biohelp_load_cursor();
 errtype biohelp_create_mouse_region(LGRegion *root);
 
 // ---------------
@@ -79,24 +76,24 @@ errtype biohelp_create_mouse_region(LGRegion *root);
 #define ARROW_Y (MFD_VIEW_HGT - 10)
 
 #define LEFT_MARGIN 1
-#define TOP_MARGIN  1
+#define TOP_MARGIN 1
 #define NUM_BUTTONS 4
-#define BARRY_HGT   (MFD_VIEW_HGT - 2 * TOP_MARGIN)
-#define BARRY_WID   (ARROW_X - LEFT_MARGIN)
-#define BUTTON_WID  12
-#define BUTTON_HGT  11
-#define TEXT_HGT    5
+#define BARRY_HGT (MFD_VIEW_HGT - 2 * TOP_MARGIN)
+#define BARRY_WID (ARROW_X - LEFT_MARGIN)
+#define BUTTON_WID 12
+#define BUTTON_HGT 11
+#define TEXT_HGT 5
 
 #define ITEM_COLOR (0x5A)
 
 #define STATUS_X 4
-#define GAMESCR_BIO_WIDTH  131
+#define GAMESCR_BIO_WIDTH 131
 #define GAMESCR_BIO_HEIGHT 17
 
 #define LAST_ACTIVE_BITS(mfd) (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][mfd])
-#define LAST_USED_BITS(mfd)   (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][mfd + 6])
-#define BIOHELP_PAGE          (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][2])
-#define NUM_TRACKS            (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][3])
+#define LAST_USED_BITS(mfd) (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][mfd + 6])
+#define BIOHELP_PAGE (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][2])
+#define NUM_TRACKS (player_struct.mfd_func_data[MFD_BIOHELP_FUNC][3])
 
 void mfd_biohelp_expose(MFD *mfd, ubyte control) {
     uchar full = control & MFD_EXPOSE_FULL;
@@ -180,7 +177,7 @@ void mfd_biohelp_expose(MFD *mfd, ubyte control) {
 // HANDLERS
 // --------
 
-uchar mfd_biohelp_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *v) {
+uchar mfd_biohelp_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *data) {
     int track = -1;
     int i = 0;
     if (!(ev->subtype & MOUSE_LDOWN))
@@ -218,9 +215,8 @@ uchar mfd_biohelp_handler(MFD *m, uiEvent *e) {
     return retval;
 }
 
-uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
+uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *reg, intptr_t data) {
     if (ev->mouse_data.action & (MOUSE_LDOWN | MOUSE_RDOWN)) {
-        extern void mfd_zoom_rect(LGRect *, int);
         LGRect start = {{-5, -5}, {5, 5}};
         int mfd = mfd_grab_func(MFD_BIOHELP_FUNC, MFD_INFO_SLOT);
         RECT_MOVE(&start, ev->pos);
@@ -236,19 +232,17 @@ uchar biohelp_region_mouse_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
 LGCursor biohelp_cursor;
 grs_bitmap biohelp_cursor_bmap;
 
-errtype biohelp_load_cursor(void)
-{
-  if (biohelp_cursor_bmap.bits != NULL)
-  {
-    free(biohelp_cursor_bmap.bits);
+errtype biohelp_load_cursor(void) {
+    if (biohelp_cursor_bmap.bits != NULL) {
+        free(biohelp_cursor_bmap.bits);
 
-    memset(&biohelp_cursor, 0, sizeof(LGCursor));
-    memset(&biohelp_cursor_bmap, 0, sizeof(grs_bitmap));
-  }
+        memset(&biohelp_cursor, 0, sizeof(LGCursor));
+        memset(&biohelp_cursor_bmap, 0, sizeof(grs_bitmap));
+    }
 
-  load_res_bitmap_cursor(&biohelp_cursor, &biohelp_cursor_bmap, REF_IMG_QuestionCursor, TRUE);
+    load_res_bitmap_cursor(&biohelp_cursor, &biohelp_cursor_bmap, REF_IMG_QuestionCursor, TRUE);
 
-  return OK;
+    return OK;
 }
 
 errtype biohelp_create_mouse_region(LGRegion *root) {

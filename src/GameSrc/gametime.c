@@ -43,8 +43,6 @@ long gNewShockTicks; // whyyyyyy
 #define MAX_DELTAT (CIT_CYCLE / MIN_FRAME_RATE)
 #define MIN_DELTAT (CIT_CYCLE / MAX_FRAME_RATE)
 
-void update_level_gametime(void);
-
 errtype update_state(uchar time_running) {
     uchar update = TRUE;
     if (time_running) {

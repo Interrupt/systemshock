@@ -36,8 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#define __FRTABLES_SRC
-
 #include "frintern.h"
 #include "frtables.h"
 #include "tilename.h"

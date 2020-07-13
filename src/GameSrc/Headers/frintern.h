@@ -50,13 +50,11 @@ int fr_prepare_view(frc *view);
 int fr_start_view(void);
 int fr_send_view(void);
 
-#ifndef __FRSETUP_SRC
 #ifdef __FRTYPES_H
 extern fauxrend_context *_fr, *_sr;
 #endif // only know about context itself if you already include types
 extern uint _fr_curflags, _fr_glob_flags;
 extern uchar *_fr_clut_list[4];
-#endif // __FRSETUP_SRC
 
 //======== From frpipe.c
 // pipe setup and control
@@ -66,10 +64,8 @@ int fr_pipe_go(void);
 int fr_pipe_end(void);
 int fr_pipe_freemem(void);
 
-#ifndef __FRPIPE_SRC
 extern int fr_map_x, fr_map_y, fr_map_z;
 extern int _fr_x_cen, _fr_y_cen;
-#endif // __FRPIPE_SRC
 
 //======== from frpts.c
 int fr_pts_frame_start(void);
@@ -78,11 +74,9 @@ int fr_pts_freemem(void);
 int fr_pts_update(int y, int lx, int rx);
 int fr_pts_setup(int pt_code); // must call before update
 
-#ifndef __FRPTS_SRC
 #ifdef __3D_H
 extern g3s_phandle *_fr_ptbase, *_fr_ptnext;
 #endif // __3D_H
-#endif // __FRPTS_SRC
 
 //======== From frclip.c
 // these all set and modify global clipping arrays
@@ -104,10 +98,8 @@ void facelet_parse_obj(void);
 
 //======== From frutil.c
 #define FR_CUR_OBJ_BASE 65
-#ifndef __FRUTIL_SRC
 extern uchar fr_cur_obj_col;
 extern ushort fr_col_to_obj[256];
-#endif
 
 //======== From frterr.c
 void fr_draw_tile(void);

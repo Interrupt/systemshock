@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "schedule.h"
 #include "grenades.h"
+#include "invent.h"
+#include "leanmetr.h"
 #include "wares.h"
 #include "objsim.h"
 #include "objclass.h"
@@ -39,6 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "combat.h"
 #include "objgame.h"
 #include "objuse.h"
+#include "rendtool.h"
 #include "gamesys.h"
 #include "frparams.h"
 #include "damage.h"
@@ -63,9 +66,7 @@ height_semaphor h_sems[NUM_HEIGHT_SEMAPHORS];
 // ---------
 int expand_tstamp(ushort s);
 int compare_tstamps(ushort t1, ushort t2);
-int compare_events(void *e1, void *e2);
 
-uchar register_h_event(uchar x, uchar y, uchar floor, char *sem, char *key, uchar no_sfx);
 void unregister_h_event(char sem);
 
 void null_event_handler(Schedule *s, SchedEvent *ev);
@@ -79,7 +80,6 @@ void light_event_handler(Schedule *s, SchedEvent *ev);
 void bark_event_handler(Schedule *s, SchedEvent *ev);
 void email_event_handler(Schedule *s, SchedEvent *ev);
 
-void reset_schedules(void);
 
 // comparison function.
 // 8/27/94 THIS FIX FOR WRAPPING BUG MAKES THE COMPARE FUNCTION MUCH LESS GENERAL.
@@ -192,7 +192,6 @@ void trap_event_handler(Schedule *s, SchedEvent *ev) {
 void height_event_handler(Schedule *s, SchedEvent *ev) {
     MapElem *pme;
     HeightSchedEvent hse = *(HeightSchedEvent *)ev;
-    extern void rendedit_process_tilemap(FullMap * map, LGRect * r, uchar newMap);
     short x, y;
     LGRect bounds;
     char ht, sign = (hse.steps_remaining > 0) ? 1 : -1;
@@ -220,7 +219,6 @@ void height_event_handler(Schedule *s, SchedEvent *ev) {
             id = objRefs[oref].obj;
             if (abs(obj_floor_height(id) - objs[id].loc.z) < FLOOR_HEIGHT_DELTA) {
                 if (id == PLAYER_OBJ) {
-                    extern void slam_posture_meter_state(void);
                     slam_posture_meter_state();
                 } else if (ObjProps[OPNUM(id)].physics_model) {
                     newloc = objs[id].loc;
@@ -259,7 +257,6 @@ void door_event_handler(Schedule *s, SchedEvent *ev) {
     ObjID id;
     short old_dest;
     ushort code, curr_code;
-    extern uchar door_moving(ObjID id, uchar dir);
 
     id = ((DoorSchedEvent *)ev)->door_id;
     code = ((DoorSchedEvent *)ev)->secret_code;
@@ -343,7 +340,6 @@ void grenade_event_handler(Schedule *s, SchedEvent *ev) {
 void explosion_event_handler(Schedule *s, SchedEvent *ev) {}
 
 void exposure_event_handler(Schedule *s, SchedEvent *ev) {
-    extern void expose_player(byte damage, ubyte type, ushort tsecs);
     SchedExposeData *xd = (SchedExposeData *)&ev->data;
     int count = xd->count;
     int damage = xd->damage;
@@ -366,8 +362,6 @@ void exposure_event_handler(Schedule *s, SchedEvent *ev) {
 }
 
 extern uchar muzzle_fire_light;
-extern void lamp_turnon(uchar visible, uchar real);
-extern void lamp_turnoff(uchar visible, uchar real);
 
 void light_event_handler(Schedule *s, SchedEvent *ev) {
     muzzle_fire_light = FALSE;
@@ -382,7 +376,6 @@ void light_event_handler(Schedule *s, SchedEvent *ev) {
 
 void bark_event_handler(Schedule *s, SchedEvent *ev) {
     ubyte mfd_id;
-    void check_panel_ref(uchar puntme);
     ubyte mfd_get_func(ubyte mfd_id, ubyte s);
 
     // timeout bark, if it's still there at all.
@@ -395,7 +388,6 @@ void bark_event_handler(Schedule *s, SchedEvent *ev) {
 }
 
 void email_event_handler(Schedule *s, SchedEvent *ev) {
-    extern void add_email_datamunge(short mung, uchar select);
     EmailSchedEvent *e = (EmailSchedEvent *)ev;
     add_email_datamunge(e->datamunge, TRUE);
 }

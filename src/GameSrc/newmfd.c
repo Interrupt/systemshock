@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-#define __NEWMFD_SRC
 
 // NEWMFD.C
 
@@ -37,8 +36,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "game_screen.h" // for the root region
 #include "fullscrn.h"
+#include "invent.h"
 #include "mfdint.h"
 #include "mfdext.h"
+#include "mfdfunc.h"
 #include "mfddims.h"
 #include "input.h"
 #include "player.h"
@@ -83,31 +84,25 @@ grs_canvas _offscreen_mfd, _fullscreen_mfd;
 #define mfdL mfd[MFD_LEFT]
 #define mfdR mfd[MFD_RIGHT]
 
+grs_bitmap mfd_background;
+grs_canvas *pmfd_canvas;
+
 // -----------
 // Prototypes
 // -----------
-void mfd_language_change(void);
 void mfd_set_slot(ubyte mfd_id, ubyte newSlot, uchar OnOff);
 void mfd_draw_all_buttons(ubyte mfd_id);
-errtype mfd_update_screen_mode();
 errtype mfd_clear_all();
-void mfd_change_fullscreen(uchar on);
 
 void mfd_clear_func(ubyte func_id);
-int mfd_choose_func(int my_func, int my_slot);
-void mfd_zoom_rect(LGRect *start, int mfdnum);
-void fullscreen_refresh_mfd(ubyte mfd_id);
 
 uchar mfd_object_cursor_handler(uiEvent *ev, LGRegion *, int which_mfd);
-uchar mfd_scan_opacity(int mfd_id, LGPoint epos);
 
-void mfd_draw_button_panel(ubyte mfd_id);
 void mfd_draw_button(ubyte mfd_id, ubyte b);
 void mfd_select_button(int which_panel, int which_button);
 
 void mfd_default_mru(uchar func);
 void set_mfd_from_defaults(int mfd_id, uchar func, uchar slot);
-void cap_mfds_with_func(uchar func, uchar max);
 
 // KLC  dbg_mfd_state used to be here.
 
@@ -371,7 +366,6 @@ void mfd_change_fullscreen(uchar on) {
 // (Called from init_input() in input.c)
 
 void keyboard_init_mfd() {
-    extern void install_keypad_hotkeys(void);
     /* KLC leave out F-keys and char codes.
 
        hotkey_add(KEY_F1, DEMO_CONTEXT,mfd_button_callback_kb,0);
@@ -499,7 +493,6 @@ void mfd_notify_func(ubyte fnum, ubyte snum, uchar Grab, MFD_Status stat, uchar 
 
     chg_set_flg(MFD_UPDATE);
 
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -734,7 +727,6 @@ uchar mfd_yield_func(int func, int *mfd_id) {
 // the indicated rect.
 
 void mfd_zoom_rect(LGRect *start, int mfdnum) {
-    extern void zoom_rect(LGRect * start, LGRect * end);
     DEBUG("Zooming mfd %i", mfdnum);
     LGRect r1, r2;
     play_digi_fx(SFX_ZOOM_BOX, 1);
@@ -751,7 +743,6 @@ void mfd_zoom_rect(LGRect *start, int mfdnum) {
 // mfd_object_cursor_handler() gets called for events in the MFD
 // region with an object on the cursor.
 
-extern uchar inventory_add_object(ObjID, bool);
 uchar object_button_down = FALSE;
 
 uchar mfd_object_cursor_handler(uiEvent *ev, LGRegion *reg, int which_mfd) {
@@ -1018,8 +1009,6 @@ void mfd_select_button(int which_panel, int which_button) {
         full_visible &= ~visible_mask(which_panel);
     } else
         mfd_change_slot((ubyte)which_panel, (ubyte)which_button);
-
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -1063,7 +1052,6 @@ void mfd_update() {
     // This code totally depends on our item func implementation.
     i = NUM_MFDS;
     if (mfd_yield_func(MFD_ITEM_FUNC, &i)) {
-        extern void update_item_mfd(void);
         update_item_mfd();
     }
 
@@ -1103,9 +1091,6 @@ uchar mfd_update_current_slot(ubyte mfd_id, ubyte status, ubyte num_steps) {
     ubyte f_id;
     ubyte control;
     MFD *m;
-
-    extern ObjID check_panel_ref(uchar puntme);
-    extern uchar mfd_distance_remove(ubyte func);
 
     f_id = mfd_get_active_func(mfd_id);
     f = &(mfd_funcs[f_id]);
@@ -1542,10 +1527,6 @@ void mfd_update_display(MFD *m, short x0, short y0, short x1, short y1) {
 // use our secret 6th slot.
 
 typedef uchar (*mfd_def_qual)(void);
-
-extern uchar mfd_target_qual(void);
-extern uchar mfd_automap_qual(void);
-extern uchar mfd_weapon_qual(void);
 
 typedef struct {
     uchar func;

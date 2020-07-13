@@ -107,9 +107,6 @@ char *next_number_fname(char *fname);
 // Execute a tight loop, doing appropriate music/palette things
 errtype tight_loop(uchar check_input);
 
-// returns whether or not a given bitmap is, well, empty.
-uchar empty_bitmap(grs_bitmap *bmp);
-
 // set / unset "wait" cursor
 errtype begin_wait();
 errtype end_wait();
@@ -129,6 +126,15 @@ void gamma_dealfunc(ushort gamma_qvar);
 void second_format(int sec_remain, char *s);
 
 int hyphenated_wrap_text(char *ps, char *out, short width);
+
+int str_to_hex(char val);
+void strip_newlines(char *buf);
+
+void text_button(char *text, int xc, int yc, int col, int shad, int w, int h);
+
+void zoom_rect(LGRect *start, LGRect *end);
+
+void ZoomDrawProc(int erase);
 
 // Globals
 

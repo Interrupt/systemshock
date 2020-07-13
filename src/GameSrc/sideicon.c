@@ -33,6 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cybstrng.h"
 #include "tools.h"
 #include "fullscrn.h"
+#include "newmfd.h"
+#include "tools.h"
 #include "wares.h"
 #include "objsim.h"
 #include "objclass.h"
@@ -71,10 +73,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Local Prototypes
 // ----------------
 
-void side_icon_language_change(void);
 uchar side_icon_mouse_callback(uiEvent *e, LGRegion *r, intptr_t udata);
 void zoom_side_icon_to_mfd(int icon, int waretype, int wnum);
-void zoom_to_side_icon(LGPoint from, int icon);
 uchar side_icon_hotkey_func(ushort keycode, uint32_t context, intptr_t i);
 void side_icon_draw_bm(LGRect *r, ubyte icon, ubyte art);
 
@@ -119,12 +119,16 @@ extern long ware_base_triples[NUM_WARE_TYPES];
 #define IDX_OF_TYPE(type, trip) (OPTRIP(trip) - OPTRIP(ware_base_triples[type]))
 
 static ICON_DATA icon_data[NUM_SIDE_ICONS] = {
-
-    {WARE_HARD, BIOSCAN_HARD_TRIPLE}, {WARE_HARD, FULLSCR_HARD_TRIPLE}, {WARE_HARD, SENS_HARD_TRIPLE},
-    {WARE_HARD, LANTERN_HARD_TRIPLE}, {WARE_HARD, SHIELD_HARD_TRIPLE},
-
-    {WARE_HARD, INFRA_GOG_TRIPLE},    {WARE_HARD, NAV_HARD_TRIPLE},     {WARE_HARD, VIDTEX_HARD_TRIPLE, SFX_EMAIL},
-    {WARE_HARD, MOTION_HARD_TRIPLE},  {WARE_HARD, JET_HARD_TRIPLE},
+    {WARE_HARD, BIOSCAN_HARD_TRIPLE},
+    {WARE_HARD, FULLSCR_HARD_TRIPLE},
+    {WARE_HARD, SENS_HARD_TRIPLE},
+    {WARE_HARD, LANTERN_HARD_TRIPLE},
+    {WARE_HARD, SHIELD_HARD_TRIPLE},
+    {WARE_HARD, INFRA_GOG_TRIPLE},
+    {WARE_HARD, NAV_HARD_TRIPLE},
+    {WARE_HARD, VIDTEX_HARD_TRIPLE, SFX_EMAIL},
+    {WARE_HARD, MOTION_HARD_TRIPLE},
+    {WARE_HARD, JET_HARD_TRIPLE},
 };
 
 grs_bitmap icon_cursor_bm[2];
@@ -257,7 +261,6 @@ void screen_init_side_icons(LGRegion *root) {
 
 void zoom_side_icon_to_mfd(int icon, int waretype, int wnum) {
     extern ubyte waretype2invtype[];
-    extern void mfd_zoom_rect(LGRect * start, int mfdnum);
 
     int mfd;
 
@@ -370,12 +373,8 @@ uchar side_icon_prog_hotkey_func(ushort keycode, uint32_t context, intptr_t notu
 // Sort of an initial-draw-everything type of routine
 
 void side_icon_expose_all() {
-    ubyte i;
-
-    for (i = 0; i < NUM_SIDE_ICONS; i++)
+    for (uint8_t i = 0; i < NUM_SIDE_ICONS; i++)
         side_icon_expose(i);
-
-    return;
 }
 
 // ----------------------------------------------------
@@ -383,7 +382,6 @@ void side_icon_expose_all() {
 // zooms a LGRect to a side icon and then exposes it.
 
 void zoom_to_side_icon(LGPoint from, int icon) {
-    extern void zoom_rect(LGRect * s, LGRect * f);
     LGRect start = {{-3, -3}, {3, 3}};
     LGRect dest;
     RECT_MOVE(&start, from);

@@ -298,12 +298,7 @@ ubyte set_player_energy_spend(ubyte new_val);
 bool IsFullscreenWareOn(void);
 
 // Globals
-#ifdef __PLAYER_SRC
-Player player_struct;
-Obj *player_dos_obj;
-#else
 extern Player player_struct;
 extern Obj *player_dos_obj;
-#endif
 
 #endif // __PLAYER_H

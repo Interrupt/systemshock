@@ -37,11 +37,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "gr2ss.h"
 
-// ============================================================
-//                   THE CYBERSPACE MFD
-// ============================================================
-void mfd_cspace_expose(MFD *mfd, ubyte control);
-
 // -------
 // DEFINES
 // -------

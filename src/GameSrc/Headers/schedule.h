@@ -110,6 +110,12 @@ errtype schedule_reset(Schedule *s);
 void run_schedules(void);
 // Runs all loaded schedules.
 
+void reset_schedules(void);
+
+int compare_events(void *e1, void *e2);
+
+uchar register_h_event(uchar x, uchar y, uchar floor, char *sem, char *key, uchar no_sfx);
+
 // Globals
 
 #endif // __SCHEDULE_H

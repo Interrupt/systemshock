@@ -61,6 +61,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Typedefs
 
 // Prototypes
+void change_svga_screen_mode();
 errtype fullscreen_init(void);
 void fullscreen_start();
 void fullscreen_exit(void);
@@ -69,20 +70,10 @@ errtype full_lower_region(LGRegion *r);
 errtype full_raise_region(LGRegion *r);
 
 // Globals
-#ifdef __FULLSCRN_SRC
-LGRegion *fullroot_region, *fullview_region;
-LGRegion *inventory_region_full;
-LGRegion *pagebutton_region_full;
-frc *full_game_fr_context;
-uchar full_game_3d = FALSE;
-uchar full_visible = 0;
-#else
 extern LGRegion *fullroot_region, *fullview_region;
 extern LGRegion *inventory_region_full;
 extern LGRegion *pagebutton_region_full;
-extern frc *full_game_fr_context;
 extern uchar full_game_3d;
 extern uchar full_visible;
-#endif
 
 #endif // __FULLSCRN_H

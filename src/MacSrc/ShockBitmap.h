@@ -1,86 +1,38 @@
 /*
 
+Copyright (C) 1994-1995 Looking Glass Technologies, Inc.
 Copyright (C) 2015-2018 Night Dive Studios, LLC.
+Copyright (C) 2018-2020 Shockolate Project
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
- 
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
-*/
-//====================================================================================
-//
-//		System Shock - ©1994-1995 Looking Glass Technologies, Inc.
-//
-//		ShockBitmap.c	-	Manages off-screen bitmaps and palettes.
-//
-//====================================================================================
 
+*/
+// ShockBitmap.c - Manages off-screen bitmaps and palettes.
 
 #include <SDL.h>
 
-#if 1
+// Globals
 
-#else
-//--------------------
-//  Types
-//--------------------
-typedef struct 
-{
-	Ptr		Address;
-	long		RowBytes;
-	GrafPtr	bits;
-	Rect		bounds;
-	Boolean	Color;
-	
-	BitMap	BWBits;			// B&W port & map
-	GrafPort BWPort;
-	
-	CGrafPort	CPort;		// color port
-	
-	Handle	OrigBits;
-	
-} ShockBitmap;
+// Current draw surface
+extern SDL_Surface *drawSurface;
+// Offscreen draw surface
+extern SDL_Surface *offscreenDrawSurface;
 
+// Prototypes
 
-//--------------------
-//  Globals
-//--------------------
-extern PixMapHandle 		gScreenPixMap;
-extern CTabHandle			gMainColorHand;
-extern Boolean				gChangedColors;
-//extern ShockBitmap			gMainOffScreen;
+/// Change screen size.
+void ChangeScreenSize(int width, int height);
 
-#endif // 0
-
-typedef struct ShockBitmap ShockBitmap; // FIXME: if this is actually needed, provide a portable struct
-
-extern SDL_Surface* drawSurface;
-extern SDL_Surface* offscreenDrawSurface;
-
-
-//--------------------
-//  Prototypes
-//--------------------
+/// Setup the main offscreen bitmaps.
 void SetupOffscreenBitmaps(int width, int height);
-void ResetCTSeed(void);
-void RememberSeed(void);
-void FixPalette(void);
-//void NewShockBitmap(ShockBitmap *theMap, short width, short height, Boolean color);
-void FreeShockBitmap(ShockBitmap *theMap);
-//Handle Build8PixMap(CGrafPtr theCGrafPtr,short width, short height);
-short CurScreenDepth(void);
-void CheckBitDepth(void);
-void CleanupPalette(void);
-void LoadPictShockBitmap(ShockBitmap *theMap, short PictID);
-
-void SetupTitleScreen(void);
-//int DoShockTitleButtons(Point mousePt);

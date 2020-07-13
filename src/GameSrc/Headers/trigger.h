@@ -117,8 +117,15 @@ errtype trap_sfx_func(int p1, int p2, int p3, int p4);
 
 errtype check_deathwatch_triggers(ObjID id, uchar really_dead);
 errtype check_entrance_triggers(uchar old_x, uchar old_y, uchar new_x, uchar new_y);
+errtype do_shodan_triggers();
 
 errtype do_multi_stuff(ObjID id);
+
+void animate_callback_func(ObjID id, intptr_t user_data);
+uchar comparator_check(int comparator, ObjID obj, uchar *special_code);
+errtype do_level_entry_triggers();
+
+short qdata_get(short qdata);
 
 // Globals
 

@@ -63,7 +63,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DMG_RAD    2
 
 // Prototypes
+void begin_shodan_conquer_fx(uchar begin);
 errtype gamerend_init(void);
+void set_dmg_percentage(int which, ubyte percent);
+void draw_full_static(grs_bitmap *stat_dest, int c_base);
+
+int gamesys_draw_func(void *fake_dest_canvas, void *fake_dest_bm, int x, int y, int flags);
+void gamesys_render_func(void *fake_dest_bitmap, int flags);
+void set_shield_raisage(uchar going_up);
 
 #ifdef __GAMEREND_SRC
 int secret_render_fx = 0;

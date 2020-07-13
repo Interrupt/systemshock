@@ -39,7 +39,7 @@ void opengl_end_sensaround();
 
 static int init_opengl() { return 0; }
 static void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm) {}
-static void opengl_clear_texture_cache() {};
+static void opengl_clear_texture_cache(){};
 
 static bool can_use_opengl() { return false; }
 static bool use_opengl() { return false; }

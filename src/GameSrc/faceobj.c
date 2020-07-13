@@ -39,14 +39,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "otrip.h"
 #include "objbit.h"
-
+#include "trigger.h"
 #include "frflags.h"
 #include "doorparm.h"
 
 #include "tfdirect.h"
 #include "ss_flet.h"
-
-#include "textmaps.h" // i really dont want to have this here
 
 #define height_step fix_make(0, 0x010000 >> SLOPE_SHIFT)
 
@@ -185,7 +183,6 @@ uchar _face_parm_cube(fix *cntr, int x, int y, int z) {
 }
 
 void _face_secret_repulsor_hack(void) {
-    extern uchar comparator_check(int comparator, ObjID obj, uchar *special_code);
     int comparator = objTraps[_n_fr_cobj->specID].comparator, r_prm, flg, r_top, r_bot;
     uchar special;
 
@@ -300,8 +297,6 @@ void facelet_obj(ObjID cobjid) {
             Ref r1 = 0, r2 = 0;
             grs_bitmap *b1;
             fix fx, fy, fz, loc_pts[3], cube_pts[3];
-            extern grs_bitmap *obj_get_model_data(ObjID id, fix * x, fix * y, fix * z, grs_bitmap * bm2, Ref * ref1,
-                                                  Ref * ref2);
 
             // r1 and r2 are cleared so that we don't lock the resources!
             // NULL so we don't load a bitmap

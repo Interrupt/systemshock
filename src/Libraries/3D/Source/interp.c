@@ -1016,6 +1016,10 @@ g3_light_check_normal_facing:
         ret
 */
 
+/**
+ * @deprecated does nothing
+ * @param sh
+ */
 void FlipShort(short *sh) {
     /*uchar temp;
     uchar *src = (uchar *) sh;
@@ -1025,6 +1029,10 @@ void FlipShort(short *sh) {
     src[1] = temp;*/
 }
 
+/**
+ * @deprecated does nothing
+ * @param lng
+ */
 void FlipLong(long *lng) {
     /*short *src = (short *) lng;
     short	temp;
@@ -1037,6 +1045,11 @@ void FlipLong(long *lng) {
     FlipShort(src+1);*/
 }
 
+/**
+ * @deprecated does nothing
+ * @param n
+ * @param vec
+ */
 void FlipVector(short n, g3s_vector *vec) {
     /*int		i,j;
 

@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef SVGA_SUPPORT
 extern void ss_string(char *s, short x, short y);
+void ss_scale_string(char *s, short x, short y);
 extern void ss_bitmap(grs_bitmap *bmp, short x, short y);
 extern void ss_ubitmap(grs_bitmap *bmp, short x, short y);
 extern void ss_scale_bitmap(grs_bitmap *bmp, short x, short y, short w, short h);
@@ -61,6 +62,8 @@ extern fix inv_convert_y[MAX_CONVERT_TYPES][MAX_USE_MODES];
 
 extern char convert_type;
 extern char convert_use_mode;
+void mouse_unconstrain(void);
+uchar perform_svga_conversion(uchar mask);
 
 extern short MODE_SCONV_X(short cval, short m);
 extern short MODE_SCONV_Y(short cval, short m);

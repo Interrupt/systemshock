@@ -86,6 +86,8 @@ errtype load_that_thar_game(int which_slot);
 // Show splash screens
 void splash_draw(bool show_splash);
 
+void empty_slate(void);
+
 // Globals
 
 #endif // __SETUP_H

@@ -23,13 +23,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/22 20:16:55 $
  */
 
-#define __FULLSCRN_SRC
 
 #include "ShockBitmap.h"
 #include "Prefs.h"
 
+#include "amap.h"
+#include "biohelp.h"
 #include "fullscrn.h"
+#include "leanmetr.h"
 #include "cybstrng.h"
+#include "frscreen.h"
 #include "frflags.h"
 #include "frprotox.h"
 #include "FrUtils.h"
@@ -41,12 +44,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mainloop.h"
 #include "mfdext.h"
 #include "miscqvar.h"
+#include "newmfd.h"
 #include "objprop.h"
 #include "otrip.h"
+#include "rendtool.h"
+#include "screen.h"
 #include "sideicon.h"
 #include "status.h"
 #include "tools.h"
+#include "view360.h"
 #include "wares.h"
+#include "wrapper.h"
 
 #include "game_screen.h" // was screen.h?
 #include "Shock.h"
@@ -87,23 +95,20 @@ uiSlab fullscreen_slab;
 
 #define CFG_TIME_VAR "time_passes"
 
-extern void status_bio_update_screenmode();
-extern void mouse_unconstrain(void);
 extern void olh_svga_deal(void);
-extern void inv_change_fullscreen(uchar on);
-extern void mfd_change_fullscreen(uchar on);
-extern void game_redrop_rad(int rad_mod);
 void change_svga_cursors();
-void change_svga_screen_mode();
 
 LGRegion fullroot_region_data, fullview_region_data;
 LGRegion *fullroot_region = &fullroot_region_data; // DUH
+LGRegion *fullview_region;
+LGRegion *inventory_region_full;
+LGRegion *pagebutton_region_full;
+uchar full_game_3d;
+uchar full_visible;
 
 short base_mouse_xr, base_mouse_yr, base_mouse_thresh;
 
 errtype fullscreen_init(void) {
-    extern void init_posture_meters(LGRegion *, bool);
-    extern errtype wrapper_create_mouse_region(LGRegion *);
     extern LGRect fscrn_rect;
 
     generic_reg_init(TRUE, fullroot_region, NULL, &fullscreen_slab, main_kb_callback, NULL);
@@ -138,9 +143,6 @@ errtype fullscreen_init(void) {
 // Draw all relevant overlays
 errtype fullscreen_overlay() {
     extern char last_message[128];
-    extern void mfd_draw_button_panel(ubyte mfd_id);
-    extern void fullscreen_refresh_mfd(ubyte mfd_id);
-    extern void inv_update_fullscreen(uchar full);
     extern uchar game_paused;
 
     if (!global_fullmap->cyber) {
@@ -154,7 +156,6 @@ errtype fullscreen_overlay() {
     if (!game_paused)
         inv_update_fullscreen((full_visible & FULL_INVENT_MASK) != 0);
     if (fullscrn_vitals) {
-        extern void update_meters(bool);
         status_vitals_update(TRUE);
         if (!global_fullmap->cyber)
             update_meters(TRUE);
@@ -172,17 +173,9 @@ errtype fullscreen_overlay() {
 void change_svga_cursors() {
     ObjID old_obj;
 
-    extern errtype make_options_cursor(void);
-    extern void reload_motion_cursors(uchar cyber);
-    extern void free_cursor_bitmaps();
-    extern void alloc_cursor_bitmaps(void);
-    extern errtype biohelp_load_cursor();
-    extern errtype load_misc_cursors();
-
     extern int last_side_icon;
     extern int last_invent_cnum;
     extern int last_mfd_cnum[NUM_MFDS];
-    extern short object_on_cursor;
     short temp;
 
     ss_set_hack_mode(2, &temp);
@@ -209,12 +202,7 @@ void change_svga_cursors() {
 }
 
 void change_svga_screen_mode() {
-    extern errtype inventory_update_screen_mode();
-    extern errtype mfd_update_screen_mode();
-    extern void view360_update_screen_mode();
-    extern void amap_pixratio_set(fix ratio);
     extern uchar redraw_paused;
-    extern bool DoubleSize;
 
     uchar cur_pal[768];
     uchar *s_table;
@@ -256,7 +244,6 @@ void change_svga_screen_mode() {
         /*if (svga_screen!=NULL)
                 gr_free_screen(svga_screen);*/
 
-        extern void ChangeScreenSize(int w, int h);
         ChangeScreenSize(cur_w, cur_h);
 
         svga_screen = gr_alloc_screen(cur_w, cur_h);
@@ -350,8 +337,6 @@ void change_svga_screen_mode() {
 void fullscreen_start() {
     extern LGRegion *pagebutton_region;
     extern LGRegion *inventory_region;
-    extern void draw_page_buttons(uchar full);
-    extern uchar inp6d_headset;
 
     // Hey, we don't need to hide here because the mouse already gets hidden by fooscreen_exit
     //   uiHideMouse(NULL);
@@ -402,8 +387,6 @@ void fullscreen_start() {
     // KLC   uiShowMouse(NULL);
 
     CaptureMouse(true);
-
-    extern void SetMotionCursorForMouseXY(void);
     SetMotionCursorForMouseXY();
 }
 

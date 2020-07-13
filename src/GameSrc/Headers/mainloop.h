@@ -66,27 +66,6 @@ errtype static_change_copy();
 void loopmode_exit(short loopmode);
 void loopmode_enter(short loopmode);
 
-#ifdef __MAINLOOP_SRC
-frc *_current_fr_context;
-short _current_loop = SETUP_LOOP; /* which loop we currently are */
-short _current_3d_flag = DEMOVIEW_UPDATE;
-LGRegion *_current_view = NULL;
-uint _change_flag = 0;   /* change flags for loop */
-uint _static_change = 0; /* current static changes */
-short _new_mode = 0;     /* mode to change to, if any */
-short _last_mode = 0;    /* last mode, if you want to change back to it */
-uchar time_passes = TRUE;
-uchar saves_allowed = FALSE;
-uchar physics_running = TRUE;
-uchar ai_on = TRUE;
-uchar anim_on = TRUE;
-uchar player_invulnerable = FALSE;
-uchar player_immortal = FALSE;
-uchar always_render = FALSE;
-uchar pal_fx_on = TRUE;
-
-#else // NOT _MAINLOOP_SRC
-
 extern short _current_loop; // which loop we currently are
 extern short _current_3d_flag;
 extern frc *_current_fr_context;
@@ -107,7 +86,6 @@ extern uchar saves_allowed;
 extern uchar time_passes;
 extern uchar pal_fx_on;
 extern LGRegion *_current_view;
-#endif
 
 #define loopLine(num, code_line) code_line
 

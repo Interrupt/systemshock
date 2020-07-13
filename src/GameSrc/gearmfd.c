@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mfdint.h"
 #include "mfdext.h"
 #include "mfddims.h"
+#include "mfdfunc.h"
 #include "tools.h"
 #include "otrip.h"
 #include "objbit.h"
@@ -45,8 +46,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern uchar full_game_3d;
 
 uchar gear_active(ObjID obj);
-void mfd_gear_expose(MFD *mfd, ubyte control);
-uchar mfd_gear_handler(MFD *m, uiEvent *e);
 
 // ---------------
 // EXPOSE FUNCTION
@@ -67,7 +66,6 @@ uchar gear_active(ObjID obj) {
     switch (ID2TRIP(obj)) {
     case TRACBEAM_TRIPLE:
         return (objs[obj].info.inst_flags & CLASS_INST_FLAG) != 0;
-        break;
     }
     return TRUE;
 }
@@ -84,12 +82,9 @@ ushort button_bitmaps[] = {
     (ushort)REFINDEX(REF_IMG_Use),
 };
 
-extern void mfd_item_micro_expose(uchar full, int triple);
-
 void mfd_gear_expose(MFD *mfd, ubyte control) {
     int active = player_struct.actives[ACTIVE_GENERAL];
     uchar full = control & MFD_EXPOSE_FULL;
-    extern void draw_mfd_item_spew(Ref id, int n);
     if (control == 0) // MFD is drawing stuff
     {
         // Do unexpose stuff here.

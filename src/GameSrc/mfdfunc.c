@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/23 20:34:20 $
  *
  */
-#define __MFDFUNC_SRC
 
 // Source code for all MFD Expose/Handler function pairs
 // This file is for callbacks only, actual infrastructure belongs
@@ -31,8 +30,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
+#include "ammomfd.h"
+#include "bark.h"
+#include "biohelp.h"
+#include "cardmfd.h"
+#include "cybermfd.h"
+#include "email.h"
+#include "fixtrmfd.h"
+#include "gearmfd.h"
+#include "invent.h"
+#include "mfdgump.h"
+#include "mfdpanel.h"
+#include "newmfd.h"
 #include "objprop.h" // temp
+#include "plotware.h"
 #include "tools.h"
+#include "view360.h"
+#include "viewhelp.h"
 #include "colors.h"
 #include "mainloop.h"
 #include "gameloop.h"
@@ -65,6 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mapflags.h"
 #include "input.h"
 #include "gr2ss.h"
+#include "mfdfunc.h"
 #include "mfdgames.h"
 #include "shodan.h"
 
@@ -85,10 +100,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 static uchar in_or_out = FALSE;
 
-extern void mouse_unconstrain(void);
-extern void mfd_ammo_expose(ubyte control);
-extern uchar mfd_ammo_handler(MFD *m, uiEvent *ev);
-
 #define LNAME_BUFSIZE 128
 
 #define GOOD_RED (RED_BASE + 5)
@@ -97,8 +108,6 @@ extern uchar mfd_ammo_handler(MFD *m, uiEvent *ev);
 #define UNAVAILABLE_ITEM_COLOR (0x60)
 #define X_MARGIN 1
 #define Y_STEP 5
-
-extern void check_panel_ref(uchar punt);
 
 #define PUSH_CANVAS(x) gr_push_canvas(x)
 #define POP_CANVAS() gr_pop_canvas()
@@ -111,7 +120,6 @@ extern void check_panel_ref(uchar punt);
 
 // Forward declaration of array at bottom of file
 
-extern void lamp_set_vals(void);
 extern uchar full_game_3d;
 
 LGRegion *mfd_regions[NUM_MFDS];
@@ -121,15 +129,12 @@ LGRegion *mfd_regions[NUM_MFDS];
 // ----------------
 
 void mfd_clear_view(void);
-int mfd_bmap_id(int triple);
 void draw_blank_mfd(void);
-void draw_mfd_item_spew(Ref id, int n);
 
 errtype mfd_item_init(MFD_Func *mfd);
 void mfd_expose_blank(MFD *m, ubyte control);
 void mfd_item_expose(MFD *m, ubyte control);
 uchar mfd_item_handler(MFD *m, uiEvent *e);
-void mfd_item_micro_expose(uchar full, int triple);
 void mfd_item_micro_hires_expose(uchar full, int triple);
 
 void mfd_general_inv_expose(MFD *m, ubyte control, ObjID id, uchar full);
@@ -146,7 +151,6 @@ errtype mfd_anim_init();
 void mfd_anim_expose(MFD *m, ubyte control);
 
 errtype mfd_weapon_init(MFD_Func *mfd);
-void weapon_mfd_for_reload(void);
 void mfd_weapon_expose(MFD *m, ubyte control);
 uchar mfd_weapon_handler(MFD *m, uiEvent *e);
 uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e);
@@ -158,7 +162,6 @@ void mfd_weapon_draw_ammo_buttons(int num_ammo_buttons, int ammo_subclass, ubyte
                                   int ammo_count);
 void mfd_weapon_draw_beam_status_bar(int charge, int setting, uchar does_overload);
 
-void mfd_setup_keypad(char special);
 
 uchar weapon_mfd_temp;
 
@@ -223,7 +226,6 @@ void mfd_init_funcs() {
 
     //   debug_mfd_func_table();
     //   debug_mfd_slots_table();
-    return;
 }
 
 // ===========================================================================
@@ -423,7 +425,6 @@ void mfd_weapon_expose(MFD *m, ubyte control) {
         mfd_update_rects(m);
     }
 
-    return;
 }
 
 // --------------------------------------------------------------------------
@@ -623,7 +624,6 @@ void mfd_weapon_draw_beam_status_bar(int amt, int setting, uchar does_overload) 
 void mfd_weapon_expose_beam(weapon_slot *ws, ubyte id, uchar Redraw) {
     char buf[ENERGY_TEXT_LEN];
     uchar does_overload = FALSE;
-    extern uchar does_weapon_overload(int type, int subtype);
 
     ss_safe_set_cliprect(0, 0, MFD_VIEW_WID, MFD_VIEW_HGT);
     if (id == MFD_LEFT) {
@@ -716,8 +716,6 @@ ubyte old_energy_setting = 0xFF;
 // mfd_weapon_beam_handler()
 //
 // This is the handler for beam type weapons in the weapons mfd.
-
-extern uchar does_weapon_overload(int type, int subtype);
 
 uchar mfd_weapon_beam_handler(MFD *m, uiEvent *e) {
     uchar retval = TRUE;
@@ -855,8 +853,6 @@ uchar mfd_weapon_projectile_handler(MFD *m, uiEvent *e, weapon_slot *ws) {
     if (ws->ammo > 0) {
         uchar retval = FALSE;
         if (e->mouse_data.action & UI_MOUSE_LDOUBLE) {
-            extern void unload_current_weapon(void);
-
             unload_current_weapon();
             MFDSetLeftAmmo(0xFF);
             MFDSetRightAmmo(0xFF);
@@ -906,8 +902,6 @@ uchar mfd_weapon_projectile_handler(MFD *m, uiEvent *e, weapon_slot *ws) {
 void weapon_mfd_for_reload(void) {
     uchar target_pri;
     uchar take_mfd;
-
-    extern int mfd_choose_func(int func, int slot);
 
     // Do not take down target mfd in favor of weapon in this case!
     target_pri = mfd_funcs[MFD_TARGET_FUNC].priority;
@@ -1239,7 +1233,6 @@ void mfd_item_expose(MFD *m, ubyte control) {
             //            }
             //            else
             {
-                extern uchar is_passive_hardware(int n);
                 int id;
                 short x = HARDWARE_BUTTON_X, y = HARDWARE_BUTTON_Y;
                 triple = get_triple_from_class_nth_item(CLASS_HARDWARE, currtype);
@@ -1271,7 +1264,6 @@ void mfd_item_expose(MFD *m, ubyte control) {
         case MFD_INV_SOFT_MISC:
             // Monkey see, monkey do, monkey will destroy you.
             {
-                extern uchar is_oneshot_misc_software(int n);
                 short x = HARDWARE_BUTTON_X, y = HARDWARE_BUTTON_Y;
                 triple = get_ware_triple(currclass - MFD_INV_SOFT_COMBAT + WARE_SOFT_COMBAT, currtype);
 
@@ -1294,8 +1286,6 @@ void mfd_item_expose(MFD *m, ubyte control) {
 
         mfd_update_rects(m);
     }
-
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -1556,7 +1546,6 @@ uchar mfd_shield_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *data)
 }
 
 void mfd_shield_setting(int setting) {
-    extern void shield_set_absorb(void);
     int n = CPTRIP(SHIELD_HARD_TRIPLE);
     int s = player_struct.hardwarez_status[n];
 
@@ -1963,7 +1952,6 @@ void mfd_bioware_expose(MFD *m, ubyte control) {
     // turn off the bioware if there's no exposed mfd.
     {
         extern WARE HardWare[NUM_HARDWAREZ];
-        int i;
         uchar on = full || control & MFD_EXPOSE;
         for (i = 0; i < NUM_MFDS; i++) {
             ubyte slot = player_struct.mfd_current_slots[i];
@@ -2216,9 +2204,6 @@ uchar curr_elev_special = 0;
 errtype mfd_elevator_setlev(MFD *mfd, short lev, elev_data_type *elev_data);
 uchar mfd_elevator_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *data);
 errtype mfd_elevator_init(MFD_Func *f);
-void mfd_setup_elevator(ushort levmask, ushort reachmask, ushort curlevel, uchar special);
-char *level_to_floor(int lev_num, char *buf);
-void mfd_elevator_expose(MFD *mfd, ubyte control);
 
 errtype mfd_elevator_setlev(MFD *mfd, short lev, elev_data_type *elev_data) {
     elev_data->stat.currlev = lev;
@@ -2478,7 +2463,6 @@ char *keypad_name(int b, char *buf);
 char *mfd_keypad_assemble(keypad_data_type *keypad_data, char *buf);
 errtype mfd_keypad_input(MFD *m, char b_num);
 uchar keypad_hotkey_func(ushort keycode, uint32_t context, intptr_t data);
-void install_keypad_hotkeys(void);
 uchar mfd_keypad_handler(MFD *m, uiEvent *ev);
 uchar mfd_keypad_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *data);
 errtype mfd_keypad_init(MFD_Func *f);
@@ -2562,7 +2546,6 @@ char *mfd_keypad_assemble(keypad_data_type *keypad_data, char *buf) {
 
 errtype mfd_keypad_input(MFD *mfd, char b_num) {
     keypad_data_type *keypad_data = (keypad_data_type *)&player_struct.mfd_func_data[MFD_KEYPAD_FUNC][0];
-    extern errtype keypad_trigger(ObjID id, uchar digits[MAX_KEYPAD_DIGITS]);
 
     switch (b_num) {
     case 10:
@@ -2968,12 +2951,6 @@ ubyte activecats[] = {
     MFD_INV_SOFT_COMBAT, MFD_INV_SOFT_DEFENSE, MFD_INV_SOFT_MISC, MFD_INV_GENINV, 0,
 };
 
-extern void set_current_active(int);
-void update_item_mfd(void);
-uchar mfd_distance_remove(ubyte slot_func);
-uchar mfd_target_qual(void);
-uchar mfd_automap_qual(void);
-uchar mfd_weapon_qual(void);
 
 void set_inventory_mfd(ubyte obclass, ubyte type, uchar grab) {
     int i;
@@ -3072,8 +3049,6 @@ void set_inventory_mfd(ubyte obclass, ubyte type, uchar grab) {
 
     if (obclass != MFD_INV_NULL && type != MFD_INV_NOTYPE)
         player_struct.actives[catactives[obclass]] = type;
-
-    return;
 }
 
 void update_item_mfd(void) {
@@ -3113,40 +3088,6 @@ uchar mfd_automap_qual(void) { return (player_struct.hardwarez[HARDWARE_AUTOMAP]
 uchar mfd_weapon_qual(void) {
     return (player_struct.weapons[player_struct.actives[ACTIVE_WEAPON]].type != EMPTY_WEAPON_SLOT);
 }
-
-// --------------------------------------------------------
-// THE STATIC MFD_FUNCS ARRAY
-
-extern void mfd_view360_expose(MFD *mfd, ubyte control);
-extern void mfd_dummy_expose(MFD *mfd, ubyte control);
-extern void mfd_fixture_expose(MFD *mfd, ubyte control);
-extern uchar mfd_fixture_handler(MFD *mfd, uiEvent *e);
-extern void mfd_emailmug_expose(MFD *mfd, ubyte control);
-extern uchar mfd_emailmug_handler(MFD *mfd, uiEvent *e);
-extern errtype mfd_emailware_init(MFD_Func *f);
-extern void mfd_emailware_expose(MFD *, ubyte);
-extern void mfd_plotware_expose(MFD *, ubyte);
-extern errtype mfd_plotware_init(MFD_Func *f);
-extern void mfd_bark_expose(MFD *, ubyte);
-extern errtype mfd_accesspanel_init(MFD_Func *f);
-extern uchar mfd_accesspanel_handler(MFD *mfd, uiEvent *ev);
-extern void mfd_accesspanel_expose(MFD *mfd, ubyte control);
-extern errtype mfd_gridpanel_init(MFD_Func *f);
-extern void mfd_gridpanel_expose(MFD *mfd, ubyte control);
-extern uchar mfd_gridpanel_handler(MFD *mfd, uiEvent *ev);
-extern void mfd_targetware_expose(MFD *mfd, ubyte control);
-extern uchar mfd_targetware_handler(MFD *mfd, uiEvent *ev);
-extern void mfd_gump_expose(MFD *mfd, ubyte control);
-extern uchar mfd_gump_handler(MFD *mfd, uiEvent *ev);
-extern void mfd_accesscard_expose(MFD *mfd, ubyte control);
-extern void mfd_biohelp_expose(MFD *mfd, ubyte control);
-extern errtype mfd_biohelp_init(MFD_Func *f);
-extern uchar mfd_biohelp_handler(MFD *mfd, uiEvent *ev);
-extern void mfd_cspace_expose(MFD *mfd, ubyte control);
-extern void mfd_viewhelp_expose(MFD *mfd, ubyte control);
-extern errtype mfd_viewhelp_init(MFD_Func *f);
-extern void mfd_gear_expose(MFD *mfd, ubyte control);
-extern uchar mfd_gear_handler(MFD *mfd, uiEvent *ev);
 
 #define PANEL_PRIORITY 37
 

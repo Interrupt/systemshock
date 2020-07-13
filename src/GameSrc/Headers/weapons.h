@@ -122,6 +122,13 @@ int current_weapon_trip(void);
 
 uchar gun_takes_ammo(int guntrip, int ammotrip);
 
+uchar ready_to_draw_handart(void);
+
+uchar does_weapon_overload(int type, int subtype);
+
+void unload_current_weapon(void);
+
+
 // Globals
 
 #endif // __WEAPONS_H

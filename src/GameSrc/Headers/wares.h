@@ -143,6 +143,47 @@ void wares_init();
 void wares_update();
 // called from the game loop
 
+void hardware_closedown(uchar visible);
+void hardware_startup(uchar visible);
+void hardware_power_outage(void);
+uchar is_passive_hardware(int n);
+
+bool is_oneshot_misc_software(int n);
+int energy_cost(int warenum);
+
+//-----------------------
+//   CYBERSPACE ONESHOTS
+//-----------------------
+void do_turbo_stuff(uchar from_drug);
+void turbo_turnon(uchar visible, uchar real_start);
+void turbo_turnoff(uchar visible, uchar real_start);
+void fakeid_turnon(uchar visible, uchar real_start);
+void decoy_turnon(uchar visible, uchar real_start);
+void decoy_turnoff(uchar visible, uchar real_stop);
+void recall_turnon(uchar visible, uchar real_start);
+
+// ---------------------
+//    JUMP JET WARE
+// ---------------------
+void activate_jumpjets(fix *xcntl, fix *ycntl, fix *zcntl);
+
+// ---------------
+//  LANTERN WARE
+// ---------------
+void lamp_set_vals(void);
+void lamp_set_vals_with_offset(byte offset);
+void lamp_turnon(uchar visible, uchar real_start);
+void lamp_change_setting(byte offset);
+void lamp_turnoff(uchar visible, uchar real_stop);
+uchar lantern_change_setting_hkey(ushort keycode, uint32_t context, intptr_t data);
+
+//--------------------------
+// SHIELD WARE
+//--------------------------
+void shield_set_absorb(void);
+void shield_toggle(uchar visible, uchar real);
+uchar shield_change_setting_hkey(ushort keycode, uint32_t context, intptr_t data);
+
 // -------
 // Globals
 // -------

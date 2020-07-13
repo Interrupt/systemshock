@@ -430,7 +430,6 @@ void star_rand(uchar col, uchar range) {
 
 extern g3s_point *first_free;
 extern g3s_matrix view_matrix;
-extern int code_point(g3s_point *pt);
 
 // matrix rotate and code a star point.  Project if clip codes
 // are not set, rotate fully if in front of viewer

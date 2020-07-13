@@ -67,22 +67,14 @@ int wirepos_iswire(wirePosPuzzle *wppz, int wim_code);
 int wirepos_rescore_n_check(wirePosPuzzle *wppz);
 uchar wirepos_moveto(wirePosPuzzle *wppz, int wim_code);
 
-int mfd_slot_primary(int slot);
 uchar mfd_accesspanel_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *data);
-uchar mfd_accesspanel_handler(MFD *mfd, uiEvent *ev);
-errtype mfd_accesspanel_init(MFD_Func *f);
 int access_help_string(wirePosPuzzle *wppz);
-void mfd_accesspanel_expose(MFD *mfd, ubyte control);
 void mfd_setup_wirepanel(uchar special, ObjID id);
 uchar mfd_solve_wirepanel(void);
-errtype mfd_gridpanel_init(MFD_Func *f);
-uchar mfd_gridpanel_button_handler(MFD *mfd, LGPoint bttn, uiEvent *ev, void *data);
-uchar mfd_gridpanel_handler(MFD *m, uiEvent *ev);
 void mfd_setup_gridpanel(ObjID id);
 uchar mfd_solve_gridpanel(void);
 void mfd_gridpanel_set_winmove(uchar check);
 gpz_state gridpanel_move(LGPoint node, gridFlowPuzzle *gfpz);
-void mfd_gridpanel_expose(MFD *mfd, ubyte control);
 
 void gpz_set_grid_state(gridFlowPuzzle *gfpz, short row, short col, gpz_state val);
 void gpz_uncharge_grid(gridFlowPuzzle *gfpz);
@@ -629,7 +621,6 @@ errtype mfd_accesspanel_init(MFD_Func *f) {
 }
 
 uchar mfd_accesspanel_handler(MFD *m, uiEvent *e) {
-    extern uchar mfd_gridpanel_handler(MFD *, uiEvent *);
 #ifdef EPICK_ON_CURSOR_TRY
     extern uchar try_use_epick(ObjID panel, ObjID cursor_obj);
 

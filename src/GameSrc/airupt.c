@@ -27,13 +27,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 
+#include "airupt.h"
 #include "musicai.h"
 #include "map.h"
 #include "tools.h"
 #include "mlimbs.h"
-
-extern errtype musicai_reset(uchar runai);
-extern errtype musicai_shutdown();
 
 struct mlimbs_request_info default_request = {0, 0, 4, 100, 0, 64, TRUE, 0, 0};
 
@@ -100,10 +98,8 @@ extern int score_playing;
 extern short curr_ramp_time, curr_ramp;
 extern char curr_prioritize, curr_crossfade;
 
-extern errtype mai_transition(int new_trans);
-extern errtype make_request(int chunk_num, int piece_ID);
-extern int digifx_volume_shift(short x, short y, short z, short phi, short theta, short basevol);
-extern int digifx_pan_shift(short x, short y, short z, short phi, short theta);
+// extern int digifx_volume_shift(short x, short y, short z, short phi, short theta, short basevol);
+// extern int digifx_pan_shift(short x, short y, short z, short phi, short theta);
 extern uchar mai_semaphor;
 
 extern uchar park_random;
@@ -130,8 +126,6 @@ extern uchar mlimbs_semaphore;
 uchar run_asynch_music_ai = FALSE;
 uchar mai_semaphor = FALSE;
 
-errtype check_asynch_ai(uchar new_score_ok);
-void grind_music_ai(void);
 
 void music_ai() {
     //   mlimbs_semaphore = TRUE;

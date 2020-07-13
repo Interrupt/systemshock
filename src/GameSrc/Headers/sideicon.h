@@ -79,6 +79,9 @@ void init_side_icon_popups(void);
 extern void screen_init_side_icons(LGRegion *root);
 errtype side_icon_load_bitmaps();
 errtype side_icon_free_bitmaps();
+void side_icon_language_change(void);
+
+void zoom_to_side_icon(LGPoint from, int icon);
 
 // Globals
 

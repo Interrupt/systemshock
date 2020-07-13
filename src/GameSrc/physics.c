@@ -44,6 +44,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "froslew.h"
 #include "grenades.h"
 #include "ice.h"
+#include "input.h"
+#include "leanmetr.h"
 #include "loops.h"
 #include "lvldata.h"
 #include "map.h"
@@ -75,18 +77,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // --------------------
 uchar safety_net_wont_you_back_me_up(ObjID oid);
 void add_edms_delete(int ph);
-void edms_delete_go(void);
-void get_phys_state(int ph, State *new_state, ObjID id);
-void physics_zero_all_controls(void);
 errtype compare_locs(void);
-void physics_set_relax(int axis, uchar relax);
 void relax_axis(int axis);
-errtype collide_objects(ObjID collision, ObjID victim, int bad);
 void terrain_object_collide(physics_handle src, ObjID target);
 errtype run_cspace_collisions(ObjID obj, ObjID exclude, ObjID exclude2);
-void state_to_objloc(State *s, ObjLoc *l);
-uchar get_phys_info(int ph, fix *list, int cnt);
-fix ID2radius(ObjID id);
 
 // STANDARD MODELS
 // ---------------
@@ -96,6 +90,9 @@ fix ID2radius(ObjID id);
 #define STANDARD_PEP       fix_make(5, 0)
 #define DEFAULT_SIZE       (FIX_UNIT / 2)
 #define STANDARD_HEIGHT    fix_make(0, 0xbd00)
+
+TerrainData terrain_info;
+State standard_state;
 
 Robot standard_robot = {STANDARD_MASS, DEFAULT_SIZE, STANDARD_HARDNESS, STANDARD_PEP, STANDARD_GRAVITY, FALSE};
 
@@ -128,13 +125,11 @@ byte player_controls[CONTROL_BANKS][DEGREES_OF_FREEDOM] = {
     {0, 0, 0, 0, 0, 0}
 };
 
-extern errtype (*state_generators[])(ObjID id, int x, int y, ObjLocState *ret);
 long old_ticks;
 
 // Collision callback testing....
 void cit_collision_callback(physics_handle C, physics_handle V, int32_t bad, int32_t DATA1, int32_t DATA2, fix location[3]);
 void cit_awol_callback(physics_handle caller);
-void cit_sleeper_callback(physics_handle caller);
 void cit_autodestruct_callback(physics_handle caller);
 
 // mapping from physics controls to camera controls
@@ -173,7 +168,6 @@ uchar safety_net_wont_you_back_me_up(ObjID oid) {
 void add_edms_delete(int ph) {
     int i = 0;
     uchar bad = FALSE;
-    extern char *get_object_lookname(ObjID id, char use_string[], int sz);
 
     for (i = 0; i < curr_edms_del; i++)
         if (edms_delete_queue[i] == ph)
@@ -267,8 +261,6 @@ extern uchar in_peril;
 // square, put it here...
 
 errtype compare_locs(void) {
-    extern void expose_player(byte damage, ubyte type, ushort hlife);
-    extern void check_hazard_regions(MapElem *);
     MapElem *newElem, *oldElem;
     extern int score_playing;
 
@@ -374,8 +366,6 @@ errtype run_cspace_collisions(ObjID obj, ObjID exclude, ObjID exclude2) {
 #define SKATE_ALPHA_CUTOFF (fix_make(8, 0))
 #define MAX_BOOSTER_ALPHA (fix_make(40, 0))
 
-extern void physics_set_relax(int axis, uchar relax);
-
 // Takes a physics state and converts it into an Objloc
 // externed in objsim.c
 void state_to_objloc(State *s, ObjLoc *l) {
@@ -398,7 +388,6 @@ short last_deltap = 0, last_deltah = 0;
 
 errtype physics_run(void) {
     int i;
-    extern int avail_memory(int debug_src);
 
     uchar update = FALSE;
     int deltat = player_struct.deltat;
@@ -533,8 +522,6 @@ errtype physics_run(void) {
             player_set_lean(leanx, player_struct.leany);
         }
         if (player_struct.controls[CONTROL_YZROT] != 0) {
-            extern int player_get_eye_fixang(void);
-            extern void player_set_eye_fixang(int);
             int delta = player_struct.controls[CONTROL_YZROT] * MAX_PITCH_RATE / CONTROL_MAX_VAL;
             int eye = player_get_eye_fixang();
             if (player_struct.drug_status[DRUG_REFLEX] > 0 && !global_fullmap->cyber)
@@ -545,7 +532,6 @@ errtype physics_run(void) {
 
         plr_lean = fix_make((int)player_struct.leanx, 0) / 3;
         if (player_struct.controls[CONTROL_ZVEL] > 0) {
-            extern void activate_jumpjets(fix * x, fix * y, fix * z);
             extern uchar jumpjets_active;
 
             player_set_posture(POSTURE_STAND);
@@ -1351,8 +1337,6 @@ uchar player_throw_object(ObjID proj_id, int x, int y, int lastx, int lasty, fix
     // let's ignore the thrown object
     EDMS_ignore_collisions(objs[PLAYER_OBJ].info.ph, objs[proj_id].info.ph);
     if (objs[proj_id].obclass == CLASS_GRENADE) {
-        extern void reactivate_mine(ObjID id);
-
         // let's get it to hit player after a little time
         if (objs[proj_id].subclass == GRENADE_SUBCLASS_DIRECT)
             //      if (GrenadeProps[CPNUM(proj_id)].flags & GREN_MINE_TYPE)
@@ -1464,8 +1448,6 @@ errtype collide_objects(ObjID collision, ObjID victim, int bad) {
                 break;
             }
         } else {
-            extern void slow_proj_hit(ObjID id, ObjID victim);
-
             // Was the player firing a special projectile?
             switch (ID2TRIP(collision)) {
             case DRILLSLOW_TRIPLE:

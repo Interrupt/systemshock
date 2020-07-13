@@ -28,11 +28,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
+#include "email.h"
 #include "invent.h"
+#include "leanmetr.h"
 #include "objprop.h"
 #include "objwpn.h"
 #include "objwarez.h"
 #include "objsim.h"
+#include "objuse.h"
+#include "status.h"
 #include "tools.h"
 #include "colors.h"
 #include "player.h"
@@ -52,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cit2d.h"
 #include "gr2ss.h"
 #include "criterr.h"
-
+#include "view360.h"
 #include "objload.h"
 #include "invpages.h"
 #include "sfxlist.h"
@@ -283,8 +287,6 @@ int known_actives[NUM_ACTIVES];
 #define NULL_PAGE 0xFFFF
 extern inv_display inv_display_list[];
 
-extern uchar email_color_func(void *dp, int num);
-
 color_func color_func_list[] = {email_color_func};
 #define EMAIL_COLOR_FUNC 240
 
@@ -362,15 +364,11 @@ static char cursor_string_buf[128];
 // ---------------------
 //  Internal Prototypes
 // ---------------------
-void draw_page_buttons(uchar full);
 ubyte add_to_some_page(ObjID obj, uchar select);
-void push_inventory_cursors(LGCursor *newcurs);
-void pop_inventory_cursors(void);
 void draw_inventory_string(char *s, int x, int y, uchar clear);
 void clear_inventory_region(short x1, short y1, short x2, short y2);
 void draw_quant_line(char *name, char *quant, long color, uchar active, short left, short right, short y);
 void draw_quant_list(inv_display *dp, uchar newpage);
-void set_current_active(int activenum);
 int get_item_at_pixrow(inv_display *dp, int row);
 char *weapon_name_func(void *, int num, char *buf);
 char *weapon_quant_func(int num, char *buf);
@@ -383,7 +381,6 @@ ubyte generic_add_func(inv_display *dp, int row, ObjID *idP, uchar select);
 void generic_drop_func(inv_display *dp, int row);
 char *null_name_func(inv_display *dp, int n, char *buf);
 static char *grenade_name_func(void *vdp, int n, char *buf);
-void push_live_grenade_cursor(ObjID obj);
 uchar grenade_use_func(inv_display *dp, int row);
 ubyte grenade_add_func(inv_display *dp, int row, ObjID *idP, uchar select);
 char *drug_name_func(inv_display *dp, int n, char *buf);
@@ -398,14 +395,12 @@ uchar general_use_func(inv_display *dp, int row);
 ubyte inv_empty_trash(void);
 ubyte add_access_card(inv_display *dp, ObjID *idP, uchar select);
 ubyte general_add_func(inv_display *dp, int row, ObjID *idP, uchar select);
-void remove_general_item(ObjID obj);
 void general_drop_func(inv_display *, int row);
 uchar inv_select_general(inv_display *dp, int w);
 void email_more_draw(inv_display *dp);
 uchar email_more_use(inv_display *dp, int);
 uchar email_use_func(inv_display *dp, int row);
 void email_select_func(inv_display *dp, int row);
-void add_email_datamunge(short mung, uchar select);
 ubyte email_add_func(inv_display *, int, ObjID *idP, uchar select);
 void email_drop_func(inv_display *, int);
 char *log_name_func(void *, int num, char *buf);
@@ -419,16 +414,9 @@ uchar inventory_handle_rightbutton(uiEvent *ev, LGRegion *reg, inv_display *dp, 
 uchar inventory_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t);
 uchar pagebutton_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t);
 uchar invent_hotkey_func(ushort, uint32_t, intptr_t data);
-uchar cycle_weapons_func(ushort, uint32_t, intptr_t data);
 void init_invent_hotkeys(void);
-void invent_language_change(void);
-errtype inventory_update_screen_mode();
-void inv_change_fullscreen(uchar on);
-void inv_update_fullscreen(uchar full);
-void super_drop_func(int dispnum, int row);
-void super_use_func(int dispnum, int row);
 void gen_log_displays(int pgnum);
-void absorb_object_on_cursor(ushort, uint32_t, intptr_t);
+void absorb_object_on_cursor(ushort keycode, uint32_t context, intptr_t data);
 uchar gen_inv_page(int pgnum, int *i, inv_display **dp);
 uchar gen_inv_displays(int *i, inv_display **dp);
 
@@ -888,7 +876,6 @@ void weapon_drop_func(inv_display *dp, int itemnum) {
 // -------------
 // GENERIC FUNCS
 // -------------
-extern int nth_after_triple(int, uchar);
 
 static char *generic_name_func(void *vdp, int num, char *buf) {
     int trip = nth_after_triple(((inv_display *)vdp)->basetrip, num);
@@ -1112,7 +1099,6 @@ uchar grenade_use_func(inv_display *dp, int row) {
 }
 
 ubyte grenade_add_func(inv_display *dp, int row, ObjID *idP, uchar select) {
-    extern errtype string_message_info(int strnum);
     ObjSpecID sid = objs[*idP].specID;
     play_digi_fx(SFX_INVENT_ADD, 1);
     if (objGrenades[sid].flags & GREN_ACTIVE_FLAG) {
@@ -1216,7 +1202,6 @@ static uchar ware_use_func(inv_display *dp, int row) {
 
 void hardware_add_specials(int n, int ver) {
     extern WARE HardWare[NUM_HARDWAREZ];
-    extern void gamescr_bio_func(void);
     switch (n) {
     case HARDWARE_AUTOMAP:
         mfd_notify_func(MFD_MAP_FUNC, MFD_MAP_SLOT, TRUE, MFD_ACTIVE, TRUE);
@@ -1230,8 +1215,6 @@ void hardware_add_specials(int n, int ver) {
         mfd_notify_func(MFD_TARGET_FUNC, MFD_TARGET_SLOT, TRUE, MFD_ACTIVE, TRUE);
         break;
     case HARDWARE_SHIELD: {
-        extern int energy_cost(int warenum);
-        extern void shield_set_absorb(void);
         int ener = 0;
         if (WareActive(player_struct.hardwarez_status[CPTRIP(SHIELD_HARD_TRIPLE)]))
             ener = energy_cost(CPTRIP(SHIELD_HARD_TRIPLE));
@@ -1244,7 +1227,6 @@ void hardware_add_specials(int n, int ver) {
         mfd_notify_func(MFD_SHIELD_FUNC, MFD_ITEM_SLOT, FALSE, MFD_ACTIVE, FALSE);
     } break;
     case HARDWARE_ENVIROSUIT: {
-        extern void zoom_to_lean_meter(void);
         if (_current_loop == GAME_LOOP)
             gamescr_bio_func();
         zoom_to_lean_meter();
@@ -1257,7 +1239,6 @@ void hardware_add_specials(int n, int ver) {
         break;
     }
     if (HardWare[n].sideicon != SI_NONE) {
-        extern void zoom_to_side_icon(LGPoint from, int icon);
         LGPoint from;
         ui_mouse_get_xy(&from.x, &from.y);
         zoom_to_side_icon(from, HardWare[n].sideicon);
@@ -1477,7 +1458,6 @@ void draw_general_list(inv_display *dp) {
 
 uchar general_use_func(inv_display *dp, int row) {
     ObjID id = player_struct.inventory[row];
-    extern errtype object_use(ObjID id, uchar in_inv, ObjID cursor_obj);
     if (id == OBJ_NULL)
         return FALSE;
     if (ObjProps[OPNUM(id)].flags & OBJECT_USE_NOCURSOR) {
@@ -1637,7 +1617,6 @@ ubyte general_add_func(inv_display *dp, int row, ObjID *idP, uchar select) {
 }
 
 void remove_general_item(ObjID obj) {
-    extern errtype obj_tractor_beam_func(ObjID id, uchar on);
     int row;
     int i;
 
@@ -1690,13 +1669,9 @@ out:
 // EMAIL
 // -----
 
-errtype inventory_draw_new_page(int pgnum);
 #define EMAIL_TRIP 0 // MAKETRIP(CLASS_SOFTWARE,SOFTWARE_SUBCLASS_EMAIL,0)
 
 #define FIRST_DATA (NUM_EMAIL - NUM_DATA)
-
-extern char *email_name_func(void *dp, int num, char *buf);
-
 #define MORE_COLOR SELECTED_ITEM_COLOR
 
 static uchar email_morebuttons[2];
@@ -1744,7 +1719,6 @@ uchar email_more_use(inv_display *dp, int w) {
 #define TITLE_IDX 1
 
 uchar email_use_func(inv_display *dp, int row) {
-    extern void read_email(Id, int);
     uchar retval = FALSE;
     int n = dp->lines[row].num;
 
@@ -1755,8 +1729,6 @@ uchar email_use_func(inv_display *dp, int row) {
     return retval;
 }
 
-extern void select_email(int num, uchar scr_update);
-
 void email_select_func(inv_display *dp, int row) {
     int n = dp->lines[row].num;
     if (n < dp->listlen) {
@@ -1766,8 +1738,6 @@ void email_select_func(inv_display *dp, int row) {
 }
 
 void add_email_datamunge(short mung, uchar select) {
-    extern void set_email_flags(int n);
-
     int n;
     uchar flash_email = TRUE;
     ubyte ver;
@@ -2160,7 +2130,6 @@ uchar inventory_handle_rightbutton(uiEvent *ev, LGRegion *reg, inv_display *dp, 
     if (grab && dp != NULL && row >= 0) {
         uchar cyber = TRIP2CL(dp->basetrip) == CLASS_SOFTWARE;
         if (cyber != global_fullmap->cyber) {
-            extern errtype string_message_info(int);
             int str = cyber ? REF_STR_InvCybFailSoft : REF_STR_InvCybFailHard;
             string_message_info(str);
         } else if (dp->drop != NULL) {
@@ -2458,7 +2427,6 @@ void invent_language_change(void) {
 
 LGRegion *create_invent_region(LGRegion *root, LGRegion **pbuttons, LGRegion **pinvent) {
     static uchar done_init = FALSE;
-    extern void add_email_handler(LGRegion * r);
     int id;
     LGRect invrect;
     LGRegion *invreg = (LGRegion *)malloc(sizeof(LGRegion));
@@ -2591,8 +2559,6 @@ errtype inventory_update_screen_mode() {
     */
     return (OK);
 }
-
-extern uchar inv_is_360_view(void);
 
 void inv_change_fullscreen(uchar on) {
     if (on) {
@@ -3453,5 +3419,4 @@ void absorb_object_on_cursor(ushort keycode, uint32_t context, intptr_t data) {
 
     if (inventory_add_object(object_on_cursor, TRUE))
         pop_cursor_object();
-    return;
 }

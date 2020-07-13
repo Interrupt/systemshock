@@ -118,11 +118,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Initialize the AI portion of the MLIMBS system.
 errtype mlimbs_AI_init(void);
 void music_ai(void);
+errtype musicai_shutdown();
+errtype musicai_reset(uchar runai);
+int gen_monster(int monster_num);
+void musicai_clear();
 errtype mai_monster_nearby(int monster_type);
 errtype mai_attack();
 errtype mai_intro();
 errtype mai_monster_defeated();
 errtype mai_player_death();
+errtype mai_transition(int new_trans);
+
+errtype make_request(int chunk_num, int piece_ID);
+
 errtype fade_into_location(int x, int y);
 errtype load_score_for_location(int x, int y);
 errtype load_score_from_cfg(char *filename);
@@ -146,18 +154,6 @@ extern uchar digi_pan_reverse;
 void grind_credits_music_ai(void);
 
 // Globals
-#ifdef __MUSICAI_SRC
-int mlimbs_peril, mlimbs_positive, mlimbs_motion, mlimbs_monster;
-ulong mlimbs_combat;
-int current_score, current_zone, current_mode, random_flag;
-int current_transition, last_score;
-int boring_count;
-int mlimbs_boredom;
-int *output_table;
-uchar wait_flag;
-int next_mode, ai_cycle;
-int cur_digi_channels = 4;
-#else
 extern int mlimbs_peril, mlimbs_positive, mlimbs_motion, mlimbs_monster;
 extern ulong mlimbs_combat;
 extern int current_score, current_zone, current_mode, random_flag;
@@ -170,6 +166,5 @@ extern int next_mode, ai_cycle;
 extern uchar music_card, music_on;
 extern uchar /*sfx_card, */ sfx_on;
 extern int cur_digi_channels;
-#endif
 
 #endif // __MUSICAI_H

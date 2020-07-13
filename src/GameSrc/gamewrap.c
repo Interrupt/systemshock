@@ -23,8 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/26 03:36:36 $
  */
 
-#define __GAMEWRAP_SRC
-
 #include <string.h>
 
 #include "Shock.h"
@@ -33,15 +31,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "archiveformat.h"
 #include "criterr.h"
 #include "cybmem.h"
-#include "cybstrng.h"
+#include "drugs.h"
 #include "dynmem.h"
 #include "faketime.h"
+#include "frprotox.h"
 #include "gamewrap.h"
-#include "hkeyfunc.h"
+#include "hud.h"
 #include "invent.h"
 #include "invpages.h"
+#include "leanmetr.h"
 #include "mainloop.h"
-#include "map.h"
 #include "miscqvar.h"
 #include "musicai.h" // to tweak music upon startup
 #include "newmfd.h"
@@ -52,11 +51,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "saveload.h"
 #include "schedule.h"
+#include "setup.h"
 #include "shodan.h"
 #include "sideicon.h"
 #include "status.h"
 #include "tools.h"
+#include "trigger.h"
 #include "wares.h"
+#include "wrapper.h"
 
 #include "otrip.h"
 
@@ -132,14 +134,6 @@ errtype copy_file(char *src_fname, char *dest_fname) {
 }
 
 void closedown_game(uchar visible) {
-    extern void fr_closedown(void);
-    extern void olh_closedown(void);
-    extern void musicai_clear();
-    extern void drug_closedown(bool visible);
-    extern void hardware_closedown(bool visible);
-    extern void clear_digi_fx();
-    extern void reset_schedules(void);
-    extern void hud_shutdown_lines(void);
     // clear any transient hud settings
     hud_shutdown_lines();
     drug_closedown(visible);
@@ -153,8 +147,6 @@ void closedown_game(uchar visible) {
 }
 
 void startup_game(uchar visible) {
-    extern void drug_startup(uchar visible);
-    extern void hardware_startup(uchar visible);
     drug_startup(visible);
     hardware_startup(visible);
     if (visible) {
@@ -188,8 +180,6 @@ void check_save_game_wackiness(void) {
 }
 
 #endif // NOT_YET
-
-extern int flush_resource_cache();
 
 errtype save_game(char *fname, char *comment) {
     int filenum;
@@ -276,7 +266,6 @@ errtype save_game(char *fname, char *comment) {
 }
 
 errtype load_game_schedules(void) {
-    extern int compare_events(void *, void *);
     char *oldvec;
     int idx = SCHEDULE_BASE_ID;
 
@@ -289,24 +278,12 @@ errtype load_game_schedules(void) {
 }
 
 errtype interpret_qvars(void) {
-    extern void recompute_music_level(ushort var);
-    extern void recompute_digifx_level(ushort var);
-#ifdef AUDIOLOGS
-    extern void recompute_audiolog_level(ushort var);
-#endif
 #ifdef SVGA_SUPPORT
     extern short mode_id;
 #endif
-    extern void digichan_dealfunc(short val);
-    extern void dclick_dealfunc(ushort var);
-    extern void joysens_dealfunc(ushort var);
-    extern void language_change(uchar lang);
-    extern errtype load_da_palette();
     extern uchar fullscrn_vitals;
     extern uchar fullscrn_icons;
     extern uchar map_notes_on;
-    extern uchar audiolog_setting;
-    extern char convert_use_mode;
     extern ubyte hud_color_bank;
 
     // KLC - don't do this here - it's a global now.   load_da_palette();
@@ -343,14 +320,10 @@ errtype load_game(char *fname) {
     ObjID old_plr;
     uchar bad_save = FALSE;
     char orig_lvl;
-    extern errtype change_detail_level(byte new_level);
-    extern void player_set_eye_fixang(int ang);
     extern uint dynmem_mask;
 
     INFO("load_game %s", fname);
 
-    //see setup.c
-    extern void empty_slate(void);
     empty_slate();
 
     closedown_game(TRUE);
@@ -408,8 +381,6 @@ errtype load_game(char *fname) {
     }
 
     extern uchar muzzle_fire_light;
-    extern void lamp_turnon(uchar visible, uchar real);
-    extern void lamp_turnoff(uchar visible, uchar real);
     muzzle_fire_light = FALSE;
     if (!(player_struct.hardwarez_status[CPTRIP(LANTERN_HARD_TRIPLE)] & WARE_ON))
         lamp_turnoff(TRUE, FALSE);
@@ -475,7 +446,6 @@ uchar create_initial_game_func(short undefined1, ulong undefined2, void *undefin
     byte plrdiff[4];
     char tmpname[sizeof(player_struct.name)];
     short plr_obj;
-    extern errtype do_level_entry_triggers();
 
     INFO("Starting game");
     DEBUG("Game archive at %s", ARCHIVE_FNAME);

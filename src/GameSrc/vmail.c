@@ -26,9 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Shock.h"
 
-// KLC #include <screen.h>
+#include "anim.h"
+#include "email.h"
 #include "game_screen.h"
 #include "vmail.h"
+#include "input.h"
 #include "invent.h"
 #include "mainloop.h"
 #include "gameloop.h"
@@ -37,13 +39,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "sfxlist.h"
 #include "musicai.h"
 #include "player.h"
+#include "sdl_events.h"
 #include "statics.h"
 #include "fullscrn.h"
 #include "render.h"
 #include "gr2ss.h"
 #include "criterr.h"
 
-#include "anim.h"
 
 //#define LOTS_O_SPEW
 uchar vmail_wait_for_input = TRUE;
@@ -57,9 +59,6 @@ ActAnim *main_anim;
 
 byte current_vmail = -1;
 extern LGCursor vmail_cursor;
-
-extern void SDLDraw(void);
-extern void pump_events(void);
 
 Ref vmail_frame_anim[NUM_VMAIL] = {
    RES_FRAMES_shield,
@@ -97,7 +96,6 @@ ubyte vmail_len[NUM_VMAIL] = {
 extern grs_canvas *anim_offscreen;
 uchar copied_background = FALSE;
 grs_bitmap *vmail_background = NULL;
-extern uchar uiCheckInput(void);
 
 #pragma disable_message(202)
 void vmail_intro(LGRect *area, ubyte flags)
@@ -248,8 +246,6 @@ errtype play_vmail(byte vmail_no)
    extern uiSlab main_slab;
    extern uchar game_paused;
    extern uchar checking_mouse_button_emulation;
-   extern uchar citadel_check_input(void);
-   extern void email_page_exit(void);
    extern short old_invent_page;
 
    // make sure we don't have a current vmail, and we're given a valid vmail num

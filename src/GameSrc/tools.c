@@ -25,10 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Source code from random useful tools and utilities
 
-#define __TOOLS_SRC
-
 #include <string.h>
 #include <ctype.h>
+#include <SDL.h>
 
 #include "criterr.h"
 #include "gr2ss.h"
@@ -42,24 +41,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 #include "hud.h"
 #include "canvchek.h"
+#include "palfx.h"
 #include "player.h"
 #include "faketime.h"
 #include "cit2d.h"
 
-#include <SDL.h>
 #include "OpenGL.h"
-
+#include "Shock.h"
 
 //------------
 //  PROTOTYPES
 //------------
-int str_to_hex(char val);
-void text_button(char *text, int xc, int yc, int col, int shad, int w, int h);
 void simple_text_button(char *text, int xc, int yc, int col);
 void Rect_gr_rect(LGRect *r);
 void Rect_gr_box(LGRect *r);
 char *itoa_2_10(char *s, int val);
-void zoom_rect(LGRect *start, LGRect *end);
 
 int str_to_hex(char val) {
     int retval = 0;
@@ -91,8 +87,6 @@ void draw_shadowed_string(char *s, short x, short y, uchar shadow) {
     {
 #ifdef SVGA_SUPPORT
         extern char convert_use_mode;
-        extern uchar perform_svga_conversion(uchar mask);
-        extern void ss_scale_string(char *s, short x, short y);
         if ((convert_use_mode > 0) && (perform_svga_conversion(OVERRIDE_FONT))) {
             if (shadow_scale)
                 ss_point_convert(&(npt.x), &(npt.y), FALSE);
@@ -198,8 +192,6 @@ errtype draw_full_res_bm(Ref id, int x, int y, uchar fade_in) {
     FrameDesc *f;
     short *temp_pall;
     byte pal_id;
-    extern void finish_pal_effect(byte id);
-    extern byte palfx_start_fade_up(uchar * new_pal);
 
     f = RefLock(id);
     if (f == NULL)
@@ -400,7 +392,6 @@ LGRect msg_rect[2] = {
 uchar message_resend = FALSE;
 extern uchar game_paused;
 extern uchar view360_message_obscured;
-void strip_newlines(char *buf);
 
 // Use the string wrapper's secret characters to delete newlines and double spaces.
 void strip_newlines(char *buf) {
@@ -414,7 +405,6 @@ void strip_newlines(char *buf) {
 }
 
 errtype message_info(const char *info_text) {
-    extern errtype inventory_draw_new_page(int pgnum);
     int x, y;
     char buf[MESSAGE_LEN];
 
@@ -704,7 +694,6 @@ errtype begin_wait() {
         retval = uiPushGlobalCursor(&wait_cursor);
         uiShowMouse(NULL);
 
-        extern void SDLDraw(void);
         SDLDraw();
     }
     wait_count++;

@@ -23,8 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/28 06:38:07 $
  */
 
-#define __INIT_SRC
-
 #include <string.h>
 #include <stdio.h>
 
@@ -52,6 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "render.h"
 #include "rendtool.h"
+#include "sdl_events.h"
 #include "sideicon.h"
 #include "textmaps.h"
 #include "tickcount.h"
@@ -63,6 +62,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullscrn.h"
 #include "frcamera.h"
 #include "dynmem.h"
+#include "vitals.h"
+#include "view360.h"
 
 #include "shockolate_version.h" // for system shock version number
 
@@ -127,10 +128,6 @@ errtype init_3d_objects();
 errtype obj_3d_shutdown();
 void init_popups();
 uchar pause_for_input(ulong wait_time);
-void shock_alloc_ipal();
-
-extern void rendedit_process_tilemap(FullMap *fmap, LGRect *r, uchar newMap);
-extern void mac_get_pal(int start, int n, uchar *pal_data);
 
 errtype init_pal_fx();
 void byebyemessage(void);
@@ -143,11 +140,9 @@ extern errtype setup_init(void);
 extern uchar toggle_heap_check(short keycode, ulong context, void *data);
 */
 
-extern errtype sanity_check_obj_props();
 errtype amap_init(void);
 // extern long old_ticks;
 
-errtype object_data_load(void);
 /*Â¥Â¥
 int   global_timer_id;
 extern int mlimbs_peril;
@@ -167,8 +162,6 @@ extern void end_setup_sound(void);
 
 extern void init_watchpoints(void);
 */
-extern void status_vitals_start(void);
-extern void status_vitals_end(void);
 
 uchar real_archive_fn[64];
 /*
@@ -183,11 +176,10 @@ MemStack temp_memstack;
 #define TEMP_STACK_SIZE (16 * 1024)
 
 uchar pause_for_input(ulong wait_time) {
-    extern void pump_events(void);
     bool gotInput = false;
 
-    ulong wait_until = TickCount() + wait_time;
-    while (!gotInput && ((ulong)TickCount() < wait_until)) {
+    uint32_t wait_until = TickCount() + wait_time;
+    while (!gotInput && (TickCount() < wait_until)) {
         pump_events();
         SDLDraw();
     }
@@ -234,9 +226,6 @@ void init_all(void) {
        extern errtype terrain_palette_popup(void);
        extern uchar cam_mode;
     */
-    extern void view360_init(void);
-    extern uchar *restemp_buffer;
-    extern int restemp_buffer_size;
 
     start_mem = slorkatron_memory_check();
     if (start_mem < MINIMUM_GAME_THRESHOLD)
@@ -732,8 +721,6 @@ void shock_alloc_ipal() {
 }
 
 errtype init_gamesys() {
-    extern void game_sched_init(void);
-
     // Load data for weapons, drugs, wares
     drugs_init();
     init_all_side_icons();
@@ -744,7 +731,6 @@ errtype init_gamesys() {
 }
 
 errtype free_gamesys(void) {
-    extern void game_sched_free(void);
     game_sched_free();
 
     return (OK);

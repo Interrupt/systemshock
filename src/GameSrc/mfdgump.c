@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mfdint.h"
 #include "mfdext.h"
+#include "mfdfunc.h"
 #include "mfddims.h"
 #include "tools.h"
 #include "gamestrn.h"
@@ -72,14 +73,6 @@ extern uchar is_container(ObjID id, int **d1, int **d2);
 ObjID gump_idlist[NUM_CONTENTS];
 uchar gump_num_objs;
 
-// -----------
-// PROTOTYPES
-// -----------
-void mfd_gump_expose(MFD *mfd, ubyte control);
-void gump_clear(void);
-uchar gump_pickup(byte row);
-uchar gump_get_useful(bool shifted);
-uchar mfd_gump_handler(MFD *m, uiEvent *uie);
 
 // ---------------
 // EXPOSE FUNCTION
@@ -96,8 +89,6 @@ uchar mfd_gump_handler(MFD *m, uiEvent *uie);
    being pulled off the screen to make room for a different func.
 */
 
-extern void check_panel_ref(uchar punt);
-
 void mfd_gump_expose(MFD *mfd, ubyte control) {
     uchar full = control & MFD_EXPOSE_FULL;
     if (control == 0) // MFD is drawing stuff
@@ -107,7 +98,6 @@ void mfd_gump_expose(MFD *mfd, ubyte control) {
     }
     if (control & MFD_EXPOSE) // Time to draw stuff
     {
-        extern void mfd_item_micro_expose(uchar full, int triple);
         ObjID id = player_struct.panel_ref;
         uchar i;
 
@@ -167,11 +157,6 @@ void mfd_gump_expose(MFD *mfd, ubyte control) {
     }
 }
 
-// ----------------
-// HANDLER FUNCTION
-// ----------------
-extern void mouse_unconstrain(void);
-
 void gump_clear(void) {
     int i;
 
@@ -182,7 +167,6 @@ void gump_clear(void) {
 uchar gump_pickup(byte row) {
     int *d1, *d2;
     ObjID cont = player_struct.panel_ref;
-    extern void check_panel_ref(uchar puntme);
 
     // KLC   mouse_unconstrain();
     if (row < 0 || row >= gump_num_objs || gump_idlist[row] == OBJ_NULL)

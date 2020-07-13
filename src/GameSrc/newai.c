@@ -81,8 +81,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 extern ObjLoc last_known_loc;
 ulong time_last_seen;
 uchar priority_check;
-extern uchar door_moving(ObjID id, uchar dir);
-extern errtype set_posture_movesafe(ObjSpecID osid, ubyte new_pos);
 
 short compute_base_visibility();
 errtype run_evil_otto(ObjID id, int dist);
@@ -115,9 +113,6 @@ ulong run_ice_time = 0;
 
 errtype run_cspace_ice() {
     int dx, dy, dist;
-    extern errtype ai_fire_special(ObjID src, ObjID target, int proj_triple, ObjLoc src_loc, ObjLoc target_loc, uchar a,
-                                   int duration);
-
     // Look for hostile ICEs, which closely resemble creatures
     // of course, only do so if we be in cspace
 
@@ -886,13 +881,10 @@ errtype ai_run() {
     uchar raycast_success;
     int dist;
     char mood;
+    extern ObjID shodan_avatar_id;
 #ifdef PLAYTEST
     short crit_count = 0;
 #endif
-    extern uchar physics_running;
-    extern ObjID shodan_avatar_id;
-    extern uchar ai_on;
-    extern errtype apply_EDMS_controls(ObjSpecID osid);
 
 #ifndef GAMEONLY
     // Punt out if no physics or no ai

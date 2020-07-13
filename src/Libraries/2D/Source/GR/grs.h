@@ -235,7 +235,7 @@ typedef struct {
    fix aspect;       /* fixed point aspect ratio w/h */
    short w;          /* screen width */
    short h;          /* screen height */
-   uchar *vbase;     /* base video address */
+   intptr_t *vbase;     /* base video address */
 } grs_drvcap;
 
 /* 3d point structure for perspective mapper. */

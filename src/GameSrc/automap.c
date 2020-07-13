@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <string.h>
+
+#include "amaploop.h"
 #include "player.h"
 #include "newmfd.h"
 #include "mfdint.h"
@@ -173,7 +175,6 @@ uchar mfd_map_handler(MFD *m, uiEvent *e) {
         if (amap_deal_with_map_click(oAMap(mapid), &tmpx, &tmpy) != NULL) {
             retval = amap_get_note(oAMap(mapid), buf);
             if (full_game_3d && !retval) {
-                extern uchar mfd_scan_opacity(int mfd, LGPoint pos);
                 retval = mfd_scan_opacity(m->id, e->pos);
             }
             if (retval) {
@@ -275,8 +276,6 @@ void mfd_map_expose(MFD *m, ubyte control) {
         gr_pop_canvas();
         mfd_update_display(m, 0, 0, MFD_VIEW_WID, MFD_VIEW_HGT);
     }
-
-    return;
 }
 
     // ---------------------------------------------------------------------------
@@ -286,11 +285,10 @@ void mfd_map_expose(MFD *m, ubyte control) {
 
 #define BUF_SIZE 10
 
-void automap_expose_cross_section(MFD *mfd, ubyte u) {
+void automap_expose_cross_section(MFD *mfd, ubyte tic) {
     grs_font *mfdamapfont;
     char buf[BUF_SIZE];
     short w, h;
-    extern char *fsmap_get_lev_str(char *buf, int size);
 
     draw_res_bm(MKREF(RES_mfdArtOverlays, MFD_ART_STATN), 0, 0);
     draw_res_bm(MKREF(RES_mfdArtOverlays, MFD_ART_LVL(player_struct.level)), 0, 0);
@@ -309,8 +307,6 @@ void automap_expose_cross_section(MFD *mfd, ubyte u) {
     draw_shadowed_string(ZOOM_STR, 1, BTXT_HGT, full_game_3d);
     draw_shadowed_string(FULL_STR, MFD_VIEW_WID - 25, BTXT_HGT, full_game_3d);
     ResUnlock(RES_mfdFont);
-
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -318,7 +314,7 @@ void automap_expose_cross_section(MFD *mfd, ubyte u) {
 //
 // The expose function for drawing the zoomed in mode for the automap
 
-void automap_expose_zoom(MFD *m, ubyte u) {
+void automap_expose_zoom(MFD *m, ubyte tac) {
     grs_font *mfdamapfont;
     int mapid = mfd_to_map(m->id);
 
@@ -333,5 +329,4 @@ void automap_expose_zoom(MFD *m, ubyte u) {
 #ifndef WORKING_INC_MFDS
     mfd_notify_func(MFD_MAP_FUNC, MFD_MAP_SLOT, FALSE, MFD_ACTIVE, FALSE);
 #endif
-    return;
 }

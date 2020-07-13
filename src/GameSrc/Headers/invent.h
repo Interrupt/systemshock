@@ -71,6 +71,33 @@ uchar inventory_add_object(ObjID new_object, uchar select);
 // the dropping/consuming/destroying code.
 errtype inventory_remove_object(ObjID new_object);
 
+void draw_page_buttons(uchar full);
+
+void inv_change_fullscreen(uchar on);
+void inv_update_fullscreen(uchar full);
+
+errtype inventory_update_screen_mode();
+
+void push_inventory_cursors(LGCursor *newcurs);
+void pop_inventory_cursors(void);
+
+void super_drop_func(int dispnum, int row);
+void super_use_func(int dispnum, int row);
+
+void absorb_object_on_cursor(ushort keycode, uint32_t context, intptr_t data);
+
+uchar cycle_weapons_func(ushort keycode, uint32_t context, intptr_t data);
+
+void push_live_grenade_cursor(ObjID obj);
+
+void set_current_active(int activenum);
+
+void remove_general_item(ObjID obj);
+
+void add_email_datamunge(short mung, uchar select);
+
+void invent_language_change(void);
+
 // Globals
 extern short inventory_page;
 extern short inv_last_page;

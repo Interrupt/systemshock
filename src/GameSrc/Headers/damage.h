@@ -138,5 +138,9 @@ int get_damage_estimate(ObjSpecID osid);
 void spew_object_specs(void);
 uchar test_object_specs(short keycode, ulong context, void *data);
 uchar damage_player(int damage, ubyte dtype, ubyte flags);
+uchar kill_player(void);
+void regenerate_player(void);
+
+void slow_proj_hit(ObjID id, ObjID victim);
 
 #endif // __DAMAGE_H

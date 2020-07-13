@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SDL.h>
 
+#include "leanmetr.h"
 #include "mouselook.h"
 #include "mouse.h"
 #include "player.h"
@@ -26,17 +27,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objsim.h"
 #include "Prefs.h"
 
-
 float mlook_hsens = 250;
 float mlook_vsens = 50;
 
 int mlook_vel_x, mlook_vel_y;
-
-extern void pump_events();
-extern void player_set_eye_fixang(int ang);
-extern void physics_set_relax(int axis, uchar relax);
-extern void player_set_eye(byte);
-extern byte player_get_eye();
 
 extern uchar game_paused;
 extern short mouseInstantX, mouseInstantY;
@@ -52,15 +46,16 @@ int mlook_enabled = FALSE;
 
 void mouse_look_physics() {
 
-	if (game_paused || !global_fullmap || !mlook_enabled) return;
+    if (game_paused || !global_fullmap || !mlook_enabled)
+        return;
 
-	middleize_mouse();
+    middleize_mouse();
 
     int mvelx, mvely;
-	get_mouselook_vel(&mvelx, &mvely);
+    get_mouselook_vel(&mvelx, &mvely);
 
     if (global_fullmap->cyber) {
-        //see physics_run() in physics.c
+        // see physics_run() in physics.c
         mlook_vel_x = -mvelx;
         mlook_vel_y = -mvely;
     } else {
@@ -95,54 +90,46 @@ void mouse_look_physics() {
 
 bool TriggerRelMouseMode = FALSE;
 
-void mouse_look_toggle(void)
-{
+void mouse_look_toggle(void) {
     mlook_enabled = !mlook_enabled;
 
-	if (mlook_enabled)
-	{
-		SDL_SetRelativeMouseMode(SDL_TRUE);
+    if (mlook_enabled) {
+        SDL_SetRelativeMouseMode(SDL_TRUE);
 
-		//throw away this first relative mouse reading
-		int mvelx, mvely;
-		get_mouselook_vel(&mvelx, &mvely);
-	}
-	else
-	{
-		SDL_SetRelativeMouseMode(SDL_FALSE);
+        // throw away this first relative mouse reading
+        int mvelx, mvely;
+        get_mouselook_vel(&mvelx, &mvely);
+    } else {
+        SDL_SetRelativeMouseMode(SDL_FALSE);
 
-		int w, h;
-		SDL_GetWindowSize(window, &w, &h);
-		SDL_WarpMouseInWindow(window, w/2, h/2);
+        int w, h;
+        SDL_GetWindowSize(window, &w, &h);
+        SDL_WarpMouseInWindow(window, w / 2, h / 2);
 
-		TriggerRelMouseMode = TRUE;
-	}
+        TriggerRelMouseMode = TRUE;
+    }
 }
 
-void mouse_look_off(void)
-{
-	if (mlook_enabled)
-	{
-		mlook_enabled = FALSE;
+void mouse_look_off(void) {
+    if (mlook_enabled) {
+        mlook_enabled = FALSE;
 
-		SDL_SetRelativeMouseMode(SDL_FALSE);
+        SDL_SetRelativeMouseMode(SDL_FALSE);
 
-		int w, h;
-		SDL_GetWindowSize(window, &w, &h);
-		SDL_WarpMouseInWindow(window, w/2, h/2);
+        int w, h;
+        SDL_GetWindowSize(window, &w, &h);
+        SDL_WarpMouseInWindow(window, w / 2, h / 2);
 
-		TriggerRelMouseMode = TRUE;
-	}
+        TriggerRelMouseMode = TRUE;
+    }
 }
 
-void mouse_look_unpause(void)
-{
-	if (mlook_enabled)
-	{
-		SDL_SetRelativeMouseMode(SDL_TRUE);
+void mouse_look_unpause(void) {
+    if (mlook_enabled) {
+        SDL_SetRelativeMouseMode(SDL_TRUE);
 
-		//throw away this first relative mouse reading
-		int mvelx, mvely;
-		get_mouselook_vel(&mvelx, &mvely);
-	}
+        // throw away this first relative mouse reading
+        int mvelx, mvely;
+        get_mouselook_vel(&mvelx, &mvely);
+    }
 }

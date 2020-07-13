@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "musicai.h"
 #include "faketime.h"
+#include "sndcall.h"
 #include "tools.h"
 #include "trigger.h"
 #ifdef AUDIOLOGS
@@ -72,7 +73,6 @@ errtype stop_digi_fx() {
         audiolog_stop();
 #endif
     if (sfx_on) {
-        extern void sound_frame_update(void);
         snd_kill_all_samples();
         sound_frame_update();
     }
@@ -122,9 +122,6 @@ extern int curr_alog;
 // ------------
 //  PROTOYTPES
 // ------------
-int compute_sfx_vol(ushort x1, ushort y1, ushort x2, ushort y2);
-int compute_sfx_pan(ushort x1, ushort y1, ushort x2, ushort y2, fixang our_ang);
-uchar set_sample_pan_gain(snd_digi_parms *sdp);
 
 int compute_sfx_vol(ushort x1, ushort y1, ushort x2, ushort y2) {
     fix dx, dy, dist;

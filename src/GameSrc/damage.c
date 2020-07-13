@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/10/27 04:56:12 $
  */
 
-#include <stdbool.h>
 #include <stdlib.h>
 
 #include "Shock.h"
@@ -69,7 +68,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PLAYER_DEFENSE_VALUE 4
 #define MAX_DAMAGE 2500
 
-extern void set_dmg_percentage(int which, ubyte percent);
 
 short destroyed_obj_count = 0;
 ObjID destroyed_ids[MAX_DESTROYED_OBJS];
@@ -81,11 +79,8 @@ int random_bell_modifier(uchar attack_on_player);
 int randomize_damage(int damage, uchar attack_on_player);
 int armor_absorption(int raw_damage, int obj_triple, ubyte penetrate);
 int shield_absorb_damage(int damage, ubyte dtype, byte shield_absorb, ubyte shield_threshold);
-uchar kill_player(void);
-void regenerate_player(void);
 void player_dies();
 ubyte damage_player(int damage, ubyte dtype, ubyte flags);
-void slow_proj_hit(ObjID id, ObjID victim);
 void critter_hit_effect(ObjID target, ubyte effect, Combat_Pt location, int damage, int max_damage);
 
 // -------------------------------------------
@@ -344,7 +339,7 @@ short fr_sfx_time;
 short shield_absorb_perc = 0;
 uchar shield_used;
 
-int shield_absorb_damage(int damage, ubyte ub, byte shield_absorb, ubyte shield_threshold) {
+int shield_absorb_damage(int damage, ubyte dtype, byte shield_absorb, ubyte shield_threshold) {
     ubyte shield_drain = 0;
 
     if ((damage | player_struct.hit_points) == 0)
@@ -400,8 +395,6 @@ int shield_absorb_damage(int damage, ubyte ub, byte shield_absorb, ubyte shield_
 }
 
 uchar alternate_death = FALSE;
-extern bool gPlayingGame;
-extern bool gDeadPlayerQuit;
 
 // kill_player()
 // kills the player, checks for traps and stuff, so on

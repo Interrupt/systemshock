@@ -154,8 +154,6 @@ void drug_use(int n) {
     mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
     if (_current_loop <= FULLSCREEN_LOOP)
         chg_set_flg(INVENTORY_UPDATE);
-
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -171,8 +169,6 @@ void drug_wear_off(int n) {
         Drugs[n].wearoff();
 
     mfd_notify_func(MFD_BIOWARE_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);
-
-    return;
 }
 
 // --------------------------------------------------------------------------
@@ -229,8 +225,6 @@ void drugs_update() {
             }
         }
     }
-
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -348,8 +342,6 @@ void drug_lsd_wearoff() {
     gr_set_pal(0, 256, ppall);
     // KLC   gamma_dealfunc(QUESTVAR_GET(GAMMACOR_QVAR));
     gamma_dealfunc(gShockPrefs.doGamma);
-
-    return;
 }
 
 void drug_lsd_closedown(bool visible) {
@@ -373,7 +365,6 @@ extern uchar fatigue_warning;
 
 void drug_staminup_use() {
     player_struct.fatigue = 0;
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -383,7 +374,6 @@ void drug_staminup_use() {
 
 void drug_staminup_effect() {
     player_struct.fatigue = 0;
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -393,7 +383,6 @@ void drug_staminup_effect() {
 
 void drug_staminup_wearoff() {
     player_struct.fatigue = MAX_FATIGUE;
-    return;
 }
 
 // --------------------------------------------------------------------------
@@ -418,7 +407,6 @@ void drug_sight_use() {
     if (INTENSITY(DRUG_SIGHT) == 0)
         set_global_lighting(SIGHT_LIGHT_LEVEL);
     INTENSITY(DRUG_SIGHT) = 1;
-    return;
 }
 
 void drug_sight_startup() {
@@ -427,15 +415,13 @@ void drug_sight_startup() {
     } else if (STATUS(DRUG_SIGHT) < 0) {
         set_global_lighting(-SIGHT_LIGHT_LEVEL);
     }
-    return;
 }
 
 // ---------------------------------------------------------------------------
 // drug_sight_effect()
 //
 // Continual effects of the sight drug.
-
-void drug_sight_effect() { return; }
+void drug_sight_effect() {}
 
 // ---------------------------------------------------------------------------
 // drug_sight_wearoff()
@@ -446,7 +432,6 @@ void drug_sight_wearoff() {
     INTENSITY(DRUG_SIGHT) = 0;
     set_global_lighting(-2 * SIGHT_LIGHT_LEVEL);
     STATUS(DRUG_SIGHT) = -Drugs[DRUG_SIGHT].duration / 4;
-    return;
 }
 
 void drug_sight_after_effect(void) {
@@ -461,7 +446,6 @@ void drug_sight_closedown(bool visible) {
         set_global_lighting(-SIGHT_LIGHT_LEVEL);
     else if (STATUS(DRUG_SIGHT) < 0)
         set_global_lighting(SIGHT_LIGHT_LEVEL);
-    return;
 }
 
 // --------------------------------------------------------------------------
@@ -486,8 +470,6 @@ void drug_medic_use() {
     INTENSITY(DRUG_MEDIC) = lg_min(INTENSITY(DRUG_MEDIC) + MEDIC_HEAL_STEPS, MAX_UBYTE);
     player_struct.hit_points_regen += MEDIC_HEAL_RATE;
     chg_set_flg(VITALS_UPDATE);
-
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -511,7 +493,6 @@ void drug_medic_effect() {
     INTENSITY(DRUG_MEDIC) = n;
     if (n == 0)
         STATUS(DRUG_MEDIC) = 0;
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -524,7 +505,6 @@ void drug_medic_wearoff() {
         drug_medic_effect();
 
     INTENSITY(DRUG_MEDIC) = 0;
-    return;
 }
 
 // --------------------------------------------------------------------------
@@ -542,7 +522,6 @@ void drug_reflex_wearoff();
 void drug_reflex_use() {
     extern char reflex_remainder;
     reflex_remainder = 0;
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -550,14 +529,14 @@ void drug_reflex_use() {
 //
 // Continual effects of the reflex drug.
 
-void drug_reflex_effect() { return; }
+void drug_reflex_effect() {}
 
 // ---------------------------------------------------------------------------
 // drug_reflex_wearoff()
 //
 // Final effects of the reflex drug.
 
-void drug_reflex_wearoff() { return; }
+void drug_reflex_wearoff() {}
 
 // --------------------------------------------------------------------------
 //                              GENIUS
@@ -575,7 +554,6 @@ void drug_genius_use() {
     void mfd_gridpanel_set_winmove(uchar check);
 
     mfd_gridpanel_set_winmove(true);
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -583,14 +561,14 @@ void drug_genius_use() {
 //
 // Continual effects of the genius drug.
 
-void drug_genius_effect() { return; }
+void drug_genius_effect() {}
 
 // ---------------------------------------------------------------------------
 // drug_genius_wearoff()
 //
 // Final effects of the genius drug.
 
-void drug_genius_wearoff() { return; }
+void drug_genius_wearoff() {}
 
 // --------------------------------------------------------------------------
 //                              DETOX
@@ -614,7 +592,6 @@ void drug_detox_use() {
     INTENSITY(DRUG_DETOX) += 2;
     if (INTENSITY(DRUG_DETOX) == 2)
         drug_detox_effect();
-    return;
 }
 
 // ---------------------------------------------------------------------------
@@ -662,7 +639,6 @@ void drug_detox_effect() {
 
 void drug_detox_wearoff() {
     INTENSITY(DRUG_DETOX) = 0;
-    return;
 }
 
 // ---------------------------------------------------------------------------

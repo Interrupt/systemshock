@@ -28,10 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define APPROX_CIT_CYCLE_HZ 256u
 #define APPROX_CIT_CYCLE_SHFT 8u
 
-extern volatile long *tmd_ticks;
-
-// KLC void cit_increment_ticks ();
-
-// KLC  #include <timer.h>
+extern volatile uint32_t *tmd_ticks;
 
 #endif /* !__FAKETIME_H */

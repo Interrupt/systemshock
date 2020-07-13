@@ -82,3 +82,7 @@ enum
 
   NUM_MOVES
 };
+
+uchar motion_keycheck_handler(uiEvent *ev, LGRegion *r, intptr_t data);
+void setup_motion_polling(void);
+void process_motion_keys(void);

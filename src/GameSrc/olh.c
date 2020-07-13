@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 #include "Prefs.h"
+#include "Shock.h"
 
 #include "player.h"
 #include "gamestrn.h"
@@ -42,10 +43,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "faketime.h"
 #include "objbit.h"
 #include "objuse.h"
+#include "olhscan.h"
 #include "doorparm.h"
 #include "render.h"
+#include "sdl_events.h"
 #include "strwrap.h"
 #include "tools.h"
+#include "trigger.h"
 #include "game_screen.h"
 #include "fullscrn.h"
 #include "input.h"
@@ -59,8 +63,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "otrip.h"
 #include "cybstrng.h"
-
-extern void SDLDraw(void);
 
 // -------------------------------------------------
 //          ON-LINE HELP FOR SYSTEM SHOCK
@@ -169,8 +171,6 @@ short weap_subclass_idx[] = {
     REFINDEX(REF_STR_helpAttackHTH), REFINDEX(REF_STR_helpAttackGun),  REFINDEX(REF_STR_helpAttackGun),
 };
 
-extern uchar is_container(ObjID id, int **d1, int **d2);
-
 // basically we chose a string id for a string
 // that has  %s, and lg_strintf the name into the
 // the string.
@@ -233,8 +233,6 @@ extern bool DoubleSize;
 // This gets called to detect objects in front of the player that have
 // help strings.  It sets up for olh_do_hudobjs.
 
-extern void olh_scan_objs(void);
-
 #define SCAN_FREQ_SHF (APPROX_CIT_CYCLE_SHFT - 2)
 
 void olh_scan_objects(void) {
@@ -283,8 +281,6 @@ ushort fixture_panel_stringrefs[] = {
     REFINDEX(REF_STR_helpPanel),    REFINDEX(REF_STR_helpPanel),
 };
 
-extern char *get_object_lookname(ObjID, char *, int);
-
 void olh_do_panel_ref(short xl, short yl) {
     int *d1, *d2;
     ObjID obj = player_struct.panel_ref;
@@ -301,7 +297,6 @@ void olh_do_panel_ref(short xl, short yl) {
         if (objs[obj].subclass == FIXTURE_SUBCLASS_CONTROL)
             ref = REF_STR_helpSwitch;
         else if (objs[obj].subclass == FIXTURE_SUBCLASS_PANEL) {
-            extern uchar comparator_check(int comparator, ObjID obj, uchar *special_code);
             uchar special;
             ObjFixture *pfixt = &objFixtures[objs[obj].specID];
             uchar rv = comparator_check(pfixt->comparator, obj, &special);
@@ -433,7 +428,6 @@ void olh_init(void)
 void olh_closedown(void) { olh_object.obj = OBJ_NULL; }
 
 void olh_shutdown(void) {
-    extern void olh_free_scan(void);
     olh_free_scan();
 }
 
@@ -461,7 +455,6 @@ void olh_overlay(void) {
     while (!done) {
         ushort key;
         ss_mouse_event me;
-        extern void pump_events(void);
         pump_events(); // DG: apparently this can loop for a long time waiting for input w/o game_loop() being able to
                        // update events
 

@@ -23,18 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "MacDev.h"
 #include "cnvdrv.h"
 #include "cnvtab.h"
-#include "bitmap.h"
 #include "fcntab.h"
 #include "lintab.h"
-#include "ShockBitmap.h"
-
-#include <SDL.h>
-
-#include <stdio.h> // printf()
-
-// extern CTabHandle           gMainColorHand;
-
-// #include <Carbon/Carbon.h>
 
 // NOTE!
 //
@@ -50,71 +40,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 typedef void (**ptr_type)();
 
 // Mac device function table
-void (**mac_device_table[])() = {(ptr_type)gr_null,       // init device
-                                 (ptr_type)gr_null,       // close device
-                                 (ptr_type)mac_set_mode,  // set mode
-                                 (ptr_type)gr_null,       // get mode
-                                 (ptr_type)mac_set_state, // set state
-                                 (ptr_type)mac_get_state, // get state
-                                 (ptr_type)mac_stat_htrace, (ptr_type)mac_stat_vtrace,
-                                 (ptr_type)mac_set_pal,   // set palette
-                                 (ptr_type)mac_get_pal,   // get palette
-                                 (ptr_type)gr_null,       // set width
-                                 (ptr_type)gr_null,       // get width
-                                 (ptr_type)mac_set_focus, // set focus
-                                 (ptr_type)mac_get_focus, // get focus
-                                 (ptr_type)gr_null,       // canvas table
-                                 (ptr_type)gr_null};      // span table
+void (**mac_device_table[])() = {
+    (ptr_type)gr_null,       // init device
+    (ptr_type)gr_null,       // close device
+    (ptr_type)mac_set_mode,  // set mode
+    (ptr_type)gr_null,       // get mode
+    (ptr_type)mac_set_state, // set state
+    (ptr_type)mac_get_state, // get state
+    (ptr_type)gr_null,       // was mac_stat_htrace
+    (ptr_type)gr_null,       // was mac_stat_vtrace
+    (ptr_type)mac_set_pal,   // set palette
+    (ptr_type)mac_get_pal,   // get palette
+    (ptr_type)gr_null,       // set width
+    (ptr_type)gr_null,       // get width
+    (ptr_type)gr_null,       // set focus, was mac_set_focus
+    (ptr_type)gr_null,       // get focus, was mac_get_focus
+    (ptr_type)gr_null,       // canvas table
+    (ptr_type)gr_null        // span table
+};
 
 //========================================================================
 // Mac specific device routines
 //========================================================================
 
-extern char *gScreenAddress;
-// extern void opengl_resize(int width, int height);
-// extern bool can_use_opengl(void);
+extern intptr_t *gScreenAddress;
 
 //------------------------------------------------------------------------
 // init the graphics mode, set up function tables and screen base address
 //
 void mac_set_mode(void) {
-    INFO("Initializing graphics mode");
-    grd_mode_cap.vbase = (uchar *)gScreenAddress;
+    DEBUG("%s: Initializing graphics mode", __FUNCTION__ );
+    grd_mode_cap.vbase = gScreenAddress;
 
     grd_canvas_table_list[BMT_DEVICE] = flat8_canvas_table;
     grd_function_table_list[BMT_DEVICE] = (grt_function_table *)flat8_function_table;
     grd_uline_fill_table_list[BMT_DEVICE] = (grt_uline_fill_table *)flat8_uline_fill_table;
-}
-
-void ChangeScreenSize(int width, int height) {
-    extern short gScreenWide, gScreenHigh, gActiveWide, gActiveHigh;
-    if (gScreenWide == width && gScreenHigh == height)
-        return;
-
-    extern SDL_Renderer *renderer;
-    extern SDL_Window *window;
-
-    extern char *gScreenAddress;
-    extern long gScreenRowbytes;
-
-    INFO("ChangeScreenSize");
-
-    SDL_RenderClear(renderer);
-
-    extern bool fullscreenActive;
-    SDL_SetWindowFullscreen(window, fullscreenActive ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-
-    SDL_SetWindowSize(window, width, height);
-    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-
-    SDL_RenderSetLogicalSize(renderer, width, height);
-
-    SetupOffscreenBitmaps(width, height);
-
-    gScreenWide = width;
-    gScreenHigh = height;
-    gActiveWide = width;
-    gActiveHigh = height;
 }
 
 //------------------------------------------------------------------------
@@ -122,7 +82,7 @@ void ChangeScreenSize(int width, int height) {
 // and ResetCTSeed).
 
 uchar backup_pal[768];
-void mac_set_pal(int start, int n, uchar *pal_data) {
+void mac_set_pal(int start, int n, uint8_t *pal_data) {
     extern void SetSDLPalette(int index, int count, uchar *pal);
 
     // HAX: Only update when given a whole palette!
@@ -136,7 +96,9 @@ void mac_set_pal(int start, int n, uchar *pal_data) {
 
 //------------------------------------------------------------------------
 // get the current color palette (copy entries from gMainColorHand)
-void mac_get_pal(int start, int n, uchar *pal_data) { memmove(pal_data, &backup_pal, sizeof(uchar) * 768); }
+void mac_get_pal(int start, int n, uint8_t *pal_data) {
+    memmove(pal_data, &backup_pal, sizeof(uchar) * 768);
+}
 
 // set and get state don't currently do anything, since its not apparent
 // any of the stuff from the VGA driver (text mode, palette stuff) is necessary
@@ -147,20 +109,3 @@ int mac_set_state(void *buf, int clear) { return (0); }
 
 //------------------------------------------------------------------------
 int mac_get_state(void *buf, int flags) { return (0); }
-
-// set and get focus don't currently do anything, since its not apparent
-// they have any Mac equivalents
-//------------------------------------------------------------------------
-void mac_set_focus(short x, short y) {}
-
-//------------------------------------------------------------------------
-void mac_get_focus(void) {}
-
-// since there isn't any easy way to detect horizontal or vertical
-// retraces on the Mac, and I'm not sure if these are really used in the
-// game, they aren't implemented yet.
-//------------------------------------------------------------------------
-void mac_stat_htrace(void) {}
-
-//------------------------------------------------------------------------
-void mac_stat_vtrace(void) {}

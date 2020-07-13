@@ -90,10 +90,8 @@ typedef struct {
     } time;
 } fauxrend_parameters;
 
-#ifndef __FRSETUP_SRC
 extern fauxrend_parameters _frp;
 #define get_frp() (_frp)
-#endif
 
 #define LIGHT_BITS_MASK 0xfu
 #define LIGHT_BITS_ANY 0x8u

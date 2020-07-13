@@ -46,4 +46,6 @@ void show_obj(ObjRefID oRef);
 
 #define NUM_OBJ_RENDER_TYPES (FAUBJ_TL_POLY + 1)
 
+short compute_3drep(Obj *cobj, ObjID cobjid, int obj_type);
+
 #endif // __FAUXOBJD_H

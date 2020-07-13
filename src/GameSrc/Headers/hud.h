@@ -85,6 +85,9 @@ errtype hud_set(ulong hud_modes);
 errtype hud_unset(ulong hud_modes);
 errtype hud_set_time(ulong hud_modes, ulong ticks);
 
+void hud_do_objs(short xtop, short ytop, short xwid, short ywid, uchar reverse);
+void hud_shutdown_lines(void);
+
 // Globals
 extern LGRect target_screen_rect;
 extern ubyte hud_colors[HUD_COLOR_BANKS][HUD_COLORS_PER_BANK];

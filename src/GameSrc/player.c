@@ -23,13 +23,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/21 21:40:54 $
  */
 
-#define __PLAYER_SRC
 #include <string.h>
 
 #include "objwpn.h"
 #include "player.h"
 #include "diffq.h" // for time limit
 #include "hud.h"
+#include "leanmetr.h"
 #include "wares.h"
 #include "objsim.h"
 #include "otrip.h"
@@ -42,7 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define CFG_FATIGUE_VAR "fatigue"
 
-extern int nth_after_triple(int trip, ubyte n);
+Player player_struct;
+Obj *player_dos_obj;
 
 // couldnt we atob this and have a cfg file???
 // then we could read it in, turn them on, free the memory, and not have to recompile
@@ -76,7 +77,6 @@ ushort init_questvars[NUM_INIT_QV][2] = {
 //
 // -------------------------------------------------------------
 
-extern void player_reset_eye(void);
 #define REACTOR_COMBO_QVAR (0x1F)
 
 errtype init_player(Player *pplr) {

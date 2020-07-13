@@ -44,10 +44,8 @@ ObjID terrain_hit_exclusion = OBJ_NULL;
 
 ObjID simple_ray_caster(Combat_Ray *ray);
 
-extern void test_object_link(void);
-
-extern physics_handle ray_cast_wrapper(fix X[3], fix D[3], fix speed, fix mass, fix size, fix range,
-                                       physics_handle exclusion);
+physics_handle ray_cast_wrapper(fix X[3], fix D[3], fix speed, fix mass, fix size, fix range,
+                                physics_handle exclusion);
 
 physics_handle ray_cast_wrapper(fix X[3], fix D[3], fix speed, fix mass, fix size, fix range,
                                 physics_handle exclusion) {

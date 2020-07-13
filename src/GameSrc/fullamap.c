@@ -32,9 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "amaploop.h"
 #include "lvldata.h"
 
-extern uchar amap_ms_callback(curAMap *amptr, int x, int y, short action, ubyte but);
-extern uchar amap_scroll_handler(uiEvent *ev, LGRegion *r, intptr_t user_data);
-
 extern grs_screen *svga_screen;
 extern grs_screen *cit_screen;
 
@@ -44,8 +41,6 @@ extern grs_screen *cit_screen;
 uchar amap_mouse_handler(uiEvent *ev, LGRegion *, intptr_t);
 uchar amap_key_handler(uiEvent *ev, LGRegion *r, intptr_t user_data);
 errtype amap_init(void);
-void amap_start(void);
-void amap_exit(void);
 
 uchar amap_mouse_handler(uiEvent *ev, LGRegion *reg, intptr_t v) {
     uiMouseData *md = &ev->mouse_data;

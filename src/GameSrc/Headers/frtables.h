@@ -94,12 +94,10 @@ typedef struct {
 #define FROCTFIX fix_make(0, 19195)
 
 //-- externs
-#ifndef __FRTABLES_SRC
 extern fix pt_offs[FRPTSOFFS];
 extern pt_mods pt_deref[FRPTSUNIQUE];
 extern ushort pt_uv[FRPTSUNIQUE][4][2];
 extern uchar pt_from_faceoff[4][FRPTSOFFS];
-#endif
 
 //======== WallstoPts
 
@@ -130,9 +128,7 @@ typedef struct {
 #define FRWALLPTSCNT 56
 #define FROUTERWALLS (FRWALLPTSCNT - 4)
 
-#ifndef __FRTABLES_SRC
 extern WallsToPts wall_pts[FRWALLPTSCNT];
-#endif
 
 // one has to wonder, doesnt one?
 #define ED (32 + 4)
@@ -158,9 +154,7 @@ typedef struct {
 
 #define FRTILEWALLCNT FRTILETYPES
 
-#ifndef __FRTABLES_SRC
 extern TilesToWalls tile_walls[FRTILEWALLCNT];
-#endif
 
 //======== TilesToFloors
 
@@ -194,9 +188,7 @@ typedef struct {
 
 #define FRTILEFLOORCNT FRTILETYPES
 
-#ifndef __FRTABLES_SRC
 extern TilesToFloors tile_floors[FRTILEFLOORCNT];
-#endif
 
 //======== Normals
 #define FRWNORM_MAX  8
@@ -212,11 +204,9 @@ extern TilesToFloors tile_floors[FRTILEFLOORCNT];
 #define FRFNORM_VZ_MIR 6
 #define FRFNORM_VF_MIR 7
 
-#ifndef __FRTABLES_SRC
 extern ushort fr_wnorm_list[FRWALLPTSCNT];
 extern uchar fr_fnorm_list[FRTILEFLOORCNT];
 extern fix fr_norm_elements[FRWNORM_MAX + 1];
-#endif
 
 //======== Obstruct
 
@@ -238,19 +228,15 @@ extern fix fr_norm_elements[FRWNORM_MAX + 1];
 #define FRFACEOBSTRUCTCNT FRTILETYPES
 #define FOBASECODES 64
 
-#ifndef __FRTABLES_SRC
 extern uchar face_obstruct[FRFACEOBSTRUCTCNT][FACE_CNT];
 extern fix fo_unpack[FOBASECODES][2];
 extern fix fo_anti_unpack[FOBASECODES][2];
-#endif
 
 //======== Merger
 // what to or pt_codes with prior to derefing for mirror compatibility
 // mirror by flr/ciel by xor/and
-#ifndef __FRTABLES_SRC
 extern uchar merge_masks[5][2][2];
 extern uchar mmask_facelet[5][2][2];
-#endif
 
 //======== Tilelets
 

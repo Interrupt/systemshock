@@ -44,8 +44,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "criterr.h"
 
 #include "cybstrng.h"
+#include "email.h"
 #include "gamescr.h"
 #include "mfdart.h"
+#include "mfdfunc.h"
+#include "newmfd.h"
 #include "otrip.h"
 #include "invpages.h"
 #include "shodan.h"
@@ -66,12 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // DEFINES
 // -------
 
-extern errtype inventory_draw_new_page(int num);
 extern uchar full_game_3d;
-
-extern void push_inventory_cursors(LGCursor *newcurs);
-extern void pop_inventory_cursors(void);
-
 LGCursor email_cursor;
 grs_bitmap email_cursor_bitmap;
 uchar email_cursor_currently = FALSE;
@@ -145,7 +143,6 @@ Id email_font = RES_tinyTechFont;
 // ------------
 char *get_email_string(int id, char *text, int siz);
 int get_sender_emailnum(int num);
-void set_email_flags(int n);
 char *get_email_title_string(int n, char *text, int siz);
 void apply_email_macros(char *text, char *newval);
 void email_intercept(void);
@@ -153,22 +150,9 @@ char *email_draw_string(char *text, short *x, short *y, bool last);
 void free_email_buffer(void);
 void draw_more_string(int x, int y, uchar footermask);
 void email_draw_text(Id email_id, bool really_an_email);
-void email_page_exit(void);
 uchar email_invpanel_input_handler(uiEvent *ev, LGRegion *r, intptr_t data);
 void parse_email_mugs(char *mug, uchar *mcolor, ushort mugnums[NUM_MFDS], uchar setup);
-void mfd_emailmug_expose(MFD *mfd, ubyte control);
-uchar mfd_emailmug_handler(MFD *m, uiEvent *ev);
-void select_email(int num, uchar scr);
-void read_email(Id new_base, int num);
-void add_email_handler(LGRegion *r);
-void mfd_emailware_expose(MFD *mfd, ubyte control);
 uchar mfd_email_button_handler(MFD *m, LGPoint bttn, uiEvent *ev, void *data);
-errtype mfd_emailware_init(MFD_Func *f);
-void email_turnon(uchar visible, uchar real_start);
-void email_turnoff(uchar visible, uchar real_stop);
-void update_email_ware();
-char *email_name_func(void *dp, int num, char *buf);
-uchar email_color_func(void *dp, int num);
 void email_slam_hack(short which);
 
 char *get_email_string(int id, char *text, int siz) {
@@ -641,8 +625,6 @@ void parse_email_mugs(char *mug, uchar *mcolor, ushort mugnums[NUM_MFDS], uchar 
     // char *sfront;
     short lastmug = -1;
     uchar esc_param, different;
-    extern void cap_mfds_with_func(uchar func, uchar max);
-    extern int str_to_hex(char);
     char buf[64];
 
     s = buf;
@@ -994,9 +976,6 @@ static ubyte email_pages[] = {50, 7, 8};
 #define STRINGS_PER_WARE (REF_STR_wareSpew1 - REF_STR_wareSpew0)
 
 void mfd_emailware_expose(MFD *mfd, ubyte control) {
-    extern void draw_mfd_item_spew(Ref id, int n);
-    extern void mfd_item_micro_expose(uchar full, int triple);
-
     uchar full = control & MFD_EXPOSE_FULL;
     uchar on = (control & (MFD_EXPOSE | MFD_EXPOSE_FULL)) != 0;
     ubyte s = player_struct.hardwarez_status[HARDWARE_EMAIL];

@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
-#define __RENDER_SRC
+#include "gamerend.h"
 #include "render.h"
 #include "frprotox.h"
 #include "faketime.h"
@@ -38,11 +38,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "frflags.h"
 #include "froslew.h"
 #include "player.h"
-
 #include "rcolors.h"
-
+#include "tools.h"
 #include "map.h"
 #include "mapflags.h"
+#include "view360.h"
 #include "wares.h"
 #include "gr2ss.h"
 
@@ -70,6 +70,28 @@ ObjID hack_cam_surrogates[NUM_HACK_CAMERAS];
 #define FRAME_SKIP_MASK 0x03
 #define FRAME_PARITY_SHF 2 // skip every 4 frames when rendering screen images
 
+uchar fr_texture = TRUE;
+uchar fr_txt_walls = TRUE;
+uchar fr_txt_floors = TRUE;
+uchar fr_txt_ceilings = TRUE;
+uchar fr_lights_out = FALSE;
+uchar fr_lighting = TRUE;
+uchar fr_play_lighting = FALSE;
+uchar fr_normal_lights = TRUE;
+int fr_detail_value = 100;
+int fr_drop[TM_SIZE_CNT] = {1, 4, 10};
+uchar fr_show_tilecursor = FALSE;
+uchar fr_cont_tilecursor = FALSE;
+uchar fr_show_all = TRUE;
+int fr_qscale_obj = 2;
+int fr_qscale_crit = 2;
+uchar fr_highlights = FALSE;
+int fr_normal_shf = 2;
+int fr_lite_rad1 = 0, fr_lite_base1 = 10, fr_lite_rad2 = 7, fr_lite_base2 = 0;
+fix fr_lite_slope = (-fix_make(2, 0) + fix_make(0, 0x5000)), fr_lite_yint = fix_make(12, 0x2000);
+int fr_detail_master = 3; /* 0-3 master detail */
+int fr_pseudo_spheres = 0;
+
 uchar hack_cameras_needed = 0;
 char curr_hack_cam = 0;
 ulong hack_cam_fr_count = 0;
@@ -80,7 +102,6 @@ uchar screen_static_drawn = FALSE;
 //------------
 int hack_camera_draw_callback(grs_canvas *cvs, grs_bitmap *bm, int u1, int u2, int u3);
 void update_cspace_tiles(void);
-void tile_hit(int mx, int my);
 
 int hack_camera_draw_callback(grs_canvas *cvs, grs_bitmap *bm, int u1, int u2, int u3) {
     //   gr_push_canvas(&hack_cam_canvases[curr_hack_cam]);
@@ -142,7 +163,6 @@ errtype shutdown_hack_cameras() {
 }
 
 errtype do_screen_static() {
-    extern void draw_full_static(grs_bitmap * stat_dest, int c_base);
     if (!screen_static_drawn)
         draw_full_static(static_bitmap, GRAY_8_BASE);
     return (OK);
@@ -189,7 +209,6 @@ errtype hack_camera_takeover(int hack_cam) {
     LGRect start = {{-5, -5}, {5, 5}};
     extern LGPoint use_cursor_pos;
     LGPoint ucp;
-    extern void zoom_rect(LGRect * start, LGRect * end);
     extern bool DoubleSize;
     extern LGRect mainview_rect;
     extern LGRect fscrn_rect;
@@ -307,7 +326,6 @@ void tile_hit(int mx, int my) {
 
 errtype render_run(void) {
     extern uchar view360_render_on;
-    extern void view360_render(void);
     static long last_cspace_update = 0;
 
 #ifdef POPUPS_ALLOWED

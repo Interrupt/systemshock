@@ -54,18 +54,9 @@ extern uchar tmap_big_buffer[];
 
 // prototypes
 uchar set_animations(short start, short frames, uchar *anim_used);
-errtype load_small_texturemaps(void);
 void setup_tmap_bitmaps(void);
-void free_textures(void);
-errtype load_master_texture_properties(void);
-errtype unload_master_texture_properties(void);
-errtype clear_texture_properties(void);
 errtype texture_crunch_init(void);
 errtype texture_crunch_go(void);
-void load_textures(void);
-
-extern void FlipShort(short *sh);
-extern void FlipLong(long *lng);
 
 #define SET_ANIM_USED(x) anim_used[(x) >> 3] |= (1 << ((x)&0x7))
 #define CHECK_ANIM_USED(x) anim_used[(x) >> 3] & (1 << ((x)&0x7))

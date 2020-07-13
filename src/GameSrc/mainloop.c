@@ -41,14 +41,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
 
+#include "InitMac.h"
+#include "Shock.h"
+#include "amaploop.h"
+#include "cutsloop.h"
 #include "game_screen.h"
 #include "fullscrn.h"
 #include "loops.h"
-#include <input.h>
-#include <setup.h>
-#include <status.h>
+#include "fullamap.h"
+#include "input.h"
+#include "sdl_events.h"
+#include "setup.h"
+#include "status.h"
 #include "tickcount.h"
-#include "cutsloop.h"
+#include "tools.h"
+#include "wrapper.h"
 
 // how is the game doing, anyway, set to true at end of time
 uchar cit_success = FALSE;
@@ -56,11 +63,23 @@ uchar cit_success = FALSE;
 // are we "paused"
 uchar game_paused = FALSE;
 
-void ShockMain(void);
-
-extern void automap_loop(void);
-extern void amap_start();
-extern void amap_exit();
+frc *_current_fr_context;
+short _current_loop = SETUP_LOOP; /* which loop we currently are */
+short _current_3d_flag = DEMOVIEW_UPDATE;
+LGRegion *_current_view = NULL;
+uint _change_flag = 0;   /* change flags for loop */
+uint _static_change = 0; /* current static changes */
+short _new_mode = 0;     /* mode to change to, if any */
+short _last_mode = 0;    /* last mode, if you want to change back to it */
+uchar time_passes = TRUE;
+uchar saves_allowed = FALSE;
+uchar physics_running = TRUE;
+uchar ai_on = TRUE;
+uchar anim_on = TRUE;
+uchar player_invulnerable = FALSE;
+uchar player_immortal = FALSE;
+uchar always_render = FALSE;
+uchar pal_fx_on = TRUE;
 
 // Note that in the shipping version, the edit_loop stuff should never
 // get called, but needs to be SOMETHING as a place holder
@@ -90,8 +109,6 @@ void loopmode_switch(short *cmode) {
 
 #ifdef SVGA_SUPPORT
     if (wrapper_screenmode_hack) {
-        extern void screenmode_screen_init(void);
-        extern void wrapper_start(void (*init)(void));
         wrapper_start(screenmode_screen_init);
     }
 #endif
@@ -106,11 +123,6 @@ void loopmode_enter(short loopmode) { (*enter_modes[loopmode])(); }
 
 extern void MousePollProc(void);
 void mainloop(int argc, char *argv[]) {
-    extern void SDLDraw(void);
-    extern long gShockTicks;
-    extern bool gPlayingGame;
-    extern void pump_events(void);
-
     while (_current_loop >= 0 && gPlayingGame) {
         gShockTicks = TickCount();
 
@@ -140,8 +152,6 @@ void mainloop(int argc, char *argv[]) {
         MousePollProc(); // update the cursor, was 35 times/sec originally
 
         status_bio_update();
-
-        extern void ZoomDrawProc(int erase);
         ZoomDrawProc(FALSE); //draw zoom rectangle if enabled; if not, returns immediately
 
         SDLDraw();

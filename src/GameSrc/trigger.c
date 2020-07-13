@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-#define __TRIGGER_SRC
 
 #include <stdlib.h>
 #include <string.h>
@@ -45,6 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gamerend.h"
 #include "gamescr.h"
 #include "gamestrn.h"
+#include "leanmetr.h"
 #include "mainloop.h" // for flag setting stuff
 #include "map.h"
 #include "mapflags.h"
@@ -60,6 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "otrip.h"
 #include "physics.h"
 #include "player.h"
+#include "rendtool.h"
 #include "saveload.h"
 #include "schedule.h"
 #include "sfxlist.h"
@@ -129,9 +130,7 @@ ObjID current_trap;
 uchar _tr_use_message;
 #define trap_use_message (&_tr_use_message)
 
-short qdata_get(short qdata);
 errtype qdata_set(short qdata, short new_val);
-uchar comparator_check(int comparator, ObjID obj, uchar *special_code);
 errtype set_trap_data(ObjID id, char num_param, int new_val);
 errtype do_timed_multi_stuff(int p);
 
@@ -147,7 +146,6 @@ errtype trap_terrain_func(int p1, int p2, int p3, int p4);
 errtype trap_height_func(int p1, int p2, int p3, int p4);
 errtype real_instance_func(int p1, int p2, int p3, int p4);
 errtype trap_instance_func(int p1, int p2, int p3, int p4);
-void animate_callback_func(ObjID id, intptr_t user_data);
 errtype real_animate_func(ObjID id, int p2, int p3, int p4);
 errtype trap_animate_func(int p1, int p2, int p3, int p4);
 void hack_shodan_conquer_func(char bonus_fun);
@@ -165,8 +163,6 @@ errtype trap_expose_func(int dmg, int dtype, int tsecs, int dummy);
 errtype trap_bark_func(int speaker, int strnum, int color, int hud_bark);
 
 errtype grind_trap(char type, int p1, int p2, int p3, int p4, ubyte *destroy_count_ptr, ObjID id);
-errtype do_level_entry_triggers();
-errtype do_shodan_triggers();
 errtype do_ecology_triggers();
 
 #define SHODOMETER_QVAR_BASE 0x10
@@ -326,7 +322,6 @@ errtype trap_null_func(int p1, int p2, int p3, int p4) { return (OK); }
 #define MAX_BRIDGE_FRAME 32
 
 errtype trap_transmogrify_func(int p1, int p2, int p3, int p4) {
-    extern void slam_posture_meter_state(void);
     int source, dest, t1, t2;
 
     if (!objs[p1].active) {
@@ -431,7 +426,6 @@ errtype trap_monster_func(int p1, int p2, int p3, int p4) {
     ObjRefID oref;
     char minx, miny, sizex, sizey, quan, failures = 0, num_gen = 0;
     LGPoint sq;
-    extern errtype obj_load_art(uchar flush_all);
     uchar okay = FALSE;
     char monster_count;
     MapElem *pme;
@@ -1011,7 +1005,6 @@ errtype trap_sfx_func(int p1, int p2, int p3, int p4) {
 
     // Fake endgame
     case 3: {
-        extern void physics_zero_all_controls();
         extern ulong secret_sfx_time;
         physics_zero_all_controls();
         secret_render_fx = FAKEWIN_REND_SFX;
@@ -1028,7 +1021,6 @@ errtype trap_sfx_func(int p1, int p2, int p3, int p4) {
 
     case 5: {
         // let's do some damage static!
-        extern void set_dmg_percentage(int which, ubyte percent);
         set_dmg_percentage(DMG_BLOOD, 100); // 100 is the amount of static (100/255) is the percent of static
     } break;
     }
@@ -1187,10 +1179,6 @@ errtype trap_questbit_func(int p1, int p2, int p3, int p4) {
 
 extern uchar alternate_death;
 
-extern bool gPlayingGame;
-extern bool gDeadPlayerQuit;
-extern bool gGameCompletedQuit;
-
 errtype trap_cutscene_func(int p1, int p2, int p3, int p4) {
     short cs = qdata_get(p1);
 
@@ -1217,7 +1205,6 @@ errtype trap_terrain_func(int p1, int p2, int p3, int p4) {
     TRACE("%s: trigger", __FUNCTION__);
     MapElem *pme;
     uchar reprocess = FALSE;
-    extern void rendedit_process_tilemap(FullMap * map, LGRect * r, uchar newMap);
     LGRect bounds;
 
     pme = MAP_GET_XY(qdata_get(p1), qdata_get(p2));
@@ -1249,7 +1236,6 @@ errtype trap_height_func(int p1, int p2, int p3, int p4) {
     char steps;
     char ht;
     uchar did_sfx = FALSE;
-    extern uchar register_h_event(uchar x, uchar y, uchar floor, char *sem, char *key, uchar no_sfx);
 
     x = qdata_get(p1);
     y = qdata_get(p2);
@@ -1401,9 +1387,7 @@ grs_bitmap shodan_draw_fs;
 grs_bitmap shodan_draw_normal;
 
 void hack_shodan_conquer_func(char c) {
-    extern void begin_shodan_conquer_fx(uchar begin);
     extern char thresh_fail;
-    extern uchar shodan_phase_in(uchar * bitmask, short x, short y, short w, short h, short num, uchar dir);
     shodan_bitmask = tmap_static_mem;
     LG_memset(shodan_bitmask, 0, SHODAN_BITMASK_SIZE / 8);
     shodan_draw_fs.bits = tmap_static_mem + (SHODAN_BITMASK_SIZE / 8);
@@ -1559,9 +1543,7 @@ void hack_taunt_diego(int p2, int p3) {
 #define MULTI_TRANSMOG_HACK 0x10
 
 errtype trap_hack_func(int p1, int p2, int p3, int p4) {
-    uchar door_moving(ObjID door, uchar dir);
     void plotware_showpage(uchar page);
-    void check_panel_ref(uchar puntme);
     void email_slam_hack(short which);
 
     TRACE("%s: trigger", __FUNCTION__);
@@ -1578,7 +1560,6 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
             int nu_tmap, old_tmap, nu_frame;
             MapElem *pme;
             ObjLoc where = repul->loc;
-            extern errtype obj_physics_refresh(short x, short y, uchar use_floor);
 
             switch (p4) {
             case 0:
@@ -1661,14 +1642,11 @@ errtype trap_hack_func(int p1, int p2, int p3, int p4) {
         }
         break;
     case GAME_OVER_HACK: {
-        extern void player_dead(void);
         extern int curr_alog;
         extern char secret_pending_hack;
         if (curr_alog != -1)
             secret_pending_hack = 1;
         else {
-            gDeadPlayerQuit = TRUE; // The player is dead.
-            //gPlayingGame = FALSE;   // Hop out of the game loop.
 
             INFO("GAME OVER!\n");
             play_cutscene(DEATH_CUTSCENE, FALSE);
@@ -1940,7 +1918,6 @@ errtype trap_teleport_func(int targ_x, int targ_y, int targ_z, int targlevel) {
 }
 
 errtype trap_expose_func(int dmg, int dtype, int tsecs, int p4) {
-    extern void expose_player(byte damage, ubyte type, ushort tsecs);
     short damage = qdata_get(dmg & 0xFFFF);
 
     if (dmg & 0x10000) {

@@ -162,7 +162,6 @@ errtype obj_load_art(uchar flush_all) {
     short objart_count = 0, count_3d = 0;
     int objfnum;
     short i, f;
-    extern uchar empty_bitmap(grs_bitmap * bmp);
     uchar ref_buffer_used = TRUE;
 
     if (flush_all)

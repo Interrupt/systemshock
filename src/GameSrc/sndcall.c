@@ -23,15 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/28 08:31:43 $
  */
 
+#include "digifx.h"
 #include "musicai.h"
-
-#define __SNDCALL_SRC
 
 #define MAX_UNLOCK 32
 int rulock_list[MAX_UNLOCK];
 int rulock_ptr = 0;
-
-void sound_frame_update(void);
 
 /* KLC - not used in Mac version.
 void cdecl simple_xmi_stop(snd_midi_parms *seq)
@@ -54,7 +51,6 @@ void digifx_EOS_callback(snd_digi_parms *sdp) {
 void sound_frame_update(void) {
     int i;
     snd_digi_parms *sdp;
-    extern uchar set_sample_pan_gain(snd_digi_parms * sdp);
 
     for (i = 0; i < SND_MAX_SAMPLES; i++) {
         snd_digi_parms *sdp = snd_sample_parms(i);

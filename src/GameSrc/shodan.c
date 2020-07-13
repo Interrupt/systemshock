@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "objclass.h"
 #include "otrip.h"
+#include "trigger.h"
 #include "newmfd.h"
 #include "hud.h"
 #include "faketime.h"
@@ -43,7 +44,6 @@ short compute_shodometer_value(uchar game_stuff) {
 #define HUD_SHODOMETER_TICKS (CIT_CYCLE << 1)
 
 errtype update_shodometer(short new_val, uchar game_stuff) {
-    extern errtype do_shodan_triggers();
     QUESTVAR_SET(SHODAN_QV, new_val);
     if (game_stuff) {
         mfd_notify_func(MFD_PLOTWARE_FUNC, MFD_INFO_SLOT, FALSE, MFD_ACTIVE, FALSE);

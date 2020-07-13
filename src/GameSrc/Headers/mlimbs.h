@@ -25,9 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/19 20:44:53 $
  */
 
-// really this is in sndcall.c, but heck
-void synchronous_update(void);
-void sound_frame_update(void);
 
 // KLC what's the diff between a char and a signed char?     typedef signed char schar;
 

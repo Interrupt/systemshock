@@ -4,39 +4,39 @@
 #include "OpenGL.h"
 
 #ifdef _WIN32
-    #define GLEW_STATIC 1
-    #include <SDL.h>
-    #include <GL/glew.h>
+#define GLEW_STATIC 1
+#include <SDL.h>
+#include <GL/glew.h>
 #else
-    #define GL_GLEXT_PROTOTYPES
-    #ifdef __APPLE__
-    #include <OpenGL/gl.h>
-    #else
-    #include <GL/gl.h>
-    #include <GL/glext.h>
-    #endif
+#define GL_GLEXT_PROTOTYPES
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#include <GL/glext.h>
+#endif
 
-    #include <SDL.h>
-    #include <SDL_opengl.h>
+#include <SDL.h>
+#include <SDL_opengl.h>
 #endif
 
 extern "C" {
-    #include "mainloop.h"
-    #include "map.h"
-    #include "frintern.h"
-    #include "frflags.h"
-    #include "player.h"
-    #include "textmaps.h"
-    #include "star.h"
-    #include "tools.h"
-    #include "Prefs.h"
-    #include "Shock.h"
-    #include "faketime.h"
-    #include "render.h"
-    #include "wares.h"
+#include "mainloop.h"
+#include "map.h"
+#include "frintern.h"
+#include "frflags.h"
+#include "player.h"
+#include "textmaps.h"
+#include "star.h"
+#include "tools.h"
+#include "Prefs.h"
+#include "Shock.h"
+#include "faketime.h"
+#include "render.h"
+#include "wares.h"
 
-    extern SDL_Renderer *renderer;
-    extern SDL_Palette *sdlPalette;
+extern SDL_Renderer *renderer;
+extern SDL_Palette *sdlPalette;
 }
 
 #include <map>
@@ -102,36 +102,24 @@ static GLuint bound_texture = -1;
 
 // View matrix; Z offset experimentally tweaked for near-perfect alignment
 // between GL projection and software projection (sprite screen coordinates)
-static const float ViewMatrix[] = {
-    1.0, 0.0,   0.0, 0.0,
-    0.0, 1.0,   0.0, 0.0,
-    0.0, 0.0,   1.0, 0.0,
-    0.0, 0.0, -0.01, 1.0
-};
+static const float ViewMatrix[] = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, -0.01, 1.0};
 
 // Projection matrix; experimentally tweaked for near-perfect alignment:
 // FOV 89.5 deg, aspect ratio 1:1, near plane 0, far plane 100
-static const float ProjectionMatrix[] = {
-    1.00876,     0.0,  0.0,  0.0,
-        0.0, 1.00876,  0.0,  0.0,
-        0.0,     0.0, -1.0, -1.0,
-        0.0,     0.0,  0.0,  0.0
-};
+static const float ProjectionMatrix[] = {1.00876, 0.0, 0.0,  0.0,  0.0, 1.00876, 0.0, 0.0,
+                                         0.0,     0.0, -1.0, -1.0, 0.0, 0.0,     0.0, 0.0};
 
 // Identity matrix for sprite rendering
-static const float IdentityMatrix[] = {
-    1.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 1.0
-};
+static const float IdentityMatrix[] = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0};
 
 static inline GLint get_texture_min_func() {
     // convert prefs texture filtering mode to GL min func value
     switch (gShockPrefs.doTextureFilter) {
-        case 0: return GL_NEAREST;
-        case 1: return GL_LINEAR;
-//        case 2: return GL_LINEAR_MIPMAP_LINEAR;
+    case 0:
+        return GL_NEAREST;
+    case 1:
+        return GL_LINEAR;
+        //        case 2: return GL_LINEAR_MIPMAP_LINEAR;
     }
 
     WARN("gShockPrefs.doTextureFilter=%d is invalid; resetting to zero (unflitered)", gShockPrefs.doTextureFilter);
@@ -142,9 +130,12 @@ static inline GLint get_texture_min_func() {
 static inline GLint get_texture_mag_func() {
     // convert prefs texture filtering mode to GL mag func value
     switch (gShockPrefs.doTextureFilter) {
-        case 0: return GL_NEAREST;
-        case 1: return GL_LINEAR;
-        case 2: return GL_LINEAR;
+    case 0:
+        return GL_NEAREST;
+    case 1:
+        return GL_LINEAR;
+    case 2:
+        return GL_LINEAR;
     }
 
     WARN("gShockPrefs.doTextureFilter=%d is invalid; resetting to zero (unflitered)", gShockPrefs.doTextureFilter);
@@ -154,12 +145,11 @@ static inline GLint get_texture_mag_func() {
 
 static void set_blend_mode(bool enabled) {
     // change the blend mode, if not set already
-    if(blend_enabled != enabled) {
+    if (blend_enabled != enabled) {
         blend_enabled = enabled;
-        if(blend_enabled) {
+        if (blend_enabled) {
             glEnable(GL_BLEND);
-        }
-        else {
+        } else {
             glDisable(GL_BLEND);
         }
     }
@@ -167,7 +157,7 @@ static void set_blend_mode(bool enabled) {
 
 static void bind_texture(GLuint tex) {
     // bind a texture, if not bound already
-    if(bound_texture != tex) {
+    if (bound_texture != tex) {
         bound_texture = tex;
         glBindTexture(GL_TEXTURE_2D, bound_texture);
     }
@@ -197,8 +187,8 @@ static GLuint loadShader(GLenum type, const char *filename) {
     char fb[256];
     sprintf(fb, "shaders/%s", filename);
 
-    FILE* file = fopen(fb, "r");
-    if(file == nullptr) {
+    FILE *file = fopen(fb, "r");
+    if (file == nullptr) {
         ERROR("Could not open shader file %s!", fb);
         return 0;
     }
@@ -215,7 +205,7 @@ static GLuint loadShader(GLenum type, const char *filename) {
 
     GLuint s = compileShader(type, source.str().c_str());
 
-    if(s == 0) {
+    if (s == 0) {
         ERROR("Could not compile shader %s", filename);
     }
     return s;
@@ -225,7 +215,7 @@ static int CreateShader(const char *vertexShaderFile, const char *fragmentShader
     GLuint vertShader = loadShader(GL_VERTEX_SHADER, vertexShaderFile);
     GLuint fragShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderFile);
 
-    if(vertShader == 0 || fragShader == 0) {
+    if (vertShader == 0 || fragShader == 0) {
         ERROR("Could not create shader %s : %s", vertexShaderFile, fragmentShaderFile);
         context = nullptr;
         return 1; // Error!
@@ -272,7 +262,7 @@ static FrameBuffer CreateFrameBuffer(int width, int height) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newBuffer.texture, 0);
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if(status != GL_FRAMEBUFFER_COMPLETE) {
+    if (status != GL_FRAMEBUFFER_COMPLETE) {
         ERROR("Could not make FrameBuffer!: %x \n", status);
         context = nullptr;
     }
@@ -284,11 +274,10 @@ static FrameBuffer CreateFrameBuffer(int width, int height) {
 }
 
 static void BindFrameBuffer(FrameBuffer *buffer) {
-    if(buffer == nullptr) {
+    if (buffer == nullptr) {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    }
-    else {
+    } else {
         glBindFramebuffer(GL_FRAMEBUFFER, buffer->frameBuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, buffer->stencilBuffer);
         glViewport(0, 0, buffer->width, buffer->height);
@@ -299,14 +288,14 @@ int init_opengl() {
     DEBUG("Initializing OpenGL");
 
     // Are we running in OpenGL mode?
-    if(SDL_GL_GetCurrentContext() == nullptr) {
+    if (SDL_GL_GetCurrentContext() == nullptr) {
         ERROR("No OpenGL context! Falling back to Software mode.");
         return 1;
     }
 
     // Can we create the world rendering context?
     context = SDL_GL_CreateContext(window);
-    if(context == nullptr) {
+    if (context == nullptr) {
         ERROR("Could not create an OpenGL context! Falling back to Software mode.");
         return 1;
     }
@@ -330,7 +319,7 @@ int init_opengl() {
     glGenTextures(1, &dynTexture);
 
     // Did the setup go okay?
-    if(context == nullptr) {
+    if (context == nullptr) {
         ERROR("OpenGL could not be initialized, falling back to Software mode.");
         return 1;
     }
@@ -377,30 +366,25 @@ void opengl_resize(int width, int height) {
 
     // Redraw the options menu background in the new resolution
     extern uchar wrapper_screenmode_hack;
-    if(wrapper_screenmode_hack) {
+    if (wrapper_screenmode_hack) {
         render_run();
         wrapper_screenmode_hack = false;
     }
 }
 
-void opengl_change_palette() {
-    palette_dirty = true;
-}
+void opengl_change_palette() { palette_dirty = true; }
 
-bool can_use_opengl() {
-    return context != nullptr;
-}
+bool can_use_opengl() { return context != nullptr; }
 
 bool use_opengl() {
     return can_use_opengl() && gShockPrefs.doUseOpenGL && opengl_enabled &&
-           (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
-           !global_fullmap->cyber && !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
+           (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) && !global_fullmap->cyber &&
+           !(_fr_curflags & (FR_PICKUPM_MASK | FR_HACKCAM_MASK));
 }
 
 bool should_opengl_swap() {
     return can_use_opengl() && gShockPrefs.doUseOpenGL && opengl_enabled &&
-           (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) &&
-           !global_fullmap->cyber;
+           (_current_loop == GAME_LOOP || _current_loop == FULLSCREEN_LOOP) && !global_fullmap->cyber;
 }
 
 void opengl_end_frame() {
@@ -428,9 +412,7 @@ static void updatePalette(SDL_Palette *palette, bool transparent) {
     }
 }
 
-static bool nightsight_active() {
-    return WareActive(player_struct.hardwarez_status[HARDWARE_GOGGLE_INFRARED]);
-}
+static bool nightsight_active() { return WareActive(player_struct.hardwarez_status[HARDWARE_GOGGLE_INFRARED]); }
 
 void opengl_start_frame() {
     SDL_GL_MakeCurrent(window, context);
@@ -473,7 +455,8 @@ void opengl_swap_and_restore() {
     int x_hdpi_scale, y_hdpi_scale;
     get_hdpi_scaling(&x_hdpi_scale, &y_hdpi_scale);
 
-    glViewport(phys_offset_x * x_hdpi_scale, phys_offset_y * y_hdpi_scale, phys_width * x_hdpi_scale, phys_height * y_hdpi_scale);
+    glViewport(phys_offset_x * x_hdpi_scale, phys_offset_y * y_hdpi_scale, phys_width * x_hdpi_scale,
+               phys_height * y_hdpi_scale);
     set_blend_mode(false);
 
     glUseProgram(textureShaderProgram.shaderProgram);
@@ -517,15 +500,15 @@ void opengl_swap_and_restore() {
 void toggle_opengl() {
     if (gShockPrefs.doUseOpenGL) {
         switch (gShockPrefs.doTextureFilter) {
-            case 0: {
-                message_info("Switching to OpenGL bilinear rendering");
-                gShockPrefs.doTextureFilter = 1;
-            } break;
-            case 1: {
-                message_info("Switching to sofware rendering");
-                gShockPrefs.doUseOpenGL = false;
-                gShockPrefs.doTextureFilter = 0;
-            } break;
+        case 0: {
+            message_info("Switching to OpenGL bilinear rendering");
+            gShockPrefs.doTextureFilter = 1;
+        } break;
+        case 1: {
+            message_info("Switching to sofware rendering");
+            gShockPrefs.doUseOpenGL = false;
+            gShockPrefs.doTextureFilter = 0;
+        } break;
         }
     } else {
         message_info("Switching to OpenGL unfiltered");
@@ -563,13 +546,13 @@ static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
 
     glPixelStorei(GL_UNPACK_ROW_LENGTH, bm->row);
 
-    if(texturesByBitsPtr.size() < MAX_CACHED_TEXTURES) {
+    if (texturesByBitsPtr.size() < MAX_CACHED_TEXTURES) {
         // We have enough room, generate the new texture
         glGenTextures(1, &toCache.texture);
         bind_texture(toCache.texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, toCache.converted->pixels);
 
-        texturesByBitsPtr[ (uint64_t)bm->bits | ((uint64_t)bm->w<<32u) | ((uint64_t)bm->h<<48u) ] = toCache;
+        texturesByBitsPtr[(uint64_t)bm->bits | ((uint64_t)bm->w << 32u) | ((uint64_t)bm->h << 48u)] = toCache;
         return true;
     }
 
@@ -580,8 +563,8 @@ static bool opengl_cache_texture(CachedTexture toCache, grs_bitmap *bm) {
     return false;
 }
 
-static CachedTexture* opengl_get_texture(grs_bitmap *bm) {
-    auto iter = texturesByBitsPtr.find( (uint64_t)bm->bits | ((uint64_t)bm->w << 32u) | ((uint64_t)bm->h << 48u) );
+static CachedTexture *opengl_get_texture(grs_bitmap *bm) {
+    auto iter = texturesByBitsPtr.find((uint64_t)bm->bits | ((uint64_t)bm->w << 32u) | ((uint64_t)bm->h << 48u));
     if (iter != texturesByBitsPtr.end()) {
         return &iter->second;
     }
@@ -589,14 +572,14 @@ static CachedTexture* opengl_get_texture(grs_bitmap *bm) {
 }
 
 void opengl_clear_texture_cache() {
-    if(texturesByBitsPtr.empty())
+    if (texturesByBitsPtr.empty())
         return;
 
     DEBUG("Clearing OpenGL texture cache.");
 
     SDL_GL_MakeCurrent(window, context);
 
-    for(auto iter = texturesByBitsPtr.begin(); iter != texturesByBitsPtr.end();) {
+    for (auto iter = texturesByBitsPtr.begin(); iter != texturesByBitsPtr.end();) {
         // don't free locked surfaces
         if (!iter->second.locked) {
             SDL_FreeSurface(iter->second.bitmap);
@@ -611,7 +594,7 @@ void opengl_clear_texture_cache() {
 }
 
 static void setPaletteForBitmap(grs_bitmap *bm, SDL_Surface *surface) {
-    if(bm->flags & BMF_TRANS)
+    if (bm->flags & BMF_TRANS)
         SDL_SetSurfacePalette(surface, transparentPalette);
     else
         SDL_SetSurfacePalette(surface, opaquePalette);
@@ -647,11 +630,10 @@ static void convert_texture(grs_bitmap *bm, bool locked) {
 
 void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm) {
     if (idx < NUM_LOADED_TEXTURES) {
-        CachedTexture* t = opengl_get_texture(bm);
-        if(t == nullptr) {
+        CachedTexture *t = opengl_get_texture(bm);
+        if (t == nullptr) {
             convert_texture(bm, true);
-        }
-        else {
+        } else {
             // Need to refresh this texture
             t->lastDrawTime = -1;
             palette_dirty = true;
@@ -660,7 +642,7 @@ void opengl_cache_wall_texture(int idx, int size, grs_bitmap *bm) {
 }
 
 static void set_texture(grs_bitmap *bm) {
-    CachedTexture* t = opengl_get_texture(bm);
+    CachedTexture *t = opengl_get_texture(bm);
     if (t == nullptr) {
         // Not cached, have to make it
         convert_texture(bm, false);
@@ -671,20 +653,18 @@ static void set_texture(grs_bitmap *bm) {
 
     if (t->locked) {
         // Locked surfaces only need to update once
-        if(palette_dirty && t->lastDrawTime != *tmd_ticks) {
+        if (palette_dirty && t->lastDrawTime != *tmd_ticks) {
             SDL_SetSurfacePalette(t->bitmap, transparentPalette); // Walls should show stars
             SDL_BlitSurface(t->bitmap, nullptr, t->converted, nullptr);
 
             isDirty = true;
         }
-    }
-    else {
+    } else {
         if (bm->type == BMT_RSD8) {
             grs_bitmap decoded;
             gr_rsd8_convert(bm, &decoded);
             SDL_memmove(t->bitmap->pixels, decoded.bits, bm->w * bm->h);
-        }
-        else {
+        } else {
             SDL_memmove(t->bitmap->pixels, bm->bits, bm->w * bm->h);
         }
 
@@ -697,13 +677,13 @@ static void set_texture(grs_bitmap *bm) {
     bind_texture(t->texture);
     t->lastDrawTime = *tmd_ticks;
 
-    if(isDirty) {
+    if (isDirty) {
         glPixelStorei(GL_UNPACK_ROW_LENGTH, bm->row);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, t->converted->pixels);   
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bm->w, bm->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, t->converted->pixels);
     }
 }
 
-static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttrib) {
+static void draw_vertex(const g3s_point &vertex, GLint tcAttrib, GLint lightAttrib) {
 
     // Default, per-vertex lighting
     float light = 1.0f - (vertex.i / 4096.0f);
@@ -715,19 +695,17 @@ static void draw_vertex(const g3s_point& vertex, GLint tcAttrib, GLint lightAttr
         // Ugly hack: We don't get the original light value, so we have to
         // recalculate it from the offset into the global lighting lookup
         // table.
-        auto* clut = (uint8_t *)gr_get_fill_parm();
+        auto *clut = (uint8_t *)gr_get_fill_parm();
         light = 1.0f - (clut - grd_screen->ltab) / 4096.0f;
     }
 
     if (tcAttrib >= 0)
         glVertexAttrib2f(tcAttrib, vertex.uv.u / 256.0, vertex.uv.v / 256.0);
     glVertexAttrib1f(lightAttrib, light);
-    glVertex3f(vertex.x / 65536.0f,  vertex.y / 65536.0f, -vertex.z / 65536.0f);
+    glVertex3f(vertex.x / 65536.0f, vertex.y / 65536.0f, -vertex.z / 65536.0f);
 }
 
-int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
-    return opengl_light_tmap(n, vp, bm);
-}
+int opengl_draw_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) { return opengl_light_tmap(n, vp, bm); }
 
 int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     if (n != 3 && n != 4) {
@@ -764,13 +742,9 @@ int opengl_light_tmap(int n, g3s_phandle *vp, grs_bitmap *bm) {
     return CLIP_NONE;
 }
 
-static float convx(float x) {
-    return  x/32768.0f / render_width - 1;
-}
+static float convx(float x) { return x / 32768.0f / render_width - 1; }
 
-static float convy(float y) {
-    return -y/32768.0f / render_height + 1;
-}
+static float convy(float y) { return -y / 32768.0f / render_height + 1; }
 
 int opengl_bitmap(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti) {
     if (n != 4) {
@@ -845,16 +819,35 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
     if (gour_flag == 1 || gour_flag == 3) {
         // translucent; see init_pal_fx() for translucency parameters
         switch (c) {
-            case 247: set_color(120, 120, 120,  80); break; // dark fog
-            case 248: set_color(170, 170, 170,  80); break; // medium fog
-            case 249: set_color(255,   0,   0,  80); break; // red fog
-            case 250: set_color(  0, 255,   0,  80); break; // green fog
-            case 251: set_color(  0,   0, 255,  80); break; // blue fog
-            case 252: set_color(240, 240, 240,  80); break; // light fog
-            case 253: set_color(  0,   0, 255, 128); break; // blue force field
-            case 254: set_color(  0, 255,   0, 128); break; // green force field
-            case 255: set_color(255,   0,   0, 128); break; // red force field
-            default: return CLIP_ALL;
+        case 247:
+            set_color(120, 120, 120, 80);
+            break; // dark fog
+        case 248:
+            set_color(170, 170, 170, 80);
+            break; // medium fog
+        case 249:
+            set_color(255, 0, 0, 80);
+            break; // red fog
+        case 250:
+            set_color(0, 255, 0, 80);
+            break; // green fog
+        case 251:
+            set_color(0, 0, 255, 80);
+            break; // blue fog
+        case 252:
+            set_color(240, 240, 240, 80);
+            break; // light fog
+        case 253:
+            set_color(0, 0, 255, 128);
+            break; // blue force field
+        case 254:
+            set_color(0, 255, 0, 128);
+            break; // green force field
+        case 255:
+            set_color(255, 0, 0, 128);
+            break; // red force field
+        default:
+            return CLIP_ALL;
         }
     } else if (c == 255) {
         // transparent
@@ -877,9 +870,11 @@ int opengl_draw_poly(long c, int n_verts, g3s_phandle *p, char gour_flag) {
     glBegin(GL_TRIANGLE_STRIP);
     while (true) {
         draw_vertex(*(p[a]), -1, lightAttrib);
-        if (a++ == b) break;
+        if (a++ == b)
+            break;
         draw_vertex(*(p[b]), -1, lightAttrib);
-        if (b-- == a) break;
+        if (b-- == a)
+            break;
     }
     glEnd();
 
@@ -933,7 +928,7 @@ int opengl_draw_star(fix star_x, fix star_y, int c, bool anti_alias) {
     float y = fix_float(star_y);
 
     // Lower screen resolutions should snap to pixels to avoid shimmering
-    if(!anti_alias) {
+    if (!anti_alias) {
         x = (int)x + 0.5f;
         y = (int)y + 0.5f;
     }
@@ -948,7 +943,7 @@ int opengl_draw_star(fix star_x, fix star_y, int c, bool anti_alias) {
     color = (255 * color) / (std_color_range + 1);
 
     glVertexAttrib1f(lightAttrib, color / 255.0f);
-    glVertex3f(x,  y, -0.25f);
+    glVertex3f(x, y, -0.25f);
 
     return CLIP_NONE;
 }
@@ -960,8 +955,6 @@ void opengl_begin_sensaround(uchar version) {
     }
 }
 
-void opengl_end_sensaround() {
-    opengl_enabled = true;
-}
+void opengl_end_sensaround() { opengl_enabled = true; }
 
 #endif // USE_OPENGL

@@ -109,7 +109,6 @@ ubyte hand_bobbing = HAND_BOB;
 ubyte hand_bobx = HAND_BOBX;
 uchar bob_up = TRUE;
 uchar bob_left = TRUE;
-void reset_handart_count(int wpn_num);
 
 // -----------------------------------------
 // get_handart()
@@ -273,7 +272,6 @@ void notify_draw_handart(void) {
 
 void reset_handart_count(int wpn_num) {
     if (player_struct.weapons[wpn_num].type == GUN_SUBCLASS_HANDTOHAND) {
-        extern ubyte toggle_hand;
         ubyte hit = (handart_count &= 0x80);
         handart_count = (player_struct.weapons[wpn_num].subtype == 0) ? PR24_COUNT : LASER_EPEE_COUNT;
         if (hit)

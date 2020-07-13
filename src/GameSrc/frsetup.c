@@ -124,7 +124,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h> // I HATE THIS
 
-#define __FRSETUP_SRC
 #include "frcamera.h"
 #include "fr3d.h"
 #include "frtypes.h"
@@ -554,11 +553,6 @@ void _fr_update_context(int det) {
     _fr->last_detail = det;
 }
 
-// run when current context detail is different from the last rendered context detail.
-#ifndef NEW_2D
-extern void gr_set_lin_always();
-extern void gr_reset_per();
-#endif
 
 void _fr_change_detail(int det) {
     // note: pixel_ratio 5 data types before scrw, if order is preserved

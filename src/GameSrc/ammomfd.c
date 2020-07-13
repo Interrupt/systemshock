@@ -102,8 +102,6 @@ uchar ammo_line_colors[] = {GREEN_BASE + 6, GREEN_BASE + 2, GREEN_YELLOW_BASE + 
 //  PROTOTYPES
 // ----------
 uchar player_has_weapon(int trip);
-void mfd_ammo_expose(ubyte control);
-uchar mfd_ammo_handler(MFD *m, uiEvent *ev);
 
 // return 0 if player does not have weapon of this type.
 // returns 1 if player does have one, but not selected
@@ -128,8 +126,8 @@ uchar player_has_weapon(int trip) {
 #define HARDWIRED_HEIGHT_CONSTANT 5
 void mfd_ammo_expose(ubyte control) {
     uchar full = control & MFD_EXPOSE_FULL;
-    if (control & MFD_EXPOSE) // Time to draw stuff
-    {
+    if (control & MFD_EXPOSE) {
+        // Time to draw stuff
         gr_set_font((grs_font *)ResGet(MFD_FONT));
 
         // Clear the canvas by drawing the background bitmap

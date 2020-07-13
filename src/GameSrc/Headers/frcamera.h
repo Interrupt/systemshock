@@ -72,10 +72,8 @@ cams *fr_camera_getdef(void);
 void fr_camera_setdef(cams *cam);
 void fr_camera_getobjloc(int oid, fix *store);
 
-#ifndef __FRCAMERA_SRC
 extern fix cam_slew_scale[CAM_COOR_CNT];
 extern fix fr_camera_last[CAM_COOR_CNT];
-#endif
 
 // cameras are now 8 bit flags
 //   1 mods, 1 flt, 2 ang, 2 off, 1 obj

@@ -68,10 +68,30 @@ uchar object_use(ObjID id, uchar in_inv, ObjID cursor_obj);
 // Lock/unlock a door
 errtype obj_door_lock(ObjID door_id, uchar new_lock);
 
+errtype obj_screen_animate(ObjID id);
+
+errtype obj_tractor_beam_func(ObjID id, uchar on);
+
+char container_extract(ObjID *pidlist, int d1, int d2);
+
+void container_stuff(ObjID *pidlist, int numobjs, int *d1, int *d2);
+
+uchar is_container(ObjID id, int **d1, int **d2);
+
+errtype keypad_trigger(ObjID id, uchar digits[]);
+
 // Special case for elevator
 uchar elevator_use(short dest_level, ubyte which_panel);
 
 errtype obj_cspace_collide(ObjID id, ObjID collider);
+
+uchar obj_too_smart(ObjID id);
+
+void multi_anim_callback(ObjID id, intptr_t user_data);
+
+void unmulti_anim_callback(ObjID id, intptr_t user_data);
+
+errtype gear_power_outage();
 
 // Globals
 

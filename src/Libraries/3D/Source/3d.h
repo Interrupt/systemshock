@@ -657,6 +657,8 @@ void g3_scale_object(fix s);
 
 void g3_end_object(void);
 
+int code_point(g3s_point *pt);
+
 // Drawing commands.
 // all return 2d clip codes. See 2d header for values
 

@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Shock.h"
 
+#include "amap.h"
 #include "citmat.h"
 #include "citres.h"
 #include "colors.h"
@@ -50,6 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objload.h"
 #include "objsim.h"
 #include "objprop.h"
+#include "objuse.h"
 #include "objwpn.h"
 #include "objwarez.h"
 #include "objstuff.h"
@@ -96,12 +98,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define obj_inv_coor_y(oloc) ((OBJ_LOC_BIN_Y(oloc) << MAP_SH) + (OBJ_LOC_FINE_Y(oloc) >> MAP_MS))
 #define obj_inv_coor_z(oid) (inv_coor(fix_from_obj_height(oid)))
 
-extern void instantiate_robot(int triple, Robot *new_robot);
-
-extern char container_extract(ObjID *pidlist, int d1, int d2);
-extern void container_stuff(ObjID *pidlist, int numobjs, int *d1, int *d2);
-extern uchar is_container(ObjID id, int **d1, int **d2);
-
 // global symbol for the player camera...
 cams player_cam;
 
@@ -119,20 +115,14 @@ int physics_handle_max = -1;
 errtype ObjClassInit(ObjID id, ObjSpecID specid, int subclass);
 errtype obj_set_secondary_properties();
 errtype do_ecology_triggers();
-errtype obj_physics_refresh(short x, short y, uchar use_floor);
 grs_bitmap *get_text_bitmap_from_string(int d1, char dest_type, char *s, uchar scroll, int scroll_index);
-grs_bitmap *get_text_bitmap_obj(ObjID cobjid, char dest_type, char *pscale);
 grs_bitmap *obj_get_model_data(ObjID id, fix *x, fix *y, fix *z, grs_bitmap *bm2, Ref *ref1, Ref *ref2);
 void place_obj_at_objloc(ObjID id, ObjLoc *newloc, ushort xsize, ushort ysize);
-char extract_object_special_color(ObjID id);
 Ref ref_from_critter_data(ObjID oid, int triple, byte posture, short frame, short view);
 void spew_contents(ObjID id, int d1, int d2);
 uchar obj_is_useless(ObjID oid);
-uchar obj_is_display(int triple);
 errtype obj_settle_func(ObjID id);
 uchar death_check(ObjID id, bool *destr);
-
-errtype set_door_data(ObjID id); //  here for now
 
 errtype set_door_data(ObjID id) {
     // Do we block the renderer?
@@ -372,7 +362,6 @@ grs_bitmap *bitmap_from_tpoly_data(int tpdata, ubyte *scale, int *index, uchar *
             return (static_bitmap);
         } else if ((*index >= FIRST_AUTOMAP_MAGIC_COOKIE) &&
                    (*index <= FIRST_AUTOMAP_MAGIC_COOKIE + NUM_AUTOMAP_MAGIC_COOKIES)) {
-            extern grs_bitmap *screen_automap_bitmap(char which_amap);
             return (screen_automap_bitmap(*index - FIRST_AUTOMAP_MAGIC_COOKIE));
         }
 
@@ -707,11 +696,8 @@ char extract_object_special_color(ObjID id) {
 
 // Shutdown the object system and free up memory as appropriate
 errtype obj_shutdown() {
-    int i;
-    extern errtype obj_load_art(uchar flush_all);
-
     // Free the word-buffer bitmap
-    for (i = 0; i < NUM_TEXT_BITMAPS; i++) {
+    for (int i = 0; i < NUM_TEXT_BITMAPS; i++) {
         if (text_bitmap_ptrs[i] != NULL)
             free(text_bitmap_ptrs[i]);
     }
@@ -756,7 +742,6 @@ uchar obj_autodelete = TRUE;
 ObjID obj_create_base(int triple) {
     ObjID new_id;
     ObjSpecID new_specid;
-    extern errtype obj_screen_animate(ObjID id);
 
     if (obj_autodelete) {
         while (!ObjAndSpecGrab(TRIP2CL(triple), &new_id, &new_specid)) {
@@ -1194,7 +1179,6 @@ errtype obj_move_to(ObjID id, ObjLoc *newloc, uchar phys_tel) {
 // representations
 uchar obj_destroy(ObjID id) {
     int retval = -1;
-    extern void check_panel_ref(uchar puntme);
     short x, y;
     uchar terrain_object = FALSE;
 
@@ -1266,7 +1250,6 @@ errtype obj_create_player(ObjLoc *plr_loc) {
     plr_loc->z = obj_height_from_fix(pos_list[2] << 8);
 
     if ((player_struct.edms_state[0]) && (!global_fullmap->cyber)) {
-        extern void state_to_objloc(State * s, ObjLoc * l);
         LG_memcpy(&new_state, player_struct.edms_state, sizeof(fix) * 12);
         state_to_objloc(&new_state, plr_loc);
         use_new = TRUE;
@@ -2107,9 +2090,6 @@ errtype obj_settle_func(ObjID id) {
     return (OK);
 }
 
-void destroy_screen_callback_func(ObjID id, intptr_t user_data);
-void diego_teleport_callback(ObjID id, intptr_t user_data);
-
 #define DESTROYED_SCREEN_ANIM_BASE 0x1B
 
 void destroy_screen_callback_func(ObjID id, intptr_t data) {
@@ -2147,8 +2127,6 @@ uchar obj_combat_destroy(ObjID id) {
     int i, *d1, *d2;
     extern ObjID hack_cam_objs[NUM_HACK_CAMERAS];
     extern ObjID hack_cam_surrogates[NUM_HACK_CAMERAS];
-    extern uchar is_container(ObjID id, int **d1, int **d2);
-    extern char container_extract(ObjID * pidlist, int d1, int d2);
     extern ObjID damage_sound_id;
     extern char damage_sound_fx;
 
@@ -2264,7 +2242,6 @@ ObjID object_place(int triple, LGPoint square) {
     ObjLoc loc;
     short flrh;
     errtype retval;
-    extern void cit_sleeper_callback(physics_handle caller);
     int newsize;
 
     new_id = obj_create_base(triple);
@@ -2293,7 +2270,6 @@ ObjID object_place(int triple, LGPoint square) {
     if (retval != OK)
         ObjDel(new_id);
     if (CHECK_OBJ_PH(new_id)) {
-        extern void edms_delete_go();
         obj_settle_func(new_id);
         cit_sleeper_callback(objs[new_id].info.ph); // rock-a-bye, object.
         edms_delete_go();

@@ -23,11 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/10/18 19:50:51 $
  */
 
-#define __AI_SRC
-
 #include <stdlib.h>
 
-#include "Headers/ai.h"
+#include "ai.h"
 #include "aiflags.h"
 #include "objects.h"
 #include "objsim.h"
@@ -58,8 +56,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // errtype ai_fire_slow_projectile(ObjID src, int proj_triple, ObjLoc src_loc, ObjLoc target_loc, uchar a, int
 // duration);  errtype ai_throw_grenade(ObjID src, int proj_triple, ObjLoc src_loc, ObjLoc target_loc);
-errtype ai_fire_special(ObjID src, ObjID target, int proj_triple, ObjLoc src_loc, ObjLoc target_loc, uchar a,
-                        int duration);
 
 #define SLOW_PROJECTILE_DURATION 1000
 #define SLOW_PROJECTILE_SPEED    fix_make(5, 0)
@@ -76,14 +72,6 @@ errtype ai_fire_special(ObjID src, ObjID target, int proj_triple, ObjLoc src_loc
 fix there_yet;
 ObjLoc last_known_loc;
 
-// -----------
-//  PROTOTYPES
-// -----------
-errtype set_posture_safe(ObjSpecID osid, ubyte new_pos);
-errtype set_posture_movesafe(ObjSpecID osid, ubyte new_pos);
-errtype clear_critter_controls(ObjSpecID osid);
-errtype apply_EDMS_controls(ObjSpecID osid);
-errtype roll_on_dnd_treasure_tables(int *pcont, char treasure_type);
 
 #define AI_HEAD_HIT_CHANCE 0x40
 void ai_find_player(ObjID id) {
@@ -329,103 +317,122 @@ errtype ai_critter_die(ObjSpecID osid) {
 
 #define FIRST_CORPSE_TTYPE 11
 
+// Each of NUM_TREASURE_TYPES has up to NUM_TREASURE_SLOTS slots with pairs of chances and reward
 int treasure_table[NUM_TREASURE_TYPES][NUM_TREASURE_SLOTS][NUM_TREASURE_ENTRIES] = {
-    // No Treasure
-    {{100, NOTHING_TRIPLE}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},
-    // Humanoid (1)
-    {{7, LSD_DRUG_TRIPLE}, {15, MEDI_DRUG_TRIPLE}, {13, BEV_CONT_TRIPLE}, {65, NOTHING_TRIPLE}, {0, 0}, {0, 0}, {0, 0}},
-    // Drone (2)
-    {{14, SPAMMO_TRIPLE},
+    {// No Treasure, loser
+     {100, NOTHING_TRIPLE},
+     {0, 0},
+     {0, 0},
+     {0, 0},
+     {0, 0},
+     {0, 0},
+     {0, 0}},
+    {// Humanoid (1)
+     {7, LSD_DRUG_TRIPLE},
+     {15, MEDI_DRUG_TRIPLE},
+     {13, BEV_CONT_TRIPLE},
+     {65, NOTHING_TRIPLE},
+     {0, 0},
+     {0, 0},
+     {0, 0}},
+    {// Drone (2)
+     {14, SPAMMO_TRIPLE},
      {8, TEFAMMO_TRIPLE},
      {17, NNAMMO_TRIPLE},
      {6, MEDI_DRUG_TRIPLE},
      {5, FRAG_G_TRIPLE},
      {50, NOTHING_TRIPLE},
      {0, 0}},
-    // Assassin (3)
-    {{40, SPAMMO_TRIPLE},
+    {// Assassin (3)
+     {40, SPAMMO_TRIPLE},
      {15, NNAMMO_TRIPLE},
      {8, TEFAMMO_TRIPLE},
      {7, TNAMMO_TRIPLE},
      {30, NOTHING_TRIPLE},
      {0, 0},
      {0, 0}},
-    // Warrior Cyborg (4)
-    {{25, SPAMMO_TRIPLE},
+    {// Warrior Cyborg (4)
+     {25, SPAMMO_TRIPLE},
      {25, TEFAMMO_TRIPLE},
      {15, HNAMMO_TRIPLE},
      {5, SPLAMMO_TRIPLE},
      {5, FRAG_G_TRIPLE},
      {25, NOTHING_TRIPLE},
      {0, 0}},
-    // Flier Bots (5)
-    {{30, SPAMMO_TRIPLE},
+    {// Flier Bots (5)
+     {30, SPAMMO_TRIPLE},
      {10, NNAMMO_TRIPLE},
      {5, TEFAMMO_TRIPLE},
      {5, HNAMMO_TRIPLE},
      {50, NOTHING_TRIPLE},
      {0, 0},
      {0, 0}},
-    // Security 1 Bots (6)
-    {{20, HNAMMO_TRIPLE},
+    {// Security 1 Bots (6)
+     {20, HNAMMO_TRIPLE},
      {20, HTAMMO_TRIPLE},
      {15, SPLAMMO_TRIPLE},
      {15, MRAMMO_TRIPLE},
      {10, TEFAMMO_TRIPLE},
      {10, HSAMMO_TRIPLE},
      {10, NOTHING_TRIPLE}},
-    // Exec Bots (7)
-    {{25, NOTHING_TRIPLE},
+    {// Exec Bots (7)
+     {25, NOTHING_TRIPLE},
      {25, SPLAMMO_TRIPLE},
      {15, HTAMMO_TRIPLE},
      {10, HNAMMO_TRIPLE},
      {10, MRAMMO_TRIPLE},
      {7, HSAMMO_TRIPLE},
      {8, NOTHING_TRIPLE}},
-    // Cyborg Enforcer (8)
-    {{10, EMP_G_TRIPLE},
+    {// Cyborg Enforcer (8)
+     {10, EMP_G_TRIPLE},
      {40, MRAMMO_TRIPLE},
      {13, SLGAMMO_TRIPLE},
      {12, BGAMMO_TRIPLE},
      {8, MEDI_DRUG_TRIPLE},
      {2, AIDKIT_TRIPLE},
      {15, STAMINA_DRUG_TRIPLE}},
-    // Security II Bot (9)
-    {{40, HTAMMO_TRIPLE},
+    {// Security II Bot (9)
+     {40, HTAMMO_TRIPLE},
      {40, HSAMMO_TRIPLE},
      {10, MRAMMO_TRIPLE},
      {7, NOTHING_TRIPLE},
      {3, PRAMMO_TRIPLE}, // no not impart prammo in favor of nothing
      {0, 0},
      {0, 0}},
-    // Elite Cyborg (10)
-    {{15, RGAMMO_TRIPLE},
+    {// Elite Cyborg (10)
+     {15, RGAMMO_TRIPLE},
      {20, BGAMMO_TRIPLE},
      {20, HSAMMO_TRIPLE},
      {11, MEDI_DRUG_TRIPLE},
      {2, AIDKIT_TRIPLE},
      {27, NOTHING_TRIPLE},
      {5, PRAMMO_TRIPLE}}, // yeah, what he said
-                          // Standard Corpse (11)
-    {{80, NOTHING_TRIPLE},
+    {// Standard Corpse (11)
+     {80, NOTHING_TRIPLE},
      {5, HELMET_TRIPLE},
      {5, BEV_CONT_TRIPLE},
      {5, WRAPPER_TRIPLE},
      {2, LSD_DRUG_TRIPLE},
      {2, PHASER_TRIPLE},
      {1, STAMINA_DRUG_TRIPLE}},
-    // loot-oriented corpse (12)
-    {{10, SPAMMO_TRIPLE},
+    {// loot-oriented corpse (12)
+     {10, SPAMMO_TRIPLE},
      {10, STAMINA_DRUG_TRIPLE},
      {5, BATTERY_TRIPLE},
      {11, MEDI_DRUG_TRIPLE},
      {64, NOTHING_TRIPLE},
      {0, 0},
      {0, 0}},
-    // electro-stuff treasure (maint & repair bots)
-    {{5, EPICK_TRIPLE}, {15, BATTERY_TRIPLE}, {80, NOTHING_TRIPLE}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},
-    // serv-bot treasure
-    {{35, BEV_CONT_TRIPLE},
+    {// electro-stuff treasure (maint & repair bots)
+     {5, EPICK_TRIPLE},
+     {15, BATTERY_TRIPLE},
+     {80, NOTHING_TRIPLE},
+     {0, 0},
+     {0, 0},
+     {0, 0},
+     {0, 0}},
+    {// serv-bot treasure
+     {35, BEV_CONT_TRIPLE},
      {5, MEDI_DRUG_TRIPLE},
      {15, BEAKER_CONT_TRIPLE},
      {15, FLASK_CONT_TRIPLE},
