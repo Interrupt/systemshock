@@ -962,17 +962,17 @@ uchar mfd_button_callback_kb(ushort keycode, uint32_t context, intptr_t data) {
     int fkeynum;
 
     if (!global_fullmap->cyber) {
-        fkeynum = (int)context; // dummy funcs
-        fkeynum = (int)keycode;
 
-        fkeynum = (int)data;
+        fkeynum = (int)keycode - 128;
 
-        if (fkeynum >= MFD_NUM_VIRTUAL_SLOTS)
+        if (fkeynum >= MFD_NUM_VIRTUAL_SLOTS) {
             which_panel = MFD_RIGHT;
-        else
+        }
+        else {
             which_panel = MFD_LEFT;
+        }
 
-        which_button = ((int)data) % MFD_NUM_VIRTUAL_SLOTS;
+        which_button = ((int)fkeynum) % MFD_NUM_VIRTUAL_SLOTS;
 
         mfd_select_button(which_panel, which_button);
     }
