@@ -38,6 +38,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mainloop.h"
 #include "movekeys.h"
 
+extern uchar mfd_button_callback_kb(ushort keycode, uint32_t context, intptr_t data);
+
 //--------------------
 //  Filenames
 //--------------------
@@ -548,6 +550,16 @@ HOTKEYLOOKUP HotKeyLookup[] = {
     {"\"use_drug\"", DEMO_CONTEXT, use_drug_hotkey, 0, 0, ALT(';'), 0},
     {"\"hud_color\"", DEMO_CONTEXT, hud_color_bank_cycle, 0, 0, ALT('h'), 0},
     {"\"showhelp\"", DEMO_CONTEXT, olh_overlay_func, (intptr_t)&olh_overlay_on, 0, ALT('o'), 0},
+    {"\"mfd left 1\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F1, 0},
+    {"\"mfd left 2\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F2, 0},
+    {"\"mfd left 3\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F3, 0},
+    {"\"mfd left 4\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F4, 0},
+    {"\"mfd left 5\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F5, 0},
+    {"\"mfd right 1\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F6, 0},
+    {"\"mfd right 2\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F7, 0},
+    {"\"mfd right 3\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F8, 0},
+    {"\"mfd right 4\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F9, 0},
+    {"\"mfd right 5\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F10, 0},
     {"\"keypad 0\"", DEMO_CONTEXT, keypad_hotkey_func, 0, 0, DOWN('0'), 0},
     {"\"keypad 1\"", DEMO_CONTEXT, keypad_hotkey_func, 0, 0, DOWN('1'), 0},
     {"\"keypad 2\"", DEMO_CONTEXT, keypad_hotkey_func, 0, 0, DOWN('2'), 0},
