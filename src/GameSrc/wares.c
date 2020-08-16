@@ -152,7 +152,6 @@ void use_ware(int waretype, int num) {
     int n, ecost;
     int ware_sfx = SFX_NONE, hnd;
 
-    INFO("+++ use waretype %d num %d\n", waretype, num);
     //   int   i;
     //   ubyte invtype;
     if ((!global_fullmap->cyber != (waretype == 0))  // boolean equality, yum.
