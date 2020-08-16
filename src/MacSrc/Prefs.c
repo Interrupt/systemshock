@@ -39,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "movekeys.h"
 
 extern uchar mfd_button_callback_kb(ushort keycode, uint32_t context, intptr_t data);
+extern uchar hw_hotkey_callback(ushort keycode, uint32_t context, intptr_t data);
 
 //--------------------
 //  Filenames
@@ -550,6 +551,16 @@ HOTKEYLOOKUP HotKeyLookup[] = {
     {"\"use_drug\"", DEMO_CONTEXT, use_drug_hotkey, 0, 0, ALT(';'), 0},
     {"\"hud_color\"", DEMO_CONTEXT, hud_color_bank_cycle, 0, 0, ALT('h'), 0},
     {"\"showhelp\"", DEMO_CONTEXT, olh_overlay_func, (intptr_t)&olh_overlay_on, 0, ALT('o'), 0},
+    {"\"bio scan\"", DEMO_CONTEXT, hw_hotkey_callback, 13, 0, 48, 0},  
+    {"\"fullscreen\"", DEMO_CONTEXT, hw_hotkey_callback, 5, 0, 49, 0},
+    {"\"360 view\"", DEMO_CONTEXT, hw_hotkey_callback, 10, 0, 50, 0},
+    {"\"lantern\"", DEMO_CONTEXT, hw_hotkey_callback, 2, 0, 51, 0},
+    {"\"shield\"", DEMO_CONTEXT, hw_hotkey_callback, 9, 0, 52, 0},
+    {"\"infrared\"", DEMO_CONTEXT, hw_hotkey_callback, 7, 0, 53, 0},
+    {"\"nav unit\"", DEMO_CONTEXT, hw_hotkey_callback, 0, 0, 54, 0},
+    {"\"data reader\"", DEMO_CONTEXT, hw_hotkey_callback, 6, 0, 55, 0},
+    {"\"booster\"", DEMO_CONTEXT, hw_hotkey_callback, 8, 0, 56, 0}, 
+    {"\"jumpjets\"", DEMO_CONTEXT, hw_hotkey_callback, 12, 0, 57, 0},
     {"\"mfd left 1\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F1, 0},
     {"\"mfd left 2\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F2, 0},
     {"\"mfd left 3\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F3, 0},

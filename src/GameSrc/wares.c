@@ -151,6 +151,8 @@ void use_ware(int waretype, int num) {
     WARE *wares;
     int n, ecost;
     int ware_sfx = SFX_NONE, hnd;
+
+    INFO("+++ use waretype %d num %d\n", waretype, num);
     //   int   i;
     //   ubyte invtype;
     if ((!global_fullmap->cyber != (waretype == 0))  // boolean equality, yum.
@@ -320,6 +322,21 @@ int get_player_ware_version(int type, int n) {
     int num;
     get_ware_pointers(type, &pver, &pstat, &Pwares, &num);
     return pver[n];
+}
+
+// ---------------------------------------------------------------------------
+// hw_hotkey_callback()
+//
+// The callback for the hardware buttons when triggered throug hotkeys
+
+uchar hw_hotkey_callback(ushort keycode, uint32_t context, intptr_t data) {
+    int wareType = WARE_HARD;
+    int wareNum = (int) data;
+    if (get_player_ware_version(wareType, wareNum)) {
+        use_ware(wareType, wareNum);
+    }
+
+    return TRUE;
 }
 
 // ---------------------------------------------------------------------------
