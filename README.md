@@ -86,7 +86,3 @@ Shockolate replaces the original game's movement with WASD controls, and uses `F
 * `Ctrl+F` to enable full screen mode
 * `Ctrl+D` to disable full screen mode 
 
-## Missing hotkeys
-
-* `F1..F10` for the side MFD's
-* `0..9` for the Hacker's hardware
