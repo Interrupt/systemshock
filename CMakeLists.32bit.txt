@@ -274,6 +274,7 @@ set(GAME_SRC
 )
 
 include_directories(
+	BEFORE
 	src/Libraries/2D/Source
 	src/Libraries/3D/Source
 	src/Libraries/AFILE/Source
