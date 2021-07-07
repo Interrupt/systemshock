@@ -1,8 +1,11 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.11)
 
 project(shockolate VERSION 0.7.8)
 
-include(FeatureSummary)
+# Prefer new GLVND library interface
+if(POLICY CMP0072)
+	cmake_policy(SET CMP0072 NEW)
+endif()
 
 #set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
 #set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS ON)
@@ -15,27 +18,17 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -D__STDC_LIMIT_MACROS")
+# FIXME why this is required?
+add_definitions(-D__STDC_LIMIT_MACROS)
 
 option(ENABLE_EXAMPLES "Enable example applications" OFF)
-add_feature_info(ENABLE_EXAMPLES ENABLE_EXAMPLES "Enable example application (can be broken!)")
 option(ENABLE_DEBUG_BLIT "Enable debugging blitter" OFF)
-add_feature_info(ENABLE_DEBUG_BLIT ENABLE_DEBUG_BLIT "Enable debugging blitter")
 option(ENABLE_OPENGL "Enable OpenGL support" ON)
-add_feature_info(ENABLE_OPENGL ENABLE_OPENGL "Enable OpenGL support")
-
-set(ENABLE_SDL2 "BUNDLED" CACHE STRING "Enable SDL2 (ON/BUNDLED, default BUNDLED)")
-set_property(CACHE ENABLE_SDL2 PROPERTY STRINGS "ON" "BUNDLED")
-add_feature_info(ENABLE_SDL2 ENABLE_SOUND "Enable SDL2 support")
-
-set(ENABLE_SOUND "BUNDLED" CACHE STRING "Enable sound support (requires SDL2_mixer) (ON/BUNDLED/OFF, default BUNDLED)")
-set_property(CACHE ENABLE_SOUND PROPERTY STRINGS "ON" "BUNDLED" "OFF")
-add_feature_info(ENABLE_SOUND ENABLE_SOUND "Enable sound support (requires SDL2_mixer)")
-
-set(ENABLE_FLUIDSYNTH "BUNDLED" CACHE STRING "Enable FluidSynth MIDI support (ON/BUNDLED/OFF, default BUNDLED)")
-set_property(CACHE ENABLE_FLUIDSYNTH PROPERTY STRINGS "ON" "BUNDLED" "OFF")
-add_feature_info(ENABLE_FLUIDSYNTH ENABLE_FLUIDSYNTH "Enable FluidSynth MIDI support")
+option(ENABLE_SOUND "Enable sound support (requires SDL2_mixer)" ON)
+# Tristate Fluidsynth
+set(ENABLE_FLUIDSYNTH "LITE" CACHE STRING "Enable FluidSynth MIDI support (ON/LITE/OFF, default LITE)")
+set_property(CACHE ENABLE_FLUIDSYNTH PROPERTY STRINGS "ON" "LITE" "OFF")
+option(ENABLE_WIN_CONSOLE "Enable debug console in Windows" ON)
 
 # HAAAAX!!
 add_definitions(-DSVGA_SUPPORT)
@@ -50,94 +43,93 @@ add_compile_options(-fsigned-char -fno-strict-aliasing)
 if(ENABLE_OPENGL)
 	find_package(OpenGL REQUIRED)
 	add_definitions(-DUSE_OPENGL)
-	if(WIN32)
-		list(APPEND OPENGL_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/build_ext/built_glew/include)
-		list(APPEND OPENGL_LIBRARIES ${CMAKE_SOURCE_DIR}/build_ext/built_glew/lib/libglew32.dll.a winmm)
-	endif(WIN32)
+	list(APPEND SHOCK_INCLUDES ${OPENGL_INCLUDE_DIRS})
+	list(APPEND SHOCK_LIBRARIES ${OPENGL_LIBRARIES})
+	if(MINGW)
+		set(GLEW_USE_STATIC_LIBS 1)
+		find_package(GLEW REQUIRED)
+		list(APPEND SHOCK_INCLUDES ${GLEW_INCLUDE_DIRS})
+		list(APPEND SHOCK_LIBRARIES GLEW::GLEW)
+	endif(MINGW)
 endif(ENABLE_OPENGL)
 
-if(ENABLE_SDL2 MATCHES "ON")
-	find_package(SDL2 REQUIRED)
-	if(SDL2_FOUND)
-		message(STATUS "SDL2 found: ${SDL2_INCLUDE_DIRS} ${SDL2_LIBRARIES}")
-	endif(SDL2_FOUND)
-endif(ENABLE_SDL2 MATCHES "ON")
-if(ENABLE_SDL2 MATCHES "BUNDLED")
-	set(SDL2_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl)
-	find_library(SDL2_LIBRARY SDL2 PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
-	find_library(SDL2MAIN_LIBRARY SDL2main PATHS ${SDL2_DIR}/lib NO_DEFAULT_PATH)
-	set(SDL2_INCLUDE_DIRS ${SDL2_DIR}/include/SDL2)
-	set(SDL2_LIBRARIES "${SDL2MAIN_LIBRARY};${SDL2_LIBRARY}")
-endif(ENABLE_SDL2 MATCHES "BUNDLED")
+find_package(SDL2 REQUIRED)
+list(APPEND SHOCK_INCLUDES ${SDL2_INCLUDE_DIRS})
+list(APPEND SHOCK_LIBRARIES ${SDL2_LIBRARIES})
 
-if(ENABLE_SOUND MATCHES "ON")
+if(ENABLE_SOUND)
 	# FIXME applies only for *nix systems
 	find_package(PkgConfig)
-	pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer>=2.0.4)
-	add_definitions(-DUSE_SDL_MIXER=1)
-endif(ENABLE_SOUND MATCHES "ON")
-if(ENABLE_SOUND MATCHES "BUNDLED")
-	set(SDL2_MIXER_DIR ${CMAKE_SOURCE_DIR}/build_ext/built_sdl_mixer)
-	set(SDL2_MIXER_INCLUDE_DIRS ${SDL2_MIXER_DIR}/include/SDL2)
-	find_library(SDL2_MIXER_LIBRARY SDL2_mixer PATHS ${SDL2_MIXER_DIR}/lib)
-	set(SDL2_MIXER_LIBRARIES ${SDL2_MIXER_LIBRARY})
-	add_definitions(-DUSE_SDL_MIXER=1)
-endif(ENABLE_SOUND MATCHES "BUNDLED")
+	pkg_check_modules(SDL2_MIXER REQUIRED IMPORTED_TARGET SDL2_mixer>=2.0.4)
+	add_definitions(-DUSE_SDL_MIXER)
+	list(APPEND SHOCK_INCLUDES ${SDL2_MIXER_INCLUDE_DIRS})
+	list(APPEND SHOCK_LIBRARIES PkgConfig::SDL2_MIXER)
+endif(ENABLE_SOUND)
 
-if(ENABLE_FLUIDSYNTH MATCHES "ON")
+if(ENABLE_FLUIDSYNTH STREQUAL "LITE")
+	include(FetchContent)
+	FetchContent_Declare(
+		fluidsynth-lite
+		# For time being https://github.com/Doom64/fluidsynth-lite/pull/10
+		# https://github.com/Doom64/fluidsynth-lite
+		GIT_REPOSITORY https://github.com/winterheart/fluidsynth-lite.git
+		GIT_SHALLOW	ON
+		GIT_TAG	a414e3055a652b5c8bb34b6e5b43e537468ccde6 # 26.01.2020
+	)
+	FetchContent_GetProperties(fluidsynth-lite)
+	if(NOT fluidsynth-lite_POPULATED)
+		message(STATUS "Populating fluidsynth-lite...")
+		FetchContent_Populate(fluidsynth-lite)
+		add_subdirectory(${fluidsynth-lite_SOURCE_DIR} ${fluidsynth-lite_BINARY_DIR})
+		set_property(TARGET libfluidsynth PROPERTY C_STANDARD 11)
+		message(STATUS "Done.")
+	endif()
+	include_directories(BEFORE SYSTEM ${fluidsynth-lite_SOURCE_DIR}/include ${fluidsynth-lite_BINARY_DIR}/include)
+	add_definitions("-DUSE_FLUIDSYNTH")
+	list(APPEND SHOCK_LIBRARIES libfluidsynth)
+elseif(ENABLE_FLUIDSYNTH)
+	# Use bulky system FluidSynth
 	find_package(PkgConfig)
-	pkg_check_modules(FLUIDSYNTH REQUIRED fluidsynth)
-	add_definitions("-DUSE_FLUIDSYNTH=1")
-endif(ENABLE_FLUIDSYNTH MATCHES "ON")
-if(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
-        find_library(FLUIDSYNTH_LIBRARY fluidsynth PATHS ${CMAKE_SOURCE_DIR}/build_ext/fluidsynth-lite/src)
-	set(FLUIDSYNTH_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/build_ext/fluidsynth-lite/include)
-	set(FLUIDSYNTH_LIBRARIES ${FLUIDSYNTH_LIBRARY})
-	add_definitions("-DUSE_FLUIDSYNTH=1")
-endif(ENABLE_FLUIDSYNTH MATCHES "BUNDLED")
-
-include_directories(
-	${SDL2_INCLUDE_DIRS}
-	${SDL2_MIXER_INCLUDE_DIRS}
-	${FLUIDSYNTH_INCLUDE_DIRS}
-	${OPENGL_INCLUDE_DIRS}
-)
+	pkg_check_modules(FLUIDSYNTH REQUIRED IMPORTED_TARGET fluidsynth)
+	list(APPEND SHOCK_INCLUDES ${FLUIDSYNTH_INCLUDE_DIRS})
+	list(APPEND SHOCK_LIBRARIES PkgConfig::FLUIDSYNTH)
+	add_definitions("-DUSE_FLUIDSYNTH")
+endif(ENABLE_FLUIDSYNTH STREQUAL "LITE")
 
 if(NOT WIN32)
-  # Find ALSA for Linux native MIDI
-  # NOTE: this seems to require having 64-bit dev pacakges installed when building
-  #  on 64-bit OS, even when building a 32-bit binary
-  find_package(ALSA)
-  if(ALSA_FOUND)
-      message(STATUS "ALSA found")
-      include_directories(${ALSA_INCLUDE_DIRS})
-      add_definitions(-DUSE_ALSA=1)
-  endif(ALSA_FOUND)
+	# Find ALSA for Linux native MIDI
+	# NOTE: this seems to require having 64-bit dev packages installed when building
+	#  on 64-bit OS, even when building a 32-bit binary
+	find_package(ALSA)
+	if(ALSA_FOUND)
+		message(STATUS "ALSA found")
+		list(APPEND SHOCK_INCLUDES ${ALSA_INCLUDE_DIRS})
+		list(APPEND SHOCK_LIBRARIES ${ALSA_LIBRARIES})
+		add_definitions(-DUSE_ALSA)
+	endif(ALSA_FOUND)
 endif(NOT WIN32)
+
+include_directories(
+	${SHOCK_INCLUDES}
+)
 
 # Generate version based on project version
 set(PROJECT_REVERSION_STRING "")
 find_package(Git)
 if(GIT_FOUND)
-	execute_process(COMMAND ${GIT_EXECUTABLE} describe --dirty
+	execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		OUTPUT_VARIABLE git_describe_out
 		ERROR_VARIABLE git_describe_error
 		RESULT_VARIABLE git_describe_result
+		OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
-	string(REGEX MATCH "[a-z|0-9|.]*-[0-9]*-g([a-z|0-9]*)([-|a-z]*)" git_commit "${git_describe_out}")
-	set(git_commit ${CMAKE_MATCH_1})
-	set(git_dirty ${CMAKE_MATCH_2})
-	set(PROJECT_REVERSION_STRING "-g${git_commit}${git_dirty}")
+	set(PROJECT_REVERSION_STRING "-g${git_describe_out}")
 endif(GIT_FOUND)
 
 message(STATUS "Version is ${PROJECT_VERSION}${PROJECT_REVERSION_STRING}")
 configure_file("${CMAKE_SOURCE_DIR}/src/GameSrc/Headers/shockolate_version.h.in"
 	"${CMAKE_BINARY_DIR}/src/GameSrc/Headers/shockolate_version.h" )
-
-# Configuration done. Print features
-feature_summary(WHAT ENABLED_FEATURES DESCRIPTION "Enabled features:")
-feature_summary(WHAT DISABLED_FEATURES DESCRIPTION "Disabled features:")
 
 # Sources configuration
 add_subdirectory(src/Libraries/)
@@ -388,11 +380,15 @@ add_library(GAME_LIB ${GAME_SRC})
 
 # MINGW additional linker options
 if(MINGW)
-	set(WINDOWS_LIBRARIES "mingw32 -mwindows")
+	set(WINDOWS_LIBRARIES mingw32 winmm)
+	if(ENABLE_WIN_CONSOLE)
+		list(APPEND ENABLE_WIN_CONSOLE -mwindows)
+	endif(ENABLE_WIN_CONSOLE)
 endif(MINGW)
 
 target_link_libraries(systemshock
 	${WINDOWS_LIBRARIES} # Set it before any linker options! Beware WinMain@16 error!!
+	${SHOCK_LIBRARIES}
 	GAME_LIB
 	UI_LIB
 	2D_LIB
@@ -406,16 +402,10 @@ target_link_libraries(systemshock
 	INPUT_LIB
 	PALETTE_LIB
 	RES_LIB
-#	SND_LIB
 	VOX_LIB
 	EDMS_LIB
 	FIXPP_LIB
 	ADLMIDI_LIB
-	${SDL2_LIBRARIES}
-	${SDL2_MIXER_LIBRARIES}
-	${FLUIDSYNTH_LIBRARIES}
-	${OPENGL_LIBRARIES}
-	${ALSA_LIBRARIES}
 )
 
 # Turn on address sanitizing if wanted

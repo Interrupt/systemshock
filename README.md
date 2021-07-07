@@ -30,29 +30,7 @@ Find a list of [downloadable packages](https://github.com/Interrupt/systemshock/
 
 ## From source code
 
-Prerequisites: 
-- [CMake](https://cmake.org/download/) installed
-
-Step 1. Build the dependencies:
-* Windows: `build_win32.sh` or `build_win64.sh` (Git Bash and MinGW recommended)
-* Linux/Mac: `build_deps.sh` or the CI build scripts in `osx-linux`
-* Other: `build_deps.sh` 
-
-Step 2. Build and run the game itself
-```
-cmake .
-make systemshock
-./systemshock
-```
-
-The following CMake options are supported in the build process:
-* `ENABLE_SDL2` - use system or bundled SDL2 (ON/BUNDLED, default BUNDLED)
-* `ENABLE_SOUND` - enable sound support (requires SDL2_mixer, ON/BUNDLED/OFF, default is BUNDLED)
-* `ENABLE_FLUIDSYNTH` - enable FluidSynth MIDI support (ON/BUNDLED/OFF, default is BUNDLED)
-* `ENABLE_OPENGL` - enable OpenGL support (ON/OFF, default ON)
-
-If you find yourself needing to modify the build script for Shockolate itself, `CMakeLists.txt` is the place to look into.
-
+See [COMPILING.md](COMPILING.md).
 
 Command line parameters
 ============
