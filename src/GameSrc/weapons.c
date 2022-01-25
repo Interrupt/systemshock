@@ -1444,6 +1444,12 @@ uchar reload_weapon_hotkey(ushort key, uint32_t context, intptr_t data) {
     int num_types;
     int i, cur;
 
+    // Don't attempt to reload a weapon that doesn't use ammo!
+    if ((ws->type == GUN_SUBCLASS_BEAM) ||
+        (ws->type == GUN_SUBCLASS_HANDTOHAND)) {
+        return FALSE; // nice try
+    }
+
     if (!differ) {
         // attempts to reload the current weapon with the same ammo type it
         // held before, but if that fails will reload with anything available.
