@@ -23,19 +23,19 @@ cache:
 # Set up environment variable values for 32 and 64 bit builds
 
 for:
--
-  matrix:
-    only:
-      - platform: x86
+  -
+    matrix:
+      only:
+        - platform: x86
     before_build:
       - set BUILD_SCRIPT=build_win32.sh
       - set ARTIFACT=systemshock-x86.zip
       - set MINGW_PATH=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin\
       - copy CMakeLists.32bit.txt CMakeLists.txt
--
-  matrix:
-    only:
-      - platform: x64
+  -
+    matrix:
+      only:
+        - platform: x64
     before_build:
       - set BUILD_SCRIPT=build_win64.sh
       - set ARTIFACT=systemshock-x64.zip
