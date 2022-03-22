@@ -56,7 +56,7 @@ build_script:
   - sh %BUILD_SCRIPT%
   - build.bat
 
-   
+
 # For now, we don't have any automatic tests to run
 test: off
 

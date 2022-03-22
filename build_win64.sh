@@ -33,7 +33,7 @@ function build_glew {
 }
 
 function build_fluidsynth {
-	git clone https://github.com/Doom64/fluidsynth-lite.git
+	git clone https://github.com/EtherTyper/fluidsynth-lite.git
 	pushd fluidsynth-lite
 	sed -i 's/DLL"\ off/DLL"\ on/' CMakeLists.txt
 	# if building fluidsynth fails, move on without it

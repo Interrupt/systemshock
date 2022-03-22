@@ -33,7 +33,7 @@ function build_sdl_mixer {
 }
 
 function build_fluidsynth {
-	git clone https://github.com/Doom64/fluidsynth-lite.git
+	git clone https://github.com/EtherTyper/fluidsynth-lite.git
 	pushd fluidsynth-lite
 
 	# force compilation of dynamic library
