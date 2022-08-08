@@ -10,8 +10,12 @@
 // Windows NativeMidi backend support
 # include <mmsystem.h>
 #else
+# if defined __APPLE__
+// OSX NativeMidi backend support
+#  include <CoreMIDI/CoreMIDI.h>
+#  include <Carbon/Carbon.h>
 // Linux NativeMidi backend support
-# if defined(USE_ALSA)
+# elif defined(USE_ALSA)
 #  include <alsa/asoundlib.h>
 # endif
 // Linux/Mac FluidMidi SF2 search support
@@ -349,15 +353,26 @@ static MusicDevice *createAdlMidiDevice()
 //------------------------------------------------------------------------------
 // Native OS MIDI
 //
-// Currently only supports Windows MCI MIDI
-// could support coremidi on OSX in the future?
-// this devolves into another null driver on unsupported configurations
+// Currently supports Windows MCI MIDI, OSX Core MIDI, and Linux ALSA
+// devolves into another null driver on unsupported configurations
+
+#ifdef __APPLE__
+// Core MIDI needs two handles at time of data send
+typedef struct
+{
+    MIDIPortRef     outputPort;  // client output port
+    MIDIEndpointRef destination; // destination endpoint
+} MidiOutHandle;
+#endif
 
 typedef struct
 {
     MusicDevice dev;
 #ifdef WIN32
     HMIDIOUT outHandle;
+#elif defined(__APPLE__)
+    MIDIClientRef midiClient; // Core MIDI client
+    MidiOutHandle outHandle;  // Core MIDI routing
 #elif defined(USE_ALSA)
     snd_seq_t *outHandle;
     int alsaMyId;
@@ -399,7 +414,7 @@ typedef enum
 // define backend-API-specific helper functions here
 #ifdef WIN32
 inline static void NativeMidiSendMessage(
-    HMIDIOUT outHandle,
+    HMIDIOUT* outHandle,
     const MidiMessageEnum message,
     const UCHAR channel,
     const UCHAR data1,
@@ -415,12 +430,206 @@ inline static void NativeMidiSendMessage(
     u.bData[3] = 0;
 
 //    INFO("NativeMidiSendMessage(): Sending MIDI data: 0x%08X", u.dwData);
-    const unsigned long err = midiOutShortMsg(outHandle, u.dwData);
+    const unsigned long err = midiOutShortMsg(*outHandle, u.dwData);
     if (err)
     {
         static char buffer[1024];
         midiOutGetErrorText(err, &buffer[0], 1024);
         WARN("NativeMidiSendMessage(): midiOutShortMsg() error: %s", &buffer[0]);
+    }
+}
+#elif defined(__APPLE__)
+// inspired by rtmidi; see modified MIT license at https://github.com/thestk/rtmidi
+inline static CFStringRef EndpointName(const MIDIEndpointRef endpoint, const bool isExternal)
+{
+    CFMutableStringRef result = CFStringCreateMutable(NULL, 0);
+
+    // Begin with the endpoint's name.
+    CFStringRef str = NULL;
+    MIDIObjectGetStringProperty(endpoint, kMIDIPropertyName, &str);
+    if (str)
+    {
+        CFStringAppend(result, str);
+        CFRelease(str);
+        str = NULL;
+    }
+
+    // some MIDI devices have a leading space in endpoint name. trim
+    CFStringRef space = CFStringCreateWithCString(NULL, " ", kCFStringEncodingUTF8);
+    CFStringTrim(result, space);
+    CFRelease(space);
+
+    MIDIEntityRef entity = 0;
+    MIDIEndpointGetEntity(endpoint, &entity);
+    if (!entity) return result;
+
+    if (CFStringGetLength(result) == 0)
+    {
+        // endpoint name has zero length -- try the entity
+        str = NULL;
+        MIDIObjectGetStringProperty(entity, kMIDIPropertyName, &str);
+        if (str)
+        {
+            CFStringAppend(result, str);
+            CFRelease(str);
+        }
+    }
+    // now consider the device's name
+    MIDIDeviceRef device = 0;
+    MIDIEntityGetDevice(entity, &device);
+    if (!device) return result;
+
+    str = NULL;
+    MIDIObjectGetStringProperty(device, kMIDIPropertyName, &str);
+    if (CFStringGetLength(result) == 0 )
+    {
+        CFRelease(result);
+        return str;
+    }
+    if (str)
+    {
+        // if an external device has only one entity, throw away
+        // the endpoint name and just use the device name
+        if (isExternal && MIDIDeviceGetNumberOfEntities(device) < 2)
+        {
+            CFRelease(result);
+            return str;
+        }
+        if (CFStringGetLength(str) == 0)
+        {
+            CFRelease(str);
+            return result;
+        }
+        // does the entity name already start with the device name?
+        // (some drivers do this though they shouldn't)
+        // if so, do not prepend
+        if (CFStringCompareWithOptions(
+                result, /* endpoint name */
+                str /* device name */,
+                CFRangeMake(0, CFStringGetLength(str)),
+                0) != kCFCompareEqualTo)
+        {
+            // prepend the device name to the entity name
+            if (CFStringGetLength(result) > 0) CFStringInsert(result, 0, CFSTR(" "));
+            CFStringInsert(result, 0, str);
+        }
+        CFRelease(str);
+    }
+    return result;
+}
+
+// inspired by rtmidi; see modified MIT license at https://github.com/thestk/rtmidi
+inline static CFStringRef ConnectedEndpointName(const MIDIEndpointRef endpointRef)
+{
+    CFMutableStringRef result = CFStringCreateMutable(NULL, 0);
+    bool anyStrings = false;
+
+    // Does the endpoint have connections?
+    CFDataRef connections = NULL;
+    OSStatus err = MIDIObjectGetDataProperty(endpointRef, kMIDIPropertyConnectionUniqueID, &connections);
+    if (connections)
+    {
+        // It has connections, follow them
+        // Concatenate the names of all connected devices
+        unsigned int nConnected = CFDataGetLength(connections) / sizeof(MIDIUniqueID);
+        if (nConnected)
+        {
+            const SInt32 *pid = (const SInt32 *)(CFDataGetBytePtr(connections));
+            for (unsigned int i = 0; i < nConnected; ++i, ++pid)
+            {
+                MIDIUniqueID id = EndianS32_BtoN(*pid);
+                MIDIObjectRef connObject;
+                MIDIObjectType connObjectType;
+                err = MIDIObjectFindByUniqueID(id, &connObject, &connObjectType);
+                if (err != noErr) continue;
+
+                CFStringRef str;
+                if (connObjectType == kMIDIObjectType_ExternalSource  ||
+                    connObjectType == kMIDIObjectType_ExternalDestination)
+                {
+                    // Connected to an external device's endpoint (10.3 and later).
+                    str = EndpointName((MIDIEndpointRef)(connObject), true);
+                }
+                else
+                {
+                    // Connected to an external device (10.2) (or something else, catch-
+                    str = NULL;
+                    MIDIObjectGetStringProperty(connObject, kMIDIPropertyName, &str);
+                }
+                if (!str) continue;
+
+                if (anyStrings)
+                {
+                    CFStringAppend(result, CFSTR(", "));
+                }
+                else
+                {
+                    anyStrings = true;
+                }
+                CFStringAppend(result, str);
+                CFRelease(str);
+            }
+        }
+        CFRelease(connections);
+    }
+
+    if (anyStrings) return result;
+
+    CFRelease(result);
+
+    // Here, either the endpoint had no connections, or we failed to obtain names
+    return EndpointName(endpointRef, false);
+}
+
+// Provide a lookup for the official byte length of MIDI messages by type
+// Core MIDI is pedantic and will ignore MIDI messages with the wrong length
+inline static ByteCount MessageLength(const MidiMessageEnum message)
+{
+    switch (message)
+    {
+        case MME_NOTE_OFF:         return 3;
+        case MME_NOTE_ON:          return 3;
+        case MME_AFTERTOUCH:       return 3;
+        case MME_CONTROL_CHANGE:   return 3;
+        case MME_PROGRAM_CHANGE:   return 2;
+        case MME_CHANNEL_PRESSURE: return 2;
+        case MME_PITCH_WHEEL:      return 3;
+    }
+    WARN("Returning default length for unknown MIDI message type %d", (int)message);
+    return 3;
+}
+
+inline static void NativeMidiSendMessage(
+    MidiOutHandle* outHandlePtr,
+    const MidiMessageEnum message,
+    const Byte channel,
+    const Byte data1,
+    const Byte data2)
+{
+    // pack the data into a byte array
+    const Byte data[] = {
+        (Byte) ((NM_CLAMP15(message) << 4) | NM_CLAMP15(channel)),
+        (Byte) NM_CLAMP127(data1),
+        (Byte) NM_CLAMP127(data2)
+    };
+    const ByteCount dataSize = MessageLength(message);
+    // build a Core MIDI packet list
+    const ByteCount bufferSize = sizeof(MIDIPacketList) + sizeof(MIDIPacket);
+    Byte buffer[bufferSize];
+    memset(buffer, 0, bufferSize);
+    MIDIPacketList* packetListPtr = (MIDIPacketList*)buffer;
+    MIDIPacket* packetPtr = MIDIPacketListInit(packetListPtr);
+    // copy byte array to first/only packet in the list
+    // note that a time of zero means "now"
+    if (!MIDIPacketListAdd(packetListPtr, bufferSize, packetPtr, 0, dataSize, data))
+    {
+        WARN("NativeMidiSendMessage(): MIDIPackerListAdd() failed for message=%d, channel=%d, data1=%d, data2=%d", message, channel, data1, data2);
+        return;
+    }
+    // send packet list from client output port to destination
+    if (MIDISend(outHandlePtr->outputPort, outHandlePtr->destination, packetListPtr) != noErr)
+    {
+        WARN("NativeMidiSendMessage(): MIDISend() failed for message=%d, channel=%d, data1=%d, data2=%d", message, channel, data1, data2);
     }
 }
 #elif defined(USE_ALSA)
@@ -468,6 +677,43 @@ static int NativeMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsi
     ndev->dev.outputIndex = outputIndex;
     // send MIDI reset in case it was in a dirty state when we opened it
     NativeMidiReset(dev);
+#elif defined(__APPLE__)
+    // create Core MIDI client
+    if (ndev->midiClient) WARN("NativeMidiInit(): midiClient != 0");
+    const CFStringRef clientNameRef = CFStringCreateWithCString(NULL, "systemshockClient", kCFStringEncodingASCII);
+    const OSStatus clientResult = MIDIClientCreate(clientNameRef, NULL, NULL, &(ndev->midiClient));
+    CFRelease(clientNameRef);
+    if (clientResult != noErr)
+    {
+        WARN("NativeMidiInit(): Failed to create Core MIDI client");
+        return -1;
+    }
+    // create output port
+    if (ndev->outHandle.outputPort) WARN("NativeMidiInit(): outputPort != 0");
+    const CFStringRef portNameRef = CFStringCreateWithCString(NULL, "systemshockPort", kCFStringEncodingASCII);
+    const OSStatus portResult = MIDIOutputPortCreate(ndev->midiClient, portNameRef, &(ndev->outHandle.outputPort));
+    CFRelease(portNameRef);
+    if (portResult != noErr)
+    {
+        WARN("NativeMidiInit(): Failed to create Core MIDI output port");
+        MIDIClientDispose(ndev->midiClient);
+        ndev->midiClient = 0;
+        return -1;
+    }
+    // get destination endpoint
+    ndev->outHandle.destination = MIDIGetDestination(outputIndex);
+    if (!ndev->outHandle.destination)
+    {
+        WARN("NativeMidiInit(): Failed to get destination for outputIndex=%d", outputIndex);
+        MIDIPortDispose(ndev->outHandle.outputPort);
+        ndev->outHandle.outputPort = 0;
+        MIDIClientDispose(ndev->midiClient);
+        ndev->midiClient = 0;
+        return -1;
+    }
+
+    ndev->dev.isOpen = 1;
+    ndev->dev.outputIndex = outputIndex;
 #elif defined(USE_ALSA)
     unsigned short foundOutput = 0;
     unsigned int outputCount = 0; // subtract 1 to get index
@@ -578,19 +824,28 @@ static void NativeMidiDestroy(MusicDevice *dev)
 {
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev) return;
-#ifdef WIN32
     if (ndev->dev.isOpen)
     {
+#ifdef WIN32
 //        INFO("NativeMidiDestroy(): closing native midi");
         // reset before close, so that notes aren't left hanging
         NativeMidiReset(dev);
         midiOutClose(ndev->outHandle);
         ndev->outHandle = 0;
-        ndev->dev.isOpen = 0;
-    }
+#elif defined(__APPLE__)
+        NativeMidiReset(dev);
+        ndev->outHandle.destination = 0;
+        if (ndev->outHandle.outputPort)
+        {
+            MIDIPortDispose(ndev->outHandle.outputPort);
+            ndev->outHandle.outputPort = 0;
+        }
+        if (ndev->midiClient)
+        {
+            MIDIClientDispose(ndev->midiClient);
+            ndev->midiClient = 0;
+        }
 #elif defined(USE_ALSA)
-    if (ndev->dev.isOpen)
-    {
         if (ndev->outHandle)
         {
             NativeMidiReset(dev);
@@ -601,9 +856,9 @@ static void NativeMidiDestroy(MusicDevice *dev)
             ndev->alsaOutputId = 0;
             ndev->alsaOutputPort = 0;
         }
+#endif
         ndev->dev.isOpen = 0;
     }
-#endif
     free(ndev);
 }
 
@@ -620,7 +875,7 @@ static void NativeMidiReset(MusicDevice *dev)
 {
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
-#if defined(WIN32) || defined(USE_ALSA)
+#if defined(WIN32) || defined(__APPLE__) || defined(USE_ALSA)
     // send All Sound Off for all channels
     for (unsigned char chan = 0; chan <= 15; ++chan)
     {
@@ -650,10 +905,10 @@ static void NativeMidiSendNoteOff(MusicDevice *dev, int channel, int note, int v
 {
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
     // send note off
     // yes, velocity is potentially relevant
-    NativeMidiSendMessage(ndev->outHandle,
+    NativeMidiSendMessage(&ndev->outHandle,
                           MME_NOTE_OFF,
                           NM_CLAMP15(channel),
                           NM_CLAMP127(note),
@@ -676,9 +931,9 @@ static void NativeMidiSendNoteOn(MusicDevice *dev, int channel, int note, int ve
 {
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
     // send note on
-    NativeMidiSendMessage(ndev->outHandle,
+    NativeMidiSendMessage(&ndev->outHandle,
                           MME_NOTE_ON,
                           NM_CLAMP15(channel),
                           NM_CLAMP127(note),
@@ -701,9 +956,9 @@ static void NativeMidiSendNoteAfterTouch(MusicDevice *dev, int channel, int note
 {
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
     // send note aftertouch (pressure)
-    NativeMidiSendMessage(ndev->outHandle,
+    NativeMidiSendMessage(&ndev->outHandle,
                           MME_AFTERTOUCH,
                           NM_CLAMP15(channel),
                           NM_CLAMP127(note),
@@ -726,9 +981,9 @@ static void NativeMidiSendControllerChange(MusicDevice *dev, int channel, int ct
 {
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
     // send controller change
-    NativeMidiSendMessage(ndev->outHandle,
+    NativeMidiSendMessage(&ndev->outHandle,
                           MME_CONTROL_CHANGE,
                           NM_CLAMP15(channel),
                           NM_CLAMP127(ctl),
@@ -751,10 +1006,10 @@ static void NativeMidiSendProgramChange(MusicDevice *dev, int channel, int pgm)
 {
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
     // send program change
     // only one data byte is used
-    NativeMidiSendMessage(ndev->outHandle,
+    NativeMidiSendMessage(&ndev->outHandle,
                           MME_PROGRAM_CHANGE,
                           NM_CLAMP15(channel),
                           NM_CLAMP127(pgm),
@@ -776,10 +1031,10 @@ static void NativeMidiSendChannelAfterTouch(MusicDevice *dev, int channel, int t
 {
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
     // send channel aftertouch (pressure)
     // only one data byte is used
-    NativeMidiSendMessage(ndev->outHandle,
+    NativeMidiSendMessage(&ndev->outHandle,
                           MME_CHANNEL_PRESSURE,
                           NM_CLAMP15(channel),
                           NM_CLAMP127(touch),
@@ -801,9 +1056,9 @@ static void NativeMidiSendPitchBendML(MusicDevice *dev, int channel, int msb, in
 {
     NativeMidiDevice *ndev = (NativeMidiDevice *)dev;
     if (!ndev || !ndev->dev.isOpen) return;
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
     // send pitch bend
-    NativeMidiSendMessage(ndev->outHandle,
+    NativeMidiSendMessage(&ndev->outHandle,
                           MME_PITCH_WHEEL,
                           NM_CLAMP15(channel),
                           NM_CLAMP127(lsb),
@@ -832,6 +1087,9 @@ static unsigned int NativeMidiGetOutputCount(MusicDevice *dev)
 #ifdef WIN32
     // add one for MIDI_MAPPER
     return midiOutGetNumDevs() + 1;
+#elif defined(__APPLE__)
+    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, false);
+    return MIDIGetNumberOfDestinations();
 #elif defined(USE_ALSA)
     unsigned int outputCount = 0;
     int alsaError = 0;
@@ -883,6 +1141,7 @@ static unsigned int NativeMidiGetOutputCount(MusicDevice *dev)
 static void NativeMidiGetOutputName(MusicDevice *dev, const unsigned int outputIndex, char *buffer, const unsigned int bufferSize)
 {
     if (!buffer || bufferSize < 1) return;
+    buffer[0] = '\0';
 //    INFO("Native MIDI output name request for outputIndex=%d", outputIndex);
 #ifdef WIN32
     if (outputIndex == 0)
@@ -897,6 +1156,11 @@ static void NativeMidiGetOutputName(MusicDevice *dev, const unsigned int outputI
         midiOutGetDevCaps(outputIndex - 1, &moc, sizeof(MIDIOUTCAPS));
         strncpy(buffer, moc.szPname, bufferSize - 1);
     }
+#elif defined(__APPLE__)
+    MIDIEndpointRef endpointRef = MIDIGetDestination(outputIndex);
+    CFStringRef nameRef = ConnectedEndpointName(endpointRef);
+    CFStringGetCString(nameRef, buffer, bufferSize, kCFStringEncodingASCII);
+    CFRelease(nameRef);
 #elif defined(USE_ALSA)
     unsigned int outputCount = 0; // subtract 1 to get index
     int alsaError = 0;
@@ -988,6 +1252,10 @@ static MusicDevice *createNativeMidiDevice()
     ndev->dev.deviceType = Music_Native;
 #ifdef WIN32
     ndev->outHandle = 0;
+#elif defined(__APPLE__)
+    ndev->outHandle.destination = 0;
+    ndev->outHandle.outputPort = 0;
+    ndev->midiClient = 0;
 #elif defined(USE_ALSA)
     ndev->outHandle = 0;
     ndev->alsaMyId = 0;
