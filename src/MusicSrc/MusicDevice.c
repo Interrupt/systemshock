@@ -440,7 +440,7 @@ inline static void NativeMidiSendMessage(
 }
 #elif defined(__APPLE__)
 // inspired by rtmidi; see modified MIT license at https://github.com/thestk/rtmidi
-inline static CFStringRef EndpointName(const MIDIEndpointRef endpoint, const bool isExternal)
+inline static CFStringRef CopyEndpointName(const MIDIEndpointRef endpoint, const bool isExternal)
 {
     CFMutableStringRef result = CFStringCreateMutable(NULL, 0);
 
@@ -450,14 +450,11 @@ inline static CFStringRef EndpointName(const MIDIEndpointRef endpoint, const boo
     if (str)
     {
         CFStringAppend(result, str);
-        CFRelease(str);
         str = NULL;
     }
 
     // some MIDI devices have a leading space in endpoint name. trim
-    CFStringRef space = CFStringCreateWithCString(NULL, " ", kCFStringEncodingUTF8);
-    CFStringTrim(result, space);
-    CFRelease(space);
+    CFStringTrim(result, CFSTR(" "));
 
     MIDIEntityRef entity = 0;
     MIDIEndpointGetEntity(endpoint, &entity);
@@ -471,7 +468,6 @@ inline static CFStringRef EndpointName(const MIDIEndpointRef endpoint, const boo
         if (str)
         {
             CFStringAppend(result, str);
-            CFRelease(str);
         }
     }
     // now consider the device's name
@@ -484,6 +480,7 @@ inline static CFStringRef EndpointName(const MIDIEndpointRef endpoint, const boo
     if (CFStringGetLength(result) == 0 )
     {
         CFRelease(result);
+        CFRetain(str);
         return str;
     }
     if (str)
@@ -493,11 +490,11 @@ inline static CFStringRef EndpointName(const MIDIEndpointRef endpoint, const boo
         if (isExternal && MIDIDeviceGetNumberOfEntities(device) < 2)
         {
             CFRelease(result);
+            CFRetain(str);
             return str;
         }
         if (CFStringGetLength(str) == 0)
         {
-            CFRelease(str);
             return result;
         }
         // does the entity name already start with the device name?
@@ -513,13 +510,12 @@ inline static CFStringRef EndpointName(const MIDIEndpointRef endpoint, const boo
             if (CFStringGetLength(result) > 0) CFStringInsert(result, 0, CFSTR(" "));
             CFStringInsert(result, 0, str);
         }
-        CFRelease(str);
     }
     return result;
 }
 
 // inspired by rtmidi; see modified MIT license at https://github.com/thestk/rtmidi
-inline static CFStringRef ConnectedEndpointName(const MIDIEndpointRef endpointRef)
+inline static CFStringRef CreateConnectedEndpointName(const MIDIEndpointRef endpointRef)
 {
     CFMutableStringRef result = CFStringCreateMutable(NULL, 0);
     bool anyStrings = false;
@@ -548,13 +544,14 @@ inline static CFStringRef ConnectedEndpointName(const MIDIEndpointRef endpointRe
                     connObjectType == kMIDIObjectType_ExternalDestination)
                 {
                     // Connected to an external device's endpoint (10.3 and later).
-                    str = EndpointName((MIDIEndpointRef)(connObject), true);
+                    str = CopyEndpointName((MIDIEndpointRef)(connObject), true);
                 }
                 else
                 {
                     // Connected to an external device (10.2) (or something else, catch-
                     str = NULL;
                     MIDIObjectGetStringProperty(connObject, kMIDIPropertyName, &str);
+                    if (str) CFRetain(str);
                 }
                 if (!str) continue;
 
@@ -578,7 +575,7 @@ inline static CFStringRef ConnectedEndpointName(const MIDIEndpointRef endpointRe
     CFRelease(result);
 
     // Here, either the endpoint had no connections, or we failed to obtain names
-    return EndpointName(endpointRef, false);
+    return CopyEndpointName(endpointRef, false);
 }
 
 // Provide a lookup for the official byte length of MIDI messages by type
@@ -680,9 +677,7 @@ static int NativeMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsi
 #elif defined(__APPLE__)
     // create Core MIDI client
     if (ndev->midiClient) WARN("NativeMidiInit(): midiClient != 0");
-    const CFStringRef clientNameRef = CFStringCreateWithCString(NULL, "systemshockClient", kCFStringEncodingASCII);
-    const OSStatus clientResult = MIDIClientCreate(clientNameRef, NULL, NULL, &(ndev->midiClient));
-    CFRelease(clientNameRef);
+    const OSStatus clientResult = MIDIClientCreate(CFSTR(""systemshockClient"), NULL, NULL, &(ndev->midiClient));
     if (clientResult != noErr)
     {
         WARN("NativeMidiInit(): Failed to create Core MIDI client");
@@ -690,9 +685,7 @@ static int NativeMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsi
     }
     // create output port
     if (ndev->outHandle.outputPort) WARN("NativeMidiInit(): outputPort != 0");
-    const CFStringRef portNameRef = CFStringCreateWithCString(NULL, "systemshockPort", kCFStringEncodingASCII);
-    const OSStatus portResult = MIDIOutputPortCreate(ndev->midiClient, portNameRef, &(ndev->outHandle.outputPort));
-    CFRelease(portNameRef);
+    const OSStatus portResult = MIDIOutputPortCreate(ndev->midiClient, CFSTR("systemshockPort"), &(ndev->outHandle.outputPort));
     if (portResult != noErr)
     {
         WARN("NativeMidiInit(): Failed to create Core MIDI output port");
@@ -1158,7 +1151,7 @@ static void NativeMidiGetOutputName(MusicDevice *dev, const unsigned int outputI
     }
 #elif defined(__APPLE__)
     MIDIEndpointRef endpointRef = MIDIGetDestination(outputIndex);
-    CFStringRef nameRef = ConnectedEndpointName(endpointRef);
+    CFStringRef nameRef = CreateConnectedEndpointName(endpointRef);
     CFStringGetCString(nameRef, buffer, bufferSize, kCFStringEncodingASCII);
     CFRelease(nameRef);
 #elif defined(USE_ALSA)
