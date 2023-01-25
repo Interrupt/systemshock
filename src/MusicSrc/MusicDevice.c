@@ -677,7 +677,7 @@ static int NativeMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsi
 #elif defined(__APPLE__)
     // create Core MIDI client
     if (ndev->midiClient) WARN("NativeMidiInit(): midiClient != 0");
-    const OSStatus clientResult = MIDIClientCreate(CFSTR(""systemshockClient"), NULL, NULL, &(ndev->midiClient));
+    const OSStatus clientResult = MIDIClientCreate(CFSTR("systemshockClient"), NULL, NULL, &(ndev->midiClient));
     if (clientResult != noErr)
     {
         WARN("NativeMidiInit(): Failed to create Core MIDI client");
