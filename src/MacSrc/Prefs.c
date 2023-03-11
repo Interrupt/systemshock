@@ -37,6 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "input.h"
 #include "mainloop.h"
 #include "movekeys.h"
+#include "mfdext.h"
 
 extern uchar mfd_button_callback_kb(ushort keycode, uint32_t context, intptr_t data);
 extern uchar hw_hotkey_callback(ushort keycode, uint32_t context, intptr_t data);
@@ -561,16 +562,16 @@ HOTKEYLOOKUP HotKeyLookup[] = {
     {"\"data reader\"", DEMO_CONTEXT, hw_hotkey_callback, 8, 0, 56, 0},
     {"\"booster\"", DEMO_CONTEXT, hw_hotkey_callback, 12, 0, 57, 0},
     {"\"jumpjets\"", DEMO_CONTEXT, hw_hotkey_callback, 13, 0, 48, 0},
-    {"\"mfd left 1\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F1, 0},
-    {"\"mfd left 2\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F2, 0},
-    {"\"mfd left 3\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F3, 0},
-    {"\"mfd left 4\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F4, 0},
-    {"\"mfd left 5\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F5, 0},
-    {"\"mfd right 1\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F6, 0},
-    {"\"mfd right 2\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F7, 0},
-    {"\"mfd right 3\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F8, 0},
-    {"\"mfd right 4\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F9, 0},
-    {"\"mfd right 5\"", DEMO_CONTEXT, mfd_button_callback_kb, 0, 0, KEY_F10, 0},
+    {"\"mfd left 1\"", DEMO_CONTEXT, mfd_button_callback_kb, ENCODE_MFD_SELECTION(MFD_LEFT, MFD_WEAPON_SLOT), 0, KEY_F1, 0},
+    {"\"mfd left 2\"", DEMO_CONTEXT, mfd_button_callback_kb, ENCODE_MFD_SELECTION(MFD_LEFT, MFD_ITEM_SLOT), 0, KEY_F2, 0},
+    {"\"mfd left 3\"", DEMO_CONTEXT, mfd_button_callback_kb, ENCODE_MFD_SELECTION(MFD_LEFT, MFD_MAP_SLOT), 0, KEY_F3, 0},
+    {"\"mfd left 4\"", DEMO_CONTEXT, mfd_button_callback_kb, ENCODE_MFD_SELECTION(MFD_LEFT, MFD_TARGET_SLOT), 0, KEY_F4, 0},
+    {"\"mfd left 5\"", DEMO_CONTEXT, mfd_button_callback_kb, ENCODE_MFD_SELECTION(MFD_LEFT, MFD_INFO_SLOT), 0, KEY_F5, 0},
+    {"\"mfd right 1\"", DEMO_CONTEXT, mfd_button_callback_kb, ENCODE_MFD_SELECTION(MFD_RIGHT, MFD_WEAPON_SLOT), 0, KEY_F6, 0},
+    {"\"mfd right 2\"", DEMO_CONTEXT, mfd_button_callback_kb, ENCODE_MFD_SELECTION(MFD_RIGHT, MFD_ITEM_SLOT), 0, KEY_F7, 0},
+    {"\"mfd right 3\"", DEMO_CONTEXT, mfd_button_callback_kb, ENCODE_MFD_SELECTION(MFD_RIGHT, MFD_MAP_SLOT), 0, KEY_F8, 0},
+    {"\"mfd right 4\"", DEMO_CONTEXT, mfd_button_callback_kb, ENCODE_MFD_SELECTION(MFD_RIGHT, MFD_TARGET_SLOT), 0, KEY_F9, 0},
+    {"\"mfd right 5\"", DEMO_CONTEXT, mfd_button_callback_kb, ENCODE_MFD_SELECTION(MFD_RIGHT, MFD_INFO_SLOT), 0, KEY_F10, 0},
     {"\"keypad 0\"", DEMO_CONTEXT, keypad_hotkey_func, 0, 0, DOWN('0'), 0},
     {"\"keypad 1\"", DEMO_CONTEXT, keypad_hotkey_func, 0, 0, DOWN('1'), 0},
     {"\"keypad 2\"", DEMO_CONTEXT, keypad_hotkey_func, 0, 0, DOWN('2'), 0},

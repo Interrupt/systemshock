@@ -959,22 +959,12 @@ uchar mfd_button_callback(uiEvent *e, LGRegion *r, intptr_t udata) {
 
 uchar mfd_button_callback_kb(ushort keycode, uint32_t context, intptr_t data) {
     int which_panel, which_button;
-    int fkeynum;
 
     if (!global_fullmap->cyber) {
 
-        fkeynum = (int)keycode - 128;
+        DECODE_MFD_SELECTION(which_panel, which_button, data);
 
-        if (fkeynum >= MFD_NUM_VIRTUAL_SLOTS) {
-            which_panel = MFD_RIGHT;
-        }
-        else {
-            which_panel = MFD_LEFT;
-        }
-
-        which_button = ((int)fkeynum) % MFD_NUM_VIRTUAL_SLOTS;
-
-        mfd_select_button(which_panel, which_button);
+        mfd_select_button(which_panel, which_button % MFD_NUM_VIRTUAL_SLOTS);
     }
 
     return TRUE;
