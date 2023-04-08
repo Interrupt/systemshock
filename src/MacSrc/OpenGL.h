@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include <3d.h>
+#include <SDL.h>
 
 #ifdef USE_OPENGL
 
@@ -18,7 +19,7 @@ bool use_opengl();
 void toggle_opengl();
 void opengl_resize(int width, int height);
 bool should_opengl_swap();
-void opengl_swap_and_restore();
+void opengl_swap_and_restore(SDL_Surface *ui);
 void opengl_change_palette();
 
 void opengl_set_viewport(int x, int y, int width, int height);
@@ -46,7 +47,7 @@ static bool use_opengl() { return false; }
 static void toggle_opengl() {}
 static void opengl_resize(int width, int height) {}
 static bool should_opengl_swap() { return false; }
-static void opengl_swap_and_restore() {}
+static void opengl_swap_and_restore(SDL_Surface *ui) {}
 static void opengl_change_palette() {}
 
 static void opengl_set_viewport(int x, int y, int width, int height) {}

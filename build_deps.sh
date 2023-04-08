@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-SDL_version=2.0.9
-SDL2_mixer_version=2.0.4
+SDL_version=2.26.0
+SDL2_mixer_version=2.6.3
 
 if [ -d ./build_ext/ ]; then
 	echo A directory named build_ext already exists.
