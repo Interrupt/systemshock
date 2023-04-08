@@ -54,6 +54,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MFD_LEFT  0
 #define MFD_RIGHT 1
 
+#define ENCODE_MFD_SELECTION(side, no) ((side) * 100 + (no))
+#define DECODE_MFD_SELECTION(side, no, code) do { no = (code) % 100; side = (code) / 100; } while(0)
+
 // Flags for MFD Functions
 #define MFD_CHANGEBIT      0x01 // Needs constant update of some sort
 #define MFD_INCREMENTAL    0x02 // Uses standard MFD background
