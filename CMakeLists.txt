@@ -104,15 +104,22 @@ include_directories(
 )
 
 if(NOT WIN32)
-  # Find ALSA for Linux native MIDI
-  # NOTE: this seems to require having 64-bit dev pacakges installed when building
-  #  on 64-bit OS, even when building a 32-bit binary
-  find_package(ALSA)
-  if(ALSA_FOUND)
-      message(STATUS "ALSA found")
-      include_directories(${ALSA_INCLUDE_DIRS})
-      add_definitions(-DUSE_ALSA=1)
-  endif(ALSA_FOUND)
+	# Find Core MIDI library for Mac native MIDI
+	if(APPLE)
+		find_library(COREFOUNDATION_LIB CoreFoundation REQUIRED)
+		find_library(COREMIDI_LIB       CoreMIDI       REQUIRED)
+		set(COREMIDI_LIBRARIES "${COREFOUNDATION_LIB};${COREMIDI_LIB}")
+		message(STATUS "COREMIDI_LIBRARIES=${COREMIDI_LIBRARIES}")
+	endif(APPLE)
+	# Find ALSA for Linux native MIDI
+	# NOTE: this seems to require having 64-bit dev pacakges installed when building
+	#  on 64-bit OS, even when building a 32-bit binary
+	find_package(ALSA)
+	if(ALSA_FOUND)
+		message(STATUS "ALSA found")
+		include_directories(${ALSA_INCLUDE_DIRS})
+		add_definitions(-DUSE_ALSA=1)
+	endif(ALSA_FOUND)
 endif(NOT WIN32)
 
 # Generate version based on project version
@@ -415,6 +422,7 @@ target_link_libraries(systemshock
 	${SDL2_MIXER_LIBRARIES}
 	${FLUIDSYNTH_LIBRARIES}
 	${OPENGL_LIBRARIES}
+	${COREMIDI_LIBRARIES}
 	${ALSA_LIBRARIES}
 )
 
