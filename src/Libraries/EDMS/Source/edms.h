@@ -149,6 +149,7 @@ void EDMS_get_state(physics_handle ph, State *s);
 void EDMS_startup(EDMS_data *D);
 void EDMS_kill_object(physics_handle ph);
 void EDMS_holistic_teleport(physics_handle ph, State *s);
+void EDMS_mouselook(physics_handle ph, int32_t xlook);
 
 //	Object packages...
 //	==================

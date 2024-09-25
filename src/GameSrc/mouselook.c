@@ -71,19 +71,7 @@ void mouse_look_physics() {
         }
 
         if (mvelx != 0) {
-            Obj *cobj = &objs[PLAYER_OBJ];
-
-            // Turning the player is harder, need to update the physics state
-
-            // Grab physics state
-            State current_state;
-            EDMS_get_state(objs[PLAYER_OBJ].info.ph, &current_state);
-
-            // Turn us a bit
-            current_state.alpha += mvelx;
-
-            // Now put the player there
-            EDMS_holistic_teleport(objs[PLAYER_OBJ].info.ph, &current_state);
+            EDMS_mouselook(objs[PLAYER_OBJ].info.ph, mvelx);
         }
     }
 }
