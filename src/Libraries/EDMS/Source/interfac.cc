@@ -308,6 +308,17 @@ void EDMS_holistic_teleport(physics_handle ph, State *s) {
     }
 }
 
+void EDMS_mouselook(physics_handle ph, int32_t xlook) {
+    int32_t on;
+    State current_state;
+
+    on = physics_handle_to_object_number(ph);
+    EDMS_get_state(ph, &current_state);
+
+    S[on][3][0].fix_to(current_state.alpha + xlook);
+    S[on][3][1] = fix_zero;
+}
+
 //	Here we exclude objects from hitting each specific others...
 //	============================================================
 void EDMS_ignore_collisions(physics_handle ph1, physics_handle ph2) {
