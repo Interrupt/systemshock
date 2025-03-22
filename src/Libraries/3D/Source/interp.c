@@ -213,7 +213,7 @@ void g3_interpret_object(ubyte *object_ptr, ...) {
     }
 
     // get addr of stack parms
-    parm_ptr = (&object_ptr) + sizeof(object_ptr); //va_start(parm_ptr, object_ptr);
+    parm_ptr = (ubyte*)(&object_ptr) + sizeof(object_ptr); //va_start(parm_ptr, object_ptr);
 
     // mark res points as free
     LG_memset(resbuf, 0, N_RES_POINTS * 4);
