@@ -294,6 +294,7 @@ int init_opengl() {
     }
 
     // Can we create the world rendering context?
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
     context = SDL_GL_CreateContext(window);
     if (context == nullptr) {
         ERROR("Could not create an OpenGL context! Falling back to Software mode.");
@@ -444,21 +445,19 @@ void get_hdpi_scaling(int *x_scale, int *y_scale) {
     *y_scale = output_height / screen_height;
 }
 
-void opengl_swap_and_restore() {
-    // restore the view backup (without HUD overlay) for incremental
-    // updates in the subsequent frame
+void opengl_swap_and_restore(SDL_Surface *ui) {
     SDL_GL_MakeCurrent(window, context);
-    SDL_GL_SwapWindow(window);
-
     glClear(GL_COLOR_BUFFER_BIT);
 
     int x_hdpi_scale, y_hdpi_scale;
     get_hdpi_scaling(&x_hdpi_scale, &y_hdpi_scale);
 
+    // Set the drawable area for the 3d view
     glViewport(phys_offset_x * x_hdpi_scale, phys_offset_y * y_hdpi_scale, phys_width * x_hdpi_scale,
                phys_height * y_hdpi_scale);
     set_blend_mode(false);
 
+    // Bind and setup our general shader program
     glUseProgram(textureShaderProgram.shaderProgram);
     GLint tcAttrib = textureShaderProgram.tcAttrib;
     GLint lightAttrib = textureShaderProgram.lightAttrib;
@@ -468,6 +467,7 @@ void opengl_swap_and_restore() {
     glUniformMatrix4fv(textureShaderProgram.uniView, 1, false, IdentityMatrix);
     glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, IdentityMatrix);
 
+    // Draw the frame buffer to the screen as a quad
     bind_texture(backupBuffer.texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -487,14 +487,25 @@ void opengl_swap_and_restore() {
     glVertex3f(-1.0f, 1.0f, 0.0f);
     glEnd();
 
+    // Finish drawing the 3d view
     glFlush();
 
     glUniform1i(textureShaderProgram.uniNightSight, false);
 
-    // check OpenGL error
+    // Check for OpenGL errors that might have happened
     GLenum err = glGetError();
     if (err != GL_NO_ERROR)
         ERROR("OpenGL error: %i", err);
+
+    // Blit the UI canvas over the 3d view
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, ui);
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_DestroyTexture(texture);
+    
+    // Finally, swap to the screen
+    SDL_RenderPresent(renderer);
 }
 
 void toggle_opengl() {
