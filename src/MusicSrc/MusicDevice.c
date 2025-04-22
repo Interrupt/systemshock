@@ -18,6 +18,9 @@
 # include <sys/types.h>
 # include <dirent.h>
 #endif
+#ifdef __APPLE__
+#include <SDL.h>
+#endif
 
 //------------------------------------------------------------------------------
 // Dummy MIDI player
@@ -1023,9 +1026,15 @@ static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsig
     fluid_settings_t *settings;
     fluid_synth_t *synth;
     int sfid;
-    char fileName[1024] = "res/";
+#ifdef __APPLE__
+    char fileName[1024] = "";
+    sprintf(fileName, "%sres/", SDL_GetBasePath());
 
+    FluidMidiGetOutputName(dev, outputIndex, &fileName[strlen(fileName)], 1024 - strlen(fileName));
+#else
+    char fileName[1024] = "res/";
     FluidMidiGetOutputName(dev, outputIndex, &fileName[4], 1020);
+#endif
     if (strlen(fileName) == 4)
     {
         WARN("Failed to locate SoundFont for outputIndex=%d", outputIndex);
@@ -1184,7 +1193,13 @@ static unsigned int FluidMidiGetOutputCount(MusicDevice *dev)
         FindClose(hFind);
     }
 #else
+#ifdef __APPLE__
+    char *respath[1024];
+    sprintf(respath, "%sres/", SDL_GetBasePath());
+    DIR *dirp = opendir(respath);
+#else
     DIR *dirp = opendir("res");
+#endif
     struct dirent *dp = 0;
     while ((dp = readdir(dirp)))
     {
@@ -1237,7 +1252,13 @@ static void FluidMidiGetOutputName(MusicDevice *dev, const unsigned int outputIn
     unsigned int outputCount = 0; // subtract 1 to get index
     // count .sf2 files in res/ subdirectory until we find the one that the user
     //  probably wants
+#ifdef __APPLE__
+    char *respath[1024];
+    sprintf(respath, "%sres/", SDL_GetBasePath());
+    DIR *dirp = opendir(respath);
+#else
     DIR *dirp = opendir("res");
+#endif
     struct dirent *dp = 0;
     while ((outputCount <= outputIndex) &&
            (dp = readdir(dirp)))

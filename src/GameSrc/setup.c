@@ -1207,7 +1207,13 @@ errtype load_savegame_names(void) {
     for (i = 0; i < NUM_SAVE_SLOTS; i++) {
         Poke_SaveName(i);
 
+#ifdef __APPLE__
+        char full_save_game_name[1024];
+        sprintf(full_save_game_name, "%s%s", SDL_GetPrefPath("Interrupt", "SystemShock"), save_game_name);
+        if (access(full_save_game_name, F_OK) != -1) {
+#else
         if (access(save_game_name, F_OK) != -1) {
+#endif
             file = ResOpenFile(save_game_name);
             if (ResInUse(OLD_SAVE_GAME_ID_BASE)) {
 #ifdef OLD_SG_FORMAT
