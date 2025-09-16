@@ -58,3 +58,4 @@ savgam*.dat
 # Eclipse CDT
 .project
 .cproject
+.DS_Store
