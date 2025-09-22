@@ -1,0 +1,89 @@
+{
+  // See https://go.microsoft.com//fwlink//?linkid=834763 for more information about this file.
+  "configurations": [
+    {
+      "name": "debug",     
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${workspaceRoot}\\build\\${name}",
+      "installRoot": "${workspaceRoot}\\build\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v -d stats",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "C:/MinGW/bin/gcc.exe"
+        },
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "C:/MinGW/bin/g++.exe"
+        }
+      ]
+    },
+    {
+      "name": "release",      
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${workspaceRoot}\\build\\${name}",
+      "installRoot": "${workspaceRoot}\\build\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "C:/MinGW/bin/gcc.exe"
+        },
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "C:/MinGW/bin/g++.exe"
+        }
+      ]
+    },
+    {
+      "name": "minsizerel",      
+      "generator": "Ninja",
+      "configurationType": "MinSizeRel",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${workspaceRoot}\\build\\${name}",
+      "installRoot": "${workspaceRoot}\\build\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "C:/MinGW/bin/gcc.exe"
+        },
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "C:/MinGW/bin/g++.exe"
+        }
+      ]
+    },
+    {
+      "name": "relwithdebinfo",      
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${workspaceRoot}\\build\\${name}",
+      "installRoot": "${workspaceRoot}\\build\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "C:/MinGW/bin/gcc.exe"
+        },
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "C:/MinGW/bin/g++.exe"
+        }
+      ]
+    }        
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "version": "0.2.1",
+  "configurations": 
+  [
+    {
+      "type": "cppdbg",
+      "name": "System Shock",
+      "project": "",
+      "cwd": "${workspaceRoot}\\build\\debug",
+      "program": "${debugInfo.target}\\build\\debug\\systemshock.exe",
+      "MIMode": "gdb",
+      "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
+      "externalConsole": true
+    }
+  ]
+}
