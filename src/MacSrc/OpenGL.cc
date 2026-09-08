@@ -40,6 +40,7 @@ extern SDL_Palette *sdlPalette;
 }
 
 #include <map>
+#include <memory>
 #include <sstream>
 
 struct CachedTexture {
@@ -75,7 +76,16 @@ static Shader textureShaderProgram;
 static Shader colorShaderProgram;
 static Shader starShaderProgram;
 
-static FrameBuffer backupBuffer;
+struct FrameBufferDeleter {
+    void operator()(FrameBuffer* fb) {
+        glDeleteFramebuffers(1, &fb->frameBuffer);
+        glDeleteRenderbuffers(1, &fb->stencilBuffer);
+        glDeleteTextures(1, &fb->texture);
+    }
+};
+
+using SmartFrameBuffer = std::unique_ptr<FrameBuffer, FrameBufferDeleter>;
+static SmartFrameBuffer backupBuffer;
 
 static SDL_GLContext context;
 static GLuint dynTexture;
@@ -247,24 +257,24 @@ static int CreateShader(const char *vertexShaderFile, const char *fragmentShader
     return 0;
 }
 
-static FrameBuffer CreateFrameBuffer(int width, int height) {
-    FrameBuffer newBuffer{};
-    newBuffer.width = width;
-    newBuffer.height = height;
+static SmartFrameBuffer CreateFrameBuffer(int width, int height) {
+    SmartFrameBuffer newBuffer{new FrameBuffer{}};
+    newBuffer->width = width;
+    newBuffer->height = height;
 
     // Make a frame buffer, texture for color, and render buffer for stencil
-    glGenFramebuffers(1, &newBuffer.frameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, newBuffer.frameBuffer);
+    glGenFramebuffers(1, &newBuffer->frameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, newBuffer->frameBuffer);
 
-    glGenRenderbuffers(1, &newBuffer.stencilBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, newBuffer.stencilBuffer);
+    glGenRenderbuffers(1, &newBuffer->stencilBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, newBuffer->stencilBuffer);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, newBuffer.stencilBuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, newBuffer->stencilBuffer);
 
-    glGenTextures(1, &newBuffer.texture);
-    glBindTexture(GL_TEXTURE_2D, newBuffer.texture);
+    glGenTextures(1, &newBuffer->texture);
+    glBindTexture(GL_TEXTURE_2D, newBuffer->texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newBuffer.texture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newBuffer->texture, 0);
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE) {
@@ -424,7 +434,7 @@ void opengl_start_frame() {
     SDL_GL_MakeCurrent(window, context);
 
     // Start rendering to our frame buffer canvas
-    BindFrameBuffer(&backupBuffer);
+    BindFrameBuffer(backupBuffer.get());
 
     // Setup the render width
     int logical_width, logical_height;
@@ -475,7 +485,7 @@ void opengl_swap_and_restore(SDL_Surface *ui) {
     glUniformMatrix4fv(textureShaderProgram.uniProj, 1, false, IdentityMatrix);
 
     // Draw the frame buffer to the screen as a quad
-    bind_texture(backupBuffer.texture);
+    bind_texture(backupBuffer->texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
