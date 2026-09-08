@@ -433,10 +433,11 @@ static struct {
                       {"keypad_minus ", 128 + 14, 0x4E},
                       {"keypad_plus ", 128 + 15, 0x45},
                       {"keypad_enter ", 128 + 16, 0x4C},
-                      {"keypad_decimal ", 128 + 17, 0x41},
+                      {"keypad_period ", 128 + 17, 0x41},
                       {"keypad_0 ", 128 + 18, 0x52},
 
                       // these have no invented "ascii" codes so they can't be used as hotkeys, only move keys
+                      // except the six editing keys should be allowed as hotkeys
                       {"keypad_home ", 0, 0x59},
                       {"keypad_up ", 0, 0x5B},
                       {"keypad_pgup ", 0, 0x5C},
@@ -446,9 +447,12 @@ static struct {
                       {"keypad_end ", 0, 0x53},
                       {"keypad_down ", 0, 0x54},
                       {"keypad_pgdn ", 0, 0x55},
-                      {"home ", 0, 0x73},
+                      {"home ", 128 + 19, 0x73},
                       {"up ", 0, 0x7E},
-                      {"pageup ", 0, 0x74},
+                      {"pageup ", 128 + 20, 0x74},
+                      {"insert ", 128 + 21, 0x75},
+                      {"end ", 128 + 23, 0x77},
+                      {"pagedown ", 128 + 25, 0x79},
                       {"left ", 0, 0x7B},
                       {"right ", 0, 0x7C},
                       {"end ", 0, 0x77},

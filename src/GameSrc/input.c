@@ -2278,9 +2278,12 @@ uchar view3d_mouse_handler(uiEvent *ev, LGRegion *r, intptr_t v) {
        }
 
     */
-    if ((md->buttons & (1 << MOUSE_RBUTTON)) == 0 ||
-        ((md->buttons & (1 << MOUSE_RBUTTON)) == 0 && global_fullmap->cyber))
+    if ((md->buttons & (1 << MOUSE_CBUTTON)) == 0)
         physics_set_one_control(MOUSE_CONTROL_BANK, CONTROL_ZVEL, 0);
+
+    if ((md->buttons & (1 << MOUSE_CBUTTON)) && !global_fullmap->cyber)
+        physics_set_one_control(MOUSE_CONTROL_BANK, CONTROL_ZVEL,
+                                MAX_JUMP_CONTROL);
 
     if (md->action & UI_MOUSE_LDOUBLE) {
         // Spew(DSRC_USER_I_Motion,("use this, bay-bee!\n"));

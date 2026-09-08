@@ -189,7 +189,7 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc) {
         return 0x2F; //  kVK_ANSI_Period = 0x2F,
     case SDLK_BACKQUOTE:
         return 0x32; //  kVK_ANSI_Grave = 0x32, // TODO: really?
-    case SDLK_KP_DECIMAL:
+    case SDLK_KP_PERIOD:
         return 0x41; //  kVK_ANSI_KeypadDecimal   = 0x41,
     case SDLK_KP_MULTIPLY:
         return 0x43; //  kVK_ANSI_KeypadMultiply = 0x43,
@@ -299,7 +299,8 @@ static uchar sdlKeyCodeToSSHOCKkeyCode(SDL_Keycode kc) {
         return 0x73; //  kVK_Home = 0x73,
     case SDLK_PAGEUP:
         return 0x74; //  kVK_PageUp = 0x74,
-    // case SDLK_ : return 0x75; //  kVK_ForwardDelete = 0x75, // TODO: what's this?
+    case SDLK_INSERT:
+        return 0x75; //  kVK_ForwardDelete = 0x75, // TODO: what's this?
     case SDLK_F4:
         return 0x76; //  kVK_F4 = 0x76,
     case SDLK_END:
@@ -561,11 +562,26 @@ void pump_events(void) {
                     case SDLK_KP_ENTER:
                         keyEvent.ascii = 128 + 16;
                         break;
-                    case SDLK_KP_DECIMAL:
+                    case SDLK_KP_PERIOD:
                         keyEvent.ascii = 128 + 17;
                         break;
                     case SDLK_KP_0:
                         keyEvent.ascii = 128 + 18;
+                        break;
+                    case SDLK_HOME:
+                        keyEvent.ascii = 128 + 19;
+                        break;
+                    case SDLK_PAGEUP:
+                        keyEvent.ascii = 128 + 20;
+                        break;
+                    case SDLK_INSERT:
+                        keyEvent.ascii = 128 + 21;
+                        break;
+                    case SDLK_END:
+                        keyEvent.ascii = 128 + 23;
+                        break;
+                    case SDLK_PAGEDOWN:
+                        keyEvent.ascii = 128 + 25;
                         break;
                     }
                 }
@@ -673,8 +689,10 @@ void pump_events(void) {
                 mouseEvent.buttons |= down ? (1 << MOUSE_RBUTTON) : 0;
                 break;
 
-                // case SDL_BUTTON_MIDDLE: // TODO: is this MOUSE_CDOWN/UP ?
-                // break;
+            case SDL_BUTTON_MIDDLE:
+                mouseEvent.type = down ? MOUSE_CDOWN : MOUSE_CUP;
+                mouseEvent.buttons |= down ? (1 << MOUSE_CBUTTON) : 0;
+                break;
             }
 
             if (mouseEvent.type != 0) {
