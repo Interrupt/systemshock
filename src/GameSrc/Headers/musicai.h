@@ -118,6 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Initialize the AI portion of the MLIMBS system.
 errtype mlimbs_AI_init(void);
 void music_ai(void);
+void musicai_prepare_start(void);
 errtype musicai_shutdown();
 errtype musicai_reset(uchar runai);
 int gen_monster(int monster_num);

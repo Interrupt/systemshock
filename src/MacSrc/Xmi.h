@@ -1,4 +1,5 @@
 #define NUM_THREADS 8
+#define MASTER_THREAD (NUM_THREADS - 1) // plays the theme's master track; the others play its pieces
 
 #define THREAD_INIT 0
 #define THREAD_READY 1
@@ -16,6 +17,12 @@ extern int NumUsedChannels; // number of in-use device channels
 void FreeXMI(void);
 int ReadXMI(const char *filename);
 void StartTrack(int i, unsigned int track);
+void StartTrackLooped(int i, unsigned int track);
+void StartMasterClock(void);
+int GetTrackNumChannels(unsigned int track);
+void XmiSetRequests(const int *pieces, int count);
+int XmiConsumeAiDue(void);
+void XmiSetPieceMeasures(const unsigned char *measures, int count, int master_measures);
 void StopTrack(int i);
 void StopTheMusic(void);
 int IsPlaying(int i);
@@ -38,12 +45,18 @@ struct midi_event_struct {
 
 typedef struct midi_event_struct MIDI_EVENT;
 
+// XMIDI loop (controllers 116 "FOR" / 117 "NEXT") of a track; start_event is NULL if it has none
+typedef struct {
+    MIDI_EVENT *start_event;
+    MIDI_EVENT *end_event;
+    int count; // 0 = forever
+} TrackLoop;
+
 extern MIDI_EVENT **TrackEvents;
+extern TrackLoop *TrackLoops;
 extern short *TrackTiming;
 extern unsigned short *TrackUsedChannels;
 
-extern MIDI_EVENT *ThreadEventList[NUM_THREADS];
-extern int ThreadTiming[NUM_THREADS];
 extern char ThreadChannelRemap[16 * NUM_THREADS];
 extern SDL_atomic_t DeviceChannelVolume[16]; // only msb: 0-127
 extern SDL_atomic_t ThreadPlaying[NUM_THREADS];

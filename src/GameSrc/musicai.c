@@ -144,25 +144,12 @@ void musicai_clear() {
     mlimbs_combat = 0;
 }
 
+static void publish_requests(void);
+
 void mlimbs_do_ai() {
     // extern uchar mlimbs_semaphore;
     extern ObjID damage_sound_id;
     extern char damage_sound_fx;
-
-    if (!IsPlaying(0)) gReadyToQueue = 1;
-
-
-    //repeat shorter tracks while thread 0 is still playing
-    if (!gReadyToQueue)
-    {
-        for (int i = 1; i < MLIMBS_MAX_CHANNELS - 1; i++)
-            if (current_request[i].pieceID != 255)
-                if (!IsPlaying(i))
-                {
-                    make_request(i, current_request[i].pieceID);
-                    current_request[i].pieceID = 255; //make sure it only plays this time
-                }
-    }
 
 
     /* Is this really necessary?  It's already called twice in fr_rend().
@@ -227,33 +214,39 @@ void mlimbs_do_ai() {
             cyber_play = play_me;
         }
 
-        // This is all pretty temporary right now, but here's what's happening.
-        // If the gReadyToQueue flag is set, that means the 6-second timer has
-        // fired.  So we call check_asynch_ai() to determine the next tune to play
-        // then queue it up.
-        //  Does not handle layering.  Just one music track!
-        if (gReadyToQueue) {
-            extern bool mlimbs_update_requests;
-            mlimbs_update_requests = TRUE;
+        // The theme's master track fires a trigger a little way into every bar. That is our cue to work
+        // out what the next bar should play; the sequencer starts and stops pieces to match when the
+        // bar begins (see apply_requests in Xmi.c).
+        // A theme that is loaded but not running (just loaded, or stopped) starts from the first bar.
+        if (NumTracks >= 2 && !IsPlaying(MASTER_THREAD))
+            MacTuneStartCurrentTheme();
 
+        if (XmiConsumeAiDue()) {
             if (!global_fullmap->cyber)
                 check_asynch_ai(TRUE);
-            int pid = current_request[0].pieceID;
-            if (pid != 255) // If there is a theme to play,
-            {
-                MacTuneQueueTune(pid); // Queue it up.
-                mlimbs_counter++;      // Tell mlimbs we've queued another tune.
-                gReadyToQueue = FALSE;
-            }
         }
-
-        // If a tune has finished playing, then another has just started, so prime the
-        // timer to do the next tune calc.
-        // if (gTuneDone) {
-        //    MacTunePrimeTimer();
-        //    gTuneDone = FALSE;
-        // }
+        publish_requests();
     }
+}
+
+// Tell the sequencer which pieces the music AI wants playing from the next bar on.
+static void publish_requests(void) {
+    extern int WonGame_ShowStats;
+    int pieces[MLIMBS_MAX_SEQUENCES - 1];
+
+    for (int i = 0; i < MLIMBS_MAX_SEQUENCES - 1; i++) {
+        int pid = current_request[i].pieceID;
+        pieces[i] = (WonGame_ShowStats || pid < 0 || pid >= 255) ? -1 : pid;
+    }
+    XmiSetRequests(pieces, MLIMBS_MAX_SEQUENCES - 1);
+}
+
+// Get ready to start a theme: begin at the first bar and work out what it plays.
+void musicai_prepare_start(void) {
+    mlimbs_counter = 0;
+    if (!global_fullmap->cyber)
+        check_asynch_ai(TRUE);
+    publish_requests();
 }
 
 #ifdef NOT_YET //
@@ -335,7 +328,7 @@ errtype mlimbs_AI_init(void) {
     mlimbs_peril = DEFAULT_PERIL_MAX;
     current_transition = TRANS_INTRO;
     current_mode = TRANSITION_MODE;
-    tmode_time = 1; // KLC - was 4
+    tmode_time = 4;
     current_score = actual_score = last_score = WALKING_SCORE;
     current_zone = HOSPITAL_ZONE;
     //   mlimbs_AI = &music_ai;
@@ -351,11 +344,10 @@ errtype mai_transition(int new_trans) {
     if (transition_table[new_trans] < LAYER_BASE) {
         current_transition = new_trans;
         next_mode = TRANSITION_MODE;
-        tmode_time = 1; // KLC - was 4
+        tmode_time = 4;
     } else if ((transition_count == 0) && (layering_table[TRANSITION_LAYER_BASE + new_trans][0] != 255)) {
         current_transition = new_trans;
-        // For now, let's not do any layered transitions.
-        //      transition_count = 1;		//KLC - was 2
+        transition_count = 2;
     }
     // temp
     /*
@@ -386,19 +378,6 @@ errtype make_request(int chunk_num, int piece_ID) {
     current_request[chunk_num].crossfade = curr_crossfade;
     current_request[chunk_num].ramp_time = curr_ramp_time;
     current_request[chunk_num].ramp = curr_ramp;
-
-    DEBUG("make_request %i %i", chunk_num, piece_ID);
-
-    extern int WonGame_ShowStats;
-
-    int i = chunk_num;
-    int track = 1+piece_ID;
-    if (i >= 0 && i < NUM_THREADS && track >= 0 && track < NumTracks && !WonGame_ShowStats && !IsPlaying(i))
-    {
-//        extern uchar curr_vol_lev;
-//        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
-        StartTrack(i, track);
-    }
 
     return (OK);
 }

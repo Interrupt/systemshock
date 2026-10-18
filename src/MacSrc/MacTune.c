@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "MacTune.h"
 #include "miscqvar.h"
 #include "Xmi.h"
+#include "musicai.h"
 
 //-----------------
 //  GLOBALS
@@ -260,16 +261,14 @@ void MacTuneStartCurrentTheme(void) {
 
     }*/
 
-    int track = 1 + current_request[0].pieceID;
-    if (track >= 0 && track < NumTracks) {
-        int i = 0;
+    // A theme is the master track (track 0) followed by its pieces. The master drives the music
+    // bar by bar; see the sequencer in Xmi.c and mlimbs_do_ai.
+    if (!music_on || NumTracks < 2)
+        return;
 
-        if (!IsPlaying(i)) {
-            //        extern uchar curr_vol_lev;
-            //        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
-            StartTrack(i, track);
-        }
-    }
+    StopTheMusic(); // start from the first bar
+    musicai_prepare_start();
+    StartMasterClock();
 }
 
 //------------------------------------------------------------------------------

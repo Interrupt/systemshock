@@ -146,14 +146,12 @@ void grind_credits_music_ai(void) {
         current_request[0].pieceID = mlimbs_boredom;
     } else
         make_request(0, mlimbs_boredom);
-    //   if (mlimbs_counter == 4)						//KLC - Was 16
-    //      mlimbs_counter = 0;
-    //   if ((mlimbs_counter % 4) == 3)
-    //   {
-    mlimbs_boredom++;
-    if (mlimbs_boredom == 8)
-        mlimbs_boredom = 0;
-    //   }
+    // move on to the next of the 8 pieces every 4 bars
+    if ((mlimbs_counter % 4) == 3) {
+        mlimbs_boredom++;
+        if (mlimbs_boredom == 8)
+            mlimbs_boredom = 0;
+    }
     // Clear out other requests
     for (i = 1; i < MLIMBS_MAX_CHANNELS - 1; i++)
         current_request[i].pieceID = 255; // KLC - was -1
@@ -165,9 +163,9 @@ void grind_music_ai(void) {
     int current_key;
     short play_me = -1, seq;
 
-    if (mlimbs_counter == 4) // KLC - was 16
-    {
-        mlimbs_counter = 0;
+    // mlimbs_counter counts bars: 4 superchunks of 4 bars each, then it wraps
+    if (mlimbs_counter >= 16) {
+        mlimbs_counter %= 16;
         boring_count++;
     }
 
@@ -289,16 +287,15 @@ void grind_music_ai(void) {
         // if we aren't doing a layered transition, just jump
         // over to new score if possible
         if (transition_count == 0) {
-            //         if (mlimbs_counter % 4 == 0)		KLC - do it every time
-            //         {
-            mlimbs_boredom = 0;
-            last_score = current_score;
-            actual_score = current_score;
-            //         }
+            if (mlimbs_counter % 4 == 0) {
+                mlimbs_boredom = 0;
+                last_score = current_score;
+                actual_score = current_score;
+            }
         }
     }
 
-    if ((next_mode) /*&& ((mlimbs_counter %  4) == 0)*/) // KLC - do it every time.
+    if ((next_mode) && ((mlimbs_counter % 4) == 0))
     {
         // If we are coming out of death, shut down music
         // Eventually this will segue back into the journey screen music, perhaps.
@@ -314,13 +311,13 @@ void grind_music_ai(void) {
             tmode_time--;
             if (tmode_time == 0) {
                 next_mode = NORMAL_MODE;
-                mlimbs_counter = 3; // so that next_mode will take effect next ai loop   KLC - was 15
+                mlimbs_counter = 15; // so that next_mode will take effect next ai loop
             }
         }
         break;
     case NORMAL_MODE:
         // Play basic superchunk
-        seq = mlimbs_counter; // KLC - was mlimbs_counter / 4
+        seq = mlimbs_counter / 4;
         play_me = track_table[actual_score + mlimbs_boredom][seq];
 
         break;
@@ -368,7 +365,7 @@ void grind_music_ai(void) {
 
             // Don't layer over fullmode transitions
             if (current_mode == NORMAL_MODE) {
-                current_key = key_table[play_me][mlimbs_counter / 2] - 1; // was (mlimbs_counter % 4) / 2
+                current_key = key_table[play_me][(mlimbs_counter % 4) / 2] - 1;
 
                 // Most layering is mutually exclusive with deconstructing
                 if (in_deconst && (layering_table[DECONSTRUCT_LAYER][current_key] != 0xFF)) {
@@ -391,16 +388,14 @@ void grind_music_ai(void) {
                     //                  Warning(("mlimbs_machine = %d  table =
                     //                  %d!\n",mlimbs_machine,layering_table[mlimbs_machine][current_key]));
                     if ((mlimbs_machine != 0) && (layering_table[mlimbs_machine][current_key] != 255)) {
-                        // KLC - no layering, force to track 0.
-                        make_request(0, layering_table[mlimbs_machine][current_key]);
+                        make_request(open_track++, layering_table[mlimbs_machine][current_key]);
                     }
 
                     // Transitions...
                     if (transition_count > 0) {
                         if (layering_table[TRANSITION_LAYER_BASE + current_transition][current_key] != 255) {
-                            // KLC                     if ((((mlimbs_counter % 4) == 0) && (transition_count == 2)) ||
-                            // KLC                        (((mlimbs_counter % 4) == 1) && (transition_count == 1)))
-                            {
+                            if ((((mlimbs_counter % 4) == 0) && (transition_count == 2)) ||
+                                (((mlimbs_counter % 4) == 1) && (transition_count == 1))) {
                                 if (current_score == actual_score) {
                                     transition_count = 0;
                                 } else {
@@ -410,7 +405,7 @@ void grind_music_ai(void) {
                                     transition_count--;
                                     if (transition_count == 0) {
                                         last_score = actual_score = current_score;
-                                        mlimbs_counter = 3; // KLC was 15
+                                        mlimbs_counter = 15;
                                         mlimbs_boredom = 0;
                                     }
                                 }
@@ -433,9 +428,8 @@ void grind_music_ai(void) {
                 if (park_playing) {
                     make_request(open_track++, park_playing);
                     park_playing = 0;
-                } else if ((score_playing == PARK_ZONE) && (rand() % 100 < park_random))
-                // KLC                  && ((mlimbs_counter % 4)  == 0))
-                {
+                } else if ((score_playing == PARK_ZONE) && (rand() % 100 < park_random) &&
+                           ((mlimbs_counter % 4) == 0)) {
                     r = rand() % NUM_PARK_SOUNDS;
                     park_playing = r + PARK_LAYER_BASE;
                     make_request(open_track++, park_playing);

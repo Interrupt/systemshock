@@ -490,11 +490,12 @@ int WaitForKey(ulong ticks) {
                 track = 1 + CreditsTune;
 
             if (track >= 0 && track < NumTracks) {
-                //        int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
-                StartTrack(i, track);
-
-                if (!WonGame_ShowStats)
+                if (WonGame_ShowStats) {
+                    StartTrackLooped(i, track); // loops by itself
+                } else {
+                    StartTrack(i, track); // one pass, then on to the next tune
                     CreditsTune = (CreditsTune + 1) % 8;
+                }
             }
         }
 
@@ -1373,8 +1374,7 @@ void setup_loop(void) {
     if (music_on && !IsPlaying(i)) {
         int track = 0;
         if (track >= 0 && track < NumTracks) {
-            //      int volume = (int)curr_vol_lev * 127 / 100; //convert from 0-100 to 0-127
-            StartTrack(i, track);
+            StartTrackLooped(i, track); // loops by itself
         }
     }
 

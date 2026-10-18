@@ -41,7 +41,7 @@ int snd_start_digital(void) {
         ERROR("%s: Init failed", __FUNCTION__);
     }
 
-    if (Mix_OpenAudio(48000, AUDIO_S16SYS, 2, 2048) < 0) {
+    if (Mix_OpenAudio(48000, AUDIO_S16SYS, 2, 1024) < 0) {
         ERROR("%s: Couldn't open audio device", __FUNCTION__);
     }
 
@@ -150,6 +150,8 @@ int MacTuneLoadTheme(char *theme_base, int themeID) {
 
     FreeXMI();
 
+    XmiSetPieceMeasures(NULL, 0, 1);
+
     if (strncmp(theme_base, "thm", 3)) {
         sprintf(filename, "res/sound/%s/%s.xmi", MusicDev->musicType, theme_base);
         ReadXMI(filename);
@@ -166,6 +168,26 @@ int MacTuneLoadTheme(char *theme_base, int themeID) {
             fread(layering_table, NUM_LAYERS * MAX_KEYS, 1, f);
             fread(key_table, NUM_LAYERABLE_SUPERCHUNKS * KEY_BAR_RESOLUTION, 1, f);
 
+            fclose(f);
+        }
+
+        // thmN.dat: number of pieces, bars per master loop, then 16 bytes per piece, of which
+        //  the 5th is the number of bars in the piece. A piece only starts on a multiple of that.
+        sprintf(filename, "res/sound/thm%i.dat", themeID);
+        f = fopen_caseless(filename, "rb");
+        if (f != 0) {
+            unsigned char header[2];
+            unsigned char measures[256];
+            int count = 0;
+
+            memset(measures, 0, sizeof(measures));
+            if (fread(header, 1, 2, f) == 2) {
+                unsigned char piece[16];
+
+                while (count < header[0] && fread(piece, 1, sizeof(piece), f) == sizeof(piece))
+                    measures[count++] = piece[4];
+                XmiSetPieceMeasures(measures, count, header[1]);
+            }
             fclose(f);
         }
     }
