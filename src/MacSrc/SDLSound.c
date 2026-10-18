@@ -195,7 +195,10 @@ int MacTuneLoadTheme(char *theme_base, int themeID) {
     return OK;
 }
 
-void MacTuneKillCurrentTheme(void) { StopTheMusic(); }
+void MacTuneKillCurrentTheme(void) {
+    StopTheMusic();
+    MacTuneResetFade();
+}
 
 #else
 

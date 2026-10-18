@@ -144,8 +144,6 @@ void musicai_clear() {
     mlimbs_combat = 0;
 }
 
-static void publish_requests(void);
-
 void mlimbs_do_ai() {
     // extern uchar mlimbs_semaphore;
     extern ObjID damage_sound_id;
@@ -214,39 +212,9 @@ void mlimbs_do_ai() {
             cyber_play = play_me;
         }
 
-        // The theme's master track fires a trigger a little way into every bar. That is our cue to work
-        // out what the next bar should play; the sequencer starts and stops pieces to match when the
-        // bar begins (see apply_requests in Xmi.c).
-        // A theme that is loaded but not running (just loaded, or stopped) starts from the first bar.
-        if (NumTracks >= 2 && !IsPlaying(MASTER_THREAD))
-            MacTuneStartCurrentTheme();
-
-        if (XmiConsumeAiDue()) {
-            if (!global_fullmap->cyber)
-                check_asynch_ai(TRUE);
-        }
-        publish_requests();
+        // The sequencer drives the music from here: see MacTuneAiUpdate in MacTune.c
+        MacTuneAiUpdate();
     }
-}
-
-// Tell the sequencer which pieces the music AI wants playing from the next bar on.
-static void publish_requests(void) {
-    extern int WonGame_ShowStats;
-    int pieces[MLIMBS_MAX_SEQUENCES - 1];
-
-    for (int i = 0; i < MLIMBS_MAX_SEQUENCES - 1; i++) {
-        int pid = current_request[i].pieceID;
-        pieces[i] = (WonGame_ShowStats || pid < 0 || pid >= 255) ? -1 : pid;
-    }
-    XmiSetRequests(pieces, MLIMBS_MAX_SEQUENCES - 1);
-}
-
-// Get ready to start a theme: begin at the first bar and work out what it plays.
-void musicai_prepare_start(void) {
-    mlimbs_counter = 0;
-    if (!global_fullmap->cyber)
-        check_asynch_ai(TRUE);
-    publish_requests();
 }
 
 #ifdef NOT_YET //
@@ -432,13 +400,8 @@ errtype fade_into_location(int x, int y) {
             MacTuneStartCurrentTheme();
             new_theme = 0;
         }
-    } else // for now, we're not going to do any cross-fading.  Just load the new score.
-    {
-        //		message_info("Sould be fading into new location.");
-        load_score_for_location(new_x, new_y);
-        MacTuneStartCurrentTheme();
-        new_theme = 0;
     }
+    // Otherwise new_theme (2, set above) makes the music AI fade the music out, then load the new score.
     return (OK);
 }
 

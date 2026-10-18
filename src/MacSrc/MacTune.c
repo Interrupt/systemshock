@@ -30,6 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "miscqvar.h"
 #include "Xmi.h"
 #include "musicai.h"
+#include "airupt.h"
+#include "map.h"
 
 //-----------------
 //  GLOBALS
@@ -242,6 +244,27 @@ Debugger();	//¥¥¥
         return(1);
 }*/
 
+// from the music AI
+extern int new_theme, new_x, new_y;
+extern short curr_ramp_time, curr_ramp;
+extern char curr_crossfade;
+extern int WonGame_ShowStats;
+
+// Tell the sequencer which pieces the music AI wants playing from the next bar on.
+static void publish_requests(void) {
+    XmiRequest requests[MLIMBS_MAX_SEQUENCES - 1];
+
+    for (int i = 0; i < MLIMBS_MAX_SEQUENCES - 1; i++) {
+        int pid = current_request[i].pieceID;
+        requests[i].piece = (WonGame_ShowStats || pid < 0 || pid >= 255) ? -1 : pid;
+        requests[i].ramp = current_request[i].ramp;
+        requests[i].ramp_ms = current_request[i].ramp_time;
+        requests[i].crossfade = current_request[i].crossfade;
+        requests[i].volume = current_request[i].rel_vol;
+    }
+    XmiSetRequests(requests, MLIMBS_MAX_SEQUENCES - 1);
+}
+
 //------------------------------------------------------------------------------
 //  If there is a theme loaded, start playing it.
 //------------------------------------------------------------------------------
@@ -267,8 +290,49 @@ void MacTuneStartCurrentTheme(void) {
         return;
 
     StopTheMusic(); // start from the first bar
-    musicai_prepare_start();
+    mlimbs_counter = 0;
+    if (!global_fullmap->cyber)
+        check_asynch_ai(TRUE); // work out what the first bar plays
+    publish_requests();
     StartMasterClock();
+}
+
+//------------------------------------------------------------------------------
+//  Called every frame while music is on.
+//------------------------------------------------------------------------------
+void MacTuneAiUpdate(void) {
+    // Changing to the music of another zone: the AI fades the old theme out (new_theme goes 2, 1, -1),
+    // then, once it is quiet, the new one is loaded and faded in.
+    if (new_theme == -1) {
+        if (global_fullmap->cyber) {
+            new_theme = 0;
+        } else if (XmiThemeFaded()) {
+            new_theme = -2;
+            load_score_for_location(new_x, new_y);
+            MacTuneStartCurrentTheme();
+        }
+    }
+
+    // A theme that is loaded but not running (just loaded, or stopped) starts from the first bar.
+    if (NumTracks >= 2 && !IsPlaying(MASTER_THREAD))
+        MacTuneStartCurrentTheme();
+
+    // The theme's master track fires a trigger a little way into every bar. That is our cue to work
+    // out what the next bar should play; the sequencer starts and stops pieces to match when the
+    // bar begins (see apply_requests in Xmi.c).
+    if (XmiConsumeAiDue() && !global_fullmap->cyber)
+        check_asynch_ai(TRUE);
+
+    publish_requests();
+}
+
+//------------------------------------------------------------------------------
+//  The music is being stopped, so a zone fade in progress is moot.
+//------------------------------------------------------------------------------
+void MacTuneResetFade(void) {
+    curr_ramp = curr_ramp_time = curr_crossfade = 0;
+    if (new_theme != -2) // not for the load that ends a zone fade, which fades the new theme in
+        new_theme = 0;
 }
 
 //------------------------------------------------------------------------------

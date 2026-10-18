@@ -503,6 +503,15 @@ typedef struct {
     MIDI_EVENT *loop_end;
     int npending;
     PendingOff pending[MAX_PENDING]; // sorted by time
+
+    // volume of the whole track, 0-1000, which can be ramped up and down (AIL's sequence volume)
+    volatile int vol1000;
+    int vol_sent; // value last sent to the device
+    int ramp_from, ramp_to;
+    double ramp_start_us, ramp_len_us; // ramp_len_us == 0: not ramping
+    int faded;                         // has been asked to fade out
+    unsigned int track;
+    unsigned short muted;              // track channels whose notes are being held back (crossfade)
 } SeqThread;
 
 static SeqThread Seq[NUM_THREADS];
@@ -511,7 +520,7 @@ static int ThreadReqLoop[NUM_THREADS];
 
 // theme driving state
 static int SlotPiece[NUM_THREADS];         // piece being played by each thread, -1 = none (sequencer thread only)
-static int Requests[MAX_PIECES];           // pieces the music AI wants playing, -1 = none
+static XmiRequest Requests[MAX_PIECES];    // pieces the music AI wants playing, piece -1 = none
 static SDL_mutex *RequestMutex;
 static SDL_atomic_t AiDue;                 // set at the master's "run the AI" trigger
 static unsigned char PieceMeasures[256];   // bars per piece, from thmN.dat
@@ -534,6 +543,18 @@ static void dispatch_event(int i, const MIDI_EVENT *ev) {
     if ((ev->status & ~15) == 0xB0 && p1 >= 110 && p1 <= 120)
         return;
 
+    if ((ev->status & ~15) == 0x90 && p2) {
+        // note on: nothing from channels that are crossfaded out; the drums have no channel of
+        // their own, so the volume of the track scales their velocity instead
+        if (channel != 9 && (Seq[i].muted & (1 << channel)))
+            return;
+        if (channel == 9 && Seq[i].vol1000 < 1000) {
+            p2 = (p2 * Seq[i].vol1000) / 1000;
+            if (!p2)
+                return;
+        }
+    }
+
     if (channel != 9)
         channel = ThreadChannelRemap[channel + 16 * i]; // remap channel, except 9 (percussion)
 
@@ -544,9 +565,11 @@ static void dispatch_event(int i, const MIDI_EVENT *ev) {
         // send volume change to device
         SDL_LockMutex(MyMutex);
         if (MusicDev && MusicDev->isOpen) {
-            // scale new volume according to global music volume
+            // scale new volume according to global music volume and the volume of the track
             extern uchar curr_vol_lev; // 0-100
-            const int scaledVolume = ((int)p2 * (int)curr_vol_lev) / 100;
+            int scaledVolume = ((int)p2 * (int)curr_vol_lev) / 100;
+            if (channel != 9)
+                scaledVolume = (scaledVolume * Seq[i].vol1000) / 1000;
             MusicDev->sendControllerChange(MusicDev, channel, p1, scaledVolume);
         }
         SDL_UnlockMutex(MyMutex);
@@ -609,12 +632,87 @@ static void reset_thread_channels(int thread) {
             MusicDev->sendControllerChange(MusicDev, channel, 1, 0);   // modulation
             MusicDev->sendControllerChange(MusicDev, channel, 10, 64); // pan
             MusicDev->sendControllerChange(MusicDev, channel, 11, 127); // expression
-            MusicDev->sendControllerChange(MusicDev, channel, 7, (127 * (int)curr_vol_lev) / 100);
+            MusicDev->sendControllerChange(MusicDev, channel, 7,
+                                           (((127 * (int)curr_vol_lev) / 100) * Seq[thread].vol1000) / 1000);
             MusicDev->sendPitchBendML(MusicDev, channel, 64, 0);
         }
     }
     SDL_UnlockMutex(MyMutex);
 }
+
+// Send the volume of every channel of a track to the device again, after the track's volume has changed.
+static void refresh_thread_volume(int thread) {
+    extern uchar curr_vol_lev; // 0-100
+    SeqThread *t = &Seq[thread];
+    int channel;
+
+    SDL_LockMutex(MyMutex);
+    if (MusicDev && MusicDev->isOpen) {
+        for (channel = 0; channel < 16; channel++) {
+            if (channel == 9 || ChannelThread[channel] != thread)
+                continue;
+            MusicDev->sendControllerChange(
+                MusicDev, channel, 7,
+                (((int)SDL_AtomicGet(&DeviceChannelVolume[channel]) * (int)curr_vol_lev) / 100 * t->vol1000) / 1000);
+        }
+    }
+    SDL_UnlockMutex(MyMutex);
+    t->vol_sent = t->vol1000;
+}
+
+// Fade the volume of a track to to1000 (0-1000) over ms.
+static void start_ramp(int thread, int to1000, int ms) {
+    SeqThread *t = &Seq[thread];
+
+    if (ms <= 0) {
+        t->ramp_len_us = 0;
+        t->vol1000 = to1000;
+        refresh_thread_volume(thread);
+        return;
+    }
+    t->ramp_from = t->vol1000;
+    t->ramp_to = to1000;
+    t->ramp_start_us = now_us();
+    t->ramp_len_us = ms * 1000.0;
+}
+
+// Keep a ramp going. Called all the time; only talks to the device when the volume moved noticeably.
+static void update_ramp(int thread, double now) {
+    SeqThread *t = &Seq[thread];
+    double f;
+    int v;
+
+    if (t->ramp_len_us <= 0)
+        return;
+    f = (now - t->ramp_start_us) / t->ramp_len_us;
+    if (f >= 1.0) {
+        f = 1.0;
+        t->ramp_len_us = 0;
+    }
+    v = t->ramp_from + (int)((t->ramp_to - t->ramp_from) * f);
+    if (t->ramp_len_us == 0 || abs(v - t->vol_sent) >= 8) {
+        t->vol1000 = v;
+        refresh_thread_volume(thread);
+    }
+}
+
+// Hold back (or let through again) the notes of one channel of a track.
+static void set_channel_muted(int thread, int track_channel, int muted) {
+    SeqThread *t = &Seq[thread];
+
+    if (muted) {
+        t->muted |= (1 << track_channel);
+        SDL_LockMutex(MyMutex);
+        if (MusicDev && MusicDev->isOpen)
+            MusicDev->sendControllerChange(MusicDev, ThreadChannelRemap[16 * thread + track_channel], 123, 0);
+        SDL_UnlockMutex(MyMutex);
+    } else {
+        t->muted &= ~(1 << track_channel);
+    }
+}
+
+// The channels of a piece that the crossfade works on: MIDI channels 11-16, as in the original.
+#define XFADE_CHANNELS 0xFC00
 
 // Stop a thread's track: silence and free its channels. Sequencer thread only.
 static void seq_stop(int thread) {
@@ -637,6 +735,7 @@ static void seq_stop(int thread) {
     t->event = 0;
     t->npending = 0;
     t->looping = 0;
+    t->ramp_len_us = 0;
 
     for (channel = 0; channel < 16; channel++) {
         if (ChannelThread[channel] == thread) {
@@ -651,7 +750,7 @@ static void seq_stop(int thread) {
 }
 
 // Start a track on a thread. Sequencer thread only. Returns 0 when the track couldn't be started.
-static int seq_start(int thread, unsigned int track, int loop, double start_us) {
+static int seq_start(int thread, unsigned int track, int loop, double start_us, int vol1000, unsigned short muted) {
     SeqThread *t = &Seq[thread];
     char channel_remap[16];
     int num, trackChannel, deviceChannel;
@@ -689,9 +788,12 @@ static int seq_start(int thread, unsigned int track, int loop, double start_us) 
         }
     }
     memcpy(ThreadChannelRemap + 16 * thread, channel_remap, 16);
-    reset_thread_channels(thread);
 
     memset(t, 0, sizeof(*t));
+    t->vol1000 = vol1000;
+    t->track = track;
+    t->muted = muted;
+    reset_thread_channels(thread);
     t->event = TrackEvents[track];
     t->start_us = start_us;
     t->is_master = (thread == MASTER_THREAD);
@@ -707,12 +809,13 @@ static int seq_start(int thread, unsigned int track, int loop, double start_us) 
     return 1;
 }
 
-// Called on the master's "start of bar" trigger: stop the pieces nobody wants any more and start the
-// requested ones that are due. A piece N bars long only starts on bars that are a multiple of N, and
-// once started it loops by itself, so it stays in sync with the master.
+// Called on the master's "start of bar" trigger: stop the pieces nobody wants any more, fade and
+// crossfade the ones that are asked to, and start the requested ones that are due. A piece N bars long
+// only starts on bars that are a multiple of N, and once started it loops by itself, so it stays in
+// sync with the master.
 // event_us is when the trigger was scheduled, which is when new pieces should start.
 static void apply_requests(double event_us) {
-    int wanted[MAX_PIECES];
+    XmiRequest wanted[MAX_PIECES];
     int counter = (int)mlimbs_counter;
     int s, r, k;
 
@@ -721,6 +824,10 @@ static void apply_requests(double event_us) {
     SDL_UnlockMutex(RequestMutex);
 
     for (s = 0; s < MAX_PIECES; s++) {
+        SeqThread *t = &Seq[s];
+        unsigned short channels;
+        int c;
+
         if (SlotPiece[s] < 0)
             continue;
         if (!SDL_AtomicGet(&ThreadPlaying[s])) {
@@ -728,18 +835,40 @@ static void apply_requests(double event_us) {
             continue;
         }
         for (r = 0; r < MAX_PIECES; r++)
-            if (wanted[r] == SlotPiece[s])
+            if (wanted[r].piece == SlotPiece[s])
                 break;
         if (r == MAX_PIECES) {
             DEBUG("bar %d: stop piece %d", counter, SlotPiece[s]);
             seq_stop(s);
+            continue;
+        }
+
+        // the piece stays, but may be asked to fade out
+        if (wanted[r].ramp < 0 && !t->faded) {
+            DEBUG("bar %d: fade out piece %d over %d ms", counter, SlotPiece[s], wanted[r].ramp_ms);
+            t->faded = 1;
+            start_ramp(s, 0, wanted[r].ramp_ms);
+        }
+
+        // ...or to bring in (lowest channel first) or take out (highest first) one more channel
+        channels = TrackUsedChannels[t->track] & XFADE_CHANNELS;
+        if (wanted[r].crossfade > 0 && (t->muted & channels)) {
+            for (c = 10; c < 16; c++)
+                if (t->muted & channels & (1 << c))
+                    break;
+            set_channel_muted(s, c, 0);
+        } else if (wanted[r].crossfade < 0 && (channels & ~t->muted)) {
+            for (c = 15; c >= 10; c--)
+                if (channels & ~t->muted & (1 << c))
+                    break;
+            set_channel_muted(s, c, 1);
         }
     }
 
     for (r = 0; r < MAX_PIECES; r++) {
-        int piece = wanted[r];
+        int piece = wanted[r].piece;
         unsigned int track = piece + 1; // track 0 is the master
-        int measures;
+        int measures, vol1000;
 
         if (piece < 0 || piece > 255 || track >= NumTracks || !TrackUsedChannels[track])
             continue;
@@ -760,9 +889,18 @@ static void apply_requests(double event_us) {
         if (s == MAX_PIECES)
             continue; // no free thread
 
-        if (seq_start(s, track, 1, event_us)) {
+        // A piece that comes in while the theme is fading in or out starts silent. If it is crossfaded
+        // in it starts with just the drums.
+        vol1000 = wanted[r].volume * 10;
+        if (seq_start(s, track, 1, event_us, wanted[r].ramp ? 0 : vol1000,
+                      wanted[r].crossfade > 0 ? (TrackUsedChannels[track] & XFADE_CHANNELS) : 0)) {
             SlotPiece[s] = piece;
-            DEBUG("bar %d: start piece %d on thread %d", counter, piece, s);
+            if (wanted[r].ramp < 0)
+                Seq[s].faded = 1;
+            else if (wanted[r].ramp > 0)
+                start_ramp(s, vol1000, wanted[r].ramp_ms);
+            DEBUG("bar %d: start piece %d on thread %d%s", counter, piece, s,
+                  wanted[r].ramp > 0 ? " (fading in)" : (wanted[r].ramp < 0 ? " (silent)" : ""));
         }
     }
 
@@ -833,9 +971,12 @@ int MyThread(void *arg) {
                 SDL_AtomicSet(&ThreadCommand[i], THREAD_READY);
             } else if (command == THREAD_PLAYTRACK) {
                 delay = 0;
-                seq_start(i, ThreadReqTrack[i], ThreadReqLoop[i], now_us());
+                seq_start(i, ThreadReqTrack[i], ThreadReqLoop[i], now_us(), 1000, 0);
                 SDL_AtomicSet(&ThreadCommand[i], THREAD_READY);
             }
+
+            if (t->ramp_len_us > 0)
+                update_ramp(i, now_us());
 
             // send every event that is due; the next event decides how long to sleep
             for (n = 0; n < 1024 && SDL_AtomicGet(&ThreadPlaying[i]); n++) {
@@ -952,14 +1093,30 @@ void StopTheMusic(void) {
 
 int IsPlaying(int i) { return SDL_AtomicGet(&ThreadPlaying[i]); }
 
-// The pieces the music AI wants playing from the next bar on (-1 = unused entry).
-void XmiSetRequests(const int *pieces, int count) {
+// The pieces the music AI wants playing from the next bar on (piece -1 = unused entry).
+void XmiSetRequests(const XmiRequest *requests, int count) {
     int i;
 
     SDL_LockMutex(RequestMutex);
-    for (i = 0; i < MAX_PIECES; i++)
-        Requests[i] = (i < count) ? pieces[i] : -1;
+    for (i = 0; i < MAX_PIECES; i++) {
+        if (i < count) {
+            Requests[i] = requests[i];
+        } else {
+            memset(&Requests[i], 0, sizeof(Requests[i]));
+            Requests[i].piece = -1;
+        }
+    }
     SDL_UnlockMutex(RequestMutex);
+}
+
+// True when the pieces of the theme have all been faded out (or there are none playing).
+int XmiThemeFaded(void) {
+    int s;
+
+    for (s = 0; s < MAX_PIECES; s++)
+        if (SDL_AtomicGet(&ThreadPlaying[s]) && Seq[s].vol1000 > 0)
+            return 0;
+    return 1;
 }
 
 // True once per bar, when the master says it's time to work out the next bar.
@@ -982,7 +1139,7 @@ void InitReadXMI(void) {
     MyMutex = SDL_CreateMutex();
     RequestMutex = SDL_CreateMutex();
     for (i = 0; i < NUM_THREADS; i++)
-        Requests[i] = -1;
+        Requests[i].piece = -1;
 
     for (channel = 0; channel < 16; channel++) {
         ChannelThread[channel] = -1;
@@ -1175,7 +1332,9 @@ void UpdateVolumeXMI(void) {
             if (i != 9 && ChannelThread[i] == -1)
                 continue;
             // scale new volume according to global music volume
-            const int scaledVolume = ((int)SDL_AtomicGet(&DeviceChannelVolume[i]) * (int)curr_vol_lev) / 100;
+            int scaledVolume = ((int)SDL_AtomicGet(&DeviceChannelVolume[i]) * (int)curr_vol_lev) / 100;
+            if (i != 9 && ChannelThread[i] >= 0)
+                scaledVolume = (scaledVolume * Seq[(int)ChannelThread[i]].vol1000) / 1000;
             MusicDev->sendControllerChange(MusicDev, i, 7, scaledVolume);
         }
     }

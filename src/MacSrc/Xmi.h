@@ -20,7 +20,17 @@ void StartTrack(int i, unsigned int track);
 void StartTrackLooped(int i, unsigned int track);
 void StartMasterClock(void);
 int GetTrackNumChannels(unsigned int track);
-void XmiSetRequests(const int *pieces, int count);
+// What the music AI asks for, one per piece; see struct mlimbs_request_info
+typedef struct {
+    int piece;     // -1 = nothing
+    int ramp;      // <0 fade the piece out, >0 fade it in
+    int ramp_ms;   // ...over this long
+    int crossfade; // >0 bring the channels of the piece in one by one, one per bar; <0 take them out
+    int volume;    // percent
+} XmiRequest;
+
+void XmiSetRequests(const XmiRequest *requests, int count);
+int XmiThemeFaded(void);
 int XmiConsumeAiDue(void);
 void XmiSetPieceMeasures(const unsigned char *measures, int count, int master_measures);
 void StopTrack(int i);
