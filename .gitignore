@@ -63,3 +63,7 @@ savgam*.dat
 # Zig build
 .zig-cache/
 zig-out/
+
+# CLion
+cmake-build-*
+.idea
