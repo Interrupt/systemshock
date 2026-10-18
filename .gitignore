@@ -60,6 +60,10 @@ savgam*.dat
 .cproject
 .DS_Store
 
+# Zig build
+.zig-cache/
+zig-out/
+
 # CLion
 cmake-build-*
 .idea

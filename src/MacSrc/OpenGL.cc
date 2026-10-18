@@ -188,8 +188,11 @@ static GLuint loadShader(GLenum type, const char *filename) {
     char fb[1024];
     sprintf(fb, "%s/shaders/%s", SDL_GetBasePath(), filename);
 #else
-    char fb[256];
-    sprintf(fb, "shaders/%s", filename);
+    char fb[1024];
+    if (gShockResDir[0]) // -data-dir changed the working directory; shaders stay with the executable
+        snprintf(fb, sizeof(fb), "%sshaders/%s", SDL_GetBasePath(), filename);
+    else
+        snprintf(fb, sizeof(fb), "shaders/%s", filename);
 #endif
 
     FILE *file = fopen(fb, "r");

@@ -1,5 +1,6 @@
-Shockolate - System Shock, but cross-platform!
+Shockolate - System Shock, but cross platform
 ============================
+
 Based on the source code for PowerPC released by Night Dive Studios, Incorporated.
 
 GENERAL NOTES
@@ -12,36 +13,35 @@ The end goal for this project is something like what Chocolate Doom is for Doom:
 an experience that closely mimics the original, but portable and with some quality-of-life improvements,
 including an OpenGL renderer and mod support!
 
-Join our Discord to follow along with development: https://discord.gg/m45xPan
+Join our Discord to follow along with development: <https://discord.gg/m45xPan>
 
 ![work so far](https://i.imgur.com/kbVWQj4.gif)
 
 Running
 =======
 
-## 1) Acquire binary
+## 1: Getting Shockolate
 ### From a prebuilt package
 
-Find a list of [downloadable packages](https://github.com/Interrupt/systemshock/releases/) for Linux and Windows.
-32- and 64-bit versions are available for Linux and Windows.
+We build [downloadable packages](https://github.com/Interrupt/systemshock/releases/) for both Linux and Windows.
 
 ### From source code
 
 See [COMPILING.md](COMPILING.md) in the repository.
 
-## 2) Provide resources
+## 2: Required Resources
 
-### 2a) Game data
+### 2a: Game data
 Original cd-rom or SS:EE assets in a `res/data` folder need to be next to the executable.
 > Floppy disk assets are an older version that we can't load currently.
 
-### 2b) Music sound font (optional)
+### 2b: Music sound font (optional)
 In the `res` folder, add a `.sf2` sound font file that should be used for playback.
 
 > There is a file on the internet that's close to the Windows default everyone knows: http://rancid.kapsi.fi/windows.sf2
 > Please note that this is a file of unknown provenance.
 
-## 3) Execute binary
+## 3: Running
 
 ```
 ./systemshock
@@ -50,6 +50,7 @@ In the `res` folder, add a `.sf2` sound font file that should be used for playba
 ### Command line parameters
 
 `-nosplash` Disables the splash screens, causes the game to start straight to the main menu
+`-data-dir` Points the game to an alternate data directory, must still be called "res"
 
 Modding Support
 ============
@@ -58,11 +59,13 @@ Point the executable at a mod file or folder and the game will load it in.
 So far mod loading supports additional `.res` and `.dat` files for resources and missions respectively.
 
 Run a fan mission from a folder:
+
 ```
 ./systemshock /Path/To/My/Mission
 ```
 
 Run a fan mission from specific files:
+
 ```
 ./systemshock my-archive.dat my-strings.res
 ```
