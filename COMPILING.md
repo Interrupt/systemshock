@@ -16,13 +16,27 @@ The necessary tasks of the respective categories are explained below. First, som
 The project is set up to officially support common **desktop** environments:
 * Linux (32bit, 64bit)
 * MS Windows (32bit, 64bit)
-* ~~MacOS~~ (should be, but currently not working after the switch to Apple Silicon)
+* MacOS (64 bit)
 
 > The emphasis on *desktop*, above, is deliberate. Only what builds by the automated build jobs
 > of this project is supported. If there is a permutation of another system that isn't ensured by a
 > build job, it may not work.
 > 
-> The following describes the ideal working setup. 
+> The following describes the ideal working setup.
+
+### Build systems
+
+Shockolate supports two build modes:
+* The legacy `cmake` build mode
+* A new `zig` build mode
+
+## Zig build instructions
+
+Download Zig 0.17.x or newer.
+
+Run `zig build` to build, `zig build run` to build and run.
+
+## CMake build instructions
 
 ### Dependencies
 
