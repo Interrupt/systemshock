@@ -37,12 +37,6 @@ jobs:
             runner: ubuntu-22.04
             toolchain_file: 'i686-w64-mingw32.cmake'
             extra_packages: 'gcc-mingw-w64-i686 g++-mingw-w64-i686'
-
-          # macOS builds (native compilation)
-          # Disabled build because of alignment issues during linking.
-          #- os: macos
-          #  arch: arm64
-          #  runner: macos-14
     steps:
       - uses: actions/checkout@v7
 
@@ -84,3 +78,28 @@ jobs:
           name: systemshock-${{ matrix.os }}-${{ matrix.arch }}
           path: dist/
           if-no-files-found: warn
+
+  # macOS arm64 is built with the Zig build system (build.zig) rather than CMake.
+  build-macos-zig:
+    name: macos - arm64 (zig)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install build dependencies
+        run: brew install pkgconf sdl2 sdl2_mixer fluid-synth
+
+      - name: Set up Zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.0
+
+      - name: Build
+        run: zig build -Drelease --summary all
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: systemshock-macos-arm64
+          path: zig-out/bin/
+          if-no-files-found: error
