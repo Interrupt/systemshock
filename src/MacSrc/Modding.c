@@ -79,6 +79,10 @@ int ProcessModArgs(int argc, char **argv) {
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
             mod_args_start++;
+            if (strcmp(argv[i], "-data-dir") == 0 && i + 1 < argc) {
+                mod_args_start++; // its value
+                i++;
+            }
         }
     }
 

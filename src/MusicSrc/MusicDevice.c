@@ -20,6 +20,8 @@
 #endif
 #ifdef __APPLE__
 #include <SDL.h>
+
+extern char gShockResDir[]; // Shock.c; set by -data-dir
 #endif
 
 //------------------------------------------------------------------------------
@@ -1028,7 +1030,8 @@ static int FluidMidiInit(MusicDevice *dev, const unsigned int outputIndex, unsig
     int sfid;
 #ifdef __APPLE__
     char fileName[1024] = "";
-    sprintf(fileName, "%sres/", SDL_GetBasePath());
+    sprintf(fileName, "%s", gShockResDir[0] ? gShockResDir : SDL_GetBasePath());
+    if (!gShockResDir[0]) strcat(fileName, "res/");
 
     FluidMidiGetOutputName(dev, outputIndex, &fileName[strlen(fileName)], 1024 - strlen(fileName));
 #else
@@ -1195,7 +1198,8 @@ static unsigned int FluidMidiGetOutputCount(MusicDevice *dev)
 #else
 #ifdef __APPLE__
     char *respath[1024];
-    sprintf(respath, "%sres/", SDL_GetBasePath());
+    sprintf(respath, "%s", gShockResDir[0] ? gShockResDir : SDL_GetBasePath());
+    if (!gShockResDir[0]) strcat(respath, "res/");
     DIR *dirp = opendir(respath);
 #else
     DIR *dirp = opendir("res");
@@ -1254,7 +1258,8 @@ static void FluidMidiGetOutputName(MusicDevice *dev, const unsigned int outputIn
     //  probably wants
 #ifdef __APPLE__
     char *respath[1024];
-    sprintf(respath, "%sres/", SDL_GetBasePath());
+    sprintf(respath, "%s", gShockResDir[0] ? gShockResDir : SDL_GetBasePath());
+    if (!gShockResDir[0]) strcat(respath, "res/");
     DIR *dirp = opendir(respath);
 #else
     DIR *dirp = opendir("res");

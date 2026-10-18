@@ -38,6 +38,11 @@ void SDLDraw();
 void CaptureMouse(bool capture);
 bool CheckArgument(char *name);
 
+// Absolute path (with trailing slash) of the game's "res" folder when given with
+// -data-dir <path-to-res>; empty when not set. The process also chdir()s to the
+// folder's parent, so the "res/..." relative paths used throughout keep working.
+extern char gShockResDir[];
+
 //--------------------
 // Public Globals
 //--------------------

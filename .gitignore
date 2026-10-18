@@ -59,3 +59,7 @@ savgam*.dat
 .project
 .cproject
 .DS_Store
+
+# Zig build
+.zig-cache/
+zig-out/

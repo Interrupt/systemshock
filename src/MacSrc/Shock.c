@@ -28,6 +28,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Includes
 //--------------------
 #include <math.h>
+#include <stdlib.h>
+#include <string.h>
+#ifdef _WIN32
+#include <direct.h>
+#define chdir _chdir
+#else
+#include <unistd.h>
+#endif
 #include <SDL.h>
 
 #include "InitMac.h"
@@ -60,6 +68,7 @@ SDL_AudioDeviceID device;
 
 int num_args;
 char **arg_values;
+char gShockResDir[1024] = "";
 
 extern grs_screen *svga_screen;
 extern frc *svga_render_context;
@@ -78,6 +87,59 @@ extern void LoadHotkeyKeybinds(void);
 extern void LoadMoveKeybinds(void);
 
 //------------------------------------------------------------------------------------
+//		-data-dir <path to res folder>
+//------------------------------------------------------------------------------------
+static void ApplyDataDirArgument(int argc, char **argv) {
+    const char *arg = NULL;
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-data-dir") == 0) {
+            if (i + 1 >= argc) {
+                ERROR("-data-dir needs a path to the res folder");
+                exit(1);
+            }
+            arg = argv[i + 1];
+        }
+    }
+    if (arg == NULL)
+        return;
+
+    char full[1024];
+#ifdef _WIN32
+    if (_fullpath(full, arg, sizeof(full)) == NULL) {
+#else
+    if (realpath(arg, full) == NULL) {
+#endif
+        ERROR("-data-dir: cannot resolve %s", arg);
+        exit(1);
+    }
+
+    // strip trailing separators, then split into parent + final component
+    size_t len = strlen(full);
+    while (len > 1 && (full[len - 1] == '/' || full[len - 1] == '\\'))
+        full[--len] = '\0';
+    char *sep = strrchr(full, '/');
+#ifdef _WIN32
+    char *bsep = strrchr(full, '\\');
+    if (bsep != NULL && (sep == NULL || bsep > sep))
+        sep = bsep;
+#endif
+    if (sep == NULL || strcasecmp(sep + 1, "res") != 0) {
+        ERROR("-data-dir must point at a folder named \"res\" (got %s)", full);
+        exit(1);
+    }
+
+    snprintf(gShockResDir, sizeof(gShockResDir), "%s/", full);
+    if (sep == full) // res directly under the root
+        sep++;
+    *sep = '\0';
+    if (chdir(full) != 0) {
+        ERROR("-data-dir: cannot enter %s", full);
+        exit(1);
+    }
+    INFO("Using game data in %s", gShockResDir);
+}
+
+//------------------------------------------------------------------------------------
 //		Main function.
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv) {
@@ -91,6 +153,8 @@ int main(int argc, char **argv) {
     log_set_level(LOG_INFO);
 
     INFO("Logger initialized");
+
+    ApplyDataDirArgument(argc, argv);
 
     // init mac managers
 
