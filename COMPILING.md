@@ -36,6 +36,12 @@ Download Zig 0.17.x or newer.
 
 Run `zig build` to build, `zig build run` to build and run.
 
+Zig supports cross compiling to different targets, eg:
+
+`zig build run -Dtarget=x86_64-windows-gnu`
+
+View the Zig documentation for a full list of supported targets.
+
 ## CMake build instructions
 
 ### Dependencies
