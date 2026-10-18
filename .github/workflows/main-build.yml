@@ -1,0 +1,86 @@
+name: Main Build
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  build:
+    name: ${{matrix.os}} - ${{matrix.arch}}
+    runs-on: ${{matrix.runner}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux builds
+          - os: linux
+            arch: x86-64
+            runner: ubuntu-22.04
+            toolchain_file: 'x86-64-gcc.cmake'
+            extra_packages: 'gcc g++ mesa-utils mesa-common-dev xorg-dev libxrandr-dev'
+
+          - os: linux
+            arch: i686
+            runner: ubuntu-22.04
+            toolchain_file: 'i686-gcc.cmake'
+            extra_packages: 'gcc-multilib g++-multilib mesa-utils mesa-common-dev:i386 xorg-dev libxrandr-dev'
+
+          # Windows builds
+          - os: mswin
+            arch: x86-64
+            runner: ubuntu-22.04
+            toolchain_file: 'x86-64-w64-mingw32.cmake'
+            extra_packages: 'gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64'
+
+          - os: mswin
+            arch: i686
+            runner: ubuntu-22.04
+            toolchain_file: 'i686-w64-mingw32.cmake'
+            extra_packages: 'gcc-mingw-w64-i686 g++-mingw-w64-i686'
+
+          # macOS builds (native compilation)
+          # Disabled build because of alignment issues during linking.
+          #- os: macos
+          #  arch: arm64
+          #  runner: macos-14
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install build dependencies (Linux)
+        if: runner.os == 'linux'
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y cmake ${{ matrix.extra_packages }}
+
+      - name: Install build dependencies (macOS)
+        if: runner.os == 'macos'
+        run: |
+          brew uninstall cmake
+          wget -q https://github.com/Kitware/CMake/releases/download/v3.31.12/cmake-3.31.12-macos-universal.tar.gz
+          tar -xzf cmake-3.31.12-macos-universal.tar.gz
+          sudo cp -r cmake-3.31.12-macos-universal/CMake.app /Applications/
+          echo "/Applications/CMake.app/Contents/bin" >> $GITHUB_PATH
+          brew install ninja
+
+      - name: Generate build files
+        run: >
+          cmake 
+          -B build 
+          -S . 
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo 
+          ${{ matrix.toolchain_file && format('-DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/{0}', matrix.toolchain_file) || '' }}
+
+      - name: Build
+        run: cmake --build build -j $(sysctl -n hw.logicalcpu || nproc)
+
+      - name: Prepare distribution package
+        run: cmake --install build --prefix dist
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: systemshock-${{ matrix.os }}-${{ matrix.arch }}
+          path: dist/
+          if-no-files-found: warn
